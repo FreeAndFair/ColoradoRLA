@@ -1,4 +1,3 @@
 Development Process and Methodology
 ===================================
 
-
