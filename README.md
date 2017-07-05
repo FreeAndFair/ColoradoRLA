@@ -34,6 +34,7 @@ Documentation about this project and the Colorado RLA system includes:
   available, including artifacts which we are permitted to locally
   mirror, is found in the [docs/bibliography](docs/bibliography)
   directory,
+* a [document describing how we perform project management](docs/project_management.md),
 * the [license](#license) under which this software is made available, and
 * all [contributors](#contributors) to the design and development of
   this system are listed below.
@@ -47,3 +48,5 @@ Contributors
 * Morgan Miller (role) contributions
 * Joe Ranweiller (role) contributions
 * Daniel Zimmerman (role) contributions
+
+More information about our team members [is available](docs/team.md).
