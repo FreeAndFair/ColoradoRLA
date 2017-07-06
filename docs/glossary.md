@@ -124,7 +124,7 @@ adjudication or equipment errors.
 
 * **margin** TBD
 
-* **hash function** TBD
+* **hash function** TBD, mentioning specifically SHA-256
 
 * **RLA software** TBD
 
@@ -210,3 +210,32 @@ adjudication or equipment errors.
 
 * **Dominion Democracy Suite** TBD
 
+* **dashboard** TBD
+
+* **developer dashboard** TBD
+
+* **state-wide dashboard** TBD
+
+* **county dashboard** TBD
+
+* **audit progress** TBD
+
+* **discrepency** TBD
+
+* **random** TBD
+
+* **contest margin** TBD
+
+* **access control** TBD
+
+* **role** TBD
+
+* **fault tolerance** TBD
+
+* **user interface (UI)** TBD
+
+* **user experience (UX)** TBD
+
+* **data synchronization** TBD
+
+* **Colorado Department of State (CDOS)** TBD
