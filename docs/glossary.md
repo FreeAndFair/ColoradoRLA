@@ -124,3 +124,72 @@ adjudication or equipment errors.
 
 * **margin** TBD
 
+* **hash function** TBD
+
+* **RLA software** TBD
+
+* **ballot storage bin** TBD
+
+* **batch** TBD
+
+* **batch size** TBD
+
+* **chain-of-custody** TBD
+
+* **county** TBD
+
+* **scanner** TBD
+
+* **imprinted ballot** TBD
+
+* **ballot order** TBD
+
+* **Secretary of State (SOS)** TBD
+
+* **Department of State (DOS)** TBD
+
+* **audit** TBD
+
+* **audit board** TBD
+
+* **audit report** TBD
+
+* **SOS audit form** TBD
+
+* **ballot certification** TBD
+
+* **UOCAVA voter** TBD
+
+* **UOCAVA ballot** TBD
+
+* **mail ballot** TBD
+
+* **election canvass** TBD
+
+* **canvas board** TBD
+
+* **post-election (historical, random) audit** TBD
+
+* **county clerk** TBD
+
+* **sample size** TBD including **initial sample size**
+
+* **equipment** TBD
+
+* **VVPAT** TBD
+
+* **overvote** TBD
+
+* **stray mark** TBD
+
+* **damage** TBD
+
+* **undervote** TBD
+
+* **risk limit** TBD
+
+* **voting system** TBD
+
+* **
+* **
+* **
