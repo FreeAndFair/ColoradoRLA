@@ -54,8 +54,7 @@ sample ballot manifest is attached as Appendix 2.
 
 * **cast vote records (CVR)** - Electronic records created during
 scanning of paper ballots indicating how the voting system interpreted
-physical marks on every ballot. A sample CVR is attached as Appendix
-1.
+physical marks on every ballot. A sample CVR is attached as Appendix 1.
 
 * **contests** - A contest in this context is each item up for
 decision on a ballot. Ex: Jane Doe for Colorado Secretary of State.
