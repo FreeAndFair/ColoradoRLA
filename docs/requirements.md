@@ -1,6 +1,16 @@
 Requirements
 ============
 
+This document contains the requirements of the specification of the
+ColoradoRLA system.
+
+History
+-------
+
+* Outline and first draft, 5 July 2017 by Joe Kiniry.
+* Second draft, 6 July 2017 by Joe Kiniry. Still no refined system
+  requirements above and beyond those in the DQ.
+
 Mandatory Requirements
 ----------------------
 
@@ -35,9 +45,9 @@ Mandatory Requirements
 ### Mandatory Non-Behavioral Requirements
 
 We summarize our approaches to three critical non-behavioral
-properties of OpenRLA below: how we achieve fault tolerance, how we
-perform synchronization, and some reflections on the dynamism of the
-UI and user experience (UX).
+properties of this system below: how we achieve *fault tolerance*, how
+we perform *synchronization*, and some reflections on the *dynamism of
+the UI and user experience (UX)*.
 
 #### Fault tolerance
 
@@ -79,15 +89,15 @@ Secondary Requirements
 ----------------------
 
 * This system will be hosted in the CDOS data center, which will support
-failover, as described in the Documented Quote [CO-RLA-DQ, p. 16]. 
+  failover, as described in the Documented Quote [CO-RLA-DQ, p. 16]. 
 
 * Our system includes all necessary features for fault tolerance
-summarized earlier, including a redundant standby server with separate
-network cards and power supplies, dual CPUs, and hard drives in a RAID
-5 configuration. 
+  summarized earlier, including a redundant standby server with
+  separate network cards and power supplies, dual CPUs, and hard
+  drives in a RAID 5 configuration.
 
 * We expect regular backups to be configured to use CDOS Disaster
-Recovery facility.
+  Recovery facility.
 
 * Ensure business continuity of the system with at least four nines
   (99.99%) availability.
