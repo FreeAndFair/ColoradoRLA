@@ -190,6 +190,23 @@ adjudication or equipment errors.
 
 * **voting system** TBD
 
-* **
-* **
-* **
+* **Dr. Philip Stark** TBD
+
+* **Dr. Mark Lindeman** TBD
+
+* **Dr. Ron Rivest** TBD
+
+* **Colorado House Bill 09-1335** TBD
+
+* **EAC** TBD
+
+* **Clear Ballot Group** TBD
+
+* **Clear Ballot ClearCount** TBD
+
+* **OpenCount** TBD
+
+* **Dominion** TBD
+
+* **Dominion Democracy Suite** TBD
+
