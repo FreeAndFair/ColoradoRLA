@@ -2,13 +2,22 @@ Validation and Verification
 ===========================
 
 Determining whether the system you are creating is the system that a
-client wants is called *validation*.  *Testing* is one means by which
+client wants is called _validation_.  _Testing_ is one means by which
 to perform validation.  Mathematically proving that a system
 performs exactly as specified under an explicitly stated set of
-assumptions is called *verification*.
+assumptions is called _verification_.
 
-Testing
--------
+We perform both validation and verification on a regular basis, every
+night when nightly builds are created and on every merge of new or
+corrected functionality into the release branch of the development
+repository.  This is standard development practice and minimizes
+problems that can occur during component integration. It is also part
+of our continuous integration practice.  We discuss our rigorous
+systems engineering method in greater detail in
+the [Development Process and Methodology](methodology.md) document.
+
+Testing and Proving
+-------------------
 
 Testing provides some degree of assurance that a system will behave
 according to its requirements. In mainstream software engineering,
@@ -22,21 +31,21 @@ applied formal methods.
 Essentially, because we reason about programs and their
 specifications, rather than hand-writing and hand-maintaining tests
 that only describe a small fraction of a system’s functionality, we
-formally describe what a system is meant to do and prove (formally,
-mathematically, mechanically) that the system will always behave that
-way under all conditions. These correctness proofs give as much
-assurance as testing every possible state the system can ever be
-in. This field of R&D is known as formal verification; our team
-includes world leaders in this topic, who have previously been
-professors and professionals inventing and publishing new concepts,
-mathematics, tools, and techniques in this area for decades.
+formally describe how a system is meant to behave and _prove_
+(formally, mathematically, mechanically) that the system will always
+behave that way under all conditions. These correctness proofs give as
+much assurance as testing every possible state of the system. This
+field of R&D is known as formal verification; our team includes world
+leaders in this topic, who have previously been professors and
+professionals inventing and publishing new concepts, mathematics,
+tools, and techniques in this area for decades.
 
-Many properties a system should have are, in fact,
-untestable. Security is one of the most noteworthy. Certainly, one can
-look for known bad practices or “gotchas”—what is often viewed as
-security testing in mainstream software engineering—but avoiding all
-of the known mistakes one can make says nothing about all of the
-possible unknown mistakes that can introduce security failures in
+Many properties a system should have cannot be tested; security is one
+of the most noteworthy of these. Certainly, one can search the system
+for known bad practices or "gotchas" (this is often viewed as
+"security testing" in mainstream software engineering), but avoiding
+all of the _known_ mistakes one can make says nothing about all of the
+possible _unknown_ mistakes that can introduce security failures in
 systems.
 
 Despite the level of assurance we can achieve through formal
@@ -52,99 +61,70 @@ System Validation
 
 Free & Fair will ensure that the delivered system meets its intended
 security, performance, and accuracy (correctness) requirements by
-applying dynamic and static checking at multiple levels.
+applying dynamic checking (classic testing) at three levels: _unit
+testing_, _functional testing_, and _user interface (UI) testing_.
 
-Dynamic checking (classic testing) is applied at three levels. The
-first is unit testing. At this level, each basic software component of
-a system is tested to ensure it meets its specification. The
-specification is obtained as part of the refinement of the high-level
-system requirements through the design process. Using our tools, most
-of these tests will be generated automatically. Unit tests provide a
-low-level indication that the basic components of a system are working
-as intended and provide an early warning if changes cause requirements
-and implementation to diverge. These will be performed under live
-conditions.
+Unit testing exercises each basic software component of the system
+to ensure it meets its specification. The specification is obtained as
+part of the refinement of the high-level system requirements through
+the design process. Using our tools, most of these tests will be
+generated automatically. Unit tests provide a low-level indication
+that the basic components of a system are working as intended and
+provide an early warning if changes cause requirements and
+implementation to diverge.
 
-The second level of dynamic checking is functional testing—testing
-that the overall functionality of the system is correct (e.g., that it
-counts ballots correctly). For these tests a range of use scenarios is
-designed, with test scenarios including even unlikely combinations of
-input data. These tests are designed to cover the full requirements of
-the system. Our functional tests can be designed without a full
+Functional testing exercises the overall functionality of the
+system. A range of use scenarios is designed to cover the full
+requirements of the system, including even unlikely combinations of
+input data. Functional tests can be designed without a full
 implementation in hand, based on the system requirements and the input
-data formats; this helps to ensure that the tests accurately
-represent the system requirements without being influenced by
-implementation choices. These will be performed under live conditions.
+data formats; this helps to ensure that the tests accurately represent
+the system requirements without being influenced by implementation
+choices. 
 
-The third level of dynamic checking is user interface (UI)
-testing. Usability and accessibility testing will be handled by the
+There are two types of user interface (UI) testing:
+_usability/accessibility testing_ and _UI functional
+testing_. Usability and accessibility testing will be handled by the
 Colorado Department of State (CDOS) for this project, in accordance
 with their processes for such; however, before delivering a version of
-the system to CDOS for testing, we will run our own set of tests to
-ensure that the implemented UI conforms to the design and the product
-requirements built into the design. This kind of testing is automated
-using tools that can drive the UI based on test scenarios; the testing
-is run regularly to be sure that no inadvertent code changes cause the
-implementation to diverge from the design. Since formal methods for
-verifying UI functionality and responsiveness are less mature than for
-algorithmic verification, UI testing is an important component of the
-overall assurance case.
+the system to CDOS for testing, we will run our own set of UI
+functional tests to ensure that the implemented UI conforms to the
+design and the product requirements built into the design. UI
+functional testing is automated using tools that can drive the UI
+based on test scenarios; the testing is run regularly to be sure that
+no inadvertent code changes cause the implementation to diverge from
+the design.
 
-Dynamic checking only provides indicative evidence that a system
-performs as intended, because it is typically not possible to test all
-possible scenarios. With this in mind, we will not only report test
-success, but also indicate what fraction of system behaviors we cover
-using dynamic checking.
-
-In addition to dynamic checking, Free & Fair will use static (formal)
-verification to prove that key components implement the system
-requirements. In static verification, implementation and specification
-are each translated into an equivalent logical representation and
-automated proof tools are used to ensure that the implementation
-satisfies the specification. These tests are performed directly on the
-software and do not have a physical component. This kind of
-verification is the formal variant of what is known by many names,
-such as component-based, component-level, subsystem-level
-testing. Because our specification and reasoning methods are
-compositional, these techniques also subsume what is normally known as
-integration testing. These formal checks are also automated and can be
-replayed regularly to be sure that requirements and implementation
-stay consistent as the project progresses. We discuss our rigorous
-systems engineering method in greater detail in the [Development
-Process and Methodology](methodology.md) document.
-
-*Security Testing*
-
-In addition to correctness, security is critical to election
-systems. Correctness guarantees state that, if used as anticipated,
-the system will give a correct result. Security guarantees state that,
-if the system is used in an unanticipated way, it cannot give
-misleading results. Assurance that nothing bad can happen cannot be
-provided by dynamic testing; it can only be provided by formal
-proof. Proofs of security guarantees will be among the assurance
-artifacts and arguments that Free & Fair produces in support of the
-delivered Elements. These tests are performed directly on the software
-and do not have a physical component.
-
-*Final System Testing*
-
-The final type of testing is the testing of the hardware/software
-combination as it would be delivered. For this purpose, a set of
-acceptance tests is designed in cooperation with the client. The
-acceptance tests are made as automated as possible, but may also
-include manual tests. These tests are performed live.
-
-One part of the regular reporting during the project will be the
-status of test suite development and test suite success, across all of
-the kinds of dynamic and static tests described above.
-
-A final aspect of both dynamic and static checking is regular
-rerunning of tests. Typically test suites are executed (and static
-checks are re-run) every night and on every merge of new or corrected
-functionality into the release branch of software development. This is
-standard development practice and minimizes problems that can occur
-during component integration. It is also part of our continuous
-integration practice.
+A part of the regular reporting during the project will be the status
+of test suite development and test suite success, across all of the
+kinds of dynamic testing described above. Since it is typically not
+possible to test all possible scenarios, dynamic checking only
+provides indicative evidence that a system performs as intended;
+therefore, we will not only report test suite success information, but
+also indicate what fraction of system behaviors our test suite covers.
 
 System Verification
 -------------------
+
+In addition to system validation through dynamic checking, described
+above, Free & Fair will use static (formal) verification to prove that
+key components implement the system requirements. In contrast to
+dynamic checking, static verification is performed without executing
+the software, and provides information about the software's behavior
+that is independent of particular test scenarios.
+
+To perform static verification, the software implementation and
+specification are each translated into an equivalent logical
+representation and automated proof tools are used to ensure that the
+implementation satisfies the specification. This is the formal variant
+of testing processes that are known by many names, such as
+component-based, component-level, and subsystem-level testing. Because
+our specification and reasoning methods are compositional—we can
+perform verification on each individual element of the software
+independently of the others—these techniques also subsume what is
+normally known as integration testing. 
+
+A part of regular reporting during the project will be the status of
+static verification, including information about exactly what
+functionality has been statically verified.
+
