@@ -76,25 +76,19 @@ data formats; this helps to ensure that the tests accurately
 represent the system requirements without being influenced by
 implementation choices. These will be performed under live conditions.
 
-The third level of dynamic checking is user interface (UI) testing. UI
-testing is different, because it takes special tools to drive a UI for
-a system in a way that is repeatable but still at the level of a human
-user. There are two kinds of UI testing to consider. First, during UI
-design, a prototype of the final system is used to simulate the user’s
-experience of the actual system. We will use this prototype to get
-early and regular feedback from users. This feedback will inform our
-iterative design improvements. Additionally, testing sessions can be
-observed, recorded, and shared with other team members to ensure that
-end user experience remains central during the design process.
-
-Second, there is testing to be sure that the implemented UI conforms
-to the design and the product requirements built into the design. This
-kind of testing is automated using tools that can drive the UI based
-on test scenarios; the testing is run regularly to be sure that no
-inadvertent code changes cause the implementation to diverge from the
-design. Since formal methods for verifying UI functionality and
-responsiveness are less mature than for algorithmic verification, UI
-testing is an important component of the overall assurance case.
+The third level of dynamic checking is user interface (UI)
+testing. Usability and accessibility testing will be handled by the
+Colorado Department of State (CDOS) for this project, in accordance
+with their processes for such; however, before delivering a version of
+the system to CDOS for testing, we will run our own set of tests to
+ensure that the implemented UI conforms to the design and the product
+requirements built into the design. This kind of testing is automated
+using tools that can drive the UI based on test scenarios; the testing
+is run regularly to be sure that no inadvertent code changes cause the
+implementation to diverge from the design. Since formal methods for
+verifying UI functionality and responsiveness are less mature than for
+algorithmic verification, UI testing is an important component of the
+overall assurance case.
 
 Dynamic checking only provides indicative evidence that a system
 performs as intended, because it is typically not possible to test all
@@ -119,7 +113,7 @@ stay consistent as the project progresses. We discuss our rigorous
 systems engineering method in greater detail in the [Development
 Process and Methodology](methodology.md) document.
 
-Security Testing
+*Security Testing*
 
 In addition to correctness, security is critical to election
 systems. Correctness guarantees state that, if used as anticipated,
@@ -132,16 +126,7 @@ artifacts and arguments that Free & Fair produces in support of the
 delivered Elements. These tests are performed directly on the software
 and do not have a physical component.
 
-Usability and Accessibility Testing
-
-We will follow best practices for user-centered design in this
-project, and will design the system for accessibility.  The actual
-usability and accessibility testing for this project will be performed
-by the Colorado Department of State using the processes they have put
-in place for such testing.
-
-
-Final System Testing
+*Final System Testing*
 
 The final type of testing is the testing of the hardware/software
 combination as it would be delivered. For this purpose, a set of
