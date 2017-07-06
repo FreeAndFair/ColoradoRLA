@@ -1,83 +1,194 @@
 Developer Instructions
 ======================
 
-*TDB abstract and introduction to this document.*
+This document is for developers interested in contributing to this
+project. It describes the technologies used, the modules and
+libraries on which we depend, and how to build the system. It also
+covers how to perform quality assurance, validation, verification, and
+deployment of the system. 
+
+Determining if the system is correct includes both checking behavioral
+properties and non-behavioral properties. Behavioral properties are
+all about correctness and boil down to decidable (*yes or no*)
+questions about the system.  Non-behavioral properties are
+measurable---such as how many resources the system uses, how reliable
+it is, or whether it is secure---and checking them entails ensuring
+that measures are as we specify. More specifically, we cover system
+performance and reliability.
+
+Finally, the document closes with a link to our project dashboard.
 
 History
 -------
 
 * Outline and first draft, 5 July 2017 by Joe Kiniry.
+* Second draft that is mostly textually complete, 6 July 2017 by Joe
+  Kiniry.
 
-Technologies in Use
--------------------
+Platform and Programming Languages
+----------------------------------
 
 To fulfill Colorado’s requirements, we will use a modular system
-design and standard, well-understood web application technologies. We
-are using a Java-based web application running on a Linux server,
+design and standard, well-understood web application technologies.
+
+We are using a Java-based web application running on a Linux server,
 hosted in the CDOS data center. We will be deploying on a JVM version
-that supports Java 8. We are using CDOS's standard SQL relational
-database management system for data persistence. As the user interface
-(UI) will be browser-based, we are writing the client in TypeScript, a
-mainstream, Microsoft-supported variant of JavaScript that offers
-opt-in, Java-like type safety. TypeScript compiles to plain,
-human-readable JavaScript, so this choice will support client-side
-correctness without requiring any special web browser support.
+that supports Java 8. 
 
-Our current plan is to use the following tools: 
+The choice of deployment on JVM is made due to IT constraints on the
+part of CDOS. (See page 11, "Hosting Environment", of the DQ.)  While
+we could have developed on .Net, and there are very good tools for
+rigorous engineering on such (which we have used in, e.g., our
+electronic poll book demonstrator), there are still significant
+challenges in multi-platform development and deployment.  We would
+rather have a straightforward cross-platform system development and
+deployment story, thus we use Java 8 on the server-side.
 
-* GitHub for distributed version control, change tracking, and
-  development documentation
-* PVS for specifying formal domain models and automatically
-  synthesizing system tests
-* SAW for formal verification of intermediate representations and
-  reasoning
-* lightweight static checkers of various kinds (e.g., CheckStyle, PMD,
-  and FindBugs for the JVM platform) for ensuring that designs and
-  code are appropriately formatted, well-designed, maintainable, etc.
-* OpenJML and Eclipse with various plugins, for performing runtime
-  verification, extended static checking, and full functional
-  verification of implementations against specifications
-* (optionally) Coq for formally specifying and reasoning about various
-  formal models of the system and elections in general
-* (optionally) Cryptol for specifying and reasoning about
-  cryptographic algorithms
-* (optionally) F* and Tamarin for specifying and reasoning about
-  cryptographic protocols
-* gcc, clang and (optionally) CompCert for compiling C code
-* various automated theorem provers such as Z3, Lean, CVC4, Yices, and
-  ABC for automatically reasoning about formal models
-* Emacs, Eclipse, IntelliJ, and other JetBrains technologies for
+We are using CDOS's standard SQL relational database management system
+for data persistence. At this time (early July) we understand that
+Informix is CDOS's preferred commercial database solution.
+
+The user interface (UI) is browser-based. We are writing the client in
+TypeScript, a mainstream, Microsoft-supported variant of JavaScript
+that offers opt-in, Java-like type safety. TypeScript compiles to
+plain, human-readable JavaScript, so this choice will support
+client-side correctness without requiring any special web browser
+support.
+
+Developer Tools
+---------------
+
+We are using many of the following tools. Developers need not download
+and install this long list of technologies. We will provide developers
+a pre-configured Eclipse install, a bootstrapping Eclipse workspace,
+and a VM image which can be loaded into VirtualBox or other comparable
+virtualization platform. We provide these resources in order to both
+decrease new developers' ramp-up time as well as to standardize on
+specific versions of tools for development.
+
+We expect to provide the initial Eclipse snapshot and workspace in the
+week of 9 July 2017.
+
+* [GitHub](https://github.com/FreeAndFair/ColoradoRLA) for distributed
+  version control, change tracking, and development documentation
+* the
+  [PVS specification and verification system](http://pvs.csl.sri.com/)
+  or the [Alloy tool](http://alloy.mit.edu/alloy/) for specifying and
+  reasoning about formal domain models and automatically synthesizing
+  system tests
+* the [Software Analysis Workbench (SAW)](https://saw.galois.com/) for
+  formal verification of intermediate representations and reasoning
+* the [CheckStyle](http://checkstyle.sourceforge.net/) lightweight
+  static checkers for ensuring code standard conformance,
+* the [FindBugs](http://findbugs.sourceforge.net/) lightweight static
+  checker for code quality evaluation,
+* the [PMD](https://pmd.github.io/) lightweight static checker for
+  code quality evalution,
+* the [Java Modeling Language (JML)](http://jmlspecs.org/) for
+  formally specifying the behavior of our Java implementation
+* the [OpenJML tools suite](http://www.openjml.org/) for performing
+  runtime verification, extended static checking, and full functional
+  verification of Java implementations against JML specifications
+* the [Coq proof assistant](https://coq.inria.fr/) for formally
+  specifying and reasoning about various formal models of the system
+  and elections in general
+* (optionally) the [KeY tool](https://www.key-project.org/) for
+  performing full functional verification and test case generation of
+  implementations with JML formal specifications
+* (optionally) the [Cryptol tool](https://cryptol.net/) for specifying
+  and reasoning about cryptographic algorithms
+* (optionally) the [F* tool](https://www.fstar-lang.org/)
+  and [Tamarin prover](https://tamarin-prover.github.io/) for
+  specifying and reasoning about cryptographic protocols
+* the [Gnu Compiler Collection (gcc)](https://gcc.gnu.org/), the [clang
+  compiler](https://clang.llvm.org/), and (optionally) the [CompCert
+  compiler](http://compcert.inria.fr/) for compiling C code
+* various automated theorem provers such
+  as [Z3](https://github.com/Z3Prover/z3),
+  the
+  [Lean theorem prover](https://leanprover.github.io/),
+  [CVC4](http://cvc4.cs.stanford.edu/web/),
+  [Yices](http://yices.csl.sri.com/),
+  and [ABC](https://people.eecs.berkeley.edu/~alanmi/abc/abc.htm) for
+  automatically reasoning about formal
+  models *
+  [Emacs](https://www.gnu.org/software/emacs/),
+  [Eclipse](https://eclipse.org/),
+  [IntelliJ IDEA](https://www.jetbrains.com/idea/),
+  and
+  [other JetBrains technologies](https://www.jetbrains.com/products.html?fromMenu) for
   Integrated Development Environments,
-* (optionally) CZT, Event-B, Overture, and RAISE for specifying formal
-  models
-* the OpenJDK Java compiler 
-* JMLUnitNG for automatic test code generation
-* standard test coverage tools such as JCov and Cobertura 
-* (optionally) Java Pathfinder and similar model checkers for
-  reasoning about safety properties of implementations
-* OmniGraffle for drawing system diagrams
-* the BON and GSSL tool suites for system specification
-* the Beetlz checker for refinement checking of BON specifications
-  against JML/Java implementations
-* (optionally) ProVerif, UPPAAL, and the TLA+ tools for distributed
-  algorithm specification and reasoning
-* the TypeScript tool set for ... @todo ranweiller
-* and Travis for continuous integration.
-
-*TDB addition of hyperlinks to the above and a discussion of
-bootstrapping developers through the use of snapshot builds of IDEs,
-kickstarter workspaces, and VM images.*
+* (optionally)
+  the [Community Z Tools (CZT)](http://czt.sourceforge.net/)
+  supporting the Z formal method,
+  the [Rodin platform](http://www.event-b.org/install.html) supporting
+  the [Event-B formal method](http://www.event-b.org/),
+  the [Overture tool](http://overturetool.org/) supporting
+  the [VDM formal method](http://overturetool.org/method/), and
+  the [RAISE tool](http://spd-web.terma.com/Projects/RAISE/)
+  supporting the RAISE specification language (RSL) for specifying and
+  reasoning about formal models of systems
+* the [OpenJDK](http://openjdk.java.net/) Java developers kit
+* [JMLUnitNG](http://insttech.secretninjaformalmethods.org/software/jmlunitng/) for
+  automatic test code generation
+* standard test coverage tools such
+  as [JCov](https://yp-engineering.github.io/jcov/)
+  and [Cobertura](http://cobertura.github.io/cobertura/)
+* (optionally)
+  [Java PathFinder (JPF)](http://javapathfinder.sourceforge.net/) and
+  similar model checkers for reasoning about safety properties of
+  implementations
+* [OmniGraffle](https://www.omnigroup.com/omnigraffle) for drawing diagrams
+* various [BON-related tools](https://github.com/FreeAndFair/BON),
+  including
+  the [BONc](http://kindsoftware.com/products/opensource/BONc/)
+  and
+  [FAFESSL](https://github.com/FreeAndFair/BON/tree/master/FAFESSL/BON) tool
+  suites, which are based upon
+  the [BON method](http://www.bon-method.com/), for system
+  specification
+* the [Beetlz tool](https://github.com/FreeAndFair/Beetlz/) for
+  refinement checking of BON specifications against JML-annotated Java
+  implementations
+* (optionally)
+  [ProVerif](http://prosecco.gforge.inria.fr/personal/bblanche/proverif/),
+  [UPPAAL](http://www.uppaal.org/), and
+  the [TLA+ tools](http://lamport.azurewebsites.net/tla/tools.html)
+  for distributed algorithm specification and reasoning
+* the [TypeScript tool suite](https://www.typescriptlang.org/) for
+  front-end development (@todo ranweiller)
+* *TBD Daikon*
+* *TBD AutoGrader*
+* and [Travis CI](https://travis-ci.org/) for continuous integration
 
 Dependencies
 ------------
 
-*TBD a concrete list of dependencies, preferably at the module/library
-level, complete with versioning information.*
+*TBD: A concrete list of dependencies, preferably at the module/library
+level, complete with versioning information. Note that we prefer that
+this dependency list is automatically generated and kept up-to-date by
+the build system.*
 
 Building
 --------
 
 *TBD discussion of which build systems we use and why.*
+
+We provide both an integrated Eclipse-based build system and a
+traditional Make-based build system. The former permits us to support
+a rich and interactive design, development, validation, and
+verification experience in an IDE. The latter facilitates
+cross-platform, IDE-independent builds and continuous integration with
+Travis CI.
+
+The Eclipse-based build system is built into our Eclipse IDE image and
+our workspace. (@todo kiniry Add hyperlinks when they become available
+next week.)
+
+The Make-based system is rooted in our
+top-level [Makefile](../Makefile). That build system not only compiles
+the RLA tool, but also generates documentation, analyzes the system
+for quality and correctness, and more.
 
 Quality Assurance
 -----------------
@@ -87,11 +198,61 @@ are concretized into metrics and measures that are automatically
 assessed and reported upon, both within the IDE and during continuous
 V&V.*
 
+We measure quality of systems by using a variety of *dynamic* and *static*
+techniques.
+
+Dynamic analysis means that we run the system and observe it,
+measuring various properties of the system and checking to see if
+those measures are in the range that we expect. We say "range" because
+many measures have a sweet spot---a good value is not too high and not
+too low. Running the system means that we either execute the system in
+a normal environment (e.g., a Java virtual machine) or we execute a
+model of the system in a test environment (e.g., an instrumented
+executable or a debugger).
+
+Static analysis entails examining a system *without* executing it.
+Static analysis that only examines a system's *syntactic* structure is
+what we call lightweight static analysis. For example, the source
+code's style and shape is syntactic.  Static analysis that examines a
+system's *semantic* structure is what we call heavyweight static
+analysis. For example, theorem proving with extended static checking
+is heavyweight static analysis.
+
+Each kind of static analysis results in a *measure* of a
+*property*. Decidable properties are either *true* or *false*, thus a
+good measure for a property is simply "yes" or "no". Other static
+analyses have more interesting measures, such as grades ("A" through
+"F") or a number.
+
+In order to automatically measure the quality of a system, we define
+the set of properties that we wish to measure and the what the optimal
+ranges are for the measure of each property. We automate this
+evalution, both in the IDE and in continuous integration. 
+
+Also, we have a tool called the AutoGrader that automatically combines
+the output of multiple analyses and "grades" the system, and
+consequently its developers. By consistently seeing automated feedback
+from a set of tuned static analysis tools, developers quickly learn
+the development practices of a team and a project and also often learn
+more about rigorous software engineering in general.
+
 Validation and Verification
 ---------------------------
 
 *TBD high level discussion here about how the goals and technologies
 discussed in the V&V document are realized.*
+
+Determining whether the system you are creating is the system that a
+client wants is called *validation*.  *Testing* is one means by which
+to perform validation.  Mathematically proving that a system
+performs exactly as specified under an explicitly stated set of
+assumptions is called *verification*.
+
+Some of the quality assurance tools and techniques discussed above are
+a part of validation and verification.
+
+[Another document](docs/v_and_v.md) focuses on this topic in great
+detail.
 
 Deployment
 ----------
@@ -99,12 +260,13 @@ Deployment
 Free & Fair develops open source software systems in full public
 view. Therefore, all artifacts associated with a given project or
 product are immediately available to all stakeholders, at any time,
-via a web-based collaborative development environment such as
-GitHub. This means that various versions of the same system (e.g.,
-builds for various platforms, experimental branches in which new
-features are being explored, etc.) are immediately available to anyone
-who browses the project website and clicks on the right download link,
-or clones the repository and builds it for themselves.
+via a web-based collaborative development environment, such as
+our [GitHub organization](https://github.com/FreeAndFair). This means
+that various versions of the same system (e.g., builds for various
+platforms, experimental branches in which new features are being
+explored, etc.) are immediately available to anyone who browses the
+project website and clicks on the right download link, or clones the
+repository and builds it for themselves.
 
 Delivery of production systems to a client or stakeholder is
 accomplished by providing the modern equivalent of "golden master
@@ -114,27 +276,20 @@ the client.
 
 For example, if the deployment platform is a flavor of Linux, one of
 the standard software packaging systems such as RPM or dpkg is used to
-deliver products. If the deployment system is Microsoft Windows or
-macOS, the standard open source packaging software is used to deploy
+deliver products. If the deployment system is Microsoft Windows or Apple
+OS X, the standard open source packaging software is used to deploy
 production systems.
 
-We believe that the deployment of a certified version of a product to
-hundreds or thousands of devices requires a different mechanism than
-the traditional "hire dozens of interns to do everything by hand."
-While the details of such a deployment depend significantly on
-industrial design decisions, we are inclined to use a public
-large-scale parallel export of (cryptographically forensically checked
-and signed) product masters onto COTS SD cards for manual insertion in
-all systems. Such a deployment mechanism would use inexpensive media
-that is long-lasting, easy and cheap to archive, and would be designed
-to address our deep concerns with regards to the deployment and
-auditing of certified product versions. Counties could then archive
-all of the digital materials relevant to an entire election in one
-small lockbox or safe deposit box.
+System Performance
+------------------
+
+*TBD discussion of automated performance testing*
 
 System Reliability
 ------------------
-  
+
+*TBD discussion of automated deployment reliability testing*
+
 To ensure business continuity, we are applying techniques we have been
 developing since the 1990s to create systems for clients requiring no
 more than 0.001% downtime. These techniques include practical applied
@@ -146,10 +301,15 @@ methodology was recently recommended by a NIST internal report (IR
 the White House Office of Science and Technology at their request in
 November, 2016.
 
-
-Build Status
-------------
+Project Dashboard
+-----------------
 
 *TBD discussion of what build status means, where build failure
 notifications go, where build logs are archived, and a link to our
 live dashboard.*
+
+Bibliography
+------------
+
+*TBD add references to appropriate papers*
+
