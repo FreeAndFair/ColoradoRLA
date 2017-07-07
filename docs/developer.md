@@ -155,8 +155,8 @@ week of 9 July 2017.
   [UPPAAL](http://www.uppaal.org/), and
   the [TLA+ tools](http://lamport.azurewebsites.net/tla/tools.html)
   for distributed algorithm specification and reasoning
-* the [TypeScript tool suite](https://www.typescriptlang.org/) for
-  front-end development (@todo ranweiller)
+* the [TypeScript](https://www.typescriptlang.org/) language for front-end development, using
+  the [React](https://facebook.github.io/react/) UI framework
 * *TBD Daikon*
 * *TBD AutoGrader*
 * and [Travis CI](https://travis-ci.org/) for continuous integration
