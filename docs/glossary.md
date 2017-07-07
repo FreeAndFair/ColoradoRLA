@@ -55,9 +55,12 @@ the number of ballots in each batch, and the
 storage location where the batch is secured following tabulation. A
 sample ballot manifest is provided at `test/manifest-dq.csv`.
 
-* **cast vote records (CVR)** - Electronic records created during
-scanning of paper ballots indicating how the voting system interpreted
-physical marks on every ballot. A sample CVR is attached as Appendix 1.
+* **cast vote record (CVR)** - An electronic record
+indicating how the marks on a ballot were interpreted as votes.
+May be created by a scanner or DRE, or manually during an audit.
+Sample CVRs in Dominion's format are in
+`test/dominion-2017-CVR_Export_20170310104116.csv`.
+See also [VVSG-Interoperability CVR Subgroup](http://collaborate.nist.gov/voting/bin/view/Voting/BallotDefinition).
 
 * **contests** - A contest in this context is each item up for
 decision on a ballot. Ex: Jane Doe for Colorado Secretary of State.
