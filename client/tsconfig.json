@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "outDir": "./dist/",
+        "sourceMap": true,
+
+        // Strictness options
+        "allowUnreachableCode": false,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+
+        "module": "commonjs",
+        "target": "es5",
+        "jsx": "react"
+    },
+
+    "files": [
+        "./declarations.d.ts",
+        "./node_modules/@types/webpack-env/index.d.ts"
+    ],
+
+    "include": [
+        "./src/**/*"
+    ]
+}
