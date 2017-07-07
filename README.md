@@ -46,7 +46,7 @@ Contributors
 * Joseph Kiniry (role) contributions
 * Neal McBurnett (role) contributions
 * Morgan Miller (role) contributions
-* Joe Ranweiller (role) contributions
+* Joe Ranweiler (role) contributions
 * Daniel Zimmerman (role) contributions
 
 More information about our team members [is available](docs/team.md).
