@@ -205,7 +205,7 @@ capabilities. We leverage those capabilities and have snapshots of
 design artifacts captured in our distributed version control system
 like any other engineering artifact.
 
-When a defect is noticed either by Free & Fair or the Colorado CDOS,
+When a defect is noticed either by Free & Fair or the Colorado Department of State,
 it will be immediately logged in the issue tracking system. Within a
 day of entry to the system, each issue will be categorized and
 assigned to a team member who will be responsible for driving the
