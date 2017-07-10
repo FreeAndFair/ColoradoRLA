@@ -1,3 +1,5 @@
+\pagebreak
+
 Project Management
 ==================
 
@@ -13,7 +15,7 @@ to build a secure, user-friendly RLA application within the limited
 timeline.
 
 Project Management Practices
-============================
+----------------------------
 
 In this section we review Free & Fair’s project management practices,
 which we have used to deliver millions of dollars worth of high
@@ -21,7 +23,7 @@ assurance systems on time and under budget. Our core project
 management principles focus on Customer Caretaking, Social Contracts,
 Continuous Improvement, Artifacts and Evidence, and Transparency.
 
-### Customer Caretaking
+### Customer Caretaking ###
 
 For all projects we have a dedicated Free & Fair team member whose
 role is to represent the interests of the client to others at Free &
@@ -30,7 +32,7 @@ project management decisions. They build a deep trust relationship
 with the client’s key performers. This position is a reflection of the
 trust relationship between us and our clients.
 
-### Social Contracts
+### Social Contracts ###
 
 Our systems engineering artifacts capture technical interdependencies
 between project team members, but the glue that holds the team
@@ -41,7 +43,7 @@ to exceed not only the expectations of our external client (in this
 case, the Colorado Department of State), but also each internal client
 (another team member).
 
-### Continuous Improvement 
+### Continuous Improvement ###
 
 Social contracts are renegotiated frequently and fluidly and are
 directly reflected upon immediately upon completion. For example, at
@@ -52,7 +54,7 @@ with regards to that particular piece of work. In particular, we focus
 on its embedded social contracts. The individuals in our organization
 always attempt to maximize efficiency, impact, and joy at work.
 
-### Artifacts and Evidence 
+### Artifacts and Evidence ###
 
 We focus on artifacts and evidence in a project or product. "Meta"
 aspects like processes and checklists serve meaningful outcomes. This
@@ -60,7 +62,7 @@ focus on the meaningful is pervasive. Principles trump rules.  For
 example, provable security is mandatory; "security theater" is
 prohibited.
 
-### Transparency
+### Transparency ###
 
 Finally, whether it is with regard to our technology, business
 practices, or project management approach, transparency is the core
@@ -75,7 +77,7 @@ transparency is the keystone of our operation. Without it, our
 election systems cannot be trustworthy and will not be successful.
 
 Project Management Structure and Responsibilities
-=================================================
+-------------------------------------------------
 
 Dr. J. Kiniry holds final responsibility for the success of this
 project.  Dr. Zimmerman and Dr. Dodds, working with Dr. J. Kiniry,
