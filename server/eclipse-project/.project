@@ -53,7 +53,6 @@
 		<nature>ie.ucd.autograder.nature</nature>
 		<nature>ie.ucd.bon.plugin.boncnature</nature>
 		<nature>edu.umd.cs.findbugs.plugin.eclipse.findbugsNature</nature>
-		<nature>net.sourceforge.pmd.eclipse.plugin.pmdNature</nature>
 		<nature>ch.acanda.eclipse.pmd.builder.PMDNature</nature>
 		<nature>org.jmlspecs.OpenJMLUI.JMLNatureID</nature>
 	</natures>
