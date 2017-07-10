@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 
 
 export interface HelloProps {
@@ -9,21 +9,20 @@ export interface HelloState {
     misc: string;
 }
 
-export class Hello extends React.Component<HelloProps, HelloState> {
-    constructor(props: HelloProps) {
+// FIX: We shouldn't have to weaken the Props type param to `any`.
+export class Hello extends React.Component<HelloProps & any, HelloState> {
+    constructor(props: any) {
         super(props);
 
-        this.state = { misc: 'I am a string' };
+        this.state = { misc: 'Some state' };
     }
 
     render() {
-        const { greeting } = this.props;
-        const { misc } = this.state;
+        const { path } = this.props.match;
 
         return (
             <div>
-                <h1>{ greeting }</h1>
-                <h2>My state: { misc }</h2>
+                <h1>{ path }</h1>
             </div>
         );
     }

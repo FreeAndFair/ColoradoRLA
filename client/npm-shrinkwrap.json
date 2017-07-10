@@ -14,6 +14,12 @@
       "resolved": "https://registry.npmjs.org/@types/enzyme/-/enzyme-2.8.1.tgz",
       "dev": true
     },
+    "@types/history": {
+      "version": "4.6.0",
+      "from": "@types/history@*",
+      "resolved": "https://registry.npmjs.org/@types/history/-/history-4.6.0.tgz",
+      "dev": true
+    },
     "@types/node": {
       "version": "8.0.8",
       "from": "@types/node@*",
@@ -27,8 +33,20 @@
     },
     "@types/react-dom": {
       "version": "15.5.1",
-      "from": "@types/react-dom@>=15.5.1 <16.0.0",
+      "from": "https://registry.npmjs.org/@types/react-dom/-/react-dom-15.5.1.tgz",
       "resolved": "https://registry.npmjs.org/@types/react-dom/-/react-dom-15.5.1.tgz"
+    },
+    "@types/react-router": {
+      "version": "4.0.13",
+      "from": "https://registry.npmjs.org/@types/react-router/-/react-router-4.0.13.tgz",
+      "resolved": "https://registry.npmjs.org/@types/react-router/-/react-router-4.0.13.tgz",
+      "dev": true
+    },
+    "@types/react-router-dom": {
+      "version": "4.0.6",
+      "from": "@types/react-router-dom@latest",
+      "resolved": "https://registry.npmjs.org/@types/react-router-dom/-/react-router-dom-4.0.6.tgz",
+      "dev": true
     },
     "@types/tape": {
       "version": "4.2.30",
@@ -1407,10 +1425,22 @@
       "resolved": "https://registry.npmjs.org/hash.js/-/hash.js-1.1.3.tgz",
       "dev": true
     },
+    "history": {
+      "version": "4.6.3",
+      "from": "history@>=4.5.1 <5.0.0",
+      "resolved": "https://registry.npmjs.org/history/-/history-4.6.3.tgz",
+      "dev": true
+    },
     "hmac-drbg": {
       "version": "1.0.1",
       "from": "hmac-drbg@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/hmac-drbg/-/hmac-drbg-1.0.1.tgz",
+      "dev": true
+    },
+    "hoist-non-react-statics": {
+      "version": "1.2.0",
+      "from": "hoist-non-react-statics@>=1.2.0 <2.0.0",
+      "resolved": "https://registry.npmjs.org/hoist-non-react-statics/-/hoist-non-react-statics-1.2.0.tgz",
       "dev": true
     },
     "hosted-git-info": {
@@ -2678,6 +2708,32 @@
       "resolved": "https://registry.npmjs.org/react-proxy/-/react-proxy-3.0.0-alpha.1.tgz",
       "dev": true
     },
+    "react-router": {
+      "version": "4.1.1",
+      "from": "react-router@>=4.1.1 <5.0.0",
+      "resolved": "https://registry.npmjs.org/react-router/-/react-router-4.1.1.tgz",
+      "dev": true,
+      "dependencies": {
+        "isarray": {
+          "version": "0.0.1",
+          "from": "isarray@0.0.1",
+          "resolved": "https://registry.npmjs.org/isarray/-/isarray-0.0.1.tgz",
+          "dev": true
+        },
+        "path-to-regexp": {
+          "version": "1.7.0",
+          "from": "path-to-regexp@>=1.5.3 <2.0.0",
+          "resolved": "https://registry.npmjs.org/path-to-regexp/-/path-to-regexp-1.7.0.tgz",
+          "dev": true
+        }
+      }
+    },
+    "react-router-dom": {
+      "version": "4.1.1",
+      "from": "react-router-dom@latest",
+      "resolved": "https://registry.npmjs.org/react-router-dom/-/react-router-dom-4.1.1.tgz",
+      "dev": true
+    },
     "react-test-renderer": {
       "version": "15.6.1",
       "from": "react-test-renderer@latest",
@@ -2784,6 +2840,12 @@
       "version": "1.3.3",
       "from": "resolve@>=1.3.3 <1.4.0",
       "resolved": "https://registry.npmjs.org/resolve/-/resolve-1.3.3.tgz",
+      "dev": true
+    },
+    "resolve-pathname": {
+      "version": "2.1.0",
+      "from": "resolve-pathname@>=2.0.0 <3.0.0",
+      "resolved": "https://registry.npmjs.org/resolve-pathname/-/resolve-pathname-2.1.0.tgz",
       "dev": true
     },
     "resolve-url": {
@@ -3533,6 +3595,12 @@
       "resolved": "https://registry.npmjs.org/validate-npm-package-license/-/validate-npm-package-license-3.0.1.tgz",
       "dev": true
     },
+    "value-equal": {
+      "version": "0.2.1",
+      "from": "value-equal@>=0.2.0 <0.3.0",
+      "resolved": "https://registry.npmjs.org/value-equal/-/value-equal-0.2.1.tgz",
+      "dev": true
+    },
     "vary": {
       "version": "1.1.1",
       "from": "vary@>=1.1.0 <1.2.0",
@@ -3543,6 +3611,12 @@
       "version": "0.0.4",
       "from": "vm-browserify@0.0.4",
       "resolved": "https://registry.npmjs.org/vm-browserify/-/vm-browserify-0.0.4.tgz",
+      "dev": true
+    },
+    "warning": {
+      "version": "3.0.0",
+      "from": "warning@>=3.0.0 <4.0.0",
+      "resolved": "https://registry.npmjs.org/warning/-/warning-3.0.0.tgz",
       "dev": true
     },
     "watchpack": {
