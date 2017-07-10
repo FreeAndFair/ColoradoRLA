@@ -181,9 +181,8 @@ main development branch to a deployment staging area that allows all
 project personnel to access and test the latest working code in a
 whole-system context.
 
-We have experience working with both external build tools, such as
-Travis CI, and internal build tools like Jenkins. *TDB discussion
-which system we will use for this project and why.*
+We will use the external build tool Travis CI, which is configurable and 
+is free of charge to open source projects.
 
 Documentation and commenting is interwoven with development. Beginning
 with our formal domain models, we lay out the requirements and
@@ -204,14 +203,18 @@ capabilities. We leverage those capabilities and have snapshots of
 design artifacts captured in our distributed version control system
 like any other engineering artifact.
 
-When a defect is noticed either by Free & Fair or the Colorado Department of State,
-it will be immediately logged in the issue tracking system. Within a
+When Free & Fair notices a defect, we will log the issue immediately into
+the issue tracking system within GitHub. If the Colorado Department of 
+State would like direct access to GitHub to log issue, we will provide 
+access;  the Colorado Department of State may prefer to notify 
+Free & Fair by email so that Free & Fair can enter the issue into the tracking system. 
+Within a
 day of entry to the system, each issue will be categorized and
 assigned to a team member who will be responsible for driving the
 effort to fix the issue. Each code change that has an effect on an
 issue will reference that issue, so that progress towards a fix can be
 observed as it occurs. We will maintain a policy that an issue can
-only be closed once the party that raises the issue signs off that the
+be closed only once the party that raises the issue signs off that the
 issue has, in fact, been fixed.
 
 All development-related team communication is facilitated by an Asana
