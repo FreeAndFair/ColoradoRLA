@@ -110,9 +110,12 @@ https://www.stat.berkeley.edu/~stark/Preprints/gentle12.pdf.
 Colorado Department of State, who possesses RLA administrative user
 privileges to perform administrative tasks.
 
+* **tabulation** - Interpretation of expressions of voter intent and aggregation
+of those into election results.
+
 * **tabulated ballots** - Paper ballots that have been scanned on a
 ballot scanning device, and the voter’s markings on which have been
-interpreted by the voting system’s software as valid votes,
+interpreted by the voting system as valid votes,
 undervotes, or overvotes.
 
 * **two-factor authentication** - Defined as two out of the three
