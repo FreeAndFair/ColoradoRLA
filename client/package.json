@@ -11,18 +11,16 @@
     "author": "Free & Fair",
     "license": "UNLICENSED",
     "dependencies": {
+        "@types/enzyme": "^2.8.1",
         "@types/react": "^15.0.31",
         "@types/react-dom": "^15.5.1",
-        "react": "^15.6.1",
-        "react-dom": "^15.6.1"
-    },
-    "devDependencies": {
-        "@types/enzyme": "^2.8.1",
         "@types/react-router-dom": "^4.0.6",
         "@types/tape": "^4.2.30",
         "@types/webpack-env": "^1.13.0",
         "awesome-typescript-loader": "^3.1.3",
         "enzyme": "^2.9.1",
+        "react": "^15.6.1",
+        "react-dom": "^15.6.1",
         "react-hot-loader": "^3.0.0-beta.7",
         "react-router-dom": "^4.1.1",
         "react-test-renderer": "^15.6.1",
