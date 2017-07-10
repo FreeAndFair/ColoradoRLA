@@ -9,11 +9,7 @@ import { App } from './container/App';
 const rootEl = document.getElementById('root');
 
 const render = (C: any) => {
-    const appContainer = (
-      <AppContainer>
-        <C />
-      </AppContainer>
-    );
+    const appContainer = <AppContainer><C /></AppContainer>;
 
     ReactDOM.render(appContainer, rootEl);
 }
