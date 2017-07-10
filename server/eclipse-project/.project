@@ -36,12 +36,12 @@
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>net.sourceforge.pmd.eclipse.plugin.pmdBuilder</name>
+			<name>ch.acanda.eclipse.pmd.builder.PMDBuilder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>ch.acanda.eclipse.pmd.builder.PMDBuilder</name>
+			<name>org.jmlspecs.OpenJMLUI.JMLBuilder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>
@@ -55,5 +55,6 @@
 		<nature>edu.umd.cs.findbugs.plugin.eclipse.findbugsNature</nature>
 		<nature>net.sourceforge.pmd.eclipse.plugin.pmdNature</nature>
 		<nature>ch.acanda.eclipse.pmd.builder.PMDNature</nature>
+		<nature>org.jmlspecs.OpenJMLUI.JMLNatureID</nature>
 	</natures>
 </projectDescription>
