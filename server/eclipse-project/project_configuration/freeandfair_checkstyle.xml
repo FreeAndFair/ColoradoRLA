@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.3//EN" "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+
+<!--
+    This configuration file was written by the eclipse-cs plugin configuration editor
+-->
+<!--
+    Checkstyle-Configuration: Free & Fair
+    Description: none
+-->
+<module name="Checker">
+  <property name="severity" value="warning"/>
+  <module name="TreeWalker">
+    <module name="JavadocStyle"/>
+    <module name="ConstantName">
+      <message key="name.invalidPattern" value="Constant ''{0}'' must be named IN_ALL_UPPER_CASE_WITH_UNDERSCORES."/>
+    </module>
+    <module name="MemberName">
+      <property name="format" value="^my_[a-z0-9]*(_[a-z0-9]+)*$"/>
+      <message key="name.invalidPattern" value="Instance field ''{0}'' must start with &quot;my_&quot; and contain only lowercase letters, numbers, and underscores."/>
+    </module>
+    <module name="MethodName">
+      <message key="name.invalidPattern" value="Method name &quot;{0}&quot; must start with a lowercase letter and contain only letters and numbers."/>
+      <message key="method.name.equals.class.name" value="Method name ''{0}'' must not equal the enclosing class name."/>
+    </module>
+    <module name="MethodTypeParameterName">
+      <message key="name.invalidPattern" value="Type parameter &quot;{0}&quot; must be a single capital letter."/>
+    </module>
+    <module name="ClassTypeParameterName">
+      <message key="name.invalidPattern" value="Type parameter ''{0}'' must be a single capital letter."/>
+    </module>
+    <module name="PackageName">
+      <property name="format" value="^[a-z]+(\.[a-z0-9]*)*$"/>
+      <message key="name.invalidPattern" value="Package name ''{0}'' must be all lower case."/>
+    </module>
+    <module name="ParameterName">
+      <property name="format" value="(^a_[a-z0-9]*(_[a-z0-9]+)*$)|(^an_[a-z0-9]*(_[a-z0-9]+)*$)|(^the_[a-z0-9]*(_[a-z0-9]+)*$)|(^some_[a-z0-9]*(_[a-z0-9]+)*$)|(^[a-z][_a-z0-9]*_[0-9]$)"/>
+      <message key="name.invalidPattern" value="Method parameter ''{0}'' must contain only lower case letters, numbers and underscores, and must either start with &quot;a_&quot;, &quot;an_&quot;, or &quot;the_&quot; or end with &quot;_X&quot; (where X is a digit)."/>
+    </module>
+    <module name="TypeName">
+      <property name="format" value="^[A-Z][a-z0-9]*([A-Z][a-z0-9]*)*$"/>
+      <message key="name.invalidPattern" value="Type name ''{0}'' must be formatted as CapitalizedWords."/>
+    </module>
+    <module name="AvoidStarImport">
+      <property name="excludes" value="org.junit.annotations,org.junit.Assert"/>
+    </module>
+    <module name="IllegalImport"/>
+    <module name="RedundantImport"/>
+    <module name="UnusedImports"/>
+    <module name="ExecutableStatementCount">
+      <property name="max" value="10"/>
+      <property name="tokens" value="CTOR_DEF"/>
+      <message key="executableStatementCount" value="Executable statement count is {0,number,integer} (max allowed for a constructor is {1,number,integer})."/>
+    </module>
+    <module name="ExecutableStatementCount">
+      <property name="max" value="50"/>
+      <property name="tokens" value="METHOD_DEF"/>
+      <message key="executableStatementCount" value="Executable statement count is {0,number,integer} (max allowed for a method is {1,number,integer})."/>
+    </module>
+    <module name="ExecutableStatementCount">
+      <property name="max" value="5"/>
+      <property name="tokens" value="INSTANCE_INIT"/>
+      <message key="executableStatementCount" value="Executable statement count is {0,number,integer} (max allowed for an instance initializer is {1,number,integer})."/>
+    </module>
+    <module name="LineLength">
+      <property name="ignorePattern" value="(^ *//\*@ .+$)|(^ *@.+$)"/>
+      <property name="max" value="95"/>
+    </module>
+    <module name="MethodLength">
+      <property name="max" value="30"/>
+      <property name="tokens" value="CTOR_DEF"/>
+      <message key="maxLen.method" value="Constructor length is {0,number,integer} lines (max allowed is {1,number,integer})."/>
+    </module>
+    <module name="MethodLength">
+      <property name="max" value="100"/>
+      <property name="tokens" value="METHOD_DEF"/>
+    </module>
+    <module name="AnonInnerLength"/>
+    <module name="ParameterNumber">
+      <property name="max" value="8"/>
+    </module>
+    <module name="GenericWhitespace"/>
+    <module name="EmptyForIteratorPad"/>
+    <module name="EmptyForInitializerPad"/>
+    <module name="NoWhitespaceAfter">
+      <property name="tokens" value="ARRAY_INIT,BNOT,DEC,DOT,INC,LNOT,UNARY_MINUS,UNARY_PLUS"/>
+    </module>
+    <module name="NoWhitespaceBefore">
+      <property name="tokens" value="SEMI,DOT,POST_DEC,POST_INC"/>
+    </module>
+    <module name="OperatorWrap">
+      <property name="option" value="eol"/>
+      <property name="tokens" value="ASSIGN,BAND,BAND_ASSIGN,BOR,BOR_ASSIGN,BSR,BSR_ASSIGN,BXOR,BXOR_ASSIGN,COLON,DIV,DIV_ASSIGN,EQUAL,GE,GT,LAND,LE,LITERAL_INSTANCEOF,LOR,LT,MINUS,MINUS_ASSIGN,MOD,MOD_ASSIGN,NOT_EQUAL,PLUS,PLUS_ASSIGN,QUESTION,SL,SL_ASSIGN,SR,SR_ASSIGN,STAR,STAR_ASSIGN"/>
+    </module>
+    <module name="MethodParamPad">
+      <property name="allowLineBreaks" value="true"/>
+    </module>
+    <module name="ParenPad"/>
+    <module name="TypecastParenPad">
+      <property name="tokens" value="RPAREN,TYPECAST"/>
+    </module>
+    <module name="WhitespaceAfter"/>
+    <module name="WhitespaceAround"/>
+    <module name="ModifierOrder"/>
+    <module name="RedundantModifier"/>
+    <module name="AvoidNestedBlocks"/>
+    <module name="EmptyBlock"/>
+    <module name="LeftCurly">
+      <property name="maxLineLength" value="95"/>
+    </module>
+    <module name="NeedBraces"/>
+    <module name="RightCurly"/>
+    <module name="CovariantEquals"/>
+    <module name="DefaultComesLast"/>
+    <module name="DeclarationOrder"/>
+    <module name="AvoidInlineConditionals"/>
+    <module name="EmptyStatement"/>
+    <module name="EqualsAvoidNull"/>
+    <module name="EqualsHashCode"/>
+    <module name="ExplicitInitialization"/>
+    <module name="FallThrough"/>
+    <module name="FinalLocalVariable"/>
+    <module name="HiddenField"/>
+    <module name="IllegalCatch"/>
+    <module name="IllegalThrows"/>
+    <module name="IllegalType">
+      <property name="tokens" value="METHOD_DEF,PARAMETER_DEF,VARIABLE_DEF"/>
+      <property name="legalAbstractClassNames" value="javax.swing.AbstractButton, AbstractButton"/>
+    </module>
+    <module name="InnerAssignment"/>
+    <module name="MagicNumber">
+      <property name="ignoreHashCodeMethod" value="true"/>
+    </module>
+    <module name="MissingSwitchDefault"/>
+    <module name="ModifiedControlVariable"/>
+    <module name="MultipleStringLiterals">
+      <property name="ignoreOccurrenceContext" value="STATIC_INIT,ANNOTATION"/>
+    </module>
+    <module name="MultipleVariableDeclarations">
+      <message key="multiple.variable.declarations" value="Only one variable definition allowed per line."/>
+    </module>
+    <module name="NestedIfDepth">
+      <property name="max" value="2"/>
+    </module>
+    <module name="NestedTryDepth">
+      <property name="max" value="2"/>
+    </module>
+    <module name="ReturnCount">
+      <property name="max" value="3"/>
+    </module>
+    <module name="SimplifyBooleanExpression"/>
+    <module name="SimplifyBooleanReturn"/>
+    <module name="StringLiteralEquality"/>
+    <module name="SuperClone"/>
+    <module name="SuperFinalize"/>
+    <module name="UnnecessaryParentheses"/>
+    <module name="FinalClass"/>
+    <module name="HideUtilityClassConstructor"/>
+    <module name="InterfaceIsType"/>
+    <module name="MutableException"/>
+    <module name="VisibilityModifier">
+      <property name="protectedAllowed" value="true"/>
+      <property name="publicMemberPattern" value="^serialVersionUID$"/>
+      <message key="variable.notPrivate" value="Variable ''{0}'' must be private or protected."/>
+    </module>
+    <module name="ArrayTypeStyle"/>
+    <module name="FinalParameters">
+      <property name="tokens" value="METHOD_DEF,CTOR_DEF,LITERAL_CATCH"/>
+    </module>
+    <module name="Indentation">
+      <property name="basicOffset" value="2"/>
+      <property name="caseIndent" value="2"/>
+    </module>
+    <module name="UpperEll"/>
+    <module name="OuterTypeNumber"/>
+    <module name="LocalFinalVariableName">
+      <property name="format" value="^[b-z][_a-z0-9]*$|^a[a-mo-z0-9][_a-z0-9]*$|^an[a-z0-9][_a-z0-9]*|^a$|^an$"/>
+      <message key="name.invalidPattern" value="Local final variable ''{0}'' must start with a lowercase letter, contain only lowercase letters, numbers and underscores, and not start with &quot;a_&quot; or &quot;an_&quot;."/>
+    </module>
+    <module name="LocalFinalVariableName">
+      <property name="format" value="^[a-su-z][_a-z0-9]*$|^t[_a-gi-z0-9][_a-z0-9]*$|^th[_a-df-z0-9][_a-z0-9]*|the[a-z0-9][_a-z0-9]*|^t$|^th$|^the$"/>
+      <message key="name.invalidPattern" value="Local final variable ''{0}'' must start with a lowercase letter, contain only lowercase letters, numbers and underscores, and not start with &quot;the_&quot;."/>
+    </module>
+    <module name="LocalFinalVariableName">
+      <property name="format" value="^[a-rt-z][_a-z0-9]*$|^s[_a-np-z0-9][_a-z0-9]*$|^so[_a-ln-z0-9][_a-z0-9]*|som[_a-df-z0-9][_a-z0-9]*|some[a-z0-9][_a-z0-9]*|^s$|^so$|^som$|^some$"/>
+      <message key="name.invalidPattern" value="Local final variable ''{0}'' must start with a lowercase letter, contain only lowercase letters, numbers and underscores, and not start with &quot;some_&quot;."/>
+    </module>
+    <module name="LocalFinalVariableName">
+      <property name="format" value="^[a-ln-z][_a-z0-9]*$|^m[_a-xz0-9][_a-z0-9]*$|^m$"/>
+      <message key="name.invalidPattern" value="Local final variable ''{0}'' must start with a lowercase letter, contain only lowercase letters, numbers and underscores, and not start with &quot;my_&quot;."/>
+    </module>
+    <module name="LocalVariableName">
+      <property name="format" value="^[b-z][_a-zA-Z0-9]*$|^a[a-mo-zA-Z0-9][_a-zA-Z0-9]*$|^an[a-zA-Z0-9][_a-zA-Z0-9]*|^a$|^an$"/>
+      <property name="tokens" value="VARIABLE_DEF"/>
+      <message key="name.invalidPattern" value="Local variable ''{0}'' must start with a lowercase letter, contain only lowercase letters, numbers and underscores, and not start with &quot;a_&quot; or &quot;an_&quot;."/>
+    </module>
+    <module name="LocalVariableName">
+      <property name="format" value="^[a-su-z][_a-zA-Z0-9]*$|^t[a-gi-zA-Z0-9][_a-zA-Z0-9]*$|^th[a-df-zA-Z0-9][_a-zA-Z0-9]*|the[a-zA-Z0-9][_a-zA-Z0-9]*|^t$|^th$|^the$ "/>
+      <message key="name.invalidPattern" value="Local variable ''{0}'' must start with a lowercase letter, contain only lowercase letters, numbers and underscores, and not start with &quot;the_&quot;."/>
+    </module>
+    <module name="LocalVariableName">
+      <property name="format" value="^[a-rt-z][_a-zA-Z0-9]*$|^s[_a-np-zA-Z0-9][_a-zA-Z0-9]*$|^so[_a-ln-zA-Z0-9][_a-zA-Z0-9]*|som[_a-df-zA-Z0-9][_a-zA-Z0-9]*|some[a-zA-Z0-9][_a-zA-Z0-9]*|^s$|^so$|^som$|^some$ "/>
+      <message key="name.invalidPattern" value="Local variable ''{0}'' must start with a lowercase letter, contain only lowercase letters, numbers and underscores, and not start with &quot;some_&quot;."/>
+    </module>
+    <module name="LocalVariableName">
+      <property name="format" value="^[a-ln-z][_a-z0-9]*$|^m[_a-xz0-9][_a-z0-9]*$|^m$"/>
+      <message key="name.invalidPattern" value="Local variable ''{0}'' must start with a lowercase letter, contain only lowercase letters, numbers and underscores, and not start with &quot;my_&quot;."/>
+    </module>
+    <module name="ParameterAssignment"/>
+    <module name="NestedForDepth">
+      <property name="max" value="3"/>
+    </module>
+    <module name="MethodCount">
+      <property name="maxTotal" value="50"/>
+      <property name="maxPrivate" value="40"/>
+      <property name="maxPackage" value="40"/>
+      <property name="maxProtected" value="40"/>
+      <property name="maxPublic" value="40"/>
+    </module>
+    <module name="OneStatementPerLine"/>
+    <module name="AbstractClassName"/>
+    <module name="InnerTypeLast">
+      <message key="arrangement.members.before.inner" value="Inner classes should be declared after all fields and methods."/>
+    </module>
+    <module name="ImportOrder">
+      <property name="separated" value="true"/>
+    </module>
+  </module>
+  <module name="FileLength">
+    <property name="max" value="1000"/>
+  </module>
+  <module name="FileTabCharacter"/>
+</module>
