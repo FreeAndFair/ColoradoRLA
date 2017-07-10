@@ -83,7 +83,7 @@ week of 9 July 2017.
 * the [FindBugs](http://findbugs.sourceforge.net/) lightweight static
   checker for code quality evaluation,
 * the [PMD](https://pmd.github.io/) lightweight static checker for
-  code quality evalution,
+  code quality evaluation,
 * the [Java Modeling Language (JML)](http://jmlspecs.org/) for
   formally specifying the behavior of our Java implementation
 * the [OpenJML tools suite](http://www.openjml.org/) for performing
@@ -155,8 +155,8 @@ week of 9 July 2017.
   [UPPAAL](http://www.uppaal.org/), and
   the [TLA+ tools](http://lamport.azurewebsites.net/tla/tools.html)
   for distributed algorithm specification and reasoning
-* the [TypeScript tool suite](https://www.typescriptlang.org/) for
-  front-end development (@todo ranweiller)
+* the [TypeScript](https://www.typescriptlang.org/) language for front-end development, using
+  the [React](https://facebook.github.io/react/) UI framework
 * *TBD Daikon*
 * *TBD AutoGrader*
 * and [Travis CI](https://travis-ci.org/) for continuous integration
@@ -227,7 +227,7 @@ analyses have more interesting measures, such as grades ("A" through
 In order to automatically measure the quality of a system, we define
 the set of properties that we wish to measure and the what the optimal
 ranges are for the measure of each property. We automate this
-evalution, both in the IDE and in continuous integration. 
+evaluation, both in the IDE and in continuous integration.
 
 Also, we have a tool called the AutoGrader that automatically combines
 the output of multiple analyses and "grades" the system, and
