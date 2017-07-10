@@ -22,7 +22,6 @@
         "@types/webpack-env": "^1.13.0",
         "awesome-typescript-loader": "^3.1.3",
         "enzyme": "^2.9.1",
-        "react-dom": "https://registry.npmjs.org/react-dom/-/react-dom-15.6.1.tgz",
         "react-hot-loader": "^3.0.0-beta.7",
         "react-test-renderer": "^15.6.1",
         "source-map-loader": "^0.2.1",
