@@ -21,8 +21,7 @@ a variant of Design by Contract with some aspects of a Correctness by
 Construction approach. Our process, method, tools and technologies
 span several deployment and development platforms, specification and
 programming languages, and communication and coordination schemes. In
-short, we use a combination of the following methodologies, which we
-explain below in more detail:
+short, we use a combination of the following methodologies:
 
 * Correct-By-Construction
 * Design-By-Contract
