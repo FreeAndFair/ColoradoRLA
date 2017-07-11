@@ -1,0 +1,154 @@
+% Domain model of the Colorado Risk Limiting Audit (CORLA) tool.
+% Joe Kiniry
+% 11 July 2017
+
+% We map PVS public theories and their contents to FAFESSL constructs.
+% The top-level corla theory maps to the FAFESSL system specification,
+% theories map to clusters, (PVS) types map to (FAFESSL) types, and
+% functions map to features.  We use special comments to denote
+% informal specifications which will be extracted using a shell script
+% into a well-typed FAFESSL informal domain model specification. 
+
+% @fafessl-cluster NAME
+% @fafessl-explanation "TBD"
+
+ballot_terminology: THEORY
+BEGIN
+  ballot: TYPE
+  ballot_contest: TYPE
+  ballot_manifest: TYPE
+  tabulated_ballot: TYPE
+  ballot_storage: TYPE
+  ballot_order: TYPE
+  imprinted_ballot: TYPE
+  ballot_certification: TYPE
+  uocava_ballot: TYPE
+  mail_ballot: TYPE
+  ballot_mark: TYPE
+  voter_marking: TYPE
+END ballot_terminology
+
+election_terminology: THEORY
+BEGIN
+  contest: TYPE
+  election: TYPE
+END election_terminology
+
+audit_terminology: THEORY
+BEGIN
+  audit: TYPE
+  audit_board: TYPE
+  ballot_polling_audit: TYPE
+  random_audit: TYPE
+  audit_progress: TYPE
+  ballots_to_audit: TYPE
+END audit_terminology
+
+forms_and_reports_terminology: THEORY
+BEGIN
+  sos_audit_form: TYPE
+  audit_report: TYPE
+END forms_and_reports_terminology
+
+rla_terminology: THEORY
+BEGIN
+  discrepency: TYPE
+  random: TYPE
+END rla_terminology
+
+terminology: THEORY
+BEGIN
+  IMPORTING
+    %fafessl-description "TBD"
+    ballot_terminology,
+    %fafessl-description "TBD"
+    audit_terminology,
+    %fafessl-description "TBD"
+    forms_and_reports_terminology,
+    election_terminology,
+    rla_terminology
+  uocava_voter: TYPE
+  cast_vote_record: TYPE
+  administrator: TYPE
+  state_administrator: TYPE
+  county_administrator: TYPE
+  contest_name: TYPE
+  PRNG: TYPE
+  seed: TYPE
+  RLA: TYPE
+  authentication: TYPE
+  authenticate: TYPE
+  two_factor_authentication: TYPE
+  wrong_outcome: TYPE
+  contest_margin: TYPE
+  margin: TYPE
+  hash: TYPE
+  batch: TYPE
+  batch_size: TYPE
+  county: TYPE
+  scanner: TYPE
+  cdos: TYPE
+  sos: TYPE
+  voter: TYPE
+  election_canvass: TYPE
+  canvas_board: TYPE
+  county_clerk: TYPE
+  sample_size: TYPE
+  vvpat: TYPE
+  overvote: TYPE
+  stray_mark: TYPE
+  undervote: TYPE
+  risk_limit: TYPE
+  voting_system: TYPE
+  dashboard: TYPE
+  developer_dashboard: TYPE
+  state_wide_dashboard: TYPE
+  county_dashboard: TYPE
+  role: TYPE
+  ui: TYPE
+  audit_center: TYPE
+  uploading_interface: TYPE
+  cvr_uploading_interface: TYPE
+  comma_separated_value: TYPE % cvr
+  county_number: TYPE
+  scanner_id_number: TYPE
+  batch_number: TYPE
+  file: TYPE
+  cvr_file: TYPE
+  cvr_number: TYPE
+  database: TYPE
+  database_table: TYPE
+  back_end: TYPE
+  front_end: TYPE
+  county_auditing_interface: TYPE
+  paper_ballot: TYPE
+  audit_adjudication_interface: TYPE
+  ballot_style: TYPE
+  political_party: TYPE
+  username: TYPE
+  password: TYPE
+  credential: TYPE
+  audit_supervisor: TYPE
+  audit_board_member: TYPE
+  email_address: TYPE
+  audit_mistake: TYPE
+  ballot_instructions: TYPE
+  digital_ballot_adjudication: TYPE
+  manual_ballot_adjudication: TYPE
+  ambiguous_mark: TYPE
+  sos_voter_intent_guide: TYPE
+END terminology
+
+% @fafessl-system CORLA_SYSTEM
+% @fafessl-indexing-author Joseph Kiniry <kiniry@freeandfair.us>
+% @fafessl-indexing-organization Free & Fair
+% @fafessl-indexing-keywords Free & Fair
+% @fafessl-indexing-created Free & Fair
+% @fafessl-indexing-github Free & Fair
+% @fafessl-explanation "TBD"
+corla: THEORY
+BEGIN
+  IMPORTING
+    %fafessl-description "TBD"
+    terminology
+END corla
