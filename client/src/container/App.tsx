@@ -9,7 +9,7 @@ export interface AppProps {
 }
 
 class App extends React.Component<AppProps & any, any> {
-    render() {
+    public render() {
         const { greeting, onClick } = this.props;
 
         return <Hello onClick={ onClick } greeting={ greeting } />;
@@ -20,7 +20,7 @@ const mapStateToProps = ({ greeting }: any) => ({ greeting });
 
 const mapDispatchToProps = (dispatch: any) => ({
     onClick() {
-        dispatch({ type: 'NEXT_GREETING' })
+        dispatch({ type: 'NEXT_GREETING' });
     },
 });
 

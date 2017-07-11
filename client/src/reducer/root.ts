@@ -5,7 +5,7 @@ export default function root(state: any = defaultState, action: any) {
 
   case 'NEXT_GREETING':
       const greeting
-          = state.greeting == 'Hello'
+          = state.greeting === 'Hello'
           ? 'Hi'
           : 'Hello';
       return { greeting };
