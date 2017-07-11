@@ -12,131 +12,204 @@
 % @fafessl-cluster NAME
 % @fafessl-explanation "TBD"
 
-ballot_terminology: THEORY
+ballots: THEORY
 BEGIN
+  ambiguous_mark: TYPE
   ballot: TYPE
+  ballot_certification: TYPE
   ballot_contest: TYPE
   ballot_manifest: TYPE
-  tabulated_ballot: TYPE
-  ballot_storage: TYPE
-  ballot_order: TYPE
-  imprinted_ballot: TYPE
-  ballot_certification: TYPE
-  uocava_ballot: TYPE
-  mail_ballot: TYPE
   ballot_mark: TYPE
+  ballot_order: TYPE
+  ballot_storage: TYPE
+  ballot_style: TYPE
+  batch: TYPE
+  batch_number: TYPE
+  batch_size: TYPE
+  cast_vote_record: TYPE
+  imprinted_ballot: TYPE
+  mail_ballot: TYPE
+  overvote: TYPE
+  paper_ballot: TYPE
+  stray_mark: TYPE
+  tabulated_ballot: TYPE
+  undervote: TYPE
+  uocava_ballot: TYPE
   voter_marking: TYPE
-END ballot_terminology
+END ballots
 
-election_terminology: THEORY
+elections: THEORY
 BEGIN
+  audit_center: TYPE
+  candidate: TYPE
   contest: TYPE
+  contest_name: TYPE
+  county: TYPE
+  county_number: TYPE
   election: TYPE
-END election_terminology
+  election_canvass: TYPE
+  political_party: TYPE
+  uocava_voter: TYPE
+  voter: TYPE
+END elections
 
-audit_terminology: THEORY
+audits: THEORY
 BEGIN
   audit: TYPE
   audit_board: TYPE
-  ballot_polling_audit: TYPE
-  random_audit: TYPE
+  audit_mistake: TYPE
   audit_progress: TYPE
+  ballot_polling_audit: TYPE
   ballots_to_audit: TYPE
-END audit_terminology
+  contest_margin: TYPE
+  digital_ballot_adjudication: TYPE
+  manual_ballot_adjudication: TYPE
+  margin: TYPE
+  random_audit: TYPE
+END audits
 
-forms_and_reports_terminology: THEORY
+instructions_forms_reports: THEORY
 BEGIN
-  sos_audit_form: TYPE
   audit_report: TYPE
-END forms_and_reports_terminology
+  ballot_instructions: TYPE
+  sos_audit_form: TYPE
+  sos_voter_intent_guide: TYPE
+END instructions_forms_reports
 
-rla_terminology: THEORY
+roles: THEORY
 BEGIN
+  administrator: TYPE
+  audit_board_member: TYPE
+  audit_supervisor: TYPE
+  canvas_board: TYPE
+  cdos: TYPE
+  county_administrator: TYPE
+  county_clerk: TYPE
+  role: TYPE
+  sos: TYPE
+  state_administrator: TYPE
+END roles
+
+randomness: THEORY
+BEGIN
+  prng: TYPE
+  seed: TYPE
+END randomness
+
+cryptography: THEORY
+BEGIN
+  hash: TYPE
+END cryptography
+
+rlas: THEORY
+BEGIN
+  RLA: TYPE
   discrepency: TYPE
   random: TYPE
-END rla_terminology
+  risk_limit: TYPE
+  sample_size: TYPE
+  wrong_outcome: TYPE
+END rlas
+
+elections_equipment: THEORY
+BEGIN
+  dominion_voting_system: TYPE
+  scanner: TYPE
+  scanner_id_number: TYPE
+  voting_system: TYPE
+  vvpat: TYPE
+END elections_equipment
+
+authentication: THEORY
+BEGIN
+  authenticate: TYPE
+  authentication: TYPE
+  two_factor_authentication: TYPE
+  username: TYPE
+  password: TYPE
+  credential: TYPE
+END authentication
+
+cast_vote_records: THEORY
+BEGIN
+  cvr: TYPE
+  cvr_file: TYPE
+  cvr_number: TYPE
+END cast_vote_records
+
+user_interfaces: THEORY
+BEGIN
+  ui: TYPE
+  uploading_interface: TYPE
+  cvr_uploading_interface: TYPE
+  county_auditing_interface: TYPE
+  audit_adjudication_interface: TYPE
+END user_interfaces
+
+dashboards: THEORY
+BEGIN
+  dashboard: TYPE
+  developer_dashboard: TYPE
+  state_wide_dashboard: TYPE
+  county_dashboard: TYPE
+END dashboards
+
+database: THEORY
+BEGIN
+  database: TYPE
+  database_table: TYPE
+END database
+
+computer_science: THEORY
+BEGIN
+  comma_separated_value: TYPE % csv
+  email_address: TYPE
+  file: TYPE
+END computer_science
+
+system_architecture: THEORY
+BEGIN
+  IMPORTING database
+
+  back_end: TYPE
+  front_end: TYPE
+END system_architecture
 
 terminology: THEORY
 BEGIN
   IMPORTING
     %fafessl-description "TBD"
-    ballot_terminology,
+    ballots,
     %fafessl-description "TBD"
-    audit_terminology,
+    elections,
     %fafessl-description "TBD"
-    forms_and_reports_terminology,
-    election_terminology,
-    rla_terminology
-  uocava_voter: TYPE
-  cast_vote_record: TYPE
-  administrator: TYPE
-  state_administrator: TYPE
-  county_administrator: TYPE
-  contest_name: TYPE
-  PRNG: TYPE
-  seed: TYPE
-  RLA: TYPE
-  authentication: TYPE
-  authenticate: TYPE
-  two_factor_authentication: TYPE
-  wrong_outcome: TYPE
-  contest_margin: TYPE
-  margin: TYPE
-  hash: TYPE
-  batch: TYPE
-  batch_size: TYPE
-  county: TYPE
-  scanner: TYPE
-  cdos: TYPE
-  sos: TYPE
-  voter: TYPE
-  election_canvass: TYPE
-  canvas_board: TYPE
-  county_clerk: TYPE
-  sample_size: TYPE
-  vvpat: TYPE
-  overvote: TYPE
-  stray_mark: TYPE
-  undervote: TYPE
-  risk_limit: TYPE
-  voting_system: TYPE
-  dashboard: TYPE
-  developer_dashboard: TYPE
-  state_wide_dashboard: TYPE
-  county_dashboard: TYPE
-  role: TYPE
-  ui: TYPE
-  audit_center: TYPE
-  uploading_interface: TYPE
-  cvr_uploading_interface: TYPE
-  comma_separated_value: TYPE % cvr
-  county_number: TYPE
-  scanner_id_number: TYPE
-  batch_number: TYPE
-  file: TYPE
-  cvr_file: TYPE
-  cvr_number: TYPE
-  database: TYPE
-  database_table: TYPE
-  back_end: TYPE
-  front_end: TYPE
-  county_auditing_interface: TYPE
-  paper_ballot: TYPE
-  audit_adjudication_interface: TYPE
-  ballot_style: TYPE
-  political_party: TYPE
-  username: TYPE
-  password: TYPE
-  credential: TYPE
-  audit_supervisor: TYPE
-  audit_board_member: TYPE
-  email_address: TYPE
-  audit_mistake: TYPE
-  ballot_instructions: TYPE
-  digital_ballot_adjudication: TYPE
-  manual_ballot_adjudication: TYPE
-  ambiguous_mark: TYPE
-  sos_voter_intent_guide: TYPE
+    audits,
+    %fafessl-description "TBD"
+    instructions_forms_reports,
+    %fafessl-description "TBD"
+    roles,
+    %fafessl-description "TBD"
+    randomness,
+    %fafessl-description "TBD"
+    cryptography,
+    %fafessl-description "TBD"
+    rlas,
+    %fafessl-description "TBD"
+    elections_equipment,
+    %fafessl-description "TBD"
+    authentication,
+    %fafessl-description "TBD"
+    cast_vote_records,
+    %fafessl-description "TBD"
+    user_interfaces,
+    %fafessl-description "TBD"
+    dashboards,
+    %fafessl-description "TBD"
+    database,
+    %fafessl-description "TBD"
+    computer_science,
+    %fafessl-description "TBD"
+    system_architecture
 END terminology
 
 % @fafessl-system CORLA_SYSTEM
