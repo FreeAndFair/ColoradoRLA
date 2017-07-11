@@ -1,29 +1,30 @@
-import * as React from "react";
+import * as React from 'react';
 
 
 export interface HelloProps {
     greeting: string;
+    onClick: any;
 }
 
 export interface HelloState {
-    misc: string;
+    local: string;
 }
 
 export class Hello extends React.Component<HelloProps, HelloState> {
-    constructor(props: HelloProps) {
+    constructor(props: any) {
         super(props);
 
-        this.state = { misc: 'I am a string' };
+        this.state = { local: 'Some state' };
     }
 
     render() {
-        const { greeting } = this.props;
-        const { misc } = this.state;
+        const { greeting, onClick } = this.props;
+        const { local } = this.state;
 
         return (
-            <div>
+            <div onClick={onClick} >
                 <h1>{ greeting }</h1>
-                <h2>My state: { misc }</h2>
+                <h2>My local state is: "{ local }"</h2>
             </div>
         );
     }
