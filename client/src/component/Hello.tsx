@@ -3,26 +3,28 @@ import * as React from 'react';
 
 export interface HelloProps {
     greeting: string;
+    onClick: any;
 }
 
 export interface HelloState {
-    misc: string;
+    local: string;
 }
 
-// FIX: We shouldn't have to weaken the Props type param to `any`.
-export class Hello extends React.Component<HelloProps & any, HelloState> {
+export class Hello extends React.Component<HelloProps, HelloState> {
     constructor(props: any) {
         super(props);
 
-        this.state = { misc: 'Some state' };
+        this.state = { local: 'Some state' };
     }
 
     render() {
-        const { path } = this.props.match;
+        const { greeting, onClick } = this.props;
+        const { local } = this.state;
 
         return (
-            <div>
-                <h1>{ path }</h1>
+            <div onClick={onClick} >
+                <h1>{ greeting }</h1>
+                <h2>My local state is: "{ local }"</h2>
             </div>
         );
     }

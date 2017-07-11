@@ -32,6 +32,11 @@
       "from": "@types/react-dom@>=15.5.1 <16.0.0",
       "resolved": "https://registry.npmjs.org/@types/react-dom/-/react-dom-15.5.1.tgz"
     },
+    "@types/react-redux": {
+      "version": "4.4.46",
+      "from": "@types/react-redux@latest",
+      "resolved": "https://registry.npmjs.org/@types/react-redux/-/react-redux-4.4.46.tgz"
+    },
     "@types/react-router": {
       "version": "4.0.14",
       "from": "@types/react-router@*",
@@ -1651,6 +1656,11 @@
       "from": "lodash@>=4.17.4 <5.0.0",
       "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.17.4.tgz"
     },
+    "lodash-es": {
+      "version": "4.17.4",
+      "from": "lodash-es@>=4.2.1 <5.0.0",
+      "resolved": "https://registry.npmjs.org/lodash-es/-/lodash-es-4.17.4.tgz"
+    },
     "lodash.assignin": {
       "version": "4.2.0",
       "from": "lodash.assignin@>=4.0.9 <5.0.0",
@@ -2296,6 +2306,11 @@
       "from": "react-proxy@>=3.0.0-alpha.0 <4.0.0",
       "resolved": "https://registry.npmjs.org/react-proxy/-/react-proxy-3.0.0-alpha.1.tgz"
     },
+    "react-redux": {
+      "version": "5.0.5",
+      "from": "react-redux@latest",
+      "resolved": "https://registry.npmjs.org/react-redux/-/react-redux-5.0.5.tgz"
+    },
     "react-router": {
       "version": "4.1.1",
       "from": "react-router@>=4.1.1 <5.0.0",
@@ -2340,6 +2355,11 @@
       "version": "1.0.0",
       "from": "redent@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/redent/-/redent-1.0.0.tgz"
+    },
+    "redux": {
+      "version": "3.7.1",
+      "from": "redux@>=3.6.0 <4.0.0",
+      "resolved": "https://registry.npmjs.org/redux/-/redux-3.7.1.tgz"
     },
     "regenerator-runtime": {
       "version": "0.10.5",
@@ -2734,6 +2754,11 @@
       "version": "2.0.0",
       "from": "supports-color@>=2.0.0 <3.0.0",
       "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-2.0.0.tgz"
+    },
+    "symbol-observable": {
+      "version": "1.0.4",
+      "from": "symbol-observable@>=1.0.3 <2.0.0",
+      "resolved": "https://registry.npmjs.org/symbol-observable/-/symbol-observable-1.0.4.tgz"
     },
     "tap-out": {
       "version": "1.4.2",

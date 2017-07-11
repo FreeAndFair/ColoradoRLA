@@ -1,23 +1,27 @@
 import * as React from 'react';
-
-import {
-    BrowserRouter as Router,
-    Route,
-} from 'react-router-dom';
+import { connect } from 'react-redux';
 
 import { Hello } from '../component/Hello';
 
 
-export class App extends React.Component {
+export interface AppProps {
+    greeting: string;
+}
+
+class App extends React.Component<AppProps & any, any> {
     render() {
-        return (
-            <Router>
-                <div>
-                    <Route exact path='/' component={Hello} />
-                    <Route path='/hola' component={Hello} />
-                    <Route path='/hello' component={Hello} />
-                </div>
-            </Router>
-        );
+        const { greeting, onClick } = this.props;
+
+        return <Hello onClick={ onClick } greeting={ greeting } />;
     }
 }
+
+const mapStateToProps = ({ greeting }: any) => ({ greeting });
+
+const mapDispatchToProps = (dispatch: any) => ({
+    onClick() {
+        dispatch({ type: 'NEXT_GREETING' })
+    },
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

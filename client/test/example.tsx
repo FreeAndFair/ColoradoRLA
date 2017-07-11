@@ -8,7 +8,11 @@ import { Hello } from '../src/component/Hello';
 test('Hello', t => {
     t.plan(1);
 
-    const wrapper = shallow(<Hello greeting='Hello' />);
+    const greeting = 'Hello';
+    const onClick = () => {};
+    const wrapper = shallow(
+        <Hello onClick={ onClick } greeting={ greeting } />
+    );
 
-    t.ok(wrapper.contains(<h1>Hello</h1>));
+    t.ok(wrapper.contains(<h1>{ greeting }</h1>));
 });
