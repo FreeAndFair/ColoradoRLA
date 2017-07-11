@@ -14,9 +14,9 @@ tools and get the project ready for development, do the following:
   automatically for you) and create a workspace somewhere outside your
   clone of the Git repository (if you have not already cloned the Git
   repository, you'll have to do so later).
-  4. Use the "Import..." option in Eclipse's "File" menu to import an
-  Oomph project into the workspace. This will result in a window with a
-  list of Eclipse products and projects.
+  4. Use "Import..." (in Eclipse's "File" menu or the context menu of the Package 
+  Explorer) to import an Oomph project into the workspace. This will result in a window 
+  with a list of Eclipse products and projects.
   5. Using the "+" button (upper-right), add the Colorado RLA setup file.
   The button will bring up a window with "Catalog" and "Resource URIs"
   options; select the Eclipse Projects catalog and put the URI
@@ -31,11 +31,13 @@ tools and get the project ready for development, do the following:
   bottom of your Eclipse window that looks like a caution sign above a
   pair of arrows. Click it, then click "Finish". Your Eclipse will restart;
   pick the same workspace you started with (it will be the default).
-  9. Clone the Git repository, if you haven't already.
-  10. Add the ColoradoRLA project, by using "Import..." to import
-  "Existing Projects into Workspace" (under "General"). Eclipse will ask you
-  to select a root directory; select the top level of the Git clone, and
-  you should see the "ColoradoRLA" project appear. Then, click "Finish".
+  10. Add the ColoradoRLA project by using "Import..." (from "File" or context menu)
+  to import "Existing Projects into Workspace" (under "General"). Eclipse will ask you
+  to select a root directory; select the top level of your Git repository clone and
+  you should see the "ColoradoRLA" project appear. Then, click "Finish". If you have
+  not yet cloned the repository, you can either do so first, or import "Projects from 
+  Git" instead and let Eclipse clone it for you. 
   11. You are now ready to work. You can optionally open the AutoGrader
   view (by selecting it from the set presented by "Window -> Show View ->
-  Other...") to get continuous feedback on the project's code quality.
+  Other..." or searching Eclipse for "AutoGrader") to get continuous feedback on the 
+  project's code quality.
