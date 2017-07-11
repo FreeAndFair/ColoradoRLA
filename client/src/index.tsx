@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
-import { createStore } from 'redux'
+import { createStore } from 'redux';
 
 import { Root } from './container/Root';
 import rootReducer from './reducer/root';
@@ -18,7 +18,7 @@ const render = (NextRoot: any) => {
     );
 
     ReactDOM.render(appContainer, rootEl);
-}
+};
 
 render(Root);
 

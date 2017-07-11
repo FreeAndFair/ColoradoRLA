@@ -17,7 +17,7 @@ export class Hello extends React.Component<HelloProps, HelloState> {
         this.state = { local: 'Some state' };
     }
 
-    render() {
+    public render() {
         const { greeting, onClick } = this.props;
         const { local } = this.state;
 

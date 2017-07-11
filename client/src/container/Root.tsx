@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Provider, Store } from 'react-redux'
+import { Provider, Store } from 'react-redux';
 import {
     BrowserRouter as Router,
     Route,
@@ -13,7 +13,7 @@ export interface RootProps {
 }
 
 export class Root extends React.Component<RootProps, void> {
-    render() {
+    public render() {
         const { store } = this.props;
 
         return (
