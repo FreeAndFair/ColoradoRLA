@@ -55,7 +55,7 @@ specific ballot represented by a given CVR. A ballot manifest will
 contain the following information: county ID, tabulator ID, batch ID,
 the number of ballots in each batch, and the
 storage location where the batch is secured following tabulation. A
-sample ballot manifest is provided at `test/manifest-dq.csv`.
+sample ballot manifest is provided at [`manifest-dq.csv`](samples/manifest-dq.csv)
 
 * **cast vote record (CVR)** - An electronic record
 indicating how the marks on a ballot were interpreted as votes.
@@ -200,7 +200,8 @@ adjudication or equipment errors.
 
 * **undervote** TBD
 
-* **risk limit** TBD
+* **risk limit** The pre-specified minimum chance of requiring a full hand count if the outcome of a full hand count would differ
+from the reported tabulation outcome.
 
 * **voting system** TBD
 
