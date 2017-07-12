@@ -171,6 +171,57 @@ level, complete with versioning information. Note that we prefer that
 this dependency list is automatically generated and kept up-to-date by
 the build system.*
 
+Code Review and Source Management
+---------------------------------
+
+We use the Git SCM for version control, with GitHub for hosting and
+code review. The development worfklow is as follows:
+
+1. Locally, pull the latest changes on the `master` branch of the
+   upstream repo, hosted on GitHub.
+1. Check out a new topic branch based on the above changes.
+1. Commit changes to your local branch.
+1. For the sake of visibility, you may open a work-in-progress Pull
+   Request from your branch to `master`. If you do, add the `wip`
+   label.
+1. When you are ready to merge to `master`, make sure your branch has
+   been pushed to the remote repository and open a Pull Request (if
+   you haven't already). Remove any `wip` label and add the `review`
+   label.
+1. If appropriate, use the GitHub "Reviewers" dropdown to formally
+   request a review from a specific person. Either way, paste a link
+   to the PR in Slack to alert others who may wish to review it.
+1. Ensure at least one other person has reviewed your changes and
+   informally but explicitly "signed off" in the PR comments.
+1. Have a _reviewer_ merge the PR when it is ready and all comments
+   are addressed. The reviewer should check that all new commits are
+   signed, then merge the PR using the GitHub "Merge pull request"
+   button. This will introduce an _unsigned_ merge commit, but
+   preserve the signatures on the actual branch's commits.
+
+**Guidelines:**
+- Do not commit directly to `master`.
+- To support bisecting, do not merge WIP commits that break the build.
+  On topic branches, squash commits as needed before merging.
+- Write short, useful commit messages with a consistent style. Follow
+  these
+  [seven rules](https://chris.beams.io/posts/git-commit/#seven-rules),
+  with the amendment that on this project, we have adopted the
+  convention of ending the subject line with a period.
+- Keep your topic branches small to facilitate review.
+- Before merging someone else's PR, make sure other reviewers'
+  comments are resolved, and that the PR author considers the PR ready
+  to merge.
+- For security-sensitive code, ensure your changes have received an
+  in-depth review, preferably from multiple reviewers.
+- Configure Git so that your commits are
+  [signed](https://git-scm.com/book/en/v2/Git-Tools-Signing-Your-Work).
+- Whenever possible, use automation to avoid committing errors or
+  noise (e.g. extraneous whitespace). Use linters, automatic code
+  formatters, test runners, and other static analysis tools. Configure
+  your editor to use them, and when feasible, integrate them into the
+  upstream continuous integration checks.
+
 Building
 --------
 
