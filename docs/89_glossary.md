@@ -155,6 +155,38 @@ major party chairpersons, which carries out an audit, with the assistance
 of the designated election official, members of his or her staff, and other
 duly appointed election judges.
 
+* **audit** TBD May include ballot tabulation audits, compliance audits, ...
+
+* **ballot tabulation audits** TBD. including risk-limiting audits,
+opportunistic audits, bayesian audits, fixed-percentage audits, etc.
+
+* **opportunistic audit* - an auditing technique designed to efficiently
+generate evidence for additional contests in a ballot-level audit. A
+significant part of the effort in doing a risk limiting audit involves
+physically retrieving the ballots selected for audit.  While doing the
+manual tabulation and entering the data for the contests on that ballot
+which are subject to strict risk limits, it is possible to
+"opportunistically" do the same thing for other contests that are observed
+on the same ballot, producing evidence about them for little additional
+effort.  These are called "opportunistic contests".  If an opportunistic
+contest achieves a risk limit, it can be "settled", and when it appears
+on subsequent ballots during the audit, it need not be tabulated.
+TBD: discuss need to consider possibility of sampling bias when
+evaluating and reporting, considerations for possible escalation, etc.
+
+* **mandatory contest** A contest which is subject to a risk limit and is
+factored in to the sampling calculations.
+
+* **opportunistic contest** A contest to be audited opportunistically.
+
+* **active contest** TBD involving not having achieved risk limit
+
+* **settled contest** TBD involving having achieved risk limit
+
+* **uncontested contest** TBD
+
+* **bayesian audits** TBD
+
 * **voting method** TBD
 
 * **electoral system** TBD
@@ -186,8 +218,6 @@ duly appointed election judges.
 * **Secretary of State (SOS)** TBD
 
 * **Department of State (DOS)** TBD
-
-* **audit** TBD
 
 * **audit report** TBD
 
