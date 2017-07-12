@@ -11,12 +11,10 @@ tools and get the project ready for development, do the following:
   2. Run the installer and install the "Eclipse IDE for Java Developers"
   (the first option on the list of distributions to install).
   3. Run the resulting Eclipse installation (the installer may do this
-  automatically for you) and create a workspace somewhere outside your
-  clone of the Git repository (if you have not already cloned the Git
-  repository, you'll have to do so later).
-  4. Use "Import..." (in Eclipse's "File" menu or the context menu of the Package
-  Explorer) to import an Oomph project into the workspace. This will result in a window
-  with a list of Eclipse products and projects.
+  automatically for you) and create a workspace, *which you will use for
+  development*, somewhere outside your clone of the Git repository (if you
+  have not already cloned the Git repository, you'll have to do so later).
+  4. Use "Import..." (in Eclipse's "File" menu or the context menu of the Package Explorer) to import an Oomph project into the workspace. This will result in a window with a list of Eclipse products and projects.
   5. Click the "+" button (upper-right), which will bring up a window with "Catalog" and "Resource URIs"; select the Eclipse Projects catalog and put the URI
   https://raw.githubusercontent.com/FreeAndFair/ColoradoRLA/master/server/eclipse.setup
   into the text field at the bottom, then click "OK".
@@ -29,13 +27,14 @@ tools and get the project ready for development, do the following:
   bottom of your Eclipse window that looks like a caution sign above a
   pair of arrows. Click it, then click "Finish". Your Eclipse will restart;
   pick the same workspace you started with (it will be the default).
-  10. Add the ColoradoRLA project by using "Import..." (from "File" or context menu)
-  to import "Existing Projects into Workspace" (under "General"). Eclipse will ask you
-  to select a root directory; select the top level of your Git repository clone and
-  you should see the "ColoradoRLA" project appear. Then, click "Finish". If you have
-  not yet cloned the repository, you can either do so first, or import "Projects from
-  Git" instead and let Eclipse clone it for you.
+  10. Add the ColoradoRLA project by using "Import..." (from "File" or
+  context menu) to import "Existing Projects into Workspace" (under
+  "General"). Eclipse will ask you to select a root directory; select the
+  top level of your Git repository clone and you should see the
+  "ColoradoRLA" project appear. Then, click "Finish". If you have not yet cloned the repository, you can either do so first, or import "Projects
+  from Git" instead and let Eclipse clone it for you. Note that the
+  Eclipse project will be linked, rather than copied, into your workspace.
   11. You are now ready to work. You can optionally open the AutoGrader
   view (by selecting it from the set presented by "Window -> Show View ->
-  Other..." or searching Eclipse for "AutoGrader") to get continuous feedback on the
-  project's code quality.
+  Other..." or searching Eclipse for "AutoGrader") to get continuous
+  feedback on the project's code quality.
