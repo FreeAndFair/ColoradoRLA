@@ -2,8 +2,8 @@ Eclipse Installation
 --------------------
 
 The installation of the various plug-ins we use for development,
-code quality, etc., is relatively automatic (though not yet as automatic as
-we would like). To install an Eclipse distribution with all the required
+code quality, etc., is straightforward, but is nowhere near as automated
+as we would like. To install an Eclipse distribution with all the required
 tools and get the project ready for development, do the following:
 
   1. Download the Eclipse Oxygen installer for your platform from
