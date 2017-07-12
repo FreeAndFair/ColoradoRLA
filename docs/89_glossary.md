@@ -181,7 +181,10 @@ factored in to the sampling calculations.
 
 * **active contest** TBD involving not having achieved risk limit
 
-* **settled contest** TBD involving having achieved risk limit
+* **settled contest** TBD involving having achieved risk limit.  Note need
+to ensure that calculations take into account the way the samples were
+selected, in case any samples were taken in a stratified manner or taken
+non-uniformly in order to target non-county-wide contests
 
 * **uncontested contest** TBD
 
