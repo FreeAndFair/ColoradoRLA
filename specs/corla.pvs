@@ -470,54 +470,6 @@ BEGIN
   public_dashboard?: public_dashboard
 END dashboard
 
-authentication: THEORY
-BEGIN
-  IMPORTING roles, dashboard
-  
-  authentication: TYPE = pred[person, credential]
-  username: TYPE
-  password: TYPE
-  % @trace Task order 1, page 4, "Uptime/Security"
-  complex_enough?: pred[password]
-  complex_check_update: [complex_enough? -> ?]
-  biometric: TYPE
-  token: TYPE
-  
-  credential: TYPE = [username, password]
-  two_factor_authentication: TYPE = [token, [username, password], biometric]
-  issue_credential: [election, person -> two_factor_authentication]
-  credential?: [person -> two_factor_authentication]
-%%% @review CDOS Must every audit board member have and use a credential?
-  authenticated: pred[person, two_factor_authentication]
-  % @description County administrator authenticates to the county dashboard.
-  authenticate: pred[county_dashboard, county_adminstrator]
-%%% @review CDOS Is this feature permitted?
-  authenticate: pred[county_dashboard, audit_board_member]
-%%% @review CDOS Is the notion of a quorum useful and necessary?
-
-  e: VAR election
-  cd: VAR county_dashboard
-  cc: VAR county_clerk
-
-%%% English description of uploading.
-
-  upload_confirmation: [county_dashboard ->
-    [email, upload_confirmation_message]]
-
-  % @description This county clerk upload that ballot manifest and its hash for this election!
-  upload_manifest: [county_dashboard,
-    authenticated(county_clerk, two_factor_authentication),
-    ballot_manifest, hash(ballot_manifest) ->
-    [county_dashboard, upload_system_message]]
-  % @description    
-  upload_cvrs: [county_dashboard,
-    authenticated(county_clerk, two_factor_authentication),
-    cvrs, hash(cvrs) ->
-    [county_dashboard, upload_system_messsage]]
-  county_upload_scenario: [election, county_clerk -> upload_confirmation]
-
-END authentication
-
 % @todo For a given election, there is a 1-1 correspondance between its ballots and its cvrs.
 
 cast_vote_records: THEORY
@@ -531,6 +483,50 @@ BEGIN
   cvr_number: TYPE = nat
 END cast_vote_records
 
+authentication: THEORY
+BEGIN
+  IMPORTING roles, dashboard, state_election, dashboard, roles,
+            information_systems, upload_system_message, ballots,
+            cryptography, cast_vote_records
+  
+  username: TYPE
+  password: TYPE
+  % @trace Task order 1, page 4, "Uptime/Security"
+  complex_enough?: pred[password]
+  % complex_check_update: [complex_enough? -> ?]
+  biometric: TYPE
+  token: TYPE
+
+  credential: TYPE = [username, password]
+  authentication: TYPE = pred[[person, credential]]
+  two_factor_authentication: TYPE = [token, [username, password], biometric]
+  issue_credential: TYPE = [state_election, person -> two_factor_authentication]
+  credential?: [person -> two_factor_authentication]
+%%% @review CDOS Must every audit board member have and use a credential?
+  authenticated: TYPE = pred[[person, two_factor_authentication]]
+  % @description County administrator authenticates to the county dashboard.
+  authenticate_county_administrator: TYPE = pred[[dashboard, county_administrator]]
+%%% @review CDOS Is this feature permitted?
+  authenticate_audit_board_member: TYPE = pred[[dashboard, audit_board_member]]
+%%% @review CDOS Is the notion of a quorum useful and necessary?
+
+%%% English description of uploading.
+
+  upload_confirmation: [dashboard ->
+                        [email, upload_system_message]]
+
+  % @todo kiniry Refine these definitions from dashboard to county_dashboard.
+  % @description This county clerk upload that ballot manifest and its hash for this election!
+  upload_manifest: [dashboard, authenticated, ballot_manifest, hash ->
+                    [dashboard, upload_system_message]]
+  % @description    
+  upload_cvrs: [dashboard, authenticated, cvr_file, hash ->
+                [dashboard, upload_system_message]]
+  county_upload_scenario: [state_election, county_clerk ->
+                           upload_system_message]
+
+END authentication
+
 %%% The user interfaces of the system are the visible interactive
 %%% parts of an application. There are several different user
 %%% interfaces in the RLA Tool. The precise names of these interfaces
@@ -542,7 +538,6 @@ BEGIN
   cvr_uploading_interface?: cvr_uploading_interface
   county_auditing_interface?: county_auditing_interface
   audit_adjudication_interface?: audit_adjudication_interface
-  upload_confirmation_message?: upload_confirmation_message
 END user_interface
 
 upload_system_message: DATATYPE
