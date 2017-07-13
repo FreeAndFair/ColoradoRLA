@@ -1,0 +1,21 @@
+language: java
+
+notifications:
+  email: false
+
+env:
+  - NODE_VERSION=v7.10.0
+
+install:
+  - nvm install "${NODE_VERSION}";
+    nvm use "${NODE_VERSION}";
+    cd "${TRAVIS_BUILD_DIR}/client";
+    npm install;
+
+script:
+  - cd "${TRAVIS_BUILD_DIR}/client";
+    npm run build;
+  - cd "${TRAVIS_BUILD_DIR}/client";
+    npm run lint;
+  - cd "${TRAVIS_BUILD_DIR}/client";
+    npm test;
