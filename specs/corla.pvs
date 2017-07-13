@@ -60,11 +60,11 @@
 
 %%% The FAFESSL annotations we use are as follows:
 %%% \begin{description}
-%%% \item[@fafessl-system] the FAFESSL name of the system
-%%% \item[@fafessl-cluster] the FAFESSL name of a cluster
-%%% \item[@fafessl-explanation] the explanation for a module
-%%% \item[%fafessl-description] a short description of a module
-%%% \item[@fafessl-indexing-<CLAUSE>] a prefix for any indexing <CLAUSE>
+%%% \item[@system] the FAFESSL name of the system
+%%% \item[@cluster] the FAFESSL name of a cluster
+%%% \item[@explanation] the explanation for an artifact
+%%% \item[%description] a short description of an artifact
+%%% \item[@indexing-<CLAUSE>] a prefix for any indexing <CLAUSE>
 %%% \end{description}
 
 %%% These suffixes are commonly used:
@@ -143,6 +143,8 @@ BEGIN
   email: TYPE
   email_address: TYPE
   file: TYPE
+  server: TYPE
+  network: TYPE
 END information_systems
 
 %%% Over time, as we need to introduce more background concepts, we
@@ -152,15 +154,93 @@ END information_systems
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%+BEGIN elections
+
+%%% \section{Elections}
+
+%%% Elections have a number of general concepts necessary to specify
+%%% the RLA Tool. Some are generic to all elections, and others are
+%%% specifiec to Colorado.
+
+elections: THEORY
+BEGIN
+%%% Voters are the most important concept in elections, as they are
+%%% who elections are for, and who should make the choices that
+%%% determine the outcome of legitimate elections. Some voters are
+%%% UOCAVA voters. What follows is one way to formalize such, simply
+%%% stating that the type uocava_voter is a predicate on the type
+%%% voter. Consequently, all voters are UOCAVA or not.
+  person: TYPE
+  voter: TYPE = pred[person]
+  uocava_voter: TYPE = pred[voter]
+
+%%% The dual of voters are candiates, who run for office to represent
+%%% voters. Note that a person can be either a voter, a candidate,
+%%% both, or neither.
+  candidate: TYPE = pred[person]
+
+%%% Elections focus on contests, each of which represents a set of
+%%% choices that voters can make. Making a legal choice ranges
+%%% enormously across the Earth, from marking a vote for a candidate
+%%% by filling in a single bubble to enumerating a total order on all
+%%% choices in a contest. Across a given ballot, each contest has a
+%%% unique name.
+
+  contest: TYPE
+  contest_name?: [contest -> string]
+% @todo Contest name uniqueness.
+
+%%% Elections are defined across cohorts of voters arranged in any
+%%% number of ways---geographic, political, professional, and more. In
+%%% Colorado, elections are organized across counties, and the entire
+%%% state. Each county has a name and a county number, both of which
+%%% are unique across the whole state.
+
+  county: TYPE
+  county_name?: [county -> string]
+  county_number?: [county -> nat]
+  state: TYPE = set[county]
+
+  s: VAR state
+  c1, c2: VAR county
+
+  county_names_unique: AXIOM
+  (FORALL s, c1, c2: county_name?(c1) = county_name?(c2)
+    IMPLIES c1 = c2)
+  county_numbers_unique: AXIOM
+  (FORALL s, c1, c2: county_number?(c1) = county_number?(c2)
+    IMPLIES c1 = c2)
+  
+  election_canvass: TYPE
+  political_party: TYPE
+
+
+  audit_center: TYPE
+END elections
+
+state_election: DATATYPE
+BEGIN
+  IMPORTING elections
+  
+  election?(s: state, c: set[contest]): election
+END state_election
+
+%+END elections
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %+BEGIN ballots
 
 %%% \section{Ballots}
 
-%%% The first basic concept of elections that we need to specify is
-%%% ballots.
+%%% The second basic concept of elections that we need to specify is
+%%% ballots. Ballots are the means by which voters indicate their
+%%% preferences for candidates in contests and choices in ballot
+%%% questions.
 
 ballots: THEORY
 BEGIN
+  IMPORTING elections
 
 %%% Several of our concepts are simply numbers. For example, ballot
 %%% identifiers (ids), batch numbers, and batch sizes are all just
@@ -188,8 +268,10 @@ BEGIN
 %%% represented in a digital fashion (a scan, PDF, etc.) or are paper
 %%% ballots, or both. Ballots are also classifed based upon where they
 %%% originate, such as ballots delivered via mail, UOCAVA ballots,
-%%% early ballots, etc. Ballots are also either tabulated or not.
+%%% early ballots, etc. Ballots are also either tabulated or not. Note
+%%% that none of these categories of ballots are mutually exclusive.
 
+% @description The legally recognized means by which a voter can express his or her choices in one or more contests in an election.
   ballot: TYPE
   digital_ballot: TYPE = pred[ballot]
   paper_ballot: TYPE = pred[ballot]
@@ -198,69 +280,150 @@ BEGIN
   early_ballot: TYPE = pred[ballot]
   tabulated_ballot: TYPE = pred[ballot]
 
-%%% Each ballot has a ballot style.
+%%% Each ballot has a single ballot style, which indicates (at least) the contests that are listed on that ballot. Usually ballot styles are encoded through the use of natural numbers.
 
-  ballot_style: TYPE
+% @description The concrete presentation of a ballot configuration.
+  ballot_style: TYPE = nat
+  ballot_style?: [ballot -> ballot_style]
 
-  ballot_contest: TYPE
+% @description A decision to be made, either the selection of one or more candidates for an office or the choice of a course of action.
+  ballot_contest: TYPE = contest
+  choice: TYPE
+
+% @description A batch is a set of ballots.  
+  batch: TYPE = set[ballot]
+
+%%% Several terms are underspecified at this time and need elucidation
+%%% or elimination. They are as follows:a
+
   ballot_manifest: TYPE
-
-  ballot_order: TYPE
-  ballot_storage: TYPE
-  batch: TYPE
-
-  cast_vote_record: TYPE
-  overvote: TYPE
-  undervote: TYPE
-
-%%% Several terms are underspecified at this time. They are as
-%%% follows.
-
   imprinted_ballot: TYPE
   ballot_certification: TYPE
 
 END ballots
 
+%%% The interpretation of the meaning of a voter's choice in a single
+%%% ballot contest is either a legal vote, an overvote, or an
+%%% undervote.
+votes: DATATYPE
+BEGIN
+  IMPORTING ballots
+
+% @description A legal selection of zero or more choices in a ballot contest.
+  vote?(choices:set[choice]):vote
+% @description A (typically deemed improper) selection of too many choices in a ballot contest.
+  overvote?(choices:set[choice]):overvote
+% @description A (sometimes deemed improper) selection of too few choices in a ballot contest.
+  undervote?(choices:set[choice]):undervote
+END votes
+
+ballot_interpretation: THEORY
+BEGIN
+  IMPORTING ballots, votes
+
+% @description A CVR is a cast vote record denoting the interpretation of a set of votes for a specific election and a single voter.
+  cast_vote_record: TYPE = set[votes]
+
+END ballot_interpretation
+
+%%% Ballots are stored by one of several possible means. Some ballot
+%%% storage mechanisms are secure, others are not. Some facilitate an
+%%% easy means by which to find a particular ballots, others do not.
+ballot_storage: DATATYPE
+BEGIN
+  IMPORTING ballots
+  
+  box(ballots:list[ballot]):box?
+  bin(ballots:list[ballot]):bin?
+  ballot_box(ballots:list[ballot]):ballot_box?
+
+% @todo add "secure: pred[ballot_storage)"
+
+END ballot_storage
+
+ballots_collections: THEORY
+BEGIN
+  IMPORTING ballots
+
+%%% Ballots are often ordered, such as after they are hand or machine sorted, when they are kept in storage that maintains order, or an order is induced upon them by a random shuffle.
+  ballot_order: TYPE = list[ballot]
+
+%%% Sometimes, but not always, a total order is induced by ballot ids.
+% @todo Introduce something like
+% < (b1: ballot, b2: ballot): bool
+% ballot_ids_unique_and_induce_order: POSTULATE strict_total_order?(<)
+
+END ballots_collections
+
 %+END ballots
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%+BEGIN elections
+%%% Elections have all kinds of different published instructions,
+%%% forms, and reports. We enumerate a few here that are specific to
+%%% Colorado, and the RLA Tool in particular.
 
-%%% \section{Elections}
-
-%%% Elections have a number of general concepts necessary to specify
-%%% the RLA Tool.
-
-elections: THEORY
+instructions_forms_reports: THEORY
 BEGIN
-  audit_center: TYPE
-  candidate: TYPE
-  contest: TYPE
-  contest_name: TYPE = string
-  county: TYPE
-  county_number: TYPE = nat
-  election: TYPE
-  election_canvass: TYPE
-  political_party: TYPE
+  audit_report: TYPE
+  ballot_instructions: TYPE
+  sos_audit_form: TYPE
+  sos_voter_intent_guide: TYPE
+END instructions_forms_reports
 
-%%% Some voters are UOCAVA voters. What follows is one way to
-%%% formalize such, simply stating that the type uocava_voter is a
-%%% predicate on the type voter. Consequently, all voters are UOCAVA
-%%% or not.
+%%% Within the RLA Tool there are a number of roles that a person
+%%% involved with the system can take on. Some of these roles are
+%%% mutually exclusive due to legal reasons.
 
-  voter: TYPE
-  uocava_voter: TYPE = pred[voter]
-END elections
+roles: THEORY
+BEGIN
+  IMPORTING elections
 
-%+END elections
+  audit_board_member: TYPE = person
+  canvas_board: TYPE = set[person]
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  colorado_department_of_state: TYPE
+  cdos: TYPE = colorado_department_of_state
+
+  sos: TYPE = person
+  state?: [sos -> state]
+
+  county_clerk: TYPE = person
+  county?: [county_clerk -> county]
+
+% @todo Roles that are currently under-defined.
+  audit_supervisor: TYPE
+  administrator: TYPE
+  county_administrator: TYPE
+  state_administrator: TYPE
+END roles
+
+canvas_boards: THEORY
+BEGIN
+  IMPORTING roles, state_election
+
+  canvas_board?: [state_election -> canvas_board]
+END canvas_boards
+
+randomness: THEORY
+BEGIN
+  unit: TYPE
+  seed: TYPE = nat
+  rng: TYPE = [unit -> nat]
+  seeded_prng: TYPE = [seed -> rng]
+END randomness
+
+cryptography: THEORY
+BEGIN
+  hash: TYPE
+END cryptography
 
 audits: THEORY
 BEGIN
+  IMPORTING roles
+  
   audit: TYPE
-  audit_board: TYPE
+  audit_board: TYPE = set[audit_board_member]
   audit_mistake: TYPE
   audit_progress: TYPE
   ballot_polling_audit: TYPE
@@ -271,39 +434,6 @@ BEGIN
   margin: TYPE
   random_audit: TYPE
 END audits
-
-instructions_forms_reports: THEORY
-BEGIN
-  audit_report: TYPE
-  ballot_instructions: TYPE
-  sos_audit_form: TYPE
-  sos_voter_intent_guide: TYPE
-END instructions_forms_reports
-
-roles: THEORY
-BEGIN
-  administrator: TYPE
-  audit_board_member: TYPE
-  audit_supervisor: TYPE
-  canvas_board: TYPE
-  cdos: TYPE
-  county_administrator: TYPE
-  county_clerk: TYPE
-  role: TYPE
-  sos: TYPE
-  state_administrator: TYPE
-END roles
-
-randomness: THEORY
-BEGIN
-  prng: TYPE
-  seed: TYPE
-END randomness
-
-cryptography: THEORY
-BEGIN
-  hash: TYPE
-END cryptography
 
 rlas: THEORY
 BEGIN
@@ -334,85 +464,94 @@ BEGIN
   credential: TYPE
 END authentication
 
+% @todo For a given election, there is a 1-1 correspondance between its ballots and its cvrs.
+
 cast_vote_records: THEORY
 BEGIN
-  cvr: TYPE
-  cvr_file: TYPE
-  cvr_number: TYPE
+  IMPORTING votes, information_systems
+  
+  cvr: TYPE = set[votes]
+  cvr_file: TYPE = [set[cvr] -> file]
+
+% @todo It is unclear what a CVR number is, if anything.
+  cvr_number: TYPE = nat
 END cast_vote_records
 
-user_interfaces: THEORY
-BEGIN
-  ui: TYPE
-  uploading_interface: TYPE
-  cvr_uploading_interface: TYPE
-  county_auditing_interface: TYPE
-  audit_adjudication_interface: TYPE
-END user_interfaces
+%%% The user interfaces of the system are the visible interactive
+%%% parts of an application. There are several different user
+%%% interfaces in the RLA Tool. The precise names of these interfaces
+%%% is still under discussion.
 
-dashboards: THEORY
+user_interface: DATATYPE
 BEGIN
-  dashboard: TYPE
-  developer_dashboard: TYPE
-  state_wide_dashboard: TYPE
-  county_dashboard: TYPE
-END dashboards
+  uploading_interface?: uploading_interface
+  cvr_uploading_interface?: cvr_uploading_interface
+  county_auditing_interface?: county_auditing_interface
+  audit_adjudication_interface?: audit_adjudication_interface
+END user_interface
 
-system_architecture: THEORY
+dashboard: DATATYPE
 BEGIN
-  IMPORTING database
+  developer_dashboard?: developer_dashboard
+  state_wide_dashboard?: state_wide_dashboard
+  county_dashboard?: county_dashboard
+END dashboard
 
-  back_end: TYPE
-  front_end: TYPE
+system_architecture: DATATYPE
+BEGIN
+  IMPORTING information_systems, database
+
+  back_end?(s: set[server], n: set[network], d: set[database]): back_end
+  front_end?: front_end
 END system_architecture
 
 terminology: THEORY
 BEGIN
   IMPORTING
-    %fafessl-description "TBD"
+    %description "TBD"
     ballots,
-    %fafessl-description "TBD"
+    %description "TBD"
     elections,
-    %fafessl-description "TBD"
+    %description "TBD"
     audits,
-    %fafessl-description "TBD"
+    %description "TBD"
     instructions_forms_reports,
-    %fafessl-description "TBD"
+    %description "TBD"
     roles,
-    %fafessl-description "TBD"
+    %description "TBD"
     randomness,
-    %fafessl-description "TBD"
+    %description "TBD"
     cryptography,
-    %fafessl-description "TBD"
+    %description "TBD"
     rlas,
-    %fafessl-description "TBD"
+    %description "TBD"
     elections_equipment,
-    %fafessl-description "TBD"
+    %description "TBD"
     authentication,
-    %fafessl-description "TBD"
+    %description "TBD"
     cast_vote_records,
-    %fafessl-description "TBD"
-    user_interfaces,
-    %fafessl-description "TBD"
-    dashboards,
-    %fafessl-description "TBD"
+    %description "TBD"
+    user_interface,
+    %description "TBD"
+    dashboard,
+    %description "TBD"
     database,
-    %fafessl-description "TBD"
+    %description "TBD"
     information_systems,
-    %fafessl-description "TBD"
+    %description "TBD"
     system_architecture
 END terminology
 
-% @fafessl-system CORLA_SYSTEM
-% @fafessl-indexing-author Joseph Kiniry <kiniry@freeandfair.us>
-% @fafessl-indexing-organization Free & Fair
-% @fafessl-indexing-keywords Free & Fair
-% @fafessl-indexing-created Free & Fair
-% @fafessl-indexing-github Free & Fair
-% @fafessl-explanation "TBD"
+% @system CORLA_SYSTEM
+% @indexing-author Joseph Kiniry <kiniry@freeandfair.us>
+% @indexing-organization Free & Fair
+% @indexing-keywords Free & Fair
+% @indexing-created Free & Fair
+% @indexing-github Free & Fair
+% @explanation "TBD"
 corla: THEORY
 BEGIN
   IMPORTING
-    %fafessl-description "TBD"
+    %description "TBD"
     terminology
 END corla
