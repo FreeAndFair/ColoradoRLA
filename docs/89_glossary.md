@@ -100,7 +100,7 @@ as a number, vector or string, used to initialize a pseudorandom number generato
 (i.e. is reasonably able and qualified) do the work stated in the
 solicitation.
 
-* **risk-limiting audit (RLA)** - a procedure for manually checking a
+* **risk-limiting audit (RLA)** - A procedure for manually checking a
 sample of ballots (or voter-verifiable records) that is guaranteed to have
 a large, pre-specified chance of correcting the reported outcome if the
 reported outcome is wrong. (An outcome is wrong if it disagrees with the
@@ -126,18 +126,19 @@ following requirements:
   * Something you know (Example: passwords)
   * Something you are (Example: biometrics)
 
-* **wrong outcome** - When the reported outcome does not match the
+* **wrong outcome** - When the reported outcome for a given contest does not match the
 outcome that a full hand count would show.
 This can happen due to equipment failures, adjudication errors,
 and other reasons.
 
-* **evidence-based elections* - an approach to achieving election integrity
+* **evidence-based elections** - An approach to achieving election integrity
 in which each election provides affirmative evidence that the reported
 outcomes actually reflect how people voted. This is done via
 software-independent voting systems, compliance audits and risk-limiting
 audits.  An alternative to certifying voting equipment and hoping that it
 functions properly in real elections.  See also *resilient canvass
-framework*.  See See https://www.stat.berkeley.edu/~stark/Preprints/evidenceVote12.pdf
+framework*.  See
+[Evidence-Based Elections - P.B. Stark and D.A. Wagner](https://www.stat.berkeley.edu/~stark/Preprints/evidenceVote12.pdf)
 
 * **resilient canvass framework** - a fault-tolerant approach to conducting
 elections that gives strong evidence that the reported outcome is correct,
@@ -160,9 +161,9 @@ duly appointed election judges.
 * **ballot tabulation audits** TBD. including risk-limiting audits,
 opportunistic audits, bayesian audits, fixed-percentage audits, etc.
 
-* **opportunistic audit* - an auditing technique designed to efficiently
+* **opportunistic audit** - an auditing technique designed to efficiently
 generate evidence for additional contests in a ballot-level audit. A
-significant part of the effort in doing a risk limiting audit involves
+significant part of the effort in doing a risk-limiting audit involves
 physically retrieving the ballots selected for audit.  While doing the
 manual tabulation and entering the data for the contests on that ballot
 which are subject to strict risk limits, it is possible to
