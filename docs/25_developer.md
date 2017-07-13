@@ -197,7 +197,10 @@ code review. The development worfklow is as follows:
    are addressed. The reviewer should check that all new commits are
    signed, then merge the PR using the GitHub "Merge pull request"
    button. This will introduce an _unsigned_ merge commit, but
-   preserve the signatures on the actual branch's commits.
+   preserve the signatures on the actual branch's commits. Finally,
+   the PR submitter, not the reviewer, should delete the merged
+   branch.
+
 
 **Guidelines:**
 - Do not commit directly to `master`.
