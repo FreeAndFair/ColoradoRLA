@@ -123,7 +123,12 @@
 database: THEORY
 BEGIN
   database_table: TYPE
+  data: TYPE
   database: TYPE = setof[database_table]
+  % @description Write this data to that table in that database!
+  write: [database, database_table, data -> database]
+  % @description What is the data in that table of that database?
+  read: [database, database_table -> data]
 END database
 
 %%% We also need to be able to talk about some pretty simple ideas
@@ -136,6 +141,7 @@ END database
 
 information_systems: THEORY
 BEGIN
+  % @description TBD
   comma_separated_value: TYPE
   % The csv type is an example of how how to introduce a type synonym
   % in PVS.
@@ -379,23 +385,24 @@ roles: THEORY
 BEGIN
   IMPORTING elections
 
-  audit_board_member: TYPE = person
+  audit_board_member: TYPE = pred[person]
   canvas_board: TYPE = set[person]
 
   colorado_department_of_state: TYPE
   cdos: TYPE = colorado_department_of_state
 
-  sos: TYPE = person
+  sos: TYPE = pred[person]
   state?: [sos -> state]
 
-  county_clerk: TYPE = person
+  county_clerk: TYPE = pred[person]
   county?: [county_clerk -> county]
 
 % @todo Roles that are currently under-defined.
-  audit_supervisor: TYPE
-  administrator: TYPE
-  county_administrator: TYPE
-  state_administrator: TYPE
+  audit_supervisor: TYPE = pred[person]
+  administrator: TYPE = pred[person]
+  county_administrator: TYPE = pred[person]
+  state_administrator: TYPE = pred[person]
+  system_administrator: TYPE = pred[person]
 END roles
 
 canvas_boards: THEORY
@@ -423,6 +430,7 @@ BEGIN
   IMPORTING roles
   
   audit: TYPE
+%%% @review CDOS Must audit boards have a minimum number of members?  A maximum?
   audit_board: TYPE = set[audit_board_member]
   audit_mistake: TYPE
   audit_progress: TYPE
@@ -454,14 +462,60 @@ BEGIN
   vvpat: TYPE
 END elections_equipment
 
+dashboard: DATATYPE
+BEGIN
+  developer_dashboard?: developer_dashboard
+  state_wide_dashboard?: state_wide_dashboard
+  county_dashboard?: county_dashboard
+  public_dashboard?: public_dashboard
+END dashboard
+
 authentication: THEORY
 BEGIN
-  authenticate: TYPE
-  authentication: TYPE
-  two_factor_authentication: TYPE
+  IMPORTING roles, dashboard
+  
+  authentication: TYPE = pred[person, credential]
   username: TYPE
   password: TYPE
-  credential: TYPE
+  % @trace Task order 1, page 4, "Uptime/Security"
+  complex_enough?: pred[password]
+  complex_check_update: [complex_enough? -> ?]
+  biometric: TYPE
+  token: TYPE
+  
+  credential: TYPE = [username, password]
+  two_factor_authentication: TYPE = [token, [username, password], biometric]
+  issue_credential: [election, person -> two_factor_authentication]
+  credential?: [person -> two_factor_authentication]
+%%% @review CDOS Must every audit board member have and use a credential?
+  authenticated: pred[person, two_factor_authentication]
+  % @description County administrator authenticates to the county dashboard.
+  authenticate: pred[county_dashboard, county_adminstrator]
+%%% @review CDOS Is this feature permitted?
+  authenticate: pred[county_dashboard, audit_board_member]
+%%% @review CDOS Is the notion of a quorum useful and necessary?
+
+  e: VAR election
+  cd: VAR county_dashboard
+  cc: VAR county_clerk
+
+%%% English description of uploading.
+
+  upload_confirmation: [county_dashboard ->
+    [email, upload_confirmation_message]]
+
+  % @description This county clerk upload that ballot manifest and its hash for this election!
+  upload_manifest: [county_dashboard,
+    authenticated(county_clerk, two_factor_authentication),
+    ballot_manifest, hash(ballot_manifest) ->
+    [county_dashboard, upload_system_message]]
+  % @description    
+  upload_cvrs: [county_dashboard,
+    authenticated(county_clerk, two_factor_authentication),
+    cvrs, hash(cvrs) ->
+    [county_dashboard, upload_system_messsage]]
+  county_upload_scenario: [election, county_clerk -> upload_confirmation]
+
 END authentication
 
 % @todo For a given election, there is a 1-1 correspondance between its ballots and its cvrs.
@@ -488,14 +542,17 @@ BEGIN
   cvr_uploading_interface?: cvr_uploading_interface
   county_auditing_interface?: county_auditing_interface
   audit_adjudication_interface?: audit_adjudication_interface
+  upload_confirmation_message?: upload_confirmation_message
 END user_interface
 
-dashboard: DATATYPE
+upload_system_message: DATATYPE
 BEGIN
-  developer_dashboard?: developer_dashboard
-  state_wide_dashboard?: state_wide_dashboard
-  county_dashboard?: county_dashboard
-END dashboard
+  ok?: ok
+  hash_wrong?: hash_wrong
+  file_type_wrong?: file_type_wrong
+  data_transmission_interrupted?: data_transmission_interrupted
+  too_late?: too_late
+END upload_system_message
 
 system_architecture: DATATYPE
 BEGIN
