@@ -140,18 +140,18 @@ functions properly in real elections.  See also *resilient canvass
 framework*.  See
 [Evidence-Based Elections - P.B. Stark and D.A. Wagner](https://www.stat.berkeley.edu/~stark/Preprints/evidenceVote12.pdf)
 
-* **resilient canvass framework** - a fault-tolerant approach to conducting
+* **resilient canvass framework** - A fault-tolerant approach to conducting
 elections that gives strong evidence that the reported outcome is correct,
 or reports that the evidence is not convincing.  See also *evidence-based elections*.
 
-* **compliance audit** - an audit which checks that the audit trail is
+* **compliance audit** - An audit which checks that the audit trail is
 sufficiently complete and accurate to tell who won. Generally includes poll
 book accounting, ballot accounting, chain of custody checks, security
 checks, signature verification audits, voter registration record auditing,
 etc.  Related terms include election canvass, ballot reconciliation.
 See https://www.stat.berkeley.edu/~stark/Preprints/evidenceVote12.pdf
 
-* **audit board** - a group of electors in each county nominated by the
+* **audit board** - A group of electors in each county nominated by the
 major party chairpersons, which carries out an audit, with the assistance
 of the designated election official, members of his or her staff, and other
 duly appointed election judges.
@@ -161,7 +161,7 @@ duly appointed election judges.
 * **ballot tabulation audits** TBD. including risk-limiting audits,
 opportunistic audits, bayesian audits, fixed-percentage audits, etc.
 
-* **opportunistic audit** - an auditing technique designed to efficiently
+* **opportunistic audit** - An auditing technique designed to efficiently
 generate evidence for additional contests in a ballot-level audit. A
 significant part of the effort in doing a risk-limiting audit involves
 physically retrieving the ballots selected for audit.  While doing the
@@ -175,10 +175,10 @@ on subsequent ballots during the audit, it need not be tabulated.
 TBD: discuss need to consider possibility of sampling bias when
 evaluating and reporting, considerations for possible escalation, etc.
 
-* **mandatory contest** A contest which is subject to a risk limit and is
+* **mandatory contest** - A contest which is subject to a risk limit and is
 factored in to the sampling calculations.
 
-* **opportunistic contest** A contest to be audited opportunistically.
+* **opportunistic contest** - A contest to be audited opportunistically.
 
 * **active contest** TBD involving not having achieved risk limit
 
@@ -195,7 +195,7 @@ non-uniformly in order to target non-county-wide contests
 
 * **electoral system** TBD
 
-* **ballot** TBD
+* **ballot** TBD including ballot id, imprinted ballot
 
 * **margin** TBD
 
@@ -215,7 +215,13 @@ non-uniformly in order to target non-county-wide contests
 
 * **scanner** TBD
 
-* **imprinted ballot** TBD
+* **imprinted ballot** - A ballot on which a unique ballot identifier has
+been imprinted in order to facilitate a ballot-level audit. The unique
+ballot identifier might for instance include a unique batch identifier and
+the sequence of the ballot within the batch, or it might be a new
+identifier which is also included in the CVR.
+Imprinting should be done after the ballot is cast and with care taken to
+avoid causing anonymity problems.
 
 * **ballot order** TBD
 
