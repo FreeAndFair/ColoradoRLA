@@ -578,13 +578,20 @@ BEGIN
   audit_adjudication_interface?: audit_adjudication_interface
 END user_interface
 
+%%% After a county administrator attempts to upload artifacts to the
+%%% RLA system's server, one of several different messages is shown.
+%%% Each is self-explanatory in this domain model, and each must be
+%%% used in a scenario of the system.
+
 upload_system_message: DATATYPE
+  WITH SUBTYPES ok, hash_wrong, file_type_wrong,
+                data_transmission_interrupted, too_late
 BEGIN
-  ok?: ok
-  hash_wrong?: hash_wrong
-  file_type_wrong?: file_type_wrong
-  data_transmission_interrupted?: data_transmission_interrupted
-  too_late?: too_late
+  ok?: make_ok: ok
+  hash_wrong?: make_hash_wrong: hash_wrong
+  file_type_wrong?: make_file_type_wrong: file_type_wrong
+  data_transmission_interrupted?: make_data_transmission_interrupted: data_transmission_interrupted
+  too_late?: make_too_late: too_late
 END upload_system_message
 
 %%% As mentioned early in this chapter, the RLA Tool is a
