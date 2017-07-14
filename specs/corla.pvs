@@ -141,7 +141,7 @@ END database
 
 information_systems: THEORY
 BEGIN
-  % @description TBD
+  % @description A list of values of arbitrary types and syntax, separated by commas.
   comma_separated_value: TYPE
   % The csv type is an example of how how to introduce a type synonym
   % in PVS.
@@ -149,9 +149,30 @@ BEGIN
   email: TYPE
   email_address: TYPE
   file: TYPE
-  server: TYPE
   network: TYPE
+  web_browser: TYPE
+  browser: TYPE = web_browser
+  javascript_code: TYPE
 END information_systems
+
+%%% There are several kinds of servers necessary to deploy this
+%%% system.  At the minimum, two of each of a web server, time (NTPD)
+%%% server, a firewall, and a database server is necessary. Two
+%%% servers of each class are necessary for redundancy to fulfill
+%%% availability requirements. Preferably rendundant servers would be
+%%% hosted in separate facilities, with separate and independent power
+%%% systems and networks.
+
+server: DATATYPE WITH SUBTYPES
+  web_server, time_server, firewall, database_server
+BEGIN
+  IMPORTING information_systems, database
+  
+  web_server?: make_web_server: web_server
+  time_server?: make_time_server: time_server
+  firewall?: make_filewall: firewall
+  database_server?(databases: set[database]): make_database_server: database_server
+END server
 
 %%% Over time, as we need to introduce more background concepts, we
 %%% will add them to this theory.
@@ -219,17 +240,15 @@ BEGIN
   
   election_canvass: TYPE
   political_party: TYPE
-
-
   audit_center: TYPE
 END elections
 
-state_election: DATATYPE
+election: DATATYPE WITH SUBTYPES state_election
 BEGIN
   IMPORTING elections
   
-  election?(s: state, c: set[contest]): election
-END state_election
+  is_state_election?(s: state, c: set[contest]): make_state_election: state_election
+END election
 
 %+END elections
 
@@ -407,9 +426,9 @@ END roles
 
 canvas_boards: THEORY
 BEGIN
-  IMPORTING roles, state_election
+  IMPORTING roles, election
 
-  canvas_board?: [state_election -> canvas_board]
+  canvas_board?: [election -> canvas_board]
 END canvas_boards
 
 randomness: THEORY
@@ -462,13 +481,27 @@ BEGIN
   vvpat: TYPE
 END elections_equipment
 
+%%% The system has several dashboards that are 
+
 dashboard: DATATYPE
 BEGIN
+  % @todo What is a developer dashboard?
   developer_dashboard?: developer_dashboard
+  % @description The overall status of the state-wide audit is summarized in the state-wide dashboard.
+  % @explanation
   state_wide_dashboard?: state_wide_dashboard
+  
   county_dashboard?: county_dashboard
   public_dashboard?: public_dashboard
 END dashboard
+
+state_wide_dashboard: THEORY
+BEGIN
+  IMPORTING dashboard
+  % @explanation The status of uploaded data will be summarized in a state-wide dashboard, along with information on which counties have not yet uploaded their CVRs, and uploads that have formatting or content issues. The status of data, and results as audits are performed, will be provided for each contest to be audited.
+  % @trace 
+
+END state_wide_dashboard
 
 % @todo For a given election, there is a 1-1 correspondance between its ballots and its cvrs.
 
@@ -477,6 +510,8 @@ BEGIN
   IMPORTING votes, information_systems
   
   cvr: TYPE = set[votes]
+  % @trace Task order #1, Exhibit A
+  as_csv: [cvr -> csv]
   cvr_file: TYPE = [set[cvr] -> file]
 
 % @todo It is unclear what a CVR number is, if anything.
@@ -485,7 +520,7 @@ END cast_vote_records
 
 authentication: THEORY
 BEGIN
-  IMPORTING roles, dashboard, state_election, dashboard, roles,
+  IMPORTING roles, dashboard, election, dashboard,
             information_systems, upload_system_message, ballots,
             cryptography, cast_vote_records
   
@@ -517,8 +552,9 @@ BEGIN
 
   % @todo kiniry Refine these definitions from dashboard to county_dashboard.
   % @description This county clerk upload that ballot manifest and its hash for this election!
-  upload_manifest: [dashboard, authenticated, ballot_manifest, hash ->
-                    [dashboard, upload_system_message]]
+  % @trace Task order #1, Exhibit A
+  upload_ballot_manifest: [dashboard, authenticated, ballot_manifest, hash ->
+                           [dashboard, upload_system_message]]
   % @description    
   upload_cvrs: [dashboard, authenticated, cvr_file, hash ->
                 [dashboard, upload_system_message]]
@@ -530,7 +566,9 @@ END authentication
 %%% The user interfaces of the system are the visible interactive
 %%% parts of an application. There are several different user
 %%% interfaces in the RLA Tool. The precise names of these interfaces
-%%% is still under discussion.
+%%% is still under discussion, but basically one is for CDOS personnel
+%%% responsible for the audit at the state-level, one is for county
+%%% personnel at the county-level, and one is for audit board members.
 
 user_interface: DATATYPE
 BEGIN
@@ -549,13 +587,100 @@ BEGIN
   too_late?: too_late
 END upload_system_message
 
-system_architecture: DATATYPE
-BEGIN
-  IMPORTING information_systems, database
+%%% As mentioned early in this chapter, the RLA Tool is a
+%%% client-server system. As usual for these kinds of systems, the
+%%% server part of this architectural style is known as the back-end
+%%% and the client part as the front-end.
 
-  back_end?(s: set[server], n: set[network], d: set[database]): back_end
-  front_end?: front_end
+% @relation back_end inherit system_architecture_component
+% @relation front_end inherit system_architecture_component
+system_architecture_component: DATATYPE WITH SUBTYPES back_end, front_end
+BEGIN
+  IMPORTING information_systems, database, server
+
+  back_end?(servers: set[server],
+            networks: set[network],
+            databases: set[database]): make_back_end: back_end
+  front_end?(web_browser: web_browser, code: javascript_code): make_front_end: front_end
+END system_architecture_component
+
+%%% The RLA system focuses on a single election and has a back-end and
+%%% a front-end.
+
+rla_system: DATATYPE
+BEGIN
+  IMPORTING election, system_architecture_component
+  
+  rla_system(election: state_election,
+             front_end: front_end,
+             back_end: back_end): make_rla_system
+END rla_system
+
+%%% The system architecture consists of:
+%%% \begin{enumeration}
+%%% \item several servers of different kinds deployed and configured
+%%% in a redundant fashion as described elsewhere.
+%%% \item several databases whose tables and data are transactionally
+%%% identical. Meaning, after each transaction completes, all
+%%% databases are guaranteed to never witness to a client an
+%%% inconsistent state relative to that transaction.
+%%% \item a Javascript-based front-end whose code comes only from the
+%%% system's web servers.
+%%% \item HTTPS-based connections between the front-end and the
+%%% back-end over which the web application transmits data, including
+%%% new HTML pages, style sheets, data input by the web browser user,
+%%% etc.
+%%% \end{enumeration}
+
+system_architecture: THEORY
+BEGIN
+  IMPORTING system_architecture_component, server, rla_system
+
+  rla: VAR rla_system
+  be: VAR back_end
+  fe: VAR front_end
+  db1, db2: VAR database_server
+
+  make_rla_system: [back_end, front_end -> rla_system]
+
+  javascript_code?: [front_end -> javascript_code]
+  code_origins?: [javascript_code -> web_server]
+  
+%%% The front-end, which recall is written in TypeScript and
+%%% Javascript, is provided to a web browser client directly from the
+%%% web server.
+  browser_code_origins: AXIOM
+    (FORALL (rla):
+      member(code_origins?(code(fe)), servers(be))
+      WHERE fe = front_end(rla), be = back_end(rla))
+
+  % @description Are these databases transactionally synchronized?
+  transactionally_synchronized?: pred[set[database]]
+
+%%% The back-end consists of two or more servers, two or more
+%%% networks, and two or more databases. The minimum cardinality of
+%%% these three sets is two because the system must have redundancy to
+%%% be fault tolerant and not have a single point of failure.
+  redundancy: AXIOM
+    (FORALL (be): 2 <= card(servers(be))
+              AND 2 <= card(networks(be))
+              AND 2 <= card(databases(be)))
+%%% Multiple databases entails having multiple synchronized database
+%%% servers amongst the back-end's servers. Note that our model is
+%%% simplified here insofar as we are presuming that all databases
+%%% across synchronized database servers are synchronized. It is
+%%% certianly possible to deploy synchronized databases in a fashion
+%%% that does not fulfill this requirement, but for all of those
+%%% databases relevant to this system, this requirement does hold.
+  database_redundancy: AXIOM
+    (FORALL (be): EXISTS (db1, db2):
+      member(db1, servers(be)) AND member(db2, servers(be))
+  AND db1 /= db2
+  AND transactionally_synchronized?(union(databases(db1),databases(db2))))
 END system_architecture
+
+%%% Thus, the overall domain model of this system is the sum total of
+%%% all concepts introduced in this chapter.
 
 terminology: THEORY
 BEGIN
