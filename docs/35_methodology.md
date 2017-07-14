@@ -23,8 +23,7 @@ a variant of Design by Contract with some aspects of a Correctness by
 Construction approach. Our process, method, tools and technologies
 span several deployment and development platforms, specification and
 programming languages, and communication and coordination schemes. In
-short, we use a combination of the following methodologies, which we
-explain below in more detail:
+short, we use a combination of the following methodologies:
 
 * Correct-By-Construction
 * Design-By-Contract
@@ -113,10 +112,8 @@ anyone who is familiar with the data formats. A modular architecture
 assists with validation and verification, allows for experimentation
 with user experience variants, and enables phased user acceptance
 testing. It can also ease customization of the system, allowing new
-voting methods and ballot styles to be swapped into the system as
-needed without requiring system-wide changes. Modular design also
-aligns with what we expect to see in version 2.0 of the U.S. Election
-Assistance Commission’s Voluntary Voting System Guidelines.
+voting methods and audit protocols to be swapped into the system as
+needed without requiring system-wide changes. 
 
 Our development repositories contain the code under development, the
 full set of development artifacts described above, and unit,
@@ -127,24 +124,6 @@ updated. In addition to standard functional tests we place a
 particular emphasis on performance tests, which allow us to ensure
 that feature changes do not impact performance.
 
-The artifacts we produce during system development provide assurance
-about the functionality and security of our systems that cannot be
-matched by any existing elections system. They also serve as
-comprehensive documentation and test suites that can be submitted as
-part of the federal and state certification process. As a result,
-certification can be dramatically cheaper and faster for our systems
-than for systems created by other vendors. For example, an election
-tabulation system built by a team led by Dr. Kiniry and used in The
-Netherlands for the 2004 European Council Elections was developed and
-certified within 12 calendar weeks, instead of the year or more
-typical for election systems in that country at that time.
-
-This applies to system revisions and customizations as well: the
-unchanged parts of the modified system retain their original assurance
-evidence, and the new assurance evidence related to the modifications
-allows the modified system to be recertified quickly and
-inexpensively.
-
 Example Use of Our Methodology
 ------------------------------
 
@@ -152,9 +131,7 @@ Historically, this kind of system has been evaluated in an ad hoc
 manner based upon informal requirements documents, a repository of
 source code, a User’s Manual, and some examples of its use. By
 contrast, our rigorous system design and assurance tests are derived
-systematically from the client requirements. For elections, these
-requirements include County specifications and the governing election
-law.
+systematically from the client requirements. 
 
 Our rigorous systems development method for the aforementioned Dutch
 election system produced three particularly useful artifacts: (1) a
@@ -193,12 +170,6 @@ analysis technique known as extended static checking, a technology for
 which Dr. Kiniry and other team members are internationally
 recognized.
 
-The assurance artifacts provided in that project for the Dutch
-government over a decade ago are significantly more advanced than what
-any election systems vendor (other than Free & Fair) provides
-today. Our rigorous process enabled an extremely efficient
-certification process then, and will do the same for STAR-Vote.
-
 Continuous Validation, Verification, Integration, and Deployment
 ----------------------------------------------------------------
 
@@ -207,14 +178,13 @@ integration, and deployment approach. Each code change is assessed
 automatically, as soon as it can be, to catch defects as early as
 possible. Continuous integration is a proven way to reduce development
 cost and improve productivity. In continuous deployment, code that has
-passed V&V and integration testing is promoted automatically from the
-main development branch to a deployment staging area that allows all
-project personnel to access and test the latest working code in a
-whole-system context.
+passed validation and verification ("V&V") and integration testing is
+promoted automatically from the main development branch to a
+deployment staging area that allows all project personnel to access
+and test the latest working code in a whole-system context.
 
-We have experience working with both external build tools, such as
-Travis CI, and internal build tools like Jenkins. *TDB discussion
-which system we will use for this project and why.*
+We will use the external build tool Travis CI, which is configurable and 
+is free of charge to open source projects.
 
 Documentation and commenting is interwoven with development. Beginning
 with our formal domain models, we lay out the requirements and
@@ -235,15 +205,18 @@ capabilities. We leverage those capabilities and have snapshots of
 design artifacts captured in our distributed version control system
 like any other engineering artifact.
 
-When a defect is noticed either by Free & Fair or the Colorado CDOS,
-it will be immediately logged in the issue tracking system. Within a
-day of entry to the system, each issue will be categorized and
-assigned to a team member who will be responsible for driving the
-effort to fix the issue. Each code change that has an effect on an
-issue will reference that issue, so that progress towards a fix can be
-observed as it occurs. We will maintain a policy that an issue can
-only be closed once the party that raises the issue signs off that the
-issue has, in fact, been fixed.
+When Free & Fair notices a defect, we will log the issue immediately
+into the issue tracking system within GitHub. If the Colorado
+Department of State would like direct access to GitHub to log issue,
+we will provide access; the Colorado Department of State may prefer to
+notify Free & Fair by email so that Free & Fair can enter the issue
+into the tracking system.  Within a day of entry to the system, each
+issue will be categorized and assigned to a team member who will be
+responsible for driving the effort to fix the issue. Each code change
+that has an effect on an issue will reference that issue, so that
+progress towards a fix can be observed as it occurs. We will maintain
+a policy that an issue can be closed only once the party that raises
+the issue signs off that the issue has, in fact, been fixed.
 
 All development-related team communication is facilitated by an Asana
 project and several Slack channels that are accessible to and editable
