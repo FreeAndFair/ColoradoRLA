@@ -143,8 +143,8 @@ information_systems: THEORY
 BEGIN
   % @description A list of values of arbitrary types and syntax, separated by commas.
   comma_separated_value: TYPE
-  % The csv type is an example of how how to introduce a type synonym
-  % in PVS.
+% The csv type is an example of how how to introduce a type synonym
+% in PVS.
   csv: TYPE = comma_separated_value
   email: TYPE
   email_address: TYPE
@@ -198,13 +198,13 @@ BEGIN
 %%% stating that the type uocava_voter is a predicate on the type
 %%% voter. Consequently, all voters are UOCAVA or not.
   person: TYPE
-  voter: TYPE = pred[person]
-  uocava_voter: TYPE = pred[voter]
+  voter: TYPE FROM person
+  uocava_voter: TYPE from voter
 
 %%% The dual of voters are candiates, who run for office to represent
 %%% voters. Note that a person can be either a voter, a candidate,
 %%% both, or neither.
-  candidate: TYPE = pred[person]
+  candidate: TYPE FROM person
 
 %%% Elections focus on contests, each of which represents a set of
 %%% choices that voters can make. Making a legal choice ranges
@@ -285,9 +285,9 @@ BEGIN
 %%% coffee spilled on a paper ballot.
 
   ballot_mark: TYPE
-  voter_marking: TYPE = pred[ballot_mark]
-  ambiguous_mark: TYPE = pred[ballot_mark]
-  stray_mark: TYPE = pred[ballot_mark]
+  voter_marking: TYPE FROM ballot_mark
+  ambiguous_mark: TYPE FROM ballot_mark
+  stray_mark: TYPE FROM ballot_mark
 
 %%% Ballots come in several varieties.  All ballots are either
 %%% represented in a digital fashion (a scan, PDF, etc.) or are paper
@@ -298,12 +298,12 @@ BEGIN
 
 % @description The legally recognized means by which a voter can express his or her choices in one or more contests in an election.
   ballot: TYPE
-  digital_ballot: TYPE = pred[ballot]
-  paper_ballot: TYPE = pred[ballot]
-  mail_ballot: TYPE = pred[ballot]
-  uocava_ballot: TYPE = pred[ballot]
-  early_ballot: TYPE = pred[ballot]
-  tabulated_ballot: TYPE = pred[ballot]
+  digital_ballot: TYPE FROM ballot
+  paper_ballot: TYPE FROM ballot
+  mail_ballot: TYPE FROM ballot
+  uocava_ballot: TYPE FROM ballot
+  early_ballot: TYPE FROM ballot
+  tabulated_ballot: TYPE FROM ballot
 
 %%% Each ballot has a single ballot style, which indicates (at least) the contests that are listed on that ballot. Usually ballot styles are encoded through the use of natural numbers.
 
@@ -404,24 +404,24 @@ roles: THEORY
 BEGIN
   IMPORTING elections
 
-  audit_board_member: TYPE = pred[person]
+  audit_board_member: TYPE FROM person
   canvas_board: TYPE = set[person]
 
   colorado_department_of_state: TYPE
   cdos: TYPE = colorado_department_of_state
 
-  sos: TYPE = pred[person]
+  sos: TYPE FROM person
   state?: [sos -> state]
 
-  county_clerk: TYPE = pred[person]
+  county_clerk: TYPE FROM person
   county?: [county_clerk -> county]
 
 % @todo Roles that are currently under-defined.
-  audit_supervisor: TYPE = pred[person]
-  administrator: TYPE = pred[person]
-  county_administrator: TYPE = pred[person]
-  state_administrator: TYPE = pred[person]
-  system_administrator: TYPE = pred[person]
+  audit_supervisor: TYPE FROM person
+  administrator: TYPE FROM person
+  county_administrator: TYPE FROM person
+  state_administrator: TYPE FROM person
+  system_administrator: TYPE FROM person
 END roles
 
 canvas_boards: THEORY
@@ -533,16 +533,14 @@ BEGIN
   token: TYPE
 
   credential: TYPE = [username, password]
-  authentication: TYPE = pred[[person, credential]]
+  authentication: TYPE FROM [person, credential]
   two_factor_authentication: TYPE = [token, [username, password], biometric]
   issue_credential: TYPE = [state_election, person -> two_factor_authentication]
   credential?: [person -> two_factor_authentication]
 %%% @review CDOS Must every audit board member have and use a credential?
-  authenticated: TYPE = pred[[person, two_factor_authentication]]
+  authenticated: TYPE FROM [person, two_factor_authentication]
   % @description County administrator authenticates to the county dashboard.
-  authenticate_county_administrator: TYPE = pred[[dashboard, county_administrator]]
-%%% @review CDOS Is this feature permitted?
-  authenticate_audit_board_member: TYPE = pred[[dashboard, audit_board_member]]
+  authenticate_county_administrator: TYPE FROM [dashboard, county_administrator]
 %%% @review CDOS Is the notion of a quorum useful and necessary?
 
 %%% English description of uploading.
