@@ -253,7 +253,21 @@ avoid causing anonymity problems.
 
 * **equipment** TBD
 
-* **VVPAT** TBD
+* **VVPAT** - A Voter-Verifiable Paper Trail consists of an audit trail
+of Voter-Verifiable Paper Records (VVPRs). Elections which produce a
+VVPAT allow an audit to gather evidence which the voter had an
+opportunity to verify.
+
+* **VVPR** - A Voter-Verifiable Paper Record, also known as a
+Voter-Verifiable Paper Ballot (VVPB).  'Voter-verified' refers to the
+fact that the voter is given the opportunity to verify that the choices
+indicated on the paper record correspond to the choices that the voter
+has made in casting the ballot. Risk-limiting audits require VVPRs.
+
+* **non-voter-verifiable ballot** (NVVB) - A ballot for which there is
+no auditable VVPR.  For example a ballot sent via an online ballot
+return system or email, for which the voter has not returned a matching
+voter verifiable paper ballot. AKA digital ballot.
 
 * **overvote** TBD
 
@@ -263,8 +277,9 @@ avoid causing anonymity problems.
 
 * **undervote** TBD
 
-* **risk limit** The pre-specified minimum chance of requiring a full hand count if the outcome of a full hand count would differ
-from the reported tabulation outcome.
+* **risk limit** - The pre-specified minimum chance of requiring a full
+hand count if the outcome of a full hand count would differ from the
+reported tabulation outcome.
 
 * **voting system** TBD
 
