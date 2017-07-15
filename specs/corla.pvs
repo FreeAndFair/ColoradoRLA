@@ -125,9 +125,9 @@ BEGIN
   database_table: TYPE
   data: TYPE
   database: TYPE = setof[database_table]
-  % @description Write this data to that table in that database!
+% @description Write this data to that table in that database!
   write: [database, database_table, data -> database]
-  % @description What is the data in that table of that database?
+% @description What is the data in that table of that database?
   read: [database, database_table -> data]
 END database
 
@@ -141,7 +141,8 @@ END database
 
 information_systems: THEORY
 BEGIN
-  % @description A list of values of arbitrary types and syntax, separated by commas.
+% @description A list of values of arbitrary types and syntax,
+% separated by commas.
   comma_separated_value: TYPE
 % The csv type is an example of how how to introduce a type synonym
 % in PVS.
@@ -163,6 +164,10 @@ END information_systems
 %%% hosted in separate facilities, with separate and independent power
 %%% systems and networks.
 
+% @relation web_server inherit server
+% @relation time_server inherit server
+% @relation firewall inherit server
+% @relation database_server inherit server
 server: DATATYPE WITH SUBTYPES
   web_server, time_server, firewall, database_server
 BEGIN
@@ -243,6 +248,7 @@ BEGIN
   audit_center: TYPE
 END elections
 
+% @relation state_election inherit election
 election: DATATYPE WITH SUBTYPES state_election
 BEGIN
   IMPORTING elections
@@ -296,7 +302,8 @@ BEGIN
 %%% early ballots, etc. Ballots are also either tabulated or not. Note
 %%% that none of these categories of ballots are mutually exclusive.
 
-% @description The legally recognized means by which a voter can express his or her choices in one or more contests in an election.
+% @description The legally recognized means by which a voter can
+% express his or her choices in one or more contests in an election.
   ballot: TYPE
   digital_ballot: TYPE FROM ballot
   paper_ballot: TYPE FROM ballot
@@ -305,13 +312,16 @@ BEGIN
   early_ballot: TYPE FROM ballot
   tabulated_ballot: TYPE FROM ballot
 
-%%% Each ballot has a single ballot style, which indicates (at least) the contests that are listed on that ballot. Usually ballot styles are encoded through the use of natural numbers.
+%%% Each ballot has a single ballot style, which indicates (at least)
+%%% the contests that are listed on that ballot. Usually ballot styles
+%%% are encoded through the use of natural numbers.
 
 % @description The concrete presentation of a ballot configuration.
   ballot_style: TYPE = nat
   ballot_style?: [ballot -> ballot_style]
 
-% @description A decision to be made, either the selection of one or more candidates for an office or the choice of a course of action.
+% @description A decision to be made, either the selection of one or
+% more candidates for an office or the choice of a course of action.
   ballot_contest: TYPE = contest
   choice: TYPE
 
@@ -330,39 +340,50 @@ END ballots
 %%% The interpretation of the meaning of a voter's choice in a single
 %%% ballot contest is either a legal vote, an overvote, or an
 %%% undervote.
-votes: DATATYPE
+
+% @relation well_formed_vote inherit vote
+% @relation overvote inherit vote
+% @relation undervote inherit vote
+vote: DATATYPE WITH SUBTYPES well_formed_vote, overvote, undervote
 BEGIN
   IMPORTING ballots
 
 % @description A legal selection of zero or more choices in a ballot contest.
-  vote?(choices:set[choice]):vote
-% @description A (typically deemed improper) selection of too many choices in a ballot contest.
-  overvote?(choices:set[choice]):overvote
-% @description A (sometimes deemed improper) selection of too few choices in a ballot contest.
-  undervote?(choices:set[choice]):undervote
-END votes
+  well_formed_vote?(choices:set[choice]): make_well_formed_vote: well_formed_vote
+% @description A (typically deemed improper) selection of too many
+% choices in a ballot contest.
+  overvote?(choices:set[choice]): make_overvote: overvote
+% @description A (sometimes deemed improper) selection of too few
+% choices in a ballot contest.
+  undervote?(choices:set[choice]): make_undervote: undervote
+END vote
 
 ballot_interpretation: THEORY
 BEGIN
-  IMPORTING ballots, votes
+  IMPORTING ballots, vote
 
-% @description A CVR is a cast vote record denoting the interpretation of a set of votes for a specific election and a single voter.
-  cast_vote_record: TYPE = set[votes]
+% @description A CVR is a cast vote record denoting the interpretation
+% of a set of votes for a specific election and a single voter.
+  cast_vote_record: TYPE = set[vote]
 
 END ballot_interpretation
 
 %%% Ballots are stored by one of several possible means. Some ballot
 %%% storage mechanisms are secure, others are not. Some facilitate an
 %%% easy means by which to find a particular ballots, others do not.
-ballot_storage: DATATYPE
+
+% @relation box inherit ballot_storage
+% @relation bin inherit ballot_storage
+% @relation ballot_box inherit ballot_storage
+ballot_storage: DATATYPE WITH SUBTYPES box, bin, ballot_box
 BEGIN
   IMPORTING ballots
   
-  box(ballots:list[ballot]):box?
-  bin(ballots:list[ballot]):bin?
-  ballot_box(ballots:list[ballot]):ballot_box?
+  box?(ballots:list[ballot]): make_box: box
+  bin?(ballots:list[ballot]): make_bin: bin
+  ballot_box?(ballots:list[ballot]): make_ballot_box: ballot_box
 
-% @todo add "secure: pred[ballot_storage)"
+% @todo add "secure: pred[ballot_storage]"
 
 END ballot_storage
 
@@ -370,7 +391,9 @@ ballots_collections: THEORY
 BEGIN
   IMPORTING ballots
 
-%%% Ballots are often ordered, such as after they are hand or machine sorted, when they are kept in storage that maintains order, or an order is induced upon them by a random shuffle.
+%%% Ballots are often ordered, such as after they are hand or machine
+%%% sorted, when they are kept in storage that maintains order, or an
+%%% order is induced upon them by a random shuffle.
   ballot_order: TYPE = list[ballot]
 
 %%% Sometimes, but not always, a total order is induced by ballot ids.
@@ -416,11 +439,26 @@ BEGIN
   county_clerk: TYPE FROM person
   county?: [county_clerk -> county]
 
-% @todo Roles that are currently under-defined.
-  audit_supervisor: TYPE FROM person
+% @review CDOS Roles that are currently under-defined and need
+% clarity. In particular, are there any lurking restrictions in roles
+% such that a person cannot have two kinds of roles
+% simultaneously. E.g., can a candidate be an audit board of their own
+% election? Can an county administrator be a candidate? Can the SOS be
+% an audit board member? Etc.
   administrator: TYPE FROM person
+  audit_supervisor: TYPE FROM person
+% @contraint CDOS states that they want to start with at least one
+% designated official per county, but must have the ability to create
+% credentials for additional users.
+% @trace email from Jerome Lovato on 12 July 2017
   county_administrator: TYPE FROM person
   state_administrator: TYPE FROM person
+  
+% @review CDOS Who bootstraps authentication? Who has the right to
+% identify people who should have credentials and generate and issue
+% those credentials? How do they (singular or plural) authenticate to
+% the system. We'll put in place a bootstrapping role for the moment,
+% the system administrator.
   system_administrator: TYPE FROM person
 END roles
 
@@ -481,36 +519,121 @@ BEGIN
   vvpat: TYPE
 END elections_equipment
 
-%%% The system has several dashboards that are 
+%+BEGIN dashboards
 
-dashboard: DATATYPE
+%%% \section{Dashboards}
+
+%%% The system has several dashboards that are the main user
+%%% interfaces to the system. State officials use the state-wide
+%%% dashboard; county officials use the county dashboard; audit board
+%%% members use the audit board dashboard; and the general public uses
+%%% the public dashboard.
+
+% @relation state_wide_dashboard inherit dashboard
+% @relation county_dashboard inherit dashboard
+% @relation audit_board_dashboard inherit dashboard
+% @relation public_dashboard inherit dashboard
+dashboard: DATATYPE WITH SUBTYPES
+  state_wide_dashboard, county_dashboard, audit_board_dashboard, public_dashboard
 BEGIN
-  % @todo What is a developer dashboard?
-  developer_dashboard?: developer_dashboard
-  % @description The overall status of the state-wide audit is summarized in the state-wide dashboard.
-  % @explanation
-  state_wide_dashboard?: state_wide_dashboard
-  
-  county_dashboard?: county_dashboard
-  public_dashboard?: public_dashboard
+% @description The overall status of the state-wide audit is
+% summarized in the state-wide dashboard.
+  state_wide_dashboard?: make_state_wide_dashboard: state_wide_dashboard
+% @description The county dashboard is used to communicate with CDOS,
+% setup the local RLA, and observe the status of the ongoing or
+% finished RLA.
+  county_dashboard?: make_county_dashboard: county_dashboard
+% @description The audit board dashboard is used by the audit board
+% members to understand the state of the audit and to facilitate the
+% audit each ballot under audit.
+  audit_board_dashboard?: make_audit_board_dashboard: audit_board_dashboard
+% @description The public dashboard is used by the general public to
+% understand the state of the current state RLA.
+  public_dashboard?: make_public_dashboard: public_dashboard
 END dashboard
 
+% @trace TBD
 state_wide_dashboard: THEORY
 BEGIN
   IMPORTING dashboard
-  % @explanation The status of uploaded data will be summarized in a state-wide dashboard, along with information on which counties have not yet uploaded their CVRs, and uploads that have formatting or content issues. The status of data, and results as audits are performed, will be provided for each contest to be audited.
-  % @trace 
+% @explanation The status of uploaded data will be summarized in a
+% state-wide dashboard, along with information on which counties have
+% not yet uploaded their CVRs, and uploads that have formatting or
+% content issues. The status of data, and results as audits are
+% performed, will be provided for each contest to be audited.
 
 END state_wide_dashboard
 
-% @todo For a given election, there is a 1-1 correspondance between its ballots and its cvrs.
+% @trace TBD
+county_dashboard: THEORY
+BEGIN
+  IMPORTING dashboard, information_systems, upload_system_message,
+            election, roles
+% @explanation 
+
+%%% English description of uploading.
+
+  upload_confirmation: [dashboard ->
+                        [email, upload_system_message]]
+
+% @todo kiniry Refine these definitions from dashboard to
+% county_dashboard.
+% @description This county clerk upload that ballot manifest and its
+% hash for this election!
+% @trace Task order #1, Exhibit A
+%  upload_ballot_manifest: [dashboard, authenticated, ballot_manifest, hash ->
+%                           [dashboard, upload_system_message]]
+% @description TBD
+%  upload_cvrs: [dashboard, authenticated, cvr_file, hash ->
+%                [dashboard, upload_system_message]]
+  county_upload_scenario: [state_election, county_clerk ->
+                           upload_system_message]
+
+END county_dashboard
+
+% @trace TBD
+audit_board_dashboard: THEORY
+BEGIN
+  IMPORTING dashboard
+% @explanation 
+
+END audit_board_dashboard
+
+% @trace TBD
+public_dashboard: THEORY
+BEGIN
+  IMPORTING dashboard
+% @explanation 
+
+END public_dashboard
+
+%+END dashboards
+
+%+BEGIN CVRs
+
+%%% \section{Cast Vote Records}
+
+%%% Cast vote records, also knows as CVRs, are the digital
+%%% interpretations of paper ballot records by a computer. They
+%%% frequently, but not always, contain an interpretation of all
+%%% contests on ballot. CVRs are sometimes syntactically written as
+%%% comma-separated values, and other times in plain English. Some
+%%% CVRs use a election-specific encoding scheme to represent choices
+%%% (e.g., a '1' means "John Doe"); others use plain English.
+
+%%% CDOS requirements mandate that CVRs are exported and uploaded to
+%%% the RLA back-end as CSV files by county official using their voting
+%%% system and the RLA Tool, respectively.
+
+% @todo kiniry For a given election, there must be a 1-1
+% correspondance between its ballots and its cvrs.
 
 cast_vote_records: THEORY
 BEGIN
-  IMPORTING votes, information_systems
+  IMPORTING vote, information_systems
   
-  cvr: TYPE = set[votes]
-  % @trace Task order #1, Exhibit A
+  cvr: TYPE = set[vote]
+% @trace Task order #1, Exhibit A
   as_csv: [cvr -> csv]
   cvr_file: TYPE = [set[cvr] -> file]
 
@@ -518,47 +641,83 @@ BEGIN
   cvr_number: TYPE = nat
 END cast_vote_records
 
+%+END CVRs
+
+%% Authentication is currently underspecified in our system design as
+%% we do not yet have information from CDOS on the nature and kind of
+%% their mandated two-factor authentication system. Consequently, we
+%% have only modeled the necessary concepts and features of any
+%% two-factor authentication system. Included in this model are the
+%% ideas of usernames, passwords, other authentication factors
+%% mentioned in CDOS documents (such as biometrics and physical
+%% tokens, such as smartcards or one-time authentication code books),
+%% etc.
+
+%%% Given that CDOS is issuing two-factor authentications, it is
+%%% unclear if they want any additional features, such as a password
+%%% reset.
+
+% @review kiniry Once we better understand CDOS's authentication
+% system, we will better know what authentication features we can
+% support.
+
 authentication: THEORY
 BEGIN
   IMPORTING roles, dashboard, election, dashboard,
             information_systems, upload_system_message, ballots,
             cryptography, cast_vote_records
   
-  username: TYPE
-  password: TYPE
-  % @trace Task order 1, page 4, "Uptime/Security"
-  complex_enough?: pred[password]
-  % complex_check_update: [complex_enough? -> ?]
-  biometric: TYPE
-  token: TYPE
+% @description A credential is the general idea of having some
+% knowledge or thing to permit one to authenticate to a system. Many
+% authentication systems mandate the use of multiple credentials.
+  credential: TYPE 
+  username: TYPE FROM credential
+  password: TYPE FROM credential
+% @trace Task order 1, page 4, "Uptime/Security"
+  complex_enough?: [password -> bool]
+% complex_check_update: [complex_enough? -> ?]
+  biometric: TYPE FROM credential
+  physical_token: TYPE FROM credential
 
-  credential: TYPE = [username, password]
-  authentication: TYPE FROM [person, credential]
-  two_factor_authentication: TYPE = [token, [username, password], biometric]
-  issue_credential: TYPE = [state_election, person -> two_factor_authentication]
+% @description One has authentication if a person has the appropriate
+% combination of identity and set of credentials.
+  authentication: TYPE FROM [person, set[credential]]
+% @description Two-factor authentication is a currently-popular form
+% of authentication that requires more than just knowledge (say, of a
+% username and password), and at least one physical mechanism, such as
+% a biometric or a physical token.
+  two_factor_authentication: TYPE =
+    [[username, password], [physical_token + biometric]]
+
+%%% In order to obtain a new, valid credential, some authority must
+%%% issue credentials to a specific person.
+  issue_credential: TYPE =
+    [cdos, state_election, person -> [person, two_factor_authentication]]
+
+%%% What are the credentials that have been issued to this person?
   credential?: [person -> two_factor_authentication]
-%%% @review CDOS Must every audit board member have and use a credential?
-  authenticated: TYPE FROM [person, two_factor_authentication]
-  % @description County administrator authenticates to the county dashboard.
-  authenticate_county_administrator: TYPE FROM [dashboard, county_administrator]
-%%% @review CDOS Is the notion of a quorum useful and necessary?
 
-%%% English description of uploading.
+%%% Is this person authenticated?
+  authenticated: [person, two_factor_authentication -> bool]
 
-  upload_confirmation: [dashboard ->
-                        [email, upload_system_message]]
+%%% What follows are several features used to authenticate various
+%%% roles to their respective dashboards.
 
-  % @todo kiniry Refine these definitions from dashboard to county_dashboard.
-  % @description This county clerk upload that ballot manifest and its hash for this election!
-  % @trace Task order #1, Exhibit A
-  upload_ballot_manifest: [dashboard, authenticated, ballot_manifest, hash ->
-                           [dashboard, upload_system_message]]
-  % @description    
-  upload_cvrs: [dashboard, authenticated, cvr_file, hash ->
-                [dashboard, upload_system_message]]
-  county_upload_scenario: [state_election, county_clerk ->
-                           upload_system_message]
+%%% Each dashboard has an abstract state machine that captures the
+%%% dashboard's workflow and consequntly identifies which features are
+%%% visible to its users at various stages. Those abstract state
+%%% machines and features are modeled in the dashboard modules
+%%% below. We focus only on authentication here.
 
+% @todo kiniry Introduce an authentication monad and a state monad for
+% our ASMs.
+
+% @description Authenticate this county administrator to that county dashboard.
+  authenticate_county_administrator:
+    [county_dashboard, county_administrator, two_factor_authentication -> bool]
+% @description Authenticate this state administrator to that state-wide dashboard.
+  authenticate_state_administrator:
+    [state_wide_dashboard, state_administrator, two_factor_authentication -> bool]
 END authentication
 
 %%% The user interfaces of the system are the visible interactive
@@ -581,16 +740,37 @@ END user_interface
 %%% Each is self-explanatory in this domain model, and each must be
 %%% used in a scenario of the system.
 
+% @relation ok inherit upload_system_message
+% @relation hash_wrong inherit upload_system_message
+% @relation file_type_wrong inherit upload_system_message
+% @relation data_transmission_interrupted inherit upload_system_message
+% @relation too_late inherit upload_system_message
 upload_system_message: DATATYPE
-  WITH SUBTYPES ok, hash_wrong, file_type_wrong,
+  WITH SUBTYPES upload_successful, hash_wrong, file_type_wrong,
                 data_transmission_interrupted, too_late
 BEGIN
-  ok?: make_ok: ok
+  upload_successful?: make_upload_successful: upload_successful
   hash_wrong?: make_hash_wrong: hash_wrong
   file_type_wrong?: make_file_type_wrong: file_type_wrong
-  data_transmission_interrupted?: make_data_transmission_interrupted: data_transmission_interrupted
+  data_transmission_interrupted?: make_data_transmission_interrupted:
+    data_transmission_interrupted
   too_late?: make_too_late: too_late
 END upload_system_message
+
+%%% Authentication attempts can result in two different kinds of
+%%% message: either a person authenticated successfully, or they did
+%%% not.
+
+% @relation successful_authentication inherit authentication_message
+% @relation unsuccessful_authentication inherit authentication_message
+authentication_message: DATATYPE
+  WITH SUBTYPES successful_authentication, unsuccessful_authentication
+BEGIN
+  successful_authentication?: make_successful_authentication:
+    successful_authentication
+  unsuccessful_authentication?: make_unsuccessful_authentication:
+    unsuccessful_authentication
+END authentication_message
 
 %%% As mentioned early in this chapter, the RLA Tool is a
 %%% client-server system. As usual for these kinds of systems, the
@@ -606,11 +786,15 @@ BEGIN
   back_end?(servers: set[server],
             networks: set[network],
             databases: set[database]): make_back_end: back_end
-  front_end?(web_browser: web_browser, code: javascript_code): make_front_end: front_end
+  front_end?(web_browser: web_browser,
+             code: javascript_code): make_front_end: front_end
 END system_architecture_component
 
 %%% The RLA system focuses on a single election and has a back-end and
 %%% a front-end.
+
+% @review kiniry Should we design the system so that we can facilitate
+% mutiple concurrent elections?
 
 rla_system: DATATYPE
 BEGIN
@@ -659,8 +843,8 @@ BEGIN
       member(code_origins?(code(fe)), servers(be))
       WHERE fe = front_end(rla), be = back_end(rla))
 
-  % @description Are these databases transactionally synchronized?
-  transactionally_synchronized?: pred[set[database]]
+% @description Are these databases transactionally synchronized?
+  transactionally_synchronized?: [set[database] -> bool]
 
 %%% The back-end consists of two or more servers, two or more
 %%% networks, and two or more databases. The minimum cardinality of
@@ -690,37 +874,37 @@ END system_architecture
 terminology: THEORY
 BEGIN
   IMPORTING
-    %description "TBD"
+% @description "TBD"
     ballots,
-    %description "TBD"
+% @description "TBD"
     elections,
-    %description "TBD"
+% @description "TBD"
     audits,
-    %description "TBD"
+% @description "TBD"
     instructions_forms_reports,
-    %description "TBD"
+% @description "TBD"
     roles,
-    %description "TBD"
+% @description "TBD"
     randomness,
-    %description "TBD"
+% @description "TBD"
     cryptography,
-    %description "TBD"
+% @description "TBD"
     rlas,
-    %description "TBD"
+% @description "TBD"
     elections_equipment,
-    %description "TBD"
+% @description "TBD"
     authentication,
-    %description "TBD"
+% @description "TBD"
     cast_vote_records,
-    %description "TBD"
+% @description "TBD"
     user_interface,
-    %description "TBD"
+% @description "TBD"
     dashboard,
-    %description "TBD"
+% @description "TBD"
     database,
-    %description "TBD"
+% @description "TBD"
     information_systems,
-    %description "TBD"
+% @description "TBD"
     system_architecture
 END terminology
 
@@ -734,6 +918,6 @@ END terminology
 corla: THEORY
 BEGIN
   IMPORTING
-    %description "TBD"
+% @description "TBD"
     terminology
 END corla
