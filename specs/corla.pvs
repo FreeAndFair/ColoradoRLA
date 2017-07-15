@@ -916,6 +916,16 @@ BEGIN
 % @description "TBD"
     cast_vote_records,
 % @description "TBD"
+% @review CDOS what is the source of info
+% presented to audit board to tell them which paper ballot
+% they should examine next? Is it the CVR alone that is 
+% the source? And what information must the audit board 
+% enter into the system to ascertain that the paper
+% ballot they are holding does in fact match the CVR
+% that will be compared to their interpretation? Will 
+% the audit board simply click "Yes, this is the right 
+% paper ballot"? Or will they have to enter some confirming 
+% piece of information (e.g., ballot style, a ballot ID number?).
     user_interface,
 % @description "TBD"
     dashboard,
