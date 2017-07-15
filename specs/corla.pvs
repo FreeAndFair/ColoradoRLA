@@ -438,6 +438,12 @@ BEGIN
 
   county_clerk: TYPE FROM person
   county?: [county_clerk -> county]
+% @review CDOS If names of audit board members are to be visible
+% on the public website, are they published directly by the 
+% County Audit Admins? If not, to whom do the County 
+% Admins submit the names, and by whom are the names published 
+% to the public website? What happens if a County
+% fails to submit names?
 
 % @review CDOS Roles that are currently under-defined and need
 % clarity. In particular, are there any lurking restrictions in roles
