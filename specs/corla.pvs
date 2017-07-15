@@ -135,7 +135,7 @@ END database
 %%% from information systems.  For example, many files in election
 %%% systems are syntactically just lists of comma-separate
 %%% values. Email is used to for communication between officials and
-%%% with the public. Files are used to store information in a
+%%% with the  . Files are used to store information in a
 %%% persistent fashion. Consequently, we introduce a few types for
 %%% these ideas.
 % @review How are emails (for SoS admin, for County Audit Admins, 
@@ -547,6 +547,11 @@ END elections_equipment
 %%% dashboard; county officials use the county dashboard; audit board
 %%% members use the audit board dashboard; and the general public uses
 %%% the public dashboard.
+
+% @review kiniry @review dmz CDOS may want to create and edit static content on the 
+% public dashboard, e.g., time and location of meeting to determine
+% the seed for the pseudo-random number generator. Let's not 
+% forget to model that in our specification.
 
 % @relation state_wide_dashboard inherit dashboard
 % @relation county_dashboard inherit dashboard
