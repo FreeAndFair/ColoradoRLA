@@ -470,6 +470,9 @@ BEGIN
 % those credentials? How do they (singular or plural) authenticate to
 % the system. We'll put in place a bootstrapping role for the moment,
 % the system administrator.
+% @review CDOS while members of the audit board are not authenticated
+% users of the RLA tool, they do "sign off" on the audit they performed. 
+% Do they also "sign in" before audit starts?
   system_administrator: TYPE FROM person
 END roles
 
