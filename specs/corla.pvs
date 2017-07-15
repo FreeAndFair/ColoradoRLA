@@ -926,6 +926,9 @@ BEGIN
 % the audit board simply click "Yes, this is the right 
 % paper ballot"? Or will they have to enter some confirming 
 % piece of information (e.g., ballot style, a ballot ID number?).
+% @review CDOS if the audit has several "rounds",
+% does the Audit Board need to "sign" after each
+% round?
     user_interface,
 % @description "TBD"
     dashboard,
