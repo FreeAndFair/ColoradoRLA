@@ -138,6 +138,9 @@ END database
 %%% with the public. Files are used to store information in a
 %%% persistent fashion. Consequently, we introduce a few types for
 %%% these ideas.
+% @review How are emails (for SoS admin, for County Audit Admins, 
+% presumably, and for whom else?) put into the system? Is this a 
+% standard part of the authentication process?
 
 information_systems: THEORY
 BEGIN
