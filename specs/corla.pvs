@@ -220,6 +220,8 @@ BEGIN
 %%% by filling in a single bubble to enumerating a total order on all
 %%% choices in a contest. Across a given ballot, each contest has a
 %%% unique name.
+% @review CDOS will there be one risk limit? If more than one, then
+% system must provide a way to map contests to risk limits.
 
   contest: TYPE
   contest_name?: [contest -> string]
