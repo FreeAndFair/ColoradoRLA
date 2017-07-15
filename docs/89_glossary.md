@@ -44,7 +44,7 @@ ending on the Operational Start Date.
 
 * **ballot manifest** - A document that describes how ballots are
 organized and stored, and relates a Cast Vote Record to the
-physical location in which the original marked ballot is stored. The
+physical location in which the tabulated ballot is stored. The
 ballot manifest specifies the physical
 location of a ballot to allow staff to find the
 specific ballot represented by a given CVR. A ballot manifest will
@@ -118,7 +118,8 @@ of those into election results.
 * **tabulated ballots** - Paper ballots that have been scanned on a
 ballot scanning device, and the voter’s markings on which have been
 interpreted by the voting system as valid votes,
-undervotes, or overvotes.
+undervotes, or overvotes.  Tabulated ballots may be duplicates of
+original ballots.
 
 * **two-factor authentication** - Defined as two out of the three
 following requirements:
@@ -256,7 +257,8 @@ avoid causing anonymity problems.
 * **VVPAT** - A Voter-Verifiable Paper Trail consists of an audit trail
 of Voter-Verifiable Paper Records (VVPRs). Elections which produce a
 VVPAT allow an audit to gather evidence which the voter had an
-opportunity to verify.
+opportunity to verify.  The VVPRs may appear in a continuous roll
+of paper used to provide auditability for a DRE.
 
 * **VVPR** - A Voter-Verifiable Paper Record, also known as a
 Voter-Verifiable Paper Ballot (VVPB).  'Voter-verified' refers to the
@@ -268,6 +270,12 @@ has made in casting the ballot. Risk-limiting audits require VVPRs.
 no auditable VVPR.  For example a ballot sent via an online ballot
 return system or email, for which the voter has not returned a matching
 voter verifiable paper ballot. AKA digital ballot.
+
+* **duplicated ballot** TBD
+
+* **original ballot** TBD
+
+* **DRE** TBD
 
 * **overvote** TBD
 
