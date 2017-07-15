@@ -519,6 +519,27 @@ BEGIN
   random_audit: TYPE
 END audits
 
+%%% \section{RLAs}
+
+%%% Audits ideally come after all the votes are tabulated, canvassed and
+%%% reconciled. But in Colorado, since the certification deadline comes
+%%% shortly after the last date for voters to cure signature
+%%% verification problems etc, there is not always enough time to do
+%%% them sequentially.  At the end of the tabulation and canvass may
+%%% come an updated vote count, and the risk limit of the audit needs to
+%%% apply to the updated outcome.
+
+%%% Given these constraints, it is generally best to audit
+%%% conservatively.  For example we assume that any late-arriving
+%%% ballots are cast for the losers.  As discussed in [BanuelosEtAl12],
+%%% counties should add a batch of phantom ballots to the manifest, one
+%%% for each possible late-arriving ballot.
+%%% Another possibility, e.g. if it turns out that not enough phantom
+%%% ballots were added, would be to use more flexible bayes audit
+%%% techniques to do a followup audit after the late-arriving ballots
+%%% and tabulations are available, but that capability is not
+%%% implemented at this time.
+
 rlas: THEORY
 BEGIN
   RLA: TYPE
