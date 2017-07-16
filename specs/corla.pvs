@@ -296,7 +296,7 @@ BEGIN
 % @description The page or pages of the Secretary of State’s website
 % devoted to risk-limiting audits.
   audit_center: TYPE
-  ballot: TYPE
+  ballot: TYPE = set[contest]
 END elections
 
 %%% Elections come in many forms: public and private
