@@ -190,7 +190,7 @@ END information_systems
 server: DATATYPE WITH SUBTYPES
   web_server, time_server, firewall, database_server, enr_server
 BEGIN
-  IMPORTING information_systems, database
+  IMPORTING information_systems, database, elections
   
   web_server?: make_web_server: web_server
   time_server?: make_time_server: time_server
@@ -296,7 +296,7 @@ BEGIN
 % @description The page or pages of the Secretary of State’s website
 % devoted to risk-limiting audits.
   audit_center: TYPE
-  ballot: TYPE = set[contest]
+  ballot: TYPE % = [election, set[contest], ballot_id]
 END elections
 
 %%% Elections come in many forms: public and private
@@ -912,11 +912,20 @@ END cast_vote_records
 %%% personnel at the county-level, and one is for audit board members.
 
 user_interface: DATATYPE
+  WITH SUBTYPES uploading_interface, cvr_uploading_interface,
+                county_auditing_interface, audit_adjudication_interface,
+                public_interface
 BEGIN
-  uploading_interface?: uploading_interface
-  cvr_uploading_interface?: cvr_uploading_interface
-  county_auditing_interface?: county_auditing_interface
-  audit_adjudication_interface?: audit_adjudication_interface
+  uploading_interface?:
+    make_uploading_interface: uploading_interface
+  cvr_uploading_interface?:
+    make_cvr_uploading_interface: cvr_uploading_interface
+  county_auditing_interface?:
+    make_county_auditing_interface: county_auditing_interface
+  audit_adjudication_interface?:
+    make_audit_adjudication_interface: audit_adjudication_interface
+  public_interface?:
+    make_public_interface: public_interface
 END user_interface
 
 %%% After a county administrator attempts to upload artifacts to the
