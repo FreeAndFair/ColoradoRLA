@@ -228,7 +228,7 @@ non-uniformly in order to target non-county-wide contests
 
 * **county** TBD
 
-* **scanner** TBD
+* **scanner** has an ID number
 
 * **imprinted ballot** - A ballot on which a unique ballot identifier has
 been imprinted in order to facilitate a ballot-level audit. The unique
@@ -365,3 +365,128 @@ reported tabulation outcome.
 * **Colorado Department of State (CDOS)** TBD
 
 * **abstract state machine** (AST) - TBD including [Abstract state machine](https://en.wikipedia.org/wiki/Abstract_state_machines)
+
+* **audit center** (aka the public interface to the system) TBD
+
+* **public audit meeting** The meeting where the random seed (and
+  possibly more) is determined.
+  
+* **working group** TBD
+
+* **regional training** TBD
+
+* **list of ballots to audit** TBD
+
+* **uploading interface** A part of the county dashboard.
+
+* **authenticate** (also known as log-in)
+
+* **comma separated value** (aka CSV)
+
+* **county number** as part of the ballot manifest
+
+* **county name** TBD
+
+* **scanner ID number** TBD
+
+* **batch number** TBD
+
+* **storage bin** (aka transfer case, ballot box, secured container)
+  used for secure storage of ballots (@review kiniry - Need we
+  differentiate these different means by which to storge ballots?)
+  
+* **CVR file** TBD
+
+* **CVR number** concatenation of scanner number - batch number -
+  ballot position within the batch
+  
+* **database table** TBD
+
+* **tool back-end** TBD
+
+* **tool front-end** TBD
+
+* **county auditing interface** TBD
+
+* **paper ballot** TBD
+
+* **audit adjudication interface** TBD
+
+* **ballot style** TBD
+
+* **political party** TBD
+
+* **username** TBD
+
+* **password** TBD
+
+* **credentials** TBD
+
+* **audit supervisor** TBD
+
+* **audit board member** (aka auditor?) TBD
+
+* **email** TBD
+
+* **audit round** TBD
+
+* **audit round results** (reviewed/submitted/acknowledged)
+
+* **press** TBD
+
+* **audit mistake** TBD
+
+* **ballot instructions** TBD
+
+* **digital ballot adjudication** TBD
+
+* **manual ballot adjudication** TBD
+
+* **ambiguous mark** (aka ambiguous vote) TBD
+
+* **SOS voter intent guide** TBD
+
+* **ballot mark** TBD
+
+* **voter marking** TBD
+
+* **EO survey** TBD
+
+* **SOS rule making** TBD
+
+* **detailed project plan** TBD
+
+* **closeout plan** TBD
+
+* **load testing** TBD
+
+* **penetration testing** TBD
+
+* **go live date** TBD
+
+* **domain model** TBD
+
+* **domain engineering** TBD
+
+* **formal method** TBD
+
+* **formal model** TBD
+
+* **requirement** TBD
+
+* **system architecture** TBD
+
+* **design-by-contract** TBD
+
+* **continuous integration** TBD
+
+* **issue tracker** TBD
+
+* **repository** TBD
+
+* **git** TBD
+
+* **Asana** TBD
+
+* **Slack** TBD
+
