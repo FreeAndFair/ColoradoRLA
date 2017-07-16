@@ -44,7 +44,7 @@ ending on the Operational Start Date.
 
 * **ballot manifest** - A document that describes how ballots are
 organized and stored, and relates a Cast Vote Record to the
-physical location in which the original marked ballot is stored. The
+physical location in which the tabulated ballot is stored. The
 ballot manifest specifies the physical
 location of a ballot to allow staff to find the
 specific ballot represented by a given CVR. A ballot manifest will
@@ -118,7 +118,8 @@ of those into election results.
 * **tabulated ballots** - Paper ballots that have been scanned on a
 ballot scanning device, and the voter’s markings on which have been
 interpreted by the voting system as valid votes,
-undervotes, or overvotes.
+undervotes, or overvotes.  Tabulated ballots may be duplicates of
+original ballots.
 
 * **two-factor authentication** - Defined as two out of the three
 following requirements:
@@ -126,10 +127,24 @@ following requirements:
   * Something you know (Example: passwords)
   * Something you are (Example: biometrics)
 
+* **ENR system** - Election Night Reporting system, used to publish
+election results starting on election night, and continuing through
+the end of certification.
+
+* **reported outcome** - The set of contest winners published by the ENR
+system.
+
+* **calculated outcome** - The set of contest winners according to the
+CVRs that are being audited.
+
 * **wrong outcome** - When the reported outcome for a given contest does not match the
-outcome that a full hand count would show.
+outcome that a full hand count of the paper ballots would show.
 This can happen due to equipment failures, adjudication errors,
 and other reasons.
+
+* **overstatement of the margin** TBD
+
+* **understatement of the margin** TBD
 
 * **evidence-based elections** - An approach to achieving election integrity
 in which each election provides affirmative evidence that the reported
@@ -140,18 +155,18 @@ functions properly in real elections.  See also *resilient canvass
 framework*.  See
 [Evidence-Based Elections - P.B. Stark and D.A. Wagner](https://www.stat.berkeley.edu/~stark/Preprints/evidenceVote12.pdf)
 
-* **resilient canvass framework** - a fault-tolerant approach to conducting
+* **resilient canvass framework** - A fault-tolerant approach to conducting
 elections that gives strong evidence that the reported outcome is correct,
 or reports that the evidence is not convincing.  See also *evidence-based elections*.
 
-* **compliance audit** - an audit which checks that the audit trail is
+* **compliance audit** - An audit which checks that the audit trail is
 sufficiently complete and accurate to tell who won. Generally includes poll
 book accounting, ballot accounting, chain of custody checks, security
 checks, signature verification audits, voter registration record auditing,
 etc.  Related terms include election canvass, ballot reconciliation.
 See https://www.stat.berkeley.edu/~stark/Preprints/evidenceVote12.pdf
 
-* **audit board** - a group of electors in each county nominated by the
+* **audit board** - A group of electors in each county nominated by the
 major party chairpersons, which carries out an audit, with the assistance
 of the designated election official, members of his or her staff, and other
 duly appointed election judges.
@@ -161,7 +176,7 @@ duly appointed election judges.
 * **ballot tabulation audits** TBD. including risk-limiting audits,
 opportunistic audits, bayesian audits, fixed-percentage audits, etc.
 
-* **opportunistic audit** - an auditing technique designed to efficiently
+* **opportunistic audit** - An auditing technique designed to efficiently
 generate evidence for additional contests in a ballot-level audit. A
 significant part of the effort in doing a risk-limiting audit involves
 physically retrieving the ballots selected for audit.  While doing the
@@ -175,10 +190,10 @@ on subsequent ballots during the audit, it need not be tabulated.
 TBD: discuss need to consider possibility of sampling bias when
 evaluating and reporting, considerations for possible escalation, etc.
 
-* **mandatory contest** A contest which is subject to a risk limit and is
+* **mandatory contest** - A contest which is subject to a risk limit and is
 factored in to the sampling calculations.
 
-* **opportunistic contest** A contest to be audited opportunistically.
+* **opportunistic contest** - A contest to be audited opportunistically.
 
 * **active contest** TBD involving not having achieved risk limit
 
@@ -195,7 +210,7 @@ non-uniformly in order to target non-county-wide contests
 
 * **electoral system** TBD
 
-* **ballot** TBD
+* **ballot** TBD including ballot id, imprinted ballot
 
 * **margin** TBD
 
@@ -215,7 +230,13 @@ non-uniformly in order to target non-county-wide contests
 
 * **scanner** TBD
 
-* **imprinted ballot** TBD
+* **imprinted ballot** - A ballot on which a unique ballot identifier has
+been imprinted in order to facilitate a ballot-level audit. The unique
+ballot identifier might for instance include a unique batch identifier and
+the sequence of the ballot within the batch, or it might be a new
+identifier which is also included in the CVR.
+Imprinting should be done after the ballot is cast and with care taken to
+avoid causing anonymity problems.
 
 * **ballot order** TBD
 
@@ -247,7 +268,37 @@ non-uniformly in order to target non-county-wide contests
 
 * **equipment** TBD
 
-* **VVPAT** TBD
+* **VVPAT** - A Voter-Verifiable Paper Trail consists of an audit trail
+of Voter-Verifiable Paper Records (VVPRs). Elections which produce a
+VVPAT allow an audit to gather evidence which the voter had an
+opportunity to verify.  The VVPRs may appear in a continuous roll
+of paper used to provide auditability for a DRE.
+
+* **VVPR** - A Voter-Verifiable Paper Record, also known as a
+Voter-Verifiable Paper Ballot (VVPB).  'Voter-verified' refers to the
+fact that the voter is given the opportunity to verify that the choices
+indicated on the paper record correspond to the choices that the voter
+has made in casting the ballot. Risk-limiting audits require VVPRs.
+
+* **non-voter-verifiable ballot** (NVVB) - A ballot for which there is
+no auditable VVPR.  For example a ballot sent via an online ballot
+return system or email, for which the voter has not returned a matching
+voter verifiable paper ballot. AKA digital ballot.
+
+* **phantom ballot** A ballot which is listed in the manifest, but is
+not present as a physical ballot.  Phantom ballots can represent
+discrepancies between the manifest and the actual paper ballot batches.
+A manifest with a batch of purely phantom ballots can also be used
+to represent the maximum number of possibly late-tabluation ballots.
+
+* **late-tabulation ballot** - A ballot which is tabulated after the CVR
+report and manifest are generated, but before the canvass is finished.
+
+* **duplicated ballot** TBD
+
+* **original ballot** TBD
+
+* **DRE** TBD
 
 * **overvote** TBD
 
@@ -257,8 +308,9 @@ non-uniformly in order to target non-county-wide contests
 
 * **undervote** TBD
 
-* **risk limit** The pre-specified minimum chance of requiring a full hand count if the outcome of a full hand count would differ
-from the reported tabulation outcome.
+* **risk limit** - The pre-specified minimum chance of requiring a full
+hand count if the outcome of a full hand count would differ from the
+reported tabulation outcome.
 
 * **voting system** TBD
 
@@ -311,3 +363,5 @@ from the reported tabulation outcome.
 * **data synchronization** TBD
 
 * **Colorado Department of State (CDOS)** TBD
+
+* **abstract state machine** (AST) - TBD including [Abstract state machine](https://en.wikipedia.org/wiki/Abstract_state_machines)
