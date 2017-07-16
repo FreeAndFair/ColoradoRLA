@@ -271,6 +271,15 @@ no auditable VVPR.  For example a ballot sent via an online ballot
 return system or email, for which the voter has not returned a matching
 voter verifiable paper ballot. AKA digital ballot.
 
+* **phantom ballot** A ballot which is listed in the manifest, but is
+not present as a physical ballot.  Phantom ballots can represent
+discrepancies between the manifest and the actual paper ballot batches.
+A manifest with a batch of purely phantom ballots can also be used
+to represent the maximum number of possibly late-tabluation ballots.
+
+* **late-tabulation ballot** - A ballot which is tabulated after the CVR
+report and manifest are generated, but before the canvass is finished.
+
 * **duplicated ballot** TBD
 
 * **original ballot** TBD
