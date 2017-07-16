@@ -51,6 +51,7 @@
 
 %%%%%% One percent sign (%) is output as regular text in block mode
 %%%%%% and deleted in file mode.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%% Our formal domain model is also annotated with structured comments
@@ -354,6 +355,8 @@ END storage_container
 
 elections_equipment: THEORY
 BEGIN
+  IMPORTING storage_container
+  
   voting_system: TYPE
   dominion_voting_system: TYPE FROM voting_system
   
@@ -362,6 +365,9 @@ BEGIN
   id_number?: [scanner -> scanner_id_number]
 % @todo Each scanner has a unique id number.
   vvpat: TYPE
+  verified?: TYPE = pred[storage_container]
+  log: TYPE
+  chain_of_custody_log: TYPE FROM log
 END elections_equipment
 
 ballots: THEORY
@@ -515,6 +521,10 @@ END ballots_collections
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%+BEGIN ifr
+
+%%% \section{Instructions, Forms, and Reports}
+
 %%% Elections have all kinds of different published instructions,
 %%% forms, and reports. We enumerate a few here that are specific to
 %%% Colorado, and the RLA Tool in particular.
@@ -524,7 +534,13 @@ BEGIN
   IMPORTING information_systems
   
   report: TYPE
+% @review CDOS The contents of this report are underspecified at the
+% moment. See submit_audit_mistake_report below for more information.
+  audit_mistake_report: TYPE FROM report
+% @review CDOS The contents of this report are underspecified at the
+% moment. See submit_audit_report below for more information.
   audit_report: TYPE FROM report
+  
 % @trace RDPR-6-Jul-2017 Section 25.2.2(D)(1)
 % @description This report shows the total number of overvotes,
 % undervotes, blank-voted contests, and valid write-in votes for (an
@@ -550,6 +566,14 @@ BEGIN
   ballot_instructions: TYPE FROM instructions
   sos_voter_intent_guide: TYPE FROM instructions
 END instructions_forms_reports
+
+%+BEGIN ifr
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%+BEGIN roles
+
+%%% \section{Roles}
 
 %%% Within the RLA Tool there are a number of roles that a person
 %%% involved with the system can take on. Some of these roles are
@@ -615,6 +639,8 @@ BEGIN
   canvas_board?: [election -> canvas_board]
 END canvas_boards
 
+%+END roles
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%% \section{Cryptography}
@@ -667,24 +693,46 @@ END randomness
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%+BEGIN audits
+
+%%% \section{Audits}
+
+%%% Election audits come in many forms. The two main kinds of audits
+%%% we focus on in this system are ballot polling audits and
+%%% comparison audits, both of which are kinds of risk-limiting
+%%% audits.
+
 audits: THEORY
 BEGIN
   IMPORTING roles
   
   audit: TYPE
+
+%%% Audits are run by audit boards, whose members come from various
+%%% constituancies and have various roles. Deciding who is on an audit
+%%% board is also usually a matter of law, policy, and history.
+
 %%% @review CDOS Must audit boards have a minimum number of members?
 %%% A maximum?
   audit_board: TYPE = set[audit_board_member]
-% @description Unknown definition.
+
+%%% These two terms are used but underdefined at this point in time.
   audit_mistake: TYPE
   audit_progress: TYPE
-  
-  ballots_to_audit: TYPE
-  contest_margin: TYPE
+
+%%% The count of the total number of ballots to audit varies across
+%%% audit types. E.g., historically in Colorado random audits must
+%%% audit 500 ballots or 20\% of all ballots, whichever is smaller.
+  ballots_to_audit: TYPE = nat
+
+%%% There are various other terms relating to audits, which we list
+%%% here. They will be defined and refined in later versions of the
+%%% domain model.
+  contest_margin: TYPE = nat
+  margin: TYPE = real
+
   digital_ballot_adjudication: TYPE
   manual_ballot_adjudication: TYPE
-
-  margin: TYPE = real
 
 % @trace struck from RDPR-6-Jul-2017 old Section 25.1.5
 
@@ -737,6 +785,8 @@ BEGIN
 
   random_audit: TYPE
 END audits
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%% \section{RLAs}
 
@@ -793,16 +843,23 @@ BEGIN
 % vote records.
   comparison_audit: TYPE FROM risk_limiting_audit
 
+%%% These are some terms of the art which we will more carefully
+%%% define as the model is refined.
   discrepency: TYPE
   random: TYPE
-  sample_size: TYPE
+  sample_size: TYPE = nat
+  
 % @trace RDPR-6-Jul-2017 Section 25.1.2
 % @description The audited contest determines the number of ballots
 % that must be examined and verified during the rla.
-  ballots_to_audit: [audited_contest -> nat]
+  number_of_ballots_to_audit: [audited_contest -> nat]
 END rlas
 
-%+BEGIN CVRs
+%+END audits
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%+BEGIN cvrs
 
 %%% \section{Cast Vote Records}
 
@@ -839,7 +896,13 @@ BEGIN
   cvr_number: TYPE = nat
 END cast_vote_records
 
-%+END CVRs
+%+END cvrs
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%+BEGIN ui
+
+%%% \section{User Interfaces}
 
 %%% The user interfaces of the system are the visible interactive
 %%% parts of an application. There are several different user
@@ -893,6 +956,10 @@ BEGIN
     unsuccessful_authentication
 END authentication_message
 
+%+END ui
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %+BEGIN dashboards
 
 %%% \section{Dashboards}
@@ -942,7 +1009,7 @@ END dashboard
 % @trace Principly RDPR-6-Jul-2017 Section 25.2.2
 state_wide_dashboard: THEORY
 BEGIN
-  IMPORTING dashboard, elections, rlas
+  IMPORTING dashboard, elections, rlas, fafessl
 
 %%% CDOS staff, after authenticating to the state-wide dashboard, is
 %%% able to see the status of the entire election. Various static
@@ -950,15 +1017,19 @@ BEGIN
 %%% information, the type and content of which is dependent upon in
 %%% the current audit stage.
 
-  audit_stage: TYPE = { initial, authenticated, risk_limits_set }
+  audit_stage: TYPE =
+    { initial, authenticated, risk_limits_set,
+      contests_to_audit_identified, random_seed_published,
+      ballot_order_defined, audit_ongoing, audit_complete,
+      audit_results_published }
 
 % @trace RDPR-6-Jul-2017 Section 25.2.2(A)
-% @description No later than 30 days before Election Day, the
-% Secretary of State will establish and publish on the audit center
-% the risk limit(s) that will apply in RLAs for that election. The
-% Secretary of State may establish different risk limits for
-% comparison audits and ballot polling audits, but in no event will
-% the risk limit exceed five percent.
+%%% No later than 30 days before Election Day, the Secretary of State
+%%% will establish and publish on the audit center the risk limit(s)
+%%% that will apply in RLAs for that election. The Secretary of State
+%%% may establish different risk limits for comparison audits and
+%%% ballot polling audits, but in no event will the risk limit exceed
+%%% five percent.
   establish_risk_limit_comparison_audits:
     [state_wide_dashboard, {r: risk_limit | r < 5} -> state_wide_dashboard]
   establish_risk_limit_ballot_polling_audits:
@@ -968,9 +1039,80 @@ BEGIN
     { no_data, cvrs_uploaded_successfully, error_in_uploaded_data }
   upload_status: [state_wide_dashboard -> set[county_status]]
 
-  select_contest_for_comparison_audit: [contest -> audited_contest]
-  select_contest_for_opportunistic_audit: [contest -> opportunistic_contest]
+% @trace RDPR-6-Jul-2017 Section 25.2.2(I)
 
+%%% \subsubsection{Selection of Audited Contests}
+
+%%% NO LATER THAN 5:00 P.M. MT ON THE FRIDAY AFTER ELECTION DAY, THE
+%%% SECRETARY OF STATE WILL SELECT FOR AUDIT AT LEAST ONE STATEWIDE
+%%% CONTEST, AND FOR EACH COUNTY AT LEAST ONE COUNTYWIDE CONTEST. THE
+%%% SECRETARY OF STATE WILL SELECT OTHER BALLOT CONTESTS FOR AUDIT IF
+%%% IN ANY PARTICULAR ELECTION THERE IS NO STATEWIDE CONTEST OR A
+%%% COUNTYWIDE CONTEST IN ANY COUNTY. THE SECRETARY OF STATE WILL
+%%% PUBLISH A COMPLETE LIST OF ALL AUDITED CONTESTS ON THE AUDIT
+%%% CENTER. THE SECRETARY OF STATE WILL CONSIDER THE FOLLOWING FACTORS
+%%% IN DETERMINING WHICH CONTESTS TO AUDIT:
+%%% (1) THE CLOSENESS OF THE REPORTED TABULATION OUTCOME OF THE CONTESTS;
+%%% (2) THE GEOGRAPHICAL SCOPE OF THE CONTESTS;
+%%% (3) ANY CAUSE FOR CONCERN REGARDING THE ACCURACY OF THE REPORTED
+%%% TABULATION OUTCOME OF THE CONTESTS;
+%%% (4) ANY BENEFITS THAT MAY RESULT FROM OPPORTUNISTICALLY AUDITING
+%%% CERTAIN CONTESTS; AND
+%%% (5) THE ABILITY OF THE COUNTY CLERKS TO COMPLETE THE AUDIT BEFORE
+%%% THE CANVASS DEADLINE.
+
+  audit_reason: TYPE =
+    { state_wide_contest, county_wide_contest, close_contest,
+      geographical_scope, concern_regarding_accuracy,
+      opportunitic_benefits, county_clerk_ability }
+
+  select_contest_for_comparison_audit:
+    [contest, audit_reason -> audited_contest]
+% @trace RDPR-6-Jul-2017 Section 25.2.2(I)
+% If there is at least one statewide contest, then at least one has to
+% be selected.
+  at_least_one_statewide_contest: AXIOM TBD
+% If there is at least one countywide contest, then at least one has
+% to be selected.
+  at_least_one_countywide_contest_per_county: AXIOM TBD
+
+  select_contest_for_opportunistic_audit:
+    [contest, audit_reason -> opportunistic_contest]
+
+%%% Ballots can be randomly selected for audit in two ways, either by:
+%%% \begin{enumeration}
+%%% \item permuting all ballots and auditing a prefix of ballots
+%%% (thereby auditing ballots "with no replacement")
+%%% \item randomly selecting ballots ballot-by-ballot (thereby
+%%% auditing ballots "with replacement" as the same ballot may be
+%%% audited multiple times).
+%%% \end{enumeration}
+
+% @todo kiniry Obviously this type has to be strengthened considerably
+% to guarantee permutation. I.e., both the set and the list are
+% finite and converting the list into a set results in a set equivalent
+% to the original set.
+  ballot_permutation:
+    [set[ballot] -> list[ballot]]
+% Note that sequences are infinite.
+  random_list_of_ballots:
+    [set[ballot] -> sequence[ballot]]
+
+% @trace RDPR-6-Jul-2017 Section 25.2.2(K)
+
+%%% \subsection{Random Selection of Ballots for Audit}
+
+%%% The Secretary of State will randomly select the individual ballots
+%%% to audit. The Secretary of State will use a pseudo-random number
+%%% generator with the seed established under subsection (H) of this
+%%% rule to identify individual ballots as reflected in the county
+%%% ballot manifests. The Secretary of State will notify each county
+%%% of, and publish on the audit center, the randomly selected ballots
+%%% that each county must audit no later than 11:59 p.m. MT on the
+%%% tenth day after Election Day.
+  public_ballot_to_audit:
+    [state_wide_dashboard, list[ballot] -> state_wide_dashboard]
+  
 END state_wide_dashboard
 
 %%% \subsection{County Dashboard]
@@ -1091,35 +1233,129 @@ END county_dashboard
 
 %%% \subsection{Audit Board Dashboard}
 
-% @trace TBD
+% @trace RDPR-6-Jul-2017 Section 25.2.3
+
+%%% There are a number of assumptions that the RLA Tool audit board
+%%% dashboard makes with respect to the C.R.S. It also facilitates the
+%%% comparison audit.
+
 audit_board_dashboard: THEORY
 BEGIN
-  IMPORTING dashboard
-% @explanation 
+  IMPORTING dashboard, ballots, storage_container, audits,
+            cast_vote_records, instructions_forms_reports
 
-END audit_board_dashboard
+%%%% The audit board must locate and retrieve from the appropriate
+%%%% storage container each randomly selected ballot. The audit board
+%%%% must verify that the seals on the appropriate storage containers
+%%%% are those recorded on the applicable chain-of-custody logs.
+  ballots_to_audit_to_storage_container_list:
+    [list[ballot] -> list[storage_container]]
+  verify_all_seals_on_storage_containers:
+    [list[storage_container] -> list[storage_container]]
+
+%%% The audit board must examine each randomly selected ballot or
+%%% VVPAT and report the voter markings or choices using the RLA Tool
+%%% or other means specified by the Secretary of State.
+
+  next_ballot_for_audit:
+    [audit_board_dashboard -> [ballot, audit_board_dashboard]]
+  report_markings:
+    [audit_board_dashboard, list[ballot_mark] -> audit_board_dashboard]
+
+%%% If supported by the county’s voting system, the audit board may
+%%% refer to the digital image of the audited ballot captured by the
+%%% voting system in order to confirm it had retrieved the correct
+%%% ballot randomly selected for audit. If the scanned ballot was
+%%% duplicated prior to tabulation, the audit board must also retrieve
+%%% and compare the markings on the original ballot. The audit board
+%%% must complete its reports of all ballots randomly selected for
+%%% audit no later than 5:00 p.m. MT one business day before the
+%%% canvass deadline.
+
+%%% The audit board must interpret voter markings on ballots selected
+%%% for audit in accordance with the secretary of state’s voter intent
+%%% guide.
+    
+%%% To the extent applicable, the Secretary of State will compare the
+%%% audit board’s reports of the audited ballots to the corresponding
+%%% CVRs and post the results of the comparison and any margin
+%%% overstatements or understatements on the audit center.
+  compare_reported_markings_to_cvr:
+    [ballot, cvr, list[ballot_mark] ->
+     [margin_overstatement, margin_understatement]]
+
+%%% The RLA will continue until the risk limit for the audited
+%%% contests is met or until a full hand count results. If the county
+%%% audit reports reflect that the risk limit has not been satisfied
+%%% in an audited contest, the Secretary of State will randomly select
+%%% additional ballots for audit.
+
+% @review CDOS The details of this last fragment of the process are
+% very underspecified.  We need clarity on what they exactly want.
+
+%%% We presume at the moment if there are errors made during the
+%%% auditing process that we should capture information in the RLA
+%%% Tool about those errors and their mitigation and resolution.
+
+% @review CDOS We need input on how much, and what kind, of logging
+% the want to see of this nature.
+  submit_audit_mistake_report:
+    [audit_board_dashboard, audit_mistake_report ->
+     audit_board_dashboard]
+
+% @review CDOS We also do not have requirements from CDOS as to how to
+% complete the audit process and have the audit board members "sign"
+% the audit.
+  submit_audit_report:
+    [audit_board_dashboard, audit_report -> audit_board_dashboard]
+
+end audit_board_dashboard
 
 %%% \subsection{Public Dashboard}
 
-% @trace TBD
 public_dashboard: THEORY
 BEGIN
   IMPORTING dashboard
-% @explanation 
+
+% @review CDOS The public dashboard is very underspecified at the
+% moment. The only thing that the contract mandates is that the public
+% must be able to "download data and reports".
+
+% @trace CORLA System Spec v1.0
+
+%%% We are currently proposing the following set of data and reports
+%%% are included on the public dashboard:
+%%% \begin{enumerate}
+%%% \item Target and Current Risk Limits, by Contest
+%%% \item Audit Board names by County
+%%% \item County Ballot Manifests, CVRs and Hashes (status & download
+%%% links)
+%%% \item Seed for randomization
+%%% \item Ballot Order
+%%% \item List of Audit Rounds (number of ballots, status by County,
+%%% download links)
+%%% \item Link to Final Audit Report
+%%% \end{enumerate}
 
 END public_dashboard
 
 %+END dashboards
 
-%% Authentication is currently underspecified in our system design as
-%% we do not yet have information from CDOS on the nature and kind of
-%% their mandated two-factor authentication system. Consequently, we
-%% have only modeled the necessary concepts and features of any
-%% two-factor authentication system. Included in this model are the
-%% ideas of usernames, passwords, other authentication factors
-%% mentioned in CDOS documents (such as biometrics and physical
-%% tokens, such as smartcards or one-time authentication code books),
-%% etc.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%+BEGIN authentication
+
+%%% \section{Authentication}
+
+%%% Authentication is currently underspecified in our system design as
+%%% we do not yet have information from CDOS on the nature and kind of
+%%% their mandated two-factor authentication system. Consequently, we
+%%% have only modeled the necessary concepts and features of any
+%%% two-factor authentication system. Included in this model are the
+%%% ideas of usernames, passwords, other authentication factors
+%%% mentioned in CDOS documents (such as biometrics and physical
+%%% tokens, such as smartcards or one-time authentication code books),
+%%% etc.
 
 %%% Given that CDOS is issuing two-factor authentications, it is
 %%% unclear if they want any additional features, such as a password
@@ -1188,6 +1424,14 @@ BEGIN
     [state_wide_dashboard, state_administrator, two_factor_authentication -> bool]
 END authentication
 
+%+END authentication
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%+BEGIN architecture
+
+%%% \section{System Architecture}
+
 %%% As mentioned early in this chapter, the RLA Tool is a
 %%% client-server system. As usual for these kinds of systems, the
 %%% server part of this architectural style is known as the back-end
@@ -1217,7 +1461,8 @@ BEGIN
   IMPORTING election, system_architecture_component
 
 % @trace RDPR-6-Jul-2017 Section 25.1.8
-% @description The software and user interface provided by the Secretary of State in order for counties to conduct RLAs.
+% @description The software and user interface provided by the
+% Secretary of State in order for counties to conduct RLAs.
   rla_tool?(election: state_election,
             front_end: front_end,
             back_end: back_end): make_rla_tool
@@ -1286,6 +1531,12 @@ BEGIN
   AND transactionally_synchronized?(union(databases(db1),databases(db2))))
 END system_architecture
 
+%+END architecture
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%+BEGIN system_assumptions
+
 %%% \section{System Assumptions}
 %%% \label{sec:System_Assumptions}
 
@@ -1326,6 +1577,12 @@ BEGIN
   CVR_vote_totals_equals_summary_results_vote_totals: AXIOM TBD
 
 END system_assumptions
+
+%+END system_assumptions
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% \section{Domain Model}
 
 %%% Thus, the overall domain model of this system is the sum total of
 %%% all concepts introduced in this chapter.
