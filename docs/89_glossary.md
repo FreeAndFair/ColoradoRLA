@@ -349,3 +349,5 @@ reported tabulation outcome.
 * **data synchronization** TBD
 
 * **Colorado Department of State (CDOS)** TBD
+
+* **abstract state machine** (AST) - TBD including [Abstract state machine](https://en.wikipedia.org/wiki/Abstract_state_machines)
