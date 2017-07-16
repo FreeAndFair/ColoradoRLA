@@ -1,6 +1,6 @@
-%%% model of the Colorado Risk Limiting Audit (CORLA) tool.
+%%% Model of the Colorado Risk Limiting Audit (CORLA) tool.
 %%% Joe Kiniry
-%%% 11-13 July 2017
+%%% 11-15 July 2017
 
 %%% This document contains a formal specification of the ColoradoRLA
 %%% system/tool. It is written in a literate style using the PVS
@@ -88,13 +88,24 @@
 %%% and the rule pertaining such are found in the "Revised Draft of
 %%% Proposed Rules" whose latest version is labeled CCR 1505-1 and
 %%% dated July 6, 2017. Section 25, Post-Election Audit, of that
-%%% document is the salient portion of that document.
+%%% document is the salient portion of that document. We will call
+%%% this document RDPR-6-Jul-2017 for the purpose of traceability in
+%%% this specification.
 
 %%% This domain model is based upon that law, its rules, our contract,
 %%% our bibliography of publications about risk-limiting audits, etc.
 
 %%%%%% Literate PVS comments +BEGIN and +END denote blocks. A block
 %%%%%% named "foo" is written to a LaTeX file "foo.tex".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Traceability and process features and annotations.
+
+fafessl: THEORY
+BEGIN
+  TBD: bool = TRUE
+END fafessl
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -167,19 +178,25 @@ END information_systems
 %%% hosted in separate facilities, with separate and independent power
 %%% systems and networks.
 
+%%% An Election Night Reporting (ENR) server is mentioned repeatedly
+%%% in the RDPR-6-Jul-2017, so we model it here.
+
 % @relation web_server inherit server
 % @relation time_server inherit server
 % @relation firewall inherit server
 % @relation database_server inherit server
+% @relation enr_server inherit server
 server: DATATYPE WITH SUBTYPES
-  web_server, time_server, firewall, database_server
+  web_server, time_server, firewall, database_server, enr_server
 BEGIN
   IMPORTING information_systems, database
   
   web_server?: make_web_server: web_server
   time_server?: make_time_server: time_server
   firewall?: make_filewall: firewall
-  database_server?(databases: set[database]): make_database_server: database_server
+  database_server?(databases: set[database]):
+    make_database_server: database_server
+  enr_server?: make_enr_server: enr_server
 END server
 
 %%% Over time, as we need to introduce more background concepts, we
@@ -207,6 +224,7 @@ BEGIN
 %%% voter. Consequently, all voters are UOCAVA or not.
   person: TYPE
   voter: TYPE FROM person
+  elector: TYPE = voter
   uocava_voter: TYPE from voter
 
 %%% The dual of voters are candiates, who run for office to represent
@@ -225,7 +243,28 @@ BEGIN
 
   contest: TYPE
   contest_name?: [contest -> string]
+% @trace RDPR-6-Jul-2017 Section 25.1.2
+% @description A contest selected by the Secretary of State for a
+% risk-limiting audit.
+  audited_contest: TYPE FROM contest
+  opportunistic_contest: TYPE FROM contest
 % @todo Contest name uniqueness.
+
+  outcome: TYPE
+  election_outcome: TYPE = set[outcome]
+  wrong_outcome: TYPE FROM election_outcome
+  
+% @trace RDPR-6-Jul-2017 Section 25.1.5
+% @description The presumed winning and losing candidates or voting
+% choices of a ballot contest as reflected in preliminary results.
+% @todo kiniry TBD
+  reported_tabulation_outcome: TYPE FROM election_outcome
+
+% @trace RDPR-6-Jul-2017 Section 25.2.2(D)
+% @explanation On the ninth day after Election Day, the county must
+% finish tabulating all ballots other than provisional ballots and
+% property owner ballots.
+  rla_tabulation_outcome: TYPE FROM election_outcome
 
 %%% Elections are defined across cohorts of voters arranged in any
 %%% number of ways---geographic, political, professional, and more. In
@@ -237,6 +276,8 @@ BEGIN
   county_name?: [county -> string]
   county_number?: [county -> nat]
   state: TYPE = set[county]
+  nation: TYPE = set[state]
+  organization: TYPE
 
   s: VAR state
   c1, c2: VAR county
@@ -250,15 +291,33 @@ BEGIN
   
   election_canvass: TYPE
   political_party: TYPE
+% @trace RDPR-6-Jul-2017 Section 25.1.1
+% @description The page or pages of the Secretary of State’s website
+% devoted to risk-limiting audits.
   audit_center: TYPE
+  ballot: TYPE
 END elections
 
+%%% Elections come in many forms: public and private
+%%% elections. National and local elections. This RLA Tool focuses on
+%%% state elections in Colorado, so we only need model that one kind
+%%% of election. Several other kinds of elections are mentioned as
+%%% well.
+
 % @relation state_election inherit election
-election: DATATYPE WITH SUBTYPES state_election
+% @relation national_election inherit election
+% @relation private_election inherit election
+election: DATATYPE WITH SUBTYPES
+  state_election, national_election, private_election
 BEGIN
   IMPORTING elections
   
-  is_state_election?(s: state, c: set[contest]): make_state_election: state_election
+  is_state_election?(s: state, c: set[contest]):
+    make_state_election: state_election
+  is_national_election?(n: nation, c: set[contest]):
+    make_national_election: national_election
+  is_private_election?(o: organization, c: set[contest]):
+    make_private_election: private_election  
 END election
 
 %+END elections
@@ -274,9 +333,40 @@ END election
 %%% preferences for candidates in contests and choices in ballot
 %%% questions.
 
-ballots: THEORY
+%%% Ballots are stored by one of several possible means. Some ballot
+%%% storage containers are secure, others are not. Some facilitate an
+%%% easy means by which to find a particular ballots, others do not.
+
+% @relation box inherit storage_container
+% @relation bin inherit storage_container
+% @relation ballot_box inherit storage_container
+storage_container: DATATYPE WITH SUBTYPES box, bin, ballot_box
 BEGIN
   IMPORTING elections
+  
+  box?(ballots:list[ballot]): make_box: box
+  bin?(ballots:list[ballot]): make_bin: bin
+  ballot_box?(ballots:list[ballot]): make_ballot_box: ballot_box
+
+% @todo add "secure: pred[ballot_storage]"
+
+END storage_container
+
+elections_equipment: THEORY
+BEGIN
+  voting_system: TYPE
+  dominion_voting_system: TYPE FROM voting_system
+  
+  scanner: TYPE
+  scanner_id_number: TYPE
+  id_number?: [scanner -> scanner_id_number]
+% @todo Each scanner has a unique id number.
+  vvpat: TYPE
+END elections_equipment
+
+ballots: THEORY
+BEGIN
+  IMPORTING elections, elections_equipment, storage_container
 
 %%% Several of our concepts are simply numbers. For example, ballot
 %%% identifiers (ids), batch numbers, and batch sizes are all just
@@ -309,13 +399,18 @@ BEGIN
 
 % @description The legally recognized means by which a voter can
 % express his or her choices in one or more contests in an election.
-  ballot: TYPE
   digital_ballot: TYPE FROM ballot
   paper_ballot: TYPE FROM ballot
   mail_ballot: TYPE FROM ballot
   uocava_ballot: TYPE FROM ballot
   early_ballot: TYPE FROM ballot
   tabulated_ballot: TYPE FROM ballot
+  provisional_ballot: TYPE FROM ballot
+  property_owner_ballot: TYPE FROM ballot
+
+%%% Ballots can be in various stages of processing, as implicitly
+%%% mentioned in the C.R.S.
+  verified_accepted?: pred[mail_ballot]
 
 %%% Each ballot has a single ballot style, which indicates (at least)
 %%% the contests that are listed on that ballot. Usually ballot styles
@@ -333,14 +428,40 @@ BEGIN
 % @description A batch is a set of ballots.  
   batch: TYPE = set[ballot]
 
-%%% Several terms are underspecified at this time and need elucidation
-%%% or elimination. They are as follows:a
+%%% The county must secure and maintain in sealed ballot containers
+%%% all tabulated ballots in the batches and order they are
+%%% scanned. The county must maintain and document uninterrupted
+%%% chain-of-custody for each ballot storage container.
 
-  ballot_manifest: TYPE
-  imprinted_ballot: TYPE
+  imprinted_ballot: TYPE FROM ballot
   ballot_certification: TYPE
 
 END ballots
+
+%%% \subsection{Ballot Manifests}
+
+% @trace RDPR-6-Jul-2017 Section 25.2.2(C)
+
+%%% While tabulating ballots, the county must maintain an accurate
+%%% ballot manifest in a form approved by the Secretary of State. At a
+%%% minimum, the ballot manifest must uniquely identify for each
+%%% tabulated ballot the scanner on which the ballot is scanned, the
+%%% ballot batch of which the ballot is a part, the number of ballots
+%%% in the batch, and the storage container in which the ballot batch
+%%% is stored after tabulation.
+
+ballot_manifests: THEORY
+BEGIN
+  IMPORTING ballots, elections_equipment, information_systems
+
+  ballot_manifest_info: TYPE =
+    [scanner_id_number, batch_number, batch_size, storage_container]
+  ballot_manifest: TYPE = set[ballot_manifest_info]
+  verified?: pred[ballot_manifest]
+  ballot_manifest_file: TYPE FROM file
+  export_ballot_manifest: [voting_system -> ballot_manifest_file]
+
+END ballot_manifests
 
 %%% The interpretation of the meaning of a voter's choice in a single
 %%% ballot contest is either a legal vote, an overvote, or an
@@ -354,7 +475,8 @@ BEGIN
   IMPORTING ballots
 
 % @description A legal selection of zero or more choices in a ballot contest.
-  well_formed_vote?(choices:set[choice]): make_well_formed_vote: well_formed_vote
+  well_formed_vote?(choices:set[choice]):
+    make_well_formed_vote: well_formed_vote
 % @description A (typically deemed improper) selection of too many
 % choices in a ballot contest.
   overvote?(choices:set[choice]): make_overvote: overvote
@@ -369,28 +491,9 @@ BEGIN
 
 % @description A CVR is a cast vote record denoting the interpretation
 % of a set of votes for a specific election and a single voter.
-  cast_vote_record: TYPE = set[vote]
+  cast_vote_record: TYPE = set[set[choice]]
 
 END ballot_interpretation
-
-%%% Ballots are stored by one of several possible means. Some ballot
-%%% storage mechanisms are secure, others are not. Some facilitate an
-%%% easy means by which to find a particular ballots, others do not.
-
-% @relation box inherit ballot_storage
-% @relation bin inherit ballot_storage
-% @relation ballot_box inherit ballot_storage
-ballot_storage: DATATYPE WITH SUBTYPES box, bin, ballot_box
-BEGIN
-  IMPORTING ballots
-  
-  box?(ballots:list[ballot]): make_box: box
-  bin?(ballots:list[ballot]): make_bin: bin
-  ballot_box?(ballots:list[ballot]): make_ballot_box: ballot_box
-
-% @todo add "secure: pred[ballot_storage]"
-
-END ballot_storage
 
 ballots_collections: THEORY
 BEGIN
@@ -418,10 +521,34 @@ END ballots_collections
 
 instructions_forms_reports: THEORY
 BEGIN
-  audit_report: TYPE
-  ballot_instructions: TYPE
+  IMPORTING information_systems
+  
+  report: TYPE
+  audit_report: TYPE FROM report
+% @trace RDPR-6-Jul-2017 Section 25.2.2(D)(1)
+% @description This report shows the total number of overvotes,
+% undervotes, blank-voted contests, and valid write-in votes for (an
+% election? | a contest?).
+% @review CDOS Need clarity on the specification of a Dominion summary
+% report.
+  summary_results_report: TYPE =
+    [overvotes: nat, undervotes: nat,
+     blank_voted_contests: nat, valid_write_in_votes: nat]
+
+% @trace RDPR-6-Jul-2017 Section 25.2.2(D)(2)
+% @description A file suitable for uploading to the secretary of
+% state’s election night reporting system.
+% @review CDOS Double-check that we are not responsible for this
+% feature, as it mentions the election night reporting systems, about
+% which we know nothing.
+  results_file: TYPE FROM file
+
+  form: TYPE
   sos_audit_form: TYPE
-  sos_voter_intent_guide: TYPE
+
+  instructions: TYPE
+  ballot_instructions: TYPE FROM instructions
+  sos_voter_intent_guide: TYPE FROM instructions
 END instructions_forms_reports
 
 %%% Within the RLA Tool there are a number of roles that a person
@@ -488,55 +615,262 @@ BEGIN
   canvas_board?: [election -> canvas_board]
 END canvas_boards
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% \section{Cryptography}
+
+cryptography: THEORY
+BEGIN
+  digest: TYPE = bvec[256]
+  sha256: [size: nat, bvec[size] -> digest]
+END cryptography
+
+%%% \subsection{Randomness}
+
+%%% Quality randomness is key to the legitimacy of any risk-limiting
+%%% audit.
+
 randomness: THEORY
 BEGIN
   unit: TYPE
-  seed: TYPE = nat
+
+% @trace RDPR-6-Jul-2017 Section 25.2.2(H)
+
+%%% \subsubsection{Random Seed}
+
+%%% The Secretary of State will convene a public meeting on the tenth
+%%% day after election day to establish a random seed for use with the
+%%% Secretary of State’s rla tool’s pseudo-random number generator
+%%% based on Philip Stark’s online tool, \emph{Pseudo-random Number
+%%% Generator using SHA-256}. This material is incorporated by
+%%% reference in the election rules and does not include later
+%%% amendments or editions. The following material incorporated by
+%%% reference is posted on the Secretary of State website and
+%%% available for review by the public during regular business hours
+%%% at the colorado secretary of state’s office: pseudo-random number
+%%% generator using SHA-256 available at
+%%% \url{https://www.stat.berkeley.edu/~stark/java/html/sha256rand.htm}. The
+%%% Secretary of State will give public notice of the meeting at least
+%%% seven calendar days in advance. The seed is a number consisting of
+%%% at least 20 digits, and each digit will be selected in order by
+%%% sequential rolls of a 10-sided die. The Secretary of State will
+%%% randomly select members of the public who attend the meeting to
+%%% take turns rolling the die, and designate one or more staff
+%%% members to take turns rolling the die in the event that no members
+%%% of the public attend the meeting. The Secretary of State will
+%%% publish the seed on the audit center immediately after it is
+%%% established.
+  seed: TYPE = {n: nat | 9999999999999999999 < n}
   rng: TYPE = [unit -> nat]
   seeded_prng: TYPE = [seed -> rng]
 END randomness
 
-cryptography: THEORY
-BEGIN
-  hash: TYPE
-END cryptography
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 audits: THEORY
 BEGIN
   IMPORTING roles
   
   audit: TYPE
-%%% @review CDOS Must audit boards have a minimum number of members?  A maximum?
+%%% @review CDOS Must audit boards have a minimum number of members?
+%%% A maximum?
   audit_board: TYPE = set[audit_board_member]
+% @description Unknown definition.
   audit_mistake: TYPE
   audit_progress: TYPE
-  ballot_polling_audit: TYPE
+  
   ballots_to_audit: TYPE
   contest_margin: TYPE
   digital_ballot_adjudication: TYPE
   manual_ballot_adjudication: TYPE
-  margin: TYPE
+
+  margin: TYPE = real
+
+% @trace struck from RDPR-6-Jul-2017 old Section 25.1.5
+
+% @description The smallest reported margin in votes between the
+% reported contest winner with the least votes in the contest, and the
+% reported contest loser with the most votes in the contest, divided
+% by the number of ballots counted in that contest.
+
+% @example For example, if the voting system tabulated 10,000 ballots
+% in an audited contest, and the reported winning candidate with the
+% least number of votes received 4,000 votes, and the reported losing
+% candidate with the most number of votes received 3,500 votes, the
+% diluted margin of the contest is 5% [(4,000 – 3,500) / 10,000]
+  diluted_margin: TYPE FROM margin
+
+% @trace struck from RDPR-6-Jul-2017 old Section 25.1.6
+
+% @description A circumstance in which the audit board’s
+% interpretation of ballot markings reveals that the winner with the
+% least number of votes received fewer votes than the voting system’s
+% interpretation of the same markings as reflected in the CVR.
+
+% @example For example, if the CVR reflects an undervote in the
+% audited contest, and the audit board’s interpretation of the
+% corresponding paper ballot reflects a vote for the loser with the
+% most votes in that contest, the CVR contains a one-vote
+% overstatement. if the CVR reflects a vote for the winner with the
+% least votes, and the audit board’s interpretation of the paper
+% ballot reflects a vote for the loser with the most votes, the
+% preliminary results contain a two-vote overstatement.
+  margin_overstatement: TYPE = nat
+
+% @trace struck from RDPR-6-Jul-2017 old Section 25.1.7
+
+% @description A circumstance in which the audit board’s
+% interpretation of ballot markings reveals that the contest winner
+% with the least number of votes received more votes than the voting
+% system’s interpretation of the same markings as reflected in the
+% CVR.
+
+% @example For example, if the CVR reflects an undervote in the
+% audited contest, and the audit board’s interpretation of the
+% corresponding paper ballot reflects a vote for the winner with the
+% least number of votes in that contest, the CVR contains a one-vote
+% understatement. If the CVR reflects a vote for the loser with the
+% most votes, and the audit board’s interpretation of the paper ballot
+% reflects a vote for the winner with the least votes, the CVR
+% contains a two-vote understatement.
+  margin_understatement: TYPE = nat  
+
   random_audit: TYPE
 END audits
 
 rlas: THEORY
 BEGIN
-  RLA: TYPE
+  IMPORTING elections
+
+% @trace RDPR-6-Jul-2017 Section 25.1.6
+% @description The largest statistical probability that an incorrect
+% reported tabulation outcome is not detected and corrected in a
+% risk-limiting audit.
+  risk_limit: TYPE = {n : nonneg_real | n <= 100}
+
+% @trace RDPR-6-Jul-2017 Section 25.1.7
+% @description A post-election audit of votes on paper ballots and
+% VVPAT records, conducted in accordance with Section 1-7-515, C.R.S.,
+% and Rule 25.2, which has a pre-specified minimum chance of requiring
+% a full hand count if the outcome of a full hand count would differ
+% from the reported tabulation outcome.
+  risk_limiting_audit: TYPE
+  RLA: TYPE = risk_limiting_audit
+
+% @trace RDPR-6-Jul-2017 Section 25.1.3
+% @description A type of risk-limiting audit in which the audit board
+% examines and reports to the Secretary of State voter markings on
+% randomly selected ballots seeking strong evidence that the reported
+% tabulation outcome is correct.
+  ballot_polling_audit: TYPE FROM risk_limiting_audit
+
+% @trace RDPR-6-Jul-2017 Section 25.1.4
+% @description A type of risk-limiting audit in which the audit board
+% examines and reports to the secretary of state voter markings on
+% randomly selected ballots, and then compared compares them to the
+% voting system’s tabulation as reflected in the corresponding cast
+% vote records.
+  comparison_audit: TYPE FROM risk_limiting_audit
+
   discrepency: TYPE
   random: TYPE
-  risk_limit: TYPE
   sample_size: TYPE
-  wrong_outcome: TYPE
+% @trace RDPR-6-Jul-2017 Section 25.1.2
+% @description The audited contest determines the number of ballots
+% that must be examined and verified during the rla.
+  ballots_to_audit: [audited_contest -> nat]
 END rlas
 
-elections_equipment: THEORY
+%+BEGIN CVRs
+
+%%% \section{Cast Vote Records}
+
+%%% Cast vote records, also knows as CVRs, are the digital
+%%% interpretations of paper ballot records by a computer. They
+%%% frequently, but not always, contain an interpretation of all
+%%% contests on ballot. CVRs are sometimes syntactically written as
+%%% comma-separated values, and other times in plain English. Some
+%%% CVRs use a election-specific encoding scheme to represent choices
+%%% (e.g., a '1' means "John Doe"); others use plain English.
+
+%%% CDOS requirements mandate that CVRs are exported and uploaded to
+%%% the RLA back-end as CSV files by county official using their voting
+%%% system and the RLA Tool, respectively.
+
+% @todo kiniry For a given election, there must be a 1-1
+% correspondance between its ballots and its cvrs.
+
+cast_vote_records: THEORY
 BEGIN
-  dominion_voting_system: TYPE
-  scanner: TYPE
-  scanner_id_number: TYPE
-  voting_system: TYPE
-  vvpat: TYPE
-END elections_equipment
+  IMPORTING vote, information_systems, elections_equipment
+  
+  cvr: TYPE = set[vote]
+  verified?: pred[cvr]
+% @trace Task order #1, Exhibit A
+  as_csv: [cvr -> csv]
+  cvr_file: TYPE FROM file
+% @trace RDPR-6-Jul-2017 Section 25.2.2(D)(3)
+% @description Immediately after completing the RLA tabulation ... the
+% county must also generate and preserve a CVR export.
+  export_cvr: [voting_system -> cvr_file]
+
+% @todo It is unclear what a CVR number is, if anything.
+  cvr_number: TYPE = nat
+END cast_vote_records
+
+%+END CVRs
+
+%%% The user interfaces of the system are the visible interactive
+%%% parts of an application. There are several different user
+%%% interfaces in the RLA Tool. The precise names of these interfaces
+%%% is still under discussion, but basically one is for CDOS personnel
+%%% responsible for the audit at the state-level, one is for county
+%%% personnel at the county-level, and one is for audit board members.
+
+user_interface: DATATYPE
+BEGIN
+  uploading_interface?: uploading_interface
+  cvr_uploading_interface?: cvr_uploading_interface
+  county_auditing_interface?: county_auditing_interface
+  audit_adjudication_interface?: audit_adjudication_interface
+END user_interface
+
+%%% After a county administrator attempts to upload artifacts to the
+%%% RLA system's server, one of several different messages is shown.
+%%% Each is self-explanatory in this domain model, and each must be
+%%% used in a scenario of the system.
+
+% @relation ok inherit upload_system_message
+% @relation hash_wrong inherit upload_system_message
+% @relation file_type_wrong inherit upload_system_message
+% @relation data_transmission_interrupted inherit upload_system_message
+% @relation too_late inherit upload_system_message
+upload_system_message: DATATYPE
+  WITH SUBTYPES upload_successful, hash_wrong, file_type_wrong,
+                data_transmission_interrupted, too_late
+BEGIN
+  upload_successful?: make_upload_successful: upload_successful
+  hash_wrong?: make_hash_wrong: hash_wrong
+  file_type_wrong?: make_file_type_wrong: file_type_wrong
+  data_transmission_interrupted?: make_data_transmission_interrupted:
+    data_transmission_interrupted
+  too_late?: make_too_late: too_late
+END upload_system_message
+
+%%% Authentication attempts can result in two different kinds of
+%%% message: either a person authenticated successfully, or they did
+%%% not.
+
+% @relation successful_authentication inherit authentication_message
+% @relation unsuccessful_authentication inherit authentication_message
+authentication_message: DATATYPE
+  WITH SUBTYPES successful_authentication, unsuccessful_authentication
+BEGIN
+  successful_authentication?: make_successful_authentication:
+    successful_authentication
+  unsuccessful_authentication?: make_unsuccessful_authentication:
+    unsuccessful_authentication
+END authentication_message
 
 %+BEGIN dashboards
 
@@ -548,10 +882,10 @@ END elections_equipment
 %%% members use the audit board dashboard; and the general public uses
 %%% the public dashboard.
 
-% @review kiniry @review dmz CDOS may want to create and edit static content on the 
-% public dashboard, e.g., time and location of meeting to determine
-% the seed for the pseudo-random number generator. Let's not 
-% forget to model that in our specification.
+% @review kiniry @review dmz CDOS may want to create and edit static
+% content on the public dashboard, e.g., time and location of meeting
+% to determine the seed for the pseudo-random number generator. Let's
+% not forget to model that in our specification.
 
 % @relation state_wide_dashboard inherit dashboard
 % @relation county_dashboard inherit dashboard
@@ -576,44 +910,165 @@ BEGIN
   public_dashboard?: make_public_dashboard: public_dashboard
 END dashboard
 
-% @trace TBD
+%%% \subsection{State-wide Dashboard}
+
+%%% The status of uploaded data will be summarized in a state-wide
+%%% dashboard, along with information on which counties have not yet
+%%% uploaded their CVRs, and uploads that have formatting or content
+%%% issues. The status of data, and results as audits are performed,
+%%% will be provided for each contest to be audited.
+
+% @trace Principly RDPR-6-Jul-2017 Section 25.2.2
 state_wide_dashboard: THEORY
 BEGIN
-  IMPORTING dashboard
-% @explanation The status of uploaded data will be summarized in a
-% state-wide dashboard, along with information on which counties have
-% not yet uploaded their CVRs, and uploads that have formatting or
-% content issues. The status of data, and results as audits are
-% performed, will be provided for each contest to be audited.
+  IMPORTING dashboard, elections, rlas
+
+%%% CDOS staff, after authenticating to the state-wide dashboard, is
+%%% able to see the status of the entire election. Various static
+%%% information about the election is displayed along with dynamic
+%%% information, the type and content of which is dependent upon in
+%%% the current audit stage.
+
+  audit_stage: TYPE = { initial, authenticated, risk_limits_set }
+
+% @trace RDPR-6-Jul-2017 Section 25.2.2(A)
+% @description No later than 30 days before Election Day, the
+% Secretary of State will establish and publish on the audit center
+% the risk limit(s) that will apply in RLAs for that election. The
+% Secretary of State may establish different risk limits for
+% comparison audits and ballot polling audits, but in no event will
+% the risk limit exceed five percent.
+  establish_risk_limit_comparison_audits:
+    [state_wide_dashboard, {r: risk_limit | r < 5} -> state_wide_dashboard]
+  establish_risk_limit_ballot_polling_audits:
+    [state_wide_dashboard, {r: risk_limit | r < 5} -> state_wide_dashboard]
+
+  county_status: TYPE =
+    { no_data, cvrs_uploaded_successfully, error_in_uploaded_data }
+  upload_status: [state_wide_dashboard -> set[county_status]]
+
+  select_contest_for_comparison_audit: [contest -> audited_contest]
+  select_contest_for_opportunistic_audit: [contest -> opportunistic_contest]
 
 END state_wide_dashboard
 
-% @trace TBD
+%%% \subsection{County Dashboard]
+
+%%% The County dashboard is used by county officials to communicate
+%%% with the Secretary of State for the purpose of planning and
+%%% executing risk-limiting audits.
+
 county_dashboard: THEORY
 BEGIN
   IMPORTING dashboard, information_systems, upload_system_message,
-            election, roles
-% @explanation 
+            election, roles, cast_vote_records, ballot_manifests,
+            cryptography, server
+%%% Some of the generation information contained in the county
+%%% dashboard is stipulated by C.R.S.
 
-%%% English description of uploading.
+% @trace RDPR-6-Jul-2017 Section 25.2
+  general_static_information: string
 
-  upload_confirmation: [dashboard ->
-                        [email, upload_system_message]]
+% @trace RDPR-6-Jul-2017 Section 25.2.2(B)
 
-% @todo kiniry Refine these definitions from dashboard to
-% county_dashboard.
-% @description This county clerk upload that ballot manifest and its
-% hash for this election!
-% @trace Task order #1, Exhibit A
-%  upload_ballot_manifest: [dashboard, authenticated, ballot_manifest, hash ->
-%                           [dashboard, upload_system_message]]
-% @description TBD
-%  upload_cvrs: [dashboard, authenticated, cvr_file, hash ->
-%                [dashboard, upload_system_message]]
-  county_upload_scenario: [state_election, county_clerk ->
-                           upload_system_message]
+% @explanation No later than 15 days before election day, the
+% designated election official must appoint an audit board to conduct
+% the risk-limiting audit. The audit board must consist of electors
+% nominated by the major political party county chairpersons. The
+% designated election official must give written notice to the county
+% chairpersons of their obligation to nominate audit board members and
+% may designate appropriately affiliated electors as audit board
+% members if one or both county chairpersons fail to do so in a timely
+% manner. At least two canvass board members must observe the RLA, and
+% members of the canvass board may serve as members of the audit
+% board. The designated election official, members of his or her
+% staff, and other duly appointed election judges may assist the audit
+% board in conducting the audit. To the extent practicable, the audit
+% board should not consist of individuals who participated in ballot
+% resolution or adjudication during the election being audited.
+  establish_audit_board:
+    [county_dashboard, set[elector] -> county_dashboard]
+
+%%% \subsubsection{Verification of Election Report Artifacts}
+
+%%% To prepare for uploading of artifacts to the Secretary of State,
+%%% counties conducting a comparison audit must verify several
+%%% properties (all of which are discussed in
+%%% \autoref{sec:System_Assumptions}. After verifying those
+%%% properties, counties must generate a digest of the CVR file using
+%%% a hash designated by the Secretary of State.
+
+%%% \subsubsection{Digest Generation}
+
+% @trace RDPR-6-Jul-2017 Section 25.2.2(E)(5)
+% @trace RDPR-6-Jul-2017 Section 25.2.2(F)
+
+%%% After verifying the accuracy of the CVR export, the county must
+%%% apply a hash value to the CVR export file using the hash value
+%%% utility provided by the Secretary of State.
+
+%%% Note that this feature is provided by a tool provided by the
+%%% Secretary of State. We have not been asked to produce such a tool,
+%%% though one could compute the hash of a file locally in a web
+%%% browser, and thus this could be part of our system. From an
+%%% assurance standpoint is a better idea to use a completely separate
+%%% tool, independently developed from us, to perform this hashing.
+
+% @review CDOS Confirm that we have nothing to do with recommending,
+% creating, or managing these two hashing tools to be used by county
+% officials.
+  generate_cvr_digest: [cvr_file -> digest]
+
+% @trace RDPR-6-Jul-2017 Section 25.2.2(F)(1)
+
+%%% Each county performing a comparison audit must upload a hash
+%%% (digest) of its ballot manifest to the RLA Tool.
+
+  generate_ballot_manifest_digest: [ballot_manifest_file -> digest]
+
+%%% \subsubsection{Comparison Audit Uploads}
+
+% @todo kiniry Improve/strengthen the dependent types in these upload
+% signatures below.
+
+%%% Each county conducting a comparison audit must upload:
+%%% (1) its verified and hashed ballot manifest to the RLA Tool.
+
+  county_upload_verified_ballot_manifest:
+    [county_dashboard, ballot_manifest_file, digest ->
+     [county_dashboard, email, upload_system_message]]
+
+%%% (2) its verified and hashed CVR export to the RLA Tool; and
+
+  upload_verified_cvrs:
+    [county_dashboard, cvr_file, digest ->
+     [county_dashboard, email, upload_system_message]]
+
+%%% (2) its RLA tabulation results export to the Secretary of State’s
+%%% election night reporting system.
+
+  upload_tabulation_results:
+    [enr_server, rla_tabulation_outcome -> enr_server]
+
+%%% \subsubsection{Ballot Polling Audit Uploads}
+
+% @trace RDPR-6-Jul-2017 Section 25.2.2(G)
+
+%%% Mo later than 11:59 p.m. MT on the ninth day after Election Day,
+%%% each county conducting a ballot polling audit must upload:
+
+%%% (1) its verified and hashed ballot manifest to the RLA tool; and
+
+%%% (2) its RLA tabulation results export to the Secretary of State’s
+%%% election night reporting system.
+
+%%% Note that both of these uploads are facilitated by the functions
+%%% defined above, as their types do not mandate a particular kind of
+%%% audit on the county.
 
 END county_dashboard
+
+%%% \subsection{Audit Board Dashboard}
 
 % @trace TBD
 audit_board_dashboard: THEORY
@@ -622,6 +1077,8 @@ BEGIN
 % @explanation 
 
 END audit_board_dashboard
+
+%%% \subsection{Public Dashboard}
 
 % @trace TBD
 public_dashboard: THEORY
@@ -632,40 +1089,6 @@ BEGIN
 END public_dashboard
 
 %+END dashboards
-
-%+BEGIN CVRs
-
-%%% \section{Cast Vote Records}
-
-%%% Cast vote records, also knows as CVRs, are the digital
-%%% interpretations of paper ballot records by a computer. They
-%%% frequently, but not always, contain an interpretation of all
-%%% contests on ballot. CVRs are sometimes syntactically written as
-%%% comma-separated values, and other times in plain English. Some
-%%% CVRs use a election-specific encoding scheme to represent choices
-%%% (e.g., a '1' means "John Doe"); others use plain English.
-
-%%% CDOS requirements mandate that CVRs are exported and uploaded to
-%%% the RLA back-end as CSV files by county official using their voting
-%%% system and the RLA Tool, respectively.
-
-% @todo kiniry For a given election, there must be a 1-1
-% correspondance between its ballots and its cvrs.
-
-cast_vote_records: THEORY
-BEGIN
-  IMPORTING vote, information_systems
-  
-  cvr: TYPE = set[vote]
-% @trace Task order #1, Exhibit A
-  as_csv: [cvr -> csv]
-  cvr_file: TYPE = [set[cvr] -> file]
-
-% @todo It is unclear what a CVR number is, if anything.
-  cvr_number: TYPE = nat
-END cast_vote_records
-
-%+END CVRs
 
 %% Authentication is currently underspecified in our system design as
 %% we do not yet have information from CDOS on the nature and kind of
@@ -744,58 +1167,6 @@ BEGIN
     [state_wide_dashboard, state_administrator, two_factor_authentication -> bool]
 END authentication
 
-%%% The user interfaces of the system are the visible interactive
-%%% parts of an application. There are several different user
-%%% interfaces in the RLA Tool. The precise names of these interfaces
-%%% is still under discussion, but basically one is for CDOS personnel
-%%% responsible for the audit at the state-level, one is for county
-%%% personnel at the county-level, and one is for audit board members.
-
-user_interface: DATATYPE
-BEGIN
-  uploading_interface?: uploading_interface
-  cvr_uploading_interface?: cvr_uploading_interface
-  county_auditing_interface?: county_auditing_interface
-  audit_adjudication_interface?: audit_adjudication_interface
-END user_interface
-
-%%% After a county administrator attempts to upload artifacts to the
-%%% RLA system's server, one of several different messages is shown.
-%%% Each is self-explanatory in this domain model, and each must be
-%%% used in a scenario of the system.
-
-% @relation ok inherit upload_system_message
-% @relation hash_wrong inherit upload_system_message
-% @relation file_type_wrong inherit upload_system_message
-% @relation data_transmission_interrupted inherit upload_system_message
-% @relation too_late inherit upload_system_message
-upload_system_message: DATATYPE
-  WITH SUBTYPES upload_successful, hash_wrong, file_type_wrong,
-                data_transmission_interrupted, too_late
-BEGIN
-  upload_successful?: make_upload_successful: upload_successful
-  hash_wrong?: make_hash_wrong: hash_wrong
-  file_type_wrong?: make_file_type_wrong: file_type_wrong
-  data_transmission_interrupted?: make_data_transmission_interrupted:
-    data_transmission_interrupted
-  too_late?: make_too_late: too_late
-END upload_system_message
-
-%%% Authentication attempts can result in two different kinds of
-%%% message: either a person authenticated successfully, or they did
-%%% not.
-
-% @relation successful_authentication inherit authentication_message
-% @relation unsuccessful_authentication inherit authentication_message
-authentication_message: DATATYPE
-  WITH SUBTYPES successful_authentication, unsuccessful_authentication
-BEGIN
-  successful_authentication?: make_successful_authentication:
-    successful_authentication
-  unsuccessful_authentication?: make_unsuccessful_authentication:
-    unsuccessful_authentication
-END authentication_message
-
 %%% As mentioned early in this chapter, the RLA Tool is a
 %%% client-server system. As usual for these kinds of systems, the
 %%% server part of this architectural style is known as the back-end
@@ -820,14 +1191,16 @@ END system_architecture_component
 % @review kiniry Should we design the system so that we can facilitate
 % mutiple concurrent elections?
 
-rla_system: DATATYPE
+rla_tool: DATATYPE
 BEGIN
   IMPORTING election, system_architecture_component
-  
-  rla_system(election: state_election,
-             front_end: front_end,
-             back_end: back_end): make_rla_system
-END rla_system
+
+% @trace RDPR-6-Jul-2017 Section 25.1.8
+% @description The software and user interface provided by the Secretary of State in order for counties to conduct RLAs.
+  rla_tool?(election: state_election,
+            front_end: front_end,
+            back_end: back_end): make_rla_tool
+END rla_tool
 
 %%% The system architecture consists of:
 %%% \begin{enumeration}
@@ -847,14 +1220,14 @@ END rla_system
 
 system_architecture: THEORY
 BEGIN
-  IMPORTING system_architecture_component, server, rla_system
+  IMPORTING system_architecture_component, server, rla_tool
 
-  rla: VAR rla_system
+  rla: VAR rla_tool
   be: VAR back_end
   fe: VAR front_end
   db1, db2: VAR database_server
 
-  make_rla_system: [back_end, front_end -> rla_system]
+  make_rla_tool: [back_end, front_end -> rla_tool]
 
   javascript_code?: [front_end -> javascript_code]
   code_origins?: [javascript_code -> web_server]
@@ -891,6 +1264,47 @@ BEGIN
   AND db1 /= db2
   AND transactionally_synchronized?(union(databases(db1),databases(db2))))
 END system_architecture
+
+%%% \section{System Assumptions}
+%%% \label{sec:System_Assumptions}
+
+%%% This system architecture has a number of explicit assumptions
+%%% which are derived from C.R.S.
+
+system_assumptions: THEORY
+BEGIN
+  IMPORTING election, fafessl
+  
+  e: VAR state_election
+% @trace RDPR-6-Jul-2017 Section 25.2.2(E)
+
+%%% According to the section entitled "CVR Export Verification",
+%%% counties conducting a comparison audit must verify that:
+%%% \begin{enumerate}
+
+%%% \item The number of individual CVRs in its CVR export equals the
+%%% aggregate number of ballots reflected in the county’s ballot
+%%% manifest as of the ninth day after election day;
+  CVR_count_equals_ballot_manifest_count: AXIOM TBD
+
+%%% \item The number of individual CVRs in its CVR export equals the
+%%% number of ballots tabulated as reflected in the summary results
+%%% report for the RLA tabulation;
+  CVR_count_equals_summary_results_report_count: AXIOM TBD
+
+%%% \item The number of individual CVRs in its CVR export equals the
+%%% number of in-person ballots issued plus the number of mail ballots
+%%% in verified-accepted stage in score, plus the number of
+%%% provisional ballots and property owner ballots included in the RLA
+%%% tabulation, if any; and
+  CVR_count_equals_aggregate_count_over_ballot_kinds: AXIOM TBD
+
+%%% \item The vote totals for all choices in all ballot contests in
+%%% the CVR export equals the vote totals in the summary results
+%%% report for the RLA tabulation.
+  CVR_vote_totals_equals_summary_results_vote_totals: AXIOM TBD
+
+END system_assumptions
 
 %%% Thus, the overall domain model of this system is the sum total of
 %%% all concepts introduced in this chapter.
