@@ -1,0 +1,121 @@
+%%%%%%
+%%%%%% pvs.sty
+%%%%%% Copyright (C) 2004 by Adriaan de Groot, University of Nijmegen
+%%%%%%
+%%%%%% This is the package for typesetting pvs stuff in latex when
+%%%%%% you don't want to use the PVS environments.
+%%%%%%
+
+%%%
+%
+% Redistribution and use in source and binary forms, with or without
+% modification, are permitted provided that the following conditions
+% are met:
+% 1. Redistributions of source code must retain the above copyright
+%    notice, this list of conditions and the following disclaimer.
+% 2. Redistributions in binary form must reproduce the above copyright
+%    notice, this list of conditions and the following disclaimer in the
+%    documentation and/or other materials provided with the distribution.
+% 
+% THIS SOFTWARE IS PROVIDED BY AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+% ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+% IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+% ARE DISCLAIMED.  IN NO EVENT SHALL AUTHOR OR CONTRIBUTORS BE LIABLE
+% FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+% DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+% OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+% HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+% LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+% OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+% SUCH DAMAGE.
+%
+%%%
+
+
+\ProvidesPackage{pvs}[1/1/1998]
+\typeout{PVS Package 1.0}
+
+%
+% This package has no options.
+%
+
+\def\pvs{\leavevmode\bgroup%
+\catcode`^=12%
+\catcode`_=12\catcode`/=12\catcode`\#=12\relax%
+\@ifnextchar*{\bgroup\hspace{0pt}\p@vs}{\hbox\bgroup\p@vs*}}
+\def\p@vs*#1{{\ttfamily #1}\egroup\egroup}
+
+\def\pvscmd#1{\pvs{(#1)}}
+
+\let\BWM=\emph
+% \let\info=\emph
+\def\info#1{\leavevmode\hbox{\sffamily #1}}
+
+
+\def\dunno{\ensuremath{?\nabla?}}
+
+\begingroup \catcode `|=0 \catcode `[= 1
+\catcode`]=2 \catcode `\{=12 \catcode `\}=12 \catcode`\\=12 
+|gdef|@xPVS#1\end{PVS}[#1|end[PVS]]
+|endgroup
+
+
+\def\PVSNormal{\small\advance\leftskip by 35pt\relax}
+\def\PVSSmall{\scriptsize\relax}
+\def\PVSLine{\hrule width \hsize height 1pt depth 1pt\relax}
+
+\newenvironment{PVS}%
+{\dimen0=\parindent%
+\@verbatim\frenchspacing\@vobeyspaces%
+%%% \advance\leftskip by -2\parindent\relax%
+\catcode`/=12\catcode`_=12\relax%
+%%% {}\hskip 2\parindent%
+\PVSSize\relax\ttfamily\upshape\@xPVS}%
+{\endverbatim\PVSEnd}%
+
+\newdimen\pvsblockheight
+\newdimen\pvslineheight
+
+\def\pvs@content{\setbox0\vbox\bgroup}
+\def\pvs@endcontent{\egroup\pvsblockheight=\ht0\relax}
+
+\def\pvs@callout#1#2{%
+\raise\pvsblockheight\hbox to 0pt{\lower0.2\pvslineheight\hbox to \hsize{%
+\lower#1\pvslineheight\hbox to 0pt{(#1)\hss}\hfil%
+\lower#1\pvslineheight\hbox to 0pt{\hss #2}}\hss}}
+
+\newenvironment{PVScallout}
+{\let\callout\pvs@callout
+\let\content\pvs@content
+\let\endcontent\pvs@endcontent
+\leavevmode%
+}
+{\hbox to \hsize{\hskip2\parindent \box0\hss}}
+
+
+\newenvironment{rejected}{\sffamily\small\begin{quote}}{\end{quote}}
+
+\def\PVSPath{pvs-}
+\def\pvsinclude#1{\let\PVSSize=\PVSNormal%
+% \let\PVSEnd=\relax\relax%
+\bgroup\catcode`/=12%
+\input{\PVSPath#1.tex}\egroup}
+
+
+\def\pvsInclude#1{\vskip\baselineskip\relax%
+\vbox{\hbox{\large #1.pvs}%
+\vskip\baselineskip%
+\PVSLine%
+\vskip\baselineskip\relax%
+}
+\let\PVSSize=\PVSSmall\relax%
+% \let\PVSEnd\PVSLine\relax
+\bgroup\itshape\catcode`/=12%
+\input{\PVSPath#1.tex}\egroup\PVSLine}
+
+\let\PVSSize=\relax\relax
+\let\PVSEnd=\relax\relax
+
+\def\PVSIndex{\subsection{Index}}
+\let\pvslemma=\textit
+\let\pvstype=\textit
