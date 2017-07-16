@@ -128,8 +128,8 @@ following requirements:
   * Something you are (Example: biometrics)
 
 * **ENR system** - Election Night Reporting system, used to publish
-election results starting on election night, and continuing thru the end
-of certification.
+election results starting on election night, and continuing through
+the end of certification.
 
 * **reported outcome** - The set of contest winners published by the ENR
 system.
