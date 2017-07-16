@@ -249,6 +249,7 @@ BEGIN
 % risk-limiting audit.
   audited_contest: TYPE FROM contest
   opportunistic_contest: TYPE FROM contest
+  full_hand_count_contest: TYPE FROM contest
 % @todo Contest name uniqueness.
 
   outcome: TYPE
@@ -1119,9 +1120,16 @@ BEGIN
 %%% of, and publish on the audit center, the randomly selected ballots
 %%% that each county must audit no later than 11:59 p.m. MT on the
 %%% tenth day after Election Day.
-  public_ballot_to_audit:
+  public_ballots_to_audit:
     [state_wide_dashboard, list[ballot] -> state_wide_dashboard]
-  
+
+%%% The Secretary of State can indicate that a contest must be a full
+%%% hand count contest.
+% @review CDOS We need to know what they process is that they want for
+% this functionality.
+  designate_full_hand_count_contest:
+    [state_wide_dashboard, contest -> state_wide_dashboard]
+
 END state_wide_dashboard
 
 %%% \subsection{County Dashboard]
