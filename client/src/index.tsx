@@ -1,29 +1,31 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-
 import { AppContainer } from 'react-hot-loader';
+import { createStore } from 'redux';
 
-import { App } from './container/App';
+import { Root } from './container/Root';
+import rootReducer from './reducer/root';
 
 
+const store = createStore(rootReducer);
 const rootEl = document.getElementById('root');
 
-const render = (C: any) => {
+const render = (NextRoot: any) => {
     const appContainer = (
-      <AppContainer>
-        <C />
-      </AppContainer>
+        <AppContainer>
+            <NextRoot store={store} />
+        </AppContainer>
     );
 
     ReactDOM.render(appContainer, rootEl);
-}
+};
 
-render(App);
+render(Root);
 
 if (module.hot) {
-    module.hot.accept('./container/App', () => {
-        const NextApp = (require('./container/App') as any).App;
+    module.hot.accept('./container/Root', () => {
+        const NextRoot = (require('./container/Root') as any).Root;
 
-        render(NextApp);
+        render(NextRoot);
     });
 }

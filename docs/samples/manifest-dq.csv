@@ -1,0 +1,4 @@
+CountyID,ScannerID,BatchID,NumBallots,StorageLocation
+Fremont,Scanner1,4,49,Bin 1
+Fremont,Scanner2,1,50,Bin 11
+Fremont,Scanner3,3,51,Bin 17
