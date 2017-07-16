@@ -530,13 +530,13 @@ END audits
 %%% apply to the updated outcome.
 
 %%% Given these constraints, it is generally best to audit
-%%% conservatively.  For example we assume that any late-arriving
+%%% conservatively.  For example we assume that any late-tabulation
 %%% ballots are cast for the losers.  As discussed in [BanuelosEtAl12],
 %%% counties should add a batch of phantom ballots to the manifest, one
-%%% for each possible late-arriving ballot.
+%%% for each possible late-tabulation ballot.
 %%% Another possibility, e.g. if it turns out that not enough phantom
 %%% ballots were added, would be to use more flexible bayes audit
-%%% techniques to do a followup audit after the late-arriving ballots
+%%% techniques to do a followup audit after the late-tabulation ballots
 %%% and tabulations are available, but that capability is not
 %%% implemented at this time.
 
