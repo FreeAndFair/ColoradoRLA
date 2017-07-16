@@ -11,7 +11,7 @@ all: book.pdf book.html
 book.pdf: $(MD_DOCS)
 	pandoc *.md --toc -f markdown -t latex -o book.pdf
 
-book.html:
+book.html: $(MD_DOCS)
 	pandoc *.md --toc -f markdown -t html5 -o book.html
 
 clean:
