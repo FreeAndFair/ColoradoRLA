@@ -65,7 +65,7 @@
 %%% \item[@cluster] the FAFESSL name of a cluster
 %%% \item[@explanation] the explanation for an artifact
 %%% \item[%description] a short description of an artifact
-%%% \item[@indexing-<CLAUSE>] a prefix for any indexing <CLAUSE>
+%%% \item[@indexing-CLAUSE] a prefix for any indexing <CLAUSE>
 %%% \end{description}
 
 %%% These suffixes are commonly used:
@@ -568,7 +568,7 @@ BEGIN
   sos_voter_intent_guide: TYPE FROM instructions
 END instructions_forms_reports
 
-%+BEGIN ifr
+%+END ifr
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
