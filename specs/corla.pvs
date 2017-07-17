@@ -285,10 +285,14 @@ BEGIN
   c1, c2: VAR county
 
   county_names_unique: AXIOM
-  (FORALL s, c1, c2: county_name?(c1) = county_name?(c2)
+  (FORALL s, c1, c2:
+    member(c1, s) AND member(c2, s) AND
+      county_name?(c1) = county_name?(c2)
     IMPLIES c1 = c2)
   county_numbers_unique: AXIOM
-  (FORALL s, c1, c2: county_number?(c1) = county_number?(c2)
+  (FORALL s, c1, c2:
+    member(c1, s) AND member(c2, s) AND
+      county_number?(c1) = county_number?(c2)
     IMPLIES c1 = c2)
   
   election_canvass: TYPE
