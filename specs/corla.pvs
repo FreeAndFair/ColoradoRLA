@@ -1020,11 +1020,11 @@ state_wide_dashboard: THEORY
 BEGIN
   IMPORTING dashboard, elections, rlas, fafessl
 
-%%% CDOS staff, after authenticating to the state-wide dashboard, is
-%%% able to see the status of the entire election. Various static
-%%% information about the election is displayed along with dynamic
-%%% information, the type and content of which is dependent upon in
-%%% the current audit stage.
+%%% CDOS staff, after authenticating to the state-wide dashboard, can
+%%% see the status of the entire election. Various static information
+%%% about the election is displayed along with dynamic information,
+%%% the type and content of which is dependent upono the current audit
+%%% stage.
 
   audit_stage: TYPE =
     { initial, authenticated, risk_limits_set,
@@ -1052,23 +1052,32 @@ BEGIN
 
 %%% \subsubsection{Selection of Audited Contests}
 
-%%% NO LATER THAN 5:00 P.M. MT ON THE FRIDAY AFTER ELECTION DAY, THE
-%%% SECRETARY OF STATE WILL SELECT FOR AUDIT AT LEAST ONE STATEWIDE
-%%% CONTEST, AND FOR EACH COUNTY AT LEAST ONE COUNTYWIDE CONTEST. THE
-%%% SECRETARY OF STATE WILL SELECT OTHER BALLOT CONTESTS FOR AUDIT IF
-%%% IN ANY PARTICULAR ELECTION THERE IS NO STATEWIDE CONTEST OR A
-%%% COUNTYWIDE CONTEST IN ANY COUNTY. THE SECRETARY OF STATE WILL
-%%% PUBLISH A COMPLETE LIST OF ALL AUDITED CONTESTS ON THE AUDIT
-%%% CENTER. THE SECRETARY OF STATE WILL CONSIDER THE FOLLOWING FACTORS
-%%% IN DETERMINING WHICH CONTESTS TO AUDIT:
-%%% (1) THE CLOSENESS OF THE REPORTED TABULATION OUTCOME OF THE CONTESTS;
-%%% (2) THE GEOGRAPHICAL SCOPE OF THE CONTESTS;
-%%% (3) ANY CAUSE FOR CONCERN REGARDING THE ACCURACY OF THE REPORTED
-%%% TABULATION OUTCOME OF THE CONTESTS;
-%%% (4) ANY BENEFITS THAT MAY RESULT FROM OPPORTUNISTICALLY AUDITING
-%%% CERTAIN CONTESTS; AND
-%%% (5) THE ABILITY OF THE COUNTY CLERKS TO COMPLETE THE AUDIT BEFORE
-%%% THE CANVASS DEADLINE.
+%%% No later than 5:00 PM MT on the Friday after Election Day, the
+%%% Secretary of State will select for audit at least one statewide
+%%% contest, and for each county at least one countywide contest. The
+%%% Secretary of State will select other ballot contets for audit if
+%%% in any particular election there is no statewide contest or a
+%%% countywide contest in any county. The Secretary of State will
+%%% publish a complete list of all audited contesets on the audit
+%%% center. The Secretary of State will consider the following factors
+%%% in determining which contests to audit:
+%%%
+%%% \begin{enumerate}
+
+%%% \item The closeness of the reported tabulation outcome of the contests;
+
+%%% \item The geographical scope of the contests;
+
+%%% \item Any cause for concern regarding the accuracy of the reported
+%%% tabulation outcome of the contests;
+
+%%% \item Any benefits that may result from opportunistically auditing
+%%% certain contests; and
+
+%%% \item The ability of the county clerks to complete the audit before
+%%% the canvass deadline.
+
+%%% \end{enumerate}
 
   audit_reason: TYPE =
     { state_wide_contest, county_wide_contest, close_contest,
@@ -1089,16 +1098,20 @@ BEGIN
     [contest, audit_reason -> opportunistic_contest]
 
 %%% Ballots can be randomly selected for audit in two ways, either by:
-%%% \begin{enumeration}
+
+%%% \begin{enumerate}
+
 %%% \item permuting all ballots and auditing a prefix of ballots
-%%% (thereby auditing ballots "with no replacement")
+%%% (thereby auditing ballots "with no replacement"); or 
+
 %%% \item randomly selecting ballots ballot-by-ballot (thereby
 %%% auditing ballots "with replacement" as the same ballot may be
 %%% audited multiple times).
-%%% \end{enumeration}
+
+%%% \end{enumerate}
 
 % @todo kiniry Obviously this type has to be strengthened considerably
-% to guarantee permutation. I.e., both the set and the list are
+% to guarantee permutation. That is, that both the set and the list are
 % finite and converting the list into a set results in a set equivalent
 % to the original set.
   ballot_permutation:
@@ -1117,21 +1130,21 @@ BEGIN
 %%% rule to identify individual ballots as reflected in the county
 %%% ballot manifests. The Secretary of State will notify each county
 %%% of, and publish on the audit center, the randomly selected ballots
-%%% that each county must audit no later than 11:59 p.m. MT on the
+%%% that each county must audit no later than 11:59 PM MT on the
 %%% tenth day after Election Day.
   public_ballots_to_audit:
     [state_wide_dashboard, list[ballot] -> state_wide_dashboard]
 
 %%% The Secretary of State can indicate that a contest must be a full
 %%% hand count contest.
-% @review CDOS We need to know what they process is that they want for
+% @review CDOS We need to know what the process is that they want for
 % this functionality.
   designate_full_hand_count_contest:
     [state_wide_dashboard, contest -> state_wide_dashboard]
 
 END state_wide_dashboard
 
-%%% \subsection{County Dashboard]
+%%% \subsection{County Dashboard}
 
 %%% The County dashboard is used by county officials to communicate
 %%% with the Secretary of State for the purpose of planning and
@@ -1173,7 +1186,7 @@ BEGIN
 %%% To prepare for uploading of artifacts to the Secretary of State,
 %%% counties conducting a comparison audit must verify several
 %%% properties (all of which are discussed in
-%%% \autoref{sec:System_Assumptions}. After verifying those
+%%% \autoref{sec:System_Assumptions}). After verifying those
 %%% properties, counties must generate a digest of the CVR file using
 %%% a hash designated by the Secretary of State.
 
@@ -1186,12 +1199,12 @@ BEGIN
 %%% apply a hash value to the CVR export file using the hash value
 %%% utility provided by the Secretary of State.
 
-%%% Note that this feature is provided by a tool provided by the
+%%% Note that this feature is implemented by a tool provided by the
 %%% Secretary of State. We have not been asked to produce such a tool,
 %%% though one could compute the hash of a file locally in a web
-%%% browser, and thus this could be part of our system. From an
-%%% assurance standpoint is a better idea to use a completely separate
-%%% tool, independently developed from us, to perform this hashing.
+%%% browser, so this could be part of our system. From an assurance
+%%% standpoint it is a better idea to use a completely separate tool,
+%%% developed independently from us, to perform this hashing.
 
 % @review CDOS Confirm that we have nothing to do with recommending,
 % creating, or managing these two hashing tools to be used by county
@@ -1211,20 +1224,25 @@ BEGIN
 % signatures below.
 
 %%% Each county conducting a comparison audit must upload:
-%%% (1) its verified and hashed ballot manifest to the RLA Tool.
+
+%%% \begin{enumerate}
+
+%%% \item its verified and hashed ballot manifest to the RLA Tool;
 
   county_upload_verified_ballot_manifest:
     [county_dashboard, ballot_manifest_file, digest ->
      [county_dashboard, email, upload_system_message]]
 
-%%% (2) its verified and hashed CVR export to the RLA Tool; and
+%%% \item its verified and hashed CVR export to the RLA Tool; and
 
   upload_verified_cvrs:
     [county_dashboard, cvr_file, digest ->
      [county_dashboard, email, upload_system_message]]
 
-%%% (2) its RLA tabulation results export to the Secretary of State’s
+%%% \item its RLA tabulation results export to the Secretary of State’s
 %%% election night reporting system.
+
+%%% \end{enumerate}
 
   upload_tabulation_results:
     [enr_server, rla_tabulation_outcome -> enr_server]
@@ -1233,13 +1251,17 @@ BEGIN
 
 % @trace RDPR-6-Jul-2017 Section 25.2.2(G)
 
-%%% Mo later than 11:59 p.m. MT on the ninth day after Election Day,
+%%% Mo later than 11:59 PM MT on the ninth day after Election Day,
 %%% each county conducting a ballot polling audit must upload:
 
-%%% (1) its verified and hashed ballot manifest to the RLA tool; and
+%%% \begin{enumerate}
 
-%%% (2) its RLA tabulation results export to the Secretary of State’s
+%%% \item its verified and hashed ballot manifest to the RLA tool; and
+
+%%% \item its RLA tabulation results export to the Secretary of State’s
 %%% election night reporting system.
+
+%%% \end{enumerate}
 
 %%% Note that both of these uploads are facilitated by the functions
 %%% defined above, as their types do not mandate a particular kind of
@@ -1280,12 +1302,12 @@ BEGIN
 
 %%% If supported by the county’s voting system, the audit board may
 %%% refer to the digital image of the audited ballot captured by the
-%%% voting system in order to confirm it had retrieved the correct
+%%% voting system in order to confirm it has retrieved the correct
 %%% ballot randomly selected for audit. If the scanned ballot was
 %%% duplicated prior to tabulation, the audit board must also retrieve
 %%% and compare the markings on the original ballot. The audit board
 %%% must complete its reports of all ballots randomly selected for
-%%% audit no later than 5:00 p.m. MT one business day before the
+%%% audit no later than 5:00 PM MT one business day before the
 %%% canvass deadline.
 
 %%% The audit board must interpret voter markings on ballots selected
@@ -1309,12 +1331,12 @@ BEGIN
 % @review CDOS The details of this last fragment of the process are
 % very underspecified.  We need clarity on what they exactly want.
 
-%%% We presume at the moment if there are errors made during the
-%%% auditing process that we should capture information in the RLA
+%%% We presume at the moment that if errors are made during the
+%%% auditing process, we should capture information in the RLA
 %%% Tool about those errors and their mitigation and resolution.
 
 % @review CDOS We need input on how much, and what kind, of logging
-% the want to see of this nature.
+% they want to see of this nature.
   submit_audit_mistake_report:
     [audit_board_dashboard, audit_mistake_report ->
      audit_board_dashboard]
@@ -1339,18 +1361,27 @@ BEGIN
 
 % @trace CORLA System Spec v1.0
 
-%%% We are currently proposing the following set of data and reports
-%%% are included on the public dashboard:
+%%% We are currently proposing that the following set of data and reports
+%%% be included on the public dashboard:
+
 %%% \begin{enumerate}
+
 %%% \item Target and Current Risk Limits, by Contest
+
 %%% \item Audit Board names by County
+
 %%% \item County Ballot Manifests, CVRs and Hashes (status & download
 %%% links)
+
 %%% \item Seed for randomization
+
 %%% \item Ballot Order
+
 %%% \item List of Audit Rounds (number of ballots, status by County,
 %%% download links)
+
 %%% \item Link to Final Audit Report
+
 %%% \end{enumerate}
 
 END public_dashboard
@@ -1370,11 +1401,11 @@ END public_dashboard
 %%% two-factor authentication system. Included in this model are the
 %%% ideas of usernames, passwords, other authentication factors
 %%% mentioned in CDOS documents (such as biometrics and physical
-%%% tokens, such as smartcards or one-time authentication code books),
+%%% tokens like smartcards and one-time authentication code books),
 %%% etc.
 
-%%% Given that CDOS is issuing two-factor authentications, it is
-%%% unclear if they want any additional features, such as a password
+%%% Given that CDOS is handling two-factor authentication, it is
+%%% unclear if they want any additional features such as a password
 %%% reset.
 
 % @review kiniry Once we better understand CDOS's authentication
@@ -1485,20 +1516,26 @@ BEGIN
 END rla_tool
 
 %%% The system architecture consists of:
-%%% \begin{enumeration}
+
+%%% \begin{enumerate}
+
 %%% \item several servers of different kinds deployed and configured
-%%% in a redundant fashion as described elsewhere.
+%%% in a redundant fashion as described elsewhere;
+
 %%% \item several databases whose tables and data are transactionally
-%%% identical. Meaning, after each transaction completes, all
+%%% identical (this means that after each transaction completes, all
 %%% databases are guaranteed to never witness to a client an
-%%% inconsistent state relative to that transaction.
-%%% \item a Javascript-based front-end whose code comes only from the
-%%% system's web servers.
+%%% inconsistent state relative to that transaction);
+
+%%% \item a JavaScript-based front-end whose code comes only from the
+%%% system's web servers; and
+
 %%% \item HTTPS-based connections between the front-end and the
 %%% back-end over which the web application transmits data, including
 %%% new HTML pages, style sheets, data input by the web browser user,
 %%% etc.
-%%% \end{enumeration}
+
+%%% \end{enumerate}
 
 system_architecture: THEORY
 BEGIN
@@ -1514,9 +1551,8 @@ BEGIN
   javascript_code?: [front_end -> javascript_code]
   code_origins?: [javascript_code -> web_server]
   
-%%% The front-end, which recall is written in TypeScript and
-%%% Javascript, is provided to a web browser client directly from the
-%%% web server.
+%%% The front-end, which is written in TypeScript and JavaScript, is
+%%% provided to a web browser client directly from the web server.
   browser_code_origins: AXIOM
     (FORALL (rla):
       member(code_origins?(code(fe)), servers(be))
@@ -1538,8 +1574,8 @@ BEGIN
 %%% simplified here insofar as we are presuming that all databases
 %%% across synchronized database servers are synchronized. It is
 %%% certianly possible to deploy synchronized databases in a fashion
-%%% that does not fulfill this requirement, but for all of those
-%%% databases relevant to this system, this requirement does hold.
+%%% that does not fulfill this requirement, but for all databases
+%%% relevant to this system, this requirement does hold.
   database_redundancy: AXIOM
     (FORALL (be): EXISTS (db1, db2):
       member(db1, servers(be)) AND member(db2, servers(be))
@@ -1556,8 +1592,8 @@ END system_architecture
 %%% \section{System Assumptions}
 %%% \label{sec:System_Assumptions}
 
-%%% This system architecture has a number of explicit assumptions
-%%% which are derived from C.R.S.
+%%% This system architecture includes a number of explicit assumptions
+%%% derived from C.R.S.
 
 system_assumptions: THEORY
 BEGIN
@@ -1568,6 +1604,7 @@ BEGIN
 
 %%% According to the section entitled "CVR Export Verification",
 %%% counties conducting a comparison audit must verify that:
+
 %%% \begin{enumerate}
 
 %%% \item The number of individual CVRs in its CVR export equals the
@@ -1591,6 +1628,8 @@ BEGIN
 %%% the CVR export equals the vote totals in the summary results
 %%% report for the RLA tabulation.
   CVR_vote_totals_equals_summary_results_vote_totals: AXIOM TBD
+
+%%% \end{enumerate}
 
 END system_assumptions
 
