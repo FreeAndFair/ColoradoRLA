@@ -7,7 +7,7 @@
 %%% theorem prover. Writing system specifications in this fashion is
 %%% called (formal) domain engineering. Our formal domain model is
 %%% written in PVS's higher-order logic (HOL). Our informal domain
-%%% model is written in the Free & Fair System Specification Language,
+%%% model is written in the Free \& Fair System Specification Language,
 %%% or FAFESSL for short. FAFESSL is a daughter of Extended BON which
 %%% was, in turn, a daughter of BON, the Business Object Notation.
 
@@ -61,11 +61,11 @@
 
 %%% The FAFESSL annotations we use are as follows:
 %%% \begin{description}
-%%% \item[@system] the FAFESSL name of the system
-%%% \item[@cluster] the FAFESSL name of a cluster
-%%% \item[@explanation] the explanation for an artifact
-%%% \item[%description] a short description of an artifact
-%%% \item[@indexing-CLAUSE] a prefix for any indexing <CLAUSE>
+%%% \item[\@system] the FAFESSL name of the system
+%%% \item[\@cluster] the FAFESSL name of a cluster
+%%% \item[\@explanation] the explanation for an artifact
+%%% \item[\@description] a short description of an artifact
+%%% \item[\@indexing-CLAUSE] a prefix for any indexing <CLAUSE>
 %%% \end{description}
 
 %%% These suffixes are commonly used:
@@ -79,7 +79,7 @@
 
 %%% \section{System Overview}
 
-%%% The RLA Tool is being developed by Free & Fair for the Colorado
+%%% The RLA Tool is being developed by Free \& Fair for the Colorado
 %%% Department of State (CDOS henceforth). The RLA Tool facilitates
 %%% running a risk limiting audit across several jurisdictions. In the
 %%% case of Colorado, it facilitates running risk limiting audits
@@ -220,7 +220,7 @@ BEGIN
 %%% who elections are for, and who make the choices that determine the
 %%% outcome of legitimate elections. Some voters are UOCAVA
 %%% voters. What follows is one way to formalize such, simply stating
-%%% that the type uocava_voter is a predicate on the type
+%%% that the type uocava\_voter is a predicate on the type
 %%% voter. Consequently, all voters are either UOCAVA or not.
   person: TYPE
   voter: TYPE FROM person
@@ -386,7 +386,7 @@ BEGIN
 
 %%% Ballots are marked by voters or ballot marking devices.  A ballot
 %%% mark is any kind of mark made on a ballot that is not found on a
-%%% blank ballot. A voter_marking is any mark made by a voter. An
+%%% blank ballot. A voter\_marking is any mark made by a voter. An
 %%% ambiguous mark is a mark for which there is ambiguity in its
 %%% interpretation (voter or machine). A stray mark is a mark that is
 %%% outside of the legitimate regions of a ballot, such as hesitation
@@ -1370,7 +1370,7 @@ BEGIN
 
 %%% \item Audit Board names by County
 
-%%% \item County Ballot Manifests, CVRs and Hashes (status & download
+%%% \item County Ballot Manifests, CVRs and Hashes (status \& download
 %%% links)
 
 %%% \item Seed for randomization
