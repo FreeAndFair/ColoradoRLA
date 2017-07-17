@@ -1,6 +1,6 @@
 %%% Model of the Colorado Risk Limiting Audit (CORLA) tool.
 %%% Joe Kiniry
-%%% 11-15 July 2017
+%%% July 2017
 
 %%% This document contains a formal specification of the ColoradoRLA
 %%% system/tool. It is written in a literate style using the PVS
@@ -40,14 +40,14 @@
 %%%%%% Here is a cheat sheet for literate PVS.
 
 %%%%%% Six percent signs (yes, %%%%%%) are meta-comments and are
-%%%%%% deleted from the output in all processing modes. I Typically
+%%%%%% deleted from the output in all processing modes. We typically
 %%%%%% use these comments for the copyright header at the top of the
-%%%%%% file and to set off blocks of PVS code from each other.
+%%%%%% file and to delineate blocks of PVS code.
 
 %%%%%% Three percent signs (%%%) are output as regular text in the
 %%%%%% file mode. The text after the percent signs can contain
-%%%%%% whatever LaTeX commands you like -- it's output as-is. In block
-%%%%%% mode, three percent sign comments are deleted from the output.
+%%%%%% arbitrary LaTeX commands, and is output as-is. In block mode,
+%%%%%% three percent sign comments are deleted from the output.
 
 %%%%%% One percent sign (%) is output as regular text in block mode
 %%%%%% and deleted in file mode.
@@ -55,8 +55,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%% Our formal domain model is also annotated with structured comments
-%%% in precise natural language using a standard set of annotation.  A
-%%% shell script processes these annotations and generates a
+%%% in precise natural language using a standard set of annotations.
+%%% A shell script processes these annotations and generates a
 %%% well-typed informal FAFESSL specification.
 
 %%% The FAFESSL annotations we use are as follows:
@@ -86,8 +86,8 @@
 %%% across all counties in the state simultaneously.
 
 %%% The Colorado election law pertaining to election audits is "TBD",
-%%% and the rule pertaining such are found in the "Revised Draft of
-%%% Proposed Rules" whose latest version is labeled CCR 1505-1 and
+%%% and the rules pertaining to such are found in the "Revised Draft
+%%% of Proposed Rules" whose latest version is labeled CCR 1505-1 and
 %%% dated July 6, 2017. Section 25, Post-Election Audit, of that
 %%% document is the salient portion of that document. We will call
 %%% this document RDPR-6-Jul-2017 for the purpose of traceability in
@@ -114,23 +114,22 @@ END fafessl
 
 %%% \section{Background Model Elements}
 
-%%% There are a number of background concepts from computer science
-%%% that are necessary to summarize in order to formalize the RLA
-%%% Tool.
+%%% It is necessary to summarize a number of background concepts from
+%%% computer science in order to formalize the RLA Tool.
 
 %%% The RLA Tool is a client-server system. The server is implemented
 %%% in Java and runs on servers hosted by CDOS. The client is
-%%% implemented in TypeScript and Javascript and runs in modern web
+%%% implemented in TypeScript and JavaScript and runs in modern web
 %%% browsers.
 
 %%% As we are hosting the RLA Tool in CDOS's system, they are
 %%% providing the hosting servers, network, and a number of services
 %%% in support of the tools deployment and management.
 
-%%% A database is used in order to store all of the data relevant to
-%%% audits. Databases contain tables which describe the information
-%%% that they contain. We need not formalize database elements in any
-%%% more detail than what follows.
+%%% A database is used to store all of the data relevant to
+%%% audits. Databases contain tables that describe the information
+%%% they contain. We need not formalize database elements in any more
+%%% detail than what follows.
 
 database: THEORY
 BEGIN
@@ -145,9 +144,9 @@ END database
 
 %%% We also need to be able to talk about some pretty simple ideas
 %%% from information systems.  For example, many files in election
-%%% systems are syntactically just lists of comma-separate
-%%% values. Email is used to for communication between officials and
-%%% with the  . Files are used to store information in a
+%%% systems are syntactically just lists of comma-separated
+%%% values. Email is used for communication between officials and
+%%% with the ?. Files are used to store information in a
 %%% persistent fashion. Consequently, we introduce a few types for
 %%% these ideas.
 % @review How are emails (for SoS admin, for County Audit Admins, 
@@ -159,7 +158,7 @@ BEGIN
 % @description A list of values of arbitrary types and syntax,
 % separated by commas.
   comma_separated_value: TYPE
-% The csv type is an example of how how to introduce a type synonym
+% The csv type is an example of how to introduce a type synonym
 % in PVS.
   csv: TYPE = comma_separated_value
   email: TYPE
@@ -171,13 +170,13 @@ BEGIN
   javascript_code: TYPE
 END information_systems
 
-%%% There are several kinds of servers necessary to deploy this
-%%% system.  At the minimum, two of each of a web server, time (NTPD)
-%%% server, a firewall, and a database server is necessary. Two
-%%% servers of each class are necessary for redundancy to fulfill
-%%% availability requirements. Preferably rendundant servers would be
-%%% hosted in separate facilities, with separate and independent power
-%%% systems and networks.
+%%% Several kinds of servers are necessary to deploy this system.  At
+%%% the minimum, two of each of a web server, a time (NTP) server, a
+%%% firewall, and a database server are necessary. Two servers of each
+%%% class are required for redundancy to fulfill availability
+%%% requirements. Preferably rendundant servers would be hosted in
+%%% separate facilities, with separate and independent power systems
+%%% and networks.
 
 %%% An Election Night Reporting (ENR) server is mentioned repeatedly
 %%% in the RDPR-6-Jul-2017, so we model it here.
@@ -211,26 +210,25 @@ END server
 
 %%% \section{Elections}
 
-%%% Elections have a number of general concepts necessary to specify
+%%% A number of general elections concepts are necessary to specify
 %%% the RLA Tool. Some are generic to all elections, and others are
 %%% specifiec to Colorado.
 
 elections: THEORY
 BEGIN
 %%% Voters are the most important concept in elections, as they are
-%%% who elections are for, and who should make the choices that
-%%% determine the outcome of legitimate elections. Some voters are
-%%% UOCAVA voters. What follows is one way to formalize such, simply
-%%% stating that the type uocava_voter is a predicate on the type
-%%% voter. Consequently, all voters are UOCAVA or not.
+%%% who elections are for, and who make the choices that determine the
+%%% outcome of legitimate elections. Some voters are UOCAVA
+%%% voters. What follows is one way to formalize such, simply stating
+%%% that the type uocava_voter is a predicate on the type
+%%% voter. Consequently, all voters are either UOCAVA or not.
   person: TYPE
   voter: TYPE FROM person
   elector: TYPE = voter
   uocava_voter: TYPE from voter
 
-%%% The dual of voters are candiates, who run for office to represent
-%%% voters. Note that a person can be either a voter, a candidate,
-%%% both, or neither.
+%%% Candidates run for office to represent voters. A person can be a
+%%% voter, a candidate, both, or neither.
   candidate: TYPE FROM person
 
 %%% Elections focus on contests, each of which represents a set of
@@ -270,9 +268,9 @@ BEGIN
 
 %%% Elections are defined across cohorts of voters arranged in any
 %%% number of ways---geographic, political, professional, and more. In
-%%% Colorado, elections are organized across counties, and the entire
+%%% Colorado, elections are organized across counties and the entire
 %%% state. Each county has a name and a county number, both of which
-%%% are unique across the whole state.
+%%% are unique across the state.
 
   county: TYPE
   county_name?: [county -> string]
@@ -304,11 +302,10 @@ BEGIN
   ballot: TYPE % = [election, set[contest], ballot_id]
 END elections
 
-%%% Elections come in many forms: public and private
-%%% elections. National and local elections. This RLA Tool focuses on
-%%% state elections in Colorado, so we only need model that one kind
-%%% of election. Several other kinds of elections are mentioned as
-%%% well.
+%%% Elections come in many forms: public and private elections;
+%%% national and local elections; etc. This RLA Tool focuses on state
+%%% elections in Colorado, so we only model that one kind of
+%%% election. Several other kinds of elections are mentioned as well.
 
 % @relation state_election inherit election
 % @relation national_election inherit election
@@ -335,7 +332,7 @@ END election
 %%% \section{Ballots}
 
 %%% The second basic concept of elections that we need to specify is
-%%% ballots. Ballots are the means by which voters indicate their
+%%% the ballot. Ballots are the means by which voters indicate their
 %%% preferences for candidates in contests and choices in ballot
 %%% questions.
 
@@ -401,12 +398,12 @@ BEGIN
   ambiguous_mark: TYPE FROM ballot_mark
   stray_mark: TYPE FROM ballot_mark
 
-%%% Ballots come in several varieties.  All ballots are either
-%%% represented in a digital fashion (a scan, PDF, etc.) or are paper
-%%% ballots, or both. Ballots are also classifed based upon where they
-%%% originate, such as ballots delivered via mail, UOCAVA ballots,
-%%% early ballots, etc. Ballots are also either tabulated or not. Note
-%%% that none of these categories of ballots are mutually exclusive.
+%%% Ballots come in several varieties.  All ballots are represented in
+%%% a digital fashion (a scan, PDF, etc.), or are paper ballots, or
+%%% both. Ballots are also classified based upon where they originate,
+%%% such as delivery via mail, UOCAVA ballots, early ballots,
+%%% etc. Ballots are also either tabulated or not. Note that none of
+%%% these categories of ballots are mutually exclusive.
 
 % @description The legally recognized means by which a voter can
 % express his or her choices in one or more contests in an election.
@@ -424,8 +421,8 @@ BEGIN
   verified_accepted?: pred[mail_ballot]
 
 %%% Each ballot has a single ballot style, which indicates (at least)
-%%% the contests that are listed on that ballot. Usually ballot styles
-%%% are encoded through the use of natural numbers.
+%%% the contests that are listed on that ballot. Ballot styles are
+%%% usually encoded as natural numbers.
 
 % @description The concrete presentation of a ballot configuration.
   ballot_style: TYPE = nat
@@ -557,8 +554,8 @@ BEGIN
      blank_voted_contests: nat, valid_write_in_votes: nat]
 
 % @trace RDPR-6-Jul-2017 Section 25.2.2(D)(2)
-% @description A file suitable for uploading to the secretary of
-% state’s election night reporting system.
+% @description A file suitable for uploading to the Secretary of
+% State’s election night reporting system.
 % @review CDOS Double-check that we are not responsible for this
 % feature, as it mentions the election night reporting systems, about
 % which we know nothing.
@@ -580,9 +577,9 @@ END instructions_forms_reports
 
 %%% \section{Roles}
 
-%%% Within the RLA Tool there are a number of roles that a person
-%%% involved with the system can take on. Some of these roles are
-%%% mutually exclusive due to legal reasons.
+%%% Within the RLA Tool, a person involved with the system can have a
+%%% number of roles. Some of these roles are mutually exclusive for
+%%% legal reasons.
 
 roles: THEORY
 BEGIN
@@ -626,10 +623,10 @@ BEGIN
 % those credentials? How do they (singular or plural) authenticate to
 % the system. We'll put in place a bootstrapping role for the moment,
 % the system administrator.
-% @review CDOS while members of the audit board might not 
-% be authenticated
-% users of the RLA tool, they do "sign off" on the audit they performed. 
-% Do they also "sign in" before audit starts?
+
+% @review CDOS while members of the audit board might not be
+% authenticated users of the RLA tool, they do "sign off" on the audit
+% they performed.  Do they also "sign in" before audit starts?
 
 % @review CDOS what happens if the Audit Board cannot find 
 % the ballot expected by the RLA tool?
@@ -658,8 +655,8 @@ END cryptography
 
 %%% \subsection{Randomness}
 
-%%% Quality randomness is key to the legitimacy of any risk-limiting
-%%% audit.
+%%% High quality randomness is key to the legitimacy of any
+%%% risk-limiting audit.
 
 randomness: THEORY
 BEGIN
@@ -671,7 +668,7 @@ BEGIN
 
 %%% The Secretary of State will convene a public meeting on the tenth
 %%% day after election day to establish a random seed for use with the
-%%% Secretary of State’s rla tool’s pseudo-random number generator
+%%% Secretary of State’s RLA tool’s pseudo-random number generator
 %%% based on Philip Stark’s online tool, \emph{Pseudo-random Number
 %%% Generator using SHA-256}. This material is incorporated by
 %%% reference in the election rules and does not include later
@@ -704,8 +701,7 @@ END randomness
 
 %%% Election audits come in many forms. The two main kinds of audits
 %%% we focus on in this system are ballot polling audits and
-%%% comparison audits, both of which are kinds of risk-limiting
-%%% audits.
+%%% comparison audits, both of which are risk-limiting audits.
 
 audits: THEORY
 BEGIN
@@ -721,18 +717,18 @@ BEGIN
 %%% A maximum?
   audit_board: TYPE = set[audit_board_member]
 
-%%% These two terms are used but underdefined at this point in time.
+%%% These two terms are used but underdefined at this time.
   audit_mistake: TYPE
   audit_progress: TYPE
 
 %%% The count of the total number of ballots to audit varies across
-%%% audit types. E.g., historically in Colorado random audits must
-%%% audit 500 ballots or 20\% of all ballots, whichever is smaller.
+%%% audit types. For example, historically in Colorado random audits
+%%% must audit 500 ballots or 20\% of all ballots, whichever is
+%%% smaller.
   ballots_to_audit: TYPE = nat
 
-%%% There are various other terms relating to audits, which we list
-%%% here. They will be defined and refined in later versions of the
-%%% domain model.
+%%% We list various other terms relating to audits here. They will be
+%%% defined and refined in later versions of the domain model.
   contest_margin: TYPE = nat
   margin: TYPE = real
 
@@ -748,16 +744,16 @@ BEGIN
 
 % @example For example, if the voting system tabulated 10,000 ballots
 % in an audited contest, and the reported winning candidate with the
-% least number of votes received 4,000 votes, and the reported losing
-% candidate with the most number of votes received 3,500 votes, the
-% diluted margin of the contest is 5% [(4,000 – 3,500) / 10,000]
+% fewest votes received 4,000 votes, and the reported losing candidate
+% with the most votes received 3,500 votes, the diluted margin of the
+% contest is 5% [(4,000 – 3,500) / 10,000]
   diluted_margin: TYPE FROM margin
 
 % @trace struck from RDPR-6-Jul-2017 old Section 25.1.6
 
 % @description A circumstance in which the audit board’s
 % interpretation of ballot markings reveals that the winner with the
-% least number of votes received fewer votes than the voting system’s
+% fewest votes received fewer votes than the voting system’s
 % interpretation of the same markings as reflected in the CVR.
 
 % @example For example, if the CVR reflects an undervote in the
@@ -765,7 +761,7 @@ BEGIN
 % corresponding paper ballot reflects a vote for the loser with the
 % most votes in that contest, the CVR contains a one-vote
 % overstatement. if the CVR reflects a vote for the winner with the
-% least votes, and the audit board’s interpretation of the paper
+% fewest votes, and the audit board’s interpretation of the paper
 % ballot reflects a vote for the loser with the most votes, the
 % preliminary results contain a two-vote overstatement.
   margin_overstatement: TYPE = nat
@@ -774,17 +770,16 @@ BEGIN
 
 % @description A circumstance in which the audit board’s
 % interpretation of ballot markings reveals that the contest winner
-% with the least number of votes received more votes than the voting
-% system’s interpretation of the same markings as reflected in the
-% CVR.
+% with the fewest votes received more votes than the voting system’s
+% interpretation of the same markings as reflected in the CVR.
 
 % @example For example, if the CVR reflects an undervote in the
 % audited contest, and the audit board’s interpretation of the
 % corresponding paper ballot reflects a vote for the winner with the
-% least number of votes in that contest, the CVR contains a one-vote
+% fewest votes in that contest, the CVR contains a one-vote
 % understatement. If the CVR reflects a vote for the loser with the
 % most votes, and the audit board’s interpretation of the paper ballot
-% reflects a vote for the winner with the least votes, the CVR
+% reflects a vote for the winner with the fewest votes, the CVR
 % contains a two-vote understatement.
   margin_understatement: TYPE = nat  
 
@@ -795,24 +790,24 @@ END audits
 
 %%% \section{RLAs}
 
-%%% Audits ideally come after all the votes are tabulated, canvassed and
-%%% reconciled. But in Colorado, since the certification deadline comes
-%%% shortly after the last date for voters to cure signature
-%%% verification problems etc, there is not always enough time to do
-%%% them sequentially.  At the end of the tabulation and canvass may
-%%% come an updated vote count, and the risk limit of the audit needs to
-%%% apply to the updated outcome.
+%%% Audits ideally come after all the votes are tabulated, canvassed
+%%% and reconciled. In Colorado, however, since the certification
+%%% deadline comes shortly after the last date for voters to cure
+%%% signature verification problems, etc., there is not always enough
+%%% time to do them sequentially.  An updated vote count may be
+%%% released at the end of the tabulation and canvass, and the risk
+%%% limit of the audit needs to apply to the updated outcome.
 
 %%% Given these constraints, it is generally best to audit
-%%% conservatively.  For example we assume that any late-tabulation
-%%% ballots are cast for the losers.  As discussed in [BanuelosEtAl12],
-%%% counties should add a batch of phantom ballots to the manifest, one
-%%% for each possible late-tabulation ballot.
-%%% Another possibility, e.g. if it turns out that not enough phantom
-%%% ballots were added, would be to use more flexible bayes audit
-%%% techniques to do a followup audit after the late-tabulation ballots
-%%% and tabulations are available, but that capability is not
-%%% implemented at this time.
+%%% conservatively.  For example, we assume that any late-tabulation
+%%% ballots are cast for the losers.  As discussed in
+%%% [BanuelosEtAl12], counties should add a batch of phantom ballots
+%%% to the manifest, one for each possible late-tabulation ballot.
+%%% Another possibility, if it turns out that not enough phantom
+%%% ballots were added, would be to use more flexible Bayes audit
+%%% techniques to do a followup audit after the late-tabulation
+%%% ballots and tabulations are available; however, that capability is
+%%% not implemented at this time.
 
 rlas: THEORY
 BEGIN
@@ -848,7 +843,7 @@ BEGIN
 % vote records.
   comparison_audit: TYPE FROM risk_limiting_audit
 
-%%% These are some terms of the art which we will more carefully
+%%% These are some terms of the art that we will more carefully
 %%% define as the model is refined.
   discrepency: TYPE
   random: TYPE
@@ -856,7 +851,7 @@ BEGIN
   
 % @trace RDPR-6-Jul-2017 Section 25.1.2
 % @description The audited contest determines the number of ballots
-% that must be examined and verified during the rla.
+% that must be examined and verified during the RLA.
   number_of_ballots_to_audit: [audited_contest -> nat]
 END rlas
 
@@ -868,20 +863,20 @@ END rlas
 
 %%% \section{Cast Vote Records}
 
-%%% Cast vote records, also knows as CVRs, are the digital
+%%% Cast vote records, also known as CVRs, are the digital
 %%% interpretations of paper ballot records by a computer. They
 %%% frequently, but not always, contain an interpretation of all
-%%% contests on ballot. CVRs are sometimes syntactically written as
+%%% contests on a ballot. CVRs are sometimes syntactically written as
 %%% comma-separated values, and other times in plain English. Some
 %%% CVRs use a election-specific encoding scheme to represent choices
 %%% (e.g., a '1' means "John Doe"); others use plain English.
 
 %%% CDOS requirements mandate that CVRs are exported and uploaded to
-%%% the RLA back-end as CSV files by county official using their voting
-%%% system and the RLA Tool, respectively.
+%%% the RLA back-end as CSV files by county officials using their
+%%% voting systems and the RLA Tool, respectively.
 
 % @todo kiniry For a given election, there must be a 1-1
-% correspondance between its ballots and its cvrs.
+% correspondence between its ballots and its CVRs.
 
 cast_vote_records: THEORY
 BEGIN
@@ -910,11 +905,11 @@ END cast_vote_records
 %%% \section{User Interfaces}
 
 %%% The user interfaces of the system are the visible interactive
-%%% parts of an application. There are several different user
+%%% parts of the application. There are three different user
 %%% interfaces in the RLA Tool. The precise names of these interfaces
-%%% is still under discussion, but basically one is for CDOS personnel
-%%% responsible for the audit at the state-level, one is for county
-%%% personnel at the county-level, and one is for audit board members.
+%%% are still under discussion; one is for CDOS personnel responsible
+%%% for the audit at the state-level, one is for county personnel at
+%%% the county-level, and one is for audit board members.
 
 user_interface: DATATYPE
   WITH SUBTYPES uploading_interface, cvr_uploading_interface,
