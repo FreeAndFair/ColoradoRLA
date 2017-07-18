@@ -6,7 +6,7 @@ import {
     Switch,
 } from 'react-router-dom';
 
-import App from './App';
+import Home from './Home';
 
 
 export interface RootProps {
@@ -21,7 +21,7 @@ const makeRoute = (def: RouteDef) => {
 };
 
 const routes: RouteDef[] = [
-    ['/', App],
+    ['/', Home],
 ];
 
 export class Root extends React.Component<RootProps, void> {

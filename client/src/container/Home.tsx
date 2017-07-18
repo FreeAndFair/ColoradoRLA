@@ -4,11 +4,11 @@ import { connect } from 'react-redux';
 import { Hello } from '../component/Hello';
 
 
-export interface AppProps {
+export interface HomeProps {
     greeting: string;
 }
 
-class App extends React.Component<AppProps & any, any> {
+class App extends React.Component<HomeProps & any, any> {
     public render() {
         const { greeting, onClick } = this.props;
 
