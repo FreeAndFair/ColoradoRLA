@@ -1,7 +1,10 @@
-%%% Model of the Colorado Risk Limiting Audit (CORLA) tool.
-%%% Joe Kiniry
-%%% July 2017
-
+%%% \title{Model of the Colorado Risk Limiting Audit (CORLA) tool}
+%%% \author{Joseph R. Kiniry and Daniel M. Zimmerman}
+%%% \date{July 2017}
+%%%
+%%% \maketitle
+%%%
+%%% \section{Introduction}
 %%% This document contains a formal specification of the ColoradoRLA
 %%% system/tool. It is written in a literate style using the PVS
 %%% theorem prover. Writing system specifications in this fashion is
@@ -10,31 +13,32 @@
 %%% model is written in the Free \& Fair System Specification Language,
 %%% or FAFESSL for short. FAFESSL is a daughter of Extended BON which
 %%% was, in turn, a daughter of BON, the Business Object Notation.
-
-%%% See our Bibliography project for more information.
-%%% https://github.com/FreeAndFair/Bibliography
-
+%%%
+%%% See our Bibliography project at GitHub, 
+%%% \url{https://github.com/FreeAndFair/Bibliography}, for more
+%%% information.
+%%%
 %%% In order to relate PVS to FAFESSL, we must define a refinement
 %%% relationship between their two type systems. Informally, that
 %%% mapping is described in the following paragraph.
-
+%%%
 %%% We map PVS public theories and their contents to FAFESSL constructs.
 %%% The top-level corla theory maps to the FAFESSL system specification,
 %%% theories map to clusters, (PVS) types map to (FAFESSL) types, and
 %%% functions map to features.  We use special comments to denote
 %%% informal specifications which will be extracted using a shell script
 %%% into a well-typed FAFESSL informal domain model specification. 
-
+%%%
 %%% As mentioned above, we write formal specifications using a
 %%% literate style, a la Knuth. Doing so permits us to document our
 %%% thinking and the system design, from domain modeling and
 %%% engineering all of the way to formal specification and
 %%% verification, in a fashion that produces beautifully printed
 %%% books and interactive hypertext.
-
+%%%
 %%% In order to write literate PVS we use our old friend Adriaan de
-%%% Groot's scripts available via
-%%% http://www.cs.kun.nl/~adridg/research/PVS-literate.html
+%%% Groot's scripts, available at
+%%% \url{http://www.cs.kun.nl/~adridg/research/PVS-literate.html}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%% Here is a cheat sheet for literate PVS.
@@ -58,16 +62,16 @@
 %%% in precise natural language using a standard set of annotations.
 %%% A shell script processes these annotations and generates a
 %%% well-typed informal FAFESSL specification.
-
+%%%
 %%% The FAFESSL annotations we use are as follows:
 %%% \begin{description}
 %%% \item[\@system] the FAFESSL name of the system
 %%% \item[\@cluster] the FAFESSL name of a cluster
 %%% \item[\@explanation] the explanation for an artifact
 %%% \item[\@description] a short description of an artifact
-%%% \item[\@indexing-CLAUSE] a prefix for any indexing <CLAUSE>
+%%% \item[\@indexing-CLAUSE] a prefix for any indexing $<$CLAUSE$>$
 %%% \end{description}
-
+%%%
 %%% These suffixes are commonly used:
 %%% \begin{description}
 %%% \item[author] an author of an artifact
@@ -76,15 +80,15 @@
 %%% \item[created] the creation date for an artifact
 %%% \item[github] the URL for the GitHub project containing an artifact
 %%% \end{description}
-
+%%%
 %%% \section{System Overview}
-
+%%%
 %%% The RLA Tool is being developed by Free \& Fair for the Colorado
 %%% Department of State (CDOS henceforth). The RLA Tool facilitates
 %%% running a risk limiting audit across several jurisdictions. In the
 %%% case of Colorado, it facilitates running risk limiting audits
 %%% across all counties in the state simultaneously.
-
+%%%
 %%% The Colorado election law pertaining to election audits is "TBD",
 %%% and the rules pertaining to such are found in the "Revised Draft
 %%% of Proposed Rules" whose latest version is labeled CCR 1505-1 and
@@ -92,7 +96,7 @@
 %%% document is the salient portion of that document. We will call
 %%% this document RDPR-6-Jul-2017 for the purpose of traceability in
 %%% this specification.
-
+%%%
 %%% This domain model is based upon that law, its rules, our contract,
 %%% our bibliography of publications about risk-limiting audits, etc.
 
@@ -116,16 +120,16 @@ END fafessl
 
 %%% It is necessary to summarize a number of background concepts from
 %%% computer science in order to formalize the RLA Tool.
-
+%%
 %%% The RLA Tool is a client-server system. The server is implemented
 %%% in Java and runs on servers hosted by CDOS. The client is
 %%% implemented in TypeScript and JavaScript and runs in modern web
 %%% browsers.
-
+%%%
 %%% As we are hosting the RLA Tool in CDOS's system, they are
 %%% providing the hosting servers, network, and a number of services
 %%% in support of the tools deployment and management.
-
+%%%
 %%% A database is used to store all of the data relevant to
 %%% audits. Databases contain tables that describe the information
 %%% they contain. We need not formalize database elements in any more
@@ -177,7 +181,7 @@ END information_systems
 %%% requirements. Preferably rendundant servers would be hosted in
 %%% separate facilities, with separate and independent power systems
 %%% and networks.
-
+%%%
 %%% An Election Night Reporting (ENR) server is mentioned repeatedly
 %%% in the RDPR-6-Jul-2017, so we model it here.
 
@@ -335,7 +339,7 @@ END election
 %%% the ballot. Ballots are the means by which voters indicate their
 %%% preferences for candidates in contests and choices in ballot
 %%% questions.
-
+%%%
 %%% Ballots are stored by one of several possible means. Some ballot
 %%% storage containers are secure, others are not. Some facilitate an
 %%% easy means by which to find a particular ballots, others do not.
@@ -647,6 +651,8 @@ END canvas_boards
 
 %%% \section{Cryptography}
 
+%%% We will add additional cryptographic primitives here as required.
+
 cryptography: THEORY
 BEGIN
   digest: TYPE = bvec[256]
@@ -713,8 +719,8 @@ BEGIN
 %%% constituancies and have various roles. Deciding who is on an audit
 %%% board is also usually a matter of law, policy, and history.
 
-%%% @review CDOS Must audit boards have a minimum number of members?
-%%% A maximum?
+% @review CDOS Must audit boards have a minimum number of members?
+% A maximum?
   audit_board: TYPE = set[audit_board_member]
 
 %%% These two terms are used but underdefined at this time.
@@ -797,7 +803,7 @@ END audits
 %%% time to do them sequentially.  An updated vote count may be
 %%% released at the end of the tabulation and canvass, and the risk
 %%% limit of the audit needs to apply to the updated outcome.
-
+%%%
 %%% Given these constraints, it is generally best to audit
 %%% conservatively.  For example, we assume that any late-tabulation
 %%% ballots are cast for the losers.  As discussed in
@@ -870,7 +876,7 @@ END rlas
 %%% comma-separated values, and other times in plain English. Some
 %%% CVRs use a election-specific encoding scheme to represent choices
 %%% (e.g., a '1' means "John Doe"); others use plain English.
-
+%%%
 %%% CDOS requirements mandate that CVRs are exported and uploaded to
 %%% the RLA back-end as CSV files by county officials using their
 %%% voting systems and the RLA Tool, respectively.
@@ -1198,7 +1204,7 @@ BEGIN
 %%% After verifying the accuracy of the CVR export, the county must
 %%% apply a hash value to the CVR export file using the hash value
 %%% utility provided by the Secretary of State.
-
+%%%
 %%% Note that this feature is implemented by a tool provided by the
 %%% Secretary of State. We have not been asked to produce such a tool,
 %%% though one could compute the hash of a file locally in a web
@@ -1309,11 +1315,11 @@ BEGIN
 %%% must complete its reports of all ballots randomly selected for
 %%% audit no later than 5:00 PM MT one business day before the
 %%% canvass deadline.
-
+%%%
 %%% The audit board must interpret voter markings on ballots selected
 %%% for audit in accordance with the secretary of state’s voter intent
 %%% guide.
-    
+%%% 
 %%% To the extent applicable, the Secretary of State will compare the
 %%% audit board’s reports of the audited ballots to the corresponding
 %%% CVRs and post the results of the comparison and any margin
@@ -1403,7 +1409,7 @@ END public_dashboard
 %%% mentioned in CDOS documents (such as biometrics and physical
 %%% tokens like smartcards and one-time authentication code books),
 %%% etc.
-
+%%%
 %%% Given that CDOS is handling two-factor authentication, it is
 %%% unclear if they want any additional features such as a password
 %%% reset.
@@ -1453,7 +1459,7 @@ BEGIN
 
 %%% What follows are several features used to authenticate various
 %%% roles to their respective dashboards.
-
+%%%
 %%% Each dashboard has an abstract state machine that captures the
 %%% dashboard's workflow and consequntly identifies which features are
 %%% visible to its users at various stages. Those abstract state
