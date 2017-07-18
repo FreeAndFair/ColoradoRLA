@@ -1,4 +1,7 @@
 *.aux
+*.dvi
 *.log
 *.out
 *.pdf
+*.prf
+*_adt.pvs
