@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bookmarks>
+   <site url="http://kindsoftware.com/products/opensource/AutoGrader/update/" selected="true" name="AutoGrader"/>
+   <site url="http://kindsoftware.com/products/opensource/BONc/update/" selected="true" name="BONc/Beetlz"/> 
+   <site url="http://eclipse-cs.sf.net/update/" selected="true" name="Checkstyle"/>
+   <site url="http://findbugs.cs.umd.edu/eclipse" selected="true" name="FindBugs"/>
+   <site url="http://metrics2.sourceforge.net/update" selected="true" name="Metrics"/>
+   <site url="http://jmlspecs.sourceforge.net/openjml-updatesite" selected="true" name="OpenJML"/>
+   <site url="http://www.acanda.ch/eclipse-pmd/release/latest" selected="true" name="PMD"/>
+   <site url="http://beust.com/eclipse" selected="true" name="TestNG"/>
+</bookmarks>
