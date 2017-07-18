@@ -21,10 +21,15 @@ export class Hello extends React.Component<HelloProps, HelloState> {
         const { greeting, onClick } = this.props;
         const { local } = this.state;
 
+        const buttonClassName = 'pt-button pt-intent-primary';
+
         return (
-            <div onClick={onClick} >
+            <div className='pt-card'>
                 <h1>{ greeting }</h1>
                 <h2>My local state is: "{ local }"</h2>
+                <button className={buttonClassName} onClick={onClick}>
+                    <span className='pt-icon-refresh' /> Toggle
+                </button>
             </div>
         );
     }
