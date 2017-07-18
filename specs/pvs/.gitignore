@@ -1,7 +1,10 @@
 *.aux
 *.dvi
+*.fdb_latexmk
+*.fls
 *.log
 *.out
 *.pdf
 *.prf
 *_adt.pvs
+pvs-corla.tex
