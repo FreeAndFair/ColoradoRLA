@@ -723,7 +723,7 @@ BEGIN
 
 %%% The count of the total number of ballots to audit varies across
 %%% audit types. For example, historically in Colorado random audits
-%%% must audit 500 ballots or 20\% of all ballots, whichever is
+%%% must audit 500 ballots or 5\% of all ballots, whichever is
 %%% smaller.
   ballots_to_audit: TYPE = nat
 
@@ -1023,7 +1023,7 @@ BEGIN
 %%% CDOS staff, after authenticating to the state-wide dashboard, can
 %%% see the status of the entire election. Various static information
 %%% about the election is displayed along with dynamic information,
-%%% the type and content of which is dependent upono the current audit
+%%% the type and content of which is dependent upon the current audit
 %%% stage.
 
   audit_stage: TYPE =
@@ -1055,10 +1055,10 @@ BEGIN
 %%% No later than 5:00 PM MT on the Friday after Election Day, the
 %%% Secretary of State will select for audit at least one statewide
 %%% contest, and for each county at least one countywide contest. The
-%%% Secretary of State will select other ballot contets for audit if
+%%% Secretary of State will select other ballot contests for audit if
 %%% in any particular election there is no statewide contest or a
 %%% countywide contest in any county. The Secretary of State will
-%%% publish a complete list of all audited contesets on the audit
+%%% publish a complete list of all audited contests on the audit
 %%% center. The Secretary of State will consider the following factors
 %%% in determining which contests to audit:
 %%%
