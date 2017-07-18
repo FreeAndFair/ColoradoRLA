@@ -419,6 +419,10 @@ BEGIN
   tabulated_ballot: TYPE FROM ballot
   provisional_ballot: TYPE FROM ballot
   property_owner_ballot: TYPE FROM ballot
+  original_ballot: TYPE FROM ballot
+  duplicated_ballot: TYPE FROM ballot
+  non_voter_verifiable_ballot: TYPE FROM ballot
+  phantom_ballot: TYPE FROM ballot
 
 %%% Ballots can be in various stages of processing, as implicitly
 %%% mentioned in the C.R.S.
@@ -930,6 +934,9 @@ BEGIN
     make_county_auditing_interface: county_auditing_interface
   audit_adjudication_interface?:
     make_audit_adjudication_interface: audit_adjudication_interface
+% @todo in the audit adjudication interface, it must be possible to classify
+% a ballot as unauditable either due to not finding a voter-verifiable paper
+% record or due to it being a phantom ballot
   public_interface?:
     make_public_interface: public_interface
 END user_interface
