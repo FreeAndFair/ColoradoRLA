@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import { Popover, Position } from '@blueprintjs/core';
+import { Link } from 'react-router-dom';
 
 import NavMenu from './NavMenu';
 
@@ -14,8 +15,11 @@ const Heading = () =>
 const Divider = () =>
     <span className='pt-navbar-divider' />;
 
-const HomeButton = () =>
-    <button className='pt-button pt-minimal pt-icon-home'>Home</button>;
+const HomeButton = () => (
+    <Link to='/'>
+        <button className='pt-button pt-minimal pt-icon-home'>Home</button>
+    </Link>
+);
 
 const UserButton = () =>
     <button className='pt-button pt-minimal pt-icon-user' />;
