@@ -34,4 +34,23 @@ The Free &amp; Fair ruleset checks Java code for possible issues.
   <rule ref="rulesets/java/typeresolution.xml"/>
   <rule ref="rulesets/java/unnecessary.xml"/>
   <rule ref="rulesets/java/unusedcode.xml"/>
-</ruleset>
+  
+  <!-- customize the short class name rule -->
+  <rule ref="rulesets/java/naming.xml/ShortClassName">
+    <properties>
+      <property name="minimum" value="4"/>
+    </properties>
+  </rule>
+  
+  <!-- customize the comment size rule -->
+  <rule ref="rulesets/java/comments.xml/CommentSize">
+    <properties>
+      <property name="maxLines" value="100"/> <!-- effectively, no maximum -->
+    </properties>
+  </rule>
+  
+  <!-- exclude the guarded log statement rule -->
+  <rule ref="rulesets/logging-jakarta-commons.xml">
+    <exclude name="GuardLogStatement"/>
+  </rule>
+ </ruleset>

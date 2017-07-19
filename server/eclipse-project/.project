@@ -41,12 +41,12 @@
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>org.jmlspecs.OpenJMLUI.JMLBuilder</name>
+			<name>org.eclipse.m2e.core.maven2Builder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>org.eclipse.m2e.core.maven2Builder</name>
+			<name>org.jmlspecs.OpenJMLUI.JMLBuilder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>
