@@ -23,33 +23,33 @@ export default class NavMenu extends React.Component<any, any> {
                 <NavItem
                     text='Home'
                     path='/'
-                    iconName='new-text-box'
+                    iconName='pt-icon-home'
                 />
                 <MenuDivider />
                 <NavItem
                     text='Audit'
                     path='/audit'
-                    iconName='new-text-box'
+                    iconName='pt-icon-eye-open'
                 />
                 <NavItem
                     text='Report'
                     path='/audit/report'
-                    iconName='new-text-box'
+                    iconName='pt-icon-timeline-bar-chart'
                 />
                 <NavItem
                     text='Round'
                     path='/audit/round'
-                    iconName='new-text-box'
+                    iconName='pt-icon-repeat'
                 />
                 <NavItem
                     text='Seed'
                     path='/audit/seed'
-                    iconName='new-text-box'
+                    iconName='pt-icon-numerical'
                 />
                 <NavItem
                     text='Upload'
                     path='/audit/upload'
-                    iconName='new-text-box'
+                    iconName='pt-icon-folder-close'
                 />
             </Menu>
         );
