@@ -7,7 +7,7 @@
         "build": "webpack",
         "lint": "tslint 'src/**/*.ts*'",
         "start": "webpack-dev-server",
-        "test": "ts-node $(npm bin)/tape 'test/**/*.test.{ts,tsx}' | tap-spec"
+        "test": "ts-node $(npm bin)/tape '{src,test}/**/*.test.{ts,tsx}' | tap-spec"
     },
     "author": "Free & Fair",
     "license": "UNLICENSED",
