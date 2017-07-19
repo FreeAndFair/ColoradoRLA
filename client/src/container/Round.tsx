@@ -1,10 +1,17 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
+import Nav from '../component/Nav';
+
 
 class Round extends React.Component<any, any> {
     public render() {
-        return <div>Round</div>;
+        return (
+            <div>
+                <Nav />
+                <div>Round</div>
+            </div>
+        );
     }
 }
 

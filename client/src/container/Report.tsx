@@ -1,10 +1,17 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
+import Nav from '../component/Nav';
+
 
 class Report extends React.Component<any, any> {
     public render() {
-        return <div>Report</div>;
+        return (
+            <div>
+                <Nav />
+                <div>Report</div>
+            </div>
+        );
     }
 }
 
