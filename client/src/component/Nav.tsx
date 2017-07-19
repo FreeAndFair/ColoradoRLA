@@ -1,5 +1,9 @@
 import * as React from 'react';
 
+import { Popover, Position } from '@blueprintjs/core';
+
+import NavMenu from './NavMenu';
+
 
 const MenuButton = () =>
     <button className='pt-button pt-minimal pt-icon-menu' />;
@@ -24,7 +28,9 @@ export default class Nav extends React.Component<any, any> {
         return (
             <nav className='pt-navbar'>
                 <div className='pt-navbar-group pt-align-left'>
-                    <MenuButton />
+                    <Popover content={<NavMenu />} position={Position.RIGHT_TOP}>
+                        <MenuButton />
+                    </Popover>
                     <Heading />
                 </div>
                 <div className='pt-navbar-group pt-align-right'>
