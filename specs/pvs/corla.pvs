@@ -216,7 +216,7 @@ END server
 
 %%% A number of general elections concepts are necessary to specify
 %%% the RLA Tool. Some are generic to all elections, and others are
-%%% specifiec to Colorado.
+%%% specific to Colorado.
 
 elections: THEORY
 BEGIN
