@@ -1732,6 +1732,48 @@ END logging
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%%% \section{Data Model}
+
+%%% A single, mirrored relational database is used to store all
+%%% persistent information for the RLA Tool.  In order to define the
+%%% data model of the system, we need to:
+%%% \begin{enumerate}
+%%% \item identify the \emph{core concepts} that must be persistent in
+%%% the system
+%%% \item identify the \emph{relationships} that must be persistent in the
+%%% system
+%%% \item derive from these pieces of information:
+%%%   \begin{enumerate}
+%%%   \item the necessary \emph{tables} that \emph{collect concepts},
+%%%   \item identify the \emph{indexing concept} of each table, and
+%%%   \item define the appropriate \emph{joins} that realize
+%%%         relationships
+%%%   \end{enumerate}
+%%% \end{enumerate}
+
+data_model: THEORY
+BEGIN
+  IMPORTING fafessl, database, information_systems, roles, rla_tool,
+            authentication
+
+  be: VAR back_end
+  db: VAR database
+
+%%% The first set of data persistently stored relates to
+%%% authentication. Some of this data will be stored in the two-factor
+%%% authentication system provided by CDOS. All other data must be
+%%% stored in the RLA Tool database. In general, each entry in the
+%%% authentication table is simply an administrator and two-factor
+%%% authentication credential pair.
+  authentication_table: TYPE =
+    [administrator, two_factor_authentication]
+
+%%% From the State's point of view 
+
+END data_model
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %%% \section{Domain Model}
 
 %%% Thus, the overall domain model of this system is the sum total of
