@@ -7,4 +7,9 @@
   <fileset name="all" enabled="true" check-config-name="Free &amp; Fair" local="true">
     <file-match-pattern match-pattern="." include-pattern="true"/>
   </fileset>
+  <filter name="DerivedFiles" enabled="true"/>
+  <filter name="FilesFromPackage" enabled="true">
+    <filter-data value="src/main/resources"/>
+    <filter-data value="src/test/resources"/>
+  </filter>
 </fileset-config>

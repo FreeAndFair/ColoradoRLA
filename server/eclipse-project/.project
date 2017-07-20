@@ -21,11 +21,6 @@
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>ie.ucd.autograder.builder</name>
-			<arguments>
-			</arguments>
-		</buildCommand>
-		<buildCommand>
 			<name>ie.ucd.bon.plugin.boncbuilder</name>
 			<arguments>
 			</arguments>
@@ -42,6 +37,11 @@
 		</buildCommand>
 		<buildCommand>
 			<name>org.jmlspecs.OpenJMLUI.JMLBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
+			<name>ie.ucd.autograder.builder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>

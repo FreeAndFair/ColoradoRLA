@@ -9,6 +9,7 @@ ie.ucd.autograder.collectors.findbugs.errorsenabled=false
 ie.ucd.autograder.collectors.findbugs.errorslookup=F,80;D-,60;D,40;C,20;B,10;A-,5;A,2.5;A+,0
 ie.ucd.autograder.collectors.findbugs.warningslookup=F,80;D-,60;D,40;C,20;B,10;A-,5;A,2.5;A+,0
 ie.ucd.autograder.collectors.pmd.errorsenabled=false
+ie.ucd.autograder.collectors.pmd.errorslookup=F,80;D-,60;D,40;C,20;B,10;A-,5;A,2.5;A+,0
 ie.ucd.autograder.collectors.pmd.markerids=ch.acanda.eclipse.pmd.core.pmdMarker,ch.acanda.eclipse.pmd.core.pmdLongMarker
 ie.ucd.autograder.collectors.pmd.warningslookup=F,80;D-,60;D,40;C,20;B,10;A-,5;A,2.5;A+,0
 ie.ucd.autograder.gradeboundaries.A.value=93.0

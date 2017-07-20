@@ -19,3 +19,6 @@ script:
     npm run lint;
   - cd "${TRAVIS_BUILD_DIR}/client";
     npm test;
+  - cd "${TRAVIS_BUILD_DIR}/server/eclipse-project";
+    mvn verify;
+
