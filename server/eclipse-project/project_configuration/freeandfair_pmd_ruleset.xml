@@ -13,7 +13,10 @@ The Free &amp; Fair ruleset checks Java code for possible issues.
   <rule ref="rulesets/java/clone.xml"/>
   <rule ref="rulesets/java/codesize.xml"/>
   <rule ref="rulesets/java/comments.xml"/>
-  <rule ref="rulesets/java/controversial.xml"/>
+  <rule ref="rulesets/java/controversial.xml">
+    <exclude name="AvoidFinalLocalVariable"/>
+    <exclude name="DataflowAnomalyAnalysis"/>
+  </rule>
   <rule ref="rulesets/java/coupling.xml">
     <exclude name="LawOfDemeter"/>
   </rule>
@@ -29,7 +32,9 @@ The Free &amp; Fair ruleset checks Java code for possible issues.
   <rule ref="rulesets/java/migrating.xml"/>
   <rule ref="rulesets/java/optimizations.xml"/>
   <rule ref="rulesets/java/strictexception.xml"/>
-  <rule ref="rulesets/java/strings.xml"/>
+  <rule ref="rulesets/java/strings.xml">
+    <exclude name="ConsecutiveAppendsShouldReuse"/>
+  </rule>
   <rule ref="rulesets/java/sunsecure.xml"/>
   <rule ref="rulesets/java/typeresolution.xml"/>
   <rule ref="rulesets/java/unnecessary.xml"/>
