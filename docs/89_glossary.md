@@ -62,7 +62,10 @@ See also [VVSG-Interoperability CVR Subgroup](http://collaborate.nist.gov/voting
 
 * **contest** - A partisan or nonpartisan candidate race, or a
 ballot measure, that appears on the ballot for an election in a
-county.  Ex: Jane Doe for Colorado Secretary of State.
+county.  Ex: Jane Doe for Colorado Secretary of State. Each option
+for the voter is called a *choice*.
+
+* **choice** TBD candidate or YES/NO option
 
 * **coordinated election** - Coordinated Elections occur on the first
 Tuesday of November in odd-numbered years.  If the Secretary of State
@@ -141,6 +144,20 @@ CVRs that are being audited.
 outcome that a full hand count of the paper ballots would show.
 This can happen due to equipment failures, adjudication errors,
 and other reasons.
+
+* **full hand count** - TBD along these lines: A procedure for
+determining the correct outcome of a contest, suitable for use in an
+RLA. It involves a tabulation of the votes for each choice in a contest
+which involves manual interpretation of each ballot, and may involve
+verifiable machine assist with checking the counts. See one suggested
+procedure at
+[Branscomb full hand countproposal](http://www.sos.state.co.us/pubs/rule_making/written_comments/2017/20170718BranscombMcCarthy.pdf).
+Cf. *recount*.
+
+* **recount** TBD, a procedure under Colorado law that happens *after*
+certification if the margin is too tight, or if a candidate requests
+it. A recount doesn't have to involve manual interpretation of each
+ballot.  Cf. *full hand count*.
 
 * **overstatement of the margin** TBD
 
