@@ -227,8 +227,4 @@
     <property name="max" value="1000"/>
   </module>
   <module name="FileTabCharacter"/>
-  <module name="SuppressionFilter">
-    <property name="file" value="${project_loc}/project_configuration/checkstyle_suppression.xml"/>
-    <property name="optional" value="false"/>
-  </module>
 </module>

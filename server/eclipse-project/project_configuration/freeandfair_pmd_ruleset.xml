@@ -14,19 +14,19 @@ The Free &amp; Fair ruleset checks Java code for possible issues.
   <rule ref="rulesets/java/codesize.xml"/>
   <rule ref="rulesets/java/comments.xml"/>
   <rule ref="rulesets/java/controversial.xml"/>
-  <rule ref="rulesets/java/coupling.xml"/>
+  <rule ref="rulesets/java/coupling.xml">
+    <exclude name="LawOfDemeter"/>
+  </rule>
   <rule ref="rulesets/java/design.xml"/>
   <rule ref="rulesets/java/empty.xml"/>
   <rule ref="rulesets/java/finalizers.xml"/>
   <rule ref="rulesets/java/imports.xml"/>
   <rule ref="rulesets/java/j2ee.xml"/>
-  <rule ref="rulesets/java/javabeans.xml"/>
   <rule ref="rulesets/java/junit.xml"/>
-  <rule ref="rulesets/java/logging-jakarta-commons.xml"/>
+  <!-- rule ref="rulesets/java/logging-jakarta-commons.xml"/ -->
   <rule ref="rulesets/java/logging-java.xml"/>
-  <rule ref="rulesets/java/metrics.xml"/>
+  <!-- rule ref="rulesets/java/metrics.xml"/  -->
   <rule ref="rulesets/java/migrating.xml"/>
-  <rule ref="rulesets/java/naming.xml"/>
   <rule ref="rulesets/java/optimizations.xml"/>
   <rule ref="rulesets/java/strictexception.xml"/>
   <rule ref="rulesets/java/strings.xml"/>
@@ -35,13 +35,6 @@ The Free &amp; Fair ruleset checks Java code for possible issues.
   <rule ref="rulesets/java/unnecessary.xml"/>
   <rule ref="rulesets/java/unusedcode.xml"/>
   
-  <!-- customize the short class name rule -->
-  <rule ref="rulesets/java/naming.xml/ShortClassName">
-    <properties>
-      <property name="minimum" value="4"/>
-    </properties>
-  </rule>
-  
   <!-- customize the comment size rule -->
   <rule ref="rulesets/java/comments.xml/CommentSize">
     <properties>
@@ -49,8 +42,11 @@ The Free &amp; Fair ruleset checks Java code for possible issues.
     </properties>
   </rule>
   
-  <!-- exclude the guarded log statement rule -->
-  <rule ref="rulesets/logging-jakarta-commons.xml">
-    <exclude name="GuardLogStatement"/>
+  <!-- customize the empty catch block rule -->
+  <rule ref="rulesets/java/empty.xml/EmptyCatchBlock">
+    <properties>
+      <property name="allowCommentedBlocks" value="true"/>
+    </properties>
   </rule>
+ 
  </ruleset>

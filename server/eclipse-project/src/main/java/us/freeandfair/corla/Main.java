@@ -100,7 +100,6 @@ public final class Main {
     }
     
     // get key store information from properties, if applicable
-    final String keystore_password = my_properties.getProperty("keystore_password", null);
     String keystore_path = my_properties.getProperty("keystore", null);
     if (keystore_path != null && !(new File(keystore_path).exists())) {
       // the keystore property isn't an absolute or relative pathname that exists, so
@@ -110,11 +109,11 @@ public final class Main {
         try {
           keystore_path = Paths.get(keystore_url.toURI()).toString();
         } catch (final URISyntaxException e) {
-          // do nothing
+          // keystore_path stays null
         }
       }
     }
-    
+
     // start Spark listening on our port
     Spark.port(port_number);
     
@@ -123,6 +122,7 @@ public final class Main {
     
     // SSL
     if (keystore_path != null) {
+      final String keystore_password = my_properties.getProperty("keystore_password", null);
       Spark.secure(keystore_path, keystore_password, null, null);
     }
     
@@ -175,8 +175,8 @@ public final class Main {
           properties.loadFromXML(new FileInputStream(file));
         } catch (final IOException ex) {
           // could not load properties that way either, let's abort
-          throw new IllegalArgumentException
-          ("Error loading specified properties file, aborting.", ex);
+          LOGGER.error("could not load properties, exiting");
+          return;
         }
       }
     } else {
