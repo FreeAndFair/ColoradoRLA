@@ -132,9 +132,6 @@
     </module>
     <module name="MissingSwitchDefault"/>
     <module name="ModifiedControlVariable"/>
-    <module name="MultipleStringLiterals">
-      <property name="ignoreOccurrenceContext" value="STATIC_INIT,ANNOTATION"/>
-    </module>
     <module name="MultipleVariableDeclarations">
       <message key="multiple.variable.declarations" value="Only one variable definition allowed per line."/>
     </module>
