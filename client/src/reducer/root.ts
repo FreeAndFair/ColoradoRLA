@@ -1,16 +1,16 @@
 const defaultState = { greeting: 'Hello' };
 
 export default function root(state: any = defaultState, action: any) {
-  switch (action.type) {
+    switch (action.type) {
 
-  case 'NEXT_GREETING':
-      const greeting
-          = state.greeting === 'Hello'
-          ? 'Hi'
-          : 'Hello';
-      return { greeting };
+    case 'NEXT_GREETING':
+        const greeting
+            = state.greeting === 'Hello'
+            ? 'Hi'
+            : 'Hello';
+        return { greeting };
 
-  default:
-      return state;
-  }
+    default:
+        return state;
+    }
 }
