@@ -248,14 +248,22 @@ elections: THEORY
 BEGIN
 %%% Voters are the most important concept in elections, as they are
 %%% who elections are for, and who make the choices that determine the
-%%% outcome of legitimate elections. Some voters are UOCAVA
-%%% voters. What follows is one way to formalize such, simply stating
-%%% that the type uocava\_voter is a predicate on the type
-%%% voter. Consequently, all voters are either UOCAVA or not.
-  person: TYPE
-  voter: TYPE FROM person
+%%% outcome of legitimate elections.
+%%%
+%%% Voters have first and lastnames and a political party affiliation.
+  person: TYPE =
+    [# firstname: string, lastname: string #]
+  political_party: TYPE = string
+  voter: TYPE = %FROM person
+    [# firstname: string,
+       lastname: string,
+       party_affiliation: political_party #]
   elector: TYPE = voter
-  uocava_voter: TYPE from voter
+%%% Some voters are UOCAVA voters. What follows is one way to
+%%% formalize such, simply stating that the type
+%%% \texttt{uocava\_voter} is a predicate on the type
+%%% voter. Consequently, all voters are either UOCAVA or not.
+  uocava_voter: pred[voter]
 
 %%% Candidates run for office to represent voters. A person can be a
 %%% voter, a candidate, both, or neither.
@@ -271,7 +279,7 @@ BEGIN
 % the ballots theory.
   contest: TYPE =
     [# name: string, description: string #] % , choices: choice #]
-  contest_name?: [contest -> string]
+
 % @trace RDPR-6-Jul-2017 Section 25.1.2
 % @description A contest selected by the Secretary of State for a
 % risk-limiting audit.
@@ -328,7 +336,6 @@ BEGIN
     IMPLIES c1 = c2)
 
   election_canvass: TYPE
-  political_party: TYPE = string
 % @trace RDPR-6-Jul-2017 Section 25.1.1
 % @description The page or pages of the Secretary of State's website
 % devoted to risk-limiting audits.
@@ -359,14 +366,26 @@ election: DATATYPE
 BEGIN
   IMPORTING elections
 
-  is_county_election?(s: set[county], c: set[contest]):
+  is_county_election?(name: string,
+                      date: string,
+                      counties: set[county],
+                      contests: set[contest]):
     make_county_election: county_election
-  is_state_election?(s: state, c: set[contest]):
+  is_state_election?(name: string,
+                     date: string,
+                     state: state,
+                     contests: set[contest]):
     make_state_election: state_election
-  is_national_election?(n: nation, c: set[contest]):
+  is_national_election?(name: string,
+                        date: string,
+                        nation: nation,
+                        contests: set[contest]):
     make_national_election: national_election
-  is_private_election?(o: organization, c: set[contest]):
-    make_private_election: private_election
+  is_private_election?(name: string,
+                       date: string,
+                       org: organization,
+                       contests: set[contest]):
+    make_private_election: private_election  
 END election
 
 %+END elections
@@ -410,10 +429,10 @@ BEGIN
 
   voting_system: TYPE
   dominion_voting_system: TYPE FROM voting_system
-
-  scanner: TYPE
-  scanner_id_number: TYPE
-  id_number?: [scanner -> scanner_id_number]
+  
+  scanner_id_number: TYPE = nat
+  scanner: TYPE =
+    [# name: string, model: string, id_number: scanner_id_number #]
 % @todo Each scanner has a unique id number.
   vvpat: TYPE
   verified?: TYPE = pred[storage_container]
@@ -489,6 +508,7 @@ BEGIN
 % @description A decision to be made, either the selection of one or
 % more candidates for an office or the choice of a course of action.
 % @todo kiniry Need to clarify choices vs options vs votes.
+% @todo kiniry Need to add model information for write-in votes.
   ballot_contest: TYPE = contest
   option: TYPE = string
   choice: TYPE = set[option]
@@ -535,6 +555,8 @@ BEGIN
 % formats.
   ballot_manifest_info: TYPE =
     [county_id, scanner_id_number, batch_number, batch_size, storage_container]
+% @todo kiniry Ballot position number is still not explicitly
+% specified.
   ballot_manifest: TYPE = set[ballot_manifest_info]
   verified?: pred[ballot_manifest]
   ballot_manifest_file: TYPE FROM file
@@ -566,6 +588,9 @@ BEGIN
 % @description A (sometimes deemed improper) selection of too few
 % choices in a ballot contest.
   undervote?(choices:set[choice]): make_undervote: undervote
+% @todo kiniry Should we model a blank vote separately from an
+% undervote?  Or do they simply use the term blank vote to denote an
+% undervote? @trace CDOS Audit Board Utility Mock-up 21 July 2017
 END vote
 
 ballot_interpretation: THEORY
