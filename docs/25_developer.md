@@ -224,6 +224,11 @@ code review. The development worfklow is as follows:
   formatters, test runners, and other static analysis tools. Configure
   your editor to use them, and when feasible, integrate them into the
   upstream continuous integration checks.
+- WARNING: sub-projects (e.g. the client, server) should _not_ directly
+  depend on files outside of their directory tree. Our CI is configured
+  to run checks only for projects that have had some file changed. If
+  you must depend on out-of-tree files, update [`.travis.yml`](../.travis.yml)
+  to avoid false positives.
 
 Building
 --------
