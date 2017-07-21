@@ -12,13 +12,19 @@ install:
     cd "${TRAVIS_BUILD_DIR}/client";
     npm install;
 
-script:
-  - cd "${TRAVIS_BUILD_DIR}/client";
-    npm run build;
-  - cd "${TRAVIS_BUILD_DIR}/client";
-    npm run lint;
-  - cd "${TRAVIS_BUILD_DIR}/client";
-    npm test;
-  - cd "${TRAVIS_BUILD_DIR}/server/eclipse-project";
-    mvn verify;
+before_script:
+  - export CLIENT_DIR="${TRAVIS_BUILD_DIR}/client";
+  - export SERVER_DIR="${TRAVIS_BUILD_DIR}/server/eclipse-project";
 
+script:
+  - if ${TRAVIS_BUILD_DIR}/ci/changes-in-dir client; then
+      cd "${CLIENT_DIR}";
+      npm run lint;
+      npm run build;
+      npm test;
+    fi;
+
+  - if ${TRAVIS_BUILD_DIR}/ci/changes-in-dir server; then
+      cd "${SERVER_DIR}";
+      mvn verify;
+    fi;
