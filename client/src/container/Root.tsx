@@ -6,17 +6,17 @@ import {
     Switch,
 } from 'react-router-dom';
 
-import Audit from './Audit';
-import Ballot from './Ballot';
-import Home from './Home';
-import Login from './Login';
-import Report from './Report';
-import Round from './Round';
-import Seed from './Seed';
-import Upload from './Upload';
+import AuditContainer from './Audit';
+import BallotContainer from './Ballot';
+import HomeContainer from './Home';
+import LoginContainer from './Login';
+import ReportContainer from './Report';
+import RoundContainer from './Round';
+import SeedContainer from './Seed';
+import UploadContainer from './Upload';
 
 
-export interface RootProps {
+export interface RootContainerProps {
     store: Store<any>;
 }
 
@@ -28,17 +28,17 @@ const makeRoute = (def: RouteDef) => {
 };
 
 const routes: RouteDef[] = [
-    ['/', Home],
-    ['/login', Login],
-    ['/audit', Audit],
-    ['/audit/ballot', Ballot],
-    ['/audit/report', Report],
-    ['/audit/round', Round],
-    ['/audit/seed', Seed],
-    ['/audit/upload', Upload],
+    ['/', HomeContainer],
+    ['/login', LoginContainer],
+    ['/audit', AuditContainer],
+    ['/audit/ballot', BallotContainer],
+    ['/audit/report', ReportContainer],
+    ['/audit/round', RoundContainer],
+    ['/audit/seed', SeedContainer],
+    ['/audit/upload', UploadContainer],
 ];
 
-export class Root extends React.Component<RootProps, void> {
+export class RootContainer extends React.Component<RootContainerProps, void> {
     public render() {
         const { store } = this.props;
 

@@ -5,11 +5,11 @@ import { Hello } from '../component/Hello';
 import Nav from '../component/Nav';
 
 
-export interface HomeProps {
+export interface HomeContainerProps {
     greeting: string;
 }
 
-class App extends React.Component<HomeProps & any, any> {
+class HomeContainer extends React.Component<HomeContainerProps & any, any> {
     public render() {
         const { greeting, onClick } = this.props;
 
@@ -30,4 +30,4 @@ const mapDispatchToProps = (dispatch: any) => ({
     },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(HomeContainer);

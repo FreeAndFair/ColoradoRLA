@@ -4,12 +4,12 @@ import { connect } from 'react-redux';
 import Nav from '../component/Nav';
 
 
-class Audit extends React.Component<any, any> {
+class AuditContainer extends React.Component<any, any> {
     public render() {
         return (
             <div>
                 <Nav />
-                <div>Audit</div>
+                <div>AuditContainer</div>
             </div>
         );
     }
@@ -19,4 +19,4 @@ const mapStateToProps = (state: any) => ({});
 
 const mapDispatchToProps = (dispatch: any) => ({});
 
-export default connect(mapStateToProps, mapDispatchToProps)(Audit);
+export default connect(mapStateToProps, mapDispatchToProps)(AuditContainer);
