@@ -45,7 +45,8 @@ tools and get the project ready for development, do the following:
   "ColoradoRLA" project appear. Then, click "Finish". If you have not yet cloned the repository, you can either do so first, or import "Projects
   from Git" instead and let Eclipse clone it for you. Note that the
   Eclipse project will be linked, rather than copied, into your workspace.
-  11. You are now ready to work. You can optionally open the AutoGrader
+  11. You are now ready to work. You can explore the project via 
+  "`Window` -> `Show View` -> `Project Explorer`", and optionally open the AutoGrader
   view (by selecting it from the set presented by "Window -> Show View ->
   Other..." or searching Eclipse for "AutoGrader") to get continuous
   feedback on the project's code quality.
