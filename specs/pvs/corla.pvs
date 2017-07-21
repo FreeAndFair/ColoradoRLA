@@ -372,8 +372,8 @@ BEGIN
 % @todo Each scanner has a unique id number.
   vvpat: TYPE
   verified?: TYPE = pred[storage_container]
-  log: TYPE
-  chain_of_custody_log: TYPE FROM log
+
+  vvsg_log: TYPE
 END elections_equipment
 
 ballots: THEORY
@@ -422,6 +422,7 @@ BEGIN
   original_ballot: TYPE FROM ballot
   duplicated_ballot: TYPE FROM ballot
   non_voter_verifiable_ballot: TYPE FROM ballot
+  voter_verifiable_ballot: TYPE FROM ballot
   phantom_ballot: TYPE FROM ballot
 
 %%% Ballots can be in various stages of processing, as implicitly
@@ -541,16 +542,27 @@ END ballots_collections
 
 instructions_forms_reports: THEORY
 BEGIN
-  IMPORTING information_systems
+  IMPORTING information_systems, ballot_manifests, election, audits
   
-  report: TYPE
+  report: TYPE = [# name: string #]
 % @review CDOS The contents of this report are underspecified at the
 % moment. See submit_audit_mistake_report below for more information.
-  audit_mistake_report: TYPE FROM report
+  audit_mistake_report: TYPE =
+    [# name: string, mistake_report: string #]
+  empty_audit_mistake_report: audit_mistake_report
+
 % @review CDOS The contents of this report are underspecified at the
-% moment. See submit_audit_report below for more information.
-  audit_report: TYPE FROM report
-  
+% moment. See submit_audit_report and sign_intermediate_audit_report
+% below for more information.
+% @trace Per email from Jerome Lovato at CDOS on 19 July 2017: The
+% Audit Board and county admin will sign off on each round until the
+% audit completed.
+  audit_report: TYPE =
+    [# name: string,
+       election: election,
+       audit_board: audit_board,
+       county_administrator: county_administrator #]
+
 % @trace RDPR-6-Jul-2017 Section 25.2.2(D)(1)
 % @description This report shows the total number of overvotes,
 % undervotes, blank-voted contests, and valid write-in votes for (an
@@ -575,6 +587,13 @@ BEGIN
   instructions: TYPE
   ballot_instructions: TYPE FROM instructions
   sos_voter_intent_guide: TYPE FROM instructions
+
+% @trace Per email from Jerome Lovato at CDOS on 19 July 2017: The
+% tool must also provide a printable list of ballot for each round.
+  ballots_under_audit_instructions: TYPE =
+    [ sequence[ballot], sequence[ballot_style],
+      sequence[ballot_manifest_info] ]
+
 END instructions_forms_reports
 
 %+END ifr
@@ -591,7 +610,7 @@ END instructions_forms_reports
 
 roles: THEORY
 BEGIN
-  IMPORTING elections
+  IMPORTING elections, fafessl
 
   audit_board_member: TYPE FROM person
   canvas_board: TYPE = set[person]
@@ -623,8 +642,8 @@ BEGIN
 % designated official per county, but must have the ability to create
 % credentials for additional users.
 % @trace email from Jerome Lovato on 12 July 2017
-  county_administrator: TYPE FROM person
-  state_administrator: TYPE FROM person
+  county_administrator: TYPE FROM administrator
+  state_administrator: TYPE FROM administrator
   
 % @review CDOS Who bootstraps authentication? Who has the right to
 % identify people who should have credentials and generate and issue
@@ -639,7 +658,12 @@ BEGIN
 % @review CDOS what happens if the Audit Board cannot find 
 % the ballot expected by the RLA tool?
 
-  system_administrator: TYPE FROM person
+  system_administrator: TYPE FROM administrator
+
+% @trace Per email from Jerome Lovato at CDOS on 19 July 2017: A
+% candidate cannot be an administrator.
+  candiates_cannot_be_administrators: AXIOM TBD
+
 END roles
 
 canvas_boards: THEORY
@@ -725,7 +749,10 @@ BEGIN
 
 % @review CDOS Must audit boards have a minimum number of members?
 % A maximum?
+% @trace Per email from Jerome Lovato at CDOS on 19 July 2017: The
+% audit board has exactly two members.
   audit_board: TYPE = set[audit_board_member]
+  audit_board_size: AXIOM TBD
 
 %%% These two terms are used but underdefined at this time.
   audit_mistake: TYPE
@@ -1002,7 +1029,8 @@ END authentication_message
 % @relation audit_board_dashboard inherit dashboard
 % @relation public_dashboard inherit dashboard
 dashboard: DATATYPE WITH SUBTYPES
-  state_wide_dashboard, county_dashboard, audit_board_dashboard, public_dashboard
+  state_wide_dashboard, county_dashboard, audit_board_dashboard,
+  public_dashboard
 BEGIN
 % @description The overall status of the state-wide audit is
 % summarized in the state-wide dashboard.
@@ -1031,7 +1059,8 @@ END dashboard
 % @trace Principly RDPR-6-Jul-2017 Section 25.2.2
 state_wide_dashboard: THEORY
 BEGIN
-  IMPORTING dashboard, elections, rlas, fafessl
+  IMPORTING dashboard, elections, rlas, fafessl,
+            instructions_forms_reports
 
 %%% CDOS staff, after authenticating to the state-wide dashboard, can
 %%% see the status of the entire election. Various static information
@@ -1053,9 +1082,9 @@ BEGIN
 %%% ballot polling audits, but in no event will the risk limit exceed
 %%% five percent.
   establish_risk_limit_comparison_audits:
-    [state_wide_dashboard, {r: risk_limit | r < 5} -> state_wide_dashboard]
+    [state_wide_dashboard, {r: risk_limit | r <= 5} -> state_wide_dashboard]
   establish_risk_limit_ballot_polling_audits:
-    [state_wide_dashboard, {r: risk_limit | r < 5} -> state_wide_dashboard]
+    [state_wide_dashboard, {r: risk_limit | r <= 5} -> state_wide_dashboard]
 
   county_status: TYPE =
     { no_data, cvrs_uploaded_successfully, error_in_uploaded_data }
@@ -1132,6 +1161,13 @@ BEGIN
 % Note that sequences are infinite.
   random_list_of_ballots:
     [set[ballot] -> sequence[ballot]]
+
+% @trace Per email from Jerome Lovato at CDOS on 19 July 2017: The
+% tool must also provide a printable list of ballot for each round.
+% At a minimum, the list must contain ballot style and ballot manifest
+% information.
+  print_ballots_under_audit_list:
+    [sequence[ballot] -> ballots_under_audit_instructions]
 
 % @trace RDPR-6-Jul-2017 Section 25.2.2(K)
 
@@ -1310,8 +1346,26 @@ BEGIN
 
   next_ballot_for_audit:
     [audit_board_dashboard -> [ballot, audit_board_dashboard]]
+
+% @trace Per email from Jerome Lovato at CDOS on 19 July 2017: The
+% Audit Board will enter the choices for the entire ballot including
+% overvotes and undervotes. The tool must not allow the Audit Board to
+% skip contests.
   report_markings:
     [audit_board_dashboard, list[ballot_mark] -> audit_board_dashboard]
+
+% @trace Per email from Jerome Lovato at CDOS on 19 July 2017: If the
+% Audit Board cannot find a ballot, the tool should have a “ballot not
+% found” box that the Audit Board will select. This will be marked as
+% an error and the county may have to audit additional ballots.
+  report_ballot_not_found:
+    [audit_board_dashboard, phantom_ballot -> audit_board_dashboard]  
+
+%%% If a ballot does not have a voter-verifiable paper ballot associated
+%%% with it then we report such and recompute.
+  report_ballot_has_no_voter_verifiable_paper_record:
+    [audit_board_dashboard, non_voter_verifiable_ballot ->
+     audit_board_dashboard]  
 
 %%% If supported by the county’s voting system, the audit board may
 %%% refer to the digital image of the audited ballot captured by the
@@ -1360,7 +1414,13 @@ BEGIN
   submit_audit_report:
     [audit_board_dashboard, audit_report -> audit_board_dashboard]
 
-end audit_board_dashboard
+% @trace Per email from Jerome Lovato at CDOS on 19 July 2017: The
+% Audit Board and county admin will sign off on each round until the
+% audit completed.
+  signoff_intermediate_audit_report:
+    [audit_board_dashboard, audit_report -> audit_board_dashboard]
+
+END audit_board_dashboard
 
 %%% \subsection{Public Dashboard}
 
@@ -1647,6 +1707,70 @@ BEGIN
 END system_assumptions
 
 %+END system_assumptions
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% \section{System Logging}
+
+%%% The system must log a variety of events. One reason to log
+%%% information is to help understand how the system is operating, fix
+%%% bugs post-facto, understand how users are using the system,
+%%% etc. Another, more important reason to log in this context of this
+%%% system is to provide an indeliable record of administrator and
+%%% auditor actions so that any audit can be "replayed" by any third
+%%% party.
+
+logging: THEORY
+BEGIN
+  log: TYPE = sequence[string]
+  chain_of_custody_log: TYPE FROM log
+% @trace Per email from Jerome Lovato at CDOS on 19 July 2017: Logging
+% of Audit Board and SOS user errors during use of the system [...is
+% the only logging we care about].
+  rla_tool_log: TYPE FROM log
+END logging
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% \section{Data Model}
+
+%%% A single, mirrored relational database is used to store all
+%%% persistent information for the RLA Tool.  In order to define the
+%%% data model of the system, we need to:
+%%% \begin{enumerate}
+%%% \item identify the \emph{core concepts} that must be persistent in
+%%% the system
+%%% \item identify the \emph{relationships} that must be persistent in the
+%%% system
+%%% \item derive from these pieces of information:
+%%%   \begin{enumerate}
+%%%   \item the necessary \emph{tables} that \emph{collect concepts},
+%%%   \item identify the \emph{indexing concept} of each table, and
+%%%   \item define the appropriate \emph{joins} that realize
+%%%         relationships
+%%%   \end{enumerate}
+%%% \end{enumerate}
+
+data_model: THEORY
+BEGIN
+  IMPORTING fafessl, database, information_systems, roles, rla_tool,
+            authentication
+
+  be: VAR back_end
+  db: VAR database
+
+%%% The first set of data persistently stored relates to
+%%% authentication. Some of this data will be stored in the two-factor
+%%% authentication system provided by CDOS. All other data must be
+%%% stored in the RLA Tool database. In general, each entry in the
+%%% authentication table is simply an administrator and two-factor
+%%% authentication credential pair.
+  authentication_table: TYPE =
+    [administrator, two_factor_authentication]
+
+%%% From the State's point of view 
+
+END data_model
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

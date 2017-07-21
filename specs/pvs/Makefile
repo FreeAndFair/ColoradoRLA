@@ -10,10 +10,11 @@ DELIT=$(REPO)/tools/delit.pl
 all:	${document}.pdf
 
 clean:
-	rm ${generated_tex}.tex *.aux *.fdb_latexmk *.fls *.log *.out *.pdf
-	
+	rm -f ${generated_tex}.tex *.aux *.fdb_latexmk *.fls *.log *.out *.pdf
+	rm -f *_adt.pvs
+
 ${generated_tex}.tex:	${pvsfile}.pvs
 	$(DELIT) -f ${pvsfile}.pvs
-	
+
 ${document}.pdf:	${generated_tex}.tex
 	latexmk -pdf ${document}
