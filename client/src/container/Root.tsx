@@ -43,7 +43,7 @@ export class RootContainer extends React.Component<RootContainerProps, void> {
         const { store } = this.props;
 
         return (
-            <Provider store={store}>
+            <Provider store={ store }>
                 <Router>
                     <Switch>
                         { routes.map(makeRoute) }
