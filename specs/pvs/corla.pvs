@@ -6,7 +6,18 @@
 %%%
 %%% \section{Introduction}
 %%% This document contains a formal specification of the ColoradoRLA
-%%% system/tool. It is written in a literate style using the PVS
+%%% system/tool. 
+%%% It contains a detailed technical specification of the system,
+%%% annotated with prose designed to help readers who are not expert
+%%% in formal system specification understand the scope and interpretations
+%%% of the elements of the specification. The details of the specification
+%%% itself will guide deployment, management, maintenance and evolution 
+%%% of the system delivered to the Colorado Department of State. The prose
+%%% annotations should help Colorado Department of State elections domain experts
+%%% and technical staff to assess the completeness and correctness of the 
+%%% ColoradoRLA system/tool.
+%%% 
+%%% This document is written in a literate style using the PVS
 %%% theorem prover. Writing system specifications in this fashion is
 %%% called (formal) domain engineering. Our formal domain model is
 %%% written in PVS's higher-order logic (HOL). Our informal domain
@@ -178,7 +189,7 @@ END information_systems
 %%% the minimum, two of each of a web server, a time (NTP) server, a
 %%% firewall, and a database server are necessary. Two servers of each
 %%% class are required for redundancy to fulfill availability
-%%% requirements. Preferably rendundant servers would be hosted in
+%%% requirements. Preferably redundant servers would be hosted in
 %%% separate facilities, with separate and independent power systems
 %%% and networks.
 %%%
@@ -695,7 +706,7 @@ BEGIN
 
 % @trace Per email from Jerome Lovato at CDOS on 19 July 2017: A
 % candidate cannot be an administrator.
-  candiates_cannot_be_administrators: AXIOM TBD
+  candidates_cannot_be_administrators: AXIOM TBD
 
 END roles
 
