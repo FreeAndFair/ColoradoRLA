@@ -1437,6 +1437,19 @@ BEGIN
     [audit_board_dashboard, non_voter_verifiable_ballot ->
      audit_board_dashboard]  
 
+% @trace Per email from Jerome Lovato at CDOS on 19 July 2017: If the
+% Audit Board cannot find a ballot, the tool should have a “ballot not
+% found” box that the Audit Board will select. This will be marked as
+% an error and the county may have to audit additional ballots.
+  report_ballot_not_found:
+    [audit_board_dashboard, phantom_ballot -> audit_board_dashboard]  
+
+%%% If a ballot does not have a voter-verifiable paper ballot associated
+%%% with it then we report such and recompute.
+  report_ballot_has_no_voter_verifiable_paper_record:
+    [audit_board_dashboard, non_voter_verifiable_ballot ->
+     audit_board_dashboard]  
+
 %%% If supported by the county’s voting system, the audit board may
 %%% refer to the digital image of the audited ballot captured by the
 %%% voting system in order to confirm it has retrieved the correct
