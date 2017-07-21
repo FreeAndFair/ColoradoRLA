@@ -22,7 +22,7 @@ export class LoginContainer extends React.Component<LoginContainerProps, any> {
     }
 }
 
-const mapStateToProps = (state: any) => ({});
+const mapStateToProps = ({ loggedIn }: any) => ({ loggedIn });
 
 const mapDispatchToProps = (dispatch: any) => ({});
 
