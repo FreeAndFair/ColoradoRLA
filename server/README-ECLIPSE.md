@@ -10,12 +10,23 @@ tools and get the project ready for development, do the following:
   http://www.eclipse.org/oxygen/.
   2. Run the installer and install the "Eclipse IDE for Java Developers"
   (the first option on the list of distributions to install).
+  You may encounter popup messages about nullpointer exceptions and
+  event loop exceptions, but re-running things should get you going again.
+  On Ubuntu you may want to use the instructions at
+  [How to install Eclipse using its installer - Ask Ubuntu](https://askubuntu.com/questions/695382/how-to-install-eclipse-using-its-installer).
+  Select OpenJDK 8 VM as the Java VM, if you have it.
+  Otherwise, Oracle Java 8 should work.
   3. Run the resulting Eclipse installation (the installer may do this
-  automatically for you) and create a workspace, *which you will use for
-  development*, somewhere outside your clone of the Git repository (if you
+  automatically for you) and create a workspace, *which you can use for
+  development of this project and others that use the same JVM*,
+  somewhere outside your clone of the Git repository (if you
   have not already cloned the Git repository, you'll have to do so later).
-  4. Use "Import..." (in Eclipse's "File" menu or the context menu of the Package Explorer) to import an Oomph project into the workspace. This will result in a window with a list of Eclipse products and projects.
-  5. Click the "+" button (upper-right), which will bring up a window with "Catalog" and "Resource URIs"; select the Eclipse Projects catalog and put the URI
+  4. Use "Import..." (in Eclipse's "File" menu or the context menu of the
+  Package Explorer) to import an Oomph project into the workspace.
+  This will result in a window with a list of Eclipse products and projects.
+  5. Click the "+" button (upper-right), which will bring up a window with
+  "Catalog" and "Resource URIs"; select the Eclipse Projects catalog
+  and put the URI
   https://raw.githubusercontent.com/FreeAndFair/ColoradoRLA/master/server/eclipse.setup
   into the text field at the bottom, then click "OK".
   6. You should now have a "Free & Fair Colorado..." item in the projects
