@@ -19,16 +19,8 @@ before_script:
 script:
   # WARNING: If changes only occur in files outside of the checked
   # directory, the checks below will not be executed.
-  - if ${TRAVIS_BUILD_DIR}/ci/changes-in-dir client; then
-      cd "${CLIENT_DIR}";
-      npm run lint;
-      npm run build;
-      npm test;
-    fi;
+  - ${TRAVIS_BUILD_DIR}/ci/check-client
 
   # WARNING: If changes only occur in files outside of the checked
   # directory, the checks below will not be executed.
-  - if ${TRAVIS_BUILD_DIR}/ci/changes-in-dir server; then
-      cd "${SERVER_DIR}";
-      mvn verify;
-    fi;
+  - ${TRAVIS_BUILD_DIR}/ci/check-server

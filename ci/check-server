@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -eux -o pipefail
+
+# Exit early if there were no server changes.
+"${TRAVIS_BUILD_DIR}/ci/changes-in-dir" server || exit 0
+
+cd "${SERVER_DIR}"
+mvn verify
