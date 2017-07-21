@@ -17,6 +17,8 @@ before_script:
   - export SERVER_DIR="${TRAVIS_BUILD_DIR}/server/eclipse-project";
 
 script:
+  # WARNING: If changes only occur in files outside of the checked
+  # directory, the checks below will not be executed.
   - if ${TRAVIS_BUILD_DIR}/ci/changes-in-dir client; then
       cd "${CLIENT_DIR}";
       npm run lint;
@@ -24,6 +26,8 @@ script:
       npm test;
     fi;
 
+  # WARNING: If changes only occur in files outside of the checked
+  # directory, the checks below will not be executed.
   - if ${TRAVIS_BUILD_DIR}/ci/changes-in-dir server; then
       cd "${SERVER_DIR}";
       mvn verify;
