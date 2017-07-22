@@ -1,0 +1,179 @@
+  RLA: TYPE = risk_limiting_audit
+  WITH SUBTYPES back_end,
+  WITH SUBTYPES box,
+  WITH SUBTYPES county_election,
+  WITH SUBTYPES state_wide_dashboard,
+  WITH SUBTYPES successful_authentication,
+  WITH SUBTYPES upload_successful,
+  WITH SUBTYPES uploading_interface,
+  WITH SUBTYPES web_server,
+  WITH SUBTYPES well_formed_vote,
+  administrator: TYPE FROM person
+  ambiguous_mark: TYPE FROM ballot_mark
+  audit: TYPE
+  audit_board: TYPE = set[audit_board_member]
+  audit_board_member: TYPE FROM person
+  audit_board_table: TYPE =
+  audit_center: TYPE
+  audit_mistake: TYPE
+  audit_mistake_report: TYPE =
+  audit_progress: TYPE
+  audit_reason: TYPE =
+  audit_report: TYPE =
+  audit_reports_table: TYPE =
+  audit_stage: TYPE =
+  audit_supervisor: TYPE FROM person
+  audited_contest: TYPE FROM contest
+  auditing_mistakes_table: TYPE =
+  authentication: TYPE FROM [person, set[credential]]
+  authentication_table: TYPE =
+  ballot: TYPE % = [election, set[contest], ballot_id]
+  ballot_certification: TYPE
+  ballot_contest: TYPE = contest
+  ballot_id: TYPE = nat
+  ballot_instructions: TYPE FROM instructions
+  ballot_manifest: TYPE = set[ballot_manifest_info]
+  ballot_manifest_digest_table: TYPE =
+  ballot_manifest_file: TYPE FROM file
+  ballot_manifest_info: TYPE =
+  ballot_manifest_table: TYPE =
+  ballot_mark: TYPE
+  ballot_order: TYPE = sequence[ballot]
+  ballot_polling_audit: TYPE FROM risk_limiting_audit
+  ballot_style: TYPE = nat
+  ballots_to_audit: TYPE = nat
+  ballots_to_audit_list_table: TYPE =
+  ballots_under_audit_instructions: TYPE =
+  ballots_under_audit_table: TYPE =
+  batch: TYPE = set[ballot]
+  batch_number: TYPE = nat
+  batch_size: TYPE = nat
+  biometric: TYPE FROM credential
+  browser: TYPE = web_browser
+  candidate: TYPE FROM person
+  canvas_board: TYPE = set[person]
+  cast_vote_record: TYPE = set[set[choice]]
+  cdos: TYPE = colorado_department_of_state
+  chain_of_custody_log: TYPE FROM log
+  choice: TYPE = set[option]
+  colorado_department_of_state: TYPE
+  comma_separated_value: TYPE
+  comparison_audit: TYPE FROM risk_limiting_audit
+  contest: TYPE =
+  contest_cvr_table: TYPE =
+  contest_margin: TYPE = nat
+  county: TYPE
+  county_administrator: TYPE FROM administrator
+  county_clerk: TYPE FROM person
+  county_contest_table: TYPE =
+  county_general_information_table: TYPE =
+  county_status: TYPE =
+  credential: TYPE 
+  csv: TYPE = comma_separated_value
+  cvr: TYPE = set[vote]
+  cvr_digest_table: TYPE =
+  cvr_file: TYPE FROM file
+  cvr_number: TYPE = nat
+  cvr_table: TYPE =
+  data: TYPE
+  database: TYPE = setof[database_table]
+  database_table: TYPE
+  digest: TYPE = bvec[256]
+  digital_ballot: TYPE FROM ballot
+  digital_ballot_adjudication: TYPE
+  diluted_margin: TYPE FROM margin
+  discrepency: TYPE
+  dominion_voting_system: TYPE FROM voting_system
+  duplicated_ballot: TYPE FROM ballot
+  early_ballot: TYPE FROM ballot
+  election_canvass: TYPE
+  election_outcome: TYPE = set[outcome]
+  elector: TYPE = voter
+  email: TYPE
+  email_address: TYPE
+  file: TYPE
+  form: TYPE
+  full_hand_count_contest: TYPE FROM contest
+  geography_table: TYPE =
+  imprinted_ballot: TYPE FROM ballot
+  instructions: TYPE
+  issue_credential: TYPE =
+  javascript_code: TYPE
+  log: TYPE = sequence[string]
+  mail_ballot: TYPE FROM ballot
+  manual_ballot_adjudication: TYPE
+  margin: TYPE = real
+  margin_overstatement: TYPE = nat
+  margin_understatement: TYPE = nat  
+  nation: TYPE = set[state]
+  national_contest_table: TYPE =
+  network: TYPE
+  non_voter_verifiable_ballot: TYPE FROM ballot
+  opportunistic_contest: TYPE FROM contest
+  option: TYPE = string
+  organization: TYPE
+  original_ballot: TYPE FROM ballot
+  outcome: TYPE
+  paper_ballot: TYPE FROM ballot
+  password: TYPE FROM credential
+  person: TYPE
+  phantom_ballot: TYPE FROM ballot
+  physical_token: TYPE FROM credential
+  political_party: TYPE = string
+  political_party_table: TYPE =
+  property_owner_ballot: TYPE FROM ballot
+  provisional_ballot: TYPE FROM ballot
+  public_meeting_to_determine_seed_table: TYPE =
+  random: TYPE
+  random_audit: TYPE
+  report: TYPE = [# name: string #]
+  reported_tabulation_outcome: TYPE FROM election_outcome
+  results_file: TYPE FROM file
+  risk_limit: TYPE = {n : nonneg_real | n <= 100}
+  risk_limiting_audit: TYPE
+  rla_information_table: TYPE =
+  rla_summary_results_table: TYPE =
+  rla_tabulation_outcome: TYPE FROM election_outcome
+  rla_tool_log: TYPE FROM log
+  rng: TYPE = [unit -> nat]
+  sample_size: TYPE = nat
+  scanner: TYPE
+  scanner_id_number: TYPE
+  seed: TYPE = {n: nat | 9999999999999999999 < n}
+  seeded_prng: TYPE = [seed -> rng]
+  sos: TYPE FROM person
+  sos_audit_form: TYPE
+  sos_voter_intent_guide: TYPE FROM instructions
+  state: TYPE = set[county]
+  state_administrator: TYPE FROM administrator
+  state_contest_table: TYPE =
+  state_status_table: TYPE =
+  stray_mark: TYPE FROM ballot_mark
+  summary_results_report: TYPE =
+  system_administrator: TYPE FROM administrator
+  tabulated_ballot: TYPE FROM ballot
+  tabulation_result_table: TYPE =
+  two_factor_authentication: TYPE =
+  unit: TYPE
+  uocava_ballot: TYPE FROM ballot
+  uocava_voter: TYPE from voter
+  username: TYPE FROM credential
+  verified?: TYPE = pred[storage_container]
+  voter: TYPE FROM person
+  voter_marking: TYPE FROM ballot_mark
+  voter_verifiable_ballot: TYPE FROM ballot
+  voting_system: TYPE
+  vvpat: TYPE
+  vvsg_log: TYPE
+  web_browser: TYPE
+  wrong_outcome: TYPE FROM election_outcome
+authentication_message: DATATYPE
+dashboard: DATATYPE
+election: DATATYPE
+rla_tool: DATATYPE
+server: DATATYPE
+storage_container: DATATYPE
+system_architecture_component: DATATYPE
+upload_system_message: DATATYPE
+user_interface: DATATYPE
+vote: DATATYPE
