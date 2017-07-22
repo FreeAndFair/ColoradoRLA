@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -eux -o pipefail
+
+# Exit early if there were no client changes.
+"${TRAVIS_BUILD_DIR}/ci/changes-in-dir" client || exit 0
+
+cd "${CLIENT_DIR}"
+npm run lint
+npm run build
+npm test
