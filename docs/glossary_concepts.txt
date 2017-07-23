@@ -1,0 +1,177 @@
+  * Something you are (Example: biometrics)
+  * Something you have (Examples: token code, grid card) 
+  * Something you know (Example: passwords)
+* **Asana** TBD
+* **CVR file** TBD
+* **CVR number** concatenation of scanner number - batch number -
+* **Clear Ballot ClearCount** TBD
+* **Clear Ballot Group** TBD
+* **Colorado Department of State (CDOS)** TBD
+* **Colorado House Bill 09-1335** TBD
+* **DRE** TBD
+* **Department of State (DOS)** TBD
+* **Dominion Democracy Suite** TBD
+* **Dominion** TBD
+* **Dr. Mark Lindeman** TBD
+* **Dr. Philip Stark** TBD
+* **Dr. Ron Rivest** TBD
+* **EAC** TBD
+* **ENR system** - Election Night Reporting system, used to publish
+* **EO survey** TBD
+* **OpenCount** TBD
+* **RLA software** TBD
+* **SOS audit form** TBD
+* **SOS rule making** TBD
+* **SOS voter intent guide** TBD
+* **Secretary of State (SOS)** TBD
+* **Slack** TBD
+* **UOCAVA ballot** TBD
+* **UOCAVA voter** TBD
+* **VVPAT** - A Voter-Verifiable Paper Trail consists of an audit trail
+* **VVPR** - A Voter-Verifiable Paper Record, also known as a
+* **abstract state machine** (AST) - TBD including [Abstract state machine](https://en.wikipedia.org/wiki/Abstract_state_machines)
+* **access control** TBD
+* **active contest** TBD involving not having achieved risk limit
+* **ambiguous mark** (aka ambiguous vote) TBD
+* **audit adjudication interface** TBD
+* **audit board member** (aka auditor?) TBD
+* **audit board** - A group of electors in each county nominated by the
+* **audit center** (aka the public interface to the system) TBD
+* **audit mistake** TBD
+* **audit progress** TBD
+* **audit report** TBD
+* **audit round results** (reviewed/submitted/acknowledged)
+* **audit round** TBD
+* **audit supervisor** TBD
+* **audit** TBD May include ballot tabulation audits, compliance audits, ...
+* **authenticate** (also known as log-in)
+* **ballot certification** TBD
+* **ballot instructions** TBD
+* **ballot manifest** - A document that describes how ballots are
+* **ballot mark** TBD
+* **ballot order** TBD
+* **ballot storage bin** TBD
+* **ballot style** TBD
+* **ballot tabulation audits** TBD. including risk-limiting audits,
+* **ballot** TBD including ballot id, imprinted ballot
+* **batch number** TBD
+* **batch size** TBD
+* **batch** TBD
+* **bayesian audits** TBD
+* **business interruption** - Any event that disrupts Contractor’s
+* **calculated outcome** - The set of contest winners according to the
+* **canvas board** TBD
+* **cast vote record (CVR)** - An electronic record
+* **chain-of-custody** TBD
+* **choice** TBD candidate or YES/NO option
+* **closeout period** - The period beginning on the earlier of 90 days
+* **closeout plan** TBD
+* **comma separated value** (aka CSV)
+* **compliance audit** - An audit which checks that the audit trail is
+* **contest margin** TBD
+* **contest name** - The title of a contest.
+* **contest** - A partisan or nonpartisan candidate race, or a
+* **continuous integration** TBD
+* **coordinated election** - Coordinated Elections occur on the first
+* **county administrator** - The designated representative(s) of each
+* **county auditing interface** TBD
+* **county clerk** TBD
+* **county dashboard** TBD
+* **county name** TBD
+* **county number** as part of the ballot manifest
+* **county** TBD
+* **credentials** TBD
+* **damage** TBD
+* **dashboard** TBD
+* **data synchronization** TBD
+* **database table** TBD
+* **deliverable** - Any tangible or intangible object produced by
+* **design-by-contract** TBD
+* **detailed project plan** TBD
+* **developer dashboard** TBD
+* **digital ballot adjudication** TBD
+* **disaster** - An event that makes it impossible for Contractor to
+* **discrepency** TBD
+* **domain engineering** TBD
+* **domain model** TBD
+* **duplicated ballot** TBD
+* **election canvass** TBD
+* **election day** - The final day on which voters can cast a ballot in a
+* **electoral system** TBD
+* **email** TBD
+* **equipment** TBD
+* **evidence-based elections** - An approach to achieving election integrity
+* **fault tolerance** TBD
+* **formal method** TBD
+* **formal model** TBD
+* **full hand count** - TBD along these lines: A procedure for
+* **git** TBD
+* **go live date** TBD
+* **hash function** TBD, mentioning specifically SHA-256
+* **imprinted ballot** - A ballot on which a unique ballot identifier has
+* **issue tracker** TBD
+* **key personnel** - The position or positions that are specifically
+* **late-tabulation ballot** - A ballot which is tabulated after the CVR
+* **list of ballots to audit** TBD
+* **load testing** TBD
+* **mail ballot** TBD
+* **mandatory contest** - A contest which is subject to a risk limit and is
+* **manual ballot adjudication** TBD
+* **margin** TBD
+* **non-voter-verifiable ballot** (NVVB) - A ballot for which there is
+* **offeror** - A vendor that submits a responsible bid for this
+* **operational start date** - When the State authorizes Contractor to
+* **opportunistic audit** - An auditing technique designed to efficiently
+* **opportunistic contest** - A contest to be audited opportunistically.
+* **original ballot** TBD
+* **other personnel** - Individuals and Subcontractors, in addition to Key
+* **overstatement of the margin** TBD
+* **overvote** TBD
+* **paper ballot** TBD
+* **password** TBD
+* **penetration testing** TBD
+* **phantom ballot** A ballot which is listed in the manifest, but is
+* **political party** TBD
+* **post-election (historical, random) audit** TBD
+* **press** TBD
+* **pseudo-random number generator** - A random number generator
+* **public audit meeting** The meeting where the random seed (and
+* **random seed** - A random seed (or seed state, or just seed) is data, such
+* **random** TBD
+* **recount** TBD, a procedure under Colorado law that happens *after*
+* **regional training** TBD
+* **reported outcome** - The set of contest winners published by the ENR
+* **repository** TBD
+* **requirement** TBD
+* **resilient canvass framework** - A fault-tolerant approach to conducting
+* **responsible bid** - A bid from a vendor that can responsibly
+* **risk limit** - The pre-specified minimum chance of requiring a full
+* **risk-limiting audit (RLA)** - A procedure for manually checking a
+* **role** TBD
+* **sample size** TBD including **initial sample size**
+* **scanner ID number** TBD
+* **scanner** has an ID number
+* **settled contest** TBD involving having achieved risk limit.  Note need
+* **start-up period** - The period starting on the Effective Date and
+* **state administrator** - The designated representative(s) of the
+* **state-wide dashboard** TBD
+* **storage bin** (aka transfer case, ballot box, secured container)
+* **stray mark** TBD
+* **system architecture** TBD
+* **tabulated ballots** - Paper ballots that have been scanned on a
+* **tabulation** - Interpretation of expressions of voter intent and aggregation
+* **tool back-end** TBD
+* **tool front-end** TBD
+* **two-factor authentication** - Defined as two out of the three
+* **uncontested contest** TBD
+* **understatement of the margin** TBD
+* **undervote** TBD
+* **uploading interface** A part of the county dashboard.
+* **user experience (UX)** TBD
+* **user interface (UI)** TBD
+* **username** TBD
+* **voter marking** TBD
+* **voting method** TBD
+* **voting system** TBD
+* **working group** TBD
+* **wrong outcome** - When the reported outcome for a given contest does not match the
