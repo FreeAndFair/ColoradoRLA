@@ -5,6 +5,8 @@ The **ColoradoRLA** system is software to facilitate risk-limiting
 audits at the state level, developed for Colorado's Department of
 State in July and August of 2017.
 
+* Blog announcement: [Free & Fair to build risk-limiting audit system for State of Colorado](http://freeandfair.us/blog/risk-limiting-audits/)
+
 * To be written: Project Background
 
 * To be written: Future Work

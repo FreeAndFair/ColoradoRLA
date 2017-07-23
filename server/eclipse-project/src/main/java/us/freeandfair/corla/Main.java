@@ -14,6 +14,7 @@ package us.freeandfair.corla;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
@@ -21,8 +22,11 @@ import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.eclipse.jetty.http.HttpStatus;
 
-import spark.Spark;
+import spark.Request;
+import spark.Response;
+import spark.Service;
 
 /**
  * The main executable for the ColoradoRLA server. 
@@ -42,9 +46,14 @@ public final class Main {
   public static final String LOGGER_NAME = "corla";
 
   /**
-   * The default port number (can be overridden by properties).
+   * The default HTTP port number (can be overridden by properties).
    */
-  public static final int DEFAULT_PORT = 8888;
+  public static final int DEFAULT_HTTP_PORT = 8888;
+  
+  /**
+   * The default HTTPS port number (can be overridden by properties).
+   */
+  public static final int DEFAULT_HTTPS_PORT = 8889;
   
   /**
    * The minimum valid port number.
@@ -80,24 +89,62 @@ public final class Main {
   // Instance Methods
   
   /**
+   * Parse a port number from properties.
+   * 
+   * @param the_property The name of the property.
+   * @param the_default The default port number.
+   */
+  private int parsePortNumber(final String the_property, final int the_default) {
+    int result = the_default;
+    
+    try {
+      final int prop_port =
+          Integer.parseInt(my_properties.getProperty(the_property, 
+                                                     String.valueOf(the_default)));
+      if (MIN_PORT <= prop_port && prop_port < MAX_PORT) {
+        result = prop_port;
+      } else {
+        LOGGER.info("invalid port number in property " + the_property + 
+                    ", using default " + the_default);
+      }
+    } catch (final NumberFormatException e) {
+      LOGGER.info("could not read port number property " + the_property + 
+                  ", using default " + the_default);
+    }
+    
+    return result;
+  }
+  
+  /**
+   * Redirect a request from HTTP to HTTPS.
+   * 
+   * @param the_request The request.
+   * @param the_response The response.
+   * @param the_port The HTTPS port.
+   */
+  private void httpsRedirect(final Request the_request, final Response the_response,
+                             final int the_port) {
+    try {
+      final URL request_url = new URL(the_request.url());
+      final URL redirect_url = new URL("https", request_url.getHost(), 
+                                       the_port, request_url.getFile());
+      the_response.redirect(redirect_url.toString());
+    } catch (final MalformedURLException e) {
+      // this should probably never happen, since we're getting the original
+      // URL from a legitimate request
+      the_response.status(HttpStatus.BAD_REQUEST_400);
+    }
+  }
+  
+  /**
    * Starts a ColoradoRLA server.
    */
   public void start() {
     LOGGER.info("starting server with properties: " + my_properties);
     
-    // get the port number from properties
-    int port_number = DEFAULT_PORT;
-    try {
-      final int prop_port_number =
-          Integer.parseInt(my_properties.getProperty("port", String.valueOf(port_number)));
-      if (MIN_PORT <= prop_port_number && prop_port_number < MAX_PORT) {
-        port_number = prop_port_number;
-      } else {
-        LOGGER.info("invalid port number in properties, using default port");
-      }
-    } catch (final NumberFormatException e) {
-      LOGGER.info("could not read port number from properties, using default port");
-    }
+    // get the port numbers from properties
+    final int http_port = parsePortNumber("http_port", DEFAULT_HTTP_PORT);
+    final int https_port = parsePortNumber("https_port", DEFAULT_HTTPS_PORT);
     
     // get key store information from properties, if applicable
     String keystore_path = my_properties.getProperty("keystore", null);
@@ -114,20 +161,30 @@ public final class Main {
       }
     }
 
-    // start Spark listening on our port
-    Spark.port(port_number);
+    // if we have a keystore, everything is on SSL except the redirect; otherwise,
+    // everything is in plaintext
     
-    // static files location
-    Spark.staticFileLocation("/us/freeandfair/corla/static");
-    
-    // SSL
-    if (keystore_path != null) {
-      final String keystore_password = my_properties.getProperty("keystore_password", null);
-      Spark.secure(keystore_path, keystore_password, null, null);
+    final Service spark = Service.ignite();
+    if (keystore_path == null) {
+      spark.port(http_port);
+    } else {
+      spark.port(https_port);
+      final String keystore_password = 
+          my_properties.getProperty("keystore_password", null);
+      spark.secure(keystore_path, keystore_password, null, null);
+
+      // redirect everything
+      final Service redirect = Service.ignite();
+      redirect.port(http_port);
+      redirect.before((the_request, the_response) -> 
+          httpsRedirect(the_request, the_response, https_port));
     }
     
+    // static files location
+    spark.staticFileLocation("/us/freeandfair/corla/static");
+
     // available endpoints
-    Spark.get("/", (the_request, the_response) -> {
+    spark.get("/", (the_request, the_response) -> {
       return "<title>ColoradoRLA Server</title><h1>ColoradoRLA Server</h1>";
     });
   }

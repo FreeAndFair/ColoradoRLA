@@ -6,17 +6,17 @@
 %%%
 %%% \section{Introduction}
 %%% This document contains a formal specification of the ColoradoRLA
-%%% system/tool. 
+%%% system/tool.
 %%% It contains a detailed technical specification of the system,
 %%% annotated with prose designed to help readers who are not expert
 %%% in formal system specification understand the scope and interpretations
 %%% of the elements of the specification. The details of the specification
-%%% itself will guide deployment, management, maintenance and evolution 
+%%% itself will guide deployment, management, maintenance and evolution
 %%% of the system delivered to the Colorado Department of State. The prose
 %%% annotations should help Colorado Department of State elections domain experts
-%%% and technical staff to assess the completeness and correctness of the 
+%%% and technical staff to assess the completeness and correctness of the
 %%% ColoradoRLA system/tool.
-%%% 
+%%%
 %%% This document is written in a literate style using the PVS
 %%% theorem prover. Writing system specifications in this fashion is
 %%% called (formal) domain engineering. Our formal domain model is
@@ -25,7 +25,7 @@
 %%% or FAFESSL for short. FAFESSL is a daughter of Extended BON which
 %%% was, in turn, a daughter of BON, the Business Object Notation.
 %%%
-%%% See our Bibliography project at GitHub, 
+%%% See our Bibliography project at GitHub,
 %%% \url{https://github.com/FreeAndFair/Bibliography}, for more
 %%% information.
 %%%
@@ -38,7 +38,7 @@
 %%% theories map to clusters, (PVS) types map to (FAFESSL) types, and
 %%% functions map to features.  We use special comments to denote
 %%% informal specifications which will be extracted using a shell script
-%%% into a well-typed FAFESSL informal domain model specification. 
+%%% into a well-typed FAFESSL informal domain model specification.
 %%%
 %%% As mentioned above, we write formal specifications using a
 %%% literate style, a la Knuth. Doing so permits us to document our
@@ -174,8 +174,8 @@ END database
 %%% with the public. Files are used to store information in a
 %%% persistent fashion. Consequently, we introduce a few types for
 %%% these ideas.
-% @review How are emails (for SoS admin, for County Audit Admins, 
-% presumably, and for whom else?) put into the system? Is this a 
+% @review How are emails (for SoS admin, for County Audit Admins,
+% presumably, and for whom else?) put into the system? Is this a
 % standard part of the authentication process?
 
 information_systems: THEORY
@@ -219,7 +219,7 @@ server: DATATYPE
                 enr_server
 BEGIN
   IMPORTING information_systems, database, elections
-  
+
   web_server?: make_web_server: web_server
   time_server?: make_time_server: time_server
   firewall?: make_filewall: firewall
@@ -285,7 +285,7 @@ BEGIN
   contest_outcome: TYPE
   election_outcome: TYPE = set[contest_outcome]
   wrong_outcome: TYPE FROM election_outcome
-  
+
 % @trace RDPR-6-Jul-2017 Section 25.1.5
 % @description The presumed winning and losing candidates or voting
 % choices of a ballot contest as reflected in preliminary results.
@@ -325,11 +325,11 @@ BEGIN
     member(c1, s) AND member(c2, s) AND
       c1`id = c2`id
     IMPLIES c1 = c2)
-  
+
   election_canvass: TYPE
   political_party: TYPE = string
 % @trace RDPR-6-Jul-2017 Section 25.1.1
-% @description The page or pages of the Secretary of State’s website
+% @description The page or pages of the Secretary of State's website
 % devoted to risk-limiting audits.
   audit_center: TYPE
   ballot: TYPE % = [election, set[contest], ballot_id]
@@ -365,7 +365,7 @@ BEGIN
   is_national_election?(n: nation, c: set[contest]):
     make_national_election: national_election
   is_private_election?(o: organization, c: set[contest]):
-    make_private_election: private_election  
+    make_private_election: private_election
 END election
 
 %+END elections
@@ -394,7 +394,7 @@ storage_container: DATATYPE
                 ballot_box
 BEGIN
   IMPORTING elections
-  
+
   box?(ballots:list[ballot]): make_box: box
   bin?(ballots:list[ballot]): make_bin: bin
   ballot_box?(ballots:list[ballot]): make_ballot_box: ballot_box
@@ -406,10 +406,10 @@ END storage_container
 elections_equipment: THEORY
 BEGIN
   IMPORTING storage_container
-  
+
   voting_system: TYPE
   dominion_voting_system: TYPE FROM voting_system
-  
+
   scanner: TYPE
   scanner_id_number: TYPE
   id_number?: [scanner -> scanner_id_number]
@@ -492,7 +492,7 @@ BEGIN
   option: TYPE = string
   choice: TYPE = set[option]
 
-% @description A batch is a set of ballots.  
+% @description A batch is a set of ballots.
   batch: TYPE = set[ballot]
 
 %%% The county must secure and maintain in sealed ballot containers
@@ -608,7 +608,7 @@ END ballots_collections
 instructions_forms_reports: THEORY
 BEGIN
   IMPORTING information_systems, ballot_manifests, election, audits
-  
+
   report: TYPE = [# name: string #]
 % @review CDOS The contents of this report are underspecified at the
 % moment. See submit_audit_investigation_report below for more
@@ -641,7 +641,7 @@ BEGIN
 
 % @trace RDPR-6-Jul-2017 Section 25.2.2(D)(2)
 % @description A file suitable for uploading to the Secretary of
-% State’s election night reporting system.
+% State's election night reporting system.
 % @review CDOS Double-check that we are not responsible for this
 % feature, as it mentions the election night reporting systems, about
 % which we know nothing.
@@ -690,9 +690,9 @@ BEGIN
   county_clerk: TYPE FROM person
   county?: [county_clerk -> county]
 % @review CDOS If names of audit board members are to be visible
-% on the public website, are they published directly by the 
-% County Audit Admins? If not, to whom do the County 
-% Admins submit the names, and by whom are the names published 
+% on the public website, are they published directly by the
+% County Audit Admins? If not, to whom do the County
+% Admins submit the names, and by whom are the names published
 % to the public website? What happens if a County
 % fails to submit names?
 
@@ -710,7 +710,7 @@ BEGIN
 % @trace email from Jerome Lovato on 12 July 2017
   county_administrator: TYPE FROM administrator
   state_administrator: TYPE FROM administrator
-  
+
 % @review CDOS Who bootstraps authentication? Who has the right to
 % identify people who should have credentials and generate and issue
 % those credentials? How do they (singular or plural) authenticate to
@@ -721,7 +721,7 @@ BEGIN
 % authenticated users of the RLA tool, they do "sign off" on the audit
 % they performed.  Do they also "sign in" before audit starts?
 
-% @review CDOS what happens if the Audit Board cannot find 
+% @review CDOS what happens if the Audit Board cannot find
 % the ballot expected by the RLA tool?
 
   system_administrator: TYPE FROM administrator
@@ -770,14 +770,14 @@ BEGIN
 %%% \begin{quotation}
 %%% The Secretary of State will convene a public meeting on the tenth
 %%% day after election day to establish a random seed for use with the
-%%% Secretary of State’s RLA tool’s pseudo-random number generator
-%%% based on Philip Stark’s online tool, \emph{Pseudo-random Number
+%%% Secretary of State's RLA tool's pseudo-random number generator
+%%% based on Philip Stark's online tool, \emph{Pseudo-random Number
 %%% Generator using SHA-256}. This material is incorporated by
 %%% reference in the election rules and does not include later
 %%% amendments or editions. The following material incorporated by
 %%% reference is posted on the Secretary of State website and
 %%% available for review by the public during regular business hours
-%%% at the colorado secretary of state’s office: pseudo-random number
+%%% at the colorado secretary of state's office: pseudo-random number
 %%% generator using SHA-256 available at
 %%% \url{https://www.stat.berkeley.edu/~stark/java/html/sha256rand.htm}. The
 %%% Secretary of State will give public notice of the meeting at least
@@ -809,7 +809,7 @@ END randomness
 audits: THEORY
 BEGIN
   IMPORTING roles
-  
+
   audit: TYPE
 
 %%% Audits are run by audit boards, whose members come from various
@@ -863,37 +863,37 @@ BEGIN
 
 % @trace struck from RDPR-6-Jul-2017 old Section 25.1.6
 
-% @description A circumstance in which the audit board’s
+% @description A circumstance in which the audit board's
 % interpretation of ballot markings reveals that the winner with the
-% fewest votes received fewer votes than the voting system’s
+% fewest votes received fewer votes than the voting system's
 % interpretation of the same markings as reflected in the CVR.
 
 % @example For example, if the CVR reflects an undervote in the
-% audited contest, and the audit board’s interpretation of the
+% audited contest, and the audit board's interpretation of the
 % corresponding paper ballot reflects a vote for the loser with the
 % most votes in that contest, the CVR contains a one-vote
 % overstatement. if the CVR reflects a vote for the winner with the
-% fewest votes, and the audit board’s interpretation of the paper
+% fewest votes, and the audit board's interpretation of the paper
 % ballot reflects a vote for the loser with the most votes, the
 % preliminary results contain a two-vote overstatement.
   margin_overstatement: TYPE = nat
 
 % @trace struck from RDPR-6-Jul-2017 old Section 25.1.7
 
-% @description A circumstance in which the audit board’s
+% @description A circumstance in which the audit board's
 % interpretation of ballot markings reveals that the contest winner
-% with the fewest votes received more votes than the voting system’s
+% with the fewest votes received more votes than the voting system's
 % interpretation of the same markings as reflected in the CVR.
 
 % @example For example, if the CVR reflects an undervote in the
-% audited contest, and the audit board’s interpretation of the
+% audited contest, and the audit board's interpretation of the
 % corresponding paper ballot reflects a vote for the winner with the
 % fewest votes in that contest, the CVR contains a one-vote
 % understatement. If the CVR reflects a vote for the loser with the
-% most votes, and the audit board’s interpretation of the paper ballot
+% most votes, and the audit board's interpretation of the paper ballot
 % reflects a vote for the winner with the fewest votes, the CVR
 % contains a two-vote understatement.
-  margin_understatement: TYPE = nat  
+  margin_understatement: TYPE = nat
 
   random_audit: TYPE
 END audits
@@ -951,7 +951,7 @@ BEGIN
 % @description A type of risk-limiting audit in which the audit board
 % examines and reports to the secretary of state voter markings on
 % randomly selected ballots, and then compared compares them to the
-% voting system’s tabulation as reflected in the corresponding cast
+% voting system's tabulation as reflected in the corresponding cast
 % vote records.
   comparison_audit: TYPE FROM risk_limiting_audit
 
@@ -960,7 +960,7 @@ BEGIN
   discrepency: TYPE
   random: TYPE
   sample_size: TYPE = nat
-  
+
 % @trace RDPR-6-Jul-2017 Section 25.1.2
 % @description The audited contest determines the number of ballots
 % that must be examined and verified during the RLA.
@@ -996,7 +996,7 @@ END rlas
 cast_vote_records: THEORY
 BEGIN
   IMPORTING vote, information_systems, elections_equipment
-  
+
   cvr: TYPE = set[vote]
   verified?: pred[cvr]
 % @trace Task order #1, Exhibit A
@@ -1230,7 +1230,7 @@ BEGIN
 %%% \begin{enumerate}
 
 %%% \item permuting all ballots and auditing a prefix of ballots
-%%% (thereby auditing ballots "with no replacement"); or 
+%%% (thereby auditing ballots "with no replacement"); or
 
 %%% \item randomly selecting ballots ballot-by-ballot (thereby
 %%% auditing ballots "with replacement" as the same ballot may be
@@ -1374,7 +1374,7 @@ BEGIN
     [county_dashboard, cvr_file, digest ->
      [county_dashboard, email, upload_system_message]]
 
-%%% \item its RLA tabulation results export to the Secretary of State’s
+%%% \item its RLA tabulation results export to the Secretary of State's
 %%% election night reporting system.
 
 %%% \end{enumerate}
@@ -1393,7 +1393,7 @@ BEGIN
 
 %%% \item its verified and hashed ballot manifest to the RLA tool; and
 
-%%% \item its RLA tabulation results export to the Secretary of State’s
+%%% \item its RLA tabulation results export to the Secretary of State's
 %%% election night reporting system.
 
 %%% \end{enumerate}
@@ -1470,9 +1470,9 @@ BEGIN
 %%% The audit board must interpret voter markings on ballots selected
 %%% for audit in accordance with the Secretary of State’s voter intent
 %%% guide.
-%%% 
+%%%
 %%% To the extent applicable, the Secretary of State will compare the
-%%% audit board’s reports of the audited ballots to the corresponding
+%%% audit board's reports of the audited ballots to the corresponding
 %%% CVRs and post the results of the comparison and any margin
 %%% overstatements or understatements on the audit center.
 %%% \end{quotation}
@@ -1581,11 +1581,11 @@ BEGIN
   IMPORTING roles, dashboard, election, dashboard,
             information_systems, upload_system_message, ballots,
             cryptography, cast_vote_records
-  
+
 % @description A credential is the general idea of having some
 % knowledge or thing to permit one to authenticate to a system. Many
 % authentication systems mandate the use of multiple credentials.
-  credential: TYPE 
+  credential: TYPE
   username: TYPE FROM credential
   password: TYPE FROM credential
 % @trace Task order 1, page 4, "Uptime/Security"
@@ -1720,7 +1720,7 @@ BEGIN
 
   javascript_code?: [front_end -> javascript_code]
   code_origins?: [javascript_code -> web_server]
-  
+
 %%% The front-end, which is written in TypeScript and JavaScript, is
 %%% provided to a web browser client directly from the web server.
   browser_code_origins: AXIOM
@@ -1768,7 +1768,7 @@ END system_architecture
 system_assumptions: THEORY
 BEGIN
   IMPORTING election, fafessl
-  
+
   e: VAR state_election
 % @trace RDPR-6-Jul-2017 Section 25.2.2(E)
 
@@ -1778,7 +1778,7 @@ BEGIN
 %%% \begin{enumerate}
 
 %%% \item The number of individual CVRs in its CVR export equals the
-%%% aggregate number of ballots reflected in the county’s ballot
+%%% aggregate number of ballots reflected in the county's ballot
 %%% manifest as of the ninth day after election day;
   CVR_count_equals_ballot_manifest_count: AXIOM TBD
 
@@ -2000,71 +2000,71 @@ END data_model
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% %%% \section{Domain Model}
+%%% \section{Domain Model}
 
-% %%% The overall domain model and specification of this system is the
-% %%% sum total of all concepts introduced in this chapter.
+%%% The overall domain model and specification of this system is the
+%%% sum total of all concepts introduced in this chapter.
 
-% terminology: THEORY
-% BEGIN
-%   IMPORTING
-% % @description "TBD"
-%     ballots,
-% % @description "TBD"
-%     elections,
-% % @description "TBD"
-%     audits,
-% % @description "TBD"
-%     instructions_forms_reports,
-% % @description "TBD"
-%     roles,
-% % @description "TBD"
-%     randomness,
-% % @description "TBD"
-%     cryptography,
-% % @description "TBD"
-%     rlas,
-% % @description "TBD"
-%     elections_equipment,
-% % @description "TBD"
-%     authentication,
-% % @description "TBD"
-%     cast_vote_records,
-% % @description "TBD"
-% % @review CDOS what is the source of info
-% % presented to audit board to tell them which paper ballot
-% % they should examine next? Is it the CVR alone that is 
-% % the source? And what information must the audit board 
-% % enter into the system to ascertain that the paper
-% % ballot they are holding does in fact match the CVR
-% % that will be compared to their interpretation? Will 
-% % the audit board simply click "Yes, this is the right 
-% % paper ballot"? Or will they have to enter some confirming 
-% % piece of information (e.g., ballot style, a ballot ID number?).
-% % @review CDOS if the audit has several "rounds",
-% % does the Audit Board need to "sign" after each
-% % round?
-%     user_interface,
-% % @description "TBD"
-%     dashboard,
-% % @description "TBD"
-%     database,
-% % @description "TBD"
-%     information_systems,
-% % @description "TBD"
-%     system_architecture
-% END terminology
+terminology: THEORY
+BEGIN
+  IMPORTING
+% @description "TBD"
+    ballots,
+% @description "TBD"
+    elections,
+% @description "TBD"
+    audits,
+% @description "TBD"
+    instructions_forms_reports,
+% @description "TBD"
+    roles,
+% @description "TBD"
+    randomness,
+% @description "TBD"
+    cryptography,
+% @description "TBD"
+    rlas,
+% @description "TBD"
+    elections_equipment,
+% @description "TBD"
+    authentication,
+% @description "TBD"
+    cast_vote_records,
+% @description "TBD"
+% @review CDOS what is the source of info
+% presented to audit board to tell them which paper ballot
+% they should examine next? Is it the CVR alone that is 
+% the source? And what information must the audit board 
+% enter into the system to ascertain that the paper
+% ballot they are holding does in fact match the CVR
+% that will be compared to their interpretation? Will 
+% the audit board simply click "Yes, this is the right 
+% paper ballot"? Or will they have to enter some confirming 
+% piece of information (e.g., ballot style, a ballot ID number?).
+% @review CDOS if the audit has several "rounds",
+% does the Audit Board need to "sign" after each
+% round?
+    user_interface,
+% @description "TBD"
+    dashboard,
+% @description "TBD"
+    database,
+% @description "TBD"
+    information_systems,
+% @description "TBD"
+    system_architecture
+END terminology
 
-% % @system CORLA_SYSTEM
-% % @indexing-author Joseph Kiniry <kiniry@freeandfair.us>
-% % @indexing-organization Free & Fair
-% % @indexing-keywords Free & Fair
-% % @indexing-created Free & Fair
-% % @indexing-github Free & Fair
-% % @explanation "TBD"
-% corla: THEORY
-% BEGIN
-%   IMPORTING
-% % @description "TBD"
-%     terminology
-% END corla
+% @system CORLA_SYSTEM
+% @indexing-author Joseph Kiniry <kiniry@freeandfair.us>
+% @indexing-organization Free & Fair
+% @indexing-keywords Free & Fair
+% @indexing-created Free & Fair
+% @indexing-github Free & Fair
+% @explanation "TBD"
+corla: THEORY
+BEGIN
+  IMPORTING
+% @description "TBD"
+    terminology
+END corla
