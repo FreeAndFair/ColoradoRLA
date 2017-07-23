@@ -6,6 +6,10 @@ import {
     Switch,
 } from 'react-router-dom';
 
+import CountyRootContainer from './county';
+import CountyAuditContainer from './county/Audit';
+import CountyContestDetailContainer from './county/ContestDetail';
+import CountyContestOverviewContainer from './county/ContestOverview';
 import LoginContainer from './Login';
 import SoSRootContainer from './sos';
 import AuditContainer from './sos/Audit';
@@ -31,6 +35,10 @@ const makeRoute = (def: RouteDef) => {
 
 const routes: RouteDef[] = [
     ['/login', LoginContainer],
+    ['/county', CountyRootContainer],
+    ['/county/audit', CountyAuditContainer],
+    ['/county/contest', CountyContestOverviewContainer],
+    ['/county/contest/:contestId', CountyContestDetailContainer],
     ['/sos', SoSRootContainer],
     ['/sos/audit', AuditContainer],
     ['/sos/audit/risk-limit', AuditRiskLimitContainer],
