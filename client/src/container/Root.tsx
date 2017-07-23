@@ -6,14 +6,7 @@ import {
     Switch,
 } from 'react-router-dom';
 
-import AuditContainer from './Audit';
-import BallotContainer from './Ballot';
-import HomeContainer from './Home';
 import LoginContainer from './Login';
-import ReportContainer from './Report';
-import RoundContainer from './Round';
-import SeedContainer from './Seed';
-import UploadContainer from './Upload';
 
 
 export interface RootContainerProps {
@@ -28,14 +21,7 @@ const makeRoute = (def: RouteDef) => {
 };
 
 const routes: RouteDef[] = [
-    ['/', HomeContainer],
     ['/login', LoginContainer],
-    ['/audit', AuditContainer],
-    ['/audit/ballot', BallotContainer],
-    ['/audit/report', ReportContainer],
-    ['/audit/round', RoundContainer],
-    ['/audit/seed', SeedContainer],
-    ['/audit/upload', UploadContainer],
 ];
 
 export class RootContainer extends React.Component<RootContainerProps, void> {
