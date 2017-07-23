@@ -865,10 +865,10 @@ BEGIN
 
 % @description A circumstance in which the audit board's
 % interpretation of ballot markings reveals that the winner with the
-% fewest votes received fewer votes than the voting system's
+% fewest votes had a smaller margin than in the voting system’s
 % interpretation of the same markings as reflected in the CVR.
 
-% @example For example, if the CVR reflects an undervote in the
+% @example For example, IF the CVR reflects an undervote in the
 % audited contest, and the audit board's interpretation of the
 % corresponding paper ballot reflects a vote for the loser with the
 % most votes in that contest, the CVR contains a one-vote
@@ -882,10 +882,10 @@ BEGIN
 
 % @description A circumstance in which the audit board's
 % interpretation of ballot markings reveals that the contest winner
-% with the fewest votes received more votes than the voting system's
+% with the fewest votes had a larger margin than the voting system's
 % interpretation of the same markings as reflected in the CVR.
 
-% @example For example, if the CVR reflects an undervote in the
+% @example For example, IF the CVR reflects an undervote in the
 % audited contest, and the audit board's interpretation of the
 % corresponding paper ballot reflects a vote for the winner with the
 % fewest votes in that contest, the CVR contains a one-vote
