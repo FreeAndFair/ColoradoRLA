@@ -507,3 +507,14 @@ reported tabulation outcome.
 
 * **Slack** TBD
 
+* **Paused Audit** @review morganmillerux I'm unclear if they will be allowed to pause and audit but it seems valuable to state what it is and then explicitly allow or disallow it.
+
+* **Missing/Not Found Ballot** @review morganmillerux this is perhaps the same as 'phantom ballot'
+
+* **Credentialing Authority** @review morganmillerux Do we need a concept of who's allowed to author credentials?
+
+* **Submit Ballot Interpretation** @review morganmillerux I see an entry for Audit Results but I think it would also be helpful to define the granular steps of submitting each ballot interpretation.
+
+* **Ballot Interpretation** @review morganmillerux Perhaps I didn't a synonym for this, but this should be included.
+
+* **Ballot Retrieval** @review morganmillerux the process of getting the ballots seems like a specific point of concern and merits being called out.
