@@ -7,7 +7,9 @@ interface FormFields {
 }
 
 function isFormValid(form: FormFields): boolean {
-    return false;
+    const { email, password } = form;
+
+    return (email.length > 0) && (password.length > 0);
 }
 
 export default class LoginForm extends React.Component<any, any> {
