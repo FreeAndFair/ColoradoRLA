@@ -12,7 +12,12 @@ function isFormValid(form: FormFields): boolean {
     return (email.length > 0) && (password.length > 0);
 }
 
-export default class LoginForm extends React.Component<any, any> {
+interface LoginFormState {
+    form: FormFields;
+}
+
+export default class LoginForm
+extends React.Component<any, LoginFormState> {
     constructor() {
         super();
 

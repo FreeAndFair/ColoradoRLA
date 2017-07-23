@@ -30,10 +30,7 @@ test('LoginForm', s => {
         t.plan(3);
 
         const c = shallow(<LoginForm />);
-
-        const nextState = c.state();
-        nextState.form.email = EMAIL;
-        c.setState(nextState);
+        c.setState({ form: { email: EMAIL, password: '' } });
 
         const emailField = c.find('input.email').first();
         t.equal(emailField.prop('value'), EMAIL, 'the email field is non-empty');
@@ -49,10 +46,7 @@ test('LoginForm', s => {
         t.plan(3);
 
         const c = shallow(<LoginForm />);
-
-        const nextState = c.state();
-        nextState.form.password = PASSWORD;
-        c.setState(nextState);
+        c.setState({ form: { email: '', password: PASSWORD } });
 
         const emailField = c.find('input.email').first();
         t.equal(emailField.prop('value'), '',
@@ -70,10 +64,7 @@ test('LoginForm', s => {
         t.plan(3);
 
         const c = shallow(<LoginForm />);
-
-        const nextState = c.state();
-        nextState.form = { email: EMAIL, password: PASSWORD };
-        c.setState(nextState);
+        c.setState({ form: { email: EMAIL, password: PASSWORD } });
 
         const emailField = c.find('input.email').first();
         t.equal(emailField.prop('value'), EMAIL,
