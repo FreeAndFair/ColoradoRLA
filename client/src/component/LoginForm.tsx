@@ -34,12 +34,14 @@ export default class LoginForm extends React.Component<any, any> {
                     Email
                     <input className='pt-input email'
                            type='text'
+                           onChange={ this.onEmailChange }
                            value={ form.email } />
                 </label>
                 <label className='pt-label'>
                     Password
                     <input className='pt-input password'
                            type='password'
+                           onChange={ this.onPasswordChange }
                            value={ form.password } />
                 </label>
                 <button
@@ -50,6 +52,18 @@ export default class LoginForm extends React.Component<any, any> {
                 </button>
             </div>
         );
+    }
+
+    private onEmailChange = (e: React.ChangeEvent<any>) => {
+        const s = { ...this.state };
+        s.form.email = e.target.value;
+        this.setState(s);
+    }
+
+    private onPasswordChange = (e: React.ChangeEvent<any>) => {
+        const s = { ...this.state };
+        s.form.password = e.target.value;
+        this.setState(s);
     }
 
     private buttonClick(e: React.MouseEvent<HTMLButtonElement>) {
