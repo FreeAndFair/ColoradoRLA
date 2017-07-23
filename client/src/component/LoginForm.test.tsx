@@ -7,6 +7,9 @@ import { Redirect } from 'react-router-dom';
 import LoginForm from './LoginForm';
 
 
+const EMAIL = 'user@eample.com';
+const PASSWORD = 'hunter2';
+
 test('LoginForm', s => {
     s.test('initial state', t => {
         t.plan(3);
@@ -28,7 +31,6 @@ test('LoginForm', s => {
 
         const c = shallow(<LoginForm />);
 
-        const EMAIL = 'user@example.com';
         const nextState = c.state();
         nextState.form.email = EMAIL;
         c.setState(nextState);
@@ -48,7 +50,6 @@ test('LoginForm', s => {
 
         const c = shallow(<LoginForm />);
 
-        const PASSWORD = 'hunter2';
         const nextState = c.state();
         nextState.form.password = PASSWORD;
         c.setState(nextState);
@@ -70,8 +71,6 @@ test('LoginForm', s => {
 
         const c = shallow(<LoginForm />);
 
-        const EMAIL = 'user@example.com';
-        const PASSWORD = 'hunter2';
         const nextState = c.state();
         nextState.form = { email: EMAIL, password: PASSWORD };
         c.setState(nextState);
