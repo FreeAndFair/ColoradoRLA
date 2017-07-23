@@ -198,6 +198,11 @@
       "from": "arr-union@>=3.1.0 <4.0.0",
       "resolved": "https://registry.npmjs.org/arr-union/-/arr-union-3.1.0.tgz"
     },
+    "array-filter": {
+      "version": "0.0.1",
+      "from": "array-filter@>=0.0.0 <0.1.0",
+      "resolved": "https://registry.npmjs.org/array-filter/-/array-filter-0.0.1.tgz"
+    },
     "array-find-index": {
       "version": "1.0.2",
       "from": "array-find-index@>=1.0.1 <2.0.0",
@@ -207,6 +212,16 @@
       "version": "2.1.1",
       "from": "array-flatten@>=2.1.0 <3.0.0",
       "resolved": "https://registry.npmjs.org/array-flatten/-/array-flatten-2.1.1.tgz"
+    },
+    "array-map": {
+      "version": "0.0.0",
+      "from": "array-map@>=0.0.0 <0.1.0",
+      "resolved": "https://registry.npmjs.org/array-map/-/array-map-0.0.0.tgz"
+    },
+    "array-reduce": {
+      "version": "0.0.0",
+      "from": "array-reduce@>=0.0.0 <0.1.0",
+      "resolved": "https://registry.npmjs.org/array-reduce/-/array-reduce-0.0.0.tgz"
     },
     "array-union": {
       "version": "1.0.2",
@@ -687,6 +702,11 @@
       "version": "0.1.4",
       "from": "date-now@>=0.1.4 <0.2.0",
       "resolved": "https://registry.npmjs.org/date-now/-/date-now-0.1.4.tgz"
+    },
+    "debounce-collect": {
+      "version": "1.0.2",
+      "from": "debounce-collect@1.0.2",
+      "resolved": "https://registry.npmjs.org/debounce-collect/-/debounce-collect-1.0.2.tgz"
     },
     "debug": {
       "version": "2.6.8",
@@ -2086,6 +2106,11 @@
       "from": "os-locale@>=1.4.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/os-locale/-/os-locale-1.4.0.tgz"
     },
+    "outpipe": {
+      "version": "1.1.1",
+      "from": "outpipe@1.1.1",
+      "resolved": "https://registry.npmjs.org/outpipe/-/outpipe-1.1.1.tgz"
+    },
     "p-map": {
       "version": "1.1.1",
       "from": "p-map@>=1.1.1 <2.0.0",
@@ -2571,10 +2596,20 @@
       "from": "sha.js@>=2.4.0 <3.0.0",
       "resolved": "https://registry.npmjs.org/sha.js/-/sha.js-2.4.8.tgz"
     },
+    "shell-quote": {
+      "version": "1.6.1",
+      "from": "shell-quote@>=1.4.2 <2.0.0",
+      "resolved": "https://registry.npmjs.org/shell-quote/-/shell-quote-1.6.1.tgz"
+    },
     "signal-exit": {
       "version": "3.0.2",
       "from": "signal-exit@>=3.0.0 <4.0.0",
       "resolved": "https://registry.npmjs.org/signal-exit/-/signal-exit-3.0.2.tgz"
+    },
+    "simpler-debounce": {
+      "version": "1.0.0",
+      "from": "simpler-debounce@1.0.0",
+      "resolved": "https://registry.npmjs.org/simpler-debounce/-/simpler-debounce-1.0.0.tgz"
     },
     "snapdragon": {
       "version": "0.8.1",
@@ -2839,6 +2874,38 @@
           "version": "1.2.0",
           "from": "minimist@>=1.2.0 <1.3.0",
           "resolved": "https://registry.npmjs.org/minimist/-/minimist-1.2.0.tgz"
+        }
+      }
+    },
+    "tape-watch": {
+      "version": "2.3.0",
+      "from": "tape-watch@latest",
+      "resolved": "https://registry.npmjs.org/tape-watch/-/tape-watch-2.3.0.tgz",
+      "dependencies": {
+        "chokidar": {
+          "version": "1.6.0",
+          "from": "chokidar@1.6.0",
+          "resolved": "https://registry.npmjs.org/chokidar/-/chokidar-1.6.0.tgz"
+        },
+        "debug": {
+          "version": "2.6.0",
+          "from": "debug@2.6.0",
+          "resolved": "https://registry.npmjs.org/debug/-/debug-2.6.0.tgz"
+        },
+        "glob": {
+          "version": "7.0.4",
+          "from": "glob@7.0.4",
+          "resolved": "https://registry.npmjs.org/glob/-/glob-7.0.4.tgz"
+        },
+        "ms": {
+          "version": "0.7.2",
+          "from": "ms@0.7.2",
+          "resolved": "https://registry.npmjs.org/ms/-/ms-0.7.2.tgz"
+        },
+        "once": {
+          "version": "1.3.3",
+          "from": "once@1.3.3",
+          "resolved": "https://registry.npmjs.org/once/-/once-1.3.3.tgz"
         }
       }
     },
