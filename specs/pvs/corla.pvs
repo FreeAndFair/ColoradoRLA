@@ -329,7 +329,7 @@ BEGIN
   election_canvass: TYPE
   political_party: TYPE = string
 % @trace RDPR-6-Jul-2017 Section 25.1.1
-% @description The page or pages of the Secretary of State’s website
+% @description The page or pages of the Secretary of State's website
 % devoted to risk-limiting audits.
   audit_center: TYPE
   ballot: TYPE % = [election, set[contest], ballot_id]
@@ -641,7 +641,7 @@ BEGIN
 
 % @trace RDPR-6-Jul-2017 Section 25.2.2(D)(2)
 % @description A file suitable for uploading to the Secretary of
-% State’s election night reporting system.
+% State's election night reporting system.
 % @review CDOS Double-check that we are not responsible for this
 % feature, as it mentions the election night reporting systems, about
 % which we know nothing.
@@ -770,14 +770,14 @@ BEGIN
 %%% \begin{quotation}
 %%% The Secretary of State will convene a public meeting on the tenth
 %%% day after election day to establish a random seed for use with the
-%%% Secretary of State’s RLA tool’s pseudo-random number generator
-%%% based on Philip Stark’s online tool, \emph{Pseudo-random Number
+%%% Secretary of State's RLA tool's pseudo-random number generator
+%%% based on Philip Stark's online tool, \emph{Pseudo-random Number
 %%% Generator using SHA-256}. This material is incorporated by
 %%% reference in the election rules and does not include later
 %%% amendments or editions. The following material incorporated by
 %%% reference is posted on the Secretary of State website and
 %%% available for review by the public during regular business hours
-%%% at the colorado secretary of state’s office: pseudo-random number
+%%% at the colorado secretary of state's office: pseudo-random number
 %%% generator using SHA-256 available at
 %%% \url{https://www.stat.berkeley.edu/~stark/java/html/sha256rand.htm}. The
 %%% Secretary of State will give public notice of the meeting at least
@@ -863,34 +863,34 @@ BEGIN
 
 % @trace struck from RDPR-6-Jul-2017 old Section 25.1.6
 
-% @description A circumstance in which the audit board’s
+% @description A circumstance in which the audit board's
 % interpretation of ballot markings reveals that the winner with the
-% fewest votes received fewer votes than the voting system’s
+% fewest votes received fewer votes than the voting system's
 % interpretation of the same markings as reflected in the CVR.
 
 % @example For example, if the CVR reflects an undervote in the
-% audited contest, and the audit board’s interpretation of the
+% audited contest, and the audit board's interpretation of the
 % corresponding paper ballot reflects a vote for the loser with the
 % most votes in that contest, the CVR contains a one-vote
 % overstatement. if the CVR reflects a vote for the winner with the
-% fewest votes, and the audit board’s interpretation of the paper
+% fewest votes, and the audit board's interpretation of the paper
 % ballot reflects a vote for the loser with the most votes, the
 % preliminary results contain a two-vote overstatement.
   margin_overstatement: TYPE = nat
 
 % @trace struck from RDPR-6-Jul-2017 old Section 25.1.7
 
-% @description A circumstance in which the audit board’s
+% @description A circumstance in which the audit board's
 % interpretation of ballot markings reveals that the contest winner
-% with the fewest votes received more votes than the voting system’s
+% with the fewest votes received more votes than the voting system's
 % interpretation of the same markings as reflected in the CVR.
 
 % @example For example, if the CVR reflects an undervote in the
-% audited contest, and the audit board’s interpretation of the
+% audited contest, and the audit board's interpretation of the
 % corresponding paper ballot reflects a vote for the winner with the
 % fewest votes in that contest, the CVR contains a one-vote
 % understatement. If the CVR reflects a vote for the loser with the
-% most votes, and the audit board’s interpretation of the paper ballot
+% most votes, and the audit board's interpretation of the paper ballot
 % reflects a vote for the winner with the fewest votes, the CVR
 % contains a two-vote understatement.
   margin_understatement: TYPE = nat
@@ -951,7 +951,7 @@ BEGIN
 % @description A type of risk-limiting audit in which the audit board
 % examines and reports to the secretary of state voter markings on
 % randomly selected ballots, and then compared compares them to the
-% voting system’s tabulation as reflected in the corresponding cast
+% voting system's tabulation as reflected in the corresponding cast
 % vote records.
   comparison_audit: TYPE FROM risk_limiting_audit
 
@@ -1374,7 +1374,7 @@ BEGIN
     [county_dashboard, cvr_file, digest ->
      [county_dashboard, email, upload_system_message]]
 
-%%% \item its RLA tabulation results export to the Secretary of State’s
+%%% \item its RLA tabulation results export to the Secretary of State's
 %%% election night reporting system.
 
 %%% \end{enumerate}
@@ -1393,7 +1393,7 @@ BEGIN
 
 %%% \item its verified and hashed ballot manifest to the RLA tool; and
 
-%%% \item its RLA tabulation results export to the Secretary of State’s
+%%% \item its RLA tabulation results export to the Secretary of State's
 %%% election night reporting system.
 
 %%% \end{enumerate}
@@ -1457,7 +1457,7 @@ BEGIN
      audit_board_dashboard]
 
 %%% \begin{quotation}
-%%% If supported by the county’s voting system, the audit board may
+%%% If supported by the county's voting system, the audit board may
 %%% refer to the digital image of the audited ballot captured by the
 %%% voting system in order to confirm it has retrieved the correct
 %%% ballot randomly selected for audit. If the scanned ballot was
@@ -1468,11 +1468,11 @@ BEGIN
 %%% canvass deadline.
 %%%
 %%% The audit board must interpret voter markings on ballots selected
-%%% for audit in accordance with the Secretary of State’s voter intent
+%%% for audit in accordance with the Secretary of State's voter intent
 %%% guide.
 %%%
 %%% To the extent applicable, the Secretary of State will compare the
-%%% audit board’s reports of the audited ballots to the corresponding
+%%% audit board's reports of the audited ballots to the corresponding
 %%% CVRs and post the results of the comparison and any margin
 %%% overstatements or understatements on the audit center.
 %%% \end{quotation}
@@ -1778,7 +1778,7 @@ BEGIN
 %%% \begin{enumerate}
 
 %%% \item The number of individual CVRs in its CVR export equals the
-%%% aggregate number of ballots reflected in the county’s ballot
+%%% aggregate number of ballots reflected in the county's ballot
 %%% manifest as of the ninth day after election day;
   CVR_count_equals_ballot_manifest_count: AXIOM TBD
 
