@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 
-interface FormFields {
+export interface FormFields {
     email: string;
     password: string;
 }
@@ -12,14 +12,18 @@ function isFormValid(form: FormFields): boolean {
     return (email.length > 0) && (password.length > 0);
 }
 
+interface LoginFormProps {
+    submit: (form: FormFields) => void;
+}
+
 interface LoginFormState {
     form: FormFields;
 }
 
 export default class LoginForm
-extends React.Component<any, LoginFormState> {
-    constructor() {
-        super();
+extends React.Component<LoginFormProps, LoginFormState> {
+    constructor(props: LoginFormProps) {
+        super(props);
 
         this.state = {
             form: {
