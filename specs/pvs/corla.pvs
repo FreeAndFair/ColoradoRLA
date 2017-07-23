@@ -100,13 +100,14 @@
 %%% case of Colorado, it facilitates running risk limiting audits
 %%% across all counties in the state simultaneously.
 %%%
-%%% The Colorado election law pertaining to election audits is "TBD",
-%%% and the rules pertaining to such are found in the "Revised Draft
-%%% of Proposed Rules" whose latest version is labeled CCR 1505-1 and
-%%% dated July 6, 2017. Section 25, Post-Election Audit, of that
-%%% document is the salient portion of that document. We will call
-%%% this document RDPR-6-Jul-2017 for the purpose of traceability in
-%%% this specification.
+%%% The Colorado election law pertaining to election audits is
+%%% \href{http://law.justia.com/codes/colorado/2016/title-1/general-primary-recall-and-congressional-vacancy-elections/article-7/part-5/section-1-7-515/}
+%%% {Section 1-7-515, C.R.S.}  and the rules pertaining to such are
+%%% found in the "Revised Draft of Proposed Rules" whose latest
+%%% version is labeled CCR 1505-1 and dated July 6, 2017. Section 25,
+%%% Post-Election Audit, of that document is the salient portion of
+%%% that document. We will call this document RDPR-6-Jul-2017 for the
+%%% purpose of traceability in this specification.
 %%%
 %%% This domain model is based upon that law, its rules, our contract,
 %%% our bibliography of publications about risk-limiting audits, etc.
