@@ -10,6 +10,9 @@ import CountyRootContainer from './county';
 import CountyAuditContainer from './county/Audit';
 import CountyContestDetailContainer from './county/ContestDetail';
 import CountyContestOverviewContainer from './county/ContestOverview';
+import HelpRootContainer from './help';
+import GlossaryContainer from './help/Glossary';
+import ManualContainer from './help/Manual';
 import LoginContainer from './Login';
 import SoSRootContainer from './sos';
 import AuditContainer from './sos/Audit';
@@ -39,6 +42,9 @@ const routes: RouteDef[] = [
     ['/county/audit', CountyAuditContainer],
     ['/county/contest', CountyContestOverviewContainer],
     ['/county/contest/:contestId', CountyContestDetailContainer],
+    ['/help', HelpRootContainer],
+    ['/help/glossary', GlossaryContainer],
+    ['/help/manual', ManualContainer],
     ['/sos', SoSRootContainer],
     ['/sos/audit', AuditContainer],
     ['/sos/audit/risk-limit', AuditRiskLimitContainer],
