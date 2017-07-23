@@ -79,4 +79,21 @@ test('LoginForm', s => {
         const submitButton = c.find('button.submit').first();
         t.ok(!submitButton.prop('disabled'), 'submit button is enabled');
     });
+
+    s.test('submit button triggers submit action', t => {
+        t.plan(1);
+
+        const FORM = { email: EMAIL, password: PASSWORD };
+
+        const submit = (form: FormFields) => {
+            t.deepEqual(form, FORM, 'the form fields are submitted');
+        };
+
+        const c = shallow(<LoginForm submit={ submit } />);
+        c.setState({ form: FORM });
+
+        c.find('button.submit').simulate('click');
+
+        t.end();
+    });
 });

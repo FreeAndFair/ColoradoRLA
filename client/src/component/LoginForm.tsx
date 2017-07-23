@@ -76,6 +76,6 @@ extends React.Component<LoginFormProps, LoginFormState> {
     }
 
     private buttonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-        return;
+        this.props.submit(this.state.form);
     }
 }
