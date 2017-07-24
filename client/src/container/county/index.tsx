@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
+import CountyRootPage from '../../component/county';
+
 
 class CountyRootContainer extends React.Component<any, any> {
     public render() {
-        return (
-            <div>County</div>
-        );
+        return <CountyRootPage />;
     }
 }
 
