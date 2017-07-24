@@ -5,57 +5,89 @@
 %%% \maketitle
 %%%
 %%% \section{Introduction}
-%%% This document contains a formal specification of the ColoradoRLA
-%%% system/tool.  It contains a detailed technical specification of
-%%% the system, annotated with prose designed to help readers who are
-%%% not expert in formal system specification understand the scope and
-%%% interpretations of the elements of the specification. The details
-%%% of the specification itself will guide deployment, management,
-%%% maintenance, and evolution of the system delivered to the Colorado
-%%% Department of State. The prose annotations should help Colorado
-%%% Department of State elections domain experts and technical staff
-%%% to assess the completeness and correctness of the ColoradoRLA
-%%% system/tool.
+%%% The RLA Tool is a computer system developed by Free \& Fair for the Colorado
+%%% Department of State (CDOS henceforth). The RLA Tool facilitates
+%%% running a risk limiting audit across several jurisdictions. In the
+%%% case of Colorado, it facilitates running risk limiting audits
+%%% across all counties in the state simultaneously.
 %%%
-%%% This document is written in a literate style using the PVS theorem
-%%% prover. Writing system specifications in this fashion is called
-%%% (formal) domain engineering and system specification. Our formal
-%%% domain model is written in PVS's higher-order logic (HOL). Our
-%%% informal domain model is written in the Free \& Fair System
-%%% Specification Language, or FAFESSL for short. FAFESSL is a
-%%% daughter of Extended BON which was, in turn, a daughter of BON,
-%%% the Business Object Notation.
+%%% The Colorado election law pertaining to election audits is
+%%% \href{http://law.justia.com/codes/colorado/2016/title-1/general-primary-recall-and-congressional-vacancy-elections/article-7/part-5/section-1-7-515/}
+%%% {Section 1-7-515, C.R.S.}  and the rules pertaining to such are
+%%% found in the "Revised Draft of Proposed Rules" whose latest
+%%% version is labeled CCR 1505-1 and dated July 6, 2017. Section 25,
+%%% Post-Election Audit, of that document is the salient portion of
+%%% that document. We will call this document RDPR-6-Jul-2017 for the
+%%% purpose of traceability in this specification.
+%%%
+%%% This domain model is based upon that law, its rules, our contract,
+%%% our bibliography of publications about risk-limiting audits, etc.
+%%%
+%%% This document contains a formal specification of the RLA
+%%% tool.
+%%% This is a detailed technical specification of the tool,
+%%% annotated with prose designed to help readers who are not expert
+%%% in formal system specification understand the scope and interpretations
+%%% of the elements of the specification. 
+%%% The specification documents our
+%%% thinking and the system design, from domain modeling and
+%%% engineering all of the way to formal specification and
+%%% verification.
+%%%
+%%% We write the formal specification using a
+%%% literate style, allowing the production of typeset books
+%%% and interactive hypertext directly from the specification.
+%%% The prose
+%%% annotations will help Colorado Department of State elections domain experts
+%%% and technical staff to assess the completeness and correctness of the
+%%% ColoradoRLA tool.
+%%% The details onf the specification
+%%% will guide deployment, management, maintenance and evolution
+%%% of the system delivered to the Colorado Department of State. 
+%%%
+%%%\subsection{Technical Note}
+%%% The RLA Tool is a client-server system. The server is implemented
+%%% in Java and runs on servers hosted by CDOS. The client is
+%%% implemented in TypeScript and JavaScript and runs in modern web
+%%% browsers.
+%%% CDOS provides
+%%% the hosting servers, network, and a number of services
+%%% in support of the tools deployment and management.
+%%%
+%%% This document is written in a literate style using the PVS
+%%% theorem prover. Writing system specifications in this fashion is
+%%% called (formal) domain engineering. Our formal domain model is
+%%% written in PVS's higher-order logic (HOL). Our informal domain
+%%% model is written in the Free \& Fair System Specification Language,
+%%% or FAFSSL for short. FAFSSL is a daughter of Extended BON which
+%%% was, in turn, a daughter of BON, the Business Object Notation.
+%%%
+% @review kiniry this bibliography is off-putting to the uninitiated, says @sfsinger
+%%%
+%%% In order to relate PVS to FAFSSL, we must define a refinement
+%%% relationship between their two type systems. Informally, that
+%%% mapping is described in the following paragraph.
+%%%
+%%% We map PVS public theories and their contents to FAFSSL
+%%% constructs.  The top-level corla theory maps to the FAFSSL system
+%%% specification, theories map to clusters, (PVS) types map to
+%%% (FAFSSL) types, and functions map to features.  We use special
+%%% comments to denote informal specifications which will be extracted
+%%% using a shell script into a well-typed FAFSSL informal domain
+%%% model specification.
+%%%
+%%% In order to write literate PVS we use our old friend Adriaan de
+%%% Groot's scripts, available at
+%%% \url{http://www.cs.kun.nl/~adridg/research/PVS-literate.html}.
+%%% Our formal domain model is also annotated with structured comments
+%%% in precise natural language using a standard set of annotations.
+%%% A shell script processes these annotations and generates a
+%%% well-typed informal FAFSSL specification.
 %%%
 %%% See our Bibliography project at GitHub,
 %%% \url{https://github.com/FreeAndFair/Bibliography}, for more
 %%% information.
-%%%
-%%% \section{Refinement}
-%%%
-%%% In order to relate PVS to FAFESSL, we must define a refinement
-%%% relationship between their two type systems. Informally, that
-%%% mapping is described in the following paragraph.
-%%%
-%%% We map PVS public theories and their contents to FAFESSL
-%%% constructs.  The top-level corla theory maps to the FAFESSL system
-%%% specification, theories map to clusters, (PVS) types map to
-%%% (FAFESSL) types, and functions map to features.  We use special
-%%% comments to denote informal specifications which will be extracted
-%%% using a shell script into a well-typed FAFESSL informal domain
-%%% model specification.
-%%%
-%%% As mentioned above, we write formal specifications using a
-%%% literate style, a la Knuth. Doing so permits us to document our
-%%% thinking and the system design, from domain modeling and
-%%% engineering all of the way to formal specification and
-%%% verification, in a fashion that produces beautifully printed books
-%%% and interactive hypertext.
-%%%
-%%% In order to write literate PVS we use our old friend Adriaan de
-%%% Groot's scripts, originally available at Dr. de Groot's
-%%% website\footnote{\url{http://www.cs.kun.nl/~adridg/research/PVS-literate.html}}
-%%% and archived in our repository in its \texttt{tools} subdirectory
-%%% at the top-level.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%% Here is a cheat sheet for literate PVS.
@@ -75,15 +107,19 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%% Our formal domain model is also annotated with structured comments
-%%% in precise natural language using a standard set of annotations.
-%%% A shell script will process these annotations and generates a
-%%% well-typed informal FAFESSL specification.
+%+BEGIN background
+
+%%% \section{Formal Model Description}
+
+%%%\subsection{Basic Technical Infrastructure}
 %%%
-%%% The FAFESSL annotations we use are as follows:
+%%% It is necessary to summarize a number of background concepts from
+%%% computer science in order to formalize the RLA Tool.
+%%
+%%% The Free \& Fair System Specification Language (FAFSSL) annotations we use are as follows:
 %%% \begin{description}
-%%% \item[\@system] the FAFESSL name of the system
-%%% \item[\@cluster] the FAFESSL name of a cluster
+%%% \item[\@system] the FAFSSL name of the system
+%%% \item[\@cluster] the FAFSSL name of a cluster
 %%% \item[\@description] a short description of an artifact
 %%% \item[\@explanation] the (potentially longer) explanation for an
 %%% artifact
@@ -99,24 +135,12 @@
 %%% \item[github] the URL for the GitHub project containing an artifact
 %%% \end{description}
 %%%
-%%% \section{System Overview}
+%%% \subsection{Kinds of Concepts}
 %%%
-%%% The RLA Tool is being developed by
-%%% \href{http://freeandfair.us/}{Free \& Fair} for the
-%%% \href{https://www.sos.state.co.us/}{Colorado Department of State}
-%%% (CDOS henceforth). The RLA Tool facilitates running a risk
-%%% limiting audit across several jurisdictions. In the case of
-%%% Colorado, it facilitates running risk limiting audits across all
-%%% counties in the state simultaneously.
-%%%
-%%% \todojrk{Provide a bit more context in the System Overview.}
-%%%
-%%% \section{Kinds of Concepts}
-%%%
-%%% There are basically three kinds of concepts, each of which is a
-%%% part of speech, that are introduced in any specification:
+%%% Three kinds of concepts, each of which is a
+%%% part of speech, are introduced in any specification:
 %%% \begin{itemize}
-
+%%%
 %%% \item \textbf{Nouns} are formalized by regular (composite)
 %%% types. The set of types available in the prelude of PVS is large,
 %%% ranging from booleans to real-world concepts like time and
@@ -135,7 +159,7 @@
 %%% with no particular ordering, such as the color of something).
 %%% \end{itemize}
 %%%
-%%% Consequently, in what follows, when we formalize a concept from
+%%% Consequently, when we formalize a concept from
 %%% some background informal information, we identify all domain
 %%% specific nouns, verbs, adjectives, and adverbs in that source
 %%% material and capture the meaning of each and every idea relevant
@@ -144,9 +168,9 @@
 %%% formalization generally increasing as we refine the model of the
 %%% system and being defining its implementation.
 %%%
-%%% \section{Refinement from Background Literature to Specification}
+%%% \subsection{Refinement from Background Literature to Specification}
 %%%
-%%% The Colorado \emph{statues} (i.e., the law) pertaining to election
+%%% The Colorado \emph{statutes} (i.e., the law) pertaining to election
 %%% audits is
 %%% \href{http://law.justia.com/codes/colorado/2016/title-1/general-primary-recall-and-congressional-vacancy-elections/article-7/part-5/section-1-7-515/}
 %%% {Section 1-7-515, of the Colorado Revised Statues}, or C.R.S. for
@@ -158,7 +182,7 @@
 %%% salient portion of that document. We will call that particular
 %%% version of the document RDPR-6-Jul-2017 for the purpose of
 %%% traceability in this specification. We refer to Colorado election
-%%% law as "C.R.S.".
+%%% law as ``C.R.S.''.
 %%%
 %%% This domain model is based upon these statues, its associated
 %%% rules, our contract with CDOS for the RLA Tool or requirements
@@ -190,7 +214,7 @@
 %%% the background literature but need not be formalized to specify
 %%% the RLA Tool's behavior.
 %%%
-%%% At the moment, our glossary is a hand-written Appendix on the RLA
+%%% Currently, our glossary is a hand-written Appendix in the RLA
 %%% Tool Book, found in the \texttt{docs} directory of the project
 %%% repository. Before the final system delivery, that book will be
 %%% integrated with this formal specification and the glossary
@@ -200,12 +224,12 @@
 %%% correctness, completeness, and traceability of our specification,
 %%% both formal and informal.
 %%%
-%%% \section{Refinement from Specification to Implementation}
+%%% \subsection{Refinement from Specification to Implementation}
 %%%
 %%% In order to turn a specification like this one into an
 %%% implementation we must take the following steps.
 %%% \begin{enumerate}
-
+%%%
 %%% \item We must decide how each type is going to be concretized into
 %%% the implementation the system. Generally, modules in the
 %%% formalization refine into comparable modules in the
@@ -251,6 +275,9 @@
 %%% wholesale in the system, ensuring that properties hold for all
 %%% possible inputs in all possible environments.
 %%% \end{enumerate}
+% @todo Explain how refinement works and how the reader can understand
+% exactly what is built vs. what is just designed.
+% @review kiniry what's the point of including these annotations? I don't see them used in the document @sfsinger
 
 %%%%%% Literate PVS comments +BEGIN and +END denote blocks. A block
 %%%%%% named "foo" is written to a LaTeX file "foo.tex".
@@ -261,7 +288,7 @@
 
 %%% \todojrk{Add annotation functions coupled to milestones.}
 
-fafessl: THEORY
+FAFSSL: THEORY
 BEGIN
   TBD: bool = TRUE
 %  first_release: []
@@ -269,28 +296,11 @@ BEGIN
 %  third_release: []
 %  final_release: []
 %  someday: []
-END fafessl
+END FAFSSL
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%+BEGIN background
-
-%%% \section{Background Model Elements}
-%%% \label{sec:Background_Model_Elements}
-%%%
-%%% It is necessary to summarize a number of background concepts from
-%%% computer science in order to formalize the RLA Tool.
-%%
-%%% The RLA Tool is a client-server system. The server is implemented
-%%% in Java and runs on servers hosted by CDOS. The client is
-%%% implemented in TypeScript and JavaScript and runs in modern web
-%%% browsers.
-%%%
-%%% As we are hosting the RLA Tool in CDOS's system, they are
-%%% providing the hosting servers, network, and a number of services
-%%% in support of the tools deployment and management.
-%%%
-%%% A database is used to store all of the data relevant to
+%%%% A database is used to store all of the data relevant to
 %%% audits. Databases contain tables that describe the information
 %%% they contain. We need not formalize database elements in any more
 %%% detail than what follows.
@@ -306,7 +316,7 @@ BEGIN
   read: [database, database_table -> data]
 END database
 
-%%% We also need to be able to talk about some pretty simple ideas
+%%% We also need to be able to talk about some ideas
 %%% from information systems.  For example, many files in election
 %%% systems are syntactically just lists of comma-separated
 %%% values. Email is used for communication between officials and
@@ -868,7 +878,7 @@ END instructions_forms_reports
 roles: THEORY
 BEGIN
   IMPORTING elections,
-            fafessl
+            FAFSSL
 
   audit_board_member: TYPE FROM person
   canvas_board: TYPE = set[person]
@@ -1360,7 +1370,7 @@ department_of_state_dashboard: THEORY
 BEGIN
   IMPORTING dashboard,
             elections,
-            fafessl,
+            FAFSSL,
             instructions_forms_reports,
             randomness,
             rlas
@@ -2047,7 +2057,7 @@ END system_architecture
 system_assumptions: THEORY
 BEGIN
   IMPORTING election,
-            fafessl
+            FAFSSL
 
   e: VAR county_election
 % @trace RDPR-6-Jul-2017 Section 25.2.2(E)
@@ -2135,7 +2145,7 @@ END logging
 
 data_model: THEORY
 BEGIN
-  IMPORTING fafessl,
+  IMPORTING FAFSSL,
             database,
             information_systems,
             roles,
