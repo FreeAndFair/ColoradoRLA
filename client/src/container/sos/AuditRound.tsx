@@ -10,8 +10,11 @@ class AuditRoundContainer extends React.Component<any, any> {
     }
 }
 
-const mapStateToProps = () => { return; };
+const mapStateToProps = () => ({});
 
-const mapDispatchToProps = (dispatch: any) => { return; };
+const mapDispatchToProps = (dispatch: any) => ({});
 
-export default connect(mapStateToProps, mapDispatchToProps)(AuditRoundContainer);
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(AuditRoundContainer);

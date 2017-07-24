@@ -12,10 +12,13 @@ export class LoginFormContainer extends React.Component<any, any> {
     }
 }
 
-const mapStateToProps = (state: any) => ({});
+const mapStateToProps = () => ({});
 
 const mapDispatchToProps = (dispatch: any) => ({
     submit: (_: FormFields) => { return; },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(LoginFormContainer);
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(LoginFormContainer);
