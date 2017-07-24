@@ -833,11 +833,11 @@ END ballots_collections
 
 %+BEGIN ifr
 
-%%% \section{Instructions, Forms, and Reports}
+%%% \subsection{Instructions, Forms, and Reports}
 
 %%% Elections have all kinds of different published instructions,
 %%% forms, and reports. We enumerate a few here that are specific to
-%%% Colorado, and the RLA Tool in particular.
+%%% Colorado, and relevant the RLA Tool in particular.
 
 instructions_forms_reports: THEORY
 BEGIN
@@ -917,7 +917,7 @@ BEGIN
             FAFSSL
 
   audit_board_member: TYPE FROM person
-  canvas_board: TYPE = set[person]
+  canvass_board: TYPE = set[person]
 
   colorado_department_of_state: TYPE
   cdos: TYPE = colorado_department_of_state
@@ -949,6 +949,8 @@ BEGIN
   county_administrator: TYPE FROM administrator
   state_administrator: TYPE FROM administrator
 
+% @review kinry dmz shouldn't a county_administrator be associated with a 
+% county, just as a county_clerk is?
 % @review CDOS Who bootstraps authentication? Who has the right to
 % identify people who should have credentials and generate and issue
 % those credentials? How do they (singular or plural) authenticate to
@@ -970,13 +972,13 @@ BEGIN
 
 END roles
 
-canvas_boards: THEORY
+canvass_boards: THEORY
 BEGIN
   IMPORTING election,
             roles
 
-  canvas_board?: [election -> canvas_board]
-END canvas_boards
+  canvass_board?: [election -> canvass_board]
+END canvass_boards
 
 %+END roles
 
