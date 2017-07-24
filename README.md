@@ -17,6 +17,8 @@ Installation and Use
 A document describing how to download, install, and use this system is
 found in [the docs directory](docs/15_installation.md).
 
+Current build status for the `master` branch: [![Build Status](https://travis-ci.org/FreeAndFair/ColoradoRLA.svg?branch=master)](https://travis-ci.org/FreeAndFair/ColoradoRLA)
+
 System Documentation
 ====================
 

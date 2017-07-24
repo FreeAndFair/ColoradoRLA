@@ -30,11 +30,11 @@ History
 Platform and Programming Languages
 ----------------------------------
 
-To fulfill Colorado’s requirements, we will use a modular system
+To fulfill Colorado’s requirements, we use a modular system
 design and standard, well-understood web application technologies.
 
 We are using a Java-based web application running on a Linux server,
-hosted in the CDOS data center. We will be deploying on a JVM version
+hosted in the CDOS data center. Deployment is targeted for a JVM version
 that supports Java 8. 
 
 The choice of deployment on JVM is made due to IT constraints on the
@@ -48,10 +48,10 @@ deployment story, thus we use Java 8 on the server-side.
 
 We are using [PostgreSQL](https://www.postgresql.org/) for data persistence.
 
-The user interface (UI) is browser-based. We are writing the client in
+The user interface (UI) is browser-based. The client is written in
 TypeScript, a mainstream, Microsoft-supported variant of JavaScript
 that offers opt-in, Java-like type safety. TypeScript compiles to
-plain, human-readable JavaScript, so this choice will support
+plain, human-readable JavaScript, so this choice supports
 client-side correctness without requiring any special web browser
 support.
 
@@ -67,7 +67,7 @@ virtualization platform. We provide these resources in order to both
 decrease new developers' ramp-up time as well as to standardize on
 specific versions of tools for development.
 
-Instructions for installing Eclipse and the plugins we leverage
+Instructions for installing Eclipse and the plugins we use
 are at [README-ECLIPSE.md](../server/README-ECLIPSE.md).
 
 * [GitHub](https://github.com/FreeAndFair/ColoradoRLA) for distributed
@@ -242,8 +242,7 @@ cross-platform, IDE-independent builds and continuous integration with
 Travis CI.
 
 The Eclipse-based build system is built into our Eclipse IDE image and
-our workspace. (@todo kiniry Add hyperlinks when they become available
-next week.)
+our workspace, as specified in `server/eclipse.setup`.
 
 The Make-based system is rooted in our
 top-level [Makefile](../Makefile). That build system not only compiles
@@ -288,6 +287,10 @@ In order to automatically measure the quality of a system, we define
 the set of properties that we wish to measure and the what the optimal
 ranges are for the measure of each property. We automate this
 evaluation, both in the IDE and in continuous integration.
+The current status of our continuous integration checks is displayed
+via a dynamic status image here
+([![Build Status](https://travis-ci.org/FreeAndFair/ColoradoRLA.svg?branch=master)](https://travis-ci.org/FreeAndFair/ColoradoRLA))
+and on our [repository's home page](../README.md).
 
 Also, we have a tool called the AutoGrader that automatically combines
 the output of multiple analyses and "grades" the system, and
@@ -311,7 +314,7 @@ assumptions is called *verification*.
 Some of the quality assurance tools and techniques discussed above are
 a part of validation and verification.
 
-[Another document](docs/v_and_v.md) focuses on this topic in great
+[Another document](40_v_and_v.md) focuses on this topic in great
 detail.
 
 Deployment
