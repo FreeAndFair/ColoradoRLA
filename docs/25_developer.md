@@ -46,9 +46,7 @@ challenges in multi-platform development and deployment.  We would
 rather have a straightforward cross-platform system development and
 deployment story, thus we use Java 8 on the server-side.
 
-We are using CDOS's standard SQL relational database management system
-for data persistence. At this time (early July) we understand that
-Informix is CDOS's preferred commercial database solution.
+We are using [PostgreSQL](https://www.postgresql.org/) for data persistence.
 
 The user interface (UI) is browser-based. We are writing the client in
 TypeScript, a mainstream, Microsoft-supported variant of JavaScript
@@ -61,18 +59,19 @@ Developer Tools
 ---------------
 
 We are using many of the following tools. Developers need not download
-and install this long list of technologies. We will provide developers
-a pre-configured Eclipse install, a bootstrapping Eclipse workspace,
+and install this long list of technologies. We have provided developers
+with a pre-configured [Eclipse](https://eclipse.org/) install,
+a bootstrapping Eclipse workspace,
 and a VM image which can be loaded into VirtualBox or other comparable
 virtualization platform. We provide these resources in order to both
 decrease new developers' ramp-up time as well as to standardize on
 specific versions of tools for development.
 
-We expect to provide the initial Eclipse snapshot and workspace in the
-week of 9 July 2017.
+Instructions for installing Eclipse and the plugins we leverage
+are at [README-ECLIPSE.md](../server/README-ECLIPSE.md).
 
 * [GitHub](https://github.com/FreeAndFair/ColoradoRLA) for distributed
-  version control, change tracking, and development documentation
+  version control, issue tracking, and development documentation
 * the
   [PVS specification and verification system](http://pvs.csl.sri.com/)
   or the [Alloy tool](http://alloy.mit.edu/alloy/) for specifying and
