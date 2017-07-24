@@ -1284,7 +1284,7 @@ END cast_vote_records
 
 %+BEGIN ui
 
-%%% \section{User Interfaces}
+%%% \subsection{User Interfaces}
 
 %%% The user interfaces of the system are the visible interactive
 %%% parts of the application. There are three different user
@@ -1292,6 +1292,10 @@ END cast_vote_records
 %%% are still under discussion; one is for CDOS personnel responsible
 %%% for the audit at the state-level, one is for county personnel at
 %%% the county-level, and one is for audit board members.
+%%% Note that all these user interfaces both receive and 
+%%% provide information.
+%%% Because the public dashboard only pushes information out, 
+%%% we do not consider it a "user interface".
 
 user_interface: DATATYPE
   WITH SUBTYPES uploading_interface,
@@ -1362,11 +1366,11 @@ END authentication_message
 
 %+BEGIN dashboards
 
-%%% \section{Dashboards}
+%%% \subsection{Dashboards}
 %%% \label{sec:Dashboards}
-%%%
-%%% The system has several dashboards that are the main user
-%%% interfaces to the system. State officials use the state-wide
+
+%%% The system has several dashboards aimed at
+%%% specific users and stakeholders. Department of State officials use the state-wide
 %%% dashboard; county officials use the county dashboard; audit board
 %%% members use the audit board dashboard; and the general public uses
 %%% the public dashboard.
@@ -1436,14 +1440,15 @@ BEGIN
       audit_results_published }
 
 % @trace RDPR-6-Jul-2017 Section 25.2.2(A)
-%%% \begin{quotation}
+%%% The state-wide dashboard will provide a way for the Secretary
+%%% of State to enter the risk limit(s), as required by RDPR-6-Jul-2017 Section 25.2.2(A).
+%%%
 %%% No later than 30 days before Election Day, the Secretary of State
 %%% will establish and publish on the audit center the risk limit(s)
 %%% that will apply in RLAs for that election. The Secretary of State
 %%% may establish different risk limits for comparison audits and
 %%% ballot polling audits, but in no event will the risk limit exceed
 %%% five percent.
-%%% \end{quotation}
   establish_risk_limit_for_comparison_audits:
     [department_of_state_dashboard, risk_limit ->
      department_of_state_dashboard]
@@ -1468,7 +1473,8 @@ BEGIN
 
 % @trace RDPR-6-Jul-2017 Section 25.2.2(I)
 
-%%% \subsubsection{Selection of Audited Contests}
+%%% The state-wide dashboard will provide a mechanism for the Secretary of 
+%%% State to enter and publish the list of contests to be audited.
 %%%
 %%% No later than 5:00 PM MT on the Friday after Election Day, the
 %%% Secretary of State will select for audit at least one statewide
@@ -1523,6 +1529,9 @@ BEGIN
 %  someday_support_opportunistic_audit:
 %    AXIOM someday(select_contest_for_opportunistic_audit)
 
+%%% The state-wide dashboard will allow the Secretary of State
+%%% to select ballots at random as required by law
+%%% (assuming that a truly random seed has been entered).
 %%% Ballots can be randomly selected for audit in two ways, either by:
 
 %%% \begin{enumerate}
@@ -1554,8 +1563,6 @@ BEGIN
     [county, list[ballot] -> ballots_under_audit_instructions]
 
 % @trace RDPR-6-Jul-2017 Section 25.2.2(K)
-
-%%% \subsection{Random Selection of Ballots for Audit}
 
 %%% The Secretary of State will randomly select the individual ballots
 %%% to audit. The Secretary of State will use a pseudo-random number
