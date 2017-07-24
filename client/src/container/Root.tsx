@@ -13,7 +13,7 @@ import CountyContestOverviewContainer from './county/ContestOverview';
 import HelpRootContainer from './help';
 import GlossaryContainer from './help/Glossary';
 import ManualContainer from './help/Manual';
-import LoginContainer from './Login';
+import LoginContainer from './login/Login';
 import SoSRootContainer from './sos';
 import AuditContainer from './sos/Audit';
 import AuditRiskLimitContainer from './sos/AuditRiskLimit';
