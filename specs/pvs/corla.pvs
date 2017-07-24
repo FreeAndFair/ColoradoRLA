@@ -132,6 +132,12 @@
 fafessl: THEORY
 BEGIN
   TBD: bool = TRUE
+% @todo kiniry Add annotation functions coupled to milestones.
+%  first_release: []
+%  second_release: []
+%  third_release: []
+%  final_release: []
+%  someday: []
 END fafessl
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -139,7 +145,8 @@ END fafessl
 %+BEGIN background
 
 %%% \section{Background Model Elements}
-
+%%% \label{sec:Background_Model_Elements}
+%%%
 %%% It is necessary to summarize a number of background concepts from
 %%% computer science in order to formalize the RLA Tool.
 %%
@@ -197,23 +204,25 @@ BEGIN
 END information_systems
 
 %%% Several kinds of servers are necessary to deploy this system.  At
-%%% the minimum, two of each of a web server, a time (NTP) server, a
-%%% firewall, and a database server are necessary. Two servers of each
-%%% class are required for redundancy to fulfill availability
-%%% requirements. Preferably redundant servers would be hosted in
-%%% separate facilities, with separate and independent power systems
-%%% and networks.
+%%% the minimum, two of each of a web server, an application server, a
+%%% time (NTP) server, a firewall, and a database server are
+%%% necessary. Two servers of each class are required for redundancy
+%%% to fulfill availability requirements. Preferably redundant servers
+%%% would be hosted in separate facilities, with separate and
+%%% independent power systems and networks.
 %%%
 %%% An Election Night Reporting (ENR) server is mentioned repeatedly
 %%% in the RDPR-6-Jul-2017, so we model it here.
 
 % @relation web_server inherit server
+% @relation application_server inherit server
 % @relation time_server inherit server
 % @relation firewall inherit server
 % @relation database_server inherit server
 % @relation enr_server inherit server
 server: DATATYPE
   WITH SUBTYPES web_server,
+                application_server,
                 time_server,
                 firewall,
                 database_server,
@@ -222,6 +231,7 @@ BEGIN
   IMPORTING information_systems, database, elections
 
   web_server?: make_web_server: web_server
+  application_server?: make_application_server: application_server
   time_server?: make_time_server: time_server
   firewall?: make_filewall: firewall
   database_server?(databases: set[database]):
@@ -1122,7 +1132,8 @@ END authentication_message
 %+BEGIN dashboards
 
 %%% \section{Dashboards}
-
+%%% \label{sec:Dashboards}
+%%%
 %%% The system has several dashboards that are the main user
 %%% interfaces to the system. State officials use the state-wide
 %%% dashboard; county officials use the county dashboard; audit board
@@ -1160,19 +1171,20 @@ BEGIN
   public_dashboard?: make_public_dashboard: public_dashboard
 END dashboard
 
-%%% \subsection{State-wide Dashboard}
-
-%%% The status of uploaded data will be summarized in a state-wide
-%%% dashboard, along with information on which counties have not yet
-%%% uploaded their CVRs, and uploads that have formatting or content
-%%% issues. The status of data, and results as audits are performed,
-%%% will be provided for each contest to be audited.
+%%% \subsection{Department of State Dashboard}
+%%% \label{sec:Department_of_State_Dashboard}
+%%%
+%%% The status of uploaded data will be summarized in a Department of
+%%% State Dashboard, along with information on which counties have not
+%%% yet uploaded their CVRs, and uploads that have formatting or
+%%% content issues. The status of data, and results as audits are
+%%% performed, will be provided for each contest to be audited.
 
 % @trace Principly RDPR-6-Jul-2017 Section 25.2.2
 department_of_state_dashboard: THEORY
 BEGIN
   IMPORTING dashboard, elections, rlas, fafessl,
-            instructions_forms_reports
+            instructions_forms_reports, randomness
 
 %%% CDOS staff, after authenticating to the state-wide dashboard, can
 %%% see the status of the entire election. Various static information
@@ -1193,10 +1205,18 @@ BEGIN
 %%% may establish different risk limits for comparison audits and
 %%% ballot polling audits, but in no event will the risk limit exceed
 %%% five percent.
-  establish_risk_limit_comparison_audits:
-    [department_of_state_dashboard, {r: risk_limit | r <= 5} -> department_of_state_dashboard]
-  establish_risk_limit_ballot_polling_audits:
-    [department_of_state_dashboard, {r: risk_limit | r <= 5} -> department_of_state_dashboard]
+  establish_risk_limit_for_comparison_audits:
+    [department_of_state_dashboard, {r: risk_limit | r <= 5} ->
+     department_of_state_dashboard]
+  establish_risk_limit_for_ballot_polling_audits:
+    [department_of_state_dashboard, {r: risk_limit | r <= 5} ->
+     department_of_state_dashboard]
+
+%%% The RLA status of each county is a part of the Department of State
+%%% dashboard. At the moment, from a UX point of view, we are assuming
+%%% that it is simply rolled into the overall dashboard, thus there is
+%%% not a state administrator means by which to trigger an update of
+%%% this data separate from all other election data.
 
   county_status: TYPE =
     { no_data, cvrs_uploaded_successfully, error_in_uploaded_data }
@@ -1205,7 +1225,7 @@ BEGIN
 % @trace RDPR-6-Jul-2017 Section 25.2.2(I)
 
 %%% \subsubsection{Selection of Audited Contests}
-
+%%%
 %%% No later than 5:00 PM MT on the Friday after Election Day, the
 %%% Secretary of State will select for audit at least one statewide
 %%% contest, and for each county at least one countywide contest. The
@@ -1238,8 +1258,9 @@ BEGIN
       geographical_scope, concern_regarding_accuracy,
       opportunitic_benefits, county_clerk_ability }
 
-  select_contest_for_comparison_audit:
-    [contest, audit_reason -> audited_contest]
+  select_contests_for_comparison_audit:
+    [department_of_state_dashboard, set[[contest, audit_reason]] ->
+     [department_of_state_dashboard, set[audited_contest]]]
 % @trace RDPR-6-Jul-2017 Section 25.2.2(I)
 % If there is at least one statewide contest, then at least one has to
 % be selected.
@@ -1248,8 +1269,15 @@ BEGIN
 % to be selected.
   at_least_one_countywide_contest_per_county: AXIOM TBD
 
+%%% At the moment, CDOS has not contracted support for the selection
+%%% of opportunistic audited contents. But, since we know that CDOS
+%%% wishes to support this feature in the future, we model it for 
+%%% future support.
   select_contest_for_opportunistic_audit:
-    [contest, audit_reason -> opportunistic_contest]
+    [department_of_state_dashboard,contest, audit_reason ->
+     [department_of_state_dashboard, opportunistic_contest]]
+%  someday_support_opportunistic_audit:
+%    AXIOM someday(select_contest_for_opportunistic_audit)
 
 %%% Ballots can be randomly selected for audit in two ways, either by:
 
@@ -1279,7 +1307,7 @@ BEGIN
 % At a minimum, the list must contain ballot style and ballot manifest
 % information.
   print_ballots_under_audit_list:
-    [sequence[ballot] -> ballots_under_audit_instructions]
+    [list[ballot] -> ballots_under_audit_instructions]
 
 % @trace RDPR-6-Jul-2017 Section 25.2.2(K)
 
@@ -1293,15 +1321,30 @@ BEGIN
 %%% of, and publish on the audit center, the randomly selected ballots
 %%% that each county must audit no later than 11:59 PM MT on the
 %%% tenth day after Election Day.
+  publish_seed:
+    [department_of_state_dashboard, seed -> department_of_state_dashboard]
   public_ballots_to_audit:
-    [department_of_state_dashboard, list[ballot] -> department_of_state_dashboard]
+    [department_of_state_dashboard ->
+      [department_of_state_dashboard, list[[contest, list[ballot]]]]]
 
 %%% The Secretary of State can indicate that a contest must be a full
 %%% hand count contest.
 % @review CDOS We need to know what the process is that they want for
 % this functionality.
-  designate_full_hand_count_contest:
-    [department_of_state_dashboard, contest -> department_of_state_dashboard]
+  indicate_full_hand_count_contest:
+    [department_of_state_dashboard, contest ->
+      [department_of_state_dashboard, full_hand_count_contest]]
+
+%%% Lastly, state administrators can simply get updates on the current
+%%% state of the election under audit and its RLAs.
+  refresh: [department_of_state_dashboard ->
+             [department_of_state_dashboard,
+              risk_limit,
+              set[[audited_contest, audit_reason]],
+              set[county_status],
+              seed,
+              list[[contest, list[ballot]]],
+              set[full_hand_count_contest]]]
 
 END department_of_state_dashboard
 
@@ -1672,7 +1715,8 @@ END authentication
 %+BEGIN architecture
 
 %%% \section{System Architecture}
-
+%%% \label{sec:System_Architecture}
+%%%
 %%% As mentioned early in this chapter, the RLA Tool is a
 %%% client-server system. As usual for these kinds of systems, the
 %%% server part of this architectural style is known as the back-end
@@ -2022,7 +2066,111 @@ BEGIN
 
 END data_model
 
-%+BEGIN data_model
+%+END data_model
+
+%+BEGIN protocol
+
+%%% \section{Protocol}
+%%% \label{sec:Protocol}
+%%%
+%%% As discussed
+%%% in~\autoref{sec:Background_Model_Elements,sec:System_Architecture},
+%%% the RLA Tool is a client-server system. In this section we
+%%% describe the protocol used by the client and server to communicate
+%%% with each other.
+
+protocol: THEORY
+BEGIN
+  IMPORTING system_architecture_component, system_architecture
+
+%%% The client-side of the system is exclusively a web browser running
+%%% an HTML/Javascript-based web application.  Recall that
+%%% in~\autoref{sec:System_Architecture} we mandated that all client
+%%% artifacts (static content, HTML, and Javascript) are provided
+%%% directly from the (web) server.
+
+  client: VAR front_end
+  browser: VAR web_browser
+
+%%% The server-side of the system is a web server which communicates
+%%% over HTTPS. It serves both static content, such as images and HTML
+%%% fragments, and executable content, such as Javascript code. As
+%%% such, this is a standard REST-based, multi-tier architecture.
+%%%
+%%% To provide assurance about system availability, we deploy multiple
+%%% instances of web and application servers providing content and
+%%% databases providing persistent data storage. All of these
+%%% artifacts are connected over multiple networks in CDOS's hosting
+%%% service. We underspecify the details of the deployment network
+%%% configuration here at the request of CDOS.
+
+  server: VAR back_end
+  servers: VAR set[server]
+  web_server: VAR web_server
+  application_server: VAR application_server
+  networks: VAR set[network]
+  databases: VAR set[database]
+
+%%% Multiple databases run in a failover configuration. Web
+%%% application servers communicate with databases over a standard
+%%% secure remote SQL connection. Web servers serve static content and
+%%% delegate dynamic content services to the application servers.
+%%%
+%%% All communication between the client web browsers and the
+%%% server(s) is initiated by the client, as with normal REST-based
+%%% architectures. As such, functions defined in the dashboards
+%%% (\autoref{sec:Dashboards}) of the system are the endpoint of all
+%%% communication in the system. The RLA Tool protocol is consequently
+%%% the union of all of those endpoints.
+%%%
+%%% \subsection{State-wide Dashboard Protocol}
+%%% \label{sec:State-wide_Dashboard_Protocol}
+%%%
+%%% As discussed in~\autoref{sec:Department_of_State_Dashboard}, the
+%%% Department of State Dashboard has eight (8) features: one for
+%%% authentication, six for providing information about a given
+%%% election and RLA, and one for getting updates on the current RLA.
+%%%
+
+%%% \begin{enumerate}
+
+%%% \item \texttt(authenticate\_state\_administrator): authentication
+%%% of state administrators (the mandatory first step in the
+%%% protocol),
+
+%%% \item \texttt(select\_contest\_for\_comparison\_audit): defining
+%%% the elections under audit,
+
+%%% \item \texttt(publish\_seed): the publication of the random seed
+%%% for RLAs in the election under audit,
+
+%%% \item \texttt(establish\_risk\_limit\_for\_comparison\_audits):
+%%% establishments of risk limits for the election under audit,
+
+%%% \item \textt(select\_contest\_for\_comparison\_audit): selection
+%%% of audited contests for the election under audit,
+
+%%% \item \texttt(public\_ballots\_to\_audit): publishing the list of
+%%% ballots to be audited for each audited contest,
+
+%%% \item \texttt(indicate\_full\_hand\_count\_contest): indicate that
+%%% a contest must be a full hand count contest, and
+
+%%% \item \texttt(refresh): update the dashboard on the current state
+%%% of the election and its RLAs, including the status of all
+%%% counties.
+%%% \end{enumerate}
+%%%
+%%% The first mandatory step in the protocol is authentication. All
+%%% other features can be used in any order, though typically, as
+%%% mandated by the C.R.S., risk limits are defined earlier than the
+%%% selection of audited contests. Refreshes are automatic and
+%%% periodic, the periodicity of which will be determined via UX and
+%%% load testing.
+
+END protocol
+
+%+END protocol
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
