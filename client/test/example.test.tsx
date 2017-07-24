@@ -1,18 +1,8 @@
 import * as test from 'tape';
-import * as React from 'react';
-import { shallow } from 'enzyme';
-
-import { Hello } from '../src/component/Hello';
 
 
-test('Hello', t => {
+test('Integration', t => {
     t.plan(1);
 
-    const greeting = 'Hello';
-    const onClick = () => {};
-    const wrapper = shallow(
-        <Hello onClick={ onClick } greeting={ greeting } />
-    );
-
-    t.ok(wrapper.contains(<h1>{ greeting }</h1>));
+    t.ok(true, 'integration tests can go here');
 });
