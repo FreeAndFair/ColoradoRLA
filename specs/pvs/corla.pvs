@@ -984,9 +984,12 @@ END canvass_boards
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%% \section{Cryptography}
+%%% \subsection{Cryptography}
 
-%%% We will add additional cryptographic primitives here as required.
+% We will add additional cryptographic primitives here as required.
+% @review kiniry dmz Is it correct to say that the cryptography is used
+% (via hashing) to verify that the ballot manifests and cvrs stored in the 
+% database are actually the ones uploaded by the Counties?
 
 cryptography: THEORY
 BEGIN
@@ -996,16 +999,17 @@ END cryptography
 
 %%% \subsection{Randomness}
 
-%%% High quality randomness is key to the legitimacy of any
-%%% risk-limiting audit.
+%%% Choosing a random sample of ballots is key to the legitimacy of any
+%%% risk-limiting audit. Legitimacy depends on a high-quality process for
+%%% the random samples. The Colorado RLA Tool will produce a random order 
+%%% of all the ballots once and for all; then random samples can be created 
+%%% as needed by considering the ballots in that random order.
 
 randomness: THEORY
 BEGIN
   unit: TYPE
 
 % @trace RDPR-6-Jul-2017 Section 25.2.2(H)
-
-%%% \subsubsection{Random Seed}
 
 %%% As stated in RDPR-6-Jul-2017 Section 25.2.2(K):
 %%% \begin{quotation}
