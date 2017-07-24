@@ -2,8 +2,11 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 
 import { Hello } from '../component/Hello';
-import Nav from '../component/Nav';
+import NavMenu from '../component/NavMenu';
+import withNav from '../component/withNav';
 
+
+const Nav = withNav(NavMenu);
 
 export interface HomeContainerProps {
     greeting: string;
