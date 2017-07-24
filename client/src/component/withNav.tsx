@@ -27,23 +27,22 @@ const UserButton = () =>
 const SettingsButton = () =>
     <button className='pt-button pt-minimal pt-icon-cog' />;
 
-export default class Nav extends React.Component<any, any> {
-    public render() {
-        return (
-            <nav className='pt-navbar'>
-                <div className='pt-navbar-group pt-align-left'>
-                    <Popover content={<NavMenu />} position={Position.RIGHT_TOP}>
-                        <MenuButton />
-                    </Popover>
-                    <Heading />
-                </div>
-                <div className='pt-navbar-group pt-align-right'>
-                    <HomeButton />
-                    <Divider />
-                    <UserButton />
-                    <SettingsButton />
-                </div>
-            </nav>
-        );
-    }
+
+export default function withNav(Menu: any): any {
+    return () => (
+        <nav className='pt-navbar'>
+            <div className='pt-navbar-group pt-align-left'>
+                <Popover content={ <Menu /> } position={ Position.RIGHT_TOP }>
+                    <MenuButton />
+                </Popover>
+                <Heading />
+            </div>
+            <div className='pt-navbar-group pt-align-right'>
+                <HomeButton />
+                <Divider />
+                <UserButton />
+                <SettingsButton />
+            </div>
+        </nav>
+    );
 }
