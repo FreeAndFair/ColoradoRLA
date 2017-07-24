@@ -1145,13 +1145,14 @@ END audits
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%% \section{RLAs}
+%%% \section{Colorado RLAs}
 
 %%% Audits ideally come after all the votes are tabulated, canvassed
 %%% and reconciled. In Colorado, however, since the certification
 %%% deadline comes shortly after the last date for voters to cure
-%%% signature verification problems, etc., there is not always enough
-%%% time to do them sequentially.  An updated vote count may be
+%%% signature verification problems, etc., 
+%%% it is highly unlikely that a RLA could be postponed until after
+%%% the canvass.  An updated vote count may be
 %%% released at the end of the tabulation and canvass, and the risk
 %%% limit of the audit needs to apply to the updated outcome.
 %%%
@@ -1237,11 +1238,16 @@ END rlas
 %%% Cast vote records, also known as CVRs, are the digital
 %%% interpretations of paper ballot records by a computer. They
 %%% frequently, but not always, contain an interpretation of all voter
-%%% choicdes in all contests on a ballot. CVRs are sometimes
+%%% choices in all contests on a ballot. CVRs are sometimes
 %%% syntactically written as comma-separated values, and other times
 %%% in plain English. Some CVRs use a election-specific encoding
 %%% scheme to represent choices (e.g., a '1' means "John Doe"); others
 %%% use plain English.
+%%%
+%%% CVRs may (and in the case of CVRs exported from Colorado's Dominion system, do)
+%%% contain information about the ballot beyond the voter choices. For 
+%%% example, ballot style, precinct id and ballot type (in-person vs. mail)
+%%% may be included.
 %%%
 %%% CDOS requirements mandate that CVRs are exported and uploaded to
 %%% the RLA back-end as CSV files by county officials using their
