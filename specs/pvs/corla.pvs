@@ -2190,7 +2190,7 @@ BEGIN
 %%% of state administrators (the mandatory first step in the
 %%% protocol),
 
-%%% \item \texttt{select\_contest\_for\_comparison\_audit}: defining
+%%% \item \texttt{select\_contests\_for\_comparison\_audit}: defining
 %%% the contests under audit,
 
 %%% \item \texttt{publish\_seed}: the publication of the random seed
