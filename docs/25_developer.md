@@ -289,8 +289,8 @@ ranges are for the measure of each property. We automate this
 evaluation, both in the IDE and in continuous integration.
 The current status of our continuous integration checks is displayed
 via a dynamic status image here
-([![Build Status](https://travis-ci.org/FreeAndFair/ColoradoRLA.svg?branch=master)](https://travis-ci.org/FreeAndFair/ColoradoRLA))
 and on our [repository's home page](../README.md).
+[![Build Status](https://travis-ci.org/FreeAndFair/ColoradoRLA.svg?branch=master)](https://travis-ci.org/FreeAndFair/ColoradoRLA)
 
 Also, we have a tool called the AutoGrader that automatically combines
 the output of multiple analyses and "grades" the system, and
@@ -314,8 +314,8 @@ assumptions is called *verification*.
 Some of the quality assurance tools and techniques discussed above are
 a part of validation and verification.
 
-[Another document](40_v_and_v.md) focuses on this topic in great
-detail.
+The [Validation and Verification](40_v_and_v.md) document focuses on
+this topic in great detail.
 
 Deployment
 ----------
