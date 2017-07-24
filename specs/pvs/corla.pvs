@@ -1390,7 +1390,7 @@ BEGIN
 %%% To prepare for uploading of artifacts to the Secretary of State,
 %%% counties conducting a comparison audit must verify several
 %%% properties (all of which are discussed in
-%%% \autoref{sec:System_Assumptions}). After verifying those
+%%% \Cref{sec:System_Assumptions}). After verifying those
 %%% properties, counties must generate a digest of the CVR file using
 %%% a hash designated by the Secretary of State.
 
@@ -2074,7 +2074,7 @@ END data_model
 %%% \label{sec:Protocol}
 %%%
 %%% As discussed
-%%% in~\autoref{sec:Background_Model_Elements,sec:System_Architecture},
+%%% in~\Cref{sec:Background_Model_Elements,sec:System_Architecture},
 %%% the RLA Tool is a client-server system. In this section we
 %%% describe the protocol used by the client and server to communicate
 %%% with each other.
@@ -2085,7 +2085,7 @@ BEGIN
 
 %%% The client-side of the system is exclusively a web browser running
 %%% an HTML/Javascript-based web application.  Recall that
-%%% in~\autoref{sec:System_Architecture} we mandated that all client
+%%% in~\Cref{sec:System_Architecture} we mandated that all client
 %%% artifacts (static content, HTML, and Javascript) are provided
 %%% directly from the (web) server.
 
@@ -2119,14 +2119,14 @@ BEGIN
 %%% All communication between the client web browsers and the
 %%% server(s) is initiated by the client, as with normal REST-based
 %%% architectures. As such, functions defined in the dashboards
-%%% (\autoref{sec:Dashboards}) of the system are the endpoint of all
+%%% (\Cref{sec:Dashboards}) of the system are the endpoint of all
 %%% communication in the system. The RLA Tool protocol is consequently
 %%% the union of all of those endpoints.
 %%%
 %%% \subsection{State-wide Dashboard Protocol}
 %%% \label{sec:State-wide_Dashboard_Protocol}
 %%%
-%%% As discussed in~\autoref{sec:Department_of_State_Dashboard}, the
+%%% As discussed in~\Cref{sec:Department_of_State_Dashboard}, the
 %%% Department of State Dashboard has eight (8) features: one for
 %%% authentication, six for providing information about a given
 %%% election and RLA, and one for getting updates on the current RLA.
@@ -2134,29 +2134,29 @@ BEGIN
 
 %%% \begin{enumerate}
 
-%%% \item \texttt(authenticate\_state\_administrator): authentication
+%%% \item \texttt{authenticate\_state\_administrator}: authentication
 %%% of state administrators (the mandatory first step in the
 %%% protocol),
 
-%%% \item \texttt(select\_contest\_for\_comparison\_audit): defining
+%%% \item \texttt{select\_contest\_for\_comparison\_audit}: defining
 %%% the elections under audit,
 
-%%% \item \texttt(publish\_seed): the publication of the random seed
+%%% \item \texttt{publish\_seed}: the publication of the random seed
 %%% for RLAs in the election under audit,
 
-%%% \item \texttt(establish\_risk\_limit\_for\_comparison\_audits):
+%%% \item \texttt{establish\_risk\_limit\_for\_comparison\_audits}:
 %%% establishments of risk limits for the election under audit,
 
-%%% \item \textt(select\_contest\_for\_comparison\_audit): selection
+%%% \item \texttt{select\_contest\_for\_comparison\_audit}: selection
 %%% of audited contests for the election under audit,
 
-%%% \item \texttt(public\_ballots\_to\_audit): publishing the list of
+%%% \item \texttt{public\_ballots\_to\_audit}: publishing the list of
 %%% ballots to be audited for each audited contest,
 
-%%% \item \texttt(indicate\_full\_hand\_count\_contest): indicate that
+%%% \item \texttt{indicate\_full\_hand\_count\_contest}: indicate that
 %%% a contest must be a full hand count contest, and
 
-%%% \item \texttt(refresh): update the dashboard on the current state
+%%% \item \texttt{refresh}: update the dashboard on the current state
 %%% of the election and its RLAs, including the status of all
 %%% counties.
 %%% \end{enumerate}
