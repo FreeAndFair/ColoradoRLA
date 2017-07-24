@@ -264,6 +264,7 @@
 fafessl: THEORY
 BEGIN
   TBD: bool = TRUE
+% @todo kiniry Add annotation functions coupled to milestones.
 %  first_release: []
 %  second_release: []
 %  third_release: []
@@ -2480,7 +2481,6 @@ BEGIN
 %%% 
 
 END protocol
-
 
 %+END protocol
 
