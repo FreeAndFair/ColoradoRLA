@@ -382,25 +382,22 @@ BEGIN
   enr_server?: make_enr_server: enr_server
 END server
 
-%%% Over time, as we need to introduce more background concepts, we
-%%% will add them to this theory.
-
 %+END background
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %+BEGIN elections
 
-%%% \section{Elections}
+%%% \subsection{Elections}
 
 %%% A number of general elections concepts are necessary to specify
 %%% the RLA Tool. Some are generic to all elections, and others are
 %%% specific to Colorado.
 
+
 elections: THEORY
 BEGIN
-%%% Voters are the most important concept in elections, as they are
-%%% who elections are for, and who make the choices that determine the
+%%% Voters make the choices that determine the
 %%% outcome of legitimate elections.
 %%%
 %%% Voters have first and lastnames and a political party affiliation.
@@ -422,14 +419,16 @@ BEGIN
 %%% voter, a candidate, both, or neither.
   candidate: TYPE FROM person
 
-%%% Elections focus on contests, each of which represents a set of
-%%% choices that voters can make. Making a legal choice ranges
+%%% Elections focus on contests, each of which represents a 
+%%% choice that voters can make. Making a legal choice ranges
 %%% enormously across the Earth, from marking a vote for a candidate
 %%% by filling in a single bubble to enumerating a total order on all
-%%% choices in a contest. Across the state, each contest has a
+%%% choices in a contest. Within any single election, each contest has a
 %%% unique name.
 %%% \todojrk{Need to break the cycle between the contest type and
-%%% the ballots theory.}
+%%% the ballots theory. sfsinger suggests: contests are grouped into elections,
+%%% not ballots. So define contests first. Then a ballot is created to 
+%%% represent a set of contests.}
   contest: TYPE =
     [# name: string, description: string #] % , choices: choice #]
 
@@ -444,6 +443,11 @@ BEGIN
 %%% \todojrk{These types will be refined when we review the
 %%% information provided by CDOS on 20 July 2017 about Dominion's file
 %%% formats.}
+%%% After a tabulation, each contest has an outcome. For some contests,
+%%% the outcome is the candidate who won; for others the outcome is a set of 
+%%% candidates (say, in a contest for five at-large seats where the top five 
+%%% vote-getters win); for ballot questions the outcome is either "yes" or "no".
+%%% The set of outcomes from all contests in a single election are the outcome of the election.
   contest_outcome: TYPE
   election_outcomes: TYPE = set[contest_outcome]
   wrong_outcome: TYPE FROM election_outcomes
@@ -474,12 +478,10 @@ BEGIN
 % ENR, and should match the CVR data exactly.
   rla_tabulation_outcome: TYPE FROM election_outcomes
 
-%%% Elections are defined across cohorts of voters arranged in any
+%%% Elections are defined across cohorts of voters paritioned in any
 %%% number of ways---geographic, political, professional, and more. In
 %%% Colorado, elections are organized across counties and the entire
-%%% state. Each county has a name and a county number, both of which
-%%% are unique across the state.
-
+%%% state. 
   county_id: TYPE = nat
   county_name: TYPE = string
   county: TYPE =
@@ -487,6 +489,9 @@ BEGIN
   state: TYPE = set[county]
   nation: TYPE = set[state]
   organization: TYPE
+
+%%% Each county has a name and a county number, both of which
+%%% are unique across the state.
 
   s: VAR state
   c1, c2: VAR county
