@@ -24,9 +24,14 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.http.HttpStatus;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import spark.Request;
 import spark.Response;
 import spark.Service;
+
+import us.freeandfair.corla.gson.FreeAndFairNamingStrategy;
 
 /**
  * The main executable for the ColoradoRLA server. 
@@ -70,6 +75,17 @@ public final class Main {
    */
   public static final Logger LOGGER = LogManager.getLogger(LOGGER_NAME);
 
+  /**
+   * The Gson object to use for translation to and from JSON; since 
+   * Gson is thread-safe, we only need one for the system. Note that
+   * any custom Gson serializers/deserializers we use must also be
+   * thread-safe.
+   */
+  public static final Gson GSON = 
+      new GsonBuilder().
+      setFieldNamingStrategy(new FreeAndFairNamingStrategy()).
+      setPrettyPrinting().create();
+  
   /**
    * The properties loaded from the properties file.
    */

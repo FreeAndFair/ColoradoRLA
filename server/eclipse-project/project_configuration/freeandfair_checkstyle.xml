@@ -218,7 +218,13 @@
     <module name="InnerTypeLast">
       <message key="arrangement.members.before.inner" value="Inner classes should be declared after all fields and methods."/>
     </module>
-    <module name="ImportOrder"/>
+    <module name="ImportOrder">
+      <property name="groups" value="/^java\./,javax,org,com,spark"/>
+      <property name="ordered" value="true"/>
+      <property name="separated" value="true"/>
+      <property name="option" value="above"/>
+      <property name="sortStaticImportsAlphabetically" value="true"/>
+    </module>
   </module>
   <module name="FileLength">
     <property name="max" value="1000"/>
