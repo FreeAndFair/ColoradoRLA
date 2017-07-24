@@ -290,6 +290,7 @@ evaluation, both in the IDE and in continuous integration.
 The current status of our continuous integration checks is displayed
 via a dynamic status image here
 and on our [repository's home page](../README.md).
+
 [![Build Status](https://travis-ci.org/FreeAndFair/ColoradoRLA.svg?branch=master)](https://travis-ci.org/FreeAndFair/ColoradoRLA)
 
 Also, we have a tool called the AutoGrader that automatically combines
