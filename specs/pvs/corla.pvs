@@ -1206,10 +1206,10 @@ BEGIN
 %%% ballot polling audits, but in no event will the risk limit exceed
 %%% five percent.
   establish_risk_limit_for_comparison_audits:
-    [department_of_state_dashboard, {r: risk_limit | r <= 5} ->
+    [department_of_state_dashboard, risk_limit ->
      department_of_state_dashboard]
   establish_risk_limit_for_ballot_polling_audits:
-    [department_of_state_dashboard, {r: risk_limit | r <= 5} ->
+    [department_of_state_dashboard, risk_limit ->
      department_of_state_dashboard]
 
 %%% The RLA status of each county is a part of the Department of State
