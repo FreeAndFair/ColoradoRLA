@@ -345,15 +345,19 @@ BEGIN
 END information_systems
 
 %%% Several kinds of servers are necessary to deploy this system.  At
-%%% the minimum, two of each of a web server, an application server, a
-%%% time (NTP) server, a firewall, and a database server are
-%%% necessary. Two servers of each class are required for redundancy
-%%% to fulfill availability requirements. Preferably redundant servers
-%%% would be hosted in separate facilities, with separate and
-%%% independent power systems and networks.
-%%%
+%%% the minimum, two of each of a web server, a time (NTP) server, a
+%%% firewall, and a database server are necessary. Two servers of each
+%%% class are required for redundancy to fulfill availability
+%%% requirements. Preferably redundant servers would be hosted in
+%%% separate facilities, with separate and independent power systems
+%%% and networks.
 %%% An Election Night Reporting (ENR) server is mentioned repeatedly
 %%% in the RDPR-6-Jul-2017, so we model it here.
+%%% The next few lines of the specification encode the process of establishing
+%%% the necessary servers.
+% @review kiniry dmz pls OK or delete the previous sentence written by sfsinger
+% @review kiniry dmz IMPORTING line below imports elections, which haven't been
+% yet defined in the spec
 
 % @relation web_server inherit server
 % @relation application_server inherit server
@@ -545,7 +549,7 @@ END election
 
 %+BEGIN ballots
 
-%%% \section{Ballots}
+%%% \subsection{Ballots}
 
 %%% The second basic concept of elections that we need to specify is
 %%% the ballot. Ballots are the means by which voters indicate their
