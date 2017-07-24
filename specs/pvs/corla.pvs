@@ -552,21 +552,34 @@ END election
 %%% \subsection{Ballots}
 
 %%% The second basic concept of elections that we need to specify is
-%%% the ballot. Ballots are the means by which voters indicate their
-%%% preferences for candidates in contests and choices in ballot
-%%% questions.
+%%% the ballot. A ballot is a (possibly flawed) representation of the choices
+%%% made by a voter in all contests in the election.
+%%% A ballot may be paper, or it may be electronic -- for example in Colorado
+%%% UOCAVA voters can return their voted ballots by email. In Colorado these electronic ballots 
+%%% are printed out, producing paper ballots. In some situations, say, if a
+%%% voter has marked a paper ballot with ink of a color that the scanners cannot read,
+%%% Election Board workers will create a duplicate ballot from the voter's original.
+% @todo sfsinger find sources for these, other than "Dwight Shellman said so".
 %%%
-%%% Ballots are stored by one of several possible means. Some ballot
+% @review kiniry dmz I think of contests_with_candidates and ballot_questions
+% as subsets of "contests". A ballot question is a contest between "yes" and "no".
+%%%
+%%% There are a variety of ways to store ballots. Some ballot
 %%% storage containers are secure, others are not. Some facilitate an
 %%% easy means by which to find a particular ballots, others do not.
 
 % @relation box inherit storage_container
 % @relation bin inherit storage_container
 % @relation ballot_box inherit storage_container
+
+%%% An important part of any election process is the creation of the storage
+%%% containers for the ballots.
 storage_container: DATATYPE
   WITH SUBTYPES box,
                 bin,
                 ballot_box
+
+Another crucial element of an election is the vote-counting equipment.
 BEGIN
   IMPORTING elections
 
@@ -605,10 +618,10 @@ BEGIN
             elections_equipment,
             storage_container
 
-%%% Several of our concepts are simply numbers or strings. For example,
-%%% ballot identifiers (ids) and batch sizes are just
-%%% natural numbers (integers starting from zero).  Batch ids are
-%%% strings.
+%%% Several of our concepts are simply whole numbers (denoted ``nat'', for 
+%%% natural numbers, in the specification). For example, ballot
+%%% identifiers (ids), batch numbers, and batch sizes are all just
+%%% natural numbers, 0, 1, 2, etc.
 
   ballot_id: TYPE = nat
   batch_id: TYPE = string
@@ -632,8 +645,9 @@ BEGIN
 %%% a digital fashion (a scan, PDF, etc.), or are paper ballots, or
 %%% both. Ballots are also classified based upon where they originate,
 %%% such as delivery via mail, UOCAVA ballots, early ballots,
-%%% etc. Ballots are also either tabulated or not. Note that none of
+%%% etc. Ballots are also either tabulated or not. Note that not all of
 %%% these categories of ballots are mutually exclusive.
+% @review kiniry dmz some of these are in fact mutually exclusive (e.g., digital_ballot and paper_ballot).
 
 % @description The legally recognized means by which a voter can
 % express his or her choices in one or more contests in an election.
@@ -667,10 +681,12 @@ BEGIN
 % more candidates for an office or the choice of a course of action.
 %%% \todojrk{Need to clarify choices vs options vs votes.}
 %%% \todojrk{Need to add model information for write-in votes.}
+% @review kiniry dmz Isn't every contest a ballot contest?
   ballot_contest: TYPE = contest
   option: TYPE = string
   choice: TYPE = set[option]
 
+%%% Ballots are often grouped into batches.
 % @description A batch is a set of ballots.
   batch: TYPE = set[ballot]
 
