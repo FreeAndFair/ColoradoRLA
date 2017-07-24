@@ -727,7 +727,11 @@ END ballots
 %%% tabulated ballot the scanner on which the ballot is scanned, the
 %%% ballot batch of which the ballot is a part, the number of ballots
 %%% in the batch, and the storage container in which the ballot batch
-%%% is stored after tabulation.
+%%% is stored after tabulation. 
+%%% In the RLA Tool, a ballot manifest uploaded by a county must eventually
+%%% be verified, using the cryptographic hash (described in a future section).
+% @review kiniry dmz perhaps we should introduce the "verified" predicate after
+% we've introduced the cryptography?
 
 ballot_manifests: THEORY
 BEGIN
@@ -755,6 +759,7 @@ BEGIN
 
 END ballot_manifests
 
+% @review kiniry dmz these (votes, cvrs) belongs in the ballot section, not the ballot manifest section.
 %%% The interpretation of the meaning of a voter's choice in a single
 %%% ballot contest is either a legal vote, an overvote, or an
 %%% undervote.
@@ -794,8 +799,14 @@ BEGIN
   IMPORTING ballots,
             vote
 
+%%% A Cast Vote Record (commonly called a "CVR") is a catalog of 
+%%% choices from one or more ballots representing distinct voters. 
+%%% In the Colorado system, CVRs are produced as comma-separated-value files
+%%% from the Dominion voting system.
+% @review kiniry dmz are we thinking of one CVR for the whole election?
 % @description A CVR is a cast vote record denoting the interpretation
 % of a set of votes for a specific election and a single voter.
+% @review kiniry dmz but a CVR has more info than just the choices.
   cast_vote_record: TYPE = set[set[choice]]
 
 END ballot_interpretation
