@@ -41,7 +41,7 @@
 %%% annotations will help Colorado Department of State elections domain experts
 %%% and technical staff to assess the completeness and correctness of the
 %%% ColoradoRLA tool.
-%%% The details onf the specification
+%%% The details of the specification
 %%% will guide deployment, management, maintenance and evolution
 %%% of the system delivered to the Colorado Department of State. 
 %%%
@@ -57,8 +57,8 @@
 %%% This document is written in a literate style using the PVS
 %%% theorem prover. Writing system specifications in this fashion is
 %%% called (formal) domain engineering. Our formal domain model is
-%%% written in PVS's higher-order logic (HOL). Our informal domain
-%%% model is written in the Free \& Fair System Specification Language,
+%%% written in PVS's higher-order logic (HOL). There is a corresponding informal domain
+%%% model written in the Free \& Fair System Specification Language,
 %%% or FAFSSL for short. FAFSSL is a daughter of Extended BON which
 %%% was, in turn, a daughter of BON, the Business Object Notation.
 %%%
@@ -905,7 +905,7 @@ END instructions_forms_reports
 
 %+BEGIN roles
 
-%%% \section{Roles}
+%%% \subsection{Roles}
 
 %%% Within the RLA Tool, a person involved with the system can have a
 %%% number of roles. Some of these roles are mutually exclusive for
@@ -1045,7 +1045,7 @@ END randomness
 
 %+BEGIN audits
 
-%%% \section{Audits}
+%%% \subsection{Audits}
 
 %%% Election audits come in many forms. The two main kinds of audits
 %%% we focus on in this system are ballot polling audits and
@@ -1145,7 +1145,7 @@ END audits
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%% \section{Colorado RLAs}
+%%% \subsection{Colorado RLAs}
 
 %%% Audits ideally come after all the votes are tabulated, canvassed
 %%% and reconciled. In Colorado, however, since the certification
@@ -1233,7 +1233,7 @@ END rlas
 
 %+BEGIN cvrs
 
-%%% \section{Cast Vote Records}
+%%% \subsection{Cast Vote Records}
 
 %%% Cast vote records, also known as CVRs, are the digital
 %%% interpretations of paper ballot records by a computer. They
@@ -1599,7 +1599,7 @@ BEGIN
 
 END department_of_state_dashboard
 
-%%% \subsection{County Dashboard}
+%%% \subsubsection{County Dashboard}
 
 %%% The County dashboard is used by county officials to communicate
 %%% with the Secretary of State for the purpose of planning and
@@ -1643,7 +1643,6 @@ BEGIN
   establish_audit_board:
     [county_dashboard, set[elector] -> county_dashboard]
 
-%%% \subsubsection{Verification of Election Report Artifacts}
 
 %%% To prepare for uploading of artifacts to the Secretary of State,
 %%% counties conducting a comparison audit must verify several
@@ -1652,7 +1651,6 @@ BEGIN
 %%% properties, counties must generate a digest of the CVR file using
 %%% a hash designated by the Secretary of State.
 
-%%% \subsubsection{Digest Generation}
 
 % @trace RDPR-6-Jul-2017 Section 25.2.2(E)(5)
 % @trace RDPR-6-Jul-2017 Section 25.2.2(F)
@@ -1681,7 +1679,6 @@ BEGIN
 
   generate_ballot_manifest_digest: [ballot_manifest_file -> digest]
 
-%%% \subsubsection{Comparison Audit Uploads}
 
 %%% \todojrk{Improve/strengthen the dependent types in these upload
 %%% signatures below.}
@@ -1710,11 +1707,10 @@ BEGIN
   upload_tabulation_results:
     [enr_server, cvr_tabulation_outcome -> enr_server]
 
-%%% \subsubsection{Ballot Polling Audit Uploads}
 
 % @trace RDPR-6-Jul-2017 Section 25.2.2(G)
 
-%%% Mo later than 11:59 PM MT on the ninth day after Election Day,
+%%% No later than 11:59 PM MT on the ninth day after Election Day,
 %%% each county conducting a ballot polling audit must upload:
 
 %%% \begin{enumerate}
@@ -1732,7 +1728,7 @@ BEGIN
 
 END county_dashboard
 
-%%% \subsection{Audit Board Dashboard}
+%%% \subsubsection{Audit Board Dashboard}
 
 % @trace RDPR-6-Jul-2017 Section 25.2.3
 
@@ -1845,7 +1841,7 @@ BEGIN
 
 END audit_board_dashboard
 
-%%% \subsection{Public Dashboard}
+%%% \subsubsection{Public Dashboard}
 
 public_dashboard: THEORY
 BEGIN
@@ -1888,7 +1884,7 @@ END public_dashboard
 
 %+BEGIN authentication
 
-%%% \section{Authentication}
+%%% \subsection{Authentication}
 
 %%% Authentication is currently underspecified in our system design as
 %%% we do not yet have information from CDOS on the nature and kind of
@@ -1981,11 +1977,13 @@ END authentication
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%%% \section{Computer System}
+
 %+BEGIN architecture
 
-%%% \section{System Architecture}
+%%% \subsection{System Architecture}
 %%% \label{sec:System_Architecture}
-%%%
+
 %%% As mentioned early in this chapter, the RLA Tool is a
 %%% client-server system. As usual for these kinds of systems, the
 %%% server part of this architectural style is known as the back-end
@@ -2103,7 +2101,7 @@ END system_architecture
 
 %+BEGIN system_assumptions
 
-%%% \section{System Assumptions}
+%%% \subsection{System Assumptions}
 %%% \label{sec:System_Assumptions}
 
 %%% This system architecture includes a number of explicit assumptions
@@ -2154,7 +2152,7 @@ END system_assumptions
 
 %+BEGIN logging
 
-%%% \section{System Logging}
+%%% \subsection{System Logging}
 
 %%% The system must log a variety of events. One reason to log
 %%% information is to help understand how the system is operating, fix
@@ -2179,7 +2177,7 @@ END logging
 
 %+BEGIN data_model
 
-%%% \section{Data Model}
+%%% \subsection{Data Model}
 
 %%% A single, mirrored relational database is used to store all
 %%% persistent information for the RLA Tool.  In order to define the
