@@ -2199,9 +2199,6 @@ BEGIN
 %%% \item \texttt{establish\_risk\_limit\_for\_comparison\_audits}:
 %%% establishments of risk limits for the election under audit,
 
-%%% \item \texttt{select\_contest\_for\_comparison\_audit}: selection
-%%% of audited contests for the election under audit,
-
 %%% \item \texttt{public\_ballots\_to\_audit}: publishing the list of
 %%% ballots to be audited for each audited contest,
 
@@ -2316,7 +2313,6 @@ BEGIN
 %%% is clear from its definition.
 
 END protocol
-
 
 %+END protocol
 
