@@ -16,7 +16,7 @@
 
 package us.freeandfair.corla.model;
 
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -26,54 +26,101 @@ import java.util.Set;
  */
 public class CastVoteRecord {
   /**
-   * A list of choices. Presumably this list should correlate to the ordering of
-   * some Contest
+   * The county ID of this cast vote record.
    */
-  private final List<Set<String>> my_cast_vote_record;
-
-  /**
-   * The Ballot Manifest info for this Cast Vote Record
-   */
-  private final BallotManifestInfo my_ballot_manifest_info;
+  private final int my_county_id;
   
   /**
+   * The scanner ID of this cast vote record.
+   */
+  private final int my_scanner_id;
+  
+  /**
+   * The batch ID of this cast vote record.
+   */
+  private final int my_batch_id;
+  
+  /**
+   * The record ID of this cast vote record.
+   */
+  private final int my_record_id;
+  
+  /**
+   * A map from contests to choices made in this cast vote record.
+   */
+  private final Map<Contest, Set<String>> my_choices;
+  
+  /**
+   * Constructs a new cast vote record.
    * 
-   * <description>
-   * <explanation>
-   * @return the cast_vote_record
+   * @param the_county_id The county ID.
+   * @param the_scanner_id The scanner ID.
+   * @param the_batch_id The batch ID.
+   * @param the_record_id The record ID.
+   * @param the_choices The contest choices.
    */
-  public List<Set<String>> getMy_cast_vote_record() {
-    assert false;
-    //@ assert false;
-    return my_cast_vote_record;
-  }
-
-  /**
-   * @param
-   * @return the ballot_manifest_info
-   */
-  public BallotManifestInfo get_ballot_manifest_info() {
-    assert false;
-    //@ assert false;
-    return my_ballot_manifest_info;
-  }
-
-  /**
-   * @param
-   */
-  public CastVoteRecord(List<Set<String>> the_cast_vote_record,
-                        BallotManifestInfo the_ballot_manifest_info) {
+  public CastVoteRecord(final int the_county_id, final int the_scanner_id,
+                        final int the_batch_id, final int the_record_id,
+                        final Map<Contest, Set<String>> the_choices) {
     super();
-    my_cast_vote_record = the_cast_vote_record;
-    my_ballot_manifest_info = the_ballot_manifest_info;
+    my_county_id = the_county_id;
+    my_scanner_id = the_scanner_id;
+    my_batch_id = the_batch_id;
+    my_record_id = the_record_id;
+    // TODO: make a clean copy of the_choices so it can't be tampered with
+    my_choices = the_choices;
   }
 
   /**
-   * @return the cast_vote_record
+   * @return the county ID.
    */
-  public List<Set<String>> get_cast_vote_record() {
-    assert false;
-    // @ assert false;
-    return my_cast_vote_record;
+  public int getCountyID() {
+    return my_county_id;
+  }
+  
+  /**
+   * @return the scanner ID.
+   */
+  public int getScannerID() {
+    return my_scanner_id;
+  }
+  
+  /**
+   * @return the batch ID.
+   */
+  public int getBatchID() {
+    return my_batch_id;
+  }
+  
+  /**
+   * @return the record ID.
+   */
+  public int getRecordID() {
+    return my_record_id;
+  }
+  
+  /**
+   * @return the choices made in this cast vote record.
+   */
+  public Map<Contest, Set<String>> getChoices() {
+    return my_choices;
+  }
+  
+  /**
+   * @return the String identifier for this cast vote record,
+   * comprised of the scanner, batch, and record IDs.
+   */
+  public String getIdentifier() {
+    return my_scanner_id + "-" + my_batch_id + "-" + my_record_id;
+  }
+
+  /**
+   * @return a String representation of this cast vote record.
+   */
+  @Override
+  public String toString() {
+    return "CastVoteRecord [my_county_id=" + my_county_id + ", my_scanner_id=" +
+           my_scanner_id + ", my_batch_id=" + my_batch_id + ", my_record_id=" + 
+           my_record_id + ", my_choices=" + my_choices + "]";
   }
 }
