@@ -15,6 +15,7 @@
     "dependencies": {
         "@blueprintjs/core": "^1.23.0",
         "@types/enzyme": "^2.8.1",
+        "@types/lodash": "^4.14.71",
         "@types/react": "^15.0.31",
         "@types/react-dom": "^15.5.1",
         "@types/react-redux": "^4.4.46",
