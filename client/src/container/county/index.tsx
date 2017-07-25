@@ -6,11 +6,13 @@ import CountyRootPage from '../../component/county';
 
 class CountyRootContainer extends React.Component<any, any> {
     public render() {
-        return <CountyRootPage />;
+        const { county } = this.props;
+
+        return <CountyRootPage { ...county }/>;
     }
 }
 
-const mapStateToProps = () => ({});
+const mapStateToProps = ({ county }: any) => ({ county });
 
 const mapDispatchToProps = (dispatch: any) => ({});
 
