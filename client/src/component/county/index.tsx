@@ -32,18 +32,17 @@ const CountyInfo = () => (
     <div>County info</div>
 );
 
-
-export default class CountyRootPage extends React.Component<any, any> {
-    public render() {
-        return (
+const CountyRootPage = () => {
+    return (
+        <div>
+            <CountyNav />
             <div>
-                <CountyNav />
-                <div>
-                    <Main />
-                    <CountyInfo />
-                    <ContestInfo />
-                </div>
+                <Main />
+                <CountyInfo />
+                <ContestInfo />
             </div>
-        );
-    }
-}
+        </div>
+    );
+};
+
+export default CountyRootPage;
