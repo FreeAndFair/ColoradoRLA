@@ -74,35 +74,35 @@ public class CastVoteRecord {
   /**
    * @return the county ID.
    */
-  public int getCountyID() {
+  public int countyID() {
     return my_county_id;
   }
   
   /**
    * @return the scanner ID.
    */
-  public int getScannerID() {
+  public int scannerID() {
     return my_scanner_id;
   }
   
   /**
    * @return the batch ID.
    */
-  public int getBatchID() {
+  public int batchID() {
     return my_batch_id;
   }
   
   /**
    * @return the record ID.
    */
-  public int getRecordID() {
+  public int recordID() {
     return my_record_id;
   }
   
   /**
    * @return the choices made in this cast vote record.
    */
-  public Map<Contest, Set<String>> getChoices() {
+  public Map<Contest, Set<String>> choices() {
     return my_choices;
   }
   
@@ -110,7 +110,7 @@ public class CastVoteRecord {
    * @return the String identifier for this cast vote record,
    * comprised of the scanner, batch, and record IDs.
    */
-  public String getIdentifier() {
+  public String identifier() {
     return my_scanner_id + "-" + my_batch_id + "-" + my_record_id;
   }
 

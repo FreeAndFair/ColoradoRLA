@@ -16,38 +16,65 @@
 
 package us.freeandfair.corla.model;
 
-import java.util.List;
-
-import us.freeandfair.corla.util.Pair;
+import java.util.Collections;
+import java.util.Set;
 
 /**
- * @description <description>
- * @explanation <explanation>
- * @bon OPTIONAL_BON_TYPENAME
+ * The definition of a contest; comprises a contest name and a set of possible
+ * choices.
+ * 
+ * @author Daniel M. Zimmerman
+ * @version 0.0.1
  */
 public class Contest {
-  private final List<Pair<String, String>> my_names_descriptions;
+  /**
+   * The contest name.
+   */
+  private final String my_name;
 
   /**
-   * <description> <explanation>
-   * 
-   * @param
-   * @return the names_descriptions
+   * The contest description.
    */
-  public List<Pair<String, String>> get_names_descriptions() {
-    assert false;
-    // @ assert false;
-    return my_names_descriptions;
-  }
-
+  private final String my_description;
+  
   /**
-   * <description> <explanation>
-   * 
-   * @param A list of pairs of first the names, and then the descriptions of the
-   *          contest
+   * The set of contest choices.
    */
-  public Contest(List<Pair<String, String>> the_names_descriptions) {
+  private final Set<Choice> my_choices;
+  
+  /**
+   * Constructs a contest with the specified parameters.
+   * 
+   * @param the_name The contest name.
+   * @param the_description The contest description.
+   * @param the_choices The set of contest choices.
+   */
+  public Contest(final String the_name, final String the_description, 
+                 final Set<Choice> the_choices) {
     super();
-    this.my_names_descriptions = the_names_descriptions;
+    my_name = the_name;
+    my_description = the_description;
+    my_choices = the_choices;
+  }
+  
+  /**
+   * @return the contest name.
+   */
+  public String name() {
+    return my_name;
+  }
+  
+  /**
+   * @return the contest description.
+   */
+  public String description() {
+    return my_description;
+  }
+  
+  /**
+   * @return the contest choices.
+   */
+  public Set<Choice> choices() {
+    return Collections.unmodifiableSet(my_choices);
   }
 }

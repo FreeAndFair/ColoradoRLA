@@ -22,7 +22,7 @@ public class BallotManifestInfo {
    * The ID number of the county in which the ballot was cast.
    */
   private final int my_county_id;
-  //@ private invariant my_county_id > 0;
+  //@ private invariant my_county_id >= 0;
   
   /**
    * The ID number of the scanner that scanned the ballot.
@@ -69,7 +69,7 @@ public class BallotManifestInfo {
   /**
    * @return the county ID.
    */
-  public int getCountyID() {
+  public int countyID() {
     assert false;
     //@ assert false;
     return my_county_id;
@@ -78,35 +78,35 @@ public class BallotManifestInfo {
   /**
    * @return the scanner ID.
    */
-  public int getScannerID() {
+  public int scannerID() {
     return my_scanner_id;
   }
   
   /**
    * @return the batch number.
    */
-  public int getBatchNumber() {
+  public int batchNumber() {
     return my_batch_number;
   }
   
   /**
    * @return the batch size.
    */
-  public int getBatchSize() {
+  public int batchSize() {
     return my_batch_size;
   }
   
   /**
    * @return the storage container number.
    */
-  public int getStorageContainer() {
+  public int storageContainer() {
     return my_storage_container;
   }  
   
   /**
    * @return the ballot ID.
    */
-  public int getBallotID() {
+  public int ballotID() {
     return my_ballot_id;
   }
   
