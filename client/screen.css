@@ -1,3 +1,22 @@
 body {
     font-family: "Liberation Sans", sans-serif;
 }
+
+.county-root {
+    display: flex;
+    flex-direction: column;
+}
+
+.county-root .info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.county-root .contest-info {
+    flex: 1;
+}
+
+.county-root .county-info {
+    flex: 1;
+}

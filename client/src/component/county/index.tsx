@@ -6,17 +6,19 @@ import CountyNav from './Nav';
 
 
 const Main = ({ name }: any) => (
-    <div>
+    <div className='county-main pt-card'>
         <h1>Hello, { name }!</h1>
         <div>
-            <div>Please upload your Ballot Manifest and Cast Vote Records.</div>
             <div>
+                Please upload your Ballot Manifest and Cast Vote Records.
+            </div>
+            <div className='pt-card'>
                 Ballot Manifest:
                 <button className='pt-button pt-intent-primary pt-icon-add'>
                     Upload
                 </button>
             </div>
-            <div>
+            <div className='pt-card'>
                 Cast Vote Records:
                 <button className='pt-button pt-intent-primary pt-icon-add'>
                     Upload
@@ -34,7 +36,7 @@ const ContestInfoTableRow = (choice: any) => (
 );
 
 const ContestInfoTable = (contest: any) => (
-    <div>
+    <div className='pt-card'>
         <span>{ contest.name }</span>
         <table className='pt-table'>
             <thead>
@@ -51,7 +53,7 @@ const ContestInfoTable = (contest: any) => (
 );
 
 const ContestInfo = ({ contests }: any): any => (
-    <div>
+    <div className='contest-info pt-card'>
         <div>Contest info</div>
         <div>
             { _.map(contests, (c: any) => <ContestInfoTable key={ c.name } { ...c }/>) }
@@ -60,7 +62,7 @@ const ContestInfo = ({ contests }: any): any => (
 );
 
 const CountyInfo = (info: any) => (
-    <div>
+    <div className='county-info pt-card'>
         <div>County Info</div>
         <div>
             <span>Field1</span>
@@ -74,7 +76,7 @@ const CountyInfo = (info: any) => (
 );
 
 const Info = ({ info, contests }: any) => (
-    <div>
+    <div className='info pt-card'>
         <CountyInfo info={ info } />
         <ContestInfo contests={ contests } />
     </div>
@@ -82,7 +84,7 @@ const Info = ({ info, contests }: any) => (
 
 const CountyRootPage = ({ name, info, contests }: any) => {
     return (
-        <div>
+        <div className='county-root'>
             <CountyNav />
             <div>
                 <Main name={ name } />
