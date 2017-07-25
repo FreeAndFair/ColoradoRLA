@@ -8,7 +8,6 @@ import CountyNav from './Nav';
 const Main = ({ name }: any) => (
     <div>
         <h1>Hello, { name }!</h1>
-        <div>Your status:</div>
         <div>
             <div>Please upload your Ballot Manifest and Cast Vote Records.</div>
             <div>
