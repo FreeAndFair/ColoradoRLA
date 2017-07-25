@@ -45,7 +45,7 @@
 %%% RLA tool built for Colorado.
 %%%
 %%% \subsection{Technical Context}
-%% The RLA Tool is a client-server system. The server is implemented
+%%% The RLA Tool is a client-server system. The server is implemented
 %%% in Java and runs on servers hosted by CDOS. The client is
 %%% implemented in TypeScript and JavaScript and runs in modern web
 %%% browsers.
