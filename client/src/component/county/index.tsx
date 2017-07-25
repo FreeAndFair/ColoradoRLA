@@ -73,14 +73,20 @@ const CountyInfo = (info: any) => (
     </div>
 );
 
+const Info = ({ info, contests }: any) => (
+    <div>
+        <CountyInfo info={ info } />
+        <ContestInfo contests={ contests } />
+    </div>
+);
+
 const CountyRootPage = ({ name, info, contests }: any) => {
     return (
         <div>
             <CountyNav />
             <div>
                 <Main name={ name } />
-                <CountyInfo info={ info } />
-                <ContestInfo contests={ contests } />
+                <Info info={ info } contests={ contests } />
             </div>
         </div>
     );
