@@ -228,7 +228,9 @@ server: DATATYPE
                 database_server,
                 enr_server
 BEGIN
-  IMPORTING information_systems, database, elections
+  IMPORTING database,
+            elections,
+            information_systems
 
   web_server?: make_web_server: web_server
   application_server?: make_application_server: application_server
@@ -456,7 +458,9 @@ END elections_equipment
 
 ballots: THEORY
 BEGIN
-  IMPORTING elections, elections_equipment, storage_container
+  IMPORTING elections,
+            elections_equipment,
+            storage_container
 
 %%% Several of our concepts are simply numbers. For example, ballot
 %%% identifiers (ids), batch numbers, and batch sizes are all just
@@ -556,7 +560,9 @@ END ballots
 
 ballot_manifests: THEORY
 BEGIN
-  IMPORTING ballots, elections_equipment, information_systems
+  IMPORTING ballots,
+            elections_equipment,
+            information_systems
 
 % @todo kiniry Should this information also include what kind of
 % ballot each ballot is?  I.e., re-marked, phantom, etc.?
@@ -605,7 +611,8 @@ END vote
 
 ballot_interpretation: THEORY
 BEGIN
-  IMPORTING ballots, vote
+  IMPORTING ballots,
+            vote
 
 % @description A CVR is a cast vote record denoting the interpretation
 % of a set of votes for a specific election and a single voter.
@@ -643,7 +650,10 @@ END ballots_collections
 
 instructions_forms_reports: THEORY
 BEGIN
-  IMPORTING information_systems, ballot_manifests, election, audits
+  IMPORTING audits,
+            ballot_manifests,
+            election,
+            information_systems
 
   report: TYPE = [# name: string #]
 % @review CDOS The contents of this report are underspecified at the
@@ -712,7 +722,8 @@ END instructions_forms_reports
 
 roles: THEORY
 BEGIN
-  IMPORTING elections, fafessl
+  IMPORTING elections,
+            fafessl
 
   audit_board_member: TYPE FROM person
   canvas_board: TYPE = set[person]
@@ -770,7 +781,8 @@ END roles
 
 canvas_boards: THEORY
 BEGIN
-  IMPORTING roles, election
+  IMPORTING election,
+            roles
 
   canvas_board?: [election -> canvas_board]
 END canvas_boards
@@ -1031,7 +1043,9 @@ END rlas
 
 cast_vote_records: THEORY
 BEGIN
-  IMPORTING vote, information_systems, elections_equipment
+  IMPORTING elections_equipment,
+            information_systems,
+            vote
 
   cvr: TYPE = set[vote]
   verified?: pred[cvr]
@@ -1183,8 +1197,12 @@ END dashboard
 % @trace Principly RDPR-6-Jul-2017 Section 25.2.2
 department_of_state_dashboard: THEORY
 BEGIN
-  IMPORTING dashboard, elections, rlas, fafessl,
-            instructions_forms_reports, randomness
+  IMPORTING dashboard,
+            elections,
+            fafessl,
+            instructions_forms_reports,
+            randomness,
+            rlas
 
 %%% CDOS staff, after authenticating to the state-wide dashboard, can
 %%% see the status of the entire election. Various static information
@@ -1256,7 +1274,7 @@ BEGIN
   audit_reason: TYPE =
     { state_wide_contest, county_wide_contest, close_contest,
       geographical_scope, concern_regarding_accuracy,
-      opportunitic_benefits, county_clerk_ability }
+      opportunitic_benefits, county_clerk_ability, no_audit }
 
   select_contests_for_comparison_audit:
     [department_of_state_dashboard, set[[contest, audit_reason]] ->
@@ -1356,9 +1374,16 @@ END department_of_state_dashboard
 
 county_dashboard: THEORY
 BEGIN
-  IMPORTING dashboard, information_systems, upload_system_message,
-            election, roles, cast_vote_records, ballot_manifests,
-            cryptography, server
+  IMPORTING ballot_manifests,
+            cast_vote_records,
+            cryptography,
+            dashboard,
+            election,
+            information_systems,
+            roles,
+            server,
+            upload_system_message
+
 %%% Some of the generation information contained in the county
 %%% dashboard is stipulated by C.R.S.
 
@@ -1403,12 +1428,13 @@ BEGIN
 %%% apply a hash value to the CVR export file using the hash value
 %%% utility provided by the Secretary of State.
 %%%
-%%% Note that this feature is implemented by a tool provided by the
-%%% Secretary of State. We have not been asked to produce such a tool,
-%%% though one could compute the hash of a file locally in a web
-%%% browser, so this could be part of our system. From an assurance
-%%% standpoint it is a better idea to use a completely separate tool,
-%%% developed independently from us, to perform this hashing.
+%%% Note that this function/feature is implemented by a tool provided
+%%% by the Secretary of State. We have not been asked to produce such
+%%% a tool, though one could compute the hash of a file locally in a
+%%% web browser, so this could be part of our system. From an
+%%% assurance standpoint it is a better idea to use a completely
+%%% separate tool, developed independently from us, to perform this
+%%% hashing.
 
 % @review CDOS Confirm that we have nothing to do with recommending,
 % creating, or managing these two hashing tools to be used by county
@@ -1483,8 +1509,12 @@ END county_dashboard
 
 audit_board_dashboard: THEORY
 BEGIN
-  IMPORTING dashboard, ballots, storage_container, audits,
-            cast_vote_records, instructions_forms_reports
+  IMPORTING dashboard,
+            audits,
+            ballots,
+            cast_vote_records,
+            instructions_forms_reports,
+            storage_container
 
 %%%% The audit board must locate and retrieve from the appropriate
 %%%% storage container each randomly selected ballot. The audit board
@@ -1647,9 +1677,15 @@ END public_dashboard
 
 authentication: THEORY
 BEGIN
-  IMPORTING roles, dashboard, election, dashboard,
-            information_systems, upload_system_message, ballots,
-            cryptography, cast_vote_records
+  IMPORTING ballots,
+            cast_vote_records,
+            cryptography,
+            dashboard,
+            dashboard,
+            election,
+            information_systems,
+            roles,
+            upload_system_message
 
 % @description A credential is the general idea of having some
 % knowledge or thing to permit one to authenticate to a system. Many
@@ -1684,8 +1720,8 @@ BEGIN
 %%% Is this person authenticated?
   authenticated: [person, two_factor_authentication -> bool]
 
-%%% What follows are several features used to authenticate various
-%%% roles to their respective dashboards.
+%%% What follows are several functions used to authenticate
+%%% various roles to their respective dashboards.
 %%%
 %%% Each dashboard has an abstract state machine that captures the
 %%% dashboard's workflow and consequntly identifies which features are
@@ -1728,7 +1764,9 @@ system_architecture_component: DATATYPE
   WITH SUBTYPES back_end,
                 front_end
 BEGIN
-  IMPORTING information_systems, database, server
+  IMPORTING database,
+            information_systems,
+            server
 
   back_end?(servers: set[server],
             networks: set[network],
@@ -1745,7 +1783,8 @@ END system_architecture_component
 
 rla_tool: DATATYPE
 BEGIN
-  IMPORTING election, system_architecture_component
+  IMPORTING election,
+            system_architecture_component
 
 % @trace RDPR-6-Jul-2017 Section 25.1.8
 % @description The software and user interface provided by the
@@ -1779,7 +1818,9 @@ END rla_tool
 
 system_architecture: THEORY
 BEGIN
-  IMPORTING system_architecture_component, server, rla_tool
+  IMPORTING rla_tool,
+            server,
+            system_architecture_component
 
   rla: VAR rla_tool
   be: VAR back_end
@@ -1837,7 +1878,8 @@ END system_architecture
 
 system_assumptions: THEORY
 BEGIN
-  IMPORTING election, fafessl
+  IMPORTING election,
+            fafessl
 
   e: VAR state_election
 % @trace RDPR-6-Jul-2017 Section 25.2.2(E)
@@ -1947,12 +1989,12 @@ BEGIN
   authentication_table: TYPE =
     sequence[[administrator, two_factor_authentication]]
 
-%%% From the State's point of view, the State-wide dashboard permits
-%%% State administrators to establish risk limits for each contest,
-%%% specify which kinds of audits are used for which races and in
-%%% which counties, etc.  Most of the dynamic data available to State
-%%% administrators is provided via County administrators using the
-%%% County dashboard.
+%%% From the State's point of view, the Department of State dashboard
+%%% permits State administrators to establish risk limits for each
+%%% contest, specify which kinds of audits are used for which races
+%%% and in which counties, etc.  Most of the dynamic data available to
+%%% State administrators is provided via County administrators using
+%%% the County dashboard.
 
   state_status_table: TYPE =
     sequence[[# county: county,
@@ -1961,11 +2003,11 @@ BEGIN
                 date: string #]]
 
 %%% There is also some background information that relates to the RLA
-%%% overall, much of which is relevant to the State-wide dashboard. In
-%%% particular, geographic (such as the identity of the State and its
-%%% Counties) and political (registered political parties) information
-%%% must be stored, as must information about each election under
-%%% audit.
+%%% overall, much of which is relevant to the Department of State
+%%% dashboard. In particular, geographic (such as the identity of the
+%%% State and its Counties) and political (registered political
+%%% parties) information must be stored, as must information about
+%%% each election under audit.
 %%%
 %%% Notice that these tables are simply a flattening of the election
 %%% datatype. This is a standard pattern in mapping HOL specifications
@@ -2081,7 +2123,8 @@ END data_model
 
 protocol: THEORY
 BEGIN
-  IMPORTING system_architecture_component, system_architecture
+  IMPORTING system_architecture,
+            system_architecture_component
 
 %%% The client-side of the system is exclusively a web browser running
 %%% an HTML/Javascript-based web application.  Recall that
@@ -2123,14 +2166,15 @@ BEGIN
 %%% communication in the system. The RLA Tool protocol is consequently
 %%% the union of all of those endpoints.
 %%%
-%%% \subsection{State-wide Dashboard Protocol}
-%%% \label{sec:State-wide_Dashboard_Protocol}
+%%% \subsection{Department of State Dashboard Protocol}
+%%% \label{sec:Department_of_State_Dashboard_Protocol}
 %%%
 %%% As discussed in~\Cref{sec:Department_of_State_Dashboard}, the
 %%% Department of State Dashboard has eight (8) features: one for
 %%% authentication, six for providing information about a given
 %%% election and RLA, and one for getting updates on the current RLA.
-%%%
+%%% Each feature is encoded in a function in the
+%%% \texttt{department\_of\_state\_dashboard} module.
 
 %%% \begin{enumerate}
 
@@ -2167,8 +2211,105 @@ BEGIN
 %%% selection of audited contests. Refreshes are automatic and
 %%% periodic, the periodicity of which will be determined via UX and
 %%% load testing.
+%%%
+%%% Each of these functions is a public feature of the system encoding
+%%% what we call a "public inbound event" to the RLA Tool's servers.
+%%% By examining one such event in detail, we will elucidate how to
+%%% read and understand its specification and derive from it our
+%%% network data model.
+%%%
+%%% \subsection{Drill-down Example of a Public Inbound Event}
+%%%
+%%% We will examine the function
+%%% \texttt{select\_contests\_for\_comparison\_audit} in detail in
+%%% this section.
+%%%
+%%% The first thing to note about this function is its \emph{type
+%%% signature}.  The type signature tells us what types of values it
+%%% depends upon (on the lefthand side of the arrow (``\texttt{->}'')
+%%% and what types of values it produces (on the righthand side). The
+%%% type signtuare of this function is
+%%% \begin{center}
+%%% \begin{alltt}
+%%% [department_of_state_dashboard, set[[contest, audit_reason]] ->
+%%%  [department_of_state_dashboard, set[audited_contest]]]
+%%% \end{alltt}
+%%%
+%%% As a consequence of the first type parameter mentioned in the
+%%% signature, this function operates on the Department of State
+%%% Dashboard, thus is visible to authenticated State
+%%% administrators.
+%%%
+%%% The second parameter states that the function expects to send a
+%%% \emph{set of pairs of contests and audit reasons} to the
+%%% server. By virtue of the fact these two generic types (sets and
+%%% pairs) are mentioned says that we must have a means by which to
+%%% encode those generic notions over the network. Because we are
+%%% using JSON as our general textual wire encoding format, we have a
+%%% straightforward means by which to encode such.
+
+%%% The mention of the domain-specific types \texttt{contest} and
+%%% \texttt{audit\_reason} mean that we must be able to encode values
+%%% of these types as well on the wire.
+%%%
+%%% To encode a value of a given type on the wire (and,
+%%% commensurately, store a value in a database), one must be able to
+%%% either or both \emph{encode its constituant values on the wire} or
+%%% \emph{refer to a uniquely identified and encoded value that has
+%%% been previously defined}.
+
+%%% The type \texttt{contest} is defined as a record containing
+%%% strings and choices, the latter of which ends up being encoded as
+%%% a set of options which are strings.  So, in the end, a contest
+%%% value's contents are nothing more than a structured assembly of
+%%% strings---a straightforward thing to encode.
+%%%
+%%% The type \texttt{audit\_reason} is simply an \emph{enumeration},
+%%% thus can be encoded in any number of ways. Commonly such
+%%% structures are encoded by either string representations of the
+%%% enumeration's values (such as ``\texttt{state\_wide\_contest}''
+%%% and ``\texttt{county\_wide\_contest}'', for example) or by using
+%%% an encoding to natural numbers (e.g., \texttt{0} means
+%%% \texttt{state\_wide\_contest}, etc.). The means of encoding
+%%% enumerations does not matter, so long as it is a full bijective
+%%% encoding (encoding covers all values and preserves all information
+%%% and is reversible). We will discuss the precise means by which we
+%%% define data types and derive their JSON encodings
+%%% in~\Cref{sec:wire_encoding} below.
+%%%
+%%% The righthand side of the function's type signature says that the
+%%% dashboard will be updated after the communication with the server
+%%% completes (successfully or not). If we have sufficient information
+%%% about potential exceptional failure cases for the function (e.g.,
+%%% we decide to deny the ability for state administrators to call
+%%% this function twice to update the contests to audit more than
+%%% once, we may need a response code to indicate such), then the
+%%% codomain of the function must indicate such. See, for example,
+%%% \texttt{county\_upload\_verified\_ballot\_manifest}.
+%%%
+% @todo kiniry Add citation or explanation of encoding of sets and
+% pairs.
+%
+% @todo kiniry Add response code for all external public events.
+%
+% @todo dmz Explan how we are doing the definition of data types and
+% the derivation of JSON encodings.
+
+%%% \subsection{County Dashboard Protocol}
+%%% \label{sec:County_Dashboard_Protocol}
+%%%
+%%% The County Dashboard has four (4) functions defined on it, all of
+%%% which are public external events:
+%%% \texttt{establish\_audit\_board},
+%%% \texttt{county\_upload\_verified\_ballot\_manifest},
+%%% \texttt{upload\_verified\_cvrs}, and
+%%% \texttt{upload\_tabulation\_results}, the meaning and use of each
+%%% is clear from its definition.
+
+%%% \end{enumeration}
 
 END protocol
+
 
 %+END protocol
 
