@@ -2234,6 +2234,7 @@ BEGIN
 %%% [department_of_state_dashboard, set[[contest, audit_reason]] ->
 %%%  [department_of_state_dashboard, set[audited_contest]]]
 %%% \end{alltt}
+%%% \end{center}
 %%%
 %%% As a consequence of the first type parameter mentioned in the
 %%% signature, this function operates on the Department of State
@@ -2305,8 +2306,6 @@ BEGIN
 %%% \texttt{upload\_verified\_cvrs}, and
 %%% \texttt{upload\_tabulation\_results}, the meaning and use of each
 %%% is clear from its definition.
-
-%%% \end{enumeration}
 
 END protocol
 
