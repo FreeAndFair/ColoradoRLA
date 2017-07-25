@@ -13,8 +13,8 @@
 %%%
 %%% The Colorado election law pertaining to election audits is
 %%% \href{http://law.justia.com/codes/colorado/2016/title-1/general-primary-recall-and-congressional-vacancy-elections/article-7/part-5/section-1-7-515/}
-%%% {Section 1-7-515, C.R.S.}, where "C.R.S." denotes "Colorado Revised Statutes". The rules pertaining to election audits are
-%%% found in the "Revised Draft of Proposed Rules" whose latest
+%%% {Section 1-7-515, C.R.S.}, where ``C.R.S." denotes ``Colorado Revised Statutes". The rules pertaining to election audits are
+%%% found in the ``Revised Draft of Proposed Rules" whose latest
 %%% version is labeled CCR 1505-1 and dated July 6, 2017. Section 25,
 %%% Post-Election Audit, of that document is the salient portion of
 %%% that document for our purposes. We will call this document RDPR-6-Jul-2017 for the
@@ -448,7 +448,7 @@ BEGIN
 %%% After a tabulation, each contest has an outcome. For some contests,
 %%% the outcome is the candidate who won; for others the outcome is a set of 
 %%% candidates (say, in a contest for five at-large seats where the top five 
-%%% vote-getters win); for ballot questions the outcome is either "yes" or "no".
+%%% vote-getters win); for ballot questions the outcome is either ``yes" or ``no".
 %%% The set of outcomes from all contests in a single election are the outcome of the election.
   contest_outcome: TYPE
   election_outcomes: TYPE = set[contest_outcome]
@@ -797,7 +797,7 @@ BEGIN
   IMPORTING ballots,
             vote
 
-%%% A Cast Vote Record (commonly called a "CVR") is a catalog of 
+%%% A Cast Vote Record (commonly called a ``CVR") is a catalog of 
 %%% choices from one or more ballots representing distinct voters. 
 %%% In the Colorado system, CVRs are produced as comma-separated-value files
 %%% from the Dominion voting system.
@@ -958,6 +958,13 @@ BEGIN
 % @review CDOS while members of the audit board might not be
 % authenticated users of the RLA tool, they do "sign off" on the audit
 % they performed.  Do they also "sign in" before audit starts?
+% Per sfsinger conversation with CDOS, yes, audit board members sign in 
+% before each round and before resuming work after a pause within a round. 
+
+% @review kiniry dmz ranweiler what happens when Audit Board takes a break?
+% Is there an option for user to tell system "let's take a break now"? 
+% Or will the system time-out after some period of inactivity?
+
 
 % @review CDOS what happens if the Audit Board cannot find
 % the ballot expected by the RLA tool?
@@ -1538,7 +1545,7 @@ BEGIN
 %%% \begin{enumerate}
 
 %%% \item permuting all ballots and auditing a prefix of ballots
-%%% (thereby auditing ballots "with no replacement"); or
+%%% (thereby auditing ballots ``with no replacement"); or
 
 %%% \item randomly selecting ballots ballot-by-ballot (thereby
 %%% auditing ballots "with replacement" as the same ballot may be
@@ -2116,7 +2123,7 @@ BEGIN
   e: VAR county_election
 % @trace RDPR-6-Jul-2017 Section 25.2.2(E)
 
-%%% According to the section entitled "CVR Export Verification",
+%%% According to the section entitled ``CVR Export Verification",
 %%% counties conducting a comparison audit must verify that:
 
 %%% \begin{enumerate}
@@ -2160,7 +2167,7 @@ END system_assumptions
 %%% bugs post-facto, understand how users are using the system,
 %%% etc. Another, reason to log in this context of this system is to
 %%% provide an indelible record of administrator and auditor actions
-%%% so that any audit can be "replayed" by any third party.
+%%% so that any audit can be ``replayed" by any third party.
 
 logging: THEORY
 BEGIN
