@@ -13,7 +13,7 @@ const rootEl = document.getElementById('root');
 const render = (NextRootContainer: any) => {
     const appContainer = (
         <AppContainer>
-            <NextRootContainer store={store} />
+            <NextRootContainer store={ store } />
         </AppContainer>
     );
 
