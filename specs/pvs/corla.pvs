@@ -17,7 +17,7 @@
 %%% found in the ``Revised Draft of Proposed Rules" whose latest
 %%% version is labeled CCR 1505-1 and dated July 6, 2017. Section 25,
 %%% Post-Election Audit, of that document is the salient portion of
-%%% that document for our purposes. We will call this document RDPR-6-Jul-2017 for the
+%%% that document for our purposes. We will call that document RDPR-6-Jul-2017 for the
 %%% purpose of traceability in this specification.
 %%%
 %%% This domain model is based upon that law, its rules,
@@ -35,7 +35,7 @@
 %%% parties with the requisite technological skills to deploy, manage
 %%% maintain or evolve the system. 
 %%%
-%%% The document is
+%%% This document is
 %%% annotated to help readers who are not expert
 %%% in formal system specification understand the scope and interpretations
 %%% of the elements of the specification. 
@@ -759,8 +759,19 @@ END ballot_manifests
 
 % @review kiniry dmz these (votes, cvrs) belongs in the ballot section, not the ballot manifest section.
 %%% The interpretation of the meaning of a voter's choice in a single
-%%% ballot contest is either a legal vote, an overvote, or an
+%%% ballot contest is either a well-formed vote 
+%%% an overvote, or an
 %%% undervote.
+%%% In any contest there is a maximum number of selections a voter may make,
+%%% usually one for Mayor, but often more than one for at-large seats on a Council.
+%%% In a well-formed vote, the interpretation of the voter's marks is 
+%%% that the voter made the maximum number of allowable selections.
+%%% In an undervote, the interpretation of the voter's marks is that the
+%%% voter made fewer selections than allowed. Undervotes are legitimate,
+%%% and the selections are added to the tallies.
+%%% In an overvote, the interpretation of the voter's marks is that the 
+%%% voter made more selections then were allowed. In this case 
+%%% none of the voter's selections are added to the tallies.
 
 % @relation well_formed_vote inherit vote
 % @relation overvote inherit vote
