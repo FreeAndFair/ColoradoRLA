@@ -3,8 +3,9 @@ import * as React from 'react';
 import CountyNav from './Nav';
 
 
-const Main = () => (
+const Main = ({ name }: any) => (
     <div>
+        <h1>Hello, { name }!</h1>
         <div>Your status:</div>
         <div>
             <div>Please upload your Ballot Manifest and Cast Vote Records.</div>
@@ -24,22 +25,28 @@ const Main = () => (
     </div>
 );
 
-const ContestInfo = () => (
-    <div>Contest info</div>
+const ContestInfo = (contests: any) => (
+    <div>
+        <div>Contest info</div>
+        <div>{ JSON.stringify(contests) }</div>
+    </div>
 );
 
-const CountyInfo = () => (
-    <div>County info</div>
+const CountyInfo = (info: any) => (
+    <div>
+        <div>County Info</div>
+        <div>{ JSON.stringify(info) }</div>
+    </div>
 );
 
-const CountyRootPage = () => {
+const CountyRootPage = ({ name, info, contests }: any) => {
     return (
         <div>
             <CountyNav />
             <div>
-                <Main />
-                <CountyInfo />
-                <ContestInfo />
+                <Main name={ name } />
+                <CountyInfo info={ info } />
+                <ContestInfo contests={ contests } />
             </div>
         </div>
     );
