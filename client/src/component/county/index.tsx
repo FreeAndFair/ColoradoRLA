@@ -62,7 +62,14 @@ const ContestInfo = ({ contests }: any): any => (
 const CountyInfo = (info: any) => (
     <div>
         <div>County Info</div>
-        <div>{ JSON.stringify(info) }</div>
+        <div>
+            <span>Field1</span>
+            <span>{ info.field1 }</span>
+        </div>
+        <div>
+            <span>Field2</span>
+            <span>{ info.field2 }</span>
+        </div>
     </div>
 );
 
