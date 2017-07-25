@@ -13,40 +13,39 @@
 %%%
 %%% The Colorado election law pertaining to election audits is
 %%% \href{http://law.justia.com/codes/colorado/2016/title-1/general-primary-recall-and-congressional-vacancy-elections/article-7/part-5/section-1-7-515/}
-%%% {Section 1-7-515, C.R.S.}  and the rules pertaining to such are
+%%% {Section 1-7-515, C.R.S.}, where "C.R.S." denotes "Colorado Revised Statutes". The rules pertaining to election audits are
 %%% found in the "Revised Draft of Proposed Rules" whose latest
 %%% version is labeled CCR 1505-1 and dated July 6, 2017. Section 25,
 %%% Post-Election Audit, of that document is the salient portion of
-%%% that document. We will call this document RDPR-6-Jul-2017 for the
+%%% that document for our purposes. We will call this document RDPR-6-Jul-2017 for the
 %%% purpose of traceability in this specification.
 %%%
-%%% This domain model is based upon that law, its rules, our contract,
+%%% This domain model is based upon that law, its rules,
+%%% the procurement contract between CDOS and Free \& Fair,
 %%% our bibliography of publications about risk-limiting audits, etc.
 %%%
-%%% This document contains a formal specification of the RLA
+%%% The core of this document is a formal specification of the RLA
 %%% tool.
-%%% This is a detailed technical specification of the tool,
-%%% annotated with prose designed to help readers who are not expert
-%%% in formal system specification understand the scope and interpretations
-%%% of the elements of the specification. 
 %%% The specification documents our
 %%% thinking and the system design, from domain modeling and
 %%% engineering all of the way to formal specification and
 %%% verification.
+%%% In keeping with the spirit of open source development, the 
+%%% publication of this specification should support any interested
+%%% parties with the requisite technological skills to deploy, manage
+%%% maintain or evolve the system. 
 %%%
-%%% We write the formal specification using a
-%%% literate style, allowing the production of typeset books
-%%% and interactive hypertext directly from the specification.
+%%% The document is
+%%% annotated to help readers who are not expert
+%%% in formal system specification understand the scope and interpretations
+%%% of the elements of the specification. 
 %%% The prose
-%%% annotations will help Colorado Department of State elections domain experts
-%%% and technical staff to assess the completeness and correctness of the
-%%% ColoradoRLA tool.
-%%% The details of the specification
-%%% will guide deployment, management, maintenance and evolution
-%%% of the system delivered to the Colorado Department of State. 
+%%% annotations will help elections domain experts
+%%% assess the completeness and correctness of the
+%%% RLA tool built for Colorado.
 %%%
-%%%\subsection{Technical Note}
-%%% The RLA Tool is a client-server system. The server is implemented
+%%% \subsection{Technical Context}
+%% The RLA Tool is a client-server system. The server is implemented
 %%% in Java and runs on servers hosted by CDOS. The client is
 %%% implemented in TypeScript and JavaScript and runs in modern web
 %%% browsers.
@@ -54,15 +53,23 @@
 %%% the hosting servers, network, and a number of services
 %%% in support of the tools deployment and management.
 %%%
-%%% This document is written in a literate style using the PVS
+%%% This document is written in the 
+%%% \href{https://en.wikipedia.org/wiki/Literate_programming}
+%%% {literate style} promoted by 
+%%% \href{https://en.wikipedia.org/wiki/Donald_Knuth}{Donald Knuth},
+%%% using the PVS
 %%% theorem prover. Writing system specifications in this fashion is
-%%% called (formal) domain engineering. Our formal domain model is
-%%% written in PVS's higher-order logic (HOL). There is a corresponding informal domain
+%%% called (formal) domain engineering. It allows the production of typeset books
+%%% and interactive hypertext directly from the specification.
+%%% In order to write literate PVS we use our old friend Adriaan de
+%%% Groot's scripts, available at
+%%% \url{http://www.cs.kun.nl/~adridg/research/PVS-literate.html}. The formal domain model is
+%%% written in PVS's higher-order logic (HOL). 
+
+%%% There is a corresponding informal domain
 %%% model written in the Free \& Fair System Specification Language,
 %%% or FAFSSL for short. FAFSSL is a daughter of Extended BON which
 %%% was, in turn, a daughter of BON, the Business Object Notation.
-%%%
-% @review kiniry this bibliography is off-putting to the uninitiated, says @sfsinger
 %%%
 %%% In order to relate PVS to FAFSSL, we must define a refinement
 %%% relationship between their two type systems. Informally, that
@@ -71,23 +78,15 @@
 %%% We map PVS public theories and their contents to FAFSSL
 %%% constructs.  The top-level corla theory maps to the FAFSSL system
 %%% specification, theories map to clusters, (PVS) types map to
-%%% (FAFSSL) types, and functions map to features.  We use special
-%%% comments to denote informal specifications which will be extracted
-%%% using a shell script into a well-typed FAFSSL informal domain
-%%% model specification.
+%%% (FAFSSL) types, and functions map to features.  
 %%%
-%%% In order to write literate PVS we use our old friend Adriaan de
-%%% Groot's scripts, available at
-%%% \url{http://www.cs.kun.nl/~adridg/research/PVS-literate.html}.
-%%% Our formal domain model is also annotated with structured comments
+%%% The formal domain model is annotated with structured comments
 %%% in precise natural language using a standard set of annotations.
 %%% A shell script processes these annotations and generates a
 %%% well-typed informal FAFSSL specification.
-%%%
 %%% See our Bibliography project at GitHub,
 %%% \url{https://github.com/FreeAndFair/Bibliography}, for more
 %%% information.
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%% Here is a cheat sheet for literate PVS.
@@ -111,7 +110,7 @@
 
 %%% \section{Formal Model Description}
 
-%%%\subsection{Basic Technical Infrastructure}
+%%% \subsection{Basic Technical Infrastructure}
 %%%
 %%% It is necessary to summarize a number of background concepts from
 %%% computer science in order to formalize the RLA Tool.
@@ -277,7 +276,8 @@
 %%% \end{enumerate}
 % @todo Explain how refinement works and how the reader can understand
 % exactly what is built vs. what is just designed.
-% @review kiniry what's the point of including these annotations? I don't see them used in the document @sfsinger
+% @review kiniry what's the point of including the FAFESSL annotations in the printed
+% book, where their use is invisible? @sfsinger
 
 %%%%%% Literate PVS comments +BEGIN and +END denote blocks. A block
 %%%%%% named "foo" is written to a LaTeX file "foo.tex".
@@ -300,8 +300,8 @@ END FAFSSL
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%% A database is used to store all of the data relevant to
-%%% audits. Databases contain tables that describe the information
+%%% All of the data relevant to the audit is stored in a database.
+%%% Databases contain tables that describe the information
 %%% they contain. We need not formalize database elements in any more
 %%% detail than what follows.
 
@@ -356,8 +356,6 @@ END information_systems
 %%% The next few lines of the specification encode the process of establishing
 %%% the necessary servers.
 % @review kiniry dmz pls OK or delete the previous sentence written by sfsinger
-% @review kiniry dmz IMPORTING line below imports elections, which haven't been
-% yet defined in the spec
 
 % @relation web_server inherit server
 % @relation application_server inherit server
@@ -837,7 +835,7 @@ END ballots_collections
 
 %%% Elections have all kinds of different published instructions,
 %%% forms, and reports. We enumerate a few here that are specific to
-%%% Colorado, and relevant the RLA Tool in particular.
+%%% Colorado, and relevant to the RLA Tool in particular.
 
 instructions_forms_reports: THEORY
 BEGIN
@@ -1002,8 +1000,10 @@ END cryptography
 %%% Choosing a random sample of ballots is key to the legitimacy of any
 %%% risk-limiting audit. Legitimacy depends on a high-quality process for
 %%% the random samples. The Colorado RLA Tool will produce a random order 
-%%% of all the ballots once and for all; then random samples can be created 
+%%% of all the ballots once and for all; then random samples 
+%%% of any size, or restricted to any County or set of Counties, can be created 
 %%% as needed by considering the ballots in that random order.
+
 
 randomness: THEORY
 BEGIN
@@ -1246,7 +1246,8 @@ END rlas
 %%%
 %%% CVRs may (and in the case of CVRs exported from Colorado's Dominion system, do)
 %%% contain information about the ballot beyond the voter choices. For 
-%%% example, ballot style, precinct id and ballot type (in-person vs. mail)
+%%% example, ballot style (which encodes, at a minimum, the set of contests on the ballot), precinct id and information about 
+%%% voting method (e.g., in-person vs. mail)
 %%% may be included.
 %%%
 %%% CDOS requirements mandate that CVRs are exported and uploaded to
