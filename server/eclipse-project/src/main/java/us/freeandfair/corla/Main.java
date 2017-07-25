@@ -134,7 +134,7 @@ public final class Main {
   /**
    * Redirect a request from HTTP to HTTPS.
    * 
-   * @param the_request The request. 
+   * @param the_request The request.
    * @param the_response The response.
    * @param the_port The HTTPS port.
    */
