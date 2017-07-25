@@ -1,5 +1,12 @@
+interface CountyAppState {
+    name: string;
+    info: any;
+    contests: any[];
+}
+
 interface AppState {
     loggedIn: boolean;
+    county?: CountyAppState;
 }
 
 const defaultState = {
