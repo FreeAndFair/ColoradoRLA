@@ -1,16 +1,24 @@
-const defaultState = { greeting: 'Hello' };
+interface AppState {
+    greeting: string;
+    loggedIn: boolean;
+}
 
-export default function root(state: any = defaultState, action: any) {
-  switch (action.type) {
+const defaultState = {
+    greeting: 'Hello',
+    loggedIn: false,
+};
 
-  case 'NEXT_GREETING':
-      const greeting
-          = state.greeting === 'Hello'
-          ? 'Hi'
-          : 'Hello';
-      return { greeting };
+export default function root(state: AppState = defaultState, action: any) {
+    switch (action.type) {
 
-  default:
-      return state;
-  }
+    case 'NEXT_GREETING':
+        const greeting
+            = state.greeting === 'Hello'
+            ? 'Hi'
+            : 'Hello';
+        return { greeting };
+
+    default:
+        return state;
+    }
 }

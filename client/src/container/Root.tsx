@@ -6,17 +6,26 @@ import {
     Switch,
 } from 'react-router-dom';
 
-import Audit from './Audit';
-import Ballot from './Ballot';
-import Home from './Home';
-import Login from './Login';
-import Report from './Report';
-import Round from './Round';
-import Seed from './Seed';
-import Upload from './Upload';
+import CountyRootContainer from './county';
+import CountyAuditContainer from './county/Audit';
+import CountyContestDetailContainer from './county/ContestDetail';
+import CountyContestOverviewContainer from './county/ContestOverview';
+import HelpRootContainer from './help';
+import GlossaryContainer from './help/Glossary';
+import ManualContainer from './help/Manual';
+import LoginContainer from './login/Login';
+import SoSRootContainer from './sos';
+import AuditContainer from './sos/Audit';
+import AuditRiskLimitContainer from './sos/AuditRiskLimit';
+import AuditRoundContainer from './sos/AuditRound';
+import AuditSeedContainer from './sos/AuditSeed';
+import ContestDetailContainer from './sos/ContestDetail';
+import ContestOverviewContainer from './sos/ContestOverview';
+import CountyDetailContainer from './sos/CountyDetail';
+import CountyOverviewContainer from './sos/CountyOverview';
 
 
-export interface RootProps {
+export interface RootContainerProps {
     store: Store<any>;
 }
 
@@ -28,22 +37,31 @@ const makeRoute = (def: RouteDef) => {
 };
 
 const routes: RouteDef[] = [
-    ['/', Home],
-    ['/login', Login],
-    ['/audit', Audit],
-    ['/audit/ballot', Ballot],
-    ['/audit/report', Report],
-    ['/audit/round', Round],
-    ['/audit/seed', Seed],
-    ['/audit/upload', Upload],
+    ['/login', LoginContainer],
+    ['/county', CountyRootContainer],
+    ['/county/audit', CountyAuditContainer],
+    ['/county/contest', CountyContestOverviewContainer],
+    ['/county/contest/:contestId', CountyContestDetailContainer],
+    ['/help', HelpRootContainer],
+    ['/help/glossary', GlossaryContainer],
+    ['/help/manual', ManualContainer],
+    ['/sos', SoSRootContainer],
+    ['/sos/audit', AuditContainer],
+    ['/sos/audit/risk-limit', AuditRiskLimitContainer],
+    ['/sos/audit/round', AuditRoundContainer],
+    ['/sos/audit/seed', AuditSeedContainer],
+    ['/sos/contest', ContestOverviewContainer],
+    ['/sos/contest/:contestId', ContestDetailContainer],
+    ['/sos/county', CountyOverviewContainer],
+    ['/sos/county/:countyId', CountyDetailContainer],
 ];
 
-export class Root extends React.Component<RootProps, void> {
+export class RootContainer extends React.Component<RootContainerProps, void> {
     public render() {
         const { store } = this.props;
 
         return (
-            <Provider store={store}>
+            <Provider store={ store }>
                 <Router>
                     <Switch>
                         { routes.map(makeRoute) }
