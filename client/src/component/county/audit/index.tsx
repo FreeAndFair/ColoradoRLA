@@ -20,12 +20,12 @@ const WizardStart = () => (
 const AuditBoardSignInForm = () => (
     <div>
         <h3>Audit Board Member</h3>
-        <div>
+        <div className='pt-card'>
             <label>Full Name:
                 <EditableText />
             </label>
         </div>
-        <div>
+        <div className='pt-card'>
             <RadioGroup label='Party Affiliation' onChange={ () => ({}) }>
                 <Radio label='Democratic Party' />
                 <Radio label='Republican Party' />
