@@ -130,7 +130,8 @@ following requirements:
   * Something you know (Example: passwords)
   * Something you are (Example: biometrics)
 
-* **ENR system** - Election Night Reporting system, used to publish
+* **ENR system** An Election Night Reporting system, a computer system
+enabling publication of
 election results starting on election night, and continuing through
 the end of certification.
 
@@ -227,19 +228,19 @@ non-uniformly in order to target non-county-wide contests
 
 * **electoral system** TBD
 
-* **ballot** TBD including ballot id, imprinted ballot
+* **ballot** a list of contests and, for each contest in the list, a list of choices, in a form allows a person or computer to record choices, read recorded choices, or both  @review kiniry previous note: TBD including ballot id, imprinted ballot
 
-* **margin** TBD
+* **margin** Given a contest and two choices in that contest, the numerical difference between the choice that got more votes and the choice that got fewer votes
 
 * **hash function** TBD, mentioning specifically SHA-256
 
-* **RLA software** TBD
+* **RLA software** The software component of a computer system for conducting Risk-Limiting Audits
 
-* **ballot storage bin** TBD
+* **ballot storage bin** A physical container for a set of paper ballots
 
-* **batch** TBD
+* **batch** a subset of the set of Ballots
 
-* **batch size** TBD
+* **batch size** the number of Ballots in the Batch
 
 * **chain-of-custody** TBD
 
@@ -257,9 +258,9 @@ avoid causing anonymity problems.
 
 * **ballot order** TBD
 
-* **Secretary of State (SOS)** TBD
+* **Secretary of State (SOS)** In most states in the United States, an office of government defined in the state constitution
 
-* **Department of State (DOS)** TBD
+* **Department of State (DOS)** An agency of government which, in most states of the United States of America, is charged with oversight of state elections
 
 * **audit report** TBD
 
@@ -267,11 +268,12 @@ avoid causing anonymity problems.
 
 * **ballot certification** TBD
 
-* **UOCAVA voter** TBD
+* **UOCAVA voter** A person entitled to cast a UOCAVA Ballot
 
-* **UOCAVA ballot** TBD
+* **UOCAVA ballot** A certain type of absentee ballot prescribed by the federal Uniformed and Overseas Citizens Absentee Voting Act and codified in 52 USC Ch. 203
 
-* **mail ballot** TBD
+* **mail ballot** A Paper Ballot that may be cast by physical delivery 
+to the Board of Elections, usually via the US Postal Service
 
 * **election canvass** TBD
 
@@ -302,28 +304,31 @@ no auditable VVPR.  For example a ballot sent via an online ballot
 return system or email, for which the voter has not returned a matching
 voter verifiable paper ballot. AKA digital ballot.
 
-* **phantom ballot** A ballot which is listed in the manifest, but is
-not present as a physical ballot.  Phantom ballots can represent
-discrepancies between the manifest and the actual paper ballot batches.
+* **phantom ballot** An entry in the Ballot Manifest for which
+there is no corresponding Paper Ballot. Phantom ballots can represent
+pancies between the manifest and the actual paper ballot batches.
 A manifest with a batch of purely phantom ballots can also be used
 to represent the maximum number of possibly late-tabluation ballots.
 
 * **late-tabulation ballot** - A ballot which is tabulated after the CVR
 report and manifest are generated, but before the canvass is finished.
 
-* **duplicated ballot** TBD
+* **duplicated ballot** A Ballot marked by an Election Official by copying voter choices from another Ballot
 
 * **original ballot** TBD
 
-* **DRE** TBD
+* **DRE** A voting system whose primary record of voter intent is an electronic record created by a voter's 
+physical interaction with a voting machine
 
-* **overvote** TBD
+* **votes allowed** Given a Contest, the maximum number of choices a voter may legitimately select in that Contest
+
+* **overvote** Given a Marked Ballot and a Contest, a selection of more choices than the Votes Allowed for that Contest
 
 * **stray mark** TBD
 
 * **damage** TBD
 
-* **undervote** TBD
+* **undervote** Given a Marked Ballot and a Contest, a selection of fewer choices than the Votes Allowed for that Contest
 
 * **risk limit** - The pre-specified minimum chance of requiring a full
 hand count if the outcome of a full hand count would differ from the
@@ -331,37 +336,37 @@ reported tabulation outcome.
 
 * **voting system** TBD
 
-* **Dr. Philip Stark** TBD
+* **Dr. Philip Stark** A certain professor of Statistics
 
-* **Dr. Mark Lindeman** TBD
+* **Dr. Mark Lindeman** A certain professor of Political Science
 
-* **Dr. Ron Rivest** TBD
+* **Dr. Ron Rivest** A certain professor of Computer Science
 
-* **Colorado House Bill 09-1335** TBD
+* **Colorado House Bill 09-1335** an act of the Colorado Legislature concerning requirements for voting equipment
 
-* **EAC** TBD
+* **EAC** An independent, bipartisan commission of the United States Federal Government, established by the Help America Vote Act of 2002
 
-* **Clear Ballot Group** TBD
+* **Clear Ballot Group** A certain company that sells election systems
 
-* **Clear Ballot ClearCount** TBD
+* **Clear Ballot ClearCount** A certain browser-based central count tabulation, consolidation and reporting system
 
-* **OpenCount** TBD
+* **OpenCount** a certain open source software system for tabulating election results and conducting post-election audits
 
-* **Dominion** TBD
+* **Dominion** A certain company known as Dominion Voting Systems, which sells election systems
 
-* **Dominion Democracy Suite** TBD
+* **Dominion Democracy Suite** An election management system for setting up an election as well as acquiring, tallying and reporting election results
 
 * **dashboard** TBD
 
 * **developer dashboard** TBD
 
-* **state-wide dashboard** TBD
+* **state-wide dashboard** A computer user interface enabling the Secretary of State to carry out actions required by the Risk Limiting Audit process
 
 * **county dashboard** TBD
 
 * **audit progress** TBD
 
-* **discrepency** TBD
+* **discrepency** Given a Contest and an audited ballot, an integer between -2 and 2 (inclusive) indicating the amount to be added to the margin of victory due to the difference between the audited interpretation and the CVR
 
 * **random** TBD
 
@@ -379,7 +384,7 @@ reported tabulation outcome.
 
 * **data synchronization** TBD
 
-* **Colorado Department of State (CDOS)** TBD
+* **Colorado Department of State (CDOS)** An agency of Colorado state government created by C.R.S. Title 24 Article 21
 
 * **abstract state machine** (AST) - TBD including [Abstract state machine](https://en.wikipedia.org/wiki/Abstract_state_machines)
 
@@ -425,11 +430,11 @@ reported tabulation outcome.
 
 * **county auditing interface** TBD
 
-* **paper ballot** TBD
+* **paper ballot** A Ballot made of paper
 
-* **audit adjudication interface** TBD
+* **audit adjudication interface** A computer user interface enabling an Audit Board to record interpretations of the ballots selected for audit
 
-* **ballot style** TBD
+* **ballot style** A short name for the set of contests appearing on a Ballot @review kiniry we also need a map from ballot styles to the power set of contests.
 
 * **political party** TBD
 
@@ -443,7 +448,7 @@ reported tabulation outcome.
 
 * **audit board member** (aka auditor?) TBD
 
-* **email** TBD
+* **email** A certain method of computer-aided communication
 
 * **audit round** TBD
 
@@ -459,11 +464,11 @@ reported tabulation outcome.
 
 * **manual ballot adjudication** TBD
 
-* **ambiguous mark** (aka ambiguous vote) TBD
+* **ambiguous mark** A Ballot Mark whose interpretation as a voter choice is uncertain
 
 * **SOS voter intent guide** TBD
 
-* **ballot mark** TBD
+* **ballot mark** Any mark on a Paper Ballot that was not printed on the Paper Ballot by the Board of Election
 
 * **voter marking** TBD
 
@@ -503,9 +508,10 @@ reported tabulation outcome.
 
 * **git** TBD
 
-* **Asana** TBD
+* **Asana** A certain web-based software program enabling project management
 
-* **Slack** TBD
+* **Slack** A certain software program enabling communication between members of a team
+
 
 * **Paused Audit** @review morganmillerux I'm unclear if they will be allowed to pause and audit but it seems valuable to state what it is and then explicitly allow or disallow it.
 
