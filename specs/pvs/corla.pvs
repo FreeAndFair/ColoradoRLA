@@ -363,7 +363,8 @@ END elections
 %%% Note that county elections are actually \emph{multi}-county
 %%% elections, where the typical case is that the set of counties is a
 %%% singleton. In other words, in the general case, contests are
-%%% multi-county contests, and county elections gather votes for
+%%% multi-county contests, which can have the same contest name in
+%%% multiple counties, and county elections gather votes for
 %%% contests from a single county.
 
 % @relation county_election inherit election
@@ -598,6 +599,15 @@ vote: DATATYPE
 BEGIN
   IMPORTING ballots
 
+% @description The number of winners in a contest. This is 1 for
+% plurality contests, and more than 1 for plurality block voting
+% contests.
+  number_elected: {n: nat | n > 0}
+% @trace https://github.com/usnistgov/CastVoteRecords
+% @description The maximum number of choices per ballot allowed for a
+% contest. This is 1 for plurality contests, number_elected for plurality
+% block voting, and the number of candidates for approval voting.
+  votes_allowed: {n: nat | n > 0}
 % @description A legal selection of zero or more choices in a ballot
 % contest.
   well_formed_vote?(choices:set[choice]):
@@ -608,6 +618,10 @@ BEGIN
 % @description A (sometimes deemed improper) selection of too few
 % choices in a ballot contest.
   undervote?(choices:set[choice]): make_undervote: undervote
+% @todo nealmcb Should we define undervote specifically as 0 votes?
+% Note that https://github.com/usnistgov/ElectionResultsReporting/ defines
+% it as "Undervote: Occurs when the voter does not select a candidate in
+% a 1-of-M contest or selects fewer than N candidates in an N-of-M contest."
 % @todo kiniry Should we model a blank vote separately from an
 % undervote?  Or do they simply use the term blank vote to denote an
 % undervote? @trace CDOS Audit Board Utility Mock-up 21 July 2017
