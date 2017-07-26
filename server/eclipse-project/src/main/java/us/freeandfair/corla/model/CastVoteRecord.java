@@ -119,8 +119,37 @@ public class CastVoteRecord {
    */
   @Override
   public String toString() {
-    return "CastVoteRecord [my_county_id=" + my_county_id + ", my_scanner_id=" +
-           my_scanner_id + ", my_batch_id=" + my_batch_id + ", my_record_id=" + 
-           my_record_id + ", my_choices=" + my_choices + "]";
+    return "CastVoteRecord [county_id=" + my_county_id + ", scanner_id=" +
+           my_scanner_id + ", batch_id=" + my_batch_id + ", record_id=" + 
+           my_record_id + ", choices=" + my_choices + "]";
+  }
+  
+  /**
+   * Compare this object with another for equivalence.
+   * 
+   * @param the_other The other object.
+   * @return true if the objects are equivalent, false otherwise.
+   */
+  @Override
+  public boolean equals(final Object the_other) {
+    boolean result = false;
+    if (the_other != null && getClass().equals(the_other.getClass())) {
+      final CastVoteRecord other_cvr = (CastVoteRecord) the_other;
+      result &= other_cvr.countyID() == countyID();
+      result &= other_cvr.scannerID() == scannerID();
+      result &= other_cvr.batchID() == batchID();
+      result &= other_cvr.recordID() == recordID();
+      result &= other_cvr.choices().equals(choices());
+    }
+    return result;
+  }
+  
+  /**
+   * @return a hash code for this object.
+   */
+  @Override
+  public int hashCode() {
+    // can't just use toString() because order of choices may differ
+    return my_county_id + my_scanner_id + my_batch_id + my_record_id + my_choices.hashCode();
   }
 }
