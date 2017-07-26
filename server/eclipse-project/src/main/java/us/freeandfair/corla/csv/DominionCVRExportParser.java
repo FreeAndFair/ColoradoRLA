@@ -104,7 +104,7 @@ public class DominionCVRExportParser implements CVRExportParser {
   /**
    * The ID of the county whose CVRs we are parsing.
    */
-  private final int my_county_id;
+  private final String my_county_id;
   
   /**
    * Construct a new Dominion CVR export parser using the specified Reader,
@@ -114,7 +114,7 @@ public class DominionCVRExportParser implements CVRExportParser {
    * @param the_county_id The ID of the county whose CVRs are to be parsed.
    * @exception IOException if an error occurs while constructing the parser.
    */
-  public DominionCVRExportParser(final Reader the_reader, final int the_county_id) 
+  public DominionCVRExportParser(final Reader the_reader, final String the_county_id) 
       throws IOException {
     my_parser = new CSVParser(the_reader, CSVFormat.DEFAULT);
     my_county_id = the_county_id;
@@ -128,7 +128,7 @@ public class DominionCVRExportParser implements CVRExportParser {
    * @param the_county_id The ID of the county whose CVRs are to be parsed.
    * @exception IOException if an error occurs while constructing the parser.
    */
-  public DominionCVRExportParser(final String the_string, final int the_county_id)
+  public DominionCVRExportParser(final String the_string, final String the_county_id)
       throws IOException {
     my_parser = CSVParser.parse(the_string, CSVFormat.DEFAULT);
     my_county_id = the_county_id;
@@ -226,12 +226,12 @@ public class DominionCVRExportParser implements CVRExportParser {
   private CastVoteRecord extractCVR(final CSVRecord the_line, 
                                     final long the_timestamp) {
     try {
-      final int tabulator_number = 
-          Integer.valueOf(stripEqualQuotes(the_line.get(TABULATOR_NUMBER_COLUMN)));
-      final int batch_id = 
-          Integer.valueOf(stripEqualQuotes(the_line.get(BATCH_ID_COLUMN)));
-      final int record_id = 
-          Integer.valueOf(stripEqualQuotes(the_line.get(RECORD_ID_COLUMN)));
+      final String tabulator_id = 
+          stripEqualQuotes(the_line.get(TABULATOR_NUMBER_COLUMN));
+      final String batch_id = 
+          stripEqualQuotes(the_line.get(BATCH_ID_COLUMN));
+      final String record_id = 
+          stripEqualQuotes(the_line.get(RECORD_ID_COLUMN));
       final String imprinted_id = 
           stripEqualQuotes(the_line.get(IMPRINTED_ID_COLUMN));
       final String ballot_style_name = 
@@ -268,10 +268,12 @@ public class DominionCVRExportParser implements CVRExportParser {
                              new BallotStyle(ballot_style_name, contests));
       }
       
-      return new CastVoteRecord(false, the_timestamp, my_county_id, tabulator_number,
+      return new CastVoteRecord(false, the_timestamp, my_county_id, tabulator_id,
                                 batch_id, record_id, imprinted_id, 
                                 my_ballot_styles.get(ballot_style_name), votes);
     } catch (final NumberFormatException e) {
+      return null;
+    } catch (final ArrayIndexOutOfBoundsException e) {
       return null;
     }
   }
@@ -375,7 +377,7 @@ public class DominionCVRExportParser implements CVRExportParser {
    */
   public static void main(final String... the_args) throws IOException {
     final Reader r = new FileReader("/Unsorted/cvrs.csv");
-    final DominionCVRExportParser thing = new DominionCVRExportParser(r, 0);
+    final DominionCVRExportParser thing = new DominionCVRExportParser(r, "Foo");
     System.err.println(thing.parse());
     System.err.println(thing.cvrs());
     System.err.println(thing.contests());

@@ -12,81 +12,87 @@
 package us.freeandfair.corla.model;
 
 /**
- * Information about a specific ballot on a ballot manifest.
+ * Information about the locations of specific batches of ballots.
  * 
  * @author Joey Dodds
  * @version 0.0.1
  */
 public class BallotManifestInfo {
   /**
-   * The ID number of the county in which the ballot was cast.
+   * The timestamp for this ballot manifest info, in milliseconds since the epoch.
    */
-  private final int my_county_id;
+  private final long my_timestamp;
+  
+  /**
+   * The ID number of the county in which the batch was scanned.
+   */
+  private final String my_county_id;
   //@ private invariant my_county_id >= 0;
   
   /**
-   * The ID number of the scanner that scanned the ballot.
+   * The ID number of the scanner that scanned the batch.
    */
-  private final int my_scanner_id;
+  private final String my_scanner_id;
 
   /**
-   * The batch number containing this ballot.
+   * The batch number.
    */
-  private final int my_batch_number;
+  private final String my_batch_id;
   
   /**
-   * The size of the ballot batch containing this ballot.
+   * The size of the batch.
    */
   private final int my_batch_size;
   
   /**
-   * The storage container number containing this ballot.
+   * The storage location for the batch.
    */
-  private final int my_storage_container;
+  private final String my_storage_location;
  
-  /**
-   * The ballot ID of this ballot.
-   */
-  private final int my_ballot_id;
-  
   /**
    * <description>
    * <explanation>
    * @param
    */
-  public BallotManifestInfo(final int the_county_id, final int the_scanner_id, 
-                            final int the_batch_number, final int the_batch_size, 
-                            final int the_storage_container, final int the_ballot_id) {
+  public BallotManifestInfo(final long the_timestamp,
+                            final String the_county_id, final String the_scanner_id, 
+                            final String the_batch_id, final int the_batch_size, 
+                            final String the_storage_location) {
     super();
+    my_timestamp = the_timestamp;
     my_county_id = the_county_id;
     my_scanner_id = the_scanner_id;
-    my_batch_number = the_batch_number;
+    my_batch_id = the_batch_id;
     my_batch_size = the_batch_size;
-    my_storage_container = the_storage_container;
-    my_ballot_id = the_ballot_id;
+    my_storage_location = the_storage_location;
+  }
+  
+  /**
+   * @return the timestamp.
+   */
+  public long timestamp() {
+    return my_timestamp;
   }
   
   /**
    * @return the county ID.
    */
-  public int countyID() {
-    assert false;
-    //@ assert false;
+  public String countyID() {
     return my_county_id;
   }  
 
   /**
    * @return the scanner ID.
    */
-  public int scannerID() {
+  public String scannerID() {
     return my_scanner_id;
   }
   
   /**
    * @return the batch number.
    */
-  public int batchNumber() {
-    return my_batch_number;
+  public String batchID() {
+    return my_batch_id;
   }
   
   /**
@@ -99,25 +105,47 @@ public class BallotManifestInfo {
   /**
    * @return the storage container number.
    */
-  public int storageContainer() {
-    return my_storage_container;
+  public String storageLocation() {
+    return my_storage_location;
   }  
-  
-  /**
-   * @return the ballot ID.
-   */
-  public int ballotID() {
-    return my_ballot_id;
-  }
   
   /**
    * @return a String representation of this object.
    */
   @Override
   public String toString() {
-    return "BallotManifestInfo [county_id=" + my_county_id + 
-        ", scanner_id=" + my_scanner_id + ", batch_size=" + my_batch_size +
-        ", storage_container=" + my_storage_container + 
-        ", ballot_id=" + my_ballot_id + "]";
+    return "BallotManifestInfo [timestamp=" + my_timestamp + 
+        ", county_id=" + my_county_id + ", scanner_id=" + my_scanner_id + 
+        ", batch_size=" + my_batch_size +
+        ", storage_container=" + my_storage_location + "]";
+  }
+  
+  /**
+   * Compare this object with another for equivalence.
+   * 
+   * @param the_other The other object.
+   * @return true if the objects are equivalent, false otherwise.
+   */
+  @Override
+  public boolean equals(final Object the_other) {
+    boolean result = false;
+    if (the_other != null && getClass().equals(the_other.getClass())) {
+      final BallotManifestInfo other_bmi = (BallotManifestInfo) the_other;
+      result &= other_bmi.timestamp() == timestamp();
+      result &= other_bmi.countyID().equals(countyID());
+      result &= other_bmi.scannerID().equals(scannerID());
+      result &= other_bmi.batchID().equals(batchID());
+      result &= other_bmi.batchSize() == batchSize();
+      result &= other_bmi.storageLocation().equals(storageLocation());
+    }
+    return result;
+  }
+  
+  /**
+   * @return a hash code for this object.
+   */
+  @Override
+  public int hashCode() {
+    return toString().hashCode();
   }
 }

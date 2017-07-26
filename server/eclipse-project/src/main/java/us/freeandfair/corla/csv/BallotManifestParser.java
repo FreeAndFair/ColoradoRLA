@@ -12,19 +12,16 @@
 package us.freeandfair.corla.csv;
 
 import java.util.List;
-import java.util.Set;
 
-import us.freeandfair.corla.model.BallotStyle;
-import us.freeandfair.corla.model.CastVoteRecord;
-import us.freeandfair.corla.model.Contest;
+import us.freeandfair.corla.model.BallotManifestInfo;
 
 /**
- * A common interface to parsers for CVR info in various formats.
+ * A common interface to parsers for ballot manifest info in various formats.
  * 
- * @author Joey Dodds <jdodds@freeandfair.us>
+ * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 0.0.1
  */
-public interface CVRExportParser {
+public interface BallotManifestParser {
   /**
    * Parse the CVRs. The export data and other supplementary information is provided
    * to the CVR parser in some way outside this interface (such as a constructor 
@@ -35,18 +32,7 @@ public interface CVRExportParser {
   boolean parse();
   
   /**
-   * @return the CVRs parsed from the export data. 
+   * @return the ballot manifest information parsed from the export data. 
    */
-  List<CastVoteRecord> cvrs();
-  
-  /**
-   * @return the contest information inferred from the export data. 
-   */
-  List<Contest> contests();
-  
-  /**
-   * @return the ballot style information inferred from the export data.
-   */
-  Set<BallotStyle> ballotStyles();
-  
+  List<BallotManifestInfo> ballotManifestInfo();
 }

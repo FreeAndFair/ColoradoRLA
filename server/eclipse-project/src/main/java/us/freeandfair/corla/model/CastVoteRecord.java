@@ -36,22 +36,22 @@ public class CastVoteRecord {
   /**
    * The county ID of this cast vote record.
    */
-  private final int my_county_id;
+  private final String my_county_id;
   
   /**
    * The scanner ID of this cast vote record.
    */
-  private final int my_scanner_id;
+  private final String my_scanner_id;
   
   /**
    * The batch ID of this cast vote record.
    */
-  private final int my_batch_id;
+  private final String my_batch_id;
   
   /**
    * The record ID of this cast vote record.
    */
-  private final int my_record_id;
+  private final String my_record_id;
   
   /**
    * The imprinted ID of this cast vote record.
@@ -85,8 +85,8 @@ public class CastVoteRecord {
    */
   public CastVoteRecord(final boolean the_audit_record_flag, 
                         final long the_timestamp,
-                        final int the_county_id, final int the_scanner_id,
-                        final int the_batch_id, final int the_record_id,
+                        final String the_county_id, final String the_scanner_id,
+                        final String the_batch_id, final String the_record_id,
                         final String the_imprinted_id,
                         final BallotStyle the_ballot_style,
                         final Map<Contest, Set<Choice>> the_choices) {
@@ -120,28 +120,28 @@ public class CastVoteRecord {
   /**
    * @return the county ID.
    */
-  public int countyID() {
+  public String countyID() {
     return my_county_id;
   }
   
   /**
    * @return the scanner ID.
    */
-  public int scannerID() {
+  public String scannerID() {
     return my_scanner_id;
   }
   
   /**
    * @return the batch ID.
    */
-  public int batchID() {
+  public String batchID() {
     return my_batch_id;
   }
   
   /**
    * @return the record ID.
    */
-  public int recordID() {
+  public String recordID() {
     return my_record_id;
   }
   
@@ -208,6 +208,7 @@ public class CastVoteRecord {
   @Override
   public int hashCode() {
     // can't just use toString() because order of choices may differ
-    return my_county_id + my_scanner_id + my_batch_id + my_record_id + my_choices.hashCode();
+    return (my_county_id + my_scanner_id + my_batch_id + my_record_id + 
+            my_choices.hashCode()).hashCode();
   }
 }
