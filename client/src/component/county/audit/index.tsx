@@ -131,19 +131,24 @@ const BallotAudit = () => (
     </div>
 );
 
-const CountyAuditWizard = () => (
-    <div>
-        <WizardStart />
-        <AuditBoardSignIn />
-        <BallotAudit />
-    </div>
-);
+const CountyAuditWizard = ({ stage }: any) => {
+    switch (stage) {
+        case 'start':
+            return <WizardStart />;
+        case 'sign-in':
+            return <AuditBoardSignIn />;
+        case 'ballot':
+            return <BallotAudit />;
+        default:
+            return <div>Unreachable.</div>;
+    }
+};
 
 const CountyAuditPage = () => {
     return (
         <div>
             <CountyNav />
-            <CountyAuditWizard />
+            <CountyAuditWizard stage='start' />
         </div>
     );
 };
