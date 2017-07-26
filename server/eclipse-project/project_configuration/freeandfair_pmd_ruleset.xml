@@ -60,4 +60,12 @@ The Free &amp; Fair ruleset checks Java code for possible issues.
     </properties>
   </rule>
  
+ <!-- customize the "too many methods" rule -->
+ <!-- unfortunately there's no better way to get PMD to deal with the fact -->
+ <!-- that we don't prefix getters with "get". -->
+ <rule ref="rulesets/java/codesize.xml/TooManyMethods">
+   <properties>
+     <property name="maxmethods" value="20"/>
+   </properties>
+ </rule>
  </ruleset>

@@ -76,7 +76,7 @@
     </module>
     <module name="AnonInnerLength"/>
     <module name="ParameterNumber">
-      <property name="max" value="8"/>
+      <property name="max" value="10"/>
     </module>
     <module name="GenericWhitespace"/>
     <module name="EmptyForIteratorPad"/>
