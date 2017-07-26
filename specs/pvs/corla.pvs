@@ -285,7 +285,7 @@ BEGIN
 %%% choices that voters can make. Making a legal choice ranges
 %%% enormously across the Earth, from marking a vote for a candidate
 %%% by filling in a single bubble to enumerating a total order on all
-%%% choices in a contest. Across a given ballot, each contest has a
+%%% choices in a contest. Across the state, each contest has a
 %%% unique name.
 % @todo kiniry Need to break the cycle between the contest type and
 % the ballots theory.
@@ -357,8 +357,7 @@ END elections
 
 %%% Elections come in many forms: public and private elections;
 %%% national and local elections; etc. This RLA Tool focuses on state
-%%% elections in Colorado, so we only model that one kind of
-%%% election. Several other kinds of elections are mentioned as well.
+%%% elections in Colorado, which we model as a set of county elections.
 %%%
 %%% Note that county elections are actually \emph{multi}-county
 %%% elections, where the typical case is that the set of counties is a
@@ -443,9 +442,9 @@ BEGIN
   voting_system: TYPE
   dominion_voting_system: TYPE FROM voting_system
   
-  scanner_id_number: TYPE = nat
+  scanner_id: TYPE = string
   scanner: TYPE =
-    [# name: string, model: string, id_number: scanner_id_number #]
+    [# name: string, model: string, id: scanner_id #]
 % @todo Each scanner has a unique id number.
   vvpat: TYPE
   verified?: TYPE = pred[storage_container]
@@ -463,12 +462,13 @@ BEGIN
             elections_equipment,
             storage_container
 
-%%% Several of our concepts are simply numbers. For example, ballot
-%%% identifiers (ids), batch numbers, and batch sizes are all just
-%%% natural numbers (integers starting from zero).
+%%% Several of our concepts are simply numbers or strings. For example,
+%%% ballot identifiers (ids) and batch sizes are just
+%%% natural numbers (integers starting from zero).  Batch ids are
+%%% strings.
 
   ballot_id: TYPE = nat
-  batch_number: TYPE = nat
+  batch_id: TYPE = string
   batch_size: TYPE = nat
 
 %%% Ballots are marked by voters or ballot marking devices.  A ballot
@@ -572,8 +572,8 @@ BEGIN
 % formats.
   ballot_manifest_info: TYPE =
     [county_id,
-     scanner_id_number,
-     batch_number,
+     scanner_id,
+     batch_id,
      batch_size,
      storage_container]
 % @todo kiniry Ballot position number is still not explicitly
@@ -2035,10 +2035,6 @@ BEGIN
     sequence[[nation, state, county]]
   political_party_table: TYPE =
     sequence[[political_party]]
-  national_contest_table: TYPE =
-    sequence[[nation, contest]]
-  state_contest_table: TYPE =
-    sequence[[state, contest]]
   county_contest_table: TYPE =
     sequence[[county, contest]]
 
