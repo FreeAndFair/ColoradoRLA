@@ -304,20 +304,20 @@ BEGIN
 % information provided by CDOS on 20 July 2017 about Dominion's file
 % formats.
   contest_outcome: TYPE
-  election_outcome: TYPE = set[contest_outcome]
-  wrong_outcome: TYPE FROM election_outcome
+  election_outcomes: TYPE = set[contest_outcome]
+  wrong_outcome: TYPE FROM election_outcomes
 
 % @trace RDPR-6-Jul-2017 Section 25.1.5
 % @description The presumed winning and losing candidates or voting
 % choices of a ballot contest as reflected in preliminary results.
 % @todo kiniry TBD
-  reported_tabulation_outcome: TYPE FROM election_outcome
+  reported_tabulation_outcome: TYPE FROM election_outcomes
 
 % @trace RDPR-6-Jul-2017 Section 25.2.2(D)
 % @explanation On the ninth day after Election Day, the county must
 % finish tabulating all ballots other than provisional ballots and
 % property owner ballots.
-  rla_tabulation_outcome: TYPE FROM election_outcome
+  rla_tabulation_outcome: TYPE FROM election_outcomes
 
 %%% Elections are defined across cohorts of voters arranged in any
 %%% number of ways---geographic, political, professional, and more. In
@@ -570,10 +570,14 @@ BEGIN
 % information provided by CDOS on 20 July 2017 about Dominion's file
 % formats.
   ballot_manifest_info: TYPE =
-    [county_id, scanner_id_number, batch_number, batch_size, storage_container]
+    [county_id,
+     scanner_id_number,
+     batch_number,
+     batch_size,
+     storage_container]
 % @todo kiniry Ballot position number is still not explicitly
 % specified.
-  ballot_manifest: TYPE = set[ballot_manifest_info]
+  ballot_manifest: TYPE = list[ballot_manifest_info]
   verified?: pred[ballot_manifest]
   ballot_manifest_file: TYPE FROM file
   export_ballot_manifest: [voting_system -> ballot_manifest_file]
@@ -1043,11 +1047,13 @@ END rlas
 
 cast_vote_records: THEORY
 BEGIN
-  IMPORTING elections_equipment,
+  IMPORTING ballot_manifests,
+            elections_equipment,
             information_systems,
             vote
 
-  cvr: TYPE = set[vote]
+  cvr: TYPE = [# votes: set[vote],
+                 description: ballot_manifest_info #]
   verified?: pred[cvr]
 % @trace Task order #1, Exhibit A
   as_csv: [cvr -> csv]
@@ -1989,12 +1995,11 @@ BEGIN
   authentication_table: TYPE =
     sequence[[administrator, two_factor_authentication]]
 
-%%% From the State's point of view, the Department of State dashboard
-%%% permits State administrators to establish risk limits for each
-%%% contest, specify which kinds of audits are used for which races
-%%% and in which counties, etc.  Most of the dynamic data available to
-%%% State administrators is provided via County administrators using
-%%% the County dashboard.
+%%% The Department of State dashboard permits State administrators to
+%%% establish risk limits for each contest, specify which kinds of
+%%% audits are used for which races and in which counties, etc.  Most
+%%% of the dynamic data available to State administrators is provided
+%%% via County administrators using the County dashboard.
 
   state_status_table: TYPE =
     sequence[[# county: county,
@@ -2091,8 +2096,11 @@ BEGIN
 %%% uploaded and stored.
 
   ballots_under_audit_table: TYPE =
-    sequence[[ballot, ballot_manifest_info, list[ballot_mark],
-              cvr, margin_overstatement, margin_understatement]]
+    sequence[[ballot,
+              list[ballot_mark],
+              cvr,
+              margin_overstatement,
+              margin_understatement]]
   auditing_investigations_table: TYPE =
     sequence[[county, audit_investigation_report]]
   audit_reports_table: TYPE =
@@ -2183,7 +2191,7 @@ BEGIN
 %%% protocol),
 
 %%% \item \texttt{select\_contest\_for\_comparison\_audit}: defining
-%%% the elections under audit,
+%%% the contests under audit,
 
 %%% \item \texttt{publish\_seed}: the publication of the random seed
 %%% for RLAs in the election under audit,
