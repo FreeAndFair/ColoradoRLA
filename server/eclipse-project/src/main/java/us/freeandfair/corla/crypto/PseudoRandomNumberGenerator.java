@@ -144,7 +144,7 @@ public class PseudoRandomNumberGenerator {
     final byte[] hash_output =
         my_sha256_digest.digest(hash_input.getBytes(StandardCharsets.UTF_8));
     System.out.println(bytesToHex(hash_output));
-    final BigInteger int_output = new BigInteger(hash_output);
+    final BigInteger int_output = new BigInteger(1,hash_output);
 
     final BigInteger in_range =
         int_output.mod(BigInteger.valueOf(my_maximum - my_minimum + 1));
