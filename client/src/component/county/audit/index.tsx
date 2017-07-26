@@ -131,24 +131,36 @@ const BallotAudit = () => (
     </div>
 );
 
-const CountyAuditWizard = ({ stage }: any) => {
-    switch (stage) {
-        case 'start':
-            return <WizardStart />;
-        case 'sign-in':
-            return <AuditBoardSignIn />;
-        case 'ballot':
-            return <BallotAudit />;
-        default:
-            return <div>Unreachable.</div>;
+type WizardStage = 'start' | 'sign-in' | 'ballot';
+
+interface CountyAuditWizardState {
+    stage: WizardStage;
+}
+
+class CountyAuditWizard extends React.Component<any, CountyAuditWizardState> {
+    constructor(props: any) {
+        super(props);
+
+        this.state = { stage: 'start' };
     }
-};
+
+    render() {
+        switch (this.state.stage) {
+            case 'start':
+                return <WizardStart />;
+            case 'sign-in':
+                return <AuditBoardSignIn />;
+            case 'ballot':
+                return <BallotAudit />;
+        }
+    }
+}
 
 const CountyAuditPage = () => {
     return (
         <div>
             <CountyNav />
-            <CountyAuditWizard stage='start' />
+            <CountyAuditWizard />
         </div>
     );
 };
