@@ -351,8 +351,10 @@ END information_systems
 %%% requirements. Preferably redundant servers would be hosted in
 %%% separate facilities, with separate and independent power systems
 %%% and networks.
+%%%
 %%% An Election Night Reporting (ENR) server is mentioned repeatedly
 %%% in the RDPR-6-Jul-2017, so we model it here.
+%%%
 %%% The next few lines of the specification encode the process of establishing
 %%% the necessary servers.
 % @review kiniry dmz pls OK or delete the previous sentence written by sfsinger
