@@ -83,7 +83,8 @@ public class CastVoteRecord {
    * @param the_ballot_style The ballot style.
    * @param the_choices The contest choices.
    */
-  public CastVoteRecord(final boolean the_audit_record_flag, final long the_timestamp,
+  public CastVoteRecord(final boolean the_audit_record_flag, 
+                        final long the_timestamp,
                         final int the_county_id, final int the_scanner_id,
                         final int the_batch_id, final int the_record_id,
                         final String the_imprinted_id,
@@ -174,7 +175,7 @@ public class CastVoteRecord {
            my_timestamp + ", county_id=" + my_county_id + ", scanner_id=" +
            my_scanner_id + ", batch_id=" + my_batch_id + ", record_id=" + 
            my_record_id + ", imprinted_id=" + my_imprinted_id + ", ballot_style=" +
-           my_ballot_style + ", choices=" + my_choices + "]";
+           my_ballot_style.id() + ", choices=" + my_choices + "]";
   }
   
   /**
