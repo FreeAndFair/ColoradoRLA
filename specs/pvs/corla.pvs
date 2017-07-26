@@ -455,11 +455,13 @@ BEGIN
 % @trace RDPR-6-Jul-2017 Section 25.1.5
 % @description The presumed winning and losing candidates or voting
 % choices of a ballot contest as reflected in preliminary results.
+%%% \todojrk{Revise this definition.}
+  reported_tabulation_outcome: TYPE FROM election_outcomes
+
 % @trace RDPR-6-Jul-2017 Section 25.2.2(D)
 % @explanation On the ninth day after Election Day, the county must
 % finish tabulating all ballots other than provisional ballots and
-% property owner ballots.  These are the results as reported in state
-% ENR, and should match the CVR data exactly.
+% property owner ballots.
   rla_tabulation_outcome: TYPE FROM election_outcomes
 
 %%% Elections are defined across cohorts of voters arranged in any
