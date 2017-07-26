@@ -30,11 +30,11 @@ History
 Platform and Programming Languages
 ----------------------------------
 
-To fulfill Colorado’s requirements, we will use a modular system
+To fulfill Colorado’s requirements, we use a modular system
 design and standard, well-understood web application technologies.
 
 We are using a Java-based web application running on a Linux server,
-hosted in the CDOS data center. We will be deploying on a JVM version
+hosted in the CDOS data center. Deployment is targeted for a JVM version
 that supports Java 8. 
 
 The choice of deployment on JVM is made due to IT constraints on the
@@ -46,14 +46,12 @@ challenges in multi-platform development and deployment.  We would
 rather have a straightforward cross-platform system development and
 deployment story, thus we use Java 8 on the server-side.
 
-We are using CDOS's standard SQL relational database management system
-for data persistence. At this time (early July) we understand that
-Informix is CDOS's preferred commercial database solution.
+We are using [PostgreSQL](https://www.postgresql.org/) for data persistence.
 
-The user interface (UI) is browser-based. We are writing the client in
+The user interface (UI) is browser-based. The client is written in
 TypeScript, a mainstream, Microsoft-supported variant of JavaScript
 that offers opt-in, Java-like type safety. TypeScript compiles to
-plain, human-readable JavaScript, so this choice will support
+plain, human-readable JavaScript, so this choice supports
 client-side correctness without requiring any special web browser
 support.
 
@@ -61,18 +59,19 @@ Developer Tools
 ---------------
 
 We are using many of the following tools. Developers need not download
-and install this long list of technologies. We will provide developers
-a pre-configured Eclipse install, a bootstrapping Eclipse workspace,
+and install this long list of technologies. We have provided developers
+with a pre-configured [Eclipse](https://eclipse.org/) install,
+a bootstrapping Eclipse workspace,
 and a VM image which can be loaded into VirtualBox or other comparable
 virtualization platform. We provide these resources in order to both
 decrease new developers' ramp-up time as well as to standardize on
 specific versions of tools for development.
 
-We expect to provide the initial Eclipse snapshot and workspace in the
-week of 9 July 2017.
+Instructions for installing Eclipse and the plugins we use
+are at [README-ECLIPSE.md](../server/README-ECLIPSE.md).
 
 * [GitHub](https://github.com/FreeAndFair/ColoradoRLA) for distributed
-  version control, change tracking, and development documentation
+  version control, issue tracking, and development documentation
 * the
   [PVS specification and verification system](http://pvs.csl.sri.com/)
   or the [Alloy tool](http://alloy.mit.edu/alloy/) for specifying and
@@ -243,8 +242,7 @@ cross-platform, IDE-independent builds and continuous integration with
 Travis CI.
 
 The Eclipse-based build system is built into our Eclipse IDE image and
-our workspace. (@todo kiniry Add hyperlinks when they become available
-next week.)
+our workspace, as specified in `server/eclipse.setup`.
 
 The Make-based system is rooted in our
 top-level [Makefile](../Makefile). That build system not only compiles
@@ -289,6 +287,11 @@ In order to automatically measure the quality of a system, we define
 the set of properties that we wish to measure and the what the optimal
 ranges are for the measure of each property. We automate this
 evaluation, both in the IDE and in continuous integration.
+The current status of our continuous integration checks is displayed
+via a dynamic status image here
+and on our [repository's home page](../README.md).
+
+[![Build Status](https://travis-ci.org/FreeAndFair/ColoradoRLA.svg?branch=master)](https://travis-ci.org/FreeAndFair/ColoradoRLA)
 
 Also, we have a tool called the AutoGrader that automatically combines
 the output of multiple analyses and "grades" the system, and
@@ -312,8 +315,8 @@ assumptions is called *verification*.
 Some of the quality assurance tools and techniques discussed above are
 a part of validation and verification.
 
-[Another document](docs/v_and_v.md) focuses on this topic in great
-detail.
+The [Validation and Verification](40_v_and_v.md) document focuses on
+this topic in great detail.
 
 Deployment
 ----------
