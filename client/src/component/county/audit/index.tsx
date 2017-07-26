@@ -5,14 +5,16 @@ import { Checkbox, EditableText, Radio, RadioGroup } from '@blueprintjs/core';
 import CountyNav from '../Nav';
 
 
-const WizardStart = () => (
+const WizardStart = ({ nextStage }: any) => (
     <div>
         <div>Acme County Audit</div>
         <div className='pt-card'>
             <div>Acme County General Election Audit</div>
             <div>Election date: 11/21/2017</div>
             <div>County & State Ballot Contests</div>
-            <button className='pt-button'>Start My Audit</button>
+            <button className='pt-button' onClick={ nextStage }>
+                Start My Audit
+            </button>
         </div>
     </div>
 );
@@ -36,7 +38,7 @@ const AuditBoardSignInForm = () => (
     </div>
 );
 
-const AuditBoardSignIn = () => (
+const AuditBoardSignIn = ({ nextStage }: any) => (
     <div>
         <div>
             <h2>Audit Board Sign-in</h2>
@@ -47,7 +49,9 @@ const AuditBoardSignIn = () => (
         </div>
         <AuditBoardSignInForm />
         <AuditBoardSignInForm />
-        <button className='pt-button pt-intent-primary'>Next</button>
+        <button className='pt-button pt-intent-primary' onClick={ nextStage }>
+            Next
+        </button>
     </div>
 );
 
@@ -122,33 +126,52 @@ const BallotContests = () => (
     </div>
 );
 
-const BallotAudit = () => (
+const BallotAudit = ({ nextStage }: any) => (
     <div>
         <h2>Ballot verification</h2>
         <AuditInstructions />
         <BallotContests />
-        <button className='pt-button pt-intent-primary'>Review</button>
+        <button className='pt-button pt-intent-primary' onClick={ nextStage }>
+            Review
+        </button>
     </div>
 );
 
-const CountyAuditWizard = ({ stage }: any) => {
-    switch (stage) {
-        case 'start':
-            return <WizardStart />;
-        case 'sign-in':
-            return <AuditBoardSignIn />;
-        case 'ballot':
-            return <BallotAudit />;
-        default:
-            return <div>Unreachable.</div>;
+type WizardStage = 'start' | 'sign-in' | 'ballot';
+
+interface CountyAuditWizardState {
+    stage: WizardStage;
+}
+
+class CountyAuditWizard extends React.Component<any, CountyAuditWizardState> {
+    constructor(props: any) {
+        super(props);
+
+        this.state = { stage: 'start' };
     }
-};
+
+    public render() {
+        let nextStage;
+
+        switch (this.state.stage) {
+            case 'start':
+                nextStage = () => this.setState({ stage: 'sign-in' });
+                return <WizardStart nextStage={ nextStage } />;
+            case 'sign-in':
+                nextStage = () => this.setState({ stage: 'ballot' });
+                return <AuditBoardSignIn nextStage={ nextStage } />;
+            case 'ballot':
+                nextStage = () => this.setState({ stage: 'start' });
+                return <BallotAudit nextStage={ nextStage } />;
+        }
+    }
+}
 
 const CountyAuditPage = () => {
     return (
         <div>
             <CountyNav />
-            <CountyAuditWizard stage='start' />
+            <CountyAuditWizard />
         </div>
     );
 };
