@@ -59,7 +59,7 @@ public class Choice {
    */
   @Override
   public String toString() {
-    return "Contest [name=" + my_name + ", description=" +
+    return "Choice [name=" + my_name + ", description=" +
            my_description + "]";
   }
 

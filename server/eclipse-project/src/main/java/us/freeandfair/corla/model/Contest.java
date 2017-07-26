@@ -17,7 +17,7 @@
 package us.freeandfair.corla.model;
 
 import java.util.Collections;
-import java.util.Set;
+import java.util.List;
 
 /**
  * The definition of a contest; comprises a contest name and a set of possible
@@ -40,7 +40,12 @@ public class Contest {
   /**
    * The set of contest choices.
    */
-  private final Set<Choice> my_choices;
+  private final List<Choice> my_choices;
+  
+  /**
+   * The maximum number of votes that can be made in this contest.
+   */
+  private final int my_votes_allowed;
   
   /**
    * Constructs a contest with the specified parameters.
@@ -48,13 +53,16 @@ public class Contest {
    * @param the_name The contest name.
    * @param the_description The contest description.
    * @param the_choices The set of contest choices.
+   * @param the_votes_allowed The maximum number of votes that can
+   * be made in this contest.
    */
   public Contest(final String the_name, final String the_description, 
-                 final Set<Choice> the_choices) {
+                 final List<Choice> the_choices, final int the_votes_allowed) {
     super();
     my_name = the_name;
     my_description = the_description;
     my_choices = the_choices;
+    my_votes_allowed = the_votes_allowed;
   }
   
   /**
@@ -74,8 +82,15 @@ public class Contest {
   /**
    * @return the contest choices.
    */
-  public Set<Choice> choices() {
-    return Collections.unmodifiableSet(my_choices);
+  public List<Choice> choices() {
+    return Collections.unmodifiableList(my_choices);
+  }
+  
+  /**
+   * @return the maximum number of votes that can be made in this contest.
+   */
+  public int votesAllowed() {
+    return my_votes_allowed;
   }
   
   /**
@@ -84,7 +99,8 @@ public class Contest {
   @Override
   public String toString() {
     return "Contest [name=" + my_name + ", description=" +
-           my_description + ", choices=" + my_choices + "]";
+           my_description + ", choices=" + my_choices + 
+           ", votes_allowed=" + my_votes_allowed + "]";
   }
 
   /**
@@ -101,6 +117,7 @@ public class Contest {
       result &= other_contest.name().equals(name());
       result &= other_contest.description().equals(description());
       result &= other_contest.choices().equals(choices());
+      result &= other_contest.votesAllowed() == votesAllowed();
     }
     return result;
   }
@@ -110,8 +127,6 @@ public class Contest {
    */
   @Override
   public int hashCode() {
-    // can't just use toString() because order of choices may differ
-    final String hash_string = name() + description() + choices().hashCode();
-    return hash_string.hashCode();
+    return toString().hashCode();
   }
 }

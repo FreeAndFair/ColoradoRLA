@@ -11,9 +11,11 @@
 
 package us.freeandfair.corla.csv;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -26,6 +28,8 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
+import us.freeandfair.corla.Main;
+import us.freeandfair.corla.model.BallotStyle;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.Choice;
 import us.freeandfair.corla.model.Contest;
@@ -37,6 +41,31 @@ import us.freeandfair.corla.model.Contest;
  */
 public class DominionCVRExportParser implements CVRExportParser {
   /**
+   * The column containing the tabulator number in a Dominion export file.
+   */
+  private static final int TABULATOR_NUMBER_COLUMN = 1;
+  
+  /**
+   * The column containing the batch ID in a Dominion export file.
+   */
+  private static final int BATCH_ID_COLUMN = 2;
+  
+  /**
+   * The column containing the record ID in a Dominion export file.
+   */
+  private static final int RECORD_ID_COLUMN = 3;
+  
+  /**
+   * The column containing the imprinted ID in a Dominion export file.
+   */
+  private static final int IMPRINTED_ID_COLUMN = 4;
+  
+  /**
+   * The column containing the ballot type in a Dominion export file.
+   */
+  private static final int BALLOT_TYPE_COLUMN = 7;
+
+  /**
    * The first column of contest names/choices in a Dominion export file.
    */
   private static final int FIRST_CHOICE_COLUMN = 8;
@@ -44,12 +73,12 @@ public class DominionCVRExportParser implements CVRExportParser {
   /**
    * A flag indicating whether parse() has been run or not.
    */
-  private final boolean my_parse_status = false;
+  private boolean my_parse_status;
   
   /**
    * A flag indicating whether or not a parse was successful.
    */
-  private final boolean my_parse_success = false;
+  private boolean my_parse_success;
   
   /**
    * The parser to be used.
@@ -57,14 +86,20 @@ public class DominionCVRExportParser implements CVRExportParser {
   private final CSVParser my_parser;
   
   /**
-   * The set of CVRs parsed from the supplied data export.
+   * The list of CVRs parsed from the supplied data export.
    */
-  private final Set<CastVoteRecord> my_cvrs = new HashSet<CastVoteRecord>();
+  private final List<CastVoteRecord> my_cvrs = new ArrayList<CastVoteRecord>();
   
   /**
-   * The set of contests inferred from the supplied data export.
+   * The list of contests parsed from the supplied data export.
    */
-  private final Set<Contest> my_contests = new HashSet<Contest>();
+  private final List<Contest> my_contests = new ArrayList<Contest>();
+  
+  /**
+   * The ballot styles inferred from the supplied data export.
+   */
+  private final Map<String, BallotStyle> my_ballot_styles = 
+      new HashMap<String, BallotStyle>();
   
   /**
    * The ID of the county whose CVRs we are parsing.
@@ -100,6 +135,21 @@ public class DominionCVRExportParser implements CVRExportParser {
   }
   
   /**
+   * Strip the '="..."' from a column.
+   * 
+   * @param the_value The value to strip.
+   * @return the stripped value, as a String, or the original String if it 
+   * does not have the '="..."' form.
+   */
+  private String stripEqualQuotes(final String the_value) {
+    String result = the_value;
+    if (the_value.startsWith("=\"") && the_value.endsWith("\"")) {
+      result = the_value.substring(0, the_value.length() - 1).replaceFirst("=\"", "");
+    }
+    return result;
+  }
+  
+  /**
    * Parse the supplied data export. If it has already been parsed, this
    * method returns immediately.
    * 
@@ -114,6 +164,7 @@ public class DominionCVRExportParser implements CVRExportParser {
     
     boolean result = true; // presume the parse will succeed
     final Iterator<CSVRecord> records = my_parser.iterator();
+    final long timestamp = System.currentTimeMillis();
     
     try {
       // we expect the first line to be the election name, which we currently discard
@@ -123,8 +174,10 @@ public class DominionCVRExportParser implements CVRExportParser {
       // for each choice in the contest
       final CSVRecord contest_line = records.next();
       
-      // find all the contest names, and how many choices each has
+      // find all the contest names, how many choices each has, 
+      // and how many choices can be made in each
       final List<String> contest_names = new ArrayList<String>();
+      final Map<String, Integer> contest_max_selections = new HashMap<String, Integer>();
       final Map<String, Integer> contest_choice_counts = new HashMap<String, Integer>();
       
       int index = FIRST_CHOICE_COLUMN;
@@ -136,8 +189,18 @@ public class DominionCVRExportParser implements CVRExportParser {
           index = index + 1;
           count = count + 1;
         }
-        contest_names.add(c);
-        contest_choice_counts.put(c, count);
+        // get the "(Vote For=" number from the contest name and clean up the name
+        final String cn = c.substring(0, c.indexOf("(Vote For="));
+        final String vf = c.replace(cn, "").replace("(Vote For=", "").replace(")", "");
+        int ms = 1; // this is our default maximum selections
+        try {
+          ms = Integer.valueOf(vf);
+        } catch (final NumberFormatException e) {
+          // ignored
+        }
+        contest_names.add(cn);
+        contest_choice_counts.put(cn, count);
+        contest_max_selections.put(cn, ms);
       } while (index < contest_line.size());
 
       // we expect the third line to be a list of contest choices
@@ -149,23 +212,85 @@ public class DominionCVRExportParser implements CVRExportParser {
       
       index = FIRST_CHOICE_COLUMN;
       for (final String cn : contest_names) {
-        final Set<Choice> choice_set = new HashSet<Choice>();
-        final int count = contest_choice_counts.get(cn); 
-        while (index < index + count) {
+        final List<Choice> choices = new ArrayList<Choice>();
+        final int end = index + contest_choice_counts.get(cn); 
+        while (index < end) {
           final String ch = contest_choices_line.get(index);
           final String ex = contest_choice_explanations_line.get(index);
-          choice_set.add(new Choice(ch, ex));
+          choices.add(new Choice(ch, ex));
           index = index + 1;
         }
-        
+        // now that we have all the choices, we can create a Contest object for 
+        // this contest (note the empty contest description at the moment, below, 
+        // as that's not in the CVR files and may not actually be used)
+        my_contests.add(new Contest(cn, "", choices, contest_max_selections.get(cn)));
       }
-      
-      
-      
+     
+      // subsequent lines contain cast vote records
+      while (records.hasNext()) {
+        final CSVRecord cvr_line = records.next();
+        try {
+          final int tabulator_number = 
+              Integer.valueOf(stripEqualQuotes(cvr_line.get(TABULATOR_NUMBER_COLUMN)));
+          final int batch_id = 
+              Integer.valueOf(stripEqualQuotes(cvr_line.get(BATCH_ID_COLUMN)));
+          final int record_id = 
+              Integer.valueOf(stripEqualQuotes(cvr_line.get(RECORD_ID_COLUMN)));
+          final String imprinted_id = 
+              stripEqualQuotes(cvr_line.get(IMPRINTED_ID_COLUMN));
+          final String ballot_style_name = 
+              stripEqualQuotes(cvr_line.get(BALLOT_TYPE_COLUMN));
+          final List<Contest> contests = new ArrayList<Contest>();
+          final Map<Contest, Set<Choice>> votes = new HashMap<Contest, Set<Choice>>();
+          
+          // for each contest, see if choices exist on the CVR; "0" or "1" are
+          // votes or absences of votes; "" means that the contest is not in this style
+          index = FIRST_CHOICE_COLUMN;
+          for (final Contest co : my_contests) {
+            boolean present = false;
+            final Set<Choice> choices = new HashSet<Choice>();
+            for (final Choice ch : co.choices()) {
+              final String mark = cvr_line.get(index);
+              present |= !mark.isEmpty();
+              if (!mark.isEmpty() && Integer.valueOf(mark) != 0) {
+                choices.add(ch);
+              }
+              index = index + 1;
+            }
+            // if this contest was on the ballot, add it to the votes
+            if (present) {
+              contests.add(co);
+              votes.put(co, choices);
+            }
+          }
+          
+          // we should now have the votes for each contest; if the ballot style
+          // doesn't exist for this ballot style name, create it now
+          
+          if (!my_ballot_styles.containsKey(ballot_style_name)) {
+            my_ballot_styles.put(ballot_style_name, 
+                                 new BallotStyle(ballot_style_name, contests));
+          }
+          
+          final CastVoteRecord cvr = 
+              new CastVoteRecord(false, timestamp, my_county_id, tabulator_number,
+                                 batch_id, record_id, imprinted_id, 
+                                 my_ballot_styles.get(ballot_style_name), votes);
+          my_cvrs.add(cvr);
+        } catch (final NumberFormatException e) {
+          // we don't record the CVR since we couldn't get its number
+          Main.LOGGER.error("Could not parse malformed CVR record (" + cvr_line + ")");
+          result = false;
+        }
+      }
     } catch (final NoSuchElementException e) {
+      Main.LOGGER.error("Could not parse CVR file because it had a malformed header");
       result = false;
     }
     
+    // TODO if we had any kind of parse error, do we scrap the whole import? 
+    my_parse_success = result;
+    my_parse_status = true;
     return result;
   }
 
@@ -174,28 +299,43 @@ public class DominionCVRExportParser implements CVRExportParser {
    */
   @Override
   public synchronized List<CastVoteRecord> cvrs() {
-    // TODO Auto-generated method stub
-    assert false;
-    //@ assert false;
-    return null;
+    return Collections.unmodifiableList(my_cvrs);
   }
 
   /**
    * @return the contests inferred from the supplied data export.
    */
   @Override
-  public synchronized Set<Contest> contests() {
-    // TODO Auto-generated method stub
-    assert false;
-    //@ assert false;
-    return null;
+  public synchronized List<Contest> contests() {
+    return Collections.unmodifiableList(my_contests);
   }
 
-  public static void main(final String... the_args) {
-    /*
-    final DominionCVRExportParser thing = new DominionCVRExportParser();
-    thing.parseCVRFile("C:\\Users\\dist0\\Downloads\\CVR_Export_20170723212105.csv", 0);
-    */
+  /**
+   * @return the ballot styles inferred from the supplied data export.
+   */
+  @Override
+  public synchronized Set<BallotStyle> ballotStyles() {
+    return new HashSet<BallotStyle>(my_ballot_styles.values());
+  }
+  
+  /**
+   * 
+   * <description>
+   * <explanation>
+   * @param
+   */
+  //@ behavior
+  //@   requires P;
+  //@   ensures Q;
+  /*@ pure @
+   */
+  public static void main(final String... the_args) throws IOException {
+    final Reader r = new FileReader("/Unsorted/cvrs.csv");
+    final DominionCVRExportParser thing = new DominionCVRExportParser(r, 0);
+    System.err.println(thing.parse());
+    System.err.println(thing.cvrs());
+    System.err.println(thing.contests());
+    System.err.println(thing.ballotStyles());
   }
 
 }
