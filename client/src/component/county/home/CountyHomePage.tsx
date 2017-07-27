@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 
 import * as _ from 'lodash';
 
@@ -8,7 +9,7 @@ import BallotManifestUploaderContainer from './BallotManifestUploaderContainer';
 import CVRUploaderContainer from './CVRUploaderContainer';
 
 
-const Main = ({ name }: any) => (
+const Main = ({ buttonEnabled, name, startAudit }: any) => (
     <div className='county-main pt-card'>
         <h1>Hello, { name }!</h1>
         <div>
@@ -17,6 +18,9 @@ const Main = ({ name }: any) => (
             </div>
             <BallotManifestUploaderContainer />
             <CVRUploaderContainer />
+            <button disabled={ false } className='pt-button pt-intent-primary' onClick={ startAudit }>
+                Start Audit
+            </button>
         </div>
     </div>
 );
@@ -75,12 +79,12 @@ const Info = ({ info, contests }: any) => (
     </div>
 );
 
-const CountyHomePage = ({ name, info, contests }: any) => {
+const CountyHomePage = ({ name, info, contests, startAudit }: any) => {
     return (
         <div className='county-root'>
             <CountyNav />
             <div>
-                <Main name={ name } />
+                <Main name={ name } startAudit={ startAudit } />
                 <Info info={ info } contests={ contests } />
             </div>
         </div>
