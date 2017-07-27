@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import CountyRootPage from './CountyRootPage';
+import CountyHomePage from './CountyHomePage';
 
 
-class CountyRootContainer extends React.Component<any, any> {
+class CountyHomeContainer extends React.Component<any, any> {
     public render() {
         const { county } = this.props;
 
-        return <CountyRootPage { ...county }/>;
+        return <CountyHomePage { ...county }/>;
     }
 }
 
@@ -19,4 +19,4 @@ const mapDispatchToProps = (dispatch: any) => ({});
 export default connect(
     mapStateToProps,
     mapDispatchToProps,
-)(CountyRootContainer);
+)(CountyHomeContainer);

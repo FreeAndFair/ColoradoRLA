@@ -9,7 +9,7 @@ import {
 import CountyContestDetailContainer from './county/ContestDetailContainer';
 import CountyContestOverviewContainer from './county/ContestOverviewContainer';
 import CountyAuditContainer from './county/CountyAuditContainer';
-import CountyRootContainer from './county/CountyRootContainer';
+import CountyHomeContainer from './county/home/CountyHomeContainer';
 
 import GlossaryContainer from './help/GlossaryContainer';
 import HelpRootContainer from './help/HelpRootContainer';
@@ -41,7 +41,7 @@ const makeRoute = (def: RouteDef) => {
 
 const routes: RouteDef[] = [
     ['/login', LoginContainer],
-    ['/county', CountyRootContainer],
+    ['/county', CountyHomeContainer],
     ['/county/audit', CountyAuditContainer],
     ['/county/contest', CountyContestOverviewContainer],
     ['/county/contest/:contestId', CountyContestDetailContainer],

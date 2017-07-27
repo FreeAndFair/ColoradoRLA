@@ -2,9 +2,10 @@ import * as React from 'react';
 
 import * as _ from 'lodash';
 
-import BallotManifestUploaderContainer from './home/BallotManifestUploaderContainer';
-import CVRUploaderContainer from './home/CVRUploaderContainer';
-import CountyNav from './Nav';
+import CountyNav from '../Nav';
+
+import BallotManifestUploaderContainer from './BallotManifestUploaderContainer';
+import CVRUploaderContainer from './CVRUploaderContainer';
 
 
 const Main = ({ name }: any) => (
@@ -74,7 +75,7 @@ const Info = ({ info, contests }: any) => (
     </div>
 );
 
-const CountyRootPage = ({ name, info, contests }: any) => {
+const CountyHomePage = ({ name, info, contests }: any) => {
     return (
         <div className='county-root'>
             <CountyNav />
@@ -86,4 +87,4 @@ const CountyRootPage = ({ name, info, contests }: any) => {
     );
 };
 
-export default CountyRootPage;
+export default CountyHomePage;
