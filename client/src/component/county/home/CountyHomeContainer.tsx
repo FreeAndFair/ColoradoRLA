@@ -9,11 +9,12 @@ class CountyHomeContainer extends React.Component<any, any> {
         const { county } = this.props;
         const startAudit = () => this.props.history.push('/county/audit');
 
-        return <CountyHomePage { ...county } startAudit={ startAudit } />;
+        return <CountyHomePage county={ county } startAudit={ startAudit } />;
     }
 }
 
-const mapStateToProps = ({ county }: any) => ({ county });
+const mapStateToProps = ({ ballotStyles, contests, county }: any) =>
+    ({ ballotStyles, contests, county });
 
 const mapDispatchToProps = (dispatch: any) => ({});
 

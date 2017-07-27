@@ -79,7 +79,9 @@ const Info = ({ info, contests }: any) => (
     </div>
 );
 
-const CountyHomePage = ({ name, info, contests, startAudit }: any) => {
+const CountyHomePage = ({ ballotStyles, contests, county, startAudit }: any) => {
+    const { ballots, info, name, status } = county;
+
     return (
         <div className='county-root'>
             <CountyNav />
