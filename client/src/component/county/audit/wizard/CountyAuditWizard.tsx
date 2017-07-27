@@ -3,10 +3,9 @@ import * as React from 'react';
 import AuditBoardSignInStage from './AuditBoardSignInStage';
 import BallotAuditStage from './BallotAuditStage';
 import ReviewStage from './ReviewStage';
-import StartStage from './StartStage';
 
 
-type WizardStage = 'start' | 'sign-in' | 'ballot-audit' | 'review';
+type WizardStage = 'sign-in' | 'ballot-audit' | 'review';
 
 interface CountyAuditWizardState {
     stage: WizardStage;
@@ -16,26 +15,34 @@ class CountyAuditWizard extends React.Component<any, CountyAuditWizardState> {
     constructor(props: any) {
         super(props);
 
-        this.state = { stage: 'start' };
+        this.state = { stage: 'sign-in' };
     }
 
     public render() {
-        let nextStage;
+        const props = { ...this.props, nextStage: this.nextStage };
 
         switch (this.state.stage) {
-            case 'start':
-                nextStage = () => this.setState({ stage: 'sign-in' });
-                return <StartStage nextStage={ nextStage } />;
             case 'sign-in':
-                nextStage = () => this.setState({ stage: 'ballot-audit' });
-                return <AuditBoardSignInStage nextStage={ nextStage } />;
+                return <AuditBoardSignInStage { ...props } />;
             case 'ballot-audit':
-                nextStage = () => this.setState({ stage: 'review' });
-                return <BallotAuditStage nextStage={ nextStage } />;
+                return <BallotAuditStage { ...props } />;
             case 'review':
-                nextStage = () => this.setState({ stage: 'ballot-audit' });
-                return <ReviewStage nextStage={ nextStage } />;
+                return <ReviewStage { ...props } />;
         }
+    }
+
+    private nextStage = () => {
+        // tslint:disable
+        const t: any = {
+            'sign-in': 'ballot-audit',
+            'ballot-audit': 'review',
+            'review': 'ballot-audit',
+        };
+        // tslint:enable
+
+        const stage = t[this.state.stage];
+
+        this.setState({ stage });
     }
 }
 

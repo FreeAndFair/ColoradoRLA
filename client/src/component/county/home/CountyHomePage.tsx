@@ -25,49 +25,65 @@ const Main = ({ buttonEnabled, name, startAudit }: any) => (
     </div>
 );
 
-const ContestInfoTableRow = (choice: any) => (
+const ContestInfoTableRow = ({ choice }: any) => (
     <tr key={ choice.id }>
         <td>{ choice.id }</td>
         <td>{ choice.name }</td>
     </tr>
 );
 
-const ContestInfoTable = (contest: any) => (
-    <div className='pt-card'>
-        <span>{ contest.name }</span>
-        <table className='pt-table'>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                </tr>
-            </thead>
-            <tbody>
-                { _.map(contest.choices, (c: any) => <ContestInfoTableRow key={ c.id } { ...c }/> ) }
-            </tbody>
-        </table>
-    </div>
-);
+const ContestInfoTable = ({ contest }: any) => {
+    const body = _.map(contest.choices, (c: any) => {
+        return <ContestInfoTableRow key={ c.id } choice={ c } />;
+    });
 
-const ContestInfo = ({ contests }: any): any => (
-    <div className='contest-info pt-card'>
-        <div>Contest info</div>
-        <div>
-            { _.map(contests, (c: any) => <ContestInfoTable key={ c.name } { ...c }/>) }
+    return (
+        <div className='pt-card'>
+            <span>{ contest.name }</span>
+            <table className='pt-table'>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    { body }
+                </tbody>
+            </table>
         </div>
-    </div>
-);
+    );
+};
 
-const CountyInfo = (info: any) => (
+const ContestInfo = ({ contests }: any): any => {
+    const contestTables = _.map(contests, (c: any) => {
+        return <ContestInfoTable key={ c.name } contest={ c } />;
+    });
+
+    return (
+        <div className='contest-info pt-card'>
+            <h3>Contest info</h3>
+            <div>
+                { contestTables }
+            </div>
+        </div>
+    );
+};
+
+const CountyInfo = ({ info }: any) => (
     <div className='county-info pt-card'>
-        <div>County Info</div>
+        <h3>County Info</h3>
         <div>
-            <span>Field1</span>
-            <span>{ info.field1 }</span>
+            <label>
+                Election Date:
+                <span>{ info.electionDate }</span>
+            </label>
         </div>
         <div>
-            <span>Field2</span>
-            <span>{ info.field2 }</span>
+            <label>
+                Audit Date:
+                <span>{ info.auditDate }</span>
+            </label>
         </div>
     </div>
 );
@@ -79,13 +95,18 @@ const Info = ({ info, contests }: any) => (
     </div>
 );
 
-const CountyHomePage = ({ name, info, contests, startAudit }: any) => {
+const CountyHomePage = (props: any) => {
+    const { ballotStyles, contests, county, startAudit } = props;
+    const { ballots, info, name, status } = county;
+
+    const countyContests = _.map(county.contests, (id: any) => contests[id]);
+
     return (
         <div className='county-root'>
             <CountyNav />
             <div>
                 <Main name={ name } startAudit={ startAudit } />
-                <Info info={ info } contests={ contests } />
+                <Info info={ info } contests={ countyContests } />
             </div>
         </div>
     );

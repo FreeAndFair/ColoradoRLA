@@ -8,7 +8,8 @@ import {
 
 import CountyContestDetailContainer from './county/ContestDetailContainer';
 import CountyContestOverviewContainer from './county/ContestOverviewContainer';
-import CountyAuditContainer from './county/CountyAuditContainer';
+
+import CountyAuditContainer from './county/audit/CountyAuditContainer';
 import CountyHomeContainer from './county/home/CountyHomeContainer';
 
 import GlossaryContainer from './help/GlossaryContainer';

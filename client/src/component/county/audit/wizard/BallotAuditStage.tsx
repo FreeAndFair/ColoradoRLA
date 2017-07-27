@@ -1,19 +1,22 @@
 import * as React from 'react';
 
+import * as _ from 'lodash';
+
 import { Checkbox, EditableText, Radio, RadioGroup } from '@blueprintjs/core';
 
 
-const AuditInstructions = () => (
-    <div>
+const AuditInstructions = ({ ballotsToAudit, currentBallot }: any) => (
+    <div className='pt-card'>
         <div>
-            Use this page to report the voter markings on the <span>2nd</span>
-            of <span>54</span> balots that you must audit.
+            Use this page to report the voter markings on the ballot with ID
+            #{ currentBallot.id }, out of { ballotsToAudit } ballots that you must
+            audit.
         </div>
         <div>
-            The <span>2nd</span> ballot is:
+            The current ballot is:
             <ul>
-                <li>[ballot ID]</li>
-                <li>[ballot style name]</li>
+                <li>{ currentBallot.id }</li>
+                <li>{ currentBallot.style.name }</li>
             </ul>
             <div>
                 Please ensure that the paper ballot you are examining is the
@@ -36,54 +39,94 @@ const AuditInstructions = () => (
     </div>
 );
 
-const BallotContest = () => (
-    <div className='pt-card'>
+const ContestInfo = ({ contest }: any) => {
+    const { name, description, choices, votesAllowed } = contest;
+
+    return (
         <div className='pt-card'>
-            <div>Ballot contest [N]</div>
-            <div>Acme County School District RE-1</div>
-            <div>Director</div>
-            <div>
-                <div>Vote for [N]</div>
-            </div>
+            <div>{ name }</div>
+            <div>{ description }</div>
+            <div>Vote for { votesAllowed } out of { choices.length }</div>
         </div>
-        <div>
-            <Checkbox checked={ false } onChange={ () => ({}) } label='Choice A' />
-            <Checkbox checked={ false } onChange={ () => ({}) } label='Choice B' />
-            <Checkbox checked={ false } onChange={ () => ({}) } label='Choice C' />
+    );
+};
+
+const ContestChoices = ({ choices }: any) => {
+    const nop = () => ({});
+    const choiceForms = _.map(choices, (c: any) => (
+        <Checkbox
+            key={ c.id }
+            checked={ false }
+            onChange={ nop }
+            label={ c.name } />
+    ));
+
+    return (
+        <div className='pt-card'>
+            { choiceForms }
         </div>
-        <div>
-            <RadioGroup label='' onChange={ () => ({}) }>
-                <Radio label='Undervote' />
-                <Radio label='No consensus' />
-            </RadioGroup>
-        </div>
+    );
+};
+
+const ContestComments = ({ onChange }: any) => {
+    return (
         <div className='pt-card'>
             <label>
                 Comments:
-                <EditableText multiline/>
+                <EditableText multiline onChange={ onChange } />
             </label>
         </div>
-    </div>
-);
+    );
+};
 
-const BallotContests = () => (
-    <div>
-        <BallotContest />
-        <BallotContest />
-        <BallotContest />
-    </div>
-);
+const BallotContestMarkForm = ({ contest }: any) => {
+    const { name, description, choices, votesAllowed } = contest;
+    const nop = () => ({});
 
-const BallotAuditStage = ({ nextStage }: any) => (
-    <div>
-        <h2>Ballot verification</h2>
-        <AuditInstructions />
-        <BallotContests />
-        <button className='pt-button pt-intent-primary' onClick={ nextStage }>
-            Review
-        </button>
-    </div>
-);
+    return (
+        <div className='pt-card'>
+            <ContestInfo contest={ contest } />
+            <ContestChoices choices={ choices } />
+            <div className='pt-card'>
+                <Checkbox checked={ false } onChange={ nop } label='No consensus' />
+            </div>
+            <ContestComments onChange={ nop } />
+        </div>
+    );
+};
+
+const BallotAuditForm = (props: any) => {
+    const { county, currentBallot } = props;
+
+    const contestForms = _.map(currentBallot.style.contests, (c: any) => {
+        return <BallotContestMarkForm key={ c.id } contest={ c } />;
+    });
+
+    return <div>{ contestForms }</div>;
+};
+
+const BallotAuditStage = (props: any) => {
+    const { ballotStyles, county, nextStage } = props;
+
+    const ballotsToAudit = county.ballots.length;
+    const currentBallot = _.find(county.ballots, (b: any) =>
+        b.id === county.currentBallotId);
+
+    return (
+        <div>
+            <h2>Ballot verification</h2>
+            <AuditInstructions
+                ballotsToAudit={ ballotsToAudit }
+                currentBallot={ currentBallot } />
+            <BallotAuditForm
+                county={ county }
+                currentBallot={ currentBallot } />
+            <button className='pt-button pt-intent-primary' onClick={ nextStage }>
+                Review
+            </button>
+        </div>
+    );
+};
 
 
 export default BallotAuditStage;
