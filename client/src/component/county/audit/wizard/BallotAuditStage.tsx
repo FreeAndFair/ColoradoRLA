@@ -51,22 +51,33 @@ const ContestInfo = ({ contest }: any) => {
     );
 };
 
+const ContestChoices = ({ choices }: any) => {
+    const nop = () => ({});
+
+    return (
+        <div className='pt-card'>
+            <Checkbox checked={ false } onChange={ nop } label='Choice A' />
+            <Checkbox checked={ false } onChange={ nop } label='Choice B' />
+            <Checkbox checked={ false } onChange={ nop } label='Choice C' />
+        </div>
+    );
+};
+
 const BallotContestMarkForm = ({ contest }: any) => {
+    const { name, description, choices, votesAllowed } = contest;
+    const nop = () => ({});
+
     return (
         <div className='pt-card'>
             <ContestInfo contest={ contest } />
+            <ContestChoices contest={ contest } />
             <div className='pt-card'>
-                <Checkbox checked={ false } onChange={ () => ({}) } label='Choice A' />
-                <Checkbox checked={ false } onChange={ () => ({}) } label='Choice B' />
-                <Checkbox checked={ false } onChange={ () => ({}) } label='Choice C' />
-            </div>
-            <div className='pt-card'>
-                <Checkbox checked={ false } onChange={ () => ({}) } label='No consensus' />
+                <Checkbox checked={ false } onChange={ nop } label='No consensus' />
             </div>
             <div className='pt-card'>
                 <label>
                     Comments:
-                    <EditableText multiline/>
+                    <EditableText multiline />
                 </label>
             </div>
         </div>
