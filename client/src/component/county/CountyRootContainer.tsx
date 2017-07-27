@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import CountyRootPage from '../../component/county';
+import CountyRootPage from './CountyRootPage';
 
 
 class CountyRootContainer extends React.Component<any, any> {
