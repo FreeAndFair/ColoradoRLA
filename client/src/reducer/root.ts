@@ -1,15 +1,9 @@
 import { exampleState } from './example';
 
 
-interface CountyAppState {
-    name: string;
-    info: any;
-    contests: any[];
-}
-
 interface AppState {
     loggedIn: boolean;
-    county?: CountyAppState;
+    county?: any;
 }
 
 const defaultState = {
