@@ -1345,7 +1345,7 @@ BEGIN
 % At a minimum, the list must contain ballot style and ballot manifest
 % information.
   print_ballots_under_audit_list:
-    [list[ballot] -> ballots_under_audit_instructions]
+    [county, list[ballot], -> ballots_under_audit_instructions]
 
 % @trace RDPR-6-Jul-2017 Section 25.2.2(K)
 
@@ -2042,6 +2042,7 @@ BEGIN
     [# location: string, date: string #]
   rla_information_table: TYPE =
     sequence[[RLA, audit_reason, contest, risk_limit]]
+% @todo nealmcb rename to audited_ballot_list_table?
   ballots_to_audit_list_table: TYPE =
     sequence[[contest, sequence[ballot_manifest_info]]]
 
