@@ -39,7 +39,8 @@ const AuditInstructions = ({ ballotsToAudit, currentBallot }: any) => (
     </div>
 );
 
-const BallotContest = () => (
+const BallotContestMarkForm = (props: any) => {
+    return (
     <div className='pt-card'>
         <div className='pt-card'>
             <div>Ballot contest [N]</div>
@@ -64,15 +65,18 @@ const BallotContest = () => (
             </label>
         </div>
     </div>
-);
+    );
+};
 
-const BallotContests = () => (
-    <div>
-        <BallotContest />
-        <BallotContest />
-        <BallotContest />
-    </div>
-);
+const BallotAuditForm = (props: any) => {
+    return (
+        <div>
+            <BallotContestMarkForm />
+            <BallotContestMarkForm />
+            <BallotContestMarkForm />
+        </div>
+    );
+};
 
 const BallotAuditStage = (props: any) => {
     const { county, nextStage } = props;
@@ -87,7 +91,7 @@ const BallotAuditStage = (props: any) => {
             <AuditInstructions
                 ballotsToAudit={ ballotsToAudit }
                 currentBallot={ currentBallot } />
-            <BallotContests />
+            <BallotAuditForm />
             <button className='pt-button pt-intent-primary' onClick={ nextStage }>
                 Review
             </button>
