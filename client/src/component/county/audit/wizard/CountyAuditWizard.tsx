@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import AuditBoardSignInStage from './AuditBoardSignInStage';
 import BallotAuditStage from './BallotAuditStage';
+import ReviewStage from './ReviewStage';
 import StartStage from './StartStage';
 
 
@@ -33,7 +34,7 @@ class CountyAuditWizard extends React.Component<any, CountyAuditWizardState> {
                 return <BallotAuditStage nextStage={ nextStage } />;
             case 'review':
                 nextStage = () => this.setState({ stage: 'ballot-audit' });
-                return <BallotAuditStage nextStage={ nextStage } />;
+                return <ReviewStage nextStage={ nextStage } />;
         }
     }
 }
