@@ -6,6 +6,9 @@ Glossary
 See also the working documents at [VVSG-Interoperability Voting Glossary](http://collaborate.nist.gov/voting/bin/view/Voting/Glossary)
 and the glossary in: ["Risk-Limiting Post-Election Audits: Why and How"](https://www.stat.berkeley.edu/~stark/Preprints/RLAwhitepaper12.pdf)
 
+* **RLA Tool** A computer system for conducting a
+Risk Limiting Audit
+
 * **business interruption** - Any event that disrupts Contractor’s
 ability to complete the Work for a period of time, and may include,
 but is not limited to a Disaster, power outage, strike, loss of
@@ -60,12 +63,15 @@ Sample CVRs in Dominion's format are in
 `test/dominion-2017-CVR_Export_20170310104116.csv`.
 See also [VVSG-Interoperability CVR Subgroup](http://collaborate.nist.gov/voting/bin/view/Voting/BallotDefinition).
 
-* **contest** - A partisan or nonpartisan candidate race, or a
-ballot measure, that appears on the ballot for an election in a
-county.  Ex: Jane Doe for Colorado Secretary of State. Each option
+* **contest** - Any decision to be made by voters in an election,
+such as a partisan or nonpartisan candidate race, or a
+ballot measure.  Ex: Jane Doe for Colorado Secretary of State. Each option
 for the voter is called a *choice*.
 
-* **choice** TBD candidate or YES/NO option
+* **choice** Any possible outcome of a Contest. In a Contest to
+determine who will fill a certain office, each choice is a person, 
+called a candidate for the office. In a ballot question contest, 
+the choices are "Yes" and "No".
 
 * **coordinated election** - Coordinated Elections occur on the first
 Tuesday of November in odd-numbered years.  If the Secretary of State
@@ -111,18 +117,19 @@ outcome that a full hand count would show.) One paper describing
 risk-limiting audits is located at
 https://www.stat.berkeley.edu/~stark/Preprints/gentle12.pdf.
 
-* **state administrator** - The designated representative(s) of the
-Colorado Department of State, who possesses RLA administrative user
+* **state administrator** - The designated person who possesses RLA administrative user
 privileges to perform administrative tasks.
 
-* **tabulation** - Interpretation of expressions of voter intent and aggregation
-of those into election results.
+* **tabulation** - Aggregation of tallies of interpretations of voter choices
+into election results. @review NIST Election Modeling group 
+separates interpretation, tally and tabulation. 
 
 * **tabulated ballots** - Paper ballots that have been scanned on a
 ballot scanning device, and the voter’s markings on which have been
 interpreted by the voting system as valid votes,
 undervotes, or overvotes.  Tabulated ballots may be duplicates of
-original ballots.
+original ballots. @review this means ballots counted by hand weren't 
+"tabulated". Is that what we want to say?
 
 * **two-factor authentication** - Defined as two out of the three
 following requirements:
@@ -160,9 +167,11 @@ certification if the margin is too tight, or if a candidate requests
 it. A recount doesn't have to involve manual interpretation of each
 ballot.  Cf. *full hand count*.
 
-* **overstatement of the margin** TBD
+* **overstatement of the margin** An error whose correction reduces the margin
+https://www.stat.berkeley.edu/~stark/Preprints/evidenceVote12.pdf
 
-* **understatement of the margin** TBD
+* **understatement of the margin** An error whose correction increases the margin
+https://www.stat.berkeley.edu/~stark/Preprints/evidenceVote12.pdf
 
 * **evidence-based elections** - An approach to achieving election integrity
 in which each election provides affirmative evidence that the reported
@@ -184,15 +193,26 @@ checks, signature verification audits, voter registration record auditing,
 etc.  Related terms include election canvass, ballot reconciliation.
 See https://www.stat.berkeley.edu/~stark/Preprints/evidenceVote12.pdf
 
-* **audit board** - A group of electors in each county nominated by the
+* **audit board** - Given a County, a group of electors in the county nominated by the
 major party chairpersons, which carries out an audit, with the assistance
 of the designated election official, members of his or her staff, and other
 duly appointed election judges.
 
-* **audit** TBD May include ballot tabulation audits, compliance audits, ...
+* **audit** A process by which the performance or outcome of a system is
+verified. @review TBD May include ballot tabulation audits, compliance audits, ...
 
-* **ballot tabulation audits** TBD. including risk-limiting audits,
-opportunistic audits, bayesian audits, fixed-percentage audits, etc.
+* **RLA** Risk Limiting Audit
+
+* **Risk Limiting Audit** An Audit designed to reduce the statistical
+probablility that a wrong election winner was determined by an 
+interpretation and tabulation system.
+
+* **ballot tabulation audits** An Audit of a vote-tabulation system. 
+@review TBD. including risk-limiting audits,
+opportunistic audits, bayesian audits, fixed-percentage audits, etc.n
+@review if we honor the NIST Election Modeling Group distinction
+between interpretation and tabulation, this definition describes
+a "ballot interpretation and tabulation audit"
 
 * **opportunistic audit** - An auditing technique designed to efficiently
 generate evidence for additional contests in a ballot-level audit. A
@@ -208,19 +228,38 @@ on subsequent ballots during the audit, it need not be tabulated.
 TBD: discuss need to consider possibility of sampling bias when
 evaluating and reporting, considerations for possible escalation, etc.
 
-* **mandatory contest** - A contest which is subject to a risk limit and is
+* **mandatory contest** - A Contest in a Risk Limiting Audit which is subject to a Risk Limit 
+and hence is
 factored in to the sampling calculations.
 
 * **opportunistic contest** - A contest to be audited opportunistically.
 
-* **active contest** TBD involving not having achieved risk limit
+* **Risk Limit Goal** In a Risk-Limiting Audit, each Contest has a Risk-Limit Goal,
+namely, the acceptable risk that an incorrect outcome will escape notice.
 
-* **settled contest** TBD involving having achieved risk limit.  Note need
+* **Dynamic Risk** In a Risk-Limiting Audit in progress, 
+for any specific Contest Under Audit, at any given
+time the Dynamic Risk is the probability, based on Ballots audited 
+so far, that an incorrect outcome of the Contest has escaped notice
+
+* **Under Audit** A Contest that has been chosen for audit
+
+* **active contest** At any given time, a Contest Under Audit whose Dynamic Risk exceeds the Risk Limit Goal 
+@review this is just a guess
+@review what's the origin of this term? Couldn't find it in Stark or Lindeman/Stark
+
+* **settled contest** At any given time, a Contest Under Audit 
+whose Dynamic Risk is less than or equal to the Risk Limit Goal
+@review TBD involving having achieved Risk Limit Goal.  Note need
 to ensure that calculations take into account the way the samples were
 selected, in case any samples were taken in a stratified manner or taken
 non-uniformly in order to target non-county-wide contests
 
-* **uncontested contest** TBD
+* **uncontested contest** A Contest for which the number of choices is 
+less than or equal to the number of winners
+@review Consider a contest with three winners where
+each voter can vote for two. Are we OK calling that an
+"uncontested contest"?
 
 * **bayesian audits** TBD
 
@@ -228,13 +267,17 @@ non-uniformly in order to target non-county-wide contests
 
 * **electoral system** TBD
 
-* **ballot** a list of contests and, for each contest in the list, a list of choices, in a form allows a person or computer to record choices, read recorded choices, or both  @review kiniry previous note: TBD including ballot id, imprinted ballot
+* **ballot** a list of contests and, for each contest in the list, a list of choices, 
+in a form that allows a person to record choices and allows a person or a computer (or both)
+to read recorded choices  
+@review kiniry previous note: TBD including ballot id
 
-* **margin** Given a contest and two choices in that contest, the numerical difference between the choice that got more votes and the choice that got fewer votes
+* **margin** Given a contest and two choices in that contest, 
+the numerical difference between the choice that got more votes and the choice that got fewer votes
 
 * **hash function** TBD, mentioning specifically SHA-256
 
-* **RLA software** The software component of a computer system for conducting Risk-Limiting Audits
+* **RLA software** The software component of an RLA Tool
 
 * **ballot storage bin** A physical container for a set of paper ballots
 
@@ -242,13 +285,17 @@ non-uniformly in order to target non-county-wide contests
 
 * **batch size** the number of Ballots in the Batch
 
-* **chain-of-custody** TBD
+* **chain of custody** Given an item (e.g., Marked Ballots, Unmarked Ballots) in need of security over a certain time period, 
+the chain of custody is the sequence
+of people, organizations or locations where the item is secured over the 
+given time period.
 
-* **county** TBD
+* **county** A political subdivision of a State, responsible for conducting elections
 
-* **scanner** has an ID number
+* **scanner** A machine that can take Paper Ballots as input and whose output is 
+a CVR for each Paper Ballot @review TBD each scanner has an ID number
 
-* **imprinted ballot** - A ballot on which a unique ballot identifier has
+* **imprinted ballot** - A Paper Ballot on which a unique ballot identifier has
 been imprinted in order to facilitate a ballot-level audit. The unique
 ballot identifier might for instance include a unique batch identifier and
 the sequence of the ballot within the batch, or it might be a new
@@ -256,7 +303,7 @@ identifier which is also included in the CVR.
 Imprinting should be done after the ballot is cast and with care taken to
 avoid causing anonymity problems.
 
-* **ballot order** TBD
+* **ballot order** A specific ordering of a set of Ballots
 
 * **Secretary of State (SOS)** In most states in the United States, an office of government defined in the state constitution
 
@@ -277,7 +324,7 @@ to the Board of Elections, usually via the US Postal Service
 
 * **election canvass** TBD
 
-* **canvas board** TBD
+* **canvass board** TBD
 
 * **post-election (historical, random) audit** TBD
 
