@@ -58,16 +58,20 @@ const ContestInfo = ({ contests }: any): any => (
     </div>
 );
 
-const CountyInfo = (info: any) => (
+const CountyInfo = ({ info }: any) => (
     <div className='county-info pt-card'>
-        <div>County Info</div>
+        <h3>County Info</h3>
         <div>
-            <span>Field1</span>
-            <span>{ info.field1 }</span>
+            <label>
+                Election Date:
+                <span>{ info.electionDate }</span>
+            </label>
         </div>
         <div>
-            <span>Field2</span>
-            <span>{ info.field2 }</span>
+            <label>
+                Audit Date:
+                <span>{ info.auditDate }</span>
+            </label>
         </div>
     </div>
 );
