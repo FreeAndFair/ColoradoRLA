@@ -2,8 +2,8 @@ import * as React from 'react';
 
 import * as _ from 'lodash';
 
-import BallotManifestUploaderContainer from '../../container/county/home/BallotManifestUploaderContainer';
-import CVRUploaderContainer from '../../container/county/home/CVRUploaderContainer';
+import BallotManifestUploaderContainer from './home/BallotManifestUploaderContainer';
+import CVRUploaderContainer from './home/CVRUploaderContainer';
 import CountyNav from './Nav';
 
 

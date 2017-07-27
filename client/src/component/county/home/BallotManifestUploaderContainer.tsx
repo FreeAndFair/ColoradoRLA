@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import BallotManifestUploader from '../../../component/county/home/BallotManifestUploader';
+import BallotManifestUploader from './BallotManifestUploader';
 
 
 class BallotManifestUploaderContainer extends React.Component<any, any> {

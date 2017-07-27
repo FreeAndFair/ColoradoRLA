@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import CVRUploader from '../../../component/county/home/CVRUploader';
+import CVRUploader from './CVRUploader';
 
 
 class CVRUploaderContainer extends React.Component<any, any> {

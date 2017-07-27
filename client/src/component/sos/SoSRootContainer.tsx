@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import SoSRootPage from '../../component/sos';
+import SoSRootPage from './SoSRootPage';
 
 
 class SoSRootContainer extends React.Component<any, any> {

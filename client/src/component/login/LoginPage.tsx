@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import LoginFormContainer from '../../container/login/LoginForm';
+import LoginFormContainer from './LoginFormContainer';
 
 
 export default class LoginPage extends React.Component<any, any> {
