@@ -53,12 +53,28 @@ const ContestInfo = ({ contest }: any) => {
 
 const ContestChoices = ({ choices }: any) => {
     const nop = () => ({});
+    const choiceForms = _.map(choices, (c: any) => (
+        <Checkbox
+            key={ c.id }
+            checked={ false }
+            onChange={ nop }
+            label={ c.name } />
+    ));
 
     return (
         <div className='pt-card'>
-            <Checkbox checked={ false } onChange={ nop } label='Choice A' />
-            <Checkbox checked={ false } onChange={ nop } label='Choice B' />
-            <Checkbox checked={ false } onChange={ nop } label='Choice C' />
+            { choiceForms }
+        </div>
+    );
+};
+
+const ContestComments = ({ onChange }: any) => {
+    return (
+        <div className='pt-card'>
+            <label>
+                Comments:
+                <EditableText multiline onChange={ onChange } />
+            </label>
         </div>
     );
 };
@@ -70,16 +86,11 @@ const BallotContestMarkForm = ({ contest }: any) => {
     return (
         <div className='pt-card'>
             <ContestInfo contest={ contest } />
-            <ContestChoices contest={ contest } />
+            <ContestChoices choices={ choices } />
             <div className='pt-card'>
                 <Checkbox checked={ false } onChange={ nop } label='No consensus' />
             </div>
-            <div className='pt-card'>
-                <label>
-                    Comments:
-                    <EditableText multiline />
-                </label>
-            </div>
+            <ContestComments onChange={ nop } />
         </div>
     );
 };
