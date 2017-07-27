@@ -328,7 +328,8 @@ to the Board of Elections, usually via the US Postal Service
 
 * **post-election (historical, random) audit** TBD
 
-* **county clerk** TBD
+* **county clerk** An office of County government, established by the Colorado Constitution (Article XIV, Section 8)
+and responsible for conducting elections in the County
 
 * **sample size** TBD including **initial sample size**
 
@@ -362,7 +363,7 @@ report and manifest are generated, but before the canvass is finished.
 
 * **duplicated ballot** A Ballot marked by an Election Official by copying voter choices from another Ballot
 
-* **original ballot** TBD
+* **original ballot** A Ballot from which a Duplicated Ballot has been created
 
 * **DRE** A voting system whose primary record of voter intent is an electronic record created by a voter's 
 physical interaction with a voting machine
@@ -371,7 +372,7 @@ physical interaction with a voting machine
 
 * **overvote** Given a Marked Ballot and a Contest, a selection of more choices than the Votes Allowed for that Contest
 
-* **stray mark** TBD
+* **stray mark** A Ballot Mark that does not carry any information about voter intent
 
 * **damage** TBD
 
@@ -403,13 +404,13 @@ reported tabulation outcome.
 
 * **Dominion Democracy Suite** An election management system for setting up an election as well as acquiring, tallying and reporting election results
 
-* **dashboard** TBD
+* **dashboard** A computer user interface
 
 * **developer dashboard** TBD
 
-* **state-wide dashboard** A computer user interface enabling the Secretary of State to carry out actions required by the Risk Limiting Audit process
+* **state-wide dashboard** A Dashboard enabling the Secretary of State to carry out actions required by the Risk Limiting Audit process
 
-* **county dashboard** TBD
+* **county dashboard** A Dashboard enabling County election officials to carry out actions required by the Risk Limiting Audit process
 
 * **audit progress** TBD
 
@@ -417,7 +418,7 @@ reported tabulation outcome.
 
 * **random** TBD
 
-* **contest margin** TBD
+* **contest margin** The Margin between the winning choice with the least votes of all winning choices and the losing choice with the most votes among all losing choices
 
 * **access control** TBD
 
@@ -483,7 +484,7 @@ reported tabulation outcome.
 
 * **ballot style** A short name for the set of contests appearing on a Ballot @review kiniry we also need a map from ballot styles to the power set of contests.
 
-* **political party** TBD
+* **political party** Any group of registered electors who, by petition or assembly, nominate candidates for the official general election ballot (Colorado Constitution, Article XXVIII Section 2)
 
 * **username** TBD
 
