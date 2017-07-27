@@ -36,11 +36,6 @@
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>org.jmlspecs.OpenJMLUI.JMLBuilder</name>
-			<arguments>
-			</arguments>
-		</buildCommand>
-		<buildCommand>
 			<name>ie.ucd.autograder.builder</name>
 			<arguments>
 			</arguments>
@@ -60,6 +55,5 @@
 		<nature>ie.ucd.bon.plugin.boncnature</nature>
 		<nature>edu.umd.cs.findbugs.plugin.eclipse.findbugsNature</nature>
 		<nature>ch.acanda.eclipse.pmd.builder.PMDNature</nature>
-		<nature>org.jmlspecs.OpenJMLUI.JMLNatureID</nature>
 	</natures>
 </projectDescription>
