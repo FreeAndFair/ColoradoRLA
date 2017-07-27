@@ -16,7 +16,7 @@ const AuditInstructions = ({ ballotsToAudit, currentBallot }: any) => (
             The current ballot is:
             <ul>
                 <li>{ currentBallot.id }</li>
-                <li>{ currentBallot.style }</li>
+                <li>{ currentBallot.style.name }</li>
             </ul>
             <div>
                 Please ensure that the paper ballot you are examining is the
@@ -69,6 +69,8 @@ const BallotContestMarkForm = (props: any) => {
 };
 
 const BallotAuditForm = (props: any) => {
+    const { county, currentBallot } = props;
+
     return (
         <div>
             <BallotContestMarkForm />
@@ -79,7 +81,7 @@ const BallotAuditForm = (props: any) => {
 };
 
 const BallotAuditStage = (props: any) => {
-    const { county, nextStage } = props;
+    const { ballotStyles, county, nextStage } = props;
 
     const ballotsToAudit = county.ballots.length;
     const currentBallot = _.find(county.ballots, (b: any) =>
@@ -91,7 +93,9 @@ const BallotAuditStage = (props: any) => {
             <AuditInstructions
                 ballotsToAudit={ ballotsToAudit }
                 currentBallot={ currentBallot } />
-            <BallotAuditForm />
+            <BallotAuditForm
+                county={ county }
+                currentBallot={ currentBallot } />
             <button className='pt-button pt-intent-primary' onClick={ nextStage }>
                 Review
             </button>

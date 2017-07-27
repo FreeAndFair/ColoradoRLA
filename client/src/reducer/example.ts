@@ -36,21 +36,32 @@ const someOfManyContest = {
     votesAllowed: 3,
 };
 
+const ballotStyles = {
+    styleA: {
+        name: 'Style A',
+        contests: [oneOfManyContest, yesNoContest],
+    },
+    styleB: {
+        name: 'Style B',
+        contests: [oneOfManyContest, yesNoContest, someOfManyContest],
+    },
+    styleC: {
+        name: 'Style C',
+        contests: [oneOfManyContest, someOfManyContest],
+    },
+};
 
 // `marks` : { [ContestId]: ChoiceId[] }
 const b = (id: any, audited: any, style: any, marks: any = {}) =>
     ({ id, audited, style, marks });
 
-
 const ballots = [
-    b(11, false, 'styleA'),
-    b(22, false, 'styleB'),
-    b(33, true, 'styleC', { 1: [2], 3: [8, 9, 11] }),
-    b(44, false, 'sylteC'),
-    b(55, true, 'styleA', { 1: [3], 2: [5] }),
+    b(11, false, ballotStyles.styleA),
+    b(22, false, ballotStyles.styleB),
+    b(33, true, ballotStyles.styleC, { 1: [2], 3: [8, 9, 11] }),
+    b(44, false, ballotStyles.styleC),
+    b(55, true, ballotStyles.styleA, { 1: [3], 2: [5] }),
 ];
-
-
 
 export const exampleCountyState = {
     name: 'Acme County',
@@ -74,20 +85,7 @@ export const exampleCountyState = {
     currentBallotId: 22,
 };
 
-const ballotStyles = {
-    styleA: {
-        name: 'Style A',
-        contests: [oneOfManyContest, yesNoContest],
-    },
-    styleB: {
-        name: 'Style B',
-        contests: [oneOfManyContest, yesNoContest, someOfManyContest],
-    },
-    styleC: {
-        name: 'Style C',
-        contests: [oneOfManyContest, someOfManyContest],
-    },
-};
+
 
 const contests = {
     1: oneOfManyContest,
