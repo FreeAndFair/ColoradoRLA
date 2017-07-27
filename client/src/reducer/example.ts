@@ -76,7 +76,11 @@ export const exampleCountyState = {
     },
 
     // Contests under audit for this county.
-    contests: [1, 2, 3],
+    contests: [
+        oneOfManyContest,
+        yesNoContest,
+        someOfManyContest,
+    ],
 
     // Ballots selected for audit.
     // When audited, will include observed marks.
