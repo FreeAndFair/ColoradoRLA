@@ -39,45 +39,43 @@ const AuditInstructions = ({ ballotsToAudit, currentBallot }: any) => (
     </div>
 );
 
-const BallotContestMarkForm = (props: any) => {
+const BallotContestMarkForm = ({ contest }: any) => {
     return (
-    <div className='pt-card'>
         <div className='pt-card'>
-            <div>Ballot contest [N]</div>
-            <div>Acme County School District RE-1</div>
-            <div>Director</div>
-            <div>
-                <div>Vote for [N]</div>
+            <div className='pt-card'>
+                <div>Ballot contest [N]</div>
+                <div>Acme County School District RE-1</div>
+                <div>Director</div>
+                <div>
+                    <div>Vote for [N]</div>
+                </div>
+            </div>
+            <div className='pt-card'>
+                <Checkbox checked={ false } onChange={ () => ({}) } label='Choice A' />
+                <Checkbox checked={ false } onChange={ () => ({}) } label='Choice B' />
+                <Checkbox checked={ false } onChange={ () => ({}) } label='Choice C' />
+            </div>
+            <div className='pt-card'>
+                <Checkbox checked={ false } onChange={ () => ({}) } label='No consensus' />
+            </div>
+            <div className='pt-card'>
+                <label>
+                    Comments:
+                    <EditableText multiline/>
+                </label>
             </div>
         </div>
-        <div className='pt-card'>
-            <Checkbox checked={ false } onChange={ () => ({}) } label='Choice A' />
-            <Checkbox checked={ false } onChange={ () => ({}) } label='Choice B' />
-            <Checkbox checked={ false } onChange={ () => ({}) } label='Choice C' />
-        </div>
-        <div className='pt-card'>
-            <Checkbox checked={ false } onChange={ () => ({}) } label='No consensus' />
-        </div>
-        <div className='pt-card'>
-            <label>
-                Comments:
-                <EditableText multiline/>
-            </label>
-        </div>
-    </div>
     );
 };
 
 const BallotAuditForm = (props: any) => {
     const { county, currentBallot } = props;
 
-    return (
-        <div>
-            <BallotContestMarkForm />
-            <BallotContestMarkForm />
-            <BallotContestMarkForm />
-        </div>
-    );
+    const contestForms = _.map(currentBallot.style.contests, (c: any) => {
+        return <BallotContestMarkForm key={ c.id } contest={ c } />;
+    });
+
+    return <div>{ contestForms }</div>;
 };
 
 const BallotAuditStage = (props: any) => {
