@@ -11,17 +11,34 @@
 
 package us.freeandfair.corla.model;
 
+import java.time.Instant;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
  * Information about the locations of specific batches of ballots.
  * 
- * @author Joey Dodds
+ * @author Daniel M. Zimmerman <dmz@freeandfair.us>6
  * @version 0.0.1
  */
+@Entity
+@Table(name = "ballot_manifest_info")
 public class BallotManifestInfo {
+  /**
+   * The database ID for this ballot manifest info.
+   */
+  @Id
+  @GeneratedValue(strategy = GenerationType.TABLE)
+  private long my_db_id;
+  
   /**
    * The timestamp for this ballot manifest info, in milliseconds since the epoch.
    */
-  private final long my_timestamp;
+  private final Instant my_timestamp;
   
   /**
    * The ID number of the county in which the batch was scanned.
@@ -49,16 +66,32 @@ public class BallotManifestInfo {
    */
   private final String my_storage_location;
  
-  /**
-   * <description>
-   * <explanation>
-   * @param
+  /** 
+   * Constructs an empty ballot manifest information record, solely for persistence.
    */
-  public BallotManifestInfo(final long the_timestamp,
+  protected BallotManifestInfo() {
+    my_timestamp = Instant.now();
+    my_county_id = "";
+    my_scanner_id = "";
+    my_batch_id = "";
+    my_batch_size = 0;
+    my_storage_location = "";
+  }
+  
+  /**
+   * Constructs a ballot manifest information record.
+   * 
+   * @param the_timestamp The timestamp.
+   * @param the_county_id The county ID.
+   * @param the_scanner_id The scanner ID.
+   * @param the_batch_id The batch ID.
+   * @param the_batch_size The batch size.
+   * @param the_storage_location The storage location.
+   */
+  public BallotManifestInfo(final Instant the_timestamp,
                             final String the_county_id, final String the_scanner_id, 
                             final String the_batch_id, final int the_batch_size, 
                             final String the_storage_location) {
-    super();
     my_timestamp = the_timestamp;
     my_county_id = the_county_id;
     my_scanner_id = the_scanner_id;
@@ -68,9 +101,16 @@ public class BallotManifestInfo {
   }
   
   /**
+   * @return the database ID.
+   */
+  public long dbID() {
+    return my_db_id;
+  }
+  
+  /**
    * @return the timestamp.
    */
-  public long timestamp() {
+  public Instant timestamp() {
     return my_timestamp;
   }
   
@@ -129,9 +169,9 @@ public class BallotManifestInfo {
   @Override
   public boolean equals(final Object the_other) {
     boolean result = false;
-    if (the_other != null && getClass().equals(the_other.getClass())) {
+    if (the_other instanceof BallotManifestInfo) {
       final BallotManifestInfo other_bmi = (BallotManifestInfo) the_other;
-      result &= other_bmi.timestamp() == timestamp();
+      result &= other_bmi.timestamp().equals(timestamp());
       result &= other_bmi.countyID().equals(countyID());
       result &= other_bmi.scannerID().equals(scannerID());
       result &= other_bmi.batchID().equals(batchID());

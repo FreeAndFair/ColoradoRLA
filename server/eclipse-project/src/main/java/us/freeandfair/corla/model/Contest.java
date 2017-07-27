@@ -16,8 +16,19 @@
 
 package us.freeandfair.corla.model;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 /**
  * The definition of a contest; comprises a contest name and a set of possible
@@ -26,7 +37,21 @@ import java.util.List;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-public class Contest {
+@Entity
+@Table(name = "contest")
+public class Contest implements Serializable {
+  /**
+   * The serialVersionUID.
+   */
+  private static final long serialVersionUID = 1L;
+
+  /**
+   * The database ID of this contest.
+   */
+  @Id
+  @GeneratedValue(strategy = GenerationType.TABLE)
+  private long my_db_id;
+  
   /**
    * The contest name.
    */
@@ -40,12 +65,24 @@ public class Contest {
   /**
    * The set of contest choices.
    */
+  @OneToMany
+  @Cascade({CascadeType.MERGE})
   private final List<Choice> my_choices;
   
   /**
    * The maximum number of votes that can be made in this contest.
    */
   private final int my_votes_allowed;
+  
+  /**
+   * Constructs an empty contest, solely for persistence.
+   */
+  protected Contest() {
+    my_name = "";
+    my_description = "";
+    my_choices = null;
+    my_votes_allowed = 0;
+  }
   
   /**
    * Constructs a contest with the specified parameters.
@@ -63,6 +100,13 @@ public class Contest {
     my_description = the_description;
     my_choices = the_choices;
     my_votes_allowed = the_votes_allowed;
+  }
+  
+  /**
+   * @return the database ID.
+   */
+  public long dbID() {
+    return my_db_id;
   }
   
   /**
@@ -112,7 +156,7 @@ public class Contest {
   @Override
   public boolean equals(final Object the_other) {
     boolean result = false;
-    if (the_other != null && getClass().equals(the_other.getClass())) {
+    if (the_other instanceof Contest) {
       final Contest other_contest = (Contest) the_other;
       result &= other_contest.name().equals(name());
       result &= other_contest.description().equals(description());

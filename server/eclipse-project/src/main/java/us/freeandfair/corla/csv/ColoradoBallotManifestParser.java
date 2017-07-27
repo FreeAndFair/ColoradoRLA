@@ -11,18 +11,14 @@
 
 package us.freeandfair.corla.csv;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -30,10 +26,6 @@ import org.apache.commons.csv.CSVRecord;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.BallotManifestInfo;
-import us.freeandfair.corla.model.BallotStyle;
-import us.freeandfair.corla.model.CastVoteRecord;
-import us.freeandfair.corla.model.Choice;
-import us.freeandfair.corla.model.Contest;
 
 /**
  * @description <description>
@@ -111,21 +103,6 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
   }
   
   /**
-   * Strip the '="..."' from a column.
-   * 
-   * @param the_value The value to strip.
-   * @return the stripped value, as a String, or the original String if it 
-   * does not have the '="..."' form.
-   */
-  private String stripEqualQuotes(final String the_value) {
-    String result = the_value;
-    if (the_value.startsWith("=\"") && the_value.endsWith("\"")) {
-      result = the_value.substring(0, the_value.length() - 1).replaceFirst("=\"", "");
-    }
-    return result;
-  }
-  
-  /**
    * Extracts ballot manifest information from a single CSV line.
    * 
    * @param the_line The CSV line.
@@ -133,7 +110,7 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
    * @return the extracted information.
    */
   private BallotManifestInfo extractBMI(final CSVRecord the_line,
-                                        final long the_timestamp) {
+                                        final Instant the_timestamp) {
     try {
       return new BallotManifestInfo(the_timestamp, 
                                     the_line.get(COUNTY_ID_COLUMN),
@@ -163,7 +140,7 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
     
     boolean result = true; // presume the parse will succeed
     final Iterator<CSVRecord> records = my_parser.iterator();
-    final long timestamp = System.currentTimeMillis();
+    final Instant timestamp = Instant.now();
     
     try {
       // we expect the first line to be the headers, which we currently discard
@@ -199,23 +176,5 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
   @Override
   public synchronized List<BallotManifestInfo> ballotManifestInfo() {
     return Collections.unmodifiableList(my_manifest_info);
-  }
-  
-  /**
-   * 
-   * <description>
-   * <explanation>
-   * @param
-   */
-  //@ behavior
-  //@   requires P;
-  //@   ensures Q;
-  /*@ pure @
-   */
-  public static void main(final String... the_args) throws IOException {
-    final Reader r = new FileReader("/Unsorted/bmi.csv");
-    final ColoradoBallotManifestParser thing = new ColoradoBallotManifestParser(r);
-    System.err.println(thing.parse());
-    System.err.println(thing.ballotManifestInfo());
   }
 }

@@ -11,22 +11,54 @@
 
 package us.freeandfair.corla.model;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
  * A contest choice; has a name and a description.
  * 
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-public class Choice {
+@Entity
+@Table(name = "choice")
+public class Choice implements Serializable {
+  /**
+   * The serialVersionUID.
+   */
+  private static final long serialVersionUID = 1L;
+
+//  /**
+//   * The database ID of this choice.
+//   */
+//  @Id
+//  @GeneratedValue(strategy = GenerationType.TABLE)
+//  private long my_db_id;
+
   /**
    * The choice name.
    */
+  @Id
   private final String my_name;
 
   /**
    * The choice description.
    */
+  @Id
   private final String my_description;
+  
+  /**
+   * Constructs an empty choice, solely for persistence. 
+   */
+  protected Choice() {
+    my_name = "";
+    my_description = "";
+  }
   
   /**
    * Constructs a choice with the specified parameters.
@@ -35,10 +67,16 @@ public class Choice {
    * @param the_description The contest description.
    */
   public Choice(final String the_name, final String the_description) {
-    super();
     my_name = the_name;
     my_description = the_description;
   }
+  
+//  /**
+//   * @return the database ID.
+//   */
+//  public long dbID() {
+//    return my_db_id;
+//  }
   
   /**
    * @return the name.
@@ -72,7 +110,7 @@ public class Choice {
   @Override
   public boolean equals(final Object the_other) {
     boolean result = false;
-    if (the_other != null && getClass().equals(the_other.getClass())) {
+    if (the_other instanceof Choice) {
       final Choice other_choice = (Choice) the_other;
       result &= other_choice.name().equals(name());
       result &= other_choice.description().equals(description());
@@ -83,6 +121,7 @@ public class Choice {
   /**
    * @return a hash code for this object.
    */
+  @Override
   public int hashCode() {
     return toString().hashCode();
   }

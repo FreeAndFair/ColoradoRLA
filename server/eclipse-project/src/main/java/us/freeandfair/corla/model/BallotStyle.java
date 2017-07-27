@@ -11,8 +11,17 @@
 
 package us.freeandfair.corla.model;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 /**
  * A ballot style has an identifier and a list of contests on the ballot.
@@ -20,16 +29,42 @@ import java.util.List;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-public class BallotStyle {
+@Entity
+@Table(name = "ballot_style")
+public class BallotStyle implements Serializable {
+//
+//  /**
+//   * The ballot style database ID.
+//   */
+//  @Id
+//  @GeneratedValue(strategy = GenerationType.TABLE)
+//  private long my_db_id;
+  
+  /**
+   * The serialVersionUID.
+   */
+  private static final long serialVersionUID = 1L;
+
   /**
    * The ballot style ID.
    */
+  @Id
   private final String my_id;
   
   /**
    * The list of contests on a ballot of this style.
    */
+  @ManyToMany
+  @Cascade({CascadeType.SAVE_UPDATE})
   private final List<Contest> my_contests;
+  
+  /**
+   * Constructs an empty ballot style, solely for persistence.
+   */
+  protected BallotStyle() {
+    my_id = "";
+    my_contests = null;
+  }
   
   /**
    * Constructs a new ballot style.
@@ -43,6 +78,13 @@ public class BallotStyle {
     my_contests = the_contests;
   }
   
+//  /**
+//   * @return the database ID.
+//   */
+//  public long dbID() {
+//    return my_db_id;
+//  }
+
   /**
    * @return the ballot style ID.
    */
@@ -75,7 +117,7 @@ public class BallotStyle {
   @Override
   public boolean equals(final Object the_other) {
     boolean result = false;
-    if (the_other != null && getClass().equals(the_other.getClass())) {
+    if (the_other instanceof BallotStyle) {
       final BallotStyle other_style = (BallotStyle) the_other;
       result &= other_style.id().equals(id());
       result &= other_style.contests().equals(contests());

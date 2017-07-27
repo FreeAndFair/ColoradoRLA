@@ -14,6 +14,7 @@ package us.freeandfair.corla.csv;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,6 +33,7 @@ import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.BallotStyle;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.Choice;
+import us.freeandfair.corla.model.ChoiceSet;
 import us.freeandfair.corla.model.Contest;
 
 /**
@@ -171,7 +173,7 @@ public class DominionCVRExportParser implements CVRExportParser {
         count = count + 1;
       }
       // get the "(Vote For=" number from the contest name and clean up the name
-      final String cn = c.substring(0, c.indexOf("(Vote For="));
+      final String cn = c.substring(0, c.indexOf("(Vote For=")).trim();
       final String vf = c.replace(cn, "").replace("(Vote For=", "").replace(")", "");
       int ms = 1; // this is our default maximum selections
       try {
@@ -204,8 +206,8 @@ public class DominionCVRExportParser implements CVRExportParser {
       final List<Choice> choices = new ArrayList<Choice>();
       final int end = index + the_choice_counts.get(cn); 
       while (index < end) {
-        final String ch = the_choice_line.get(index);
-        final String ex = the_expl_line.get(index);
+        final String ch = the_choice_line.get(index).trim();
+        final String ex = the_expl_line.get(index).trim();
         choices.add(new Choice(ch, ex));
         index = index + 1;
       }
@@ -220,11 +222,11 @@ public class DominionCVRExportParser implements CVRExportParser {
    * Extract a CVR from a line of the file.
    * 
    * @param the_line The line representing the CVR.
-   * @param the_timestamp The import timestamp in milliseconds since the epoch.
+   * @param the_timestamp The import timestamp.
    * @return the resulting CVR.
    */
   private CastVoteRecord extractCVR(final CSVRecord the_line, 
-                                    final long the_timestamp) {
+                                    final Instant the_timestamp) {
     try {
       final String tabulator_id = 
           stripEqualQuotes(the_line.get(TABULATOR_NUMBER_COLUMN));
@@ -237,14 +239,14 @@ public class DominionCVRExportParser implements CVRExportParser {
       final String ballot_style_name = 
           stripEqualQuotes(the_line.get(BALLOT_TYPE_COLUMN));
       final List<Contest> contests = new ArrayList<Contest>();
-      final Map<Contest, Set<Choice>> votes = new HashMap<Contest, Set<Choice>>();
+      final Map<Contest, ChoiceSet> votes = new HashMap<Contest, ChoiceSet>();
       
       // for each contest, see if choices exist on the CVR; "0" or "1" are
       // votes or absences of votes; "" means that the contest is not in this style
       int index = FIRST_CHOICE_COLUMN;
       for (final Contest co : my_contests) {
         boolean present = false;
-        final Set<Choice> choices = new HashSet<Choice>();
+        final ChoiceSet choices = new ChoiceSet();
         for (final Choice ch : co.choices()) {
           final String mark = the_line.get(index);
           present |= !mark.isEmpty();
@@ -293,7 +295,7 @@ public class DominionCVRExportParser implements CVRExportParser {
     
     boolean result = true; // presume the parse will succeed
     final Iterator<CSVRecord> records = my_parser.iterator();
-    final long timestamp = System.currentTimeMillis();
+    final Instant timestamp = Instant.now();
     
     try {
       // we expect the first line to be the election name, which we currently discard
