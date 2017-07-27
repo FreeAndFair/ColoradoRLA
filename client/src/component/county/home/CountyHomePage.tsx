@@ -62,7 +62,7 @@ const ContestInfo = ({ contests }: any): any => {
 
     return (
         <div className='contest-info pt-card'>
-            <div>Contest info</div>
+            <h3>Contest info</h3>
             <div>
                 { contestTables }
             </div>
