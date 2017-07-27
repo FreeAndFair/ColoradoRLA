@@ -12,6 +12,8 @@
 package us.freeandfair.corla.model;
 
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -29,11 +31,29 @@ import javax.persistence.Table;
 @Table(name = "ballot_manifest_info")
 public class BallotManifestInfo {
   /**
+   * The current ID number to be used.
+   */
+  private static long current_id;
+
+  /**
+   * The table of objects that have been created.
+   */
+  private static final Map<BallotManifestInfo, BallotManifestInfo> CACHE = 
+      new HashMap<BallotManifestInfo, BallotManifestInfo>();
+  
+  /**
+   * The table of objects by ID.
+   */
+  private static final Map<Long, BallotManifestInfo> BY_ID =
+      new HashMap<Long, BallotManifestInfo>();
+  
+  /**
    * The database ID for this ballot manifest info.
    */
   @Id
   @GeneratedValue(strategy = GenerationType.TABLE)
-  private long my_db_id;
+  @SuppressWarnings("PMD.ImmutableField")
+  private long my_db_id = getID();
   
   /**
    * The timestamp for this ballot manifest info, in milliseconds since the epoch.
@@ -88,16 +108,58 @@ public class BallotManifestInfo {
    * @param the_batch_size The batch size.
    * @param the_storage_location The storage location.
    */
-  public BallotManifestInfo(final Instant the_timestamp,
-                            final String the_county_id, final String the_scanner_id, 
-                            final String the_batch_id, final int the_batch_size, 
-                            final String the_storage_location) {
+  protected BallotManifestInfo(final Instant the_timestamp,
+                               final String the_county_id, final String the_scanner_id, 
+                               final String the_batch_id, final int the_batch_size, 
+                               final String the_storage_location) {
     my_timestamp = the_timestamp;
     my_county_id = the_county_id;
     my_scanner_id = the_scanner_id;
     my_batch_id = the_batch_id;
     my_batch_size = the_batch_size;
     my_storage_location = the_storage_location;
+  }
+  
+  /**
+   * @return the next ID
+   */
+  private static synchronized long getID() {
+    return current_id++;
+  }
+  
+  /**
+   * Returns a ballot manifest info with the specified parameters.
+   * 
+   * @param the_name The ballot style name.
+   * @param the_contests The list of contests on a ballot of this style.
+   */
+  @SuppressWarnings("PMD.UseObjectForClearerAPI")
+  public static synchronized BallotManifestInfo instance(final Instant the_timestamp,
+                                                         final String the_county_id, 
+                                                         final String the_scanner_id, 
+                                                         final String the_batch_id, 
+                                                         final int the_batch_size, 
+                                                         final String the_storage_location) {
+    BallotManifestInfo result = new BallotManifestInfo(the_timestamp, the_county_id,
+                                                       the_scanner_id, the_batch_id,
+                                                       the_batch_size, the_storage_location);
+    if (CACHE.containsKey(result)) {
+      result = CACHE.get(result);
+    } else {
+      CACHE.put(result, result);
+      BY_ID.put(result.dbID(), result);
+    }
+    return result;
+  }
+  
+  /**
+   * Returns the ballot manifest info with the specified ID.
+   * 
+   * @param the_id The ID.
+   * @return the ballot manifest info, or null if it doesn't exist.
+   */
+  public static synchronized BallotManifestInfo byID(final long the_id) {
+    return BY_ID.get(the_id);
   }
   
   /**
@@ -168,7 +230,7 @@ public class BallotManifestInfo {
    */
   @Override
   public boolean equals(final Object the_other) {
-    boolean result = false;
+    boolean result = true;
     if (the_other instanceof BallotManifestInfo) {
       final BallotManifestInfo other_bmi = (BallotManifestInfo) the_other;
       result &= other_bmi.timestamp().equals(timestamp());
@@ -177,6 +239,8 @@ public class BallotManifestInfo {
       result &= other_bmi.batchID().equals(batchID());
       result &= other_bmi.batchSize() == batchSize();
       result &= other_bmi.storageLocation().equals(storageLocation());
+    } else {
+      result = false;
     }
     return result;
   }

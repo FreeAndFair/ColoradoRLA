@@ -18,7 +18,9 @@ package us.freeandfair.corla.model;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -46,11 +48,29 @@ public class Contest implements Serializable {
   private static final long serialVersionUID = 1L;
 
   /**
+   * The table of objects that have been created.
+   */
+  private static final Map<Contest, Contest> CACHE = 
+      new HashMap<Contest, Contest>();
+  
+  /**
+   * The table of objects by ID.
+   */
+  private static final Map<Long, Contest> BY_ID =
+      new HashMap<Long, Contest>();
+
+  /**
+   * The current ID number to be used.
+   */
+  private static long current_id;
+  
+  /**
    * The database ID of this contest.
    */
   @Id
   @GeneratedValue(strategy = GenerationType.TABLE)
-  private long my_db_id;
+  @SuppressWarnings("PMD.ImmutableField")
+  private long my_db_id = getID();
   
   /**
    * The contest name.
@@ -93,8 +113,8 @@ public class Contest implements Serializable {
    * @param the_votes_allowed The maximum number of votes that can
    * be made in this contest.
    */
-  public Contest(final String the_name, final String the_description, 
-                 final List<Choice> the_choices, final int the_votes_allowed) {
+  protected Contest(final String the_name, final String the_description, 
+                    final List<Choice> the_choices, final int the_votes_allowed) {
     super();
     my_name = the_name;
     my_description = the_description;
@@ -102,6 +122,47 @@ public class Contest implements Serializable {
     my_votes_allowed = the_votes_allowed;
   }
   
+  /**
+   * @return the next ID
+   */
+  private static synchronized long getID() {
+    return current_id++;
+  }
+  
+  /**
+   * Returns a contest with the specified parameters.
+   * 
+   * @param the_name The contest name.
+   * @param the_description The contest description.
+   * @param the_choices The set of contest choices.
+   * @param the_votes_allowed The maximum number of votes that can
+   * be made in this contest.
+   */
+  public static synchronized Contest instance(final String the_name, 
+                                              final String the_description, 
+                                              final List<Choice> the_choices, 
+                                              final int the_votes_allowed) {
+    Contest result = new Contest(the_name, the_description, the_choices,
+                                 the_votes_allowed);
+    if (CACHE.containsKey(result)) {
+      result = CACHE.get(result);
+    } else {
+      CACHE.put(result, result);
+      BY_ID.put(result.dbID(), result);
+    }
+    return result;
+  }
+  
+  /**
+   * Returns the contest with the specified ID.
+   * 
+   * @param the_id The ID.
+   * @return the contest, or null if it doesn't exist.
+   */
+  public static synchronized Contest byID(final long the_id) {
+    return BY_ID.get(the_id);
+  }
+
   /**
    * @return the database ID.
    */
@@ -155,13 +216,15 @@ public class Contest implements Serializable {
    */
   @Override
   public boolean equals(final Object the_other) {
-    boolean result = false;
+    boolean result = true;
     if (the_other instanceof Contest) {
       final Contest other_contest = (Contest) the_other;
       result &= other_contest.name().equals(name());
       result &= other_contest.description().equals(description());
       result &= other_contest.choices().equals(choices());
       result &= other_contest.votesAllowed() == votesAllowed();
+    } else {
+      result = false;
     }
     return result;
   }

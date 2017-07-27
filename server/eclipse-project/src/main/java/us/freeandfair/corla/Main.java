@@ -13,28 +13,18 @@ package us.freeandfair.corla;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.http.HttpStatus;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.boot.Metadata;
-import org.hibernate.boot.MetadataSources;
-import org.hibernate.boot.registry.StandardServiceRegistry;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cfg.Environment;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -43,14 +33,10 @@ import spark.Request;
 import spark.Response;
 import spark.Service;
 
-import us.freeandfair.corla.csv.DominionCVRExportParser;
+import us.freeandfair.corla.endpoint.Endpoint;
+import us.freeandfair.corla.endpoint.Root;
 import us.freeandfair.corla.gson.FreeAndFairNamingStrategy;
-import us.freeandfair.corla.model.BallotManifestInfo;
-import us.freeandfair.corla.model.BallotStyle;
-import us.freeandfair.corla.model.CastVoteRecord;
-import us.freeandfair.corla.model.Choice;
-import us.freeandfair.corla.model.ChoiceSet;
-import us.freeandfair.corla.model.Contest;
+import us.freeandfair.corla.hibernate.Persistence;
 
 /**
  * The main executable for the ColoradoRLA server. 
@@ -111,14 +97,9 @@ public final class Main {
   private final Properties my_properties;
   
   /**
-   * The service registry for Hibernate.
+   * Our endpoints.
    */
-  private StandardServiceRegistry my_registry;
-  
-  /**
-   * The session factory for Hibernate.
-   */
-  private SessionFactory my_session_factory;
+  private final List<Endpoint> my_endpoints = new ArrayList<Endpoint>();
   
   // Constructors
 
@@ -182,62 +163,13 @@ public final class Main {
   }
   
   /**
-   * Sets up the session factory from the properties in the properties file.
-   */
-  private void setupSessionFactory() {
-    LOGGER.info("attempting to create Hibernate session factory");
-    
-    try {
-      final StandardServiceRegistryBuilder rb = new StandardServiceRegistryBuilder();      
-      final Map<String, String> settings = new HashMap<>();
-      
-      // get settings from our properties file
-      settings.put(Environment.DRIVER, my_properties.getProperty("hibernate.driver", ""));
-      settings.put(Environment.URL, my_properties.getProperty("hibernate.url", ""));
-      settings.put(Environment.USER, my_properties.getProperty("hibernate.user", ""));
-      settings.put(Environment.PASS, my_properties.getProperty("hibernate.pass", ""));
-      settings.put(Environment.DIALECT, my_properties.getProperty("hibernate.dialect", ""));
-      settings.put(Environment.HBM2DDL_AUTO, "update");
-      settings.put(Environment.SHOW_SQL, "true");
-      settings.put(Environment.PHYSICAL_NAMING_STRATEGY, 
-                   "us.freeandfair.corla.hibernate.FreeAndFairNamingStrategy");
-      
-      // apply settings
-      rb.applySettings(settings);
-      
-      // create registry
-      my_registry = rb.build();
-      
-      // create metadata sources and metadata
-      final MetadataSources sources = new MetadataSources(my_registry);
-      sources.addAnnotatedClass(BallotManifestInfo.class);
-      sources.addAnnotatedClass(BallotStyle.class);
-      sources.addAnnotatedClass(CastVoteRecord.class);
-      sources.addAnnotatedClass(Choice.class);
-      sources.addAnnotatedClass(Contest.class);
-      sources.addAnnotatedClass(ChoiceSet.class);
-      final Metadata metadata = sources.getMetadataBuilder().build();
-      
-      // create session factory
-      my_session_factory = metadata.getSessionFactoryBuilder().build();
-      LOGGER.info("started Hibernate");
-    } catch (final Exception e) {
-      e.printStackTrace();
-      LOGGER.info("could not start Hibernate, persistence is disabled");
-      if (my_registry != null) {
-        StandardServiceRegistryBuilder.destroy(my_registry);
-      }
-    }
-  }
-  
-  /**
    * Starts a ColoradoRLA server.
    */
   public void start() {
     LOGGER.info("starting server with properties: " + my_properties);
 
-    // start Hibernate and the database connection
-    setupSessionFactory();
+    // provide properties to the persistence engine
+    Persistence.setProperties(my_properties);
 
     // get the port numbers from properties
     final int http_port = parsePortNumber("http_port", DEFAULT_HTTP_PORT);
@@ -281,46 +213,15 @@ public final class Main {
     spark.staticFileLocation("/us/freeandfair/corla/static");
 
     // available endpoints
-    spark.get("/", (the_request, the_response) -> {
-      return "<title>ColoradoRLA Server</title><h1>ColoradoRLA Server</h1>";
-    });
     
-    spark.get("/dbtest", (the_request, the_response) -> dbTest(the_request, the_response));
+    my_endpoints.add(new Root());
+
+    for (final Endpoint e : my_endpoints) {
+      spark.get(e.endpointName(), (the_request, the_response) -> 
+                e.endpoint(the_request, the_response));
+    }
   }
-  
-  private String dbTest(final Request the_request, final Response the_response) {
-    try {
-    final Reader r = new FileReader("/Volumes/Zocalo/Unsorted/cvrs.csv");
-    final DominionCVRExportParser thing = new DominionCVRExportParser(r, "Foo");
     
-    Session session = my_session_factory.openSession();
-    Transaction transaction = session.getTransaction();
-    transaction.begin();
-    System.err.println(thing.parse());
-    System.err.println(thing.cvrs());
-    System.err.println(thing.contests());
-    System.err.println(thing.ballotStyles());
-    for (Contest c : thing.contests()) {
-      for (Choice ch : c.choices()) {
-        session.save(ch);
-        System.err.println("saved " + ch);
-      }
-      session.save(c);
-      System.err.println("saved " + c);
-    }
-//    for (BallotStyle bs :thing.ballotStyles()) {
-//      session.save(bs);
-////      System.err.println("saved " + bs);
-//    }
-    for (CastVoteRecord cvr : thing.cvrs()) {
-      session.save(cvr);
-//      System.err.println("saved " + cvr);
-    }
-    transaction.commit();
-    return "OK";
-    } catch (Exception e) { e.printStackTrace(); return "Not OK"; }
-  }
-  
   // Static Methods
   
   /**

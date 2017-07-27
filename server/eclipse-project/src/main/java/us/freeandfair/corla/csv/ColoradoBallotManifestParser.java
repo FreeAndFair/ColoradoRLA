@@ -112,12 +112,12 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
   private BallotManifestInfo extractBMI(final CSVRecord the_line,
                                         final Instant the_timestamp) {
     try {
-      return new BallotManifestInfo(the_timestamp, 
-                                    the_line.get(COUNTY_ID_COLUMN),
-                                    the_line.get(SCANNER_ID_COLUMN),
-                                    the_line.get(BATCH_NUMBER_COLUMN),
-                                    Integer.valueOf(the_line.get(NUM_BALLOTS_COLUMN)),
-                                    the_line.get(BATCH_LOCATION_COLUMN));
+      return BallotManifestInfo.instance(the_timestamp, 
+                                         the_line.get(COUNTY_ID_COLUMN),
+                                         the_line.get(SCANNER_ID_COLUMN),
+                                         the_line.get(BATCH_NUMBER_COLUMN),
+                                         Integer.valueOf(the_line.get(NUM_BALLOTS_COLUMN)),
+                                         the_line.get(BATCH_LOCATION_COLUMN));
     } catch (final NumberFormatException e) {
       return null;
     } catch (final ArrayIndexOutOfBoundsException e) {

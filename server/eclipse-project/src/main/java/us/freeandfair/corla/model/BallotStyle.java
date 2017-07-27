@@ -13,7 +13,9 @@ package us.freeandfair.corla.model;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -40,11 +42,29 @@ public class BallotStyle implements Serializable {
   private static final long serialVersionUID = 1L;
 
   /**
+   * The table of objects that have been created.
+   */
+  private static final Map<BallotStyle, BallotStyle> CACHE = 
+      new HashMap<BallotStyle, BallotStyle>();
+  
+  /**
+   * The table of objects by ID.
+   */
+  private static final Map<Long, BallotStyle> BY_ID =
+      new HashMap<Long, BallotStyle>();
+  
+  /**
+   * The current ID number to be used.
+   */
+  private static long current_id;
+  
+  /**
    * The ballot style database ID.
    */
   @Id
   @GeneratedValue(strategy = GenerationType.TABLE)
-  private long my_db_id;
+  @SuppressWarnings("PMD.ImmutableField")
+  private long my_db_id = getID();
 
   /**
    * The ballot style ID.
@@ -69,15 +89,50 @@ public class BallotStyle implements Serializable {
   /**
    * Constructs a new ballot style.
    * 
-   * @param the_id The ballot style ID.
+   * @param the_name The ballot style ID.
    * @param the_contests The list of contests on a ballot of this style.
    */
-  public BallotStyle(final String the_id, final List<Contest> the_contests) {
-    my_id = the_id;
+  protected BallotStyle(final String the_name, final List<Contest> the_contests) {
+    my_id = the_name;
     // TODO: clone to make immutable
     my_contests = the_contests;
   }
   
+  /**
+   * @return the next ID
+   */
+  private static synchronized long getID() {
+    return current_id++;
+  }
+  
+  /**
+   * Returns a ballot style with the specified parameters.
+   * 
+   * @param the_name The ballot style name.
+   * @param the_contests The list of contests on a ballot of this style.
+   */
+  public static synchronized BallotStyle instance(final String the_name, 
+                                                  final List<Contest> the_contests) {
+    BallotStyle result = new BallotStyle(the_name, the_contests);
+    if (CACHE.containsKey(result)) {
+      result = CACHE.get(result);
+    } else {
+      CACHE.put(result, result);
+      BY_ID.put(result.dbID(), result);
+    }
+    return result;
+  }
+  
+  /**
+   * Returns the ballot style with the specified ID.
+   * 
+   * @param the_id The ID.
+   * @return the ballot style, or null if it doesn't exist.
+   */
+  public static synchronized BallotStyle byID(final long the_id) {
+    return BY_ID.get(the_id);
+  }
+
   /**
    * @return the database ID.
    */
@@ -116,11 +171,13 @@ public class BallotStyle implements Serializable {
    */
   @Override
   public boolean equals(final Object the_other) {
-    boolean result = false;
+    boolean result = true;
     if (the_other instanceof BallotStyle) {
       final BallotStyle other_style = (BallotStyle) the_other;
       result &= other_style.id().equals(id());
       result &= other_style.contests().equals(contests());
+    } else {
+      result = false;
     }
     return result;
   }

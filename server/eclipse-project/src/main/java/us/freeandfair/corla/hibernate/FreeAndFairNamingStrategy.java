@@ -80,10 +80,7 @@ public class FreeAndFairNamingStrategy extends PhysicalNamingStrategyStandardImp
   @Override
   public Identifier toPhysicalColumnName(final Identifier the_identifier, 
                                          final JdbcEnvironment the_context) {
-    final Identifier result =
-        new Identifier(addUnderscores(the_identifier.getText()).replaceAll("my_", ""),
-                       the_identifier.isQuoted());
-    System.err.println(result);
-    return result;
+    return new Identifier(addUnderscores(the_identifier.getText()).replaceAll("my_", ""),
+                          the_identifier.isQuoted());
   }
 }

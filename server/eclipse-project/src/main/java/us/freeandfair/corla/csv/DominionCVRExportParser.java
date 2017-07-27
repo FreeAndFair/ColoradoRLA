@@ -28,12 +28,14 @@ import java.util.Set;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.hibernate.Persistence;
 import us.freeandfair.corla.model.BallotStyle;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.Choice;
-import us.freeandfair.corla.model.ChoiceSet;
 import us.freeandfair.corla.model.Contest;
 
 /**
@@ -107,6 +109,11 @@ public class DominionCVRExportParser implements CVRExportParser {
    * The ID of the county whose CVRs we are parsing.
    */
   private final String my_county_id;
+  
+  /**
+   * The session we're using for persistence.
+   */
+  private Session my_session = Persistence.NO_SESSION;
   
   /**
    * Construct a new Dominion CVR export parser using the specified Reader,
@@ -208,13 +215,16 @@ public class DominionCVRExportParser implements CVRExportParser {
       while (index < end) {
         final String ch = the_choice_line.get(index).trim();
         final String ex = the_expl_line.get(index).trim();
-        choices.add(new Choice(ch, ex));
+        choices.add(Persistence.getEntity(Choice.instance(ch, ex), Choice.class,
+                                          my_session));
         index = index + 1;
       }
       // now that we have all the choices, we can create a Contest object for 
       // this contest (note the empty contest description at the moment, below, 
       // as that's not in the CVR files and may not actually be used)
-      my_contests.add(new Contest(cn, "", choices, the_votes_allowed.get(cn)));
+      my_contests.add(Persistence.getEntity(Contest.instance(cn, "", choices, 
+                                                             the_votes_allowed.get(cn)),
+                                            Contest.class, my_session));
     }
   }
   
@@ -247,13 +257,14 @@ public class DominionCVRExportParser implements CVRExportParser {
       for (final Contest co : my_contests) {
         boolean present = false;
         final StringBuilder choices = new StringBuilder();
-        for (final Choice ch : co.choices()) {
+        for (int i = 0; i < co.choices().size(); i++) {
           final String mark = the_line.get(index);
-          present |= !mark.isEmpty();
-          if (!mark.isEmpty() && Integer.valueOf(mark) != 0) {
-            choices.append("1");
+          final boolean p = !mark.isEmpty();
+          present |= p;
+          if (p && Integer.valueOf(mark) == 0) {
+            choices.append('0');
           } else {
-            choices.append("0");
+            choices.append('1');
           }
           index = index + 1;
         }
@@ -268,13 +279,18 @@ public class DominionCVRExportParser implements CVRExportParser {
       // doesn't exist for this ballot style name, create it now
       
       if (!my_ballot_styles.containsKey(ballot_style_name)) {
-        my_ballot_styles.put(ballot_style_name, 
-                             new BallotStyle(ballot_style_name, contests));
+        final BallotStyle bs = BallotStyle.instance(ballot_style_name, contests);
+        /*
+        if (my_session != Persistence.NO_SESSION) {
+          my_session.save(bs);
+        }
+        */
+        my_ballot_styles.put(ballot_style_name, bs);
       }
       
-      return new CastVoteRecord(false, the_timestamp, my_county_id, tabulator_id,
-                                batch_id, record_id, imprinted_id, 
-                                my_ballot_styles.get(ballot_style_name), contests, votes);
+      return CastVoteRecord.instance(false, the_timestamp, my_county_id, tabulator_id,
+                                     batch_id, record_id, imprinted_id, 
+                                     my_ballot_styles.get(ballot_style_name), contests, votes);
     } catch (final NumberFormatException e) {
       return null;
     } catch (final ArrayIndexOutOfBoundsException e) {
@@ -298,6 +314,11 @@ public class DominionCVRExportParser implements CVRExportParser {
     boolean result = true; // presume the parse will succeed
     final Iterator<CSVRecord> records = my_parser.iterator();
     final Instant timestamp = Instant.now();
+    Transaction transaction = null;
+    my_session = Persistence.openSession();
+    if (my_session != Persistence.NO_SESSION) {
+      transaction = my_session.beginTransaction();
+    }
     
     try {
       // we expect the first line to be the election name, which we currently discard
@@ -341,6 +362,10 @@ public class DominionCVRExportParser implements CVRExportParser {
     // TODO if we had any kind of parse error, do we scrap the whole import? 
     my_parse_success = result;
     my_parse_status = true;
+    if (transaction != null) {
+      transaction.commit();
+      my_session.close();
+    }
     return result;
   }
 
@@ -379,6 +404,7 @@ public class DominionCVRExportParser implements CVRExportParser {
   //@   ensures Q;
   /*@ pure @
    */
+  @SuppressWarnings("PMD.SystemPrintln")
   public static void main(final String... the_args) throws IOException {
     final Reader r = new FileReader("/Unsorted/cvrs.csv");
     final DominionCVRExportParser thing = new DominionCVRExportParser(r, "Foo");
@@ -386,6 +412,11 @@ public class DominionCVRExportParser implements CVRExportParser {
     System.err.println(thing.cvrs());
     System.err.println(thing.contests());
     System.err.println(thing.ballotStyles());
+    
+    for (final Contest bs : thing.contests()) {
+      System.err.println();
+      System.err.println(Main.GSON.toJson(bs));
+    }
   }
 
 }

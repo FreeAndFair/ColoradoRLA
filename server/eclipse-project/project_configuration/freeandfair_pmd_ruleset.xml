@@ -31,7 +31,9 @@ The Free &amp; Fair ruleset checks Java code for possible issues.
   <rule ref="rulesets/java/j2ee.xml"/>
   <rule ref="rulesets/java/junit.xml"/>
   <!-- rule ref="rulesets/java/logging-jakarta-commons.xml"/ -->
-  <rule ref="rulesets/java/logging-java.xml"/>
+  <rule ref="rulesets/java/logging-java.xml">
+    <exclude name="GuardLogStatementJavaUtil"/>
+  </rule>
   <!-- rule ref="rulesets/java/metrics.xml"/  -->
   <rule ref="rulesets/java/migrating.xml"/>
   <rule ref="rulesets/java/optimizations.xml">
