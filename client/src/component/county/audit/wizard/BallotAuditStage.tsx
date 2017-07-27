@@ -1,19 +1,22 @@
 import * as React from 'react';
 
+import * as _ from 'lodash';
+
 import { Checkbox, EditableText, Radio, RadioGroup } from '@blueprintjs/core';
 
 
-const AuditInstructions = () => (
+const AuditInstructions = ({ ballotsToAudit, currentBallot }: any) => (
     <div>
         <div>
-            Use this page to report the voter markings on the <span>2nd</span>
-            of <span>54</span> balots that you must audit.
+            Use this page to report the voter markings on the ballot with ID
+            #{ currentBallot.id }, out of { ballotsToAudit } ballots that you must
+            audit.
         </div>
         <div>
-            The <span>2nd</span> ballot is:
+            The current ballot is:
             <ul>
-                <li>[ballot ID]</li>
-                <li>[ballot style name]</li>
+                <li>{ currentBallot.id }</li>
+                <li>{ currentBallot.style }</li>
             </ul>
             <div>
                 Please ensure that the paper ballot you are examining is the
@@ -71,16 +74,26 @@ const BallotContests = () => (
     </div>
 );
 
-const BallotAuditStage = ({ nextStage }: any) => (
-    <div>
-        <h2>Ballot verification</h2>
-        <AuditInstructions />
-        <BallotContests />
-        <button className='pt-button pt-intent-primary' onClick={ nextStage }>
-            Review
-        </button>
-    </div>
-);
+const BallotAuditStage = (props: any) => {
+    const { county, nextStage } = props;
+
+    const ballotsToAudit = county.ballots.length;
+    const currentBallot = _.find(county.ballots, (b: any) =>
+        b.id === county.currentBallotId);
+
+    return (
+        <div>
+            <h2>Ballot verification</h2>
+            <AuditInstructions
+                ballotsToAudit={ ballotsToAudit }
+                currentBallot={ currentBallot } />
+            <BallotContests />
+            <button className='pt-button pt-intent-primary' onClick={ nextStage }>
+                Review
+            </button>
+        </div>
+    );
+};
 
 
 export default BallotAuditStage;

@@ -64,6 +64,8 @@ export const exampleCountyState = {
     // Ballots selected for audit.
     // When audited, will include observed marks.
     ballots,
+
+    currentBallotId: 22,
 };
 
 const ballotStyles = {

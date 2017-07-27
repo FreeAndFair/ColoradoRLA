@@ -19,19 +19,30 @@ class CountyAuditWizard extends React.Component<any, CountyAuditWizardState> {
     }
 
     public render() {
-        let nextStage;
+        const props = { ...this.props, nextStage: this.nextStage };
 
         switch (this.state.stage) {
             case 'sign-in':
-                nextStage = () => this.setState({ stage: 'ballot-audit' });
-                return <AuditBoardSignInStage nextStage={ nextStage } />;
+                return <AuditBoardSignInStage { ...props } />;
             case 'ballot-audit':
-                nextStage = () => this.setState({ stage: 'review' });
-                return <BallotAuditStage nextStage={ nextStage } />;
+                return <BallotAuditStage { ...props } />;
             case 'review':
-                nextStage = () => this.setState({ stage: 'ballot-audit' });
-                return <ReviewStage nextStage={ nextStage } />;
+                return <ReviewStage { ...props } />;
         }
+    }
+
+    private nextStage = () => {
+        // tslint:disable
+        const t: any = {
+            'sign-in': 'ballot-audit',
+            'ballot-audit': 'review',
+            'review': 'ballot-audit',
+        };
+        // tslint:enable
+
+        const stage = t[this.state.stage];
+
+        this.setState({ stage });
     }
 }
 
