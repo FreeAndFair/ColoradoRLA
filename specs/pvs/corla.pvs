@@ -307,16 +307,28 @@ BEGIN
   election_outcomes: TYPE = set[contest_outcome]
   wrong_outcome: TYPE FROM election_outcomes
 
+%%% Tabulation results are calculated from the CVRs by the RLA tool.
+%%% These outcomes and margins are used to drive the RLA algorithms.
+%%% These outcomes should be checked against the
+%%% reported_tabulation_outcome, and should match since they were
+%%% generated at the same time.
+% @description tabulation outcome (winners and margins) calculated
+% from the CVRs. Should match the rla_tablulation_outcome.
+% @trace RDPR-6-Jul-2017 Section 25.2.2(D)(3)
+% @explanation Immediately after completing the RLA tabulation ... the
+% county must also generate and preserve a CVR export.
+  cvr_tabulation_outcome: TYPE FROM election_outcomes
+
 % @trace RDPR-6-Jul-2017 Section 25.1.5
 % @description The presumed winning and losing candidates or voting
 % choices of a ballot contest as reflected in preliminary results.
-% @todo kiniry TBD
-  reported_tabulation_outcome: TYPE FROM election_outcomes
-
 % @trace RDPR-6-Jul-2017 Section 25.2.2(D)
 % @explanation On the ninth day after Election Day, the county must
 % finish tabulating all ballots other than provisional ballots and
 % property owner ballots.
+% These are the results as reported in state ENR, and should match the
+% CVR data exactly.
+% @todo dmz confirm nealmcb's edits on all tabulation_outcome types
   rla_tabulation_outcome: TYPE FROM election_outcomes
 
 %%% Elections are defined across cohorts of voters arranged in any
@@ -2095,12 +2107,10 @@ BEGIN
   contest_cvr_table: TYPE =
     sequence[[contest, cvr]]
 
-%%% Finally, the tabulation results are uploaded by the counties, and
-%%% is the key information necessary in order to run the RLA
-%%% algorithm.
+%%% Tabulation results as calculated from the CVRs.
 
   tabulation_result_table: TYPE =
-    sequence[[contest, rla_tabulation_outcome]]
+    sequence[[contest, cvr_tabulation_outcome]]
 
 %%% While running the RLA, the Audit Board uploads information about
 %%% each ballot they audit. Also, if any investigations are made and
