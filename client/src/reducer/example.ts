@@ -1,25 +1,30 @@
 // tslint:disable
 const oneOfManyContest = {
     name: 'One of Many Contest',
+    description: 'A contest with 3 choices, where 1 may be selected.',
     id: 1,
     choices: [
         { id: 1, name: 'Choice 1' },
         { id: 2, name: 'Choice 2' },
         { id: 3, name: 'Choice 3' },
     ],
+    votesAllowed: 1,
 };
 
 const yesNoContest = {
     name: 'Yes/No Contest',
+    description: 'A contest with 2 choices, where 1 may be selected.',
     id: 2,
     choices: [
         { id: 4, name: 'Yes' },
         { id: 5, name: 'No' },
     ],
+    votesAllowed: 1,
 };
 
 const someOfManyContest = {
     name: 'Some of Many Contest',
+    description: 'A contest with 5 choices, where 3 may be selected.',
     id: 3,
     choices: [
         { id: 7, name: 'Choice A' },
@@ -28,6 +33,7 @@ const someOfManyContest = {
         { id: 10, name: 'Choice D' },
         { id: 11, name: 'Choice E' },
     ],
+    votesAllowed: 3,
 };
 
 
@@ -69,9 +75,18 @@ export const exampleCountyState = {
 };
 
 const ballotStyles = {
-    styleA: { name: 'Style A', contests: [1, 2] },
-    styleB: { name: 'Style B', contests: [1, 2, 3] },
-    styleC: { name: 'Style C', contests: [1, 3] },
+    styleA: {
+        name: 'Style A',
+        contests: [oneOfManyContest, yesNoContest],
+    },
+    styleB: {
+        name: 'Style B',
+        contests: [oneOfManyContest, yesNoContest, someOfManyContest],
+    },
+    styleC: {
+        name: 'Style C',
+        contests: [oneOfManyContest, someOfManyContest],
+    },
 };
 
 const contests = {
