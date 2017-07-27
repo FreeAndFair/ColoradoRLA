@@ -6,7 +6,7 @@ import { Checkbox, EditableText, Radio, RadioGroup } from '@blueprintjs/core';
 
 
 const AuditInstructions = ({ ballotsToAudit, currentBallot }: any) => (
-    <div>
+    <div className='pt-card'>
         <div>
             Use this page to report the voter markings on the ballot with ID
             #{ currentBallot.id }, out of { ballotsToAudit } ballots that you must
