@@ -6,10 +6,11 @@ import CountyHomePage from './CountyHomePage';
 
 class CountyHomeContainer extends React.Component<any, any> {
     public render() {
-        const { county } = this.props;
         const startAudit = () => this.props.history.push('/county/audit');
 
-        return <CountyHomePage county={ county } startAudit={ startAudit } />;
+        const props = { startAudit, ...this.props };
+
+        return <CountyHomePage { ...props } />;
     }
 }
 
