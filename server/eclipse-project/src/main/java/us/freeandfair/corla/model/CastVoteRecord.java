@@ -13,6 +13,7 @@ package us.freeandfair.corla.model;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -362,5 +363,40 @@ public class CastVoteRecord implements Serializable {
     // can't just use toString() because order of choices may differ
     return (my_county_id + my_scanner_id + my_batch_id + my_record_id + 
             my_contests.hashCode() + my_choices.hashCode()).hashCode();
+  }
+  
+  /** 
+   * A comparator that compares CastVoteRecords based on their county id
+   * and imprinted id.
+   */
+  public static class IDComparator implements Comparator<CastVoteRecord> {
+    /**
+     * Compare this record to another, using the county id and imprinted id.
+     * 
+     * @param the_other The other record.
+     * @return a negative integer, zero, or a positive integer as the first 
+     * argument is less than, equal to, or greater than the second.
+     */
+    // we are explicitly trying to shortcut in case of object identity, 
+    // so we suppress the "compare objects with equals" warning
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
+    @Override
+    public int compare(final CastVoteRecord record_1, final CastVoteRecord record_2) {
+      final int result;
+      
+      if (record_1 == record_2) {
+        result = 0;
+      } else if (record_1 == null) {
+        result = 1;
+      } else if (record_2 == null) {
+        result = -1;
+      } else {
+        final String id_1 = record_1.countyID() + record_1.imprintedID();
+        final String id_2 = record_2.countyID() + record_2.imprintedID();
+        result = id_1.compareTo(id_2);
+      }
+      
+      return result;
+    }
   }
 }
