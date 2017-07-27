@@ -46,16 +46,13 @@ const BallotContest = () => (
                 <div>Vote for [N]</div>
             </div>
         </div>
-        <div>
+        <div className='pt-card'>
             <Checkbox checked={ false } onChange={ () => ({}) } label='Choice A' />
             <Checkbox checked={ false } onChange={ () => ({}) } label='Choice B' />
             <Checkbox checked={ false } onChange={ () => ({}) } label='Choice C' />
         </div>
-        <div>
-            <RadioGroup label='' onChange={ () => ({}) }>
-                <Radio label='Undervote' />
-                <Radio label='No consensus' />
-            </RadioGroup>
+        <div className='pt-card'>
+            <Checkbox checked={ false } onChange={ () => ({}) } label='No consensus' />
         </div>
         <div className='pt-card'>
             <label>
