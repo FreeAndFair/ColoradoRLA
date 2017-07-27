@@ -39,17 +39,22 @@ const AuditInstructions = ({ ballotsToAudit, currentBallot }: any) => (
     </div>
 );
 
+const ContestInfo = ({ contest }: any) => {
+    const { name, description, choices, votesAllowed } = contest;
+
+    return (
+        <div className='pt-card'>
+            <div>{ name }</div>
+            <div>{ description }</div>
+            <div>Vote for { votesAllowed } out of { choices.length }</div>
+        </div>
+    );
+};
+
 const BallotContestMarkForm = ({ contest }: any) => {
     return (
         <div className='pt-card'>
-            <div className='pt-card'>
-                <div>Ballot contest [N]</div>
-                <div>Acme County School District RE-1</div>
-                <div>Director</div>
-                <div>
-                    <div>Vote for [N]</div>
-                </div>
-            </div>
+            <ContestInfo contest={ contest } />
             <div className='pt-card'>
                 <Checkbox checked={ false } onChange={ () => ({}) } label='Choice A' />
                 <Checkbox checked={ false } onChange={ () => ({}) } label='Choice B' />
