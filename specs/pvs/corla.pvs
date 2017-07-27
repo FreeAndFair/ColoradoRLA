@@ -545,6 +545,17 @@ BEGIN
   imprinted_ballot: TYPE FROM ballot
   ballot_certification: TYPE
 
+% @description The number of winners in a contest. This is 1 for
+% plurality contests, and more than 1 for plurality block voting
+% contests.
+  number_elected: TYPE = posnat
+
+% @trace https://github.com/usnistgov/CastVoteRecords
+% @description The maximum number of choices per ballot allowed for a
+% contest. This is 1 for plurality contests, number_elected for plurality
+% block voting, and the number of candidates for approval voting.
+  votes_allowed: TYPE = posnat
+
 END ballots
 
 %%% \subsection{Ballot Manifests}
@@ -599,15 +610,6 @@ vote: DATATYPE
 BEGIN
   IMPORTING ballots
 
-% @description The number of winners in a contest. This is 1 for
-% plurality contests, and more than 1 for plurality block voting
-% contests.
-  number_elected: {n: nat | n > 0}
-% @trace https://github.com/usnistgov/CastVoteRecords
-% @description The maximum number of choices per ballot allowed for a
-% contest. This is 1 for plurality contests, number_elected for plurality
-% block voting, and the number of candidates for approval voting.
-  votes_allowed: {n: nat | n > 0}
 % @description A legal selection of zero or more choices in a ballot
 % contest.
   well_formed_vote?(choices:set[choice]):
@@ -1345,7 +1347,7 @@ BEGIN
 % At a minimum, the list must contain ballot style and ballot manifest
 % information.
   print_ballots_under_audit_list:
-    [county, list[ballot], -> ballots_under_audit_instructions]
+    [county, list[ballot] -> ballots_under_audit_instructions]
 
 % @trace RDPR-6-Jul-2017 Section 25.2.2(K)
 
@@ -2128,6 +2130,8 @@ BEGIN
 END data_model
 
 %+END data_model
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %+BEGIN protocol
 
