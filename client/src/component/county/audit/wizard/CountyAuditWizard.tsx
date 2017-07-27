@@ -88,7 +88,7 @@ const BallotAudit = ({ nextStage }: any) => (
     </div>
 );
 
-type WizardStage = 'start' | 'sign-in' | 'report-marks' | 'review';
+type WizardStage = 'start' | 'sign-in' | 'ballot-audit' | 'review';
 
 interface CountyAuditWizardState {
     stage: WizardStage;
@@ -109,13 +109,13 @@ class CountyAuditWizard extends React.Component<any, CountyAuditWizardState> {
                 nextStage = () => this.setState({ stage: 'sign-in' });
                 return <WizardStart nextStage={ nextStage } />;
             case 'sign-in':
-                nextStage = () => this.setState({ stage: 'report-marks' });
+                nextStage = () => this.setState({ stage: 'ballot-audit' });
                 return <AuditBoardSignIn nextStage={ nextStage } />;
-            case 'report-marks':
+            case 'ballot-audit':
                 nextStage = () => this.setState({ stage: 'review' });
                 return <BallotAudit nextStage={ nextStage } />;
             case 'review':
-                nextStage = () => this.setState({ stage: 'report-marks' });
+                nextStage = () => this.setState({ stage: 'ballot-audit' });
                 return <BallotAudit nextStage={ nextStage } />;
         }
     }
