@@ -290,7 +290,7 @@ public final class Main {
   
   private String dbTest(final Request the_request, final Response the_response) {
     try {
-    final Reader r = new FileReader("/Unsorted/cvrs.csv");
+    final Reader r = new FileReader("/Volumes/Zocalo/Unsorted/cvrs.csv");
     final DominionCVRExportParser thing = new DominionCVRExportParser(r, "Foo");
     
     Session session = my_session_factory.openSession();
@@ -300,13 +300,21 @@ public final class Main {
     System.err.println(thing.cvrs());
     System.err.println(thing.contests());
     System.err.println(thing.ballotStyles());
-    for (BallotStyle bs :thing.ballotStyles()) {
-      session.save(bs);
-      System.err.println("saved " + bs);
+    for (Contest c : thing.contests()) {
+      for (Choice ch : c.choices()) {
+        session.save(ch);
+        System.err.println("saved " + ch);
+      }
+      session.save(c);
+      System.err.println("saved " + c);
     }
+//    for (BallotStyle bs :thing.ballotStyles()) {
+//      session.save(bs);
+////      System.err.println("saved " + bs);
+//    }
     for (CastVoteRecord cvr : thing.cvrs()) {
       session.save(cvr);
-      System.err.println("saved " + cvr);
+//      System.err.println("saved " + cvr);
     }
     transaction.commit();
     return "OK";

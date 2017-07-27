@@ -15,9 +15,11 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
@@ -31,31 +33,29 @@ import org.hibernate.annotations.CascadeType;
  */
 @Entity
 @Table(name = "ballot_style")
-public class BallotStyle implements Serializable {
-//
-//  /**
-//   * The ballot style database ID.
-//   */
-//  @Id
-//  @GeneratedValue(strategy = GenerationType.TABLE)
-//  private long my_db_id;
-  
+public class BallotStyle implements Serializable {  
   /**
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1L;
 
   /**
-   * The ballot style ID.
+   * The ballot style database ID.
    */
   @Id
+  @GeneratedValue(strategy = GenerationType.TABLE)
+  private long my_db_id;
+
+  /**
+   * The ballot style ID.
+   */
   private final String my_id;
   
   /**
    * The list of contests on a ballot of this style.
    */
-  @ManyToMany
-  @Cascade({CascadeType.SAVE_UPDATE})
+  @ElementCollection
+  @Cascade({CascadeType.ALL})
   private final List<Contest> my_contests;
   
   /**
@@ -78,12 +78,12 @@ public class BallotStyle implements Serializable {
     my_contests = the_contests;
   }
   
-//  /**
-//   * @return the database ID.
-//   */
-//  public long dbID() {
-//    return my_db_id;
-//  }
+  /**
+   * @return the database ID.
+   */
+  public long dbID() {
+    return my_db_id;
+  }
 
   /**
    * @return the ballot style ID.

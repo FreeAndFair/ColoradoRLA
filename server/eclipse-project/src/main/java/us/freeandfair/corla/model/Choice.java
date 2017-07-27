@@ -12,10 +12,10 @@
 package us.freeandfair.corla.model;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -33,23 +33,21 @@ public class Choice implements Serializable {
    */
   private static final long serialVersionUID = 1L;
 
-//  /**
-//   * The database ID of this choice.
-//   */
-//  @Id
-//  @GeneratedValue(strategy = GenerationType.TABLE)
-//  private long my_db_id;
+  /**
+   * The database ID of this choice.
+   */
+  @Id
+  @GeneratedValue(strategy = GenerationType.TABLE)
+  private long my_db_id;
 
   /**
    * The choice name.
    */
-  @Id
   private final String my_name;
 
   /**
    * The choice description.
    */
-  @Id
   private final String my_description;
   
   /**
@@ -71,12 +69,12 @@ public class Choice implements Serializable {
     my_description = the_description;
   }
   
-//  /**
-//   * @return the database ID.
-//   */
-//  public long dbID() {
-//    return my_db_id;
-//  }
+  /**
+   * @return the database ID.
+   */
+  public long dbID() {
+    return my_db_id;
+  }
   
   /**
    * @return the name.

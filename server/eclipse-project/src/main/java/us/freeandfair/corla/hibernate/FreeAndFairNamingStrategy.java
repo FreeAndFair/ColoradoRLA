@@ -57,8 +57,8 @@ public class FreeAndFairNamingStrategy extends PhysicalNamingStrategyStandardImp
   }
 
   /**
-   * Translates a Java identifier to a Hibernate table name, by removing the
-   * "my_" prefix and leaving the remainder of the field name intact.
+   * Translates a Java identifier to a Hibernate table name, by removing all
+   * "my_" occurrences and leaving the remainder of the field name intact.
    * 
    * @param the_identifier The identifier to translate.
    * @param the_context The context (ignored).
@@ -66,13 +66,13 @@ public class FreeAndFairNamingStrategy extends PhysicalNamingStrategyStandardImp
   @Override
   public Identifier toPhysicalTableName(final Identifier the_identifier, 
                                         final JdbcEnvironment the_context) {
-    return new Identifier(addUnderscores(the_identifier.getText()).replaceFirst("^my_", ""),
+    return new Identifier(addUnderscores(the_identifier.getText()).replaceAll("my_", ""),
                           the_identifier.isQuoted());
   }
   
   /**
-   * Translates a Java identifier to a Hibernate column name, by removing the
-   * "my_" prefix and leaving the remainder of the field name intact.
+   * Translates a Java identifier to a Hibernate column name, by removing all
+   * "my_" occurrences and leaving the remainder of the field name intact.
    * 
    * @param the_identifier The identifier to translate.
    * @param the_context The context (ignored).
@@ -80,7 +80,10 @@ public class FreeAndFairNamingStrategy extends PhysicalNamingStrategyStandardImp
   @Override
   public Identifier toPhysicalColumnName(final Identifier the_identifier, 
                                          final JdbcEnvironment the_context) {
-    return new Identifier(addUnderscores(the_identifier.getText()).replaceFirst("^my_", ""),
-                          the_identifier.isQuoted());
+    final Identifier result =
+        new Identifier(addUnderscores(the_identifier.getText()).replaceAll("my_", ""),
+                       the_identifier.isQuoted());
+    System.err.println(result);
+    return result;
   }
 }

@@ -239,26 +239,28 @@ public class DominionCVRExportParser implements CVRExportParser {
       final String ballot_style_name = 
           stripEqualQuotes(the_line.get(BALLOT_TYPE_COLUMN));
       final List<Contest> contests = new ArrayList<Contest>();
-      final Map<Contest, ChoiceSet> votes = new HashMap<Contest, ChoiceSet>();
+      final List<String> votes = new ArrayList<String>();
       
       // for each contest, see if choices exist on the CVR; "0" or "1" are
       // votes or absences of votes; "" means that the contest is not in this style
       int index = FIRST_CHOICE_COLUMN;
       for (final Contest co : my_contests) {
         boolean present = false;
-        final ChoiceSet choices = new ChoiceSet();
+        final StringBuilder choices = new StringBuilder();
         for (final Choice ch : co.choices()) {
           final String mark = the_line.get(index);
           present |= !mark.isEmpty();
           if (!mark.isEmpty() && Integer.valueOf(mark) != 0) {
-            choices.add(ch);
+            choices.append("1");
+          } else {
+            choices.append("0");
           }
           index = index + 1;
         }
         // if this contest was on the ballot, add it to the votes
         if (present) {
           contests.add(co);
-          votes.put(co, choices);
+          votes.add(choices.toString());
         }
       }
       
@@ -272,7 +274,7 @@ public class DominionCVRExportParser implements CVRExportParser {
       
       return new CastVoteRecord(false, the_timestamp, my_county_id, tabulator_id,
                                 batch_id, record_id, imprinted_id, 
-                                my_ballot_styles.get(ballot_style_name), votes);
+                                my_ballot_styles.get(ballot_style_name), contests, votes);
     } catch (final NumberFormatException e) {
       return null;
     } catch (final ArrayIndexOutOfBoundsException e) {
