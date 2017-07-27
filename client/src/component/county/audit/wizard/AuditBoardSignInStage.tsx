@@ -22,7 +22,7 @@ const AuditBoardSignInForm = () => (
     </div>
 );
 
-const AuditBoardSignIn = ({ nextStage }: any) => (
+const AuditBoardSignInStage = ({ nextStage }: any) => (
     <div>
         <div>
             <h2>Audit Board Sign-in</h2>
@@ -40,4 +40,4 @@ const AuditBoardSignIn = ({ nextStage }: any) => (
 );
 
 
-export default AuditBoardSignIn;
+export default AuditBoardSignInStage;

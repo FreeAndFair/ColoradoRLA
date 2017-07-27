@@ -74,7 +74,7 @@ const BallotContests = () => (
     </div>
 );
 
-const BallotAudit = ({ nextStage }: any) => (
+const BallotAuditStage = ({ nextStage }: any) => (
     <div>
         <h2>Ballot verification</h2>
         <AuditInstructions />
@@ -86,4 +86,4 @@ const BallotAudit = ({ nextStage }: any) => (
 );
 
 
-export default BallotAudit;
+export default BallotAuditStage;

@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 
-const WizardStart = ({ nextStage }: any) => (
+const StartStage = ({ nextStage }: any) => (
     <div>
         <div>Acme County Audit</div>
         <div className='pt-card'>
@@ -16,4 +16,4 @@ const WizardStart = ({ nextStage }: any) => (
 );
 
 
-export default WizardStart;
+export default StartStage;

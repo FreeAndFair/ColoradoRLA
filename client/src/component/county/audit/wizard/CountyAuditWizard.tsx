@@ -1,8 +1,8 @@
 import * as React from 'react';
 
-import AuditBoardSignIn from './AuditBoardSignIn';
-import BallotAudit from './BallotAudit';
-import WizardStart from './WizardStart';
+import AuditBoardSignInStage from './AuditBoardSignInStage';
+import BallotAuditStage from './BallotAuditStage';
+import StartStage from './StartStage';
 
 
 type WizardStage = 'start' | 'sign-in' | 'ballot-audit' | 'review';
@@ -24,16 +24,16 @@ class CountyAuditWizard extends React.Component<any, CountyAuditWizardState> {
         switch (this.state.stage) {
             case 'start':
                 nextStage = () => this.setState({ stage: 'sign-in' });
-                return <WizardStart nextStage={ nextStage } />;
+                return <StartStage nextStage={ nextStage } />;
             case 'sign-in':
                 nextStage = () => this.setState({ stage: 'ballot-audit' });
-                return <AuditBoardSignIn nextStage={ nextStage } />;
+                return <AuditBoardSignInStage nextStage={ nextStage } />;
             case 'ballot-audit':
                 nextStage = () => this.setState({ stage: 'review' });
-                return <BallotAudit nextStage={ nextStage } />;
+                return <BallotAuditStage nextStage={ nextStage } />;
             case 'review':
                 nextStage = () => this.setState({ stage: 'ballot-audit' });
-                return <BallotAudit nextStage={ nextStage } />;
+                return <BallotAuditStage nextStage={ nextStage } />;
         }
     }
 }
