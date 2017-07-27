@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import * as _ from 'lodash';
+
 
 const BallotContestResultVoteForN = () => (
     <div className='pt-card'>
@@ -42,7 +44,7 @@ const BallotContestResultUndervote = () => (
     </div>
 );
 
-const BallotContestResults = () => (
+const BallotContestResults = ({ marks }: any) => (
     <div className='pt-card'>
         <BallotContestResultVoteForN />
         <BallotContestResultYesNo />
@@ -51,16 +53,37 @@ const BallotContestResults = () => (
 );
 
 
-const ReviewStage = ({ nextStage }: any) => (
-    <div>
-        <BallotContestResults />
-        <div className='pt-card'>
-            <button className='pt-button pt-intent-primary' onClick={ nextStage }>
-                Submit & Next Ballot
-            </button>
+const findById = (arr: any[], id: any) =>
+    _.find(arr, (o: any) => o.id === id);
+
+
+const ReviewStage = (props: any) => {
+    const { county, nextStage } = props;
+
+    // `exampleMarks` : { [ContestId]: ChoiceId[] }
+    const exampleMarks = {
+        1: ['2'],
+        3: ['8', '9', '11'],
+    };
+
+    const marks = _.mapValues(exampleMarks, (markIds: any, contestId: any) => {
+        const contest = findById(county.contests, contestId);
+        const marks = _.map(markIds, (id: any) => findById(contest.choices, id));
+
+        return { contest, marks };
+    });
+
+    return (
+        <div>
+            <BallotContestResults marks={ marks } />
+            <div className='pt-card'>
+                <button className='pt-button pt-intent-primary' onClick={ nextStage }>
+                    Submit & Next Ballot
+                </button>
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 
 export default ReviewStage;
