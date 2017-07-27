@@ -1,12 +1,15 @@
 import * as React from 'react';
 
 
-const BallotManifestUploader = () => (
+const BallotManifestUploader = ({ onChange, fileName }: any) => (
     <div className='pt-card'>
         Ballot Manifest:
-        <button className='pt-button pt-intent-primary pt-icon-add'>
-            Upload
-        </button>
+        <div>
+            <label className='pt-file-upload'>
+                <input type='file' onChange={ onChange } />
+                <span className='pt-file-upload-input'>{ fileName }</span>
+            </label>
+        </div>
     </div>
 );
 

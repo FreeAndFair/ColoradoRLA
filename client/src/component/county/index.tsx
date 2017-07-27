@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import * as _ from 'lodash';
 
-import BallotManifestUploader from './home/BallotManifestUploader';
+import BallotManifestUploaderContainer from '../../container/county/home/BallotManifestUploaderContainer';
 import CountyNav from './Nav';
 
 
@@ -13,7 +13,7 @@ const Main = ({ name }: any) => (
             <div>
                 Please upload your Ballot Manifest and Cast Vote Records.
             </div>
-            <BallotManifestUploader />
+            <BallotManifestUploaderContainer />
             <div className='pt-card'>
                 Cast Vote Records:
                 <button className='pt-button pt-intent-primary pt-icon-add'>
