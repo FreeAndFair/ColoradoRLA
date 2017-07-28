@@ -2,6 +2,11 @@ body {
     font-family: "Liberation Sans", sans-serif;
 }
 
+.login-page {
+    margin: 0 auto;
+    width: 50%;
+}
+
 .county-root {
     display: flex;
     flex-direction: column;
