@@ -7,7 +7,11 @@ const AuditBoardSignInForm = (props: any) => {
     const { boardMember, updateBoardMember } = props;
     const { index, name, party } = boardMember;
 
-    const onChange = (e: any) => {
+    const onNameChange = (nextName: string) => {
+        updateBoardMember(index, nextName, party);
+    };
+
+    const onPartyChange = (e: any) => {
         const nextParty = e.target.value;
         updateBoardMember(index, name, nextParty);
     };
@@ -17,13 +21,13 @@ const AuditBoardSignInForm = (props: any) => {
             <h3>Audit Board Member</h3>
             <div className='pt-card'>
                 <label>Full Name:
-                    <EditableText value={ name } />
+                    <EditableText value={ name } onChange={ onNameChange } />
                 </label>
             </div>
             <div className='pt-card'>
                 <RadioGroup
                     label='Party Affiliation'
-                    onChange={ onChange }
+                    onChange={ onPartyChange }
                     selectedValue={ party }
                 >
                     <Radio
