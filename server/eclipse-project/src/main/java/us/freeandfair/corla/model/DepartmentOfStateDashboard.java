@@ -116,9 +116,7 @@ public class DepartmentOfStateDashboard {
    * auditing them.
    */
   public void selectContestsToAudit(final Map<Contest, AuditReason> the_contests) {
-    for (final Contest c : the_contests.keySet()) {
-      my_audit_reasons.put(c, the_contests.get(c));
-    }
+    my_audit_reasons.putAll(the_contests);
     // TODO this state change doesn't necessarily happen here
     my_audit_stage = AuditStage.CONTESTS_TO_AUDIT_IDENTIFIED;
   }

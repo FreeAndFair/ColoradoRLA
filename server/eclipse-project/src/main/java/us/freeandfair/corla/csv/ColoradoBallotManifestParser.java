@@ -116,7 +116,7 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
                                          the_line.get(COUNTY_ID_COLUMN),
                                          the_line.get(SCANNER_ID_COLUMN),
                                          the_line.get(BATCH_NUMBER_COLUMN),
-                                         Integer.valueOf(the_line.get(NUM_BALLOTS_COLUMN)),
+                                         Integer.parseInt(the_line.get(NUM_BALLOTS_COLUMN)),
                                          the_line.get(BATCH_LOCATION_COLUMN));
     } catch (final NumberFormatException e) {
       return null;

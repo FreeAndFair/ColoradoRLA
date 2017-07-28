@@ -357,10 +357,10 @@ public class CastVoteRecord implements Serializable {
       final CastVoteRecord other_cvr = (CastVoteRecord) the_other;
       result &= other_cvr.recordType() == recordType();
       result &= other_cvr.timestamp().equals(timestamp());
-      result &= other_cvr.countyID() == countyID();
-      result &= other_cvr.scannerID() == scannerID();
-      result &= other_cvr.batchID() == batchID();
-      result &= other_cvr.recordID() == recordID();
+      result &= other_cvr.countyID().equals(countyID());
+      result &= other_cvr.scannerID().equals(scannerID());
+      result &= other_cvr.batchID().equals(batchID());
+      result &= other_cvr.recordID().equals(recordID());
       result &= other_cvr.imprintedID().equals(imprintedID());
       result &= other_cvr.ballotStyle().equals(ballotStyle());
       result &= other_cvr.choices().equals(choices());
@@ -384,7 +384,13 @@ public class CastVoteRecord implements Serializable {
    * A comparator that compares CastVoteRecords based on their county id
    * and imprinted id.
    */
-  public static class IDComparator implements Comparator<CastVoteRecord> {
+  public static class IDComparator 
+      implements Serializable, Comparator<CastVoteRecord> {
+    /**
+     * The serialVersionUID.
+     */
+    private static final long serialVersionUID = 1L;
+    
     /**
      * Compare this record to another, using the county id and imprinted id.
      * 

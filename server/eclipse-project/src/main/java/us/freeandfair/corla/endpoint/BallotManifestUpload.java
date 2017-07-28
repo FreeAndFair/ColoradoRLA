@@ -63,7 +63,7 @@ public class BallotManifestUpload implements Endpoint {
                           new MultipartConfigElement("/tmp"));
     boolean ok = true;
     try (InputStream is = the_request.raw().getPart("bmi_file").getInputStream()) {
-      final InputStreamReader isr = new InputStreamReader(is);
+      final InputStreamReader isr = new InputStreamReader(is, "UTF-8");
       final BallotManifestParser parser = new ColoradoBallotManifestParser(isr);
       ok = parser.parse();
       Main.LOGGER.info(parser.ballotManifestInfo().size() + 

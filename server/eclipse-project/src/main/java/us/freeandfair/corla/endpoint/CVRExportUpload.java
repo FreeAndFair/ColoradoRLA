@@ -30,6 +30,7 @@ import us.freeandfair.corla.csv.CVRExportParser;
 import us.freeandfair.corla.csv.DominionCVRExportParser;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
+import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
  * The "CVR upload" endpoint.
@@ -59,27 +60,26 @@ public class CVRExportUpload implements Endpoint {
    * {@inheritDoc}
    */
   @Override
+  @SuppressFBWarnings(value = {"OS_OPEN_STREAM"}, 
+                      justification = "FindBugs false positive with multiple resources.")
   public String endpoint(final Request the_request, final Response the_response) {
     // this is a multipart request - there's a "county" identifier, and a "cvr_file"
     // containing the actual file
     the_request.attribute("org.eclipse.jetty.multipartConfig", 
                           new MultipartConfigElement("/tmp"));
     boolean ok = true;
-    try (InputStream county_is = the_request.raw().getPart("county").getInputStream()) {
-      final InputStreamReader county_isr = new InputStreamReader(county_is);
+    try (InputStream county_is = the_request.raw().getPart("county").getInputStream(); 
+         InputStream cvr_is = the_request.raw().getPart("cvr_file").getInputStream()) {
+      final InputStreamReader county_isr = new InputStreamReader(county_is, "UTF-8");
       final BufferedReader br = new BufferedReader(county_isr);
       final String county = br.lines().collect(Collectors.joining("\n"));
-      try (InputStream cvr_is = the_request.raw().getPart("cvr_file").getInputStream()) {
-        final InputStreamReader cvr_isr = new InputStreamReader(cvr_is);
-        final CVRExportParser parser = new DominionCVRExportParser(cvr_isr, county);
-        ok = parser.parse();
-        Main.LOGGER.info(parser.cvrs().size() + " CVRs parsed from " + county + 
-                         " county upload file");
-        Main.LOGGER.info(CastVoteRecord.getMatching(null, RecordType.UPLOADED).size() + 
-                         " uploaded CVRs in storage");
-      } catch (final IOException | ServletException e) {
-        ok = false;
-      }
+      final InputStreamReader cvr_isr = new InputStreamReader(cvr_is, "UTF-8");
+      final CVRExportParser parser = new DominionCVRExportParser(cvr_isr, county);
+      ok = parser.parse();
+      Main.LOGGER.info(parser.cvrs().size() + " CVRs parsed from " + county + 
+                       " county upload file");
+      Main.LOGGER.info(CastVoteRecord.getMatching(null, RecordType.UPLOADED).size() + 
+                       " uploaded CVRs in storage");
     } catch (final IOException | ServletException e) {
       ok = false;
     }

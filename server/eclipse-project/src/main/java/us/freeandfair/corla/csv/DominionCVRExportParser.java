@@ -190,7 +190,7 @@ public class DominionCVRExportParser implements CVRExportParser {
       final String vf = c.replace(cn, "").replace("(Vote For=", "").replace(")", "");
       int ms = 1; // this is our default maximum selections
       try {
-        ms = Integer.valueOf(vf);
+        ms = Integer.parseInt(vf);
       } catch (final NumberFormatException e) {
         // ignored
       }
@@ -264,10 +264,11 @@ public class DominionCVRExportParser implements CVRExportParser {
         boolean present = false;
         final Set<Choice> votes = new HashSet<Choice>();
         for (final Choice ch : co.choices()) {
-          final String mark = the_line.get(index);
-          final boolean p = !mark.isEmpty();
+          final String mark_string = the_line.get(index);
+          final boolean p = !mark_string.isEmpty();
+          final boolean mark = "1".equals(mark_string);
           present |= p;
-          if (p && Integer.valueOf(mark) != 0) {
+          if (p && mark) {
             votes.add(ch);
           }
           index = index + 1;
