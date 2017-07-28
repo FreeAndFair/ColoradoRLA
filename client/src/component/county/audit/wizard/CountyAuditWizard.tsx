@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import AuditBoardSignInStageContainer from './AuditBoardSignInStageContainer';
-import BallotAuditStage from './BallotAuditStage';
+import BallotAuditStageContainer from './BallotAuditStageContainer';
 import ReviewStage from './ReviewStage';
 
 
@@ -25,7 +25,7 @@ class CountyAuditWizard extends React.Component<any, CountyAuditWizardState> {
             case 'sign-in':
                 return  <AuditBoardSignInStageContainer { ...props } />;
             case 'ballot-audit':
-                return <BallotAuditStage { ...props } />;
+                return <BallotAuditStageContainer { ...props } />;
             case 'review':
                 return <ReviewStage { ...props } />;
         }
