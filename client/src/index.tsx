@@ -6,9 +6,13 @@ import { createStore } from 'redux';
 import { RootContainer } from './component/RootContainer';
 import rootReducer from './reducer/root';
 
+import fetchInitialState from './action/fetchInitialState';
+
 
 const store = createStore(rootReducer);
 const rootEl = document.getElementById('root');
+
+fetchInitialState(store.dispatch);
 
 const render = (NextRootContainer: any) => {
     const appContainer = (
