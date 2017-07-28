@@ -28,6 +28,25 @@ export default function root(state: AppState = defaultState, action: any) {
         return action.data;
     }
 
+    case 'SELECT_NEXT_BALLOT': {
+        const nextState = { ...state };
+
+        const { ballots, currentBallotId } = state.county;
+        const currentIndex = _.findIndex(ballots, (b: any) => b.id === currentBallotId);
+        const nextIndex = currentIndex + 1;
+
+        if (nextIndex >= ballots.length) {
+            // All ballots audited.
+            // TODO: change audit status.
+            return state;
+        }
+
+        const nextBallotId = ballots[nextIndex].id;
+        nextState.county.currentBallotId = nextBallotId;
+
+        return nextState;
+    }
+
     case 'UPDATE_BOARD_MEMBER': {
         const { index, name, party } = action.data;
         const nextState = { ...state };
