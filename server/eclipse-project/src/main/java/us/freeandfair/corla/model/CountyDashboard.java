@@ -12,10 +12,8 @@
 package us.freeandfair.corla.model;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * The county dashboard.
@@ -32,15 +30,18 @@ public class CountyDashboard {
   /**
    * The county status of this dashboard.
    */
-  private final CountyStatus my_status;
+  private CountyStatus my_status;
   
   /**
-   * The CVRs to audit in the current round, and the most
-   * recent aCVRs submitted for them.
+   * The most recent set of uploaded CVRs.
    */
-  private final SortedMap<CastVoteRecord, CastVoteRecord> my_cvrs_to_audit = 
-      new TreeMap<CastVoteRecord, CastVoteRecord>(new CastVoteRecord.IDComparator());
+  private final SortedSet<CastVoteRecord> my_cvrs =
+      new TreeSet<CastVoteRecord>(new CastVoteRecord.IDComparator());
 
+  /**
+   * The audit board dashboard.
+   */
+  private final AuditBoardDashboard my_audit_board_dashboard;
   
   /**
    * Constructs a new County dashboard for the specified county.
@@ -51,6 +52,7 @@ public class CountyDashboard {
   public CountyDashboard(final County the_county) {
     my_county = the_county;
     my_status = CountyStatus.NO_DATA;
+    my_audit_board_dashboard = new AuditBoardDashboard(my_county);
   }
   
   /**
@@ -68,42 +70,38 @@ public class CountyDashboard {
   }
   
   /**
-   * Define the CVRs to audit. This clears the set of previously submitted
-   * aCVRs (but they are all retained in persistent storage).
-   * 
-   * @param the_cvrs_to_audit The CVRs to audit.
+   * @return the audit board dashboard for this county.
    */
-  public void setCVRsToAudit(final Collection<CastVoteRecord> the_cvrs_to_audit) {
-    my_cvrs_to_audit.clear();
-    for (final CastVoteRecord cvr : the_cvrs_to_audit) {
-      my_cvrs_to_audit.put(cvr, null);
-    }
+  public AuditBoardDashboard auditBoardDashboard() {
+    return my_audit_board_dashboard;
   }
   
   /**
-   * Submit an aCVR for a CVR under audit.
+   * Sets new set of CVRs, replacing any current set of CVRs.
    * 
-   * @param the_cvr_under_audit The CVR under audit.
-   * @param the_acvr The corresponding aCVR.
-   * @exception IllegalArgumentException if the specified CVR under audit
-   *  is not, in fact, under audit.
+   * @param the_cvrs The CVRs.
    */
-  public void submitAuditCVR(final CastVoteRecord the_cvr_under_audit,
-                             final CastVoteRecord the_acvr) {
-    if (my_cvrs_to_audit.keySet().contains(the_cvr_under_audit)) {
-      my_cvrs_to_audit.put(the_cvr_under_audit, the_acvr);
-    } else {
-      throw new IllegalArgumentException("attempt to set aCVR for unaudited CVR");
-    }
+  public void setCVRs(final Collection<CastVoteRecord> the_cvrs) {
+    my_cvrs.clear();
+    my_cvrs.addAll(the_cvrs);
+    my_status = CountyStatus.CVRS_UPLOADED_SUCCESSFULLY;
   }
   
   /**
-   * @return all the aCVRs that have been submitted to this dashboard in this round.
+   * Sets the audit board membership.
+   * 
+   * @param the_board_members The members of the audit board.
    */
-  public Set<CastVoteRecord> auditCVRs() {
-    final Set<CastVoteRecord> result = 
-        new HashSet<CastVoteRecord>(my_cvrs_to_audit.values());
-    result.remove(null);
-    return result;
+  public void setAuditBoardMembership(final Collection<Elector> the_board_members) {
+    my_audit_board_dashboard.setMembers(the_board_members);  
+  }
+  
+  /**
+   * Records a failed CVR upload event. This also ensures that the set of CVRs 
+   * is empty.
+   */
+  public void uploadFailed() {
+    my_cvrs.clear();
+    my_status = CountyStatus.ERROR_IN_UPLOADED_DATA;
   }
 }

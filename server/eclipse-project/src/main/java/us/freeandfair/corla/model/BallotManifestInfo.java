@@ -24,7 +24,7 @@ import javax.persistence.Table;
 /**
  * Information about the locations of specific batches of ballots.
  * 
- * @author Daniel M. Zimmerman <dmz@freeandfair.us>6
+ * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 0.0.1
  */
 @Entity

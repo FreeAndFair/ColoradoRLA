@@ -22,6 +22,18 @@ import spark.Response;
  */
 public interface Endpoint {
   /**
+   * The endpoint type for this endpoint.
+   */
+  enum EndpointType {
+    GET, POST, PUT;
+  }
+  
+  /**
+   * @return the type of this endpoint.
+   */
+  EndpointType endpointType();
+  
+  /**
    * The name of the endpoint implemented by this class.
    * 
    * @return the endpoint name.

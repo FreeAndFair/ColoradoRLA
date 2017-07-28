@@ -33,6 +33,7 @@ import spark.Request;
 import spark.Response;
 import spark.Service;
 
+import us.freeandfair.corla.endpoint.CVRUpload;
 import us.freeandfair.corla.endpoint.Endpoint;
 import us.freeandfair.corla.endpoint.Root;
 import us.freeandfair.corla.gson.FreeAndFairNamingStrategy;
@@ -101,6 +102,11 @@ public final class Main {
    */
   private final List<Endpoint> my_endpoints = new ArrayList<Endpoint>();
   
+  /**
+   * Our Spark service.
+   */
+  private Service my_spark;
+  
   // Constructors
 
   /**
@@ -163,6 +169,32 @@ public final class Main {
   }
   
   /**
+   * Activate the endpoints.
+   */
+  private void activateEndpoints() {
+    for (final Endpoint e : my_endpoints) {
+      switch (e.endpointType()) {
+        case GET:
+          my_spark.get(e.endpointName(), (the_request, the_response) -> 
+                       e.endpoint(the_request, the_response));
+          break;
+         
+        case PUT:
+          my_spark.put(e.endpointName(), (the_request, the_response) ->
+                       e.endpoint(the_request, the_response));
+          break;
+          
+        case POST:
+          my_spark.post(e.endpointName(), (the_request, the_response) ->
+                        e.endpoint(the_request, the_response));
+          break;
+          
+        default:
+      }
+    }
+  }
+  
+  /**
    * Starts a ColoradoRLA server.
    */
   public void start() {
@@ -193,14 +225,14 @@ public final class Main {
     // if we have a keystore, everything is on SSL except the redirect; otherwise,
     // everything is in plaintext
     
-    final Service spark = Service.ignite();
+    my_spark = Service.ignite();
     if (keystore_path == null) {
-      spark.port(http_port);
+      my_spark.port(http_port);
     } else {
-      spark.port(https_port);
+      my_spark.port(https_port);
       final String keystore_password = 
           my_properties.getProperty("keystore_password", null);
-      spark.secure(keystore_path, keystore_password, null, null);
+      my_spark.secure(keystore_path, keystore_password, null, null);
 
       // redirect everything
       final Service redirect = Service.ignite();
@@ -210,16 +242,14 @@ public final class Main {
     }
     
     // static files location
-    spark.staticFileLocation("/us/freeandfair/corla/static");
+    my_spark.staticFileLocation("/us/freeandfair/corla/static");
 
     // available endpoints
     
     my_endpoints.add(new Root());
+    my_endpoints.add(new CVRUpload());
 
-    for (final Endpoint e : my_endpoints) {
-      spark.get(e.endpointName(), (the_request, the_response) -> 
-                e.endpoint(the_request, the_response));
-    }
+    activateEndpoints();
   }
     
   // Static Methods

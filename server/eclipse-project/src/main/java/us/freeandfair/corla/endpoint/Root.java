@@ -26,6 +26,14 @@ public class Root implements Endpoint {
    * {@inheritDoc}
    */
   @Override
+  public EndpointType endpointType() {
+    return EndpointType.GET;
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   public String endpointName() {
     return "/";
   }
@@ -35,6 +43,6 @@ public class Root implements Endpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    return "Hello from the ColoradoRLA server.";
+    return "ColoradoRLA Server, Version 0.0.1 - Please Use a Valid Endpoint!";
   }
 }

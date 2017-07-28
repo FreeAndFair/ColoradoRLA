@@ -13,12 +13,13 @@ package us.freeandfair.corla.model;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -114,18 +115,12 @@ public class CastVoteRecord implements Serializable {
   private final BallotStyle my_ballot_style;
   
   /**
-   * A list of contests in this cast vote record.
+   * The contests in this cast vote record and the choices
+   * made in them.
    */
   @OneToMany
   @Cascade({CascadeType.MERGE})
-  private final List<Contest> my_contests;
-  
-  /**
-   * A list of choices in this cast vote record.
-   */
-  @ElementCollection
-  @Cascade({CascadeType.ALL})
-  private final List<String> my_choices;
+  private final Map<Contest, Set<Choice>> my_choices;
   
   /**
    * Constructs an empty cast vote record, solely for persistence.
@@ -139,7 +134,6 @@ public class CastVoteRecord implements Serializable {
     my_record_id = "";
     my_imprinted_id = "";
     my_ballot_style = null;
-    my_contests = null;
     my_choices = null;
   }
   
@@ -155,8 +149,7 @@ public class CastVoteRecord implements Serializable {
    * @param the_record_id The record ID.
    * @param the_imprinted_id The imprinted ID.
    * @param the_ballot_style The ballot style.
-   * @param the_contests The contests.
-   * @param the_choices The contest choices.
+   * @param the_choices A map of the choices made in each contest.
    */
   @SuppressWarnings("PMD.ExcessiveParameterList")
   protected CastVoteRecord(final boolean the_audit_record_flag, 
@@ -165,8 +158,7 @@ public class CastVoteRecord implements Serializable {
                            final String the_batch_id, final String the_record_id,
                            final String the_imprinted_id,
                            final BallotStyle the_ballot_style,
-                           final List<Contest> the_contests,
-                           final List<String> the_choices) {
+                           final Map<Contest, Set<Choice>> the_choices) {
     my_audit_record_flag = the_audit_record_flag;
     my_timestamp = the_timestamp;
     my_county_id = the_county_id;
@@ -176,7 +168,6 @@ public class CastVoteRecord implements Serializable {
     my_imprinted_id = the_imprinted_id;
     my_ballot_style = the_ballot_style;
     // TODO: make a clean copy of the_choices so it can't be tampered with
-    my_contests = the_contests;
     my_choices = the_choices;
   }
 
@@ -211,13 +202,12 @@ public class CastVoteRecord implements Serializable {
                                                      final String the_record_id,
                                                      final String the_imprinted_id,
                                                      final BallotStyle the_ballot_style,
-                                                     final List<Contest> the_contests,
-                                                     final List<String> the_choices) {
+                                                     final Map<Contest, Set<Choice>> 
+                                                           the_choices) {
     CastVoteRecord result = 
         new CastVoteRecord(the_audit_record_flag, the_timestamp, the_county_id, 
                            the_scanner_id, the_batch_id, the_record_id,
-                           the_imprinted_id, the_ballot_style, the_contests,
-                           the_choices);
+                           the_imprinted_id, the_ballot_style, the_choices);
     if (CACHE.containsKey(result)) {
       result = CACHE.get(result);
     } else {
@@ -235,6 +225,42 @@ public class CastVoteRecord implements Serializable {
    */
   public static synchronized CastVoteRecord byID(final long the_id) {
     return BY_ID.get(the_id);
+  }
+  
+  /**
+   * "Forgets" the specified CVR.
+   * 
+   * @param the_cvr The CVR to "forget".
+   */
+  public static synchronized void forget(final CastVoteRecord the_cvr) {
+    CACHE.remove(the_cvr);
+    BY_ID.remove(the_cvr.dbID());
+  }
+  
+  /**
+   * Gets all known CVRs for the specified counties.
+   * 
+   * @param the_county_ids The county ID to retrieve CVRs for; if this set is 
+   * empty or null, all CVRs for all counties are retrieved.
+   * @param the_exclude_audit_records true to exclude audit records, false
+   * otherwise.
+   * @return all CVRs for the specified county ID.
+   */
+  public static synchronized Collection<CastVoteRecord> 
+      getCVRs(final Set<String> the_county_ids, final boolean the_exclude_audit_records) {
+    final Set<CastVoteRecord> result = new HashSet<CastVoteRecord>();
+    final boolean check_county = the_county_ids != null && !the_county_ids.isEmpty();
+    
+    for (final CastVoteRecord cvr : CACHE.keySet()) {
+      if (check_county && !the_county_ids.contains(cvr.countyID())) {
+        continue;
+      }
+      if (!the_exclude_audit_records || !cvr.isAuditRecord()) {
+        result.add(cvr);
+      }
+    }
+    
+    return result;
   }
   
   /**
@@ -302,16 +328,9 @@ public class CastVoteRecord implements Serializable {
   }
   
   /**
-   * @return the contests in this cast vote record.
-   */
-  public List<Contest> contests() {
-    return my_contests;
-  }
-  
-  /**
    * @return the choices made in this cast vote record.
    */
-  public List<String> choices() {
+  public Map<Contest, Set<Choice>> choices() {
     return my_choices;
   }
 
@@ -324,7 +343,7 @@ public class CastVoteRecord implements Serializable {
            my_timestamp + ", county_id=" + my_county_id + ", scanner_id=" +
            my_scanner_id + ", batch_id=" + my_batch_id + ", record_id=" + 
            my_record_id + ", imprinted_id=" + my_imprinted_id + ", ballot_style=" +
-           my_ballot_style.id() + ", contests=" + my_contests + 
+           my_ballot_style.id() + ", contests=" + my_choices + 
            ", choices=" + my_choices + "]";
   }
   
@@ -347,7 +366,6 @@ public class CastVoteRecord implements Serializable {
       result &= other_cvr.recordID() == recordID();
       result &= other_cvr.imprintedID().equals(imprintedID());
       result &= other_cvr.ballotStyle().equals(ballotStyle());
-      result &= other_cvr.contests().equals(contests());
       result &= other_cvr.choices().equals(choices());
     } else {
       result = false;
@@ -362,7 +380,7 @@ public class CastVoteRecord implements Serializable {
   public int hashCode() {
     // can't just use toString() because order of choices may differ
     return (my_county_id + my_scanner_id + my_batch_id + my_record_id + 
-            my_contests.hashCode() + my_choices.hashCode()).hashCode();
+            my_choices.hashCode() + my_choices.hashCode()).hashCode();
   }
   
   /** 
