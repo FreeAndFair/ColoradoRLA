@@ -459,8 +459,6 @@ BEGIN
 % finish tabulating all ballots other than provisional ballots and
 % property owner ballots.  These are the results as reported in state
 % ENR, and should match the CVR data exactly.
-% @todo dmz confirm nealmcb's edits on all tabulation_outcome types
-  rla_tabulation_outcome: TYPE FROM election_outcomes
 
 %%% Elections are defined across cohorts of voters arranged in any
 %%% number of ways---geographic, political, professional, and more. In
@@ -510,14 +508,8 @@ END elections
 %%% contests from a single county.
 
 % @relation county_election inherit election
-% @relation state_election inherit election
-% @relation national_election inherit election
-% @relation private_election inherit election
 election: DATATYPE
-  WITH SUBTYPES county_election,
-                state_election,
-                national_election,
-                private_election
+  WITH SUBTYPES county_election
 BEGIN
   IMPORTING elections
 
@@ -526,21 +518,6 @@ BEGIN
                       counties: set[county],
                       contests: set[contest]):
     make_county_election: county_election
-  is_state_election?(name: string,
-                     date: string,
-                     state: state,
-                     contests: set[contest]):
-    make_state_election: state_election
-  is_national_election?(name: string,
-                        date: string,
-                        nation: nation,
-                        contests: set[contest]):
-    make_national_election: national_election
-  is_private_election?(name: string,
-                       date: string,
-                       org: organization,
-                       contests: set[contest]):
-    make_private_election: private_election  
 END election
 
 %+END elections
@@ -1077,7 +1054,7 @@ BEGIN
 
 % @description A circumstance in which the audit board's
 % interpretation of ballot markings reveals that the winner with the
-% fewest votes had a smaller margin than in the voting system’s
+% fewest votes had a smaller margin than in the voting system's
 % interpretation of the same markings as reflected in the CVR.
 
 % @example For example, IF the CVR reflects an undervote in the
@@ -1137,11 +1114,23 @@ rlas: THEORY
 BEGIN
   IMPORTING elections
 
+%%% First, we'll formalize the general idea of a risk limit from the
+%%% scientific literature.
+  risk_limit: TYPE = {n : nonneg_real | n <= 100}
+
 % @trace RDPR-6-Jul-2017 Section 25.1.6
 % @description The largest statistical probability that an incorrect
 % reported tabulation outcome is not detected and corrected in a
 % risk-limiting audit.
-  risk_limit: TYPE = {n : nonneg_real | n <= 100}
+
+%%% Next, we'll formalize what is stated in the current draft rules.
+% @trace RDPR-6-Jul-2017 Section 25.2.2(A)
+  RDPR_risk_limit: TYPE = {n : nonneg_real | n <= 5}
+
+%%% Finally, according to the current draft rules, the Secretary of
+%%% State has an ``escape clause'', and one thing that they can choose
+%%% to do is set any kind of risk limit they like.
+  RDPR_escape_clause_risk_limit: TYPE = {n : nonneg_real | n <= 100}
 
 % @trace RDPR-6-Jul-2017 Section 25.1.7
 % @description A post-election audit of votes on paper ballots and
@@ -1337,7 +1326,9 @@ dashboard: DATATYPE
 BEGIN
 % @description The overall status of the state-wide audit is
 % summarized in the state-wide dashboard.
-  department_of_state_dashboard?: make_department_of_state_dashboard: department_of_state_dashboard
+  department_of_state_dashboard?:
+    make_department_of_state_dashboard:
+    department_of_state_dashboard
 % @description The county dashboard is used to communicate with CDOS,
 % setup the local RLA, and observe the status of the ongoing or
 % finished RLA.
@@ -1383,15 +1374,22 @@ BEGIN
       audit_results_published }
 
 % @trace RDPR-6-Jul-2017 Section 25.2.2(A)
+%%% \begin{quotation}
 %%% No later than 30 days before Election Day, the Secretary of State
 %%% will establish and publish on the audit center the risk limit(s)
 %%% that will apply in RLAs for that election. The Secretary of State
 %%% may establish different risk limits for comparison audits and
 %%% ballot polling audits, but in no event will the risk limit exceed
 %%% five percent.
+%%% \end{quotation}
   establish_risk_limit_for_comparison_audits:
     [department_of_state_dashboard, risk_limit ->
      department_of_state_dashboard]
+
+%%% Because ballot polling audits are mentioned in the current draft
+%%% rules, we must formalize the associated concepts, even though we
+%%% are not implementing support for ballot polling audits in this
+%%% first version of the RLA Tool.
   establish_risk_limit_for_ballot_polling_audits:
     [department_of_state_dashboard, risk_limit ->
      department_of_state_dashboard]
@@ -1641,7 +1639,7 @@ BEGIN
 %%% \end{enumerate}
 
   upload_tabulation_results:
-    [enr_server, rla_tabulation_outcome -> enr_server]
+    [enr_server, cvr_tabulation_outcome -> enr_server]
 
 %%% \subsubsection{Ballot Polling Audit Uploads}
 
@@ -1722,7 +1720,7 @@ BEGIN
      audit_board_dashboard]  
 
 %%% \begin{quotation}
-%%% If supported by the county’s voting system, the audit board may
+%%% If supported by the county's voting system, the audit board may
 %%% refer to the digital image of the audited ballot captured by the
 %%% voting system in order to confirm it has retrieved the correct
 %%% ballot randomly selected for audit. If the scanned ballot was
@@ -1733,7 +1731,7 @@ BEGIN
 %%% canvass deadline.
 %%%
 %%% The audit board must interpret voter markings on ballots selected
-%%% for audit in accordance with the Secretary of State’s voter intent
+%%% for audit in accordance with the Secretary of State's voter intent
 %%% guide.
 %%%
 %%% To the extent applicable, the Secretary of State will compare the
@@ -1878,7 +1876,7 @@ BEGIN
 %%% In order to obtain a new, valid credential, some authority must
 %%% issue credentials to a specific person.
   issue_credential: TYPE =
-    [cdos, state_election, person -> [person, two_factor_authentication]]
+    [cdos, county_election, person -> [person, two_factor_authentication]]
 
 %%% What are the credentials that have been issued to this person?
   credential?: [person -> two_factor_authentication]
@@ -1955,7 +1953,7 @@ BEGIN
 % @trace RDPR-6-Jul-2017 Section 25.1.8
 % @description The software and user interface provided by the
 % Secretary of State in order for counties to conduct RLAs.
-  rla_tool?(election: state_election,
+  rla_tool?(election: county_election,
             front_end: front_end,
             back_end: back_end): make_rla_tool
 END rla_tool
@@ -2047,7 +2045,7 @@ BEGIN
   IMPORTING election,
             fafessl
 
-  e: VAR state_election
+  e: VAR county_election
 % @trace RDPR-6-Jul-2017 Section 25.2.2(E)
 
 %%% According to the section entitled "CVR Export Verification",
@@ -2188,9 +2186,15 @@ BEGIN
     [# location: string, date: string #]
   rla_information_table: TYPE =
     sequence[[RLA, audit_reason, contest, risk_limit]]
-% @todo nealmcb rename to audited_ballot_list_table?
-  ballots_to_audit_list_table: TYPE =
+%%% We formalize the list of ballots under audit and organize them
+%%% both by contest and by county. The former is defined when the RLA
+%%% algorithm randomly chooses ballots. The latter is populated by
+%%% filtering the former by county, and it is what is shared with
+%%% counties via the Audit Board Dashboard.
+  audited_ballot_by_contest_list_table: TYPE =
     sequence[[contest, sequence[ballot_manifest_info]]]
+  audited_ballot_by_county_list_table: TYPE =
+    sequence[[county, sequence[ballot_manifest_info]]]
 
 %%% County administator actions create and update several kinds of
 %%% data. For example, they define who is on their audit boards, they
@@ -2348,16 +2352,13 @@ BEGIN
 %%% protocol),
 
 %%% \item \texttt{select\_contests\_for\_comparison\_audit}: defining
-%%% the contests under audit,
+%%% which contests will be under audit using comparison audits,
 
 %%% \item \texttt{publish\_seed}: the publication of the random seed
 %%% for RLAs in the election under audit,
 
 %%% \item \texttt{establish\_risk\_limit\_for\_comparison\_audits}:
 %%% establishments of risk limits for the election under audit,
-
-%%% \item \texttt{select\_contest\_for\_comparison\_audit}: selection
-%%% of audited contests for the election under audit,
 
 %%% \item \texttt{public\_ballots\_to\_audit}: publishing the list of
 %%% ballots to be audited for each audited contest,
@@ -2471,6 +2472,11 @@ BEGIN
 %%% \texttt{upload\_verified\_cvrs}, and
 %%% \texttt{upload\_tabulation\_results}, the meaning and use of each
 %%% is clear from its definition.
+%%%
+%%% \subsection{Audit Board Dashboard Protocol}
+%%% \label{sec:Audit_Board_Dashboard_Protocol}
+%%%
+%%% 
 
 END protocol
 
