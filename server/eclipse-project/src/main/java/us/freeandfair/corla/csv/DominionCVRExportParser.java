@@ -11,9 +11,6 @@
 
 package us.freeandfair.corla.csv;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.time.Instant;
@@ -37,6 +34,7 @@ import us.freeandfair.corla.Main;
 import us.freeandfair.corla.hibernate.Persistence;
 import us.freeandfair.corla.model.BallotStyle;
 import us.freeandfair.corla.model.CastVoteRecord;
+import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.Choice;
 import us.freeandfair.corla.model.Contest;
 
@@ -115,7 +113,8 @@ public class DominionCVRExportParser implements CVRExportParser {
   /**
    * The session we're using for persistence.
    */
-  private Session my_session = Persistence.NO_SESSION;
+  // note that we have not turned on persistence yet
+  private final Session my_session = Persistence.NO_SESSION;
   
   /**
    * The transaction we're using for persistence.
@@ -293,8 +292,9 @@ public class DominionCVRExportParser implements CVRExportParser {
         my_ballot_styles.put(ballot_style_name, bs);
       }
       
-      return CastVoteRecord.instance(false, the_timestamp, my_county_id, tabulator_id,
-                                     batch_id, record_id, imprinted_id, 
+      return CastVoteRecord.instance(RecordType.UPLOADED, 
+                                     the_timestamp, my_county_id, 
+                                     tabulator_id, batch_id, record_id, imprinted_id, 
                                      my_ballot_styles.get(ballot_style_name), choices);
     } catch (final NumberFormatException e) {
       return null;

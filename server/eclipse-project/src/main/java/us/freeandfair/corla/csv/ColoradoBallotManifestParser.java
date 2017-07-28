@@ -25,9 +25,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.hibernate.Persistence;
 import us.freeandfair.corla.model.BallotManifestInfo;
-import us.freeandfair.corla.model.CastVoteRecord;
 
 /**
  * @description <description>

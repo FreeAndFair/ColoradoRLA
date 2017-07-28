@@ -184,7 +184,7 @@ public class BallotManifestInfo {
    * @return the requested ballot manifest information.
    */
   public static synchronized Collection<BallotManifestInfo> 
-      getBallotManifestInfo(final Set<String> the_county_ids) {
+      getMatching(final Set<String> the_county_ids) {
     final Set<BallotManifestInfo> result = new HashSet<BallotManifestInfo>();
     final boolean check_county = the_county_ids != null && !the_county_ids.isEmpty();
     
@@ -196,6 +196,13 @@ public class BallotManifestInfo {
     }
     
     return result;
+  }
+
+  /**
+   * @return all known ballot manifest information.
+   */
+  public static synchronized Collection<BallotManifestInfo> getAll() {
+    return new HashSet<BallotManifestInfo>(CACHE.keySet());
   }
 
   /**

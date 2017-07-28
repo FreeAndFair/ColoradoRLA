@@ -29,6 +29,7 @@ import us.freeandfair.corla.Main;
 import us.freeandfair.corla.csv.CVRExportParser;
 import us.freeandfair.corla.csv.DominionCVRExportParser;
 import us.freeandfair.corla.model.CastVoteRecord;
+import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 
 /**
  * The "CVR upload" endpoint.
@@ -37,7 +38,7 @@ import us.freeandfair.corla.model.CastVoteRecord;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class CVRUpload implements Endpoint {
+public class CVRExportUpload implements Endpoint {
   /**
    * {@inheritDoc}
    */
@@ -74,7 +75,7 @@ public class CVRUpload implements Endpoint {
         ok = parser.parse();
         Main.LOGGER.info(parser.cvrs().size() + " CVRs parsed from " + county + 
                          " county upload file");
-        Main.LOGGER.info(CastVoteRecord.getCVRs(null, true).size() + 
+        Main.LOGGER.info(CastVoteRecord.getMatching(null, RecordType.UPLOADED).size() + 
                          " uploaded CVRs in storage");
       } catch (final IOException | ServletException e) {
         ok = false;

@@ -68,7 +68,7 @@ public class BallotManifestUpload implements Endpoint {
       ok = parser.parse();
       Main.LOGGER.info(parser.ballotManifestInfo().size() + 
                        " ballot manifest records parsed from upload file");
-      Main.LOGGER.info(BallotManifestInfo.getBallotManifestInfo(null).size() + 
+      Main.LOGGER.info(BallotManifestInfo.getMatching(null).size() + 
                        " uploaded ballot manifest records in storage");
     } catch (final IOException | ServletException e) {
       ok = false;

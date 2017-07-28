@@ -12,10 +12,13 @@
 package us.freeandfair.corla.model;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -105,6 +108,30 @@ public class BallotStyle implements Serializable {
     return current_id++;
   }
   
+  /**
+   * Get all ballot styles that match the specified ID (normally, we would expect
+   * there to only be one, but malformed data can cause that not to happen).
+   * 
+   * @param the_id The ID. If this is null, all ballot styles are returned.
+   * @return the requested ballot styles.
+   */
+  public static synchronized Collection<BallotStyle> getMatching(final String the_id) {
+    final Set<BallotStyle> result = new HashSet<BallotStyle>();
+    for (final BallotStyle bs : CACHE.keySet()) {
+      if (the_id == null || the_id.equals(bs.id())) {
+        result.add(bs);
+      }
+    }
+    return result;
+  }
+  
+  /**
+   * @return all known ballot styles.
+   */
+  public static synchronized Collection<BallotStyle> getAll() {
+    return new HashSet<BallotStyle>(CACHE.keySet());
+  }
+
   /**
    * Returns a ballot style with the specified parameters.
    * 

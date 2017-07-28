@@ -33,8 +33,16 @@ import spark.Request;
 import spark.Response;
 import spark.Service;
 
+import us.freeandfair.corla.endpoint.ACVRDownload;
+import us.freeandfair.corla.endpoint.ACVRDownloadByCounty;
+import us.freeandfair.corla.endpoint.BallotManifestDownload;
+import us.freeandfair.corla.endpoint.BallotManifestDownloadByCounty;
 import us.freeandfair.corla.endpoint.BallotManifestUpload;
-import us.freeandfair.corla.endpoint.CVRUpload;
+import us.freeandfair.corla.endpoint.BallotStyleDownload;
+import us.freeandfair.corla.endpoint.BallotStyleDownloadByID;
+import us.freeandfair.corla.endpoint.CVRDownload;
+import us.freeandfair.corla.endpoint.CVRDownloadByCounty;
+import us.freeandfair.corla.endpoint.CVRExportUpload;
 import us.freeandfair.corla.endpoint.Endpoint;
 import us.freeandfair.corla.endpoint.Root;
 import us.freeandfair.corla.gson.FreeAndFairNamingStrategy;
@@ -46,6 +54,10 @@ import us.freeandfair.corla.hibernate.Persistence;
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 0.0.1
  */
+// the endpoints are excessive imports, but this may be dealt with differently
+// later, as for example by making a list of classes somewhere and instantiating
+// the endpoints dynamically
+@SuppressWarnings("PMD.ExcessiveImports")
 public final class Main {
   /**
    * The name of the default properties resource.
@@ -248,9 +260,16 @@ public final class Main {
     // available endpoints
     
     my_endpoints.add(new Root());
-    my_endpoints.add(new CVRUpload());
+    my_endpoints.add(new ACVRDownload());
+    my_endpoints.add(new ACVRDownloadByCounty());
+    my_endpoints.add(new CVRExportUpload());
+    my_endpoints.add(new CVRDownloadByCounty());
+    my_endpoints.add(new CVRDownload());
     my_endpoints.add(new BallotManifestUpload());
-
+    my_endpoints.add(new BallotManifestDownloadByCounty());
+    my_endpoints.add(new BallotManifestDownload());
+    my_endpoints.add(new BallotStyleDownloadByID());
+    my_endpoints.add(new BallotStyleDownload());
     activateEndpoints();
   }
     
