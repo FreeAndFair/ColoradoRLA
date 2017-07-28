@@ -58,7 +58,7 @@ public class Choice implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.TABLE)
   @SuppressWarnings("PMD.ImmutableField")
-  private long my_db_id = getID();
+  private long my_id = getID();
 
   /**
    * The choice name.
@@ -109,7 +109,7 @@ public class Choice implements Serializable {
       result = CACHE.get(result);
     } else {
       CACHE.put(result, result);
-      BY_ID.put(result.dbID(), result);
+      BY_ID.put(result.id(), result);
     }
     return result;
   }
@@ -127,8 +127,8 @@ public class Choice implements Serializable {
   /**
    * @return the database ID.
    */
-  public long dbID() {
-    return my_db_id;
+  public long id() {
+    return my_id;
   }
   
   /**

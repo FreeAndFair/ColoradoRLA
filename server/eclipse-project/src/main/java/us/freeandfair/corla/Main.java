@@ -39,10 +39,15 @@ import us.freeandfair.corla.endpoint.BallotManifestDownload;
 import us.freeandfair.corla.endpoint.BallotManifestDownloadByCounty;
 import us.freeandfair.corla.endpoint.BallotManifestUpload;
 import us.freeandfair.corla.endpoint.BallotStyleDownload;
+import us.freeandfair.corla.endpoint.BallotStyleDownloadByCounty;
 import us.freeandfair.corla.endpoint.BallotStyleDownloadByID;
 import us.freeandfair.corla.endpoint.CVRDownload;
 import us.freeandfair.corla.endpoint.CVRDownloadByCounty;
+import us.freeandfair.corla.endpoint.CVRDownloadByID;
 import us.freeandfair.corla.endpoint.CVRExportUpload;
+import us.freeandfair.corla.endpoint.ContestDownload;
+import us.freeandfair.corla.endpoint.ContestDownloadByCounty;
+import us.freeandfair.corla.endpoint.ContestDownloadByID;
 import us.freeandfair.corla.endpoint.Endpoint;
 import us.freeandfair.corla.endpoint.Root;
 import us.freeandfair.corla.gson.FreeAndFairNamingStrategy;
@@ -93,7 +98,7 @@ public final class Main {
    * The logger.
    */
   public static final Logger LOGGER = LogManager.getLogger(LOGGER_NAME);
-
+ 
   /**
    * The Gson object to use for translation to and from JSON; since 
    * Gson is thread-safe, we only need one for the system. Note that
@@ -105,6 +110,11 @@ public final class Main {
       setFieldNamingStrategy(new FreeAndFairNamingStrategy()).
       setPrettyPrinting().create();
   
+  /**
+   * The "no spark" constant.
+   */
+  private static final Service NO_SPARK = null;
+ 
   /**
    * The properties loaded from the properties file.
    */
@@ -118,7 +128,7 @@ public final class Main {
   /**
    * Our Spark service.
    */
-  private Service my_spark;
+  private Service my_spark = NO_SPARK;
   
   // Constructors
 
@@ -264,12 +274,17 @@ public final class Main {
     my_endpoints.add(new ACVRDownloadByCounty());
     my_endpoints.add(new CVRExportUpload());
     my_endpoints.add(new CVRDownloadByCounty());
+    my_endpoints.add(new CVRDownloadByID());
     my_endpoints.add(new CVRDownload());
     my_endpoints.add(new BallotManifestUpload());
     my_endpoints.add(new BallotManifestDownloadByCounty());
     my_endpoints.add(new BallotManifestDownload());
+    my_endpoints.add(new BallotStyleDownloadByCounty());
     my_endpoints.add(new BallotStyleDownloadByID());
     my_endpoints.add(new BallotStyleDownload());
+    my_endpoints.add(new ContestDownloadByCounty());
+    my_endpoints.add(new ContestDownloadByID());
+    my_endpoints.add(new ContestDownload());
     activateEndpoints();
   }
     
