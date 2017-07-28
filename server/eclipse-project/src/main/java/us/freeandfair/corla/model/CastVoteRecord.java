@@ -244,7 +244,7 @@ public class CastVoteRecord implements Serializable {
    * empty or null, all CVRs for all counties are retrieved.
    * @param the_exclude_audit_records true to exclude audit records, false
    * otherwise.
-   * @return all CVRs for the specified county ID.
+   * @return the requested CVRs.
    */
   public static synchronized Collection<CastVoteRecord> 
       getCVRs(final Set<String> the_county_ids, final boolean the_exclude_audit_records) {

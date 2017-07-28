@@ -33,6 +33,7 @@ import spark.Request;
 import spark.Response;
 import spark.Service;
 
+import us.freeandfair.corla.endpoint.BallotManifestUpload;
 import us.freeandfair.corla.endpoint.CVRUpload;
 import us.freeandfair.corla.endpoint.Endpoint;
 import us.freeandfair.corla.endpoint.Root;
@@ -248,6 +249,7 @@ public final class Main {
     
     my_endpoints.add(new Root());
     my_endpoints.add(new CVRUpload());
+    my_endpoints.add(new BallotManifestUpload());
 
     activateEndpoints();
   }

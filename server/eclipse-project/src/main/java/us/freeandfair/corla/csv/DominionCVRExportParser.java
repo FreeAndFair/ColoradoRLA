@@ -422,34 +422,4 @@ public class DominionCVRExportParser implements CVRExportParser {
   public synchronized Set<BallotStyle> ballotStyles() {
     return new HashSet<BallotStyle>(my_ballot_styles.values());
   }
-  
-  /**
-   * 
-   * <description>
-   * <explanation>
-   * @param
-   */
-  //@ behavior
-  //@   requires P;
-  //@   ensures Q;
-  /*@ pure @
-   */
-  @SuppressWarnings("PMD.SystemPrintln")
-  public static void main(final String... the_args) throws IOException {
-    final Reader r = new FileReader(
-         "/Unsorted/dominion-2017-CVR_Export_20170310104116-clean.csv");
-    final DominionCVRExportParser thing = new DominionCVRExportParser(r, "Foo");
-    thing.parse();
-    //System.err.println(thing.parse());
-    //System.err.println(thing.cvrs());
-    //System.err.println(thing.contests());
-    //System.err.println(thing.ballotStyles());
-    
-    final File file = new File("/Unsorted/test.json");
-    file.createNewFile();
-    final FileWriter fw = new FileWriter(file);
-    fw.write(Main.GSON.toJson(thing.cvrs()));
-    fw.close();
-  }
-
 }

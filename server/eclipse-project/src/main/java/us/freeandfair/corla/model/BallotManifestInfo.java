@@ -12,8 +12,11 @@
 package us.freeandfair.corla.model;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -162,6 +165,39 @@ public class BallotManifestInfo {
     return BY_ID.get(the_id);
   }
   
+  /**
+   * "Forgets" the specified ballot manifest info.
+   * 
+   * @param the_bmi The info to "forget".
+   */
+  public static synchronized void forget(final BallotManifestInfo the_bmi) {
+    CACHE.remove(the_bmi);
+    BY_ID.remove(the_bmi.dbID());
+  }
+  
+  /**
+   * Gets all known ballot manifest information for the specified counties.
+   * 
+   * @param the_county_ids The county ID to retrieve ballot manifest information 
+   * for; if this set is empty or null, all ballot manifest information for all 
+   * counties is retrieved.
+   * @return the requested ballot manifest information.
+   */
+  public static synchronized Collection<BallotManifestInfo> 
+      getBallotManifestInfo(final Set<String> the_county_ids) {
+    final Set<BallotManifestInfo> result = new HashSet<BallotManifestInfo>();
+    final boolean check_county = the_county_ids != null && !the_county_ids.isEmpty();
+    
+    for (final BallotManifestInfo bmi : CACHE.keySet()) {
+      if (check_county && !the_county_ids.contains(bmi.countyID())) {
+        continue;
+      }
+      result.add(bmi);
+    }
+    
+    return result;
+  }
+
   /**
    * @return the database ID.
    */

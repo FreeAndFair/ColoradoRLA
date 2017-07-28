@@ -25,7 +25,9 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.hibernate.Persistence;
 import us.freeandfair.corla.model.BallotManifestInfo;
+import us.freeandfair.corla.model.CastVoteRecord;
 
 /**
  * @description <description>
@@ -126,6 +128,22 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
   }
   
   /**
+   * Commits the changes from the parsing to persistent storage.
+   */
+  private void commit() {
+    // nothing to do here, because we don't have persistence yet
+  }
+  
+  /**
+   * Aborts the changes from parsing.
+   */
+  private void abort() {
+    for (final BallotManifestInfo bmi : my_manifest_info) {
+      BallotManifestInfo.forget(bmi);
+    }
+  }
+  
+  /**
    * Parse the supplied data export. If it has already been parsed, this
    * method returns immediately.
    * 
@@ -160,13 +178,21 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
         }
       }
     } catch (final NoSuchElementException e) {
-      Main.LOGGER.error("Could not parse CVR file because it had a malformed header");
+      Main.LOGGER.error("Could not parse ballot manifest file because it had " +
+                        "a malformed header");
       result = false;
     }
     
-    // TODO if we had any kind of parse error, do we scrap the whole import? 
+    // if we had any kind of parse error, we scrap the whole import
+    
     my_parse_success = result;
     my_parse_status = true;
+    if (my_parse_success) {
+      commit();
+    } else {
+      abort();
+    }
+
     return result;
   }
 
