@@ -80,7 +80,13 @@ const BallotReview = ({ ballotMarks }: any) => {
 };
 
 const ReviewStage = (props: any) => {
-    const { county, currentBallot, marks: rawMarks, nextStage } = props;
+    const {
+        county,
+        currentBallot,
+        marks: rawMarks,
+        nextStage,
+        selectNextBallot,
+    } = props;
 
     const ballotMarks = _.mapValues(rawMarks, ({choices, comments }: any, contestId: any) => {
         const contest = findById(county.contests, contestId);
@@ -89,11 +95,16 @@ const ReviewStage = (props: any) => {
         return { contest, marks, comments };
     });
 
+    const onClick  = () => {
+        selectNextBallot();
+        nextStage();
+    };
+
     return (
         <div>
             <BallotReview ballotMarks={ ballotMarks } />
             <div className='pt-card'>
-                <button className='pt-button pt-intent-primary' onClick={ nextStage }>
+                <button className='pt-button pt-intent-primary' onClick={ onClick }>
                     Submit & Next Ballot
                 </button>
             </div>
