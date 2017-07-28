@@ -13,14 +13,21 @@ const defaultState = {
 
 export default function root(state: AppState = defaultState, action: any) {
     switch (action.type) {
-    case 'LOGIN':
+
+    case 'LOGIN': {
         return { ...state, loggedIn: true };
-    case 'FETCH_INITIAL_STATE_SEND':
+    }
+
+    case 'FETCH_INITIAL_STATE_SEND': {
         // TODO: add flag to indicate pending fetch.
         return state;
-    case 'FETCH_INITIAL_STATE_RECEIVE':
+    }
+
+    case 'FETCH_INITIAL_STATE_RECEIVE': {
         // TODO: should be a deep merge.
         return action.data;
+    }
+
     case 'UPDATE_BOARD_MEMBER': {
         const { index, name, party } = action.data;
         const nextState = { ...state };
@@ -30,6 +37,7 @@ export default function root(state: AppState = defaultState, action: any) {
 
         return nextState;
     }
+
     case 'UPDATE_BALLOT_MARKS': {
         const { ballotId, choices, comments, contestId } = action.data;
         const nextState = { ...state };
@@ -47,6 +55,7 @@ export default function root(state: AppState = defaultState, action: any) {
 
         return nextState;
     }
+
     default:
         return state;
     }
