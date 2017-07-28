@@ -54,9 +54,19 @@ const ballotStyles = {
     },
 };
 
+const m = (style: any) => {
+    const marks: any = {};
+
+    for (const c of style.contests) {
+        marks[c.id] = { choices: [], comments: '' };
+    }
+
+    return marks;
+};
+
 // `marks` : { [ContestId]: ChoiceId[] }
 const b = (id: any, audited: any, style: any) =>
-    ({ id, audited, style, marks: _.clone(style) });
+    ({ id, audited, style, marks: m(style) });
 
 const ballots = [
     b(11, false, ballotStyles.styleA),
