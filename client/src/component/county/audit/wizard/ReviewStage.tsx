@@ -2,6 +2,8 @@ import * as React from 'react';
 
 import * as _ from 'lodash';
 
+import findById from '../../../../findById';
+
 
 const BallotContestResultVoteForN = () => (
     <div className='pt-card'>
@@ -74,10 +76,6 @@ const BallotReview = ({ ballotMarks }: any) => {
 
     return <div className='pt-card'>{ contestReviews }</div>;
 };
-
-const findById = (arr: any[], id: any) =>
-    _.find(arr, (o: any) => o.id === id);
-
 
 const ReviewStage = (props: any) => {
     const { county, nextStage } = props;
