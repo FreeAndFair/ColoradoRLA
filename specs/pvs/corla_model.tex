@@ -1,7 +1,13 @@
 \documentclass{article}
 \usepackage{pvs}
 \usepackage{hyperref}
+\usepackage{cleveref}
 \usepackage{url}
+\usepackage{alltt}
+\usepackage[textwidth=1.7in,colorinlistoftodos]{todonotes}
 \begin{document}
+\newcommand{\todojrk}[1]{\todo[noline,color=yellow!100]{#1}}
+\newcommand{\tododmz}[1]{\todo[noline,color=green!100]{#1}}
 \include{pvs-corla}
+\listoftodos
 \end{document}
