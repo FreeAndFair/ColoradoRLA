@@ -20,17 +20,21 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import us.freeandfair.corla.util.Pair;
 
 /**
- * @description <description>
+ * @description A class for running comparison audits on tabulated data
  * @explanation <explanation>
- * @bon OPTIONAL_BON_TYPENAME
  */
 public class ComparisonAudit {
+
+  /**
+   * Gamma, as presented in the literature:
+   * https://www.stat.berkeley.edu/~stark/Preprints/gentle12.pdf
+   */
+  private static double my_gamma = 1.03905;
 
   /**
    * A map from a contest_ID into a Contest where a Contest is an integer
@@ -44,11 +48,19 @@ public class ComparisonAudit {
    */
   private BigDecimal my_min_margin = BigDecimal.ONE;
 
+  /**
+   * The maximum asn(number of expected ballots to draw) discovered across all
+   * contests added to this audit
+   */
   private int my_max_asn;
 
-  private final double my_gamma = 1.03905;
-
+  /**
+   * The risk limit for the audit. If the audit concludes successfully, this
+   * will be the risk that the election results are incorrect. 1 - risk gives
+   * confidence in the correctness of the election
+   */
   private final BigDecimal my_risk;
+
   /**
    * The total number of ballots cast for these contests
    */
@@ -58,6 +70,10 @@ public class ComparisonAudit {
    * <description> <explanation>
    * 
    * @param the_total_ballots The total number of ballots cast for this audit
+   * @param the_risk The risk limit for the audit. If the audit concludes
+   *          successfully, this will be the risk that the election results are
+   *          incorrect. 1 - risk gives confidence in the correctness of the
+   *          election
    */
   public ComparisonAudit(final int the_total_ballots, final BigDecimal the_risk) {
     my_total_ballots = the_total_ballots;
@@ -66,9 +82,17 @@ public class ComparisonAudit {
   }
 
   /**
-   * <description> <explanation>
+   * Create an audit for the given contests, sets the margin and the expected
+   * ballot selection
    * 
    * @param the_total_ballots The total number of ballots cast for this audit
+   * @param the_risk The risk limit for the audit. If the audit concludes
+   *          successfully, this will be the risk that the election results are
+   *          incorrect. 1 - risk gives confidence in the correctness of the
+   *          election
+   * @param the_contests map from contest identifiers to contests, where
+   *          contests are a pair of the number of winners selected by the
+   *          contest and a map from candidate identifiers to vote counts
    */
   public ComparisonAudit(final int the_total_ballots, final BigDecimal the_risk,
                          final Map<String, Pair<Integer, Map<String, Integer>>> the_contests) {
@@ -78,30 +102,55 @@ public class ComparisonAudit {
     updateMinMargin();
   }
 
-  public static int nmin(final double the_alpha, final double the_gamma, final double the_m,
-                         final double the_o1, final double the_o2, final double the_u1,
-                         final double the_u2) {
-    return (int) (Math
-        .max(the_o1 + the_o2 + the_u1 + the_u1,
-             Math.ceil(-2 * the_gamma *
-                       (Math.log(the_alpha) + the_o1 * Math.log(1 - 1 / (2 * the_gamma)) +
-                        the_o2 * Math.log(1 - 1 / the_gamma) +
-                        the_u1 * Math.log(1 + 1 / (2 * the_gamma)) +
-                        the_u2 * Math.log(1 + 1 / the_gamma)) /
-                       the_m)));
+  /**
+   * 
+   * The stopping sample size as defined in the literature:
+   * https://www.stat.berkeley.edu/~stark/Preprints/gentle12.pdf
+   * 
+   * @param the_o1 the number of one-vote overstatements
+   * @param the_o2 the number of two-vote overstatements
+   * @param the_u1 the number of one-vote understatements
+   * @param the_u2 the number of two-vote understatements
+   */
+  private int nmin(final double the_o1, final double the_o2, final double the_u1,
+                   final double the_u2) {
+    return (int) (Math.max(the_o1 + the_o2 + the_u1 + the_u1, Math.ceil(
+        -2 * my_gamma *
+              (Math.log(my_risk.doubleValue()) + the_o1 * Math.log(1 - 1 / (2 * my_gamma)) +
+               the_o2 * Math.log(1 - 1 / my_gamma) +
+               the_u1 * Math.log(1 + 1 / (2 * my_gamma)) +
+               the_u2 * Math.log(1 + 1 / my_gamma)) /
+              my_min_margin.doubleValue())));
   }
 
-  public static int nminfromrates(final double the_alpha, final double the_gamma,
-                                  final double the_m, final double the_r1, final double the_r2,
-                                  final double the_s1, final double the_s2,
-                                  final boolean the_round_up1, final boolean the_round_up2) {
-    double n0 = -2 * the_gamma * Math.log(the_alpha) /
-                (the_m + 2 * the_gamma *
-                         (the_r1 * Math.log(1 - 1 / (2 * the_gamma)) +
-                          the_r2 * Math.log(1 - 1 / the_gamma) +
-                          the_s1 * Math.log(1 + 1 / (2 * the_gamma)) +
-                          the_s2 * Math.log(1 + 1 / the_gamma)));
-    double o1, o2, u1, u2;
+  /**
+   * 
+   * This calculates the sample size, but using expected rates rather than
+   * actual sampled rates
+   * 
+   * @param the_r1 the rate of one-vote overstatements
+   * @param the_r2 the rate of two-vote overstatements
+   * @param the_s1 the rate of one-vote understatements
+   * @param the_s2 the rate of one-vote understatements
+   * @param the_round_up1 always round up the number of one-vote
+   *          over/understatements
+   * @param the_roud_up2 always round up the number of two-vote
+   *          over/understatements
+   */
+  private int nminfromrates(final double the_r1, final double the_r2, final double the_s1,
+                           final double the_s2, final boolean the_round_up1,
+                           final boolean the_round_up2) {
+    double n0 = -2 * my_gamma * Math.log(my_risk.doubleValue()) /
+                (my_min_margin.doubleValue() + 2 * my_gamma *
+                                               (the_r1 * Math.log(1 - 1 / (2 * my_gamma)) +
+                                                the_r2 * Math.log(1 - 1 / my_gamma) +
+                                                the_s1 * Math.log(1 + 1 / (2 * my_gamma)) +
+                                                the_s2 * Math.log(1 + 1 / my_gamma)));
+    double o1;
+    double o2;
+    double u1;
+    double u2;
+
     for (int i = 0; i < 3; i++) {
       if (the_round_up1) {
         o1 = Math.ceil(the_r1 * n0);
@@ -117,31 +166,12 @@ public class ComparisonAudit {
         o2 = Math.round(the_r2 * n0);
         u2 = Math.round(the_s2 * n0);
       }
-      n0 = nmin(the_alpha, the_gamma, the_m, o1, o2, u1, u2);
+      n0 = nmin(o1, o2, u1, u2);
     }
-    return (int) (n0);
-  }
-
-  // TODO: This is for Comparison audits
-  public static int asn(final int the_winner_votes, final int the_loser_votes,
-                        final BigDecimal the_risk, final int the_total_ballots) {
-    final double risk = the_risk.doubleValue();
-
-    final double s_w = ((double) the_winner_votes) / (the_winner_votes + the_loser_votes);
-    final double s_l = ((double) the_loser_votes) / (the_winner_votes + the_loser_votes);
-    final double p_w = the_winner_votes / ((double) the_total_ballots);
-    final double p_l = the_loser_votes / ((double) the_total_ballots);
-    final double z_w = Math.log(2 * s_w);
-    final double z_l = Math.log(2 * s_l);
-    final double numerator = Math.log(1.0 / risk) + z_w / 2;
-    final double denominator = p_w * z_w + p_l * z_l;
-
-    return (int) Math.ceil(numerator / denominator);
+    return (int) n0;
   }
 
   /**
-   * 
-   * <description> <explanation>
    * 
    * @param the_contest_id The identifier for the contest
    * @return True iff the contest has been added to this audit
@@ -151,8 +181,6 @@ public class ComparisonAudit {
   }
 
   /**
-   * 
-   * <description> <explanation>
    * 
    * @param the_contest_id The identifier for the contest the candidate belongs
    *          to
@@ -233,30 +261,34 @@ public class ComparisonAudit {
     if (contest == null) {
       return false;
     }
-    final Pair<BigDecimal, Integer> contest_margin_asn =
-        getMarginASNForContest(contest.getFirst(), contest.getSecond());
 
-    my_min_margin = contest_margin_asn.getFirst().min(my_min_margin);
-    my_max_asn = Math.max(my_max_asn, contest_margin_asn.getSecond());
+    final BigDecimal contest_margin =
+        getMarginForContest(contest.getFirst(), contest.getSecond());
+
+    my_min_margin = contest_margin.min(my_min_margin);
+
+    // this depends on the update to my_min_margin
+    final int max_asn =
+        Math.max(my_max_asn, nminfromrates(.001, .0001, .001, .0001, true, false));
+
+    my_max_asn = Math.max(my_max_asn, max_asn);
     return true;
   }
 
   /**
    * 
-   * <description> <explanation>
-   * 
    * @param the_number_of_winners the number of winners allowed for the contest
    * @param the_votes the votes of the contest
    * @return the diluted margin for the contest
    */
-  private Pair<BigDecimal, Integer> getMarginASNForContest(final int the_number_of_winners,
-                                                   final Map<String, Integer> the_votes) {
+  private BigDecimal getMarginForContest(final int the_number_of_winners,
+                                         final Map<String, Integer> the_votes) {
 
     final ArrayList<Integer> sorted_votes = new ArrayList<>(the_votes.values());
 
     // if we only have winners there is no margin
     if (the_number_of_winners >= sorted_votes.size()) {
-      return new Pair<BigDecimal, Integer>(BigDecimal.ONE, 0);
+      return BigDecimal.ONE;
     }
 
     Collections.sort(sorted_votes, Collections.reverseOrder());
@@ -269,28 +301,31 @@ public class ComparisonAudit {
     // TODO: What do we do in a tie?
     assert margin != 0;
 
-    final BigDecimal dilutedmargin =
-        BigDecimal.valueOf(margin).divide(BigDecimal.valueOf(my_total_ballots));
-
-    final List<Integer> winners = sorted_votes.subList(0, the_number_of_winners);
-    final List<Integer> losers =
-        sorted_votes.subList(the_number_of_winners, sorted_votes.size());
-
-    int max_asn = 0;
-    for (final Integer winnervotes : winners) {
-      for (final Integer loservotes : losers) {
-        max_asn =
-            Math.max(my_max_asn, asn(winnervotes, loservotes, my_risk, my_total_ballots));
-      }
-    }
-    return new Pair<BigDecimal, Integer>(dilutedmargin, max_asn);
+    return BigDecimal.valueOf(margin).divide(BigDecimal.valueOf(my_total_ballots));
   }
 
+  /**
+   * 
+   * @param the_audited The total number of ballots that have been audited for
+   *          this audit
+   * @param the_one_over the total number of ballots with one-vote overstatement
+   * @param the_two_over the total number of ballots with two-vote overstatement
+   * @param the_one_under the total number of ballots with one_vote
+   *          understatement
+   * @param the_one_under the total number of ballots with two_vote
+   *          understatement
+   * @return True if the audit is completed
+   */
+  // @ behavior
+  // @ requires P;
+  // @ ensures Q;
+  /*
+   * @ pure @
+   */
   public boolean auditComplete(final int the_audited, final int the_one_over,
                                final int the_two_over, final int the_one_under,
                                final int the_two_under) {
-    double nmin = nmin(my_risk.doubleValue(), my_gamma, my_min_margin.doubleValue(),
-                       the_one_over, the_two_over, the_one_under, the_two_under);
+    final double nmin = nmin(the_one_over, the_two_over, the_one_under, the_two_under);
     return the_audited >= nmin;
   }
 

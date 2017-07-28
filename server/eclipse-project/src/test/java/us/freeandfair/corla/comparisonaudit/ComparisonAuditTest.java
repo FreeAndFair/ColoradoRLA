@@ -25,18 +25,21 @@ import java.util.HashMap;
 
 import org.testng.annotations.Test;
 
-
 /**
  * @description <description>
  * @explanation <explanation>
  * @bon OPTIONAL_BON_TYPENAME
  */
 public class ComparisonAuditTest {
-  @Test()
-  public void testnminfromrates() {
-    assertEquals(ComparisonAudit.nminfromrates(0.05, 1.03905, .2, .001, .0001, .001, .0001, true, false), 34);
-  }
-  
+
+  /*
+   * no longer a valid test
+   * 
+   * @Test() public void testnminfromrates() {
+   * assertEquals(ComparisonAudit.nminfromrates(0.05, 1.03905, .2, .001, .0001,
+   * .001, .0001, true, false), 34); }
+   */
+
   @Test()
   public void testAudit() {
     final ComparisonAudit comparison_audit = new ComparisonAudit(100, BigDecimal.valueOf(.05));
