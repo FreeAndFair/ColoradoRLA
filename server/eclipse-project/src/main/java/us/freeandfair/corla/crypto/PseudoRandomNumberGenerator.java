@@ -23,15 +23,13 @@ import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
 import java.util.List;
 
-import us.freeandfair.corla.util.Pair;
-
 /**
  * A pseudo-random number generator based on Philip Stark's pseudo-random number
  * generator found at
  * <a href="https://www.stat.berkeley.edu/~stark/Java/Html/sha256Rand.htm">
  * https://www.stat.berkeley.edu/~stark/Java/Html/sha256Rand.htm</a>.
  * 
- * @author Daniel M. Zimmerman
+ * @author Joey Dodds
  * @version 0.0.1
  */
 public class PseudoRandomNumberGenerator {
@@ -90,7 +88,6 @@ public class PseudoRandomNumberGenerator {
       my_sha256_digest = MessageDigest.getInstance("SHA-256");
     } catch (final NoSuchAlgorithmException e) {
       assert false;
-      e.printStackTrace();
     }
     my_random_numbers = new LinkedList<Integer>();
     my_with_replacement = the_with_replacement;
@@ -143,8 +140,7 @@ public class PseudoRandomNumberGenerator {
 
     final byte[] hash_output =
         my_sha256_digest.digest(hash_input.getBytes(StandardCharsets.UTF_8));
-    System.out.println(bytesToHex(hash_output));
-    final BigInteger int_output = new BigInteger(1,hash_output);
+    final BigInteger int_output = new BigInteger(1, hash_output);
 
     final BigInteger in_range =
         int_output.mod(BigInteger.valueOf(my_maximum - my_minimum + 1));
@@ -156,11 +152,4 @@ public class PseudoRandomNumberGenerator {
 
   }
 
-  public String bytesToHex(byte[] in) {
-    final StringBuilder builder = new StringBuilder();
-    for (byte b : in) {
-      builder.append(String.format("%02x", b));
-    }
-    return builder.toString();
-  }
 }
