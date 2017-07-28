@@ -78,15 +78,9 @@ const BallotReview = ({ ballotMarks }: any) => {
 };
 
 const ReviewStage = (props: any) => {
-    const { county, nextStage } = props;
+    const { county, currentBallot, marks: rawMarks, nextStage } = props;
 
-    // `exampleMarks` : { [ContestId]: ChoiceId[] }
-    const exampleMarks = {
-        1: { choices: ['2'], comments: '' },
-        3: { choices: ['8', '9', '11'], comments: '' },
-    };
-
-    const ballotMarks = _.mapValues(exampleMarks, ({choices, comments }: any, contestId: any) => {
+    const ballotMarks = _.mapValues(rawMarks, ({choices, comments }: any, contestId: any) => {
         const contest = findById(county.contests, contestId);
         const marks = _.map(choices, (id: any) => findById(contest.choices, id));
 
