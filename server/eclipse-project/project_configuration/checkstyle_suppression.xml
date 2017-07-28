@@ -5,4 +5,5 @@
 <suppressions>
   <suppress files="[/\\]\..+" checks=".*"/>
   <suppress files=".+\.(?:jar|zip|war|class|tar|bin|jks|properties)$" checks=".*"/>
+  <suppress files="[\\/]test[\\/]" checks=".*"/>
 </suppressions>

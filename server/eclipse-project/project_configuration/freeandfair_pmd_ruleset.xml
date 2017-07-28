@@ -16,21 +16,31 @@ The Free &amp; Fair ruleset checks Java code for possible issues.
   <rule ref="rulesets/java/controversial.xml">
     <exclude name="AvoidFinalLocalVariable"/>
     <exclude name="DataflowAnomalyAnalysis"/>
+    <exclude name="OnlyOneReturn"/>
+    <exclude name="UseConcurrentHashMap"/>
   </rule>
   <rule ref="rulesets/java/coupling.xml">
     <exclude name="LawOfDemeter"/>
   </rule>
-  <rule ref="rulesets/java/design.xml"/>
+  <rule ref="rulesets/java/design.xml">
+    <exclude name="AvoidSynchronizedAtMethodLevel"/>
+  </rule>
   <rule ref="rulesets/java/empty.xml"/>
   <rule ref="rulesets/java/finalizers.xml"/>
   <rule ref="rulesets/java/imports.xml"/>
   <rule ref="rulesets/java/j2ee.xml"/>
-  <rule ref="rulesets/java/junit.xml"/>
+  <rule ref="rulesets/java/junit.xml">
+    <exclude name="JUnitTestContainsTooManyAsserts"/>
+  </rule>
   <!-- rule ref="rulesets/java/logging-jakarta-commons.xml"/ -->
-  <rule ref="rulesets/java/logging-java.xml"/>
+  <rule ref="rulesets/java/logging-java.xml">
+    <exclude name="GuardLogStatementJavaUtil"/>
+  </rule>
   <!-- rule ref="rulesets/java/metrics.xml"/  -->
   <rule ref="rulesets/java/migrating.xml"/>
-  <rule ref="rulesets/java/optimizations.xml"/>
+  <rule ref="rulesets/java/optimizations.xml">
+    <exclude name="AvoidInstantiatingObjectsInLoops"/>
+  </rule>
   <rule ref="rulesets/java/strictexception.xml"/>
   <rule ref="rulesets/java/strings.xml">
     <exclude name="ConsecutiveAppendsShouldReuse"/>
@@ -54,4 +64,12 @@ The Free &amp; Fair ruleset checks Java code for possible issues.
     </properties>
   </rule>
  
+ <!-- customize the "too many methods" rule -->
+ <!-- unfortunately there's no better way to get PMD to deal with the fact -->
+ <!-- that we don't prefix getters with "get". -->
+ <rule ref="rulesets/java/codesize.xml/TooManyMethods">
+   <properties>
+     <property name="maxmethods" value="20"/>
+   </properties>
+ </rule>
  </ruleset>

@@ -76,7 +76,7 @@
     </module>
     <module name="AnonInnerLength"/>
     <module name="ParameterNumber">
-      <property name="max" value="8"/>
+      <property name="max" value="10"/>
     </module>
     <module name="GenericWhitespace"/>
     <module name="EmptyForIteratorPad"/>
@@ -120,7 +120,6 @@
     <module name="FallThrough"/>
     <module name="FinalLocalVariable"/>
     <module name="HiddenField"/>
-    <module name="IllegalCatch"/>
     <module name="IllegalThrows"/>
     <module name="IllegalType">
       <property name="tokens" value="METHOD_DEF,PARAMETER_DEF,VARIABLE_DEF"/>
@@ -218,12 +217,13 @@
     <module name="InnerTypeLast">
       <message key="arrangement.members.before.inner" value="Inner classes should be declared after all fields and methods."/>
     </module>
-    <module name="ImportOrder">
-      <property name="groups" value="/^java\./,javax,org,com,spark"/>
-      <property name="ordered" value="true"/>
-      <property name="separated" value="true"/>
-      <property name="option" value="above"/>
-      <property name="sortStaticImportsAlphabetically" value="true"/>
+    <module name="CustomImportOrder">
+      <property name="customImportOrderRules"
+                value="STATIC###STANDARD_JAVA_PACKAGE###SPECIAL_IMPORTS###THIRD_PARTY_PACKAGE"/>
+      <property name="specialImportsRegExp" value="org"/>
+      <property name="thirdPartyPackageRegExp" value="com|spark"/>
+      <property name="sortImportsInGroupAlphabetically" value="true"/>
+      <property name="separateLineBetweenGroups" value="true"/>
     </module>
   </module>
   <module name="FileLength">

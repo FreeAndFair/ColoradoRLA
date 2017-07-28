@@ -18,6 +18,8 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.log4j.LogManager;
@@ -31,7 +33,20 @@ import spark.Request;
 import spark.Response;
 import spark.Service;
 
+import us.freeandfair.corla.endpoint.ACVRDownload;
+import us.freeandfair.corla.endpoint.ACVRDownloadByCounty;
+import us.freeandfair.corla.endpoint.BallotManifestDownload;
+import us.freeandfair.corla.endpoint.BallotManifestDownloadByCounty;
+import us.freeandfair.corla.endpoint.BallotManifestUpload;
+import us.freeandfair.corla.endpoint.BallotStyleDownload;
+import us.freeandfair.corla.endpoint.BallotStyleDownloadByID;
+import us.freeandfair.corla.endpoint.CVRDownload;
+import us.freeandfair.corla.endpoint.CVRDownloadByCounty;
+import us.freeandfair.corla.endpoint.CVRExportUpload;
+import us.freeandfair.corla.endpoint.Endpoint;
+import us.freeandfair.corla.endpoint.Root;
 import us.freeandfair.corla.gson.FreeAndFairNamingStrategy;
+import us.freeandfair.corla.hibernate.Persistence;
 
 /**
  * The main executable for the ColoradoRLA server. 
@@ -39,6 +54,10 @@ import us.freeandfair.corla.gson.FreeAndFairNamingStrategy;
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 0.0.1
  */
+// the endpoints are excessive imports, but this may be dealt with differently
+// later, as for example by making a list of classes somewhere and instantiating
+// the endpoints dynamically
+@SuppressWarnings("PMD.ExcessiveImports")
 public final class Main {
   /**
    * The name of the default properties resource.
@@ -90,6 +109,16 @@ public final class Main {
    * The properties loaded from the properties file.
    */
   private final Properties my_properties;
+  
+  /**
+   * Our endpoints.
+   */
+  private final List<Endpoint> my_endpoints = new ArrayList<Endpoint>();
+  
+  /**
+   * Our Spark service.
+   */
+  private Service my_spark;
   
   // Constructors
 
@@ -153,11 +182,40 @@ public final class Main {
   }
   
   /**
+   * Activate the endpoints.
+   */
+  private void activateEndpoints() {
+    for (final Endpoint e : my_endpoints) {
+      switch (e.endpointType()) {
+        case GET:
+          my_spark.get(e.endpointName(), (the_request, the_response) -> 
+                       e.endpoint(the_request, the_response));
+          break;
+         
+        case PUT:
+          my_spark.put(e.endpointName(), (the_request, the_response) ->
+                       e.endpoint(the_request, the_response));
+          break;
+          
+        case POST:
+          my_spark.post(e.endpointName(), (the_request, the_response) ->
+                        e.endpoint(the_request, the_response));
+          break;
+          
+        default:
+      }
+    }
+  }
+  
+  /**
    * Starts a ColoradoRLA server.
    */
   public void start() {
     LOGGER.info("starting server with properties: " + my_properties);
-    
+
+    // provide properties to the persistence engine
+    Persistence.setProperties(my_properties);
+
     // get the port numbers from properties
     final int http_port = parsePortNumber("http_port", DEFAULT_HTTP_PORT);
     final int https_port = parsePortNumber("https_port", DEFAULT_HTTPS_PORT);
@@ -180,14 +238,14 @@ public final class Main {
     // if we have a keystore, everything is on SSL except the redirect; otherwise,
     // everything is in plaintext
     
-    final Service spark = Service.ignite();
+    my_spark = Service.ignite();
     if (keystore_path == null) {
-      spark.port(http_port);
+      my_spark.port(http_port);
     } else {
-      spark.port(https_port);
+      my_spark.port(https_port);
       final String keystore_password = 
           my_properties.getProperty("keystore_password", null);
-      spark.secure(keystore_path, keystore_password, null, null);
+      my_spark.secure(keystore_path, keystore_password, null, null);
 
       // redirect everything
       final Service redirect = Service.ignite();
@@ -197,14 +255,24 @@ public final class Main {
     }
     
     // static files location
-    spark.staticFileLocation("/us/freeandfair/corla/static");
+    my_spark.staticFileLocation("/us/freeandfair/corla/static");
 
     // available endpoints
-    spark.get("/", (the_request, the_response) -> {
-      return "<title>ColoradoRLA Server</title><h1>ColoradoRLA Server</h1>";
-    });
+    
+    my_endpoints.add(new Root());
+    my_endpoints.add(new ACVRDownload());
+    my_endpoints.add(new ACVRDownloadByCounty());
+    my_endpoints.add(new CVRExportUpload());
+    my_endpoints.add(new CVRDownloadByCounty());
+    my_endpoints.add(new CVRDownload());
+    my_endpoints.add(new BallotManifestUpload());
+    my_endpoints.add(new BallotManifestDownloadByCounty());
+    my_endpoints.add(new BallotManifestDownload());
+    my_endpoints.add(new BallotStyleDownloadByID());
+    my_endpoints.add(new BallotStyleDownload());
+    activateEndpoints();
   }
-  
+    
   // Static Methods
   
   /**
