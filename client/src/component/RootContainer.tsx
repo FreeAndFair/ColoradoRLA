@@ -34,8 +34,10 @@ export interface RootContainerProps {
     store: Store<any>;
 }
 
-const LoginRoute = ({ loggedIn, page: Page, ...rest }: any) => {
+const LoginRoute = ({ store, page: Page, ...rest }: any) => {
     const render = (props: any) => {
+        const { loggedIn } = store.getState();
+
         if (loggedIn) {
             return <Page { ...props } />;
         }
@@ -48,7 +50,7 @@ const LoginRoute = ({ loggedIn, page: Page, ...rest }: any) => {
 
 type RouteDef = [string, React.ComponentClass];
 
-const makeRoute = (loggedIn: boolean) => (def: RouteDef) => {
+const makeRoute = (store: any) => (def: RouteDef) => {
     const [path, Page] = def;
     return (
         <LoginRoute
@@ -56,7 +58,7 @@ const makeRoute = (loggedIn: boolean) => (def: RouteDef) => {
             key={ path }
             path={ path }
             page={ Page }
-            loggedIn={ loggedIn }
+            store={ store }
         />
     );
 };
@@ -83,14 +85,13 @@ const routes: RouteDef[] = [
 export class RootContainer extends React.Component<RootContainerProps, void> {
     public render() {
         const { store } = this.props;
-        const { loggedIn } = store.getState();
 
         return (
             <Provider store={ store }>
                 <Router>
                     <Switch>
                         <Route exact path='/login' component={ LoginContainer } />
-                        { routes.map(makeRoute(loggedIn)) }
+                        { routes.map(makeRoute(store)) }
                     </Switch>
                 </Router>
             </Provider>
