@@ -54,19 +54,26 @@ const ContestInfo = ({ contest }: any) => {
 };
 
 const ContestChoices = (props: any) => {
-    const { choices, updateBallotMarks } = props;
+    const { choices, marks, updateBallotMarks } = props;
 
-    const updateChoices = (e: any) => {
-        const { checked } = e.target;
-        updateBallotMarks({});
+    const updateChoiceById = (id: number) => (e: any) => {
+        const nextChoices = _.without(marks.choices, id);
+
+        if (e.target.checked) {
+            nextChoices.push(id);
+        }
+
+        updateBallotMarks({ choices: nextChoices });
     };
 
     const choiceForms = _.map(choices, (c: any) => {
+        const checked = _.includes(marks.choices, c.id);
+
         return (
             <Checkbox
                 key={ c.id }
-                checked={ false }
-                onChange={ updateChoices }
+                checked={ checked }
+                onChange={ updateChoiceById(c.id) }
                 label={ c.name }
             />
         );
@@ -108,6 +115,7 @@ const BallotContestMarkForm = (props: any) => {
             <ContestInfo contest={ contest } />
             <ContestChoices
                 choices={ choices }
+                marks={ marks[contest.id] }
                 updateBallotMarks={ updateBallotMarks }
             />
             <div className='pt-card'>
