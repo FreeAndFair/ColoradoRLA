@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Provider, Store } from 'react-redux';
 import {
     BrowserRouter as Router,
+    Redirect,
     Route,
     Switch,
 } from 'react-router-dom';
@@ -33,15 +34,34 @@ export interface RootContainerProps {
     store: Store<any>;
 }
 
+const LoginRoute = ({ loggedIn, page: Page, ...rest }: any) => {
+    const render = (props: any) => {
+        if (loggedIn) {
+            return <Page { ...props } />;
+        }
+
+        return <Redirect to='/login' />;
+    };
+
+    return <Route render={ render } { ...rest } />;
+};
+
 type RouteDef = [string, React.ComponentClass];
 
-const makeRoute = (def: RouteDef) => {
-    const [path, Component] = def;
-    return <Route exact key={ path } path={ path } component={ Component } />;
+const makeRoute = (loggedIn: boolean) => (def: RouteDef) => {
+    const [path, Page] = def;
+    return (
+        <LoginRoute
+            exact
+            key={ path }
+            path={ path }
+            page={ Page }
+            loggedIn={ loggedIn }
+        />
+    );
 };
 
 const routes: RouteDef[] = [
-    ['/login', LoginContainer],
     ['/county', CountyHomeContainer],
     ['/county/audit', CountyAuditContainer],
     ['/county/contest', CountyContestOverviewContainer],
@@ -63,12 +83,14 @@ const routes: RouteDef[] = [
 export class RootContainer extends React.Component<RootContainerProps, void> {
     public render() {
         const { store } = this.props;
+        const { loggedIn } = store.getState();
 
         return (
             <Provider store={ store }>
                 <Router>
                     <Switch>
-                        { routes.map(makeRoute) }
+                        <Route exact path='/login' component={ LoginContainer } />
+                        { routes.map(makeRoute(loggedIn)) }
                     </Switch>
                 </Router>
             </Provider>
