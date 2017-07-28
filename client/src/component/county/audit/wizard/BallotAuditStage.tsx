@@ -4,6 +4,8 @@ import * as _ from 'lodash';
 
 import { Checkbox, EditableText, Radio, RadioGroup } from '@blueprintjs/core';
 
+import findById from '../../../../findById';
+
 
 const AuditInstructions = ({ ballotsToAudit, currentBallot }: any) => (
     <div className='pt-card'>
@@ -51,15 +53,22 @@ const ContestInfo = ({ contest }: any) => {
     );
 };
 
-const ContestChoices = ({ choices }: any) => {
-    const nop = () => ({});
-    const choiceForms = _.map(choices, (c: any) => (
-        <Checkbox
-            key={ c.id }
-            checked={ false }
-            onChange={ nop }
-            label={ c.name } />
-    ));
+const ContestChoices = ({ choices, updateBallotMarks }: any) => {
+    const updateChoices = (e: any) => {
+        let { checked } = e.target;
+        updateBallotMarks({});
+    };
+
+    const choiceForms = _.map(choices, (c: any) => {
+        return (
+            <Checkbox
+                key={ c.id }
+                checked={ false }
+                onChange={ updateChoices }
+                label={ c.name }
+            />
+        );
+    });
 
     return (
         <div className='pt-card'>
@@ -68,59 +77,83 @@ const ContestChoices = ({ choices }: any) => {
     );
 };
 
-const ContestComments = ({ onChange }: any) => {
+const ContestComments = ({ comments, onChange }: any) => {
     return (
         <div className='pt-card'>
             <label>
                 Comments:
-                <EditableText multiline onChange={ onChange } />
+                <EditableText multiline value={ comments } onChange={ onChange } />
             </label>
         </div>
     );
 };
 
-const BallotContestMarkForm = ({ contest }: any) => {
+const BallotContestMarkForm = (props: any) => {
+    const { contest, county, currentBallot, updateBallotMarks } = props;
     const { name, description, choices, votesAllowed } = contest;
-    const nop = () => ({});
+    const { marks } = currentBallot;
+
+    const updateComments = (comments: any) => {
+        const ballotId = currentBallot.id;
+        const contestId = contest.id;
+        updateBallotMarks({ ballotId, comments, contestId });
+    };
+
+    const updateConsensus = (e: any) => {
+        updateBallotMarks({});
+    };
 
     return (
         <div className='pt-card'>
             <ContestInfo contest={ contest } />
-            <ContestChoices choices={ choices } />
+            <ContestChoices choices={ choices } updateBallotMarks={ updateBallotMarks } />
             <div className='pt-card'>
-                <Checkbox checked={ false } onChange={ nop } label='No consensus' />
+                <Checkbox
+                    label='No consensus'
+                    checked={ false }
+                    onChange={ updateConsensus }
+                />
             </div>
-            <ContestComments onChange={ nop } />
+            <ContestComments comments={ marks.comments } onChange={ updateComments } />
         </div>
     );
 };
 
 const BallotAuditForm = (props: any) => {
-    const { county, currentBallot } = props;
+    const { county, currentBallot, updateBallotMarks } = props;
 
     const contestForms = _.map(currentBallot.style.contests, (c: any) => {
-        return <BallotContestMarkForm key={ c.id } contest={ c } />;
+        return (
+            <BallotContestMarkForm
+                key={ c.id }
+                contest={ c }
+                county={ county }
+                currentBallot={ currentBallot }
+                updateBallotMarks={ updateBallotMarks } />
+        );
     });
 
     return <div>{ contestForms }</div>;
 };
 
 const BallotAuditStage = (props: any) => {
-    const { ballotStyles, county, nextStage } = props;
+    const { ballotStyles, ballots, county, nextStage, updateBallotMarks } = props;
 
     const ballotsToAudit = county.ballots.length;
-    const currentBallot = _.find(county.ballots, (b: any) =>
-        b.id === county.currentBallotId);
+    const currentBallot = findById(county.ballots, county.currentBallotId);
 
     return (
         <div>
             <h2>Ballot verification</h2>
             <AuditInstructions
                 ballotsToAudit={ ballotsToAudit }
-                currentBallot={ currentBallot } />
+                currentBallot={ currentBallot }
+            />
             <BallotAuditForm
                 county={ county }
-                currentBallot={ currentBallot } />
+                currentBallot={ currentBallot }
+                updateBallotMarks={ updateBallotMarks }
+            />
             <button className='pt-button pt-intent-primary' onClick={ nextStage }>
                 Review
             </button>
