@@ -1,3 +1,6 @@
+import * as _ from 'lodash';
+
+
 // tslint:disable
 const oneOfManyContest = {
     name: 'One of Many Contest',
@@ -52,8 +55,8 @@ const ballotStyles = {
 };
 
 // `marks` : { [ContestId]: ChoiceId[] }
-const b = (id: any, audited: any, style: any, marks: any = {}) =>
-    ({ id, audited, style, marks });
+const b = (id: any, audited: any, style: any) =>
+    ({ id, audited, style, marks: _.clone(style) });
 
 const ballots = [
     b(11, false, ballotStyles.styleA),
