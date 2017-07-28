@@ -459,6 +459,7 @@ BEGIN
 % finish tabulating all ballots other than provisional ballots and
 % property owner ballots.  These are the results as reported in state
 % ENR, and should match the CVR data exactly.
+  rla_tabulation_outcome: TYPE FROM election_outcomes
 
 %%% Elections are defined across cohorts of voters arranged in any
 %%% number of ways---geographic, political, professional, and more. In
@@ -1639,7 +1640,7 @@ BEGIN
 %%% \end{enumerate}
 
   upload_tabulation_results:
-    [enr_server, cvr_tabulation_outcome -> enr_server]
+    [enr_server, rla_tabulation_outcome -> enr_server]
 
 %%% \subsubsection{Ballot Polling Audit Uploads}
 
