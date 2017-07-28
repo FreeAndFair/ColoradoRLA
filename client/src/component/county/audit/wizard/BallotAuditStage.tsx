@@ -94,9 +94,7 @@ const BallotContestMarkForm = (props: any) => {
     const { marks } = currentBallot;
 
     const updateComments = (comments: any) => {
-        const ballotId = currentBallot.id;
-        const contestId = contest.id;
-        updateBallotMarks({ ballotId, comments, contestId });
+        updateBallotMarks({ comments });
     };
 
     const updateConsensus = (e: any) => {
@@ -106,7 +104,10 @@ const BallotContestMarkForm = (props: any) => {
     return (
         <div className='pt-card'>
             <ContestInfo contest={ contest } />
-            <ContestChoices choices={ choices } updateBallotMarks={ updateBallotMarks } />
+            <ContestChoices
+                choices={ choices }
+                updateBallotMarks={ updateBallotMarks }
+            />
             <div className='pt-card'>
                 <Checkbox
                     label='No consensus'
@@ -120,9 +121,15 @@ const BallotContestMarkForm = (props: any) => {
 };
 
 const BallotAuditForm = (props: any) => {
-    const { county, currentBallot, updateBallotMarks } = props;
+    const { county, currentBallot } = props;
 
     const contestForms = _.map(currentBallot.style.contests, (c: any) => {
+        const updateBallotMarks: any = (data: any) => props.updateBallotMarks({
+            ballotId: currentBallot.id,
+            contestId: c.id,
+            ...data,
+        });
+
         return (
             <BallotContestMarkForm
                 key={ c.id }
