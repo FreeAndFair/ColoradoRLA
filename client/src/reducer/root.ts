@@ -47,11 +47,17 @@ export default function root(state: AppState = defaultState, action: any) {
 
         const ballot = { ...ballots[ballotIndex] };
         ballot.audited = true;
-        const marks = { ...ballot.marks[contestId], choices, comments };
+        const marks = { ...ballot.marks[contestId] };
+        if (choices) {
+            marks.choices = choices;
+        }
+        if (comments) {
+            marks.comments = comments;
+        }
         ballot.marks[contestId] = marks;
 
         ballots[ballotIndex] = ballot;
-        nextState.county.ballots = ballots
+        nextState.county.ballots = ballots;
 
         return nextState;
     }
