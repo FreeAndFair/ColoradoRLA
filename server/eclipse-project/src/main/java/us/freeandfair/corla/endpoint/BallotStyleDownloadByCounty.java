@@ -12,6 +12,7 @@
 package us.freeandfair.corla.endpoint;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,16 +20,18 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.model.BallotManifestInfo;
+import us.freeandfair.corla.model.BallotStyle;
+import us.freeandfair.corla.model.CastVoteRecord;
+import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 
 /**
- * The ballot manifest by county download endpoint.
+ * The ballot style by county download endpoint.
  * 
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class BallotManifestDownloadByCounty implements Endpoint {
+public class BallotStyleDownloadByCounty implements Endpoint {
   /**
    * {@inheritDoc}
    */
@@ -42,7 +45,7 @@ public class BallotManifestDownloadByCounty implements Endpoint {
    */
   @Override
   public String endpointName() {
-    return "/ballot-manifest/county/:counties";
+    return "/ballot-style/county/:counties";
   }
 
   /**
@@ -52,6 +55,12 @@ public class BallotManifestDownloadByCounty implements Endpoint {
   public String endpoint(final Request the_request, final Response the_response) {
     final String[] counties = the_request.params(":counties").split(",");
     final Set<String> county_set = new HashSet<String>(Arrays.asList(counties));
-    return Main.GSON.toJson(BallotManifestInfo.getMatching(county_set));
+    final Collection<CastVoteRecord> cvr_set = 
+        CastVoteRecord.getMatching(county_set, RecordType.UPLOADED);
+    final Set<BallotStyle> bs_set = new HashSet<BallotStyle>();
+    for (final CastVoteRecord cvr : cvr_set) {
+      bs_set.add(cvr.ballotStyle());
+    }
+    return Main.GSON.toJson(bs_set);
   }
 }

@@ -11,24 +11,22 @@
 
 package us.freeandfair.corla.endpoint;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import org.eclipse.jetty.http.HttpStatus;
 
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.model.BallotManifestInfo;
+import us.freeandfair.corla.model.CastVoteRecord;
 
 /**
- * The ballot manifest by county download endpoint.
+ * The CVR by ID download endpoint.
  * 
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class BallotManifestDownloadByCounty implements Endpoint {
+public class CVRDownloadByID implements Endpoint {
   /**
    * {@inheritDoc}
    */
@@ -42,7 +40,7 @@ public class BallotManifestDownloadByCounty implements Endpoint {
    */
   @Override
   public String endpointName() {
-    return "/ballot-manifest/county/:counties";
+    return "/cvr/id/:id";
   }
 
   /**
@@ -50,8 +48,20 @@ public class BallotManifestDownloadByCounty implements Endpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    final String[] counties = the_request.params(":counties").split(",");
-    final Set<String> county_set = new HashSet<String>(Arrays.asList(counties));
-    return Main.GSON.toJson(BallotManifestInfo.getMatching(county_set));
+    String result = null;
+    try {
+      final CastVoteRecord c = 
+          CastVoteRecord.byID(Long.parseLong(the_request.params(":id")));
+      if (c != null) {
+        result = Main.GSON.toJson(c);
+      }
+    } catch (final NumberFormatException e) {
+      // ignore
+    }
+    if (result == null) {
+      the_response.status(HttpStatus.BAD_REQUEST_400);
+      result = "Not OK";
+    }
+    return result;
   }
 }

@@ -43,7 +43,7 @@ public class CVRDownloadByCounty implements Endpoint {
    */
   @Override
   public String endpointName() {
-    return "/cvr/:counties";
+    return "/cvr/county/:counties";
   }
 
   /**

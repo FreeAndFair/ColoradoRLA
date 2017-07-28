@@ -18,7 +18,7 @@ import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.BallotStyle;
 
 /**
- * The ballot manifest download endpoint.
+ * The ballot style download endpoint.
  * 
  * @author Daniel M. Zimmerman
  * @version 0.0.1
