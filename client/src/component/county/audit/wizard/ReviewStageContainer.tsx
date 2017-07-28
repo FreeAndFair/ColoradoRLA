@@ -26,7 +26,9 @@ const mapStateToProps = (state: any) => {
     };
 };
 
-const mapDispatchToProps = (dispatch: any) => bindActionCreators({}, dispatch);
+const mapDispatchToProps = (dispatch: any) => bindActionCreators({
+    selectNextBallot: () => ({ type: 'SELECT_NEXT_BALLOT' }),
+}, dispatch);
 
 
 export default connect(
