@@ -6,23 +6,27 @@ import {
     Switch,
 } from 'react-router-dom';
 
-import CountyRootContainer from './county';
-import CountyAuditContainer from './county/Audit';
-import CountyContestDetailContainer from './county/ContestDetail';
-import CountyContestOverviewContainer from './county/ContestOverview';
-import HelpRootContainer from './help';
-import GlossaryContainer from './help/Glossary';
-import ManualContainer from './help/Manual';
-import LoginContainer from './login/Login';
-import SoSRootContainer from './sos';
-import AuditContainer from './sos/Audit';
-import AuditRiskLimitContainer from './sos/AuditRiskLimit';
-import AuditRoundContainer from './sos/AuditRound';
-import AuditSeedContainer from './sos/AuditSeed';
-import ContestDetailContainer from './sos/ContestDetail';
-import ContestOverviewContainer from './sos/ContestOverview';
-import CountyDetailContainer from './sos/CountyDetail';
-import CountyOverviewContainer from './sos/CountyOverview';
+import CountyContestDetailContainer from './county/ContestDetailContainer';
+import CountyContestOverviewContainer from './county/ContestOverviewContainer';
+
+import CountyAuditContainer from './county/audit/CountyAuditContainer';
+import CountyHomeContainer from './county/home/CountyHomeContainer';
+
+import GlossaryContainer from './help/GlossaryContainer';
+import HelpRootContainer from './help/HelpRootContainer';
+import ManualContainer from './help/ManualContainer';
+
+import LoginContainer from './login/LoginContainer';
+
+import AuditContainer from './sos/AuditContainer';
+import AuditRiskLimitContainer from './sos/AuditRiskLimitContainer';
+import AuditRoundContainer from './sos/AuditRoundContainer';
+import AuditSeedContainer from './sos/AuditSeedContainer';
+import ContestDetailContainer from './sos/ContestDetailContainer';
+import ContestOverviewContainer from './sos/ContestOverviewContainer';
+import CountyDetailContainer from './sos/CountyDetailContainer';
+import CountyOverviewContainer from './sos/CountyOverviewContainer';
+import SoSRootContainer from './sos/SoSRootContainer';
 
 
 export interface RootContainerProps {
@@ -38,7 +42,7 @@ const makeRoute = (def: RouteDef) => {
 
 const routes: RouteDef[] = [
     ['/login', LoginContainer],
-    ['/county', CountyRootContainer],
+    ['/county', CountyHomeContainer],
     ['/county/audit', CountyAuditContainer],
     ['/county/contest', CountyContestOverviewContainer],
     ['/county/contest/:contestId', CountyContestDetailContainer],

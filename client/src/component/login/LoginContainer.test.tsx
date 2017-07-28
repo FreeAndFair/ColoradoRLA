@@ -4,8 +4,8 @@ import * as test from 'tape';
 
 import { Redirect } from 'react-router-dom';
 
-import LoginPage from '../../component/login/LoginPage';
-import { LoginContainer } from './Login';
+import { LoginContainer } from './LoginContainer';
+import LoginPage from './LoginPage';
 
 
 test('LoginContainer', s => {

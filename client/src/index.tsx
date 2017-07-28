@@ -3,7 +3,7 @@ import * as ReactDOM from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
 import { createStore } from 'redux';
 
-import { RootContainer } from './container/Root';
+import { RootContainer } from './component/RootContainer';
 import rootReducer from './reducer/root';
 
 
@@ -23,9 +23,9 @@ const render = (NextRootContainer: any) => {
 render(RootContainer);
 
 if (module.hot) {
-    module.hot.accept('./container/Root', () => {
+    module.hot.accept('./component/RootContainer', () => {
         const NextRootContainer =
-            (require('./container/Root') as any).RootContainer;
+            (require('./component/RootContainer') as any).RootContainer;
 
         render(NextRootContainer);
     });

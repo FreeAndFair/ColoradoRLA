@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import LoginForm, { FormFields } from '../../component/login/LoginForm';
+import LoginForm, { FormFields } from './LoginForm';
 
 
 export class LoginFormContainer extends React.Component<any, any> {

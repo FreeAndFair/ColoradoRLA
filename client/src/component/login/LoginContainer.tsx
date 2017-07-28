@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import { Redirect } from 'react-router-dom';
 
-import LoginPage from '../../component/login/LoginPage';
+import LoginPage from './LoginPage';
 
 
 interface LoginContainerProps {
