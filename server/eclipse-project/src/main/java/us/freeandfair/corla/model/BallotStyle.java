@@ -11,7 +11,9 @@
 
 package us.freeandfair.corla.model;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,6 +31,11 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 
 /**
  * A ballot style has an identifier and a list of contests on the ballot.
@@ -67,25 +74,26 @@ public class BallotStyle implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.TABLE)
   @SuppressWarnings("PMD.ImmutableField")
-  private long my_db_id = getID();
+  private long my_id = getID();
 
   /**
    * The ballot style ID.
    */
-  private final String my_id;
+  private final String my_identifier;
   
   /**
    * The list of contests on a ballot of this style.
    */
   @ElementCollection
   @Cascade({CascadeType.ALL})
+  @JsonAdapter(ContestJsonAdapter.class)
   private final List<Contest> my_contests;
   
   /**
    * Constructs an empty ballot style, solely for persistence.
    */
   protected BallotStyle() {
-    my_id = "";
+    my_identifier = "";
     my_contests = null;
   }
   
@@ -96,7 +104,7 @@ public class BallotStyle implements Serializable {
    * @param the_contests The list of contests on a ballot of this style.
    */
   protected BallotStyle(final String the_name, final List<Contest> the_contests) {
-    my_id = the_name;
+    my_identifier = the_name;
     // TODO: clone to make immutable
     my_contests = the_contests;
   }
@@ -118,7 +126,7 @@ public class BallotStyle implements Serializable {
   public static synchronized Collection<BallotStyle> getMatching(final String the_id) {
     final Set<BallotStyle> result = new HashSet<BallotStyle>();
     for (final BallotStyle bs : CACHE.keySet()) {
-      if (the_id == null || the_id.equals(bs.id())) {
+      if (the_id == null || the_id.equals(bs.identifier())) {
         result.add(bs);
       }
     }
@@ -145,7 +153,7 @@ public class BallotStyle implements Serializable {
       result = CACHE.get(result);
     } else {
       CACHE.put(result, result);
-      BY_ID.put(result.dbID(), result);
+      BY_ID.put(result.id(), result);
     }
     return result;
   }
@@ -163,15 +171,15 @@ public class BallotStyle implements Serializable {
   /**
    * @return the database ID.
    */
-  public long dbID() {
-    return my_db_id;
+  public long id() {
+    return my_id;
   }
 
   /**
-   * @return the ballot style ID.
+   * @return the ballot style identifier.
    */
-  public String id() {
-    return my_id;
+  public String identifier() {
+    return my_identifier;
   }
   
   /**
@@ -186,7 +194,7 @@ public class BallotStyle implements Serializable {
    */
   @Override
   public String toString() {
-    return "BallotStyle [id=" + my_id + ", contests=" +
+    return "BallotStyle [identifier=" + my_identifier + ", contests=" +
            my_contests + "]";
   }
 
@@ -201,7 +209,7 @@ public class BallotStyle implements Serializable {
     boolean result = true;
     if (the_other instanceof BallotStyle) {
       final BallotStyle other_style = (BallotStyle) the_other;
-      result &= other_style.id().equals(id());
+      result &= other_style.identifier().equals(identifier());
       result &= other_style.contests().equals(contests());
     } else {
       result = false;
@@ -215,5 +223,45 @@ public class BallotStyle implements Serializable {
   @Override
   public int hashCode() {
     return toString().hashCode();
+  }
+  
+  /**
+   * JSON adapter for the internal contest list.
+   */
+  public static final class ContestJsonAdapter extends TypeAdapter<List<Contest>> {
+    /**
+     * Writes a list of contests as an array of contest IDs.
+     * 
+     * @param the_writer The JSON writer.
+     * @param the_list The list of contests to write.
+     */ 
+    @Override
+    public void write(final JsonWriter the_writer, final List<Contest> the_list) 
+        throws IOException {
+      the_writer.beginArray();
+      for (final Contest c : the_list) {
+        the_writer.value(c.id());
+      }
+      the_writer.endArray();
+    }
+    
+    /**
+     * Reads a list of contests from an array of contest IDs.
+     */
+    @Override
+    public List<Contest> read(final JsonReader the_reader) throws IOException {
+      final List<Contest> result = new ArrayList<Contest>();
+      the_reader.beginArray();
+      while (the_reader.hasNext()) {
+        final Contest c = Contest.byID(the_reader.nextLong());
+        if (c == null) {
+          throw new IOException("invalid contest ID");
+        } else {
+          result.add(c);
+        }
+      }
+      the_reader.endArray();
+      return result;
+    }
   }
 }

@@ -17,8 +17,10 @@
 package us.freeandfair.corla.model;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -70,7 +72,7 @@ public class Contest implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.TABLE)
   @SuppressWarnings("PMD.ImmutableField")
-  private long my_db_id = getID();
+  private long my_id = getID();
   
   /**
    * The contest name.
@@ -130,6 +132,13 @@ public class Contest implements Serializable {
   }
   
   /**
+   * @return all known contests.
+   */
+  public static synchronized Collection<Contest> getAll() {
+    return new HashSet<Contest>(CACHE.keySet());
+  }
+
+  /**
    * Returns a contest with the specified parameters.
    * 
    * @param the_name The contest name.
@@ -148,7 +157,7 @@ public class Contest implements Serializable {
       result = CACHE.get(result);
     } else {
       CACHE.put(result, result);
-      BY_ID.put(result.dbID(), result);
+      BY_ID.put(result.id(), result);
     }
     return result;
   }
@@ -166,8 +175,8 @@ public class Contest implements Serializable {
   /**
    * @return the database ID.
    */
-  public long dbID() {
-    return my_db_id;
+  public long id() {
+    return my_id;
   }
   
   /**

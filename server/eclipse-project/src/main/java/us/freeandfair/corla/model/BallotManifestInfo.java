@@ -56,7 +56,7 @@ public class BallotManifestInfo {
   @Id
   @GeneratedValue(strategy = GenerationType.TABLE)
   @SuppressWarnings("PMD.ImmutableField")
-  private long my_db_id = getID();
+  private long my_id = getID();
   
   /**
    * The timestamp for this ballot manifest info, in milliseconds since the epoch.
@@ -150,7 +150,7 @@ public class BallotManifestInfo {
       result = CACHE.get(result);
     } else {
       CACHE.put(result, result);
-      BY_ID.put(result.dbID(), result);
+      BY_ID.put(result.id(), result);
     }
     return result;
   }
@@ -172,7 +172,7 @@ public class BallotManifestInfo {
    */
   public static synchronized void forget(final BallotManifestInfo the_bmi) {
     CACHE.remove(the_bmi);
-    BY_ID.remove(the_bmi.dbID());
+    BY_ID.remove(the_bmi.id());
   }
   
   /**
@@ -208,8 +208,8 @@ public class BallotManifestInfo {
   /**
    * @return the database ID.
    */
-  public long dbID() {
-    return my_db_id;
+  public long id() {
+    return my_id;
   }
   
   /**

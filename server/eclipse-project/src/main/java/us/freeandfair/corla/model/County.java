@@ -58,7 +58,7 @@ public class County implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.TABLE)
   @SuppressWarnings("PMD.ImmutableField")
-  private long my_db_id = getID();
+  private long my_id = getID();
 
   /**
    * The county name.
@@ -68,14 +68,14 @@ public class County implements Serializable {
   /**
    * The county ID.
    */
-  private final String my_id;
+  private final String my_identifier;
   
   /**
    * Constructs an empty county, solely for persistence. 
    */
   protected County() {
     my_name = "";
-    my_id = "";
+    my_identifier = "";
   }
     
   /**
@@ -86,7 +86,7 @@ public class County implements Serializable {
    */
   protected County(final String the_name, final String the_id) {
     my_name = the_name;
-    my_id = the_id;
+    my_identifier = the_id;
   }
   
   /**
@@ -109,7 +109,7 @@ public class County implements Serializable {
       result = CACHE.get(result);
     } else {
       CACHE.put(result, result);
-      BY_ID.put(result.dbID(), result);
+      BY_ID.put(result.id(), result);
     }
     return result;
   }
@@ -127,8 +127,8 @@ public class County implements Serializable {
   /**
    * @return the database ID.
    */
-  public long dbID() {
-    return my_db_id;
+  public long id() {
+    return my_id;
   }
   
   /**
@@ -141,8 +141,8 @@ public class County implements Serializable {
   /**
    * @return the county ID.
    */
-  public String id() {
-    return my_id;
+  public String identifier() {
+    return my_identifier;
   }
   
   /**
@@ -151,7 +151,7 @@ public class County implements Serializable {
   @Override
   public String toString() {
     return "County [name=" + my_name + ", id=" +
-           my_id + "]";
+           my_identifier + "]";
   }
 
   /**
@@ -166,7 +166,7 @@ public class County implements Serializable {
     if (the_other instanceof County) {
       final County other_county = (County) the_other;
       result &= other_county.name().equals(name());
-      result &= other_county.id().equals(id());
+      result &= other_county.identifier().equals(identifier());
     } else {
       result = false;
     }
