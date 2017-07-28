@@ -87,6 +87,17 @@ export const exampleCountyState = {
     ballots,
 
     currentBallotId: 22,
+
+    auditBoard: [
+        {
+            name: 'John Smith',
+            party: 'Democratic Party'
+        },
+        {
+            name: 'Jane Doe',
+            party: 'Republican Party'
+        },
+    ],
 };
 
 const contests = {
