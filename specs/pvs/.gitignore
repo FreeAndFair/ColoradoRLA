@@ -7,5 +7,7 @@
 *.pdf
 *.prf
 *.tdo
+*.bin
+auto
 *_adt.pvs
 pvs-corla.tex
