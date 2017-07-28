@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import AuditBoardSignInStage from './AuditBoardSignInStage';
+import AuditBoardSignInStageContainer from './AuditBoardSignInStageContainer';
 import BallotAuditStage from './BallotAuditStage';
 import ReviewStage from './ReviewStage';
 
@@ -23,7 +23,13 @@ class CountyAuditWizard extends React.Component<any, CountyAuditWizardState> {
 
         switch (this.state.stage) {
             case 'sign-in':
-                return <AuditBoardSignInStage { ...props } />;
+                const { updateBoardMember } = this.props;
+                return (
+                    <AuditBoardSignInStageContainer
+                        { ...props }
+                        updateBoardMember={ updateBoardMember }
+                    />
+                );
             case 'ballot-audit':
                 return <BallotAuditStage { ...props } />;
             case 'review':

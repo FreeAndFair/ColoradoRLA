@@ -1,3 +1,6 @@
+import * as _ from 'lodash';
+
+
 interface AppState {
     loggedIn: boolean;
     county?: any;
@@ -18,6 +21,15 @@ export default function root(state: AppState = defaultState, action: any) {
     case 'FETCH_INITIAL_STATE_RECEIVE':
         // TODO: should be a deep merge.
         return action.data;
+    case 'UPDATE_BOARD_MEMBER': {
+        const { index, name, party } = action.data;
+        const nextState = { ...state };
+
+        nextState.county.auditBoard = _.clone(nextState.county.auditBoard);
+        nextState.county.auditBoard[index] = { name, party };
+
+        return nextState;
+    }
     default:
         return state;
     }
