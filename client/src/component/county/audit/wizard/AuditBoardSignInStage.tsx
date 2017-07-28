@@ -4,8 +4,13 @@ import { EditableText, Radio, RadioGroup } from '@blueprintjs/core';
 
 
 const AuditBoardSignInForm = (props: any) => {
-    const { boardMember } = props;
-    const { name, party } = boardMember;
+    const { boardMember, updateBoardMember } = props;
+    const { index, name, party } = boardMember;
+
+    const onChange = (e: any) => {
+        const nextParty = e.target.value;
+        updateBoardMember(index, name, nextParty);
+    };
 
     return (
         <div>
@@ -18,7 +23,7 @@ const AuditBoardSignInForm = (props: any) => {
             <div className='pt-card'>
                 <RadioGroup
                     label='Party Affiliation'
-                    onChange={ () => ({}) }
+                    onChange={ onChange }
                     selectedValue={ party }
                 >
                     <Radio
@@ -44,8 +49,9 @@ const AuditBoardSignInForm = (props: any) => {
 };
 
 const AuditBoardSignInStage = (props: any) => {
-    const { county, nextStage } = props;
-    const { auditBoard } = county;
+    const { auditBoard, county, nextStage, updateBoardMember } = props;
+
+    const boardMember = (i: number) => ({ index: i, ...auditBoard[i] });
 
     return (
         <div>
@@ -56,8 +62,14 @@ const AuditBoardSignInStage = (props: any) => {
                     today:
                 </p>
             </div>
-            <AuditBoardSignInForm boardMember={ auditBoard[0] } />
-            <AuditBoardSignInForm boardMember={ auditBoard[1] } />
+            <AuditBoardSignInForm
+                boardMember={ boardMember(0) }
+                updateBoardMember={ updateBoardMember }
+            />
+            <AuditBoardSignInForm
+                boardMember={ boardMember(1) }
+                updateBoardMember={ updateBoardMember }
+            />
             <button className='pt-button pt-intent-primary' onClick={ nextStage }>
                 Next
             </button>
