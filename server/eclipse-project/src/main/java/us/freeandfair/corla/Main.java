@@ -35,6 +35,7 @@ import spark.Service;
 
 import us.freeandfair.corla.endpoint.ACVRDownload;
 import us.freeandfair.corla.endpoint.ACVRDownloadByCounty;
+import us.freeandfair.corla.endpoint.ACVRUpload;
 import us.freeandfair.corla.endpoint.BallotManifestDownload;
 import us.freeandfair.corla.endpoint.BallotManifestDownloadByCounty;
 import us.freeandfair.corla.endpoint.BallotManifestUpload;
@@ -272,10 +273,11 @@ public final class Main {
     my_endpoints.add(new Root());
     my_endpoints.add(new ACVRDownload());
     my_endpoints.add(new ACVRDownloadByCounty());
-    my_endpoints.add(new CVRExportUpload());
+    my_endpoints.add(new ACVRUpload());
     my_endpoints.add(new CVRDownloadByCounty());
     my_endpoints.add(new CVRDownloadByID());
     my_endpoints.add(new CVRDownload());
+    my_endpoints.add(new CVRExportUpload());
     my_endpoints.add(new BallotManifestUpload());
     my_endpoints.add(new BallotManifestDownloadByCounty());
     my_endpoints.add(new BallotManifestDownload());

@@ -511,11 +511,13 @@ public class CastVoteRecord implements Serializable {
         if ("contest".equals(the_reader.nextName())) {
           final Contest contest = Contest.byID(the_reader.nextLong());
           final Set<Choice> choices = new HashSet<Choice>();
-          the_reader.beginArray();
-          while (the_reader.hasNext()) {
-            choices.add(Choice.byID(the_reader.nextLong()));
+          if ("choices".equals(the_reader.nextName())) {
+            the_reader.beginArray();
+            while (the_reader.hasNext()) {
+              choices.add(Choice.byID(the_reader.nextLong()));
+            }
+            the_reader.endArray();
           }
-          the_reader.endArray();
           result.put(contest, choices);
         } else {
           error = true;
