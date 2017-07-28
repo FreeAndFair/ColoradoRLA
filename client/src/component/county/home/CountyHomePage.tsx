@@ -99,14 +99,12 @@ const CountyHomePage = (props: any) => {
     const { ballotStyles, contests, county, startAudit } = props;
     const { ballots, info, name, status } = county;
 
-    const countyContests = _.map(county.contests, (id: any) => contests[id]);
-
     return (
         <div className='county-root'>
             <CountyNav />
             <div>
                 <Main name={ name } startAudit={ startAudit } />
-                <Info info={ info } contests={ countyContests } />
+                <Info info={ info } contests={ county.contests } />
             </div>
         </div>
     );

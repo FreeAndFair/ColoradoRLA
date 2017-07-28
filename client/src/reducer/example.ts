@@ -92,9 +92,9 @@ export const exampleCountyState = {
 
 
 const contests = {
-    1: oneOfManyContest,
-    2: yesNoContest,
-    3: someOfManyContest,
+    '1': oneOfManyContest,
+    '2': yesNoContest,
+    '3': someOfManyContest,
 };
 
 export const exampleState = {

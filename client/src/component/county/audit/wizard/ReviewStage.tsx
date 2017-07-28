@@ -46,7 +46,7 @@ const BallotContestResultUndervote = () => (
 
 const BallotContestReview = ({ contest, marks }: any) => {
     const markDOM = _.map(marks, (m: any) => (
-        <div className='pt-card'>
+        <div key={ m.id } className='pt-card'>
             <div>{ m.id }</div>
             <div>{ m.name }</div>
         </div>
