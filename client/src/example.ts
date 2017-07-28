@@ -89,8 +89,6 @@ export const exampleCountyState = {
     currentBallotId: 22,
 };
 
-
-
 const contests = {
     '1': oneOfManyContest,
     '2': yesNoContest,
@@ -103,3 +101,6 @@ export const exampleState = {
     ballotStyles,
     contests,
 };
+
+
+export default exampleState;
