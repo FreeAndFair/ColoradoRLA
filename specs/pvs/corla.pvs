@@ -1,55 +1,61 @@
-%%% \title{Model of the Colorado Risk Limiting Audit (CORLA) tool}
-%%% \author{Joseph R. Kiniry and Daniel M. Zimmerman}
+%%% \title{Formal Specification of the Colorado Risk Limiting Audit (CORLA) tool}
+%%% \author{Joseph R. Kiniry and Daniel M. Zimmerman\\with input from\\Neal McBurnett, Stephanie Singer, and Joey Dodds}
 %%% \date{July 2017}
 %%%
 %%% \maketitle
 %%%
 %%% \section{Introduction}
 %%% This document contains a formal specification of the ColoradoRLA
+%%% system/tool.  It contains a detailed technical specification of
+%%% the system, annotated with prose designed to help readers who are
+%%% not expert in formal system specification understand the scope and
+%%% interpretations of the elements of the specification. The details
+%%% of the specification itself will guide deployment, management,
+%%% maintenance, and evolution of the system delivered to the Colorado
+%%% Department of State. The prose annotations should help Colorado
+%%% Department of State elections domain experts and technical staff
+%%% to assess the completeness and correctness of the ColoradoRLA
 %%% system/tool.
-%%% It contains a detailed technical specification of the system,
-%%% annotated with prose designed to help readers who are not expert
-%%% in formal system specification understand the scope and interpretations
-%%% of the elements of the specification. The details of the specification
-%%% itself will guide deployment, management, maintenance and evolution
-%%% of the system delivered to the Colorado Department of State. The prose
-%%% annotations should help Colorado Department of State elections domain experts
-%%% and technical staff to assess the completeness and correctness of the
-%%% ColoradoRLA system/tool.
 %%%
-%%% This document is written in a literate style using the PVS
-%%% theorem prover. Writing system specifications in this fashion is
-%%% called (formal) domain engineering. Our formal domain model is
-%%% written in PVS's higher-order logic (HOL). Our informal domain
-%%% model is written in the Free \& Fair System Specification Language,
-%%% or FAFESSL for short. FAFESSL is a daughter of Extended BON which
-%%% was, in turn, a daughter of BON, the Business Object Notation.
+%%% This document is written in a literate style using the PVS theorem
+%%% prover. Writing system specifications in this fashion is called
+%%% (formal) domain engineering and system specification. Our formal
+%%% domain model is written in PVS's higher-order logic (HOL). Our
+%%% informal domain model is written in the Free \& Fair System
+%%% Specification Language, or FAFESSL for short. FAFESSL is a
+%%% daughter of Extended BON which was, in turn, a daughter of BON,
+%%% the Business Object Notation.
 %%%
 %%% See our Bibliography project at GitHub,
 %%% \url{https://github.com/FreeAndFair/Bibliography}, for more
 %%% information.
 %%%
+%%% \section{Refinement}
+%%%
 %%% In order to relate PVS to FAFESSL, we must define a refinement
 %%% relationship between their two type systems. Informally, that
 %%% mapping is described in the following paragraph.
 %%%
-%%% We map PVS public theories and their contents to FAFESSL constructs.
-%%% The top-level corla theory maps to the FAFESSL system specification,
-%%% theories map to clusters, (PVS) types map to (FAFESSL) types, and
-%%% functions map to features.  We use special comments to denote
-%%% informal specifications which will be extracted using a shell script
-%%% into a well-typed FAFESSL informal domain model specification.
+%%% We map PVS public theories and their contents to FAFESSL
+%%% constructs.  The top-level corla theory maps to the FAFESSL system
+%%% specification, theories map to clusters, (PVS) types map to
+%%% (FAFESSL) types, and functions map to features.  We use special
+%%% comments to denote informal specifications which will be extracted
+%%% using a shell script into a well-typed FAFESSL informal domain
+%%% model specification.
 %%%
 %%% As mentioned above, we write formal specifications using a
 %%% literate style, a la Knuth. Doing so permits us to document our
 %%% thinking and the system design, from domain modeling and
 %%% engineering all of the way to formal specification and
-%%% verification, in a fashion that produces beautifully printed
-%%% books and interactive hypertext.
+%%% verification, in a fashion that produces beautifully printed books
+%%% and interactive hypertext.
 %%%
 %%% In order to write literate PVS we use our old friend Adriaan de
-%%% Groot's scripts, available at
-%%% \url{http://www.cs.kun.nl/~adridg/research/PVS-literate.html}.
+%%% Groot's scripts, originally available at Dr. de Groot's
+%%% website\footnote{\url{http://www.cs.kun.nl/~adridg/research/PVS-literate.html}}
+%%% and archived in our repository in its \texttt{tools} subdirectory
+%%% at the top-level.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%% Here is a cheat sheet for literate PVS.
@@ -71,19 +77,20 @@
 
 %%% Our formal domain model is also annotated with structured comments
 %%% in precise natural language using a standard set of annotations.
-%%% A shell script processes these annotations and generates a
+%%% A shell script will process these annotations and generates a
 %%% well-typed informal FAFESSL specification.
 %%%
 %%% The FAFESSL annotations we use are as follows:
 %%% \begin{description}
 %%% \item[\@system] the FAFESSL name of the system
 %%% \item[\@cluster] the FAFESSL name of a cluster
-%%% \item[\@explanation] the explanation for an artifact
 %%% \item[\@description] a short description of an artifact
+%%% \item[\@explanation] the (potentially longer) explanation for an
+%%% artifact
 %%% \item[\@indexing-CLAUSE] a prefix for any indexing $<$CLAUSE$>$
 %%% \end{description}
 %%%
-%%% These suffixes are commonly used:
+%%% These suffixes are commonly used for indexing:
 %%% \begin{description}
 %%% \item[author] an author of an artifact
 %%% \item[organization] an organization responsible for an artifact
@@ -94,33 +101,156 @@
 %%%
 %%% \section{System Overview}
 %%%
-%%% The RLA Tool is being developed by Free \& Fair for the Colorado
-%%% Department of State (CDOS henceforth). The RLA Tool facilitates
-%%% running a risk limiting audit across several jurisdictions. In the
-%%% case of Colorado, it facilitates running risk limiting audits
-%%% across all counties in the state simultaneously.
+%%% The RLA Tool is being developed by
+%%% \href{http://freeandfair.us/}{Free \& Fair} for the
+%%% \href{https://www.sos.state.co.us/}{Colorado Department of State}
+%%% (CDOS henceforth). The RLA Tool facilitates running a risk
+%%% limiting audit across several jurisdictions. In the case of
+%%% Colorado, it facilitates running risk limiting audits across all
+%%% counties in the state simultaneously.
 %%%
-%%% The Colorado election law pertaining to election audits is
+%%% \todojrk{Provide a bit more context in the System Overview.}
+%%%
+%%% \section{Kinds of Concepts}
+%%%
+%%% There are basically three kinds of concepts, each of which is a
+%%% part of speech, that are introduced in any specification:
+%%% \begin{itemize}
+
+%%% \item \textbf{Nouns} are formalized by regular (composite)
+%%% types. The set of types available in the prelude of PVS is large,
+%%% ranging from booleans to real-world concepts like time and
+%%% tokenizing leers. Composite types are product types such as tuples
+%%% and records.
+%%% \item \textbf{Verbs} are formalized by function types. PVS's HOL
+%%% supports higher order dependent type declarations, including
+%%% higher order function types. Thus, even the most complex verb
+%%% forms can be formalized in the model.
+%%% \item \textbf{Adjectives and adverbs} are formalized by defining
+%%% function types that apply to formalizations of nouns and verbs,
+%%% respectively. Often these types are either predicate types (i.e.,
+%%% something is true or not), metric types encoded in enumerations or
+%%% ordered structures such as numbers (i.e., how heavy something is),
+%%% or are enumeration types (i.e., what properties something has, but
+%%% with no particular ordering, such as the color of something).
+%%% \end{itemize}
+%%%
+%%% Consequently, in what follows, when we formalize a concept from
+%%% some background informal information, we identify all domain
+%%% specific nouns, verbs, adjectives, and adverbs in that source
+%%% material and capture the meaning of each and every idea relevant
+%%% to the system we are defining. This identification and
+%%% formalization process is iterative, with the precision of the
+%%% formalization generally increasing as we refine the model of the
+%%% system and being defining its implementation.
+%%%
+%%% \section{Refinement from Background Literature to Specification}
+%%%
+%%% The Colorado \emph{statues} (i.e., the law) pertaining to election
+%%% audits is
 %%% \href{http://law.justia.com/codes/colorado/2016/title-1/general-primary-recall-and-congressional-vacancy-elections/article-7/part-5/section-1-7-515/}
-%%% {Section 1-7-515, C.R.S.}  and the rules pertaining to such are
-%%% found in the "Revised Draft of Proposed Rules" whose latest
-%%% version is labeled CCR 1505-1 and dated July 6, 2017. Section 25,
-%%% Post-Election Audit, of that document is the salient portion of
-%%% that document. We will call this document RDPR-6-Jul-2017 for the
-%%% purpose of traceability in this specification.
+%%% {Section 1-7-515, of the Colorado Revised Statues}, or C.R.S. for
+%%% short. The \emph{rules} (i.e., the interpretation of the statutes
+%%% and an explanation for how to realize their goals) pertaining to
+%%% such are found in the "Revised Draft of Proposed Rules" whose
+%%% latest version is labeled CCR 1505-1 and dated July 6,
+%%% 2017. Section 25, Post-Election Audit, of that document is the
+%%% salient portion of that document. We will call that particular
+%%% version of the document RDPR-6-Jul-2017 for the purpose of
+%%% traceability in this specification. We refer to Colorado election
+%%% law as "C.R.S.".
 %%%
-%%% This domain model is based upon that law, its rules, our contract,
-%%% our bibliography of publications about risk-limiting audits, etc.
+%%% This domain model is based upon these statues, its associated
+%%% rules, our contract with CDOS for the RLA Tool or requirements
+%%% stipulated in refinement of the contract through written exchanges
+%%% with CDOS, and our bibliography of publications about
+%%% risk-limiting audits and digital elections. Every concept
+%%% introduced herein comes from one of those sources. That full
+%%% collection of resources is known as the \emph{background
+%%% literature} for the system.
+%%%
+%%% In general, if a concept is defined, its relationship to those
+%%% non-technical artifacts (statue, rules, contract, etc.) is
+%%% captured using a traceability annotation of the form
+%%% \begin{center}
+%%% \begin{alltt}
+%%% @trace <SOURCE ARTIFACT> Discussion of traceability relationship.
+%%% \end{alltt}
+%%% \end{center}
+%%%
+%%% If a concept is introduced and it has no explicitly annotated
+%%% traceability relation, then the reason for its introduce should be
+%%% spelled out in the discussion of that concept in the same section.
+%%%
+%%% As discussed above, the set of all concepts defined and relevant
+%%% to the system is the systems's domain model. The short definition
+%%% of each and every concept is part of what constitutes the
+%%% \emph{glossary} of this system. There may be other terms in the
+%%% glossary introduced because they relate to, or are mentioned in,
+%%% the background literature but need not be formalized to specify
+%%% the RLA Tool's behavior.
+%%%
+%%% At the moment, our glossary is a hand-written Appendix on the RLA
+%%% Tool Book, found in the \texttt{docs} directory of the project
+%%% repository. Before the final system delivery, that book will be
+%%% integrated with this formal specification and the glossary
+%%% concepts that come from this formal specification will be
+%%% automatically generated out of this specification. By integrating
+%%% the artifacts in this fashion we more easily guarantee precision,
+%%% correctness, completeness, and traceability of our specification,
+%%% both formal and informal.
+%%%
+%%% \section{Refinement from Specification to Implementation}
+%%%
+%%% In order to turn a specification like this one into an
+%%% implementation we must take the following steps.
+%%% \begin{enumerate}
 
-
-% @todo kiniry Add a discussion of our glossary and its relationship
-% to this specification.
-
-% @todo kiniry Define C.R.S. and explain the other sources used to
-% derive all concepts in this specification.
-
-% @todo Explain how refinement works and how the reader can understand
-% exactly what is built vs. what is just designed.
+%%% \item We must decide how each type is going to be concretized into
+%%% the implementation the system. Generally, modules in the
+%%% formalization refine into comparable modules in the
+%%% implementation. For example, a cluster of ideas that must be
+%%% persisted and all relate to each other often turn into a database
+%%% table or an object graph. Simpler concepts often map directly to
+%%% built-in primitive and library types. Function types,
+%%% unsurprisingly, turn into procedures, functions, or methods.
+%%%
+%%% \item We must ensure that all properties about types mandated by
+%%% the specification are realized in the implementation. We use
+%%% axiomatic definitions to encode types and their constraints,
+%%% usually via dependent types and sometimes via literal axioms in
+%%% the formal specification.
+%%%
+%%% A simple example will provide an example of both of these steps.
+%%% The concept of risk limit is that it is a percentage. Thus, it is
+%%% a number between 0 and 100. It is a modeling decision how to
+%%% represent such, but given the client has not mandated that risk
+%%% limits must not be fractional percentages, such as 1.25%, we must
+%%% choose to use a real number to formalize the idea of risk
+%%% limits. Thus, we encode the concept of risk limit as the 
+%%% type
+%%% \begin{center}
+%%% \begin{alltt}
+%%% risk_limit: TYPE = {n : nonneg_real | n <= 100}
+%%% \end{alltt}
+%%% \end{center}
+%%% which means ``the concept of risk limit is equivalent to the set
+%%% of all non-negative real numbers whose value is no greater than
+%%% 100''.
+%%%
+%%% \item We must ensure that all properties about the system and its
+%%% components are realized by the system. System properties are
+%%% specified using theorems.
+%%%
+%%% Each theorem is refined in the system to assurance artifacts. One
+%%% form of assurance is testing. Runtime verification---in the form
+%%% of runtime assertion checking, automatically generated tests, or
+%%% hand-written tests---can check sets of cases of each
+%%% theorem. Formal verification---in the form of automatic static
+%%% analysis or interactive theorem proving---can check properties
+%%% wholesale in the system, ensuring that properties hold for all
+%%% possible inputs in all possible environments.
+%%% \end{enumerate}
 
 %%%%%% Literate PVS comments +BEGIN and +END denote blocks. A block
 %%%%%% named "foo" is written to a LaTeX file "foo.tex".
@@ -129,10 +259,11 @@
 
 % Traceability and process features and annotations.
 
+%%% \todojrk{Add annotation functions coupled to milestones.}
+
 fafessl: THEORY
 BEGIN
   TBD: bool = TRUE
-% @todo kiniry Add annotation functions coupled to milestones.
 %  first_release: []
 %  second_release: []
 %  third_release: []
@@ -287,8 +418,8 @@ BEGIN
 %%% by filling in a single bubble to enumerating a total order on all
 %%% choices in a contest. Across the state, each contest has a
 %%% unique name.
-% @todo kiniry Need to break the cycle between the contest type and
-% the ballots theory.
+%%% \todojrk{Need to break the cycle between the contest type and
+%%% the ballots theory.}
   contest: TYPE =
     [# name: string, description: string #] % , choices: choice #]
 
@@ -300,9 +431,9 @@ BEGIN
   full_hand_count_contest: TYPE FROM contest
 % @todo Contest name uniqueness.
 
-% @todo kiniry These types will be refined when we review the
-% information provided by CDOS on 20 July 2017 about Dominion's file
-% formats.
+%%% \todojrk{These types will be refined when we review the
+%%% information provided by CDOS on 20 July 2017 about Dominion's file
+%%% formats.}
   contest_outcome: TYPE
   election_outcomes: TYPE = set[contest_outcome]
   wrong_outcome: TYPE FROM election_outcomes
@@ -310,8 +441,9 @@ BEGIN
 %%% Tabulation results are calculated from the CVRs by the RLA tool.
 %%% These outcomes and margins are used to drive the RLA algorithms.
 %%% These outcomes should be checked against the
-%%% reported_tabulation_outcome, and should match since they were
-%%% generated at the same time.
+%%% \texttt{reported\_tabulation\_outcome}, and should match since
+%%% they were generated at the same time.
+
 % @description tabulation outcome (winners and margins) calculated
 % from the CVRs. Should match the rla_tablulation_outcome.
 % @trace RDPR-6-Jul-2017 Section 25.2.2(D)(3)
@@ -512,8 +644,8 @@ BEGIN
 
 % @description A decision to be made, either the selection of one or
 % more candidates for an office or the choice of a course of action.
-% @todo kiniry Need to clarify choices vs options vs votes.
-% @todo kiniry Need to add model information for write-in votes.
+%%% \todojrk{Need to clarify choices vs options vs votes.}
+%%% \todojrk{Need to add model information for write-in votes.}
   ballot_contest: TYPE = contest
   option: TYPE = string
   choice: TYPE = set[option]
@@ -566,19 +698,19 @@ BEGIN
             elections_equipment,
             information_systems
 
-% @todo kiniry Should this information also include what kind of
-% ballot each ballot is?  I.e., re-marked, phantom, etc.?
-% @todo kiniry These types will be refined when we review the
-% information provided by CDOS on 20 July 2017 about Dominion's file
-% formats.
+%%% \todojrk{Should this information also include what kind of
+%%% ballot each ballot is?  I.e., re-marked, phantom, etc.?}
+%%% \todojrk{These types will be refined when we review the
+%%% information provided by CDOS on 20 July 2017 about Dominion's file
+%%% formats.}
   ballot_manifest_info: TYPE =
     [county_id,
      scanner_id,
      batch_id,
      batch_size,
      storage_container]
-% @todo kiniry Ballot position number is still not explicitly
-% specified.
+%%% \todojrk{Ballot position number is still not explicitly
+%%% specified.}
   ballot_manifest: TYPE = list[ballot_manifest_info]
   verified?: pred[ballot_manifest]
   ballot_manifest_file: TYPE FROM file
@@ -614,9 +746,10 @@ BEGIN
 % Note that https://github.com/usnistgov/ElectionResultsReporting/ defines
 % it as "Undervote: Occurs when the voter does not select a candidate in
 % a 1-of-M contest or selects fewer than N candidates in an N-of-M contest."
-% @todo kiniry Should we model a blank vote separately from an
-% undervote?  Or do they simply use the term blank vote to denote an
-% undervote? @trace CDOS Audit Board Utility Mock-up 21 July 2017
+%%% \todojrk{Should we model a blank vote separately from an
+%%% undervote?  Or do they simply use the term blank vote to denote an
+%%% undervote?}
+% @trace CDOS Audit Board Utility Mock-up 21 July 2017
 END vote
 
 ballot_interpretation: THEORY
@@ -1036,7 +1169,7 @@ BEGIN
 % that must be examined and verified during the RLA.
   number_of_ballots_to_audit: [audited_contest -> nat]
 
-% @todo kiniry Still need to model core RLA algorithm(s).
+%%% \todojrk{Still need to model core RLA algorithm(s).}
 END rlas
 
 %+END audits
@@ -1060,8 +1193,8 @@ END rlas
 %%% the RLA back-end as CSV files by county officials using their
 %%% voting systems and the RLA Tool, respectively.
 
-% @todo kiniry For a given election, there must be a 1-1
-% correspondence between its ballots and its CVRs.
+%%% \todojrk{For a given election, there must be a 1-1 correspondence
+%%% between its ballots and its CVRs.}
 
 cast_vote_records: THEORY
 BEGIN
@@ -1343,10 +1476,10 @@ BEGIN
 
 %%% \end{enumerate}
 
-% @todo kiniry Obviously this type has to be strengthened considerably
-% to guarantee permutation. That is, that both the set and the list are
-% finite and converting the list into a set results in a set equivalent
-% to the original set.
+%%% \todojrk{Obviously this type has to be strengthened considerably
+%%% to guarantee permutation. That is, that both the set and the list
+%%% are finite and converting the list into a set results in a set
+%%% equivalent to the original set.}
   ballot_permutation:
     [set[ballot] -> list[ballot]]
 % Note that sequences are infinite.
@@ -1483,8 +1616,8 @@ BEGIN
 
 %%% \subsubsection{Comparison Audit Uploads}
 
-% @todo kiniry Improve/strengthen the dependent types in these upload
-% signatures below.
+%%% \todojrk{Improve/strengthen the dependent types in these upload
+%%% signatures below.}
 
 %%% Each county conducting a comparison audit must upload:
 
@@ -1762,8 +1895,8 @@ BEGIN
 %%% machines and features are modeled in the dashboard modules
 %%% below. We focus only on authentication here.
 
-% @todo kiniry Introduce an authentication monad and a state monad for
-% our ASMs.
+%%% \todojrk{Introduce an authentication monad and a state monad for
+%%% our ASMs.}
 
 % @description Authenticate this county administrator to that county
 % dashboard.
@@ -2139,8 +2272,8 @@ BEGIN
 %%% All of the information on the public dashboard is derived from the
 %%% above data.
 
-% @todo kiniry Add election as first column to every table? Or have a
-% different DB per election?
+%%% \todojrk{Add election as first column to every table? Or have a
+%%% different DB per election?}
 
 END data_model
 
@@ -2323,13 +2456,13 @@ BEGIN
 %%% codomain of the function must indicate such. See, for example,
 %%% \texttt{county\_upload\_verified\_ballot\_manifest}.
 %%%
-% @todo kiniry Add citation or explanation of encoding of sets and
-% pairs.
-%
-% @todo kiniry Add response code for all external public events.
-%
-% @todo dmz Explan how we are doing the definition of data types and
-% the derivation of JSON encodings.
+%%% \todojrk{Add citation or explanation of encoding of sets and
+%%% pairs.}
+%%%
+%%% \todojrk{Add response code for all external public events.}
+%%%
+%%% \tododmz{Explan how we are doing the definition of data types and
+%%% the derivation of JSON encodings.}
 
 %%% \subsection{County Dashboard Protocol}
 %%% \label{sec:County_Dashboard_Protocol}
