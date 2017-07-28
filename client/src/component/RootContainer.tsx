@@ -92,6 +92,7 @@ export class RootContainer extends React.Component<RootContainerProps, void> {
                     <Switch>
                         <Route exact path='/login' component={ LoginContainer } />
                         { routes.map(makeRoute(store)) }
+                        <Redirect from='/' to='/county' />
                     </Switch>
                 </Router>
             </Provider>
