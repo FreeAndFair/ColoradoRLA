@@ -1,9 +1,9 @@
 \pagebreak
 
-Tutorial
+Run Book outline
 ========
 
-***should the tutorial deal with the SOS establishing the risk
+***should the run book deal with the SOS establishing the risk
 limit, or any of their pre-audit responsibilities like the selection
 of which races to audit?
 
@@ -14,7 +14,7 @@ the computers read those ballots, to determine whether the computers
 did their job accurately…” Try to put their minds at ease about the
 process. :)
 
-***should the tutorial cover the mechanics of storing ballots and the
+***should the run book cover the mechanics of storing ballots and the
 other physical aspects of the RLA process which are not ‘in’ the RLA
 tool/system?
 
@@ -34,7 +34,7 @@ Detailed description with associated screenshot of the County dashboard
 with instructions about the process of uploading ballot manifests and
 CVRs, and associated hash functions.
 
-***should the tutorial cover the preparation/creation of these artifacts
+***should the run book cover the preparation/creation of these artifacts
 they’ll be uploading?
 
 Description of the process of generating the random seed, perhaps with a
@@ -45,13 +45,13 @@ will they be instructed to enter it themselves?
 
 ***should more detailed instructions/descriptions for the retrieving of
 ballots, and the rules about interpretation of ballot marks, be included
-in the tutorial?
+in the run book?
 
 Contest landing page ---?
 
 Contest detail page ---?
 
-I don't think (but will happily stand corrected) the tutorial needs to contain
+I don't think (but will happily stand corrected) the run book needs to contain
 the 'why' -- only the 'how' and where/when/etc. of the process as experienced
 by the users/auditors. Each screenshot should have an associated index
 describing key features/fields/etc. which can be numerically identified.
