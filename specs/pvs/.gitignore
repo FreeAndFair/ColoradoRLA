@@ -6,5 +6,7 @@
 *.out
 *.pdf
 *.prf
+*.bin
+auto
 *_adt.pvs
 pvs-corla.tex
