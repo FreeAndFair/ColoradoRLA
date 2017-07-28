@@ -53,9 +53,11 @@ const ContestInfo = ({ contest }: any) => {
     );
 };
 
-const ContestChoices = ({ choices, updateBallotMarks }: any) => {
+const ContestChoices = (props: any) => {
+    const { choices, updateBallotMarks } = props;
+
     const updateChoices = (e: any) => {
-        let { checked } = e.target;
+        const { checked } = e.target;
         updateBallotMarks({});
     };
 
