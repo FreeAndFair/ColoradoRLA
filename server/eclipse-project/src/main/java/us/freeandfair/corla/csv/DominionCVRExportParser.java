@@ -383,8 +383,9 @@ public class DominionCVRExportParser implements CVRExportParser {
           my_cvrs.add(cvr);
         }
       }
-    } catch (final NoSuchElementException | StringIndexOutOfBoundsException e) {
-      Main.LOGGER.error("Could not parse CVR file because it had a malformed header");
+    } catch (final NoSuchElementException | StringIndexOutOfBoundsException |
+                   ArrayIndexOutOfBoundsException e) {
+      Main.LOGGER.error("Could not parse CVR file because it was malformed");
       result = false;
     }
     

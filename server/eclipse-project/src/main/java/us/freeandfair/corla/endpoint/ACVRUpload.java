@@ -15,6 +15,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.time.Instant;
 import java.util.stream.Collectors;
 
 import javax.servlet.MultipartConfigElement;
@@ -22,24 +23,24 @@ import javax.servlet.ServletException;
 
 import org.eclipse.jetty.http.HttpStatus;
 
+import com.google.gson.JsonSyntaxException;
+
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.csv.CVRExportParser;
-import us.freeandfair.corla.csv.DominionCVRExportParser;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
- * The "CVR upload" endpoint.
+ * The "audit CVR upload" endpoint.
  * 
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class CVRExportUpload implements Endpoint {
+public class ACVRUpload implements Endpoint {
   /**
    * {@inheritDoc}
    */
@@ -53,17 +54,17 @@ public class CVRExportUpload implements Endpoint {
    */
   @Override
   public String endpointName() {
-    return "/upload-cvr-export";
+    return "/upload-audit-cvr";
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  @SuppressFBWarnings(value = {"OS_OPEN_STREAM"}, 
-                      justification = "FindBugs false positive with resources.")
   // catching a null pointer exception is the most sensible way to deal with the 
   // request not having the parts we need to process
+  @SuppressFBWarnings(value = {"OS_OPEN_STREAM"}, 
+                      justification = "FindBugs false positive with resources.")
   @SuppressWarnings({"PMD.AvoidCatchingGenericException", "PMD.AvoidCatchingNPE"})
   public String endpoint(final Request the_request, final Response the_response) {
     // this is a multipart request - there's a "county" identifier, and a "cvr_file"
@@ -71,19 +72,26 @@ public class CVRExportUpload implements Endpoint {
     the_request.attribute("org.eclipse.jetty.multipartConfig", 
                           new MultipartConfigElement("/tmp"));
     boolean ok = true;
-    try (InputStream county_is = the_request.raw().getPart("county").getInputStream(); 
-         InputStream cvr_is = the_request.raw().getPart("cvr_file").getInputStream()) {
-      final InputStreamReader county_isr = new InputStreamReader(county_is, "UTF-8");
-      final BufferedReader br = new BufferedReader(county_isr);
-      final String county = br.lines().collect(Collectors.joining("\n"));
-      final InputStreamReader cvr_isr = new InputStreamReader(cvr_is, "UTF-8");
-      final CVRExportParser parser = new DominionCVRExportParser(cvr_isr, county);
-      ok = parser.parse();
-      Main.LOGGER.info(parser.cvrs().size() + " CVRs parsed from " + county + 
-                       " county upload file");
-      Main.LOGGER.info(CastVoteRecord.getMatching(null, RecordType.UPLOADED).size() + 
-                       " uploaded CVRs in storage");
-    } catch (final IOException | ServletException | NullPointerException e) {
+    try (InputStream acvr_is = the_request.raw().getPart("audit_cvr").getInputStream()) {
+      final InputStreamReader acvr_isr = new InputStreamReader(acvr_is, "UTF-8");
+      final BufferedReader acvr_br = new BufferedReader(acvr_isr);
+      final String acvr_json = acvr_br.lines().collect(Collectors.joining("\n"));
+      
+      final CastVoteRecord acvr = Main.GSON.fromJson(acvr_json, CastVoteRecord.class);
+      
+      // we need to create a new CVR instance the "right" way, so it persists and also
+      // has the right type
+      final CastVoteRecord real_acvr = 
+          CastVoteRecord.instance(RecordType.AUDITOR_ENTERED, Instant.now(), 
+                                  acvr.countyID(), acvr.scannerID(), acvr.batchID(), 
+                                  acvr.recordID(), acvr.imprintedID(), acvr.ballotStyle(), 
+                                  acvr.choices());
+      Main.LOGGER.info("Audit CVR parsed and stored as id " + real_acvr.id());
+      Main.LOGGER.info(CastVoteRecord.getMatching(null, RecordType.AUDITOR_ENTERED).size() + 
+                       " audit CVRs in storage");
+    } catch (final JsonSyntaxException | IOException | ServletException | 
+                   NullPointerException e) {
+      Main.LOGGER.info("Unable to parse ACVR: " + e);
       ok = false;
     }
     
