@@ -44,14 +44,36 @@ const BallotContestResultUndervote = () => (
     </div>
 );
 
-const BallotContestResults = ({ marks }: any) => (
-    <div className='pt-card'>
-        <BallotContestResultVoteForN />
-        <BallotContestResultYesNo />
-        <BallotContestResultUndervote />
-    </div>
-);
+const BallotContestReview = ({ contest, marks }: any) => {
+    const markDOM = _.map(marks, (m: any) => (
+        <div className='pt-card'>
+            <div>{ m.id }</div>
+            <div>{ m.name }</div>
+        </div>
+    ));
 
+    return (
+        <div className='pt-card'>
+            <div className='pt-card'>
+                <div>{ contest.name } ({ contest.id })</div>
+                <div>{ contest.description }</div>
+                <div>Vote for { contest.votesAllowed }</div>
+            </div>
+            <div className='pt-card'>
+                { markDOM }
+            </div>
+        </div>
+    );
+};
+
+const BallotReview = ({ ballotMarks }: any) => {
+    const contestReviews = _.map(ballotMarks, (contestMarks: any) => {
+        const key = contestMarks.contest.id;
+        return <BallotContestReview key={ key } { ...contestMarks } />;
+    });
+
+    return <div className='pt-card'>{ contestReviews }</div>;
+};
 
 const findById = (arr: any[], id: any) =>
     _.find(arr, (o: any) => o.id === id);
@@ -66,7 +88,7 @@ const ReviewStage = (props: any) => {
         3: ['8', '9', '11'],
     };
 
-    const marks = _.mapValues(exampleMarks, (markIds: any, contestId: any) => {
+    const ballotMarks = _.mapValues(exampleMarks, (markIds: any, contestId: any) => {
         const contest = findById(county.contests, contestId);
         const marks = _.map(markIds, (id: any) => findById(contest.choices, id));
 
@@ -75,7 +97,7 @@ const ReviewStage = (props: any) => {
 
     return (
         <div>
-            <BallotContestResults marks={ marks } />
+            <BallotReview ballotMarks={ ballotMarks } />
             <div className='pt-card'>
                 <button className='pt-button pt-intent-primary' onClick={ nextStage }>
                     Submit & Next Ballot
