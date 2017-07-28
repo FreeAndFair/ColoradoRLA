@@ -211,7 +211,7 @@
 %%% formalization refine into comparable modules in the
 %%% implementation. For example, a cluster of ideas that must be
 %%% persisted and all relate to each other often turn into a database
-%%% table or an object graph. Simpler concepts often map directly
+%%% table or an object graph. Simpler concepts often map directly to
 %%% built-in primitive and library types. Function types,
 %%% unsurprisingly, turn into procedures, functions, or methods.
 %%%
