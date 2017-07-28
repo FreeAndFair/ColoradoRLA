@@ -86,8 +86,8 @@ export const exampleCountyState = {
 
     // Miscellaneous county-relevant election metadata.
     info: {
-        electionDate: '11/21/2017',
-        auditDate: '12/1/2017',
+        electionDate: '11/07/2017',
+        auditDate: '11/18/2017',
     },
 
     // Contests under audit for this county.
