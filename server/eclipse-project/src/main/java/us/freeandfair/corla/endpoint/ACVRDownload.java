@@ -53,6 +53,7 @@ public class ACVRDownload implements Endpoint {
   public String endpoint(final Request the_request, final Response the_response) {
     final String[] counties = the_request.params(":counties").split(",");
     final Set<String> county_set = new HashSet<String>(Arrays.asList(counties));
-    return Main.GSON.toJson(CastVoteRecord.getMatching(county_set, RecordType.AUDITOR_ENTERED));
+    return Main.GSON.toJson(CastVoteRecord.getMatching(county_set, 
+                                                       RecordType.AUDITOR_ENTERED));
   }
 }

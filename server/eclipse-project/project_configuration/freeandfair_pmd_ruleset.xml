@@ -29,7 +29,9 @@ The Free &amp; Fair ruleset checks Java code for possible issues.
   <rule ref="rulesets/java/finalizers.xml"/>
   <rule ref="rulesets/java/imports.xml"/>
   <rule ref="rulesets/java/j2ee.xml"/>
-  <rule ref="rulesets/java/junit.xml"/>
+  <rule ref="rulesets/java/junit.xml">
+    <exclude name="JUnitTestContainsTooManyAsserts"/>
+  </rule>
   <!-- rule ref="rulesets/java/logging-jakarta-commons.xml"/ -->
   <rule ref="rulesets/java/logging-java.xml">
     <exclude name="GuardLogStatementJavaUtil"/>

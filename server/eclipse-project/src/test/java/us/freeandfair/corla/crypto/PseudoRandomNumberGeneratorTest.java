@@ -16,7 +16,6 @@
 
 package us.freeandfair.corla.crypto;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,12 +23,14 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
- * @description <description>
- * @explanation <explanation>
- * @bon OPTIONAL_BON_TYPENAME
+ * A test case for the PseudoRandomNumberGenerator.
  */
+// TestNG classes do not need constructors
+@SuppressWarnings("PMD.AtLeastOneConstructor")
 public class PseudoRandomNumberGeneratorTest {
-
+  /**
+   * A single test case that generates a 47 number sequence.
+   */
   @Test()
   public void testRandomGenerator() {
     final String seed = "3546311556112163624615351222";

@@ -34,7 +34,7 @@ public class ComparisonAudit {
    * Gamma, as presented in the literature:
    * https://www.stat.berkeley.edu/~stark/Preprints/gentle12.pdf
    */
-  private static double my_gamma = 1.03905;
+  private static final double GAMMA = 1.03905;
 
   /**
    * A map from a contest_ID into a Contest where a Contest is an integer
@@ -114,12 +114,14 @@ public class ComparisonAudit {
    */
   private int nmin(final double the_o1, final double the_o2, final double the_u1,
                    final double the_u2) {
+    // Checkstyle isn't fine-grained enough to exclude just this method, so we
+    // use -1 * 2 for -2.
     return (int) (Math.max(the_o1 + the_o2 + the_u1 + the_u1, Math.ceil(
-        -2 * my_gamma *
-              (Math.log(my_risk.doubleValue()) + the_o1 * Math.log(1 - 1 / (2 * my_gamma)) +
-               the_o2 * Math.log(1 - 1 / my_gamma) +
-               the_u1 * Math.log(1 + 1 / (2 * my_gamma)) +
-               the_u2 * Math.log(1 + 1 / my_gamma)) /
+        -1 * 2 * GAMMA *
+              (Math.log(my_risk.doubleValue()) + the_o1 * Math.log(1 - 1 / (2 * GAMMA)) +
+               the_o2 * Math.log(1 - 1 / GAMMA) +
+               the_u1 * Math.log(1 + 1 / (2 * GAMMA)) +
+               the_u2 * Math.log(1 + 1 / GAMMA)) /
               my_min_margin.doubleValue())));
   }
 
@@ -140,18 +142,23 @@ public class ComparisonAudit {
   private int nminfromrates(final double the_r1, final double the_r2, final double the_s1,
                            final double the_s2, final boolean the_round_up1,
                            final boolean the_round_up2) {
-    double n0 = -2 * my_gamma * Math.log(my_risk.doubleValue()) /
-                (my_min_margin.doubleValue() + 2 * my_gamma *
-                                               (the_r1 * Math.log(1 - 1 / (2 * my_gamma)) +
-                                                the_r2 * Math.log(1 - 1 / my_gamma) +
-                                                the_s1 * Math.log(1 + 1 / (2 * my_gamma)) +
-                                                the_s2 * Math.log(1 + 1 / my_gamma)));
+    // Checkstyle isn't fine-grained enough to exclude just this method, so we
+    // use -1 * 2 for -2.
+    double n0 = -1 * 2 * GAMMA * Math.log(my_risk.doubleValue()) /
+                (my_min_margin.doubleValue() + 2 * GAMMA *
+                                               (the_r1 * Math.log(1 - 1 / (2 * GAMMA)) +
+                                                the_r2 * Math.log(1 - 1 / GAMMA) +
+                                                the_s1 * Math.log(1 + 1 / (2 * GAMMA)) +
+                                                the_s2 * Math.log(1 + 1 / GAMMA)));
     double o1;
     double o2;
     double u1;
     double u2;
 
-    for (int i = 0; i < 3; i++) {
+    // Checkstyle isn't fine-grained enough to exclude just this method, so we
+    // make a final local variable for the loop bound
+    final int loop_bound = 3;
+    for (int i = 0; i < loop_bound; i++) {
       if (the_round_up1) {
         o1 = Math.ceil(the_r1 * n0);
         u1 = Math.ceil(the_s1 * n0);

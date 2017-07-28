@@ -16,7 +16,6 @@
 
 package us.freeandfair.corla.comparisonaudit;
 
-import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
@@ -26,10 +25,9 @@ import java.util.HashMap;
 import org.testng.annotations.Test;
 
 /**
- * @description <description>
- * @explanation <explanation>
- * @bon OPTIONAL_BON_TYPENAME
+ * Tests for the ComparisonAudit class.
  */
+@SuppressWarnings("PMD.AtLeastOneConstructor")
 public class ComparisonAuditTest {
 
   /*
@@ -40,6 +38,9 @@ public class ComparisonAuditTest {
    * .001, .0001, true, false), 34); }
    */
 
+  /**
+   * A minimal test.
+   */
   @Test()
   public void testAudit() {
     final ComparisonAudit comparison_audit = new ComparisonAudit(100, BigDecimal.valueOf(.05));
