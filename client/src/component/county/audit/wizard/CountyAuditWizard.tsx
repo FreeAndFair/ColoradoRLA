@@ -23,13 +23,7 @@ class CountyAuditWizard extends React.Component<any, CountyAuditWizardState> {
 
         switch (this.state.stage) {
             case 'sign-in':
-                const { updateBoardMember } = this.props;
-                return (
-                    <AuditBoardSignInStageContainer
-                        { ...props }
-                        updateBoardMember={ updateBoardMember }
-                    />
-                );
+                return  <AuditBoardSignInStageContainer { ...props } />;
             case 'ballot-audit':
                 return <BallotAuditStage { ...props } />;
             case 'review':
