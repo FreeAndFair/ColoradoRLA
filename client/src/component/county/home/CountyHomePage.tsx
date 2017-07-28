@@ -74,16 +74,10 @@ const CountyInfo = ({ info }: any) => (
     <div className='county-info pt-card'>
         <h3>County Info</h3>
         <div>
-            <label>
-                Election Date:
-                <span>{ info.electionDate }</span>
-            </label>
+            Election Date: { info.electionDate }
         </div>
         <div>
-            <label>
-                Audit Date:
-                <span>{ info.auditDate }</span>
-            </label>
+            Audit Date: { info.auditDate }
         </div>
     </div>
 );
