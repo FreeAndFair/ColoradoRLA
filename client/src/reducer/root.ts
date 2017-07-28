@@ -30,6 +30,23 @@ export default function root(state: AppState = defaultState, action: any) {
 
         return nextState;
     }
+    case 'UPDATE_BALLOT_MARKS': {
+        const { ballotId, choices, comments, contestId } = action.data;
+        const nextState = { ...state };
+
+        const ballots = _.clone(nextState.county.ballots);
+        const ballotIndex = _.findIndex(ballots, (b: any) => b.id === ballotId);
+
+        const ballot = { ...ballots[ballotIndex] };
+        ballot.audited = true;
+        const marks = { ...ballot.marks[contestId], choices, comments };
+        ballot.marks[contestId] = marks;
+
+        ballots[ballotIndex] = ballot;
+        nextState.county.ballots = ballots
+
+        return nextState;
+    }
     default:
         return state;
     }

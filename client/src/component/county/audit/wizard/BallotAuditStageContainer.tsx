@@ -4,6 +4,8 @@ import { bindActionCreators } from 'redux';
 
 import BallotAuditStage from './BallotAuditStage';
 
+import findById from '../../../../findById';
+
 
 class BallotAuditStageContainer extends React.Component<any, any> {
     public render() {
@@ -11,10 +13,21 @@ class BallotAuditStageContainer extends React.Component<any, any> {
     }
 }
 
-const mapStateToProps = ({ ballotStyles, county }: any) =>
-    ({ ballotStyles, county });
+const mapStateToProps = (state: any) => {
+    const { ballotStyles, county } = state;
+    const { ballots, currentBallotId } = county;
 
-const mapDispatchToProps = (dispatch: any) => bindActionCreators({}, dispatch);
+    const currentBallot = findById(ballots, currentBallotId);
+
+    return { ballotStyles, county, currentBallot, marks: currentBallot.marks };
+};
+
+const mapDispatchToProps = (dispatch: any) => bindActionCreators({
+    updateBallotMarks: (data: any) => ({
+        data,
+        type: 'UPDATE_BALLOT_MARKS',
+    }),
+}, dispatch);
 
 export default connect(
     mapStateToProps,
