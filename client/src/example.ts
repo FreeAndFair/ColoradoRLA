@@ -58,9 +58,11 @@ const b = (id: any, audited: any, style: any, marks: any = {}) =>
 const ballots = [
     b(11, false, ballotStyles.styleA),
     b(22, false, ballotStyles.styleB),
-    b(33, true, ballotStyles.styleC, { 1: ['2'], 3: ['8', '9', '11'] }),
+    b(33, false, ballotStyles.styleC),
     b(44, false, ballotStyles.styleC),
-    b(55, true, ballotStyles.styleA, { 1: ['3'], 2: ['5'] }),
+    b(55, true, ballotStyles.styleA),
+    b(66, false, ballotStyles.styleB),
+    b(77, false, ballotStyles.styleC),
 ];
 
 export const exampleCountyState = {
