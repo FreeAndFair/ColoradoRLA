@@ -84,15 +84,15 @@ const ReviewStage = (props: any) => {
 
     // `exampleMarks` : { [ContestId]: ChoiceId[] }
     const exampleMarks = {
-        1: ['2'],
-        3: ['8', '9', '11'],
+        1: { choices: ['2'], comments: '' },
+        3: { choices: ['8', '9', '11'], comments: '' },
     };
 
-    const ballotMarks = _.mapValues(exampleMarks, (markIds: any, contestId: any) => {
+    const ballotMarks = _.mapValues(exampleMarks, ({choices, comments }: any, contestId: any) => {
         const contest = findById(county.contests, contestId);
-        const marks = _.map(markIds, (id: any) => findById(contest.choices, id));
+        const marks = _.map(choices, (id: any) => findById(contest.choices, id));
 
-        return { contest, marks };
+        return { contest, marks, comments };
     });
 
     return (
