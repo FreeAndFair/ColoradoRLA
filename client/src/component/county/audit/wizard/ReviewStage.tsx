@@ -4,6 +4,8 @@ import * as _ from 'lodash';
 
 import findById from '../../../../findById';
 
+import BackButton from './BackButton';
+
 
 const BallotContestResultVoteForN = () => (
     <div className='pt-card'>
@@ -98,10 +100,6 @@ const BallotReview = ({ ballotMarks }: any) => {
     });
 
     return <div className='pt-card'>{ contestReviews }</div>;
-};
-
-const BackButton = ({ back }: any) => {
-    return <button className='pt-button' onClick={ back }>Back</button>
 };
 
 const ReviewStage = (props: any) => {

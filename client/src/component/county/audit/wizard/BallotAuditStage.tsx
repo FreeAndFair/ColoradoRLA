@@ -6,6 +6,8 @@ import { Checkbox, EditableText, Radio, RadioGroup } from '@blueprintjs/core';
 
 import findById from '../../../../findById';
 
+import BackButton from './BackButton';
+
 
 const AuditInstructions = ({ ballotsToAudit, currentBallot }: any) => (
     <div className='pt-card'>
@@ -155,7 +157,14 @@ const BallotAuditForm = (props: any) => {
 };
 
 const BallotAuditStage = (props: any) => {
-    const { ballotStyles, ballots, county, nextStage, updateBallotMarks } = props;
+    const {
+        ballotStyles,
+        ballots,
+        county,
+        nextStage,
+        prevStage,
+        updateBallotMarks,
+    } = props;
 
     const ballotsToAudit = county.ballots.length;
     const currentBallot = findById(county.ballots, county.currentBallotId);
@@ -172,6 +181,7 @@ const BallotAuditStage = (props: any) => {
                 currentBallot={ currentBallot }
                 updateBallotMarks={ updateBallotMarks }
             />
+            <BackButton back={ prevStage } />
             <button className='pt-button pt-intent-primary' onClick={ nextStage }>
                 Review
             </button>
