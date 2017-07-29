@@ -64,7 +64,7 @@ const BallotContestReview = ({ comments, contest, marks }: any) => {
                 { markDOM }
             </div>
             <div className='pt-card'>
-                { comments }
+                Comments: { comments }
             </div>
         </div>
     );
