@@ -62,8 +62,7 @@ public class CVRExportUpload implements Endpoint {
   @Override
   @SuppressFBWarnings(value = {"OS_OPEN_STREAM"}, 
                       justification = "FindBugs false positive with resources.")
-  // catching a null pointer exception is the most sensible way to deal with the 
-  // request not having the parts we need to process
+  // the CSV parser can throw arbitrary runtime exceptions, which we must catch
   @SuppressWarnings({"PMD.AvoidCatchingGenericException", "PMD.AvoidCatchingNPE"})
   public String endpoint(final Request the_request, final Response the_response) {
     // this is a multipart request - there's a "county" identifier, and a "cvr_file"
@@ -83,7 +82,8 @@ public class CVRExportUpload implements Endpoint {
                        " county upload file");
       Main.LOGGER.info(CastVoteRecord.getMatching(null, RecordType.UPLOADED).size() + 
                        " uploaded CVRs in storage");
-    } catch (final IOException | ServletException | NullPointerException e) {
+    } catch (final RuntimeException | IOException | ServletException e) {
+      Main.LOGGER.info("could not parse malformed CVR export file");
       ok = false;
     }
     
