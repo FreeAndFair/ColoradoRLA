@@ -104,12 +104,14 @@ const BallotContestMarkForm = (props: any) => {
 
     const contestMarks = marks[contest.id];
 
+    const noConsensus = !!contestMarks.noConsensus;
+
     const updateComments = (comments: any) => {
         updateBallotMarks({ comments });
     };
 
     const updateConsensus = (e: any) => {
-        updateBallotMarks({});
+        updateBallotMarks({ noConsensus: e.target.checked });
     };
 
     return (
@@ -123,7 +125,7 @@ const BallotContestMarkForm = (props: any) => {
             <div className='pt-card'>
                 <Checkbox
                     label='No consensus'
-                    checked={ false }
+                    checked={ noConsensus }
                     onChange={ updateConsensus }
                 />
             </div>
