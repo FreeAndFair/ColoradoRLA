@@ -11,9 +11,7 @@
 
 package us.freeandfair.corla.model;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,10 +30,9 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
+
+import us.freeandfair.corla.gson.ContestsJsonAdapter;
 
 /**
  * A ballot style has an identifier and a list of contests on the ballot.
@@ -86,7 +83,7 @@ public class BallotStyle implements Serializable {
    */
   @ElementCollection
   @Cascade({CascadeType.ALL})
-  @JsonAdapter(ContestJsonAdapter.class)
+  @JsonAdapter(ContestsJsonAdapter.class)
   private final List<Contest> my_contests;
   
   /**
@@ -223,45 +220,5 @@ public class BallotStyle implements Serializable {
   @Override
   public int hashCode() {
     return toString().hashCode();
-  }
-  
-  /**
-   * JSON adapter for the internal contest list.
-   */
-  public static final class ContestJsonAdapter extends TypeAdapter<List<Contest>> {
-    /**
-     * Writes a list of contests as an array of contest IDs.
-     * 
-     * @param the_writer The JSON writer.
-     * @param the_list The list of contests to write.
-     */ 
-    @Override
-    public void write(final JsonWriter the_writer, final List<Contest> the_list) 
-        throws IOException {
-      the_writer.beginArray();
-      for (final Contest c : the_list) {
-        the_writer.value(c.id());
-      }
-      the_writer.endArray();
-    }
-    
-    /**
-     * Reads a list of contests from an array of contest IDs.
-     */
-    @Override
-    public List<Contest> read(final JsonReader the_reader) throws IOException {
-      final List<Contest> result = new ArrayList<Contest>();
-      the_reader.beginArray();
-      while (the_reader.hasNext()) {
-        final Contest c = Contest.byID(the_reader.nextLong());
-        if (c == null) {
-          throw new IOException("invalid contest ID");
-        } else {
-          result.add(c);
-        }
-      }
-      the_reader.endArray();
-      return result;
-    }
   }
 }

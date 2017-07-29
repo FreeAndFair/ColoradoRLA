@@ -296,7 +296,9 @@ public class DominionCVRExportParser implements CVRExportParser {
       return CastVoteRecord.instance(RecordType.UPLOADED, 
                                      the_timestamp, my_county_id, 
                                      tabulator_id, batch_id, record_id, imprinted_id, 
-                                     my_ballot_styles.get(ballot_style_name), choices);
+                                     my_ballot_styles.get(ballot_style_name), choices,
+                                     new HashMap<Contest, String>(), 
+                                     new HashMap<Contest, Boolean>());
     } catch (final NumberFormatException e) {
       return null;
     } catch (final ArrayIndexOutOfBoundsException e) {

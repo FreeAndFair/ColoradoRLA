@@ -11,15 +11,14 @@
 
 package us.freeandfair.corla.model;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -33,10 +32,12 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
+
+import us.freeandfair.corla.gson.BallotStyleJsonAdapter;
+import us.freeandfair.corla.gson.ChoicesMapJsonAdapter;
+import us.freeandfair.corla.gson.CommentsMapJsonAdapter;
+import us.freeandfair.corla.gson.ConsensusMapJsonAdapter;
 
 /**
  * A cast vote record contains information about a single ballot, either 
@@ -69,7 +70,7 @@ public class CastVoteRecord implements Serializable {
    * The current ID number to be used.
    */
   private static int current_id;
- 
+  
   /**
    * The database ID of this record.
    */
@@ -128,8 +129,20 @@ public class CastVoteRecord implements Serializable {
    */
   @OneToMany
   @Cascade({CascadeType.MERGE})
-  @JsonAdapter(ChoiceMapJsonAdapter.class)
+  @JsonAdapter(ChoicesMapJsonAdapter.class)
   private final Map<Contest, Set<Choice>> my_contest_choices;
+  
+  /** 
+   * Comments for the contests in this cast vote record.
+   */
+  @JsonAdapter(CommentsMapJsonAdapter.class)
+  private final Map<Contest, String> my_contest_comments;
+  
+  /**
+   * Consensus flags for the contests in this cast vote record.
+   */
+  @JsonAdapter(ConsensusMapJsonAdapter.class)
+  private final Map<Contest, Boolean> my_contest_consensus;
   
   /**
    * Constructs an empty cast vote record, solely for persistence.
@@ -144,6 +157,8 @@ public class CastVoteRecord implements Serializable {
     my_imprinted_id = "";
     my_ballot_style = null;
     my_contest_choices = null;
+    my_contest_comments = null;
+    my_contest_consensus = null;
   }
   
   /**
@@ -166,7 +181,9 @@ public class CastVoteRecord implements Serializable {
                            final String the_batch_id, final String the_record_id,
                            final String the_imprinted_id,
                            final BallotStyle the_ballot_style,
-                           final Map<Contest, Set<Choice>> the_choices) {
+                           final Map<Contest, Set<Choice>> the_choices,
+                           final Map<Contest, String> the_comments,
+                           final Map<Contest, Boolean> the_consensus) {
     my_record_type = the_record_type;
     my_timestamp = the_timestamp;
     my_county_id = the_county_id;
@@ -177,6 +194,8 @@ public class CastVoteRecord implements Serializable {
     my_ballot_style = the_ballot_style;
     // TODO: make a clean copy of the_choices so it can't be tampered with
     my_contest_choices = the_choices;
+    my_contest_comments = the_comments;
+    my_contest_consensus = the_consensus;
   }
 
   /**
@@ -201,20 +220,19 @@ public class CastVoteRecord implements Serializable {
    * @param the_choices The contest choices.
    */
   @SuppressWarnings({"PMD.ExcessiveParameterList", "PMD.UseObjectForClearerAPI"})
-  public static synchronized CastVoteRecord instance(final RecordType the_record_type, 
-                                                     final Instant the_timestamp,
-                                                     final String the_county_id, 
-                                                     final String the_scanner_id,
-                                                     final String the_batch_id, 
-                                                     final String the_record_id,
-                                                     final String the_imprinted_id,
-                                                     final BallotStyle the_ballot_style,
-                                                     final Map<Contest, Set<Choice>> 
-                                                           the_choices) {
+  public static synchronized CastVoteRecord 
+      instance(final RecordType the_record_type, final Instant the_timestamp,
+               final String the_county_id, final String the_scanner_id,
+               final String the_batch_id, final String the_record_id,
+               final String the_imprinted_id, final BallotStyle the_ballot_style,
+               final Map<Contest, Set<Choice>> the_choices,
+               final Map<Contest, String> the_comments,
+               final Map<Contest, Boolean> the_consensus) {
     CastVoteRecord result = 
         new CastVoteRecord(the_record_type, the_timestamp, the_county_id, 
                            the_scanner_id, the_batch_id, the_record_id,
-                           the_imprinted_id, the_ballot_style, the_choices);
+                           the_imprinted_id, the_ballot_style, the_choices, 
+                           the_comments, the_consensus);
     if (CACHE.containsKey(result)) {
       result = CACHE.get(result);
     } else {
@@ -337,9 +355,23 @@ public class CastVoteRecord implements Serializable {
    * @return the choices made in this cast vote record.
    */
   public Map<Contest, Set<Choice>> choices() {
-    return my_contest_choices;
+    return Collections.unmodifiableMap(my_contest_choices);
   }
 
+  /**
+   * @return the comments made in this cast vote record.
+   */
+  public Map<Contest, String> comments() {
+    return Collections.unmodifiableMap(my_contest_comments);
+  }
+  
+  /**
+   * @return the consensus flags for the contests in this cast vote record.
+   */
+  public Map<Contest, Boolean> consensus() {
+    return Collections.unmodifiableMap(my_contest_consensus);
+  }
+  
   /**
    * @return a String representation of this cast vote record.
    */
@@ -350,7 +382,8 @@ public class CastVoteRecord implements Serializable {
            my_scanner_id + ", batch_id=" + my_batch_id + ", record_id=" + 
            my_record_id + ", imprinted_id=" + my_imprinted_id + ", ballot_style=" +
            my_ballot_style.identifier() + ", contests=" + my_contest_choices + 
-           ", choices=" + my_contest_choices + "]";
+           ", choices=" + my_contest_choices + ", comments=" + 
+           my_contest_comments + ", consensus=" + my_contest_consensus + "]";
   }
   
   /**
@@ -373,6 +406,8 @@ public class CastVoteRecord implements Serializable {
       result &= other_cvr.imprintedID().equals(imprintedID());
       result &= other_cvr.ballotStyle().equals(ballotStyle());
       result &= other_cvr.choices().equals(choices());
+      result &= other_cvr.comments().equals(comments());
+      result &= other_cvr.consensus().equals(consensus());
     } else {
       result = false;
     }
@@ -386,7 +421,9 @@ public class CastVoteRecord implements Serializable {
   public int hashCode() {
     // can't just use toString() because order of choices may differ
     return (my_county_id + my_scanner_id + my_batch_id + my_record_id + 
-            my_contest_choices.hashCode() + my_contest_choices.hashCode()).hashCode();
+            my_ballot_style.hashCode() + my_contest_choices.hashCode() + 
+            my_contest_comments.hashCode() + 
+            my_contest_consensus.hashCode()).hashCode();
   }
   
   /** 
@@ -435,99 +472,5 @@ public class CastVoteRecord implements Serializable {
    */
   public enum RecordType {
     UPLOADED, AUDITOR_ENTERED, PHANTOM, ANY;
-  }
-  
-  /**
-   * JSON adapter for the internal ballot style.
-   */
-  public static final class BallotStyleJsonAdapter extends TypeAdapter<BallotStyle> {
-    /**
-     * Writes a ballot style as its ID.
-     * 
-     * @param the_writer The JSON writer.
-     * @param the_style The ballot style to write.
-     */ 
-    @Override
-    public void write(final JsonWriter the_writer, final BallotStyle the_style) 
-        throws IOException {
-      the_writer.value(the_style.id());
-    }
-    
-    /**
-     * Reads a list of contests from an array of contest IDs.
-     */
-    @Override
-    public BallotStyle read(final JsonReader the_reader) throws IOException {
-      final BallotStyle result = BallotStyle.byID(the_reader.nextLong());
-      if (result == null) {
-        throw new IOException("invalid ballot style ID");
-      }
-      return result;
-    }
-  }
-  
-  /**
-   * JSON adapter for the internal map from contests to choices.
-   */
-  public static final class ChoiceMapJsonAdapter 
-      extends TypeAdapter<Map<Contest, Set<Choice>>> {
-    /**
-     * Writes a map from contests to choices as a mapping from IDs
-     * to arrays of IDs.
-     * 
-     * @param the_writer The JSON writer.
-     * @param the_choice_map The map to write.
-     */ 
-    @Override
-    public void write(final JsonWriter the_writer, 
-                      final Map<Contest, Set<Choice>> the_choice_map) 
-        throws IOException {
-      the_writer.beginObject();
-      for (final Entry<Contest, Set<Choice>> e : the_choice_map.entrySet()) {
-        the_writer.name("contest");
-        the_writer.value(e.getKey().id());
-        the_writer.name("choices");
-        the_writer.beginArray();
-        for (final Choice c : e.getValue()) {
-          the_writer.value(c.id());
-        }
-        the_writer.endArray();
-      }
-      the_writer.endObject();
-    }
-    
-    /**
-     * Reads a map from contests to choices from a mapping from IDs to
-     * arrays of IDs.
-     */
-    @Override
-    public Map<Contest, Set<Choice>> read(final JsonReader the_reader) 
-        throws IOException {
-      final Map<Contest, Set<Choice>> result = 
-          new HashMap<Contest, Set<Choice>>();
-      boolean error = false;
-      the_reader.beginObject();
-      while (the_reader.hasNext()) {
-        if ("contest".equals(the_reader.nextName())) {
-          final Contest contest = Contest.byID(the_reader.nextLong());
-          final Set<Choice> choices = new HashSet<Choice>();
-          if ("choices".equals(the_reader.nextName())) {
-            the_reader.beginArray();
-            while (the_reader.hasNext()) {
-              choices.add(Choice.byID(the_reader.nextLong()));
-            }
-            the_reader.endArray();
-          }
-          result.put(contest, choices);
-        } else {
-          error = true;
-        }
-      }
-      the_reader.endObject();
-      if (error) {
-        throw new IOException("invalid contest to choice mapping");
-      }
-      return result;
-    }
   }
 }
