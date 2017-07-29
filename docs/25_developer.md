@@ -370,7 +370,8 @@ Project Dashboard
 
 We use [Travis CI](https://travis-ci.org/) for continuous integration.
 It produces new builds for every check-in and runs our test suites, as
-specified in our `.travis.yml` file and in the `ci` directory.
+specified in our [`.travis.yml`](../.travis.yml) file and in the
+[`ci`](../ci) directory.
 
 Current build status for the `master` branch status is reflected in the
 `README.md` of our main github page. Build status logs, can be found at
