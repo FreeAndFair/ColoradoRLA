@@ -61,10 +61,11 @@ const AuditBoardSignInStage = (props: any) => {
         <div>
             <div>
                 <h2>Audit Board Sign-in</h2>
-                <p>Enter the full names and party affiliations of each member of
+                <div className='pt-card'>
+                    Enter the full names and party affiliations of each member of
                     the Acme County Audit Board who will be conducting this audit
                     today:
-                </p>
+                </div>
             </div>
             <AuditBoardSignInForm
                 boardMember={ boardMember(0) }
