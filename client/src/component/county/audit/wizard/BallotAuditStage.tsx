@@ -54,7 +54,7 @@ const ContestInfo = ({ contest }: any) => {
 };
 
 const ContestChoices = (props: any) => {
-    const { choices, marks, updateBallotMarks } = props;
+    const { choices, marks, noConsensus, updateBallotMarks } = props;
 
     const updateChoiceById = (id: number) => (e: any) => {
         const nextChoices = _.without(marks.choices, id);
@@ -72,6 +72,7 @@ const ContestChoices = (props: any) => {
         return (
             <Checkbox
                 key={ c.id }
+                disabled={ noConsensus }
                 checked={ checked }
                 onChange={ updateChoiceById(c.id) }
                 label={ c.name }
@@ -120,6 +121,7 @@ const BallotContestMarkForm = (props: any) => {
             <ContestChoices
                 choices={ choices }
                 marks={ contestMarks }
+                noConsensus={ noConsensus }
                 updateBallotMarks={ updateBallotMarks }
             />
             <div className='pt-card'>
