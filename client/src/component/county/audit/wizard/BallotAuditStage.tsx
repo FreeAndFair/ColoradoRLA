@@ -24,18 +24,13 @@ const AuditInstructions = ({ ballotsToAudit, currentBallot }: any) => (
                 Please ensure that the paper ballot you are examining is the
                 same ballot style/ID.
             </div>
-            <div>
-                Replicate on this page all valid votes in each ballot contest
-                contained on this paper ballot.  If you determine a particular
-                ballot contest does not contain a valid vote, please also
-                indicate whether the ballot contains a blank vote or an over
-                vote.
-            </div>
-            <div>
-                If the paper ballot you are examining indicates that it was
-                duplicated, please ask a county staff member to retrieve the
-                original paper ballot submitted by the voter, and report the
-                votes contained on that ballot on this page.
+            <div className='pt-card'>
+                Record here the <strong> voter intent </strong> as described by the Voter
+                Intent Guide from the Secretary of State. All markings <strong> do not </strong>
+                need to be recorded. Replicate on this page all <strong> valid votes </strong> in
+                each ballot contest contained on this paper ballot. Or, in case of an
+                <strong> overvote</strong>, record all final voter choices that contribute to
+                the overvote. Please include notes in the comments field.
             </div>
         </div>
     </div>
