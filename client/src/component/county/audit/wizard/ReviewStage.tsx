@@ -53,6 +53,12 @@ const BallotContestReview = ({ comments, contest, marks, noConsensus }: any) => 
         </div>
     );
 
+    const noMarksDiv = (
+        <div>
+            No voter marks were observed for this contest.
+        </div>
+    );
+
     const markedChoiceDivs = _.map(marks, (m: any) => {
         return (
             <div key={ m.id } className='pt-card'>
@@ -64,7 +70,7 @@ const BallotContestReview = ({ comments, contest, marks, noConsensus }: any) => 
     const markedChoices = (
         <div>
             <strong>Marks:</strong>
-            { markedChoiceDivs }
+            { markedChoiceDivs.length ? markedChoiceDivs : noMarksDiv }
         </div>
     );
 
