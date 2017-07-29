@@ -49,6 +49,9 @@ const BallotContestResultUndervote = () => (
 );
 
 const BallotContestReview = ({ comments, contest, marks, noConsensus }: any) => {
+    const { votesAllowed } = contest;
+    const votesMarked = marks.length;
+
     const noConsensusDiv = (
         <div>
             No consensus was reached for this contest's marks.
@@ -69,12 +72,22 @@ const BallotContestReview = ({ comments, contest, marks, noConsensus }: any) => 
         );
     });
 
-    const markedChoices = (
-        <div>
-            <strong>Marks:</strong>
-            { markedChoiceDivs.length ? markedChoiceDivs : noMarksDiv }
-        </div>
-    );
+    const markedChoices = () => {
+        if (votesMarked > votesAllowed) {
+            return (
+                <div>
+                    <strong>Overvote</strong> for this contest.
+                </div>
+            );
+        }
+
+        return (
+            <div>
+                <strong>Marks:</strong>
+                { markedChoiceDivs.length ? markedChoiceDivs : noMarksDiv }
+            </div>
+        );
+    };
 
     return (
         <div className='pt-card'>
@@ -84,7 +97,7 @@ const BallotContestReview = ({ comments, contest, marks, noConsensus }: any) => 
                 <div>Vote for { contest.votesAllowed }</div>
             </div>
             <div className='pt-card'>
-                { noConsensus ? noConsensusDiv : markedChoices }
+                { noConsensus ? noConsensusDiv : markedChoices() }
             </div>
             <div className='pt-card'>
                 Comments: { comments }

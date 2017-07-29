@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+PS4='+[\t] '
+set -eux -o pipefail
+
+readonly SCRIPT_DIR="$(dirname ${BASH_SOURCE[0]})"
+readonly CLIENT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+cd "${CLIENT_DIR}"
+rm -rf dist
+
+# Build production JavaScript bundle.
+"$(npm bin)/webpack" -p --config webpack.config.prod.js --output-filename bundle.js
+
+# Copy root HTML document.
+cp index.prod.html dist/index.html
+
+# Copy app stylesheet.
+cp screen.css dist/
+
+# Copy library stylesheets and assets.
+cp node_modules/normalize.css/normalize.css dist/
+cp -r node_modules/@blueprintjs/core/dist/blueprint.css dist/
+cp -r node_modules/@blueprintjs/core/resources dist/
