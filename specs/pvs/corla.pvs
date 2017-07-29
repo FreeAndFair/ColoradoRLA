@@ -172,18 +172,16 @@
 %%% The Colorado \emph{statutes} (i.e., the law) pertaining to election
 %%% audits is
 %%% \href{http://law.justia.com/codes/colorado/2016/title-1/general-primary-recall-and-congressional-vacancy-elections/article-7/part-5/section-1-7-515/}
-%%% {Section 1-7-515, of the Colorado Revised Statues}, or C.R.S. for
-%%% short. The \emph{rules} (i.e., the interpretation of the statutes
+%%% {Section 1-7-515, of the C.R.S.}. The \emph{rules} (i.e., the interpretation of the statutes
 %%% and an explanation for how to realize their goals) pertaining to
 %%% such are found in the "Revised Draft of Proposed Rules" whose
 %%% latest version is labeled CCR 1505-1 and dated July 6,
 %%% 2017. Section 25, Post-Election Audit, of that document is the
 %%% salient portion of that document. We will call that particular
 %%% version of the document RDPR-6-Jul-2017 for the purpose of
-%%% traceability in this specification. We refer to Colorado election
-%%% law as ``C.R.S.''.
+%%% traceability in this specification. 
 %%%
-%%% This domain model is based upon these statues, its associated
+%%% This domain model is based upon these statutes, their associated
 %%% rules, our contract with CDOS for the RLA Tool or requirements
 %%% stipulated in refinement of the contract through written exchanges
 %%% with CDOS, and our bibliography of publications about
