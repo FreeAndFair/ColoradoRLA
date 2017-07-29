@@ -47,7 +47,7 @@
     <module name="RedundantImport"/>
     <module name="UnusedImports"/>
     <module name="ExecutableStatementCount">
-      <property name="max" value="10"/>
+      <property name="max" value="20"/>
       <property name="tokens" value="CTOR_DEF"/>
       <message key="executableStatementCount" value="Executable statement count is {0,number,integer} (max allowed for a constructor is {1,number,integer})."/>
     </module>
@@ -75,9 +75,6 @@
       <property name="tokens" value="METHOD_DEF"/>
     </module>
     <module name="AnonInnerLength"/>
-    <module name="ParameterNumber">
-      <property name="max" value="10"/>
-    </module>
     <module name="GenericWhitespace"/>
     <module name="EmptyForIteratorPad"/>
     <module name="EmptyForInitializerPad"/>

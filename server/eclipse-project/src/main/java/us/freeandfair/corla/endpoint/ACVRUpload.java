@@ -85,7 +85,7 @@ public class ACVRUpload implements Endpoint {
           CastVoteRecord.instance(RecordType.AUDITOR_ENTERED, Instant.now(), 
                                   acvr.countyID(), acvr.scannerID(), acvr.batchID(), 
                                   acvr.recordID(), acvr.imprintedID(), acvr.ballotStyle(), 
-                                  acvr.choices());
+                                  acvr.choices(), acvr.comments(), acvr.consensus());
       Main.LOGGER.info("Audit CVR parsed and stored as id " + real_acvr.id());
       Main.LOGGER.info(CastVoteRecord.getMatching(null, RecordType.AUDITOR_ENTERED).size() + 
                        " audit CVRs in storage");
