@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CORLA Server Tests</title>
+</head>
+<body>
+<h2>CVR Export Upload Test</h2>
+<div style="display:block">
+    <form action="http://localhost:8888/upload-cvr-export" method="post" enctype="multipart/form-data">
+        <label for="cvr_file">Select a CVR export file</label>
+        <input type="file" id="cvr_file" name="cvr_file"/>
+        County: <input type="text" name="county"/>
+        <input type="submit" id="buttonUpload" value="Upload"/>
+    </form>
+</div>
+<hr>
+<h2>Audit CVR Upload Test</h2>
+<div style="display:block">
+    <form action="http://localhost:8888/upload-audit-cvr" method="post" enctype="multipart/form-data">
+        <label for="audit_cvr">Select a file containing a single JSON audit CVR</label>
+        <input type="file" id="audit_cvr" name="audit_cvr"/>
+        <input type="submit" id="buttonUpload" value="Upload"/>
+    </form>
+</div>
+<hr>
+<h2><a href="http://localhost:8888/cvr">All CVRs Download Test</a></h2>
+<hr>
+<h2>CVRs (by County) Download Test</h2>
+<div style="display:block">
+Manually go to <tt>http://localhost:8888/cvr/county/C</tt>, replacing <tt>C</tt> with a comma-separated list of counties.
+</div>
+<hr>
+<h2>Ballot Manifest Upload Test</h2>
+<div style="display:block">
+    <form action="http://localhost:8888/upload-ballot-manifest" method="post" enctype="multipart/form-data">
+        <label for="bmi_file">Select a ballot manifest file</label>
+        <input type="file" id="bmi_file" name="bmi_file"/>
+        <input type="submit" id="buttonUpload" value="Upload"/>
+    </form>
+</div>
+<hr>
+<h2><a href="http://localhost:8888/ballot-manifest">All Ballot Manifest Download Test</a></h2>
+<hr>
+<h2>Ballot Manifest (by County) Download Test</h2>
+<div style="display:block">
+Manually go to <tt>http://localhost:8888/ballot-manifest/county/C</tt>, replacing <tt>C</tt> with a comma-separated list of counties.
+</div>
+<hr>
+<h2><a href="http://localhost:8888/ballot-style">All Ballot Style Download Test</a></h2>
+<hr>
+<h2>Ballot Style (by ID) Download Test</h2>
+<div style="display:block">
+Manually go to <tt>http://localhost:8888/ballot-style/id/N</tt>, replacing <tt>N</tt> with the ballot style ID (from a downloaded CVR or ballot style).
+</div>
+<hr>
+<h2>Ballot Style (by County) Download Test</h2>
+<div style="display:block">
+Manually go to <tt>http://localhost:8888/ballot-style/county/C</tt>, replacing <tt>C</tt> with a comma-separated list of counties.
+</div>
+<hr>
+<h2><a href="http://localhost:8888/contest">All Contest Download Test</a></h2>
+<hr>
+<h2>Contest (by ID) Download Test</h2>
+<div style="display:block">
+Manually go to <tt>http://localhost:8888/contest/id/N</tt>, replacing <tt>N</tt> with the contest ID (from a downloaded CVR or ballot style).
+</div>
+<hr>
+<h2>Contest (by County) Download Test</h2>
+<div style="display:block">
+Manually go to <tt>http://localhost:8888/contest/county/C</tt>, replacing <tt>C</tt> with a comma-separated list of counties.
+</div>
+
+</body>
+</html>
