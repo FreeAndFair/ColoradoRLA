@@ -19,7 +19,13 @@ class CountyAuditWizard extends React.Component<any, CountyAuditWizardState> {
     }
 
     public render() {
-        const props = { ...this.props, nextStage: this.nextStage };
+        const { nextStage, prevStage } = this;
+
+        const props = {
+            ...this.props,
+            nextStage,
+            prevStage,
+        };
 
         switch (this.state.stage) {
             case 'sign-in':
@@ -36,6 +42,19 @@ class CountyAuditWizard extends React.Component<any, CountyAuditWizardState> {
         const t: any = {
             'sign-in': 'ballot-audit',
             'ballot-audit': 'review',
+            'review': 'ballot-audit',
+        };
+        // tslint:enable
+
+        const stage = t[this.state.stage];
+
+        this.setState({ stage });
+    }
+
+    private prevStage = () => {
+        // tslint:disable
+        const t: any = {
+            'ballot-audit': 'sign-in',
             'review': 'ballot-audit',
         };
         // tslint:enable

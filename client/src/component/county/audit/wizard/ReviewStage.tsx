@@ -100,12 +100,17 @@ const BallotReview = ({ ballotMarks }: any) => {
     return <div className='pt-card'>{ contestReviews }</div>;
 };
 
+const BackButton = ({ back }: any) => {
+    return <button className='pt-button' onClick={ back }>Back</button>
+};
+
 const ReviewStage = (props: any) => {
     const {
         county,
         currentBallot,
         marks: rawMarks,
         nextStage,
+        prevStage,
         selectNextBallot,
     } = props;
 
@@ -125,6 +130,7 @@ const ReviewStage = (props: any) => {
         <div>
             <BallotReview ballotMarks={ ballotMarks } />
             <div className='pt-card'>
+                <BackButton back={ prevStage } />
                 <button className='pt-button pt-intent-primary' onClick={ onClick }>
                     Submit & Next Ballot
                 </button>
