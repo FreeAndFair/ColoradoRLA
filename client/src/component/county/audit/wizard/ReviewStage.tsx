@@ -2,6 +2,10 @@ import * as React from 'react';
 
 import * as _ from 'lodash';
 
+import findById from '../../../../findById';
+
+import BackButton from './BackButton';
+
 
 const BallotContestResultVoteForN = () => (
     <div className='pt-card'>
@@ -44,23 +48,46 @@ const BallotContestResultUndervote = () => (
     </div>
 );
 
-const BallotContestReview = ({ contest, marks }: any) => {
-    const markDOM = _.map(marks, (m: any) => (
-        <div key={ m.id } className='pt-card'>
-            <div>{ m.id }</div>
-            <div>{ m.name }</div>
+const BallotContestReview = ({ comments, contest, marks, noConsensus }: any) => {
+    const noConsensusDiv = (
+        <div>
+            No consensus was reached for this contest's marks.
         </div>
-    ));
+    );
+
+    const noMarksDiv = (
+        <div>
+            No voter marks were observed for this contest.
+        </div>
+    );
+
+    const markedChoiceDivs = _.map(marks, (m: any) => {
+        return (
+            <div key={ m.id } className='pt-card'>
+                <div>{ m.name }</div>
+            </div>
+        );
+    });
+
+    const markedChoices = (
+        <div>
+            <strong>Marks:</strong>
+            { markedChoiceDivs.length ? markedChoiceDivs : noMarksDiv }
+        </div>
+    );
 
     return (
         <div className='pt-card'>
             <div className='pt-card'>
-                <div>{ contest.name } ({ contest.id })</div>
+                <div>{ contest.name }</div>
                 <div>{ contest.description }</div>
                 <div>Vote for { contest.votesAllowed }</div>
             </div>
             <div className='pt-card'>
-                { markDOM }
+                { noConsensus ? noConsensusDiv : markedChoices }
+            </div>
+            <div className='pt-card'>
+                Comments: { comments }
             </div>
         </div>
     );
@@ -75,31 +102,34 @@ const BallotReview = ({ ballotMarks }: any) => {
     return <div className='pt-card'>{ contestReviews }</div>;
 };
 
-const findById = (arr: any[], id: any) =>
-    _.find(arr, (o: any) => o.id === id);
-
-
 const ReviewStage = (props: any) => {
-    const { county, nextStage } = props;
+    const {
+        county,
+        currentBallot,
+        marks: rawMarks,
+        nextStage,
+        prevStage,
+        selectNextBallot,
+    } = props;
 
-    // `exampleMarks` : { [ContestId]: ChoiceId[] }
-    const exampleMarks = {
-        1: ['2'],
-        3: ['8', '9', '11'],
-    };
-
-    const ballotMarks = _.mapValues(exampleMarks, (markIds: any, contestId: any) => {
+    const ballotMarks = _.mapValues(rawMarks, ({choices, comments, noConsensus }: any, contestId: any) => {
         const contest = findById(county.contests, contestId);
-        const marks = _.map(markIds, (id: any) => findById(contest.choices, id));
+        const marks = _.map(choices, (id: any) => findById(contest.choices, id));
 
-        return { contest, marks };
+        return { comments, contest, marks, noConsensus };
     });
+
+    const onClick  = () => {
+        selectNextBallot();
+        nextStage();
+    };
 
     return (
         <div>
             <BallotReview ballotMarks={ ballotMarks } />
             <div className='pt-card'>
-                <button className='pt-button pt-intent-primary' onClick={ nextStage }>
+                <BackButton back={ prevStage } />
+                <button className='pt-button pt-intent-primary' onClick={ onClick }>
                     Submit & Next Ballot
                 </button>
             </div>

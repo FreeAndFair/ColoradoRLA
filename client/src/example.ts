@@ -1,3 +1,6 @@
+import * as _ from 'lodash';
+
+
 // tslint:disable
 const oneOfManyContest = {
     name: 'One of Many Contest',
@@ -51,16 +54,28 @@ const ballotStyles = {
     },
 };
 
+const m = (style: any) => {
+    const marks: any = {};
+
+    for (const c of style.contests) {
+        marks[c.id] = { choices: [], comments: '' };
+    }
+
+    return marks;
+};
+
 // `marks` : { [ContestId]: ChoiceId[] }
-const b = (id: any, audited: any, style: any, marks: any = {}) =>
-    ({ id, audited, style, marks });
+const b = (id: any, audited: any, style: any) =>
+    ({ id, audited, style, marks: m(style) });
 
 const ballots = [
     b(11, false, ballotStyles.styleA),
     b(22, false, ballotStyles.styleB),
-    b(33, true, ballotStyles.styleC, { 1: ['2'], 3: ['8', '9', '11'] }),
+    b(33, false, ballotStyles.styleC),
     b(44, false, ballotStyles.styleC),
-    b(55, true, ballotStyles.styleA, { 1: ['3'], 2: ['5'] }),
+    b(55, true, ballotStyles.styleA),
+    b(66, false, ballotStyles.styleB),
+    b(77, false, ballotStyles.styleC),
 ];
 
 export const exampleCountyState = {
@@ -71,8 +86,8 @@ export const exampleCountyState = {
 
     // Miscellaneous county-relevant election metadata.
     info: {
-        electionDate: '11/21/2017',
-        auditDate: '12/1/2017',
+        electionDate: '11/07/2017',
+        auditDate: '11/18/2017',
     },
 
     // Contests under audit for this county.
@@ -87,9 +102,18 @@ export const exampleCountyState = {
     ballots,
 
     currentBallotId: 22,
+
+    auditBoard: [
+        {
+            name: 'John Smith',
+            party: 'Democratic Party'
+        },
+        {
+            name: 'Jane Doe',
+            party: 'Republican Party'
+        },
+    ],
 };
-
-
 
 const contests = {
     '1': oneOfManyContest,
@@ -103,3 +127,6 @@ export const exampleState = {
     ballotStyles,
     contests,
 };
+
+
+export default exampleState;
