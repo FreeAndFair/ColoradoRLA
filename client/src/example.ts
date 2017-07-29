@@ -3,20 +3,20 @@ import * as _ from 'lodash';
 
 // tslint:disable
 const oneOfManyContest = {
-    name: 'One of Many Contest',
+    name: 'Regent of the University of Colorado - At Large',
     description: 'A contest with 3 choices, where 1 may be selected.',
     id: '1',
     choices: [
-        { id: '1', name: 'Choice 1' },
-        { id: '2', name: 'Choice 2' },
-        { id: '3', name: 'Choice 3' },
+        { id: '1', name: 'Harley Acosta' },
+        { id: '2', name: 'Tessa Mckinney' },
+        { id: '3', name: 'Regina Robles' },
     ],
     votesAllowed: 1,
 };
 
 const yesNoContest = {
-    name: 'Yes/No Contest',
-    description: 'A contest with 2 choices, where 1 may be selected.',
+    name: 'Proposition 107 (Statutory)',
+    description: '',
     id: '2',
     choices: [
         { id: '4', name: 'Yes' },
@@ -26,15 +26,15 @@ const yesNoContest = {
 };
 
 const someOfManyContest = {
-    name: 'Some of Many Contest',
+    name: 'COUNTY COMMISSIONER - At Large',
     description: 'A contest with 5 choices, where 3 may be selected.',
     id: '3',
     choices: [
-        { id: '7', name: 'Choice A' },
-        { id: '8', name: 'Choice B' },
-        { id: '9', name: 'Choice C' },
-        { id: '10', name: 'Choice D' },
-        { id: '11', name: 'Choice E' },
+        { id: '7', name: 'Maya Mclaughlin' },
+        { id: '8', name: 'Rachelle Kramer' },
+        { id: '9', name: 'Nina Jimenez' },
+        { id: '10', name: 'Felicia Reid' },
+        { id: '11', name: 'Julian Jenkins' },
     ],
     votesAllowed: 3,
 };
