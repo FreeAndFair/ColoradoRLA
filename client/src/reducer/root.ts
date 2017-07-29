@@ -80,7 +80,9 @@ export default function root(state: AppState = defaultState, action: any) {
         if (comments) {
             marks.comments = comments;
         }
-        marks.noConsensus = !!noConsensus;
+        if (noConsensus) {
+            marks.noConsensus = !!noConsensus;
+        }
 
         ballot.marks[contestId] = marks;
 
