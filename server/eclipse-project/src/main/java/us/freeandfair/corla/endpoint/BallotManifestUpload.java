@@ -56,9 +56,10 @@ public class BallotManifestUpload implements Endpoint {
    * {@inheritDoc}
    */
   @Override
+  // the CSV parser can throw arbitrary runtime exceptions, which we must catch
+  @SuppressWarnings("PMD.AvoidCatchingGenericException")
   public String endpoint(final Request the_request, final Response the_response) {
-    // this is a multipart request - there's a "county" identifier, and a "cvr_file"
-    // containing the actual file
+    // this is a multipart request, even though there's only one file
     the_request.attribute("org.eclipse.jetty.multipartConfig", 
                           new MultipartConfigElement("/tmp"));
     boolean ok = true;
@@ -70,7 +71,8 @@ public class BallotManifestUpload implements Endpoint {
                        " ballot manifest records parsed from upload file");
       Main.LOGGER.info(BallotManifestInfo.getMatching(null).size() + 
                        " uploaded ballot manifest records in storage");
-    } catch (final IOException | ServletException e) {
+    } catch (final RuntimeException | IOException | ServletException e) {
+      Main.LOGGER.info("could not parse malformed ballot manifest");
       ok = false;
     }
     
