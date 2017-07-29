@@ -46,12 +46,16 @@ const BallotContestResultUndervote = () => (
     </div>
 );
 
-const BallotContestReview = ({ comments, contest, marks }: any) => {
-    const markDOM = _.map(marks, (m: any) => (
-        <div key={ m.id } className='pt-card'>
-            <div>{ m.name }</div>
-        </div>
-    ));
+const BallotContestReview = ({ comments, contest, marks, noConsensus }: any) => {
+    const noConsensusDiv = <div>No consensus was reached for this contest.</div>;
+
+    const markedChoices = _.map(marks, (m: any) => {
+        return (
+            <div key={ m.id } className='pt-card'>
+                <div>{ m.name }</div>
+            </div>
+        );
+    });
 
     return (
         <div className='pt-card'>
@@ -61,7 +65,7 @@ const BallotContestReview = ({ comments, contest, marks }: any) => {
                 <div>Vote for { contest.votesAllowed }</div>
             </div>
             <div className='pt-card'>
-                { markDOM }
+                { noConsensus ? noConsensusDiv : markedChoices }
             </div>
             <div className='pt-card'>
                 Comments: { comments }
@@ -88,11 +92,11 @@ const ReviewStage = (props: any) => {
         selectNextBallot,
     } = props;
 
-    const ballotMarks = _.mapValues(rawMarks, ({choices, comments }: any, contestId: any) => {
+    const ballotMarks = _.mapValues(rawMarks, ({choices, comments, noConsensus }: any, contestId: any) => {
         const contest = findById(county.contests, contestId);
         const marks = _.map(choices, (id: any) => findById(contest.choices, id));
 
-        return { contest, marks, comments };
+        return { comments, contest, marks, noConsensus };
     });
 
     const onClick  = () => {
