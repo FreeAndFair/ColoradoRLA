@@ -102,6 +102,8 @@ const BallotContestMarkForm = (props: any) => {
     const { name, description, choices, votesAllowed } = contest;
     const { marks } = currentBallot;
 
+    const contestMarks = marks[contest.id];
+
     const updateComments = (comments: any) => {
         updateBallotMarks({ comments });
     };
@@ -115,7 +117,7 @@ const BallotContestMarkForm = (props: any) => {
             <ContestInfo contest={ contest } />
             <ContestChoices
                 choices={ choices }
-                marks={ marks[contest.id] }
+                marks={ contestMarks }
                 updateBallotMarks={ updateBallotMarks }
             />
             <div className='pt-card'>
@@ -125,7 +127,7 @@ const BallotContestMarkForm = (props: any) => {
                     onChange={ updateConsensus }
                 />
             </div>
-            <ContestComments comments={ marks.comments } onChange={ updateComments } />
+            <ContestComments comments={ contestMarks.comments } onChange={ updateComments } />
         </div>
     );
 };
