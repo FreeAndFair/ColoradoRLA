@@ -58,7 +58,13 @@ export default function root(state: AppState = defaultState, action: any) {
     }
 
     case 'UPDATE_BALLOT_MARKS': {
-        const { ballotId, choices, comments, contestId } = action.data;
+        const {
+            ballotId,
+            choices,
+            comments,
+            contestId,
+            noConsensus,
+        } = action.data;
         const nextState = { ...state };
 
         const ballots = _.clone(nextState.county.ballots);
@@ -66,6 +72,7 @@ export default function root(state: AppState = defaultState, action: any) {
 
         const ballot = { ...ballots[ballotIndex] };
         ballot.audited = true;
+
         const marks = { ...ballot.marks[contestId] };
         if (choices) {
             marks.choices = choices;
@@ -73,6 +80,8 @@ export default function root(state: AppState = defaultState, action: any) {
         if (comments) {
             marks.comments = comments;
         }
+        marks.noConsensus = !!noConsensus;
+
         ballot.marks[contestId] = marks;
 
         ballots[ballotIndex] = ballot;
