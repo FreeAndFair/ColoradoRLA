@@ -1,0 +1,6 @@
+CountyID,ScannerID,BatchID,NumBallots,StorageLocation
+Arapahoe,"10","2",25,Bin 22
+Arapahoe,"3","800",20,Bin 1
+Arapahoe,"4","1200",50,Bin 1
+Arapahoe,"5","1600",20,Bin 17
+Arapahoe,"9","3200",50,Bin 17
