@@ -47,15 +47,26 @@ const BallotContestResultUndervote = () => (
 );
 
 const BallotContestReview = ({ comments, contest, marks, noConsensus }: any) => {
-    const noConsensusDiv = <div>No consensus was reached for this contest.</div>;
+    const noConsensusDiv = (
+        <div>
+            No consensus was reached for this contest's marks.
+        </div>
+    );
 
-    const markedChoices = _.map(marks, (m: any) => {
+    const markedChoiceDivs = _.map(marks, (m: any) => {
         return (
             <div key={ m.id } className='pt-card'>
                 <div>{ m.name }</div>
             </div>
         );
     });
+
+    const markedChoices = (
+        <div>
+            <strong>Marks:</strong>
+            { markedChoiceDivs }
+        </div>
+    );
 
     return (
         <div className='pt-card'>
