@@ -368,9 +368,18 @@ November, 2016.
 Project Dashboard
 -----------------
 
-*TBD discussion of what build status means, where build failure
-notifications go, where build logs are archived, and a link to our
-live dashboard.*
+We use [Travis CI](https://travis-ci.org/) for continuous integration.
+It produces new builds for every check-in and runs our test suites, as
+specified in our `.travis.yml` file and in the `ci` directory.
+
+Current build status for the `master` branch status is reflected in the
+`README.md` of our main github page. Build status logs, can be found at
+our dashboard:
+[FreeAndFair/ColoradoRLA](https://travis-ci.org/FreeAndFair/ColoradoRLA).
+
+The raw build logs provide details on which versions of our build tools
+and libraries were used each step along the way.
+
 
 Bibliography
 ------------
