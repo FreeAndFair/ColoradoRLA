@@ -2372,8 +2372,7 @@ END data_model
 %%% \section{Protocol}
 %%% \label{sec:Protocol}
 %%%
-%%% As discussed
-%%% in~\Cref{sec:Background_Model_Elements,sec:System_Architecture},
+%%% As discussed in~\Cref{sec:System_Architecture},
 %%% the RLA Tool is a client-server system. In this section we
 %%% describe the protocol used by the client and server to communicate
 %%% with each other.
