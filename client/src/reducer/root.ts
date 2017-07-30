@@ -80,7 +80,7 @@ export default function root(state: AppState = defaultState, action: any) {
         if (comments) {
             marks.comments = comments;
         }
-        if (noConsensus) {
+        if (_.isEmpty(noConsensus)) {
             marks.noConsensus = !!noConsensus;
         }
 
