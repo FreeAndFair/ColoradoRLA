@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
+import ContestDetailPage from './ContestDetailPage';
+
 
 class ContestDetailContainer extends React.Component<any, any> {
     public render() {
-        return (
-            <div>Contest Detail</div>
-        );
+        return <ContestDetailPage />;
     }
 }
 
