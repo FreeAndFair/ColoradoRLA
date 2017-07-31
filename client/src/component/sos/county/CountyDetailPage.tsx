@@ -25,30 +25,37 @@ const Breadcrumb = ({ county }: any) => (
 
 const CountyDetails = ({ county }: any) => {
     return (
-        <table className='pt-table pt-bordered pt-condensed'>
-            <tbody>
-                <tr>
-                    <td>ID:</td>
-                    <td>{ county.id }</td>
-                </tr>
-                <tr>
-                    <td>Name:</td>
-                    <td>{ county.name }</td>
-                </tr>
-                <tr>
-                    <td>Started:</td>
-                    <td>{ county.started }</td>
-                </tr>
-                <tr>
-                    <td>Ballots Submitted:</td>
-                    <td>{ county.submitted }</td>
-                </tr>
-                <tr>
-                    <td>Discrepancies:</td>
-                    <td>{ county.discrepancies }</td>
-                </tr>
-            </tbody>
-        </table>
+        <div>
+            <table className='pt-table pt-bordered pt-condensed'>
+                <tbody>
+                    <tr>
+                        <td>ID:</td>
+                        <td>{ county.id }</td>
+                    </tr>
+                    <tr>
+                        <td>Name:</td>
+                        <td>{ county.name }</td>
+                    </tr>
+                    <tr>
+                        <td>Started:</td>
+                        <td>{ county.started }</td>
+                    </tr>
+                    <tr>
+                        <td>Ballots Submitted:</td>
+                        <td>{ county.submitted }</td>
+                    </tr>
+                    <tr>
+                        <td>Discrepancies:</td>
+                        <td>{ county.discrepancies }</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div>Audit board:</div>
+            <ul>
+                <li>John Doe (Democratic Party)</li>
+                <li>Jane Smith (RepublicanParty)</li>
+            </ul>
+        </div>
     );
 };
 
