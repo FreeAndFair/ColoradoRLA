@@ -8,12 +8,15 @@ import { LoginContainer } from './LoginContainer';
 import LoginPage from './LoginPage';
 
 
+const routeProps = () => ({ location: { state: { from: '/' } } });
+
+
 test('LoginContainer', s => {
 
     s.test('when logged out', t => {
         t.plan(2);
 
-        const c = shallow(<LoginContainer loggedIn={ false } />);
+        const c = shallow(<LoginContainer loggedIn={ false } { ...routeProps() } />);
         const r = c.find(Redirect);
 
         t.ok(!r.exists(), 'it does not redirect the user');
@@ -24,7 +27,7 @@ test('LoginContainer', s => {
     s.test('when logged in', t => {
         t.plan(2);
 
-        const c = shallow(<LoginContainer loggedIn={ true } />);
+        const c = shallow(<LoginContainer loggedIn={ true } { ...routeProps() } />);
         const r = c.find(Redirect);
 
         t.ok(r.exists(), 'it redirects the user');

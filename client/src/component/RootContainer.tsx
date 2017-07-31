@@ -42,7 +42,12 @@ const LoginRoute = ({ store, page: Page, ...rest }: any) => {
             return <Page { ...props } />;
         }
 
-        return <Redirect to='/login' />;
+        const from  = props.location.pathname || '/';
+        const to = {
+            pathname: '/login',
+            state: { from },
+        };
+        return <Redirect to={ to } />;
     };
 
     return <Route render={ render } { ...rest } />;
