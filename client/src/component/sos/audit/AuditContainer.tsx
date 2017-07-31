@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
+import AuditPage from './AuditPage';
+
 
 class AuditContainer extends React.Component<any, any> {
     public render() {
-        return (
-            <div>Audit</div>
-        );
+        return <AuditPage />;
     }
 }
 
