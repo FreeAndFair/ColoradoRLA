@@ -11,7 +11,7 @@ const Breadcrumb = () => (
             </a>
         </li>
         <li>
-            <a className='pt-breadcrumb' href='/sos/admin'>
+            <a className='pt-breadcrumb' href='/sos/audit'>
                 Audit Admin
             </a>
         </li>
