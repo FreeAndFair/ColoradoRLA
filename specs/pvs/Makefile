@@ -16,5 +16,5 @@ clean:
 ${generated_tex}.tex:	${pvsfile}.pvs
 	$(DELIT) -f ${pvsfile}.pvs
 
-${document}.pdf:	${generated_tex}.tex
+${document}.pdf:	${generated_tex}.tex ${document}.tex
 	latexmk -pdf ${document}

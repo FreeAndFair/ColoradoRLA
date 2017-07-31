@@ -5,71 +5,69 @@
 %%% \maketitle
 %%%
 %%% \section{Introduction}
-%%% The RLA Tool is a computer system developed by Free \& Fair for the Colorado
-%%% Department of State (CDOS henceforth). The RLA Tool facilitates
-%%% running a risk limiting audit across several jurisdictions. In the
-%%% case of Colorado, it facilitates running risk limiting audits
-%%% across all counties in the state simultaneously.
+%%%
+%%% The RLA Tool is a computer system developed by Free \& Fair for
+%%% the Colorado Department of State (CDOS henceforth). The RLA Tool
+%%% facilitates running a risk limiting audit across several
+%%% jurisdictions. In the case of Colorado, it facilitates running
+%%% risk limiting audits across all counties in the state
+%%% simultaneously.
 %%%
 %%% The Colorado election law pertaining to election audits is
 %%% \href{http://law.justia.com/codes/colorado/2016/title-1/general-primary-recall-and-congressional-vacancy-elections/article-7/part-5/section-1-7-515/}
-%%% {Section 1-7-515, C.R.S.}, where ``C.R.S." denotes ``Colorado Revised Statutes". The rules pertaining to election audits are
+%%% {Section 1-7-515, C.R.S.}, where ``C.R.S." denotes ``Colorado
+%%% Revised Statutes". The rules pertaining to election audits are
 %%% found in the ``Revised Draft of Proposed Rules" whose latest
 %%% version is labeled CCR 1505-1 and dated July 6, 2017. Section 25,
 %%% Post-Election Audit, of that document is the salient portion of
-%%% that document for our purposes. We will call that document RDPR-6-Jul-2017 for the
-%%% purpose of traceability in this specification.
+%%% that document for our purposes. We will call that document
+%%% RDPR-6-Jul-2017 for the purpose of traceability in this
+%%% specification.
 %%%
-%%% This domain model is based upon that law, its rules,
-%%% the procurement contract between CDOS and Free \& Fair,
-%%% our bibliography of publications about risk-limiting audits, etc.
+%%% This domain model is based upon that law, its rules, the
+%%% procurement contract between CDOS and Free \& Fair, our
+%%% bibliography of publications about risk-limiting audits, etc.
 %%%
 %%% The core of this document is a formal specification of the RLA
-%%% tool.
-%%% The specification documents our
-%%% thinking and the system design, from domain modeling and
-%%% engineering all of the way to formal specification and
-%%% verification.
-%%% In keeping with the spirit of open source development, the 
-%%% publication of this specification should support any interested
-%%% parties with the requisite technological skills to deploy, manage
-%%% maintain or evolve the system. 
+%%% tool.  The specification documents our thinking and the system
+%%% design, from domain modeling and engineering all of the way to
+%%% formal specification and verification.  In keeping with the spirit
+%%% of open source development, the publication of this specification
+%%% should support any interested parties with the requisite
+%%% technological skills to deploy, manage maintain or evolve the
+%%% system.
 %%%
-%%% This document is
-%%% annotated to help readers who are not expert
-%%% in formal system specification understand the scope and interpretations
-%%% of the elements of the specification. 
-%%% The prose
-%%% annotations will help elections domain experts
-%%% assess the completeness and correctness of the
-%%% RLA tool built for Colorado.
+%%% This document is annotated to help readers who are not expert in
+%%% formal system specification understand the scope and
+%%% interpretations of the elements of the specification.  The prose
+%%% annotations will help elections domain experts assess the
+%%% completeness and correctness of the RLA tool built for Colorado.
 %%%
 %%% \subsection{Technical Context}
+%%%
 %%% The RLA Tool is a client-server system. The server is implemented
 %%% in Java and runs on servers hosted by CDOS. The client is
 %%% implemented in TypeScript and JavaScript and runs in modern web
-%%% browsers.
-%%% CDOS provides
-%%% the hosting servers, network, and a number of services
-%%% in support of the tools deployment and management.
+%%% browsers.  CDOS provides the hosting servers, network, and a
+%%% number of services in support of the tools deployment and
+%%% management.
 %%%
-%%% This document is written in the 
+%%% This document is written in the
 %%% \href{https://en.wikipedia.org/wiki/Literate_programming}
-%%% {literate style} promoted by 
+%%% {literate style} promoted by
 %%% \href{https://en.wikipedia.org/wiki/Donald_Knuth}{Donald Knuth},
-%%% using the PVS
-%%% theorem prover. Writing system specifications in this fashion is
-%%% called (formal) domain engineering. It allows the production of typeset books
-%%% and interactive hypertext directly from the specification.
-%%% In order to write literate PVS we use our old friend Adriaan de
-%%% Groot's scripts, available at
-%%% \url{http://www.cs.kun.nl/~adridg/research/PVS-literate.html}. The formal domain model is
-%%% written in PVS's higher-order logic (HOL). 
+%%% using the PVS theorem prover. Writing system specifications in
+%%% this fashion is called (formal) domain engineering. It allows the
+%%% production of typeset books and interactive hypertext directly
+%%% from the specification.  In order to write literate PVS we use our
+%%% old friend Adriaan de Groot's scripts, available at
+%%% \url{http://www.cs.kun.nl/~adridg/research/PVS-literate.html}. The
+%%% formal domain model is written in PVS's higher-order logic (HOL).
 
-%%% There is a corresponding informal domain
-%%% model written in the Free \& Fair System Specification Language,
-%%% or FAFSSL for short. FAFSSL is a daughter of Extended BON which
-%%% was, in turn, a daughter of BON, the Business Object Notation.
+%%% There is a corresponding informal domain model written in the Free
+%%% \& Fair System Specification Language, or FAFSSL for short. FAFSSL
+%%% is a daughter of Extended BON which was, in turn, a daughter of
+%%% \href{BON}{http://www.bon-method.com/}, the Business Object Notation.
 %%%
 %%% In order to relate PVS to FAFSSL, we must define a refinement
 %%% relationship between their two type systems. Informally, that
@@ -78,13 +76,13 @@
 %%% We map PVS public theories and their contents to FAFSSL
 %%% constructs.  The top-level corla theory maps to the FAFSSL system
 %%% specification, theories map to clusters, (PVS) types map to
-%%% (FAFSSL) types, and functions map to features.  
+%%% (FAFSSL) types, and functions map to features.
 %%%
-%%% The formal domain model is annotated with structured comments
-%%% in precise natural language using a standard set of annotations.
-%%% A shell script processes these annotations and generates a
-%%% well-typed informal FAFSSL specification.
-%%% See our Bibliography project at GitHub,
+%%% The formal domain model is annotated with structured comments in
+%%% precise natural language using a standard set of annotations.  A
+%%% shell script processes these annotations and generates a
+%%% well-typed informal FAFSSL specification.  See our Bibliography
+%%% project at GitHub,
 %%% \url{https://github.com/FreeAndFair/Bibliography}, for more
 %%% information.
 
@@ -115,7 +113,8 @@
 %%% It is necessary to summarize a number of background concepts from
 %%% computer science in order to formalize the RLA Tool.
 %%
-%%% The Free \& Fair System Specification Language (FAFSSL) annotations we use are as follows:
+%%% The Free \& Fair System Specification Language (FAFSSL)
+%%% annotations we use are as follows:
 %%% \begin{description}
 %%% \item[\@system] the FAFSSL name of the system
 %%% \item[\@cluster] the FAFSSL name of a cluster
@@ -169,17 +168,17 @@
 %%%
 %%% \subsection{Refinement from Background Literature to Specification}
 %%%
-%%% The Colorado \emph{statutes} (i.e., the law) pertaining to election
-%%% audits is
+%%% The Colorado \emph{statutes} (i.e., the law) pertaining to
+%%% election audits is
 %%% \href{http://law.justia.com/codes/colorado/2016/title-1/general-primary-recall-and-congressional-vacancy-elections/article-7/part-5/section-1-7-515/}
-%%% {Section 1-7-515, of the C.R.S.}. The \emph{rules} (i.e., the interpretation of the statutes
-%%% and an explanation for how to realize their goals) pertaining to
-%%% such are found in the "Revised Draft of Proposed Rules" whose
-%%% latest version is labeled CCR 1505-1 and dated July 6,
-%%% 2017. Section 25, Post-Election Audit, of that document is the
-%%% salient portion of that document. We will call that particular
-%%% version of the document RDPR-6-Jul-2017 for the purpose of
-%%% traceability in this specification. 
+%%% {Section 1-7-515, of the C.R.S.}. The \emph{rules} (i.e., the
+%%% interpretation of the statutes and an explanation for how to
+%%% realize their goals) pertaining to such are found in the "Revised
+%%% Draft of Proposed Rules" whose latest version is labeled CCR
+%%% 1505-1 and dated July 6, 2017. Section 25, Post-Election Audit, of
+%%% that document is the salient portion of that document. We will
+%%% call that particular version of the document RDPR-6-Jul-2017 for
+%%% the purpose of traceability in this specification.
 %%%
 %%% This domain model is based upon these statutes, their associated
 %%% rules, our contract with CDOS for the RLA Tool or requirements
@@ -221,10 +220,28 @@
 %%% correctness, completeness, and traceability of our specification,
 %%% both formal and informal.
 %%%
+%%% Another goal we have is making sure that our formal model is
+%%% consistent with federal standards. In particular, the work of the
+%%% NIST/EAC Interoperability Working group, Election Modeling
+%%% subgroup, will likely be be useful. In that work there is a BPMN2
+%%% model, pictures, XPDL, XML, and more at
+%%% \href{https://github.com/usnistgov/ElectionModeling}{the NIST
+%%% Election Modeling GitHub page}, and the
+%%% \href{http://collaborate.nist.gov/voting/bin/view/Voting/ElectionModeling}{NIST
+%%% main Election Modeling wiki}.  UML for some relevant concepts is
+%%% also available via
+%%% \href{https://github.com/usnistgov/CastVoteRecords}{GitHub}.  We
+%%% do not have time or resources for ensuring \emph{consistency} between
+%%% models now.\footnote{What consistent usually means in this context
+%%% is that there is a relation we can define between types in the
+%%% models that is information preserving from the simpler model to
+%%% the more complex one.}
+%%%
 %%% \subsection{Refinement from Specification to Implementation}
 %%%
 %%% In order to turn a specification like this one into an
 %%% implementation we must take the following steps.
+%%%
 %%% \begin{enumerate}
 %%%
 %%% \item We must decide how each type is going to be concretized into
@@ -272,10 +289,6 @@
 %%% wholesale in the system, ensuring that properties hold for all
 %%% possible inputs in all possible environments.
 %%% \end{enumerate}
-% @todo Explain how refinement works and how the reader can understand
-% exactly what is built vs. what is just designed.
-% @review kiniry what's the point of including the FAFESSL annotations in the printed
-% book, where their use is invisible? @sfsinger
 
 %%%%%% Literate PVS comments +BEGIN and +END denote blocks. A block
 %%%%%% named "foo" is written to a LaTeX file "foo.tex".
@@ -284,7 +297,7 @@
 
 % Traceability and process features and annotations.
 
-%%% \todojrk{Add annotation functions coupled to milestones.}
+%%% \todokiniry{Add annotation functions coupled to milestones.}
 
 FAFSSL: THEORY
 BEGIN
@@ -421,16 +434,15 @@ BEGIN
 %%% voter, a candidate, both, or neither.
   candidate: TYPE FROM person
 
-%%% Elections focus on contests, each of which represents a 
-%%% choice that voters can make. Making a legal choice ranges
-%%% enormously across the Earth, from marking a vote for a candidate
-%%% by filling in a single bubble to enumerating a total order on all
-%%% choices in a contest. Within any single election, each contest has a
-%%% unique name.
-%%% \todojrk{Need to break the cycle between the contest type and
-%%% the ballots theory. sfsinger suggests: contests are grouped into elections,
-%%% not ballots. So define contests first. Then a ballot is created to 
-%%% represent a set of contests.}
+%%% Elections focus on contests, each of which represents a choice
+%%% that voters can make. Making a legal choice ranges enormously
+%%% across the Earth, from marking a vote for a candidate by filling
+%%% in a single bubble to enumerating a total order on all choices in
+%%% a contest. Within any single election, each contest has a unique
+%%% name.  \todokiniry{Need to break the cycle between the contest type
+%%% and the ballots theory. sfsinger suggests: contests are grouped
+%%% into elections, not ballots. So define contests first. Then a
+%%% ballot is created to represent a set of contests.}
   contest: TYPE =
     [# name: string, description: string #] % , choices: choice #]
 
@@ -440,16 +452,16 @@ BEGIN
   audited_contest: TYPE FROM contest
   opportunistic_contest: TYPE FROM contest
   full_hand_count_contest: TYPE FROM contest
-% @todo Contest name uniqueness.
-
-%%% \todojrk{These types will be refined when we review the
+%%% \todokiniry{Add an axiom for contest name uniqueness.}
+%%% \todokiniry{These types will be refined when we review the
 %%% information provided by CDOS on 20 July 2017 about Dominion's file
-%%% formats.}
-%%% After a tabulation, each contest has an outcome. For some contests,
-%%% the outcome is the candidate who won; for others the outcome is a set of 
-%%% candidates (say, in a contest for five at-large seats where the top five 
-%%% vote-getters win); for ballot questions the outcome is either ``yes" or ``no".
-%%% The set of outcomes from all contests in a single election are the outcome of the election.
+%%% formats.} After a tabulation, each contest has an outcome. For
+%%% some contests, the outcome is the candidate who won; for others
+%%% the outcome is a set of candidates (say, in a contest for five
+%%% at-large seats where the top five vote-getters win); for ballot
+%%% questions the outcome is either ``yes" or ``no".  The set of
+%%% outcomes from all contests in a single election are the outcome of
+%%% the election.
   contest_outcome: TYPE
   election_outcomes: TYPE = set[contest_outcome]
   wrong_outcome: TYPE FROM election_outcomes
@@ -470,7 +482,7 @@ BEGIN
 % @trace RDPR-6-Jul-2017 Section 25.1.5
 % @description The presumed winning and losing candidates or voting
 % choices of a ballot contest as reflected in preliminary results.
-%%% \todojrk{Revise this definition.}
+%%% \todokiniry{Revise this definition.}
   reported_tabulation_outcome: TYPE FROM election_outcomes
 
 % @trace RDPR-6-Jul-2017 Section 25.2.2(D)
@@ -550,17 +562,16 @@ END election
 %%% \subsection{Ballots}
 
 %%% The second basic concept of elections that we need to specify is
-%%% the ballot. A ballot is a (possibly flawed) representation of the choices
-%%% made by a voter in all contests in the election.
-%%% A ballot may be paper, or it may be electronic -- for example in Colorado
-%%% UOCAVA voters can return their voted ballots by email. In Colorado these electronic ballots 
-%%% are printed out, producing paper ballots. In some situations, say, if a
-%%% voter has marked a paper ballot with ink of a color that the scanners cannot read,
-%%% Election Board workers will create a duplicate ballot from the voter's original.
-% @todo sfsinger find sources for these, other than "Dwight Shellman said so".
-%%%
-% @review kiniry dmz I think of contests_with_candidates and ballot_questions
-% as subsets of "contests". A ballot question is a contest between "yes" and "no".
+%%% the ballot. A ballot is a (possibly flawed) representation of the
+%%% choices made by a voter in all contests in the election.  A ballot
+%%% may be paper, or it may be electronic -- for example in Colorado
+%%% UOCAVA voters can return their voted ballots by email. In Colorado
+%%% these electronic ballots are printed out, producing paper
+%%% ballots. In some situations, say, if a voter has marked a paper
+%%% ballot with ink of a color that the scanners cannot read, Election
+%%% Board workers will create a duplicate ballot from the voter's
+%%% original. \todosfsinger{Find sources for these, other than
+%%% ``Dwight Shellman said so''}.
 %%%
 %%% There are a variety of ways to store ballots. Some ballot
 %%% storage containers are secure, others are not. Some facilitate an
@@ -570,24 +581,28 @@ END election
 % @relation bin inherit storage_container
 % @relation ballot_box inherit storage_container
 
-%%% An important part of any election process is the creation of the storage
-%%% containers for the ballots.
+%%% An important part of any election process is the creation of the
+%%% storage containers for the ballots. We distinguish different types
+%%% of containers because (a) we have witnessed different storage
+%%% mechanisms in the field, (b) we understand there is not a uniform
+%%% storage mechanism in Colorado, and (c) some mechanisms are secure
+%%% and provide a chain-of-custody evidence and others are not. This
+%%% latter point matters with regards to the meaning of
+%%% \emph{chain\_of\_custody\_secure?}  and \texttt{verified?} below.
 storage_container: DATATYPE
   WITH SUBTYPES box,
                 bin,
                 ballot_box
-
-Another crucial element of an election is the vote-counting equipment.
 BEGIN
   IMPORTING elections
 
   box?(ballots:list[ballot]): make_box: box
   bin?(ballots:list[ballot]): make_bin: bin
   ballot_box?(ballots:list[ballot]): make_ballot_box: ballot_box
-
-% @todo add "secure: pred[ballot_storage]"
-
 END storage_container
+
+%%% Another crucial element of an election is the vote-counting
+%%% equipment.
 
 elections_equipment: THEORY
 BEGIN
@@ -599,9 +614,10 @@ BEGIN
   scanner_id: TYPE = string
   scanner: TYPE =
     [# name: string, model: string, id: scanner_id #]
-% @todo Each scanner has a unique id number.
+%%% \todokiniry{Add an axiom for uniqueness of scanner id numbers.}
   vvpat: TYPE
   verified?: TYPE = pred[storage_container]
+  chain_of_custody_secure?: TYPE = pred[storage_container]
 
 %%% Voting system's logs are precisely defined in federal
 %%% standards. Those standards are known as the ``Voluntary Voting
@@ -677,12 +693,15 @@ BEGIN
 
 % @description A decision to be made, either the selection of one or
 % more candidates for an office or the choice of a course of action.
-%%% \todojrk{Need to clarify choices vs options vs votes.}
-%%% \todojrk{Need to add model information for write-in votes.}
+%%% \todokiniry{Need to clarify choices vs options vs votes.}
+%%% \todokiniry{Need to add model information for write-in votes.}
 % @review kiniry dmz Isn't every contest a ballot contest?
   ballot_contest: TYPE = contest
   option: TYPE = string
   choice: TYPE = set[option]
+
+% @review kiniry dmz I think of contests_with_candidates and ballot_questions
+% as subsets of "contests". A ballot question is a contest between "yes" and "no".
 
 %%% Ballots are often grouped into batches.
 % @description A batch is a set of ballots.
@@ -737,9 +756,9 @@ BEGIN
             elections_equipment,
             information_systems
 
-%%% \todojrk{Should this information also include what kind of
+%%% \todokiniry{Should this information also include what kind of
 %%% ballot each ballot is?  I.e., re-marked, phantom, etc.?}
-%%% \todojrk{These types will be refined when we review the
+%%% \todokiniry{These types will be refined when we review the
 %%% information provided by CDOS on 20 July 2017 about Dominion's file
 %%% formats.}
   ballot_manifest_info: TYPE =
@@ -748,7 +767,7 @@ BEGIN
      batch_id,
      batch_size,
      storage_container]
-%%% \todojrk{Ballot position number is still not explicitly
+%%% \todokiniry{Ballot position number is still not explicitly
 %%% specified.}
   ballot_manifest: TYPE = list[ballot_manifest_info]
   verified?: pred[ballot_manifest]
@@ -793,13 +812,15 @@ BEGIN
 % @description A (sometimes deemed improper) selection of too few
 % choices in a ballot contest.
   undervote?(choices:set[choice]): make_undervote: undervote
-% @todo nealmcb Should we define undervote specifically as 0 votes?
-% Note that https://github.com/usnistgov/ElectionResultsReporting/ defines
-% it as "Undervote: Occurs when the voter does not select a candidate in
-% a 1-of-M contest or selects fewer than N candidates in an N-of-M contest."
-%%% \todojrk{Should we model a blank vote separately from an
-%%% undervote?  Or do they simply use the term blank vote to denote an
-%%% undervote?}
+%%% \todonealmcb{Should we define undervote specifically as 0 votes?
+%%% Note that
+%%% \href{https://github.com/usnistgov/ElectionResultsReporting/}{the
+%%% Election Results Reporting project} defines it as ``Undervote:
+%%% Occurs when the voter does not select a candidate in a 1-of-M
+%%% contest or selects fewer than N candidates in an N-of-M
+%%% contest.''} \todokiniry{Should we model a blank vote separately
+%%% from an undervote?  Or do they simply use the term blank vote to
+%%% denote an undervote?}
 % @trace CDOS Audit Board Utility Mock-up 21 July 2017
 END vote
 
@@ -830,7 +851,7 @@ BEGIN
   ballot_order: TYPE = sequence[ballot]
 
 %%% Sometimes, but not always, a total order is induced by ballot ids.
-% @todo Introduce something like
+%%% \todokiniry{Introduce appropriate axiom for such.}
 % < (b1: ballot, b2: ballot): bool
 % ballot_ids_unique_and_induce_order: POSTULATE strict_total_order?(<)
 
@@ -1242,7 +1263,7 @@ BEGIN
 % that must be examined and verified during the RLA.
   number_of_ballots_to_audit: [audited_contest -> nat]
 
-%%% \todojrk{Still need to model core RLA algorithm(s).}
+%%% \todokiniry{Still need to model core RLA algorithm(s).}
 END rlas
 
 %+END audits
@@ -1272,8 +1293,9 @@ END rlas
 %%% the RLA back-end as CSV files by county officials using their
 %%% voting systems and the RLA Tool, respectively.
 
-%%% \todojrk{For a given election, there must be a 1-1 correspondence
-%%% between its ballots and its CVRs.}
+%%% \todokiniry{For a given election, we cannot expect a 1-1
+%%% correspondence between its ballots and its CVRs. Phantom ballots
+%%% and human error will result in a violation of such a property.}
 
 cast_vote_records: THEORY
 BEGIN
@@ -1293,7 +1315,7 @@ BEGIN
 % county must also generate and preserve a CVR export.
   export_cvr: [voting_system -> cvr_file]
 
-% @todo It is unclear what a CVR number is, if anything.
+%%% \todokiniry{It is unclear what a CVR number is, if anything.}
   cvr_number: TYPE = nat
 END cast_vote_records
 
@@ -1331,9 +1353,10 @@ BEGIN
     make_county_auditing_interface: county_auditing_interface
   audit_adjudication_interface?:
     make_audit_adjudication_interface: audit_adjudication_interface
-% @todo in the audit adjudication interface, it must be possible to classify
-% a ballot as unauditable either due to not finding a voter-verifiable paper
-% record or due to it being a phantom ballot
+%%% \todokiniry{In the audit adjudication interface, it must be
+%%% possible to classify a ballot as unauditable either due to not
+%%% finding a voter-verifiable paper record or due to it being a
+%%% phantom ballot.}
   public_interface?:
     make_public_interface: public_interface
 END user_interface
@@ -1564,7 +1587,7 @@ BEGIN
 
 %%% \end{enumerate}
 
-%%% \todojrk{Obviously this type has to be strengthened considerably
+%%% \todokiniry{Obviously this type has to be strengthened considerably
 %%% to guarantee permutation. That is, that both the set and the list
 %%% are finite and converting the list into a set results in a set
 %%% equivalent to the original set.}
@@ -1699,7 +1722,7 @@ BEGIN
   generate_ballot_manifest_digest: [ballot_manifest_file -> digest]
 
 
-%%% \todojrk{Improve/strengthen the dependent types in these upload
+%%% \todokiniry{Improve/strengthen the dependent types in these upload
 %%% signatures below.}
 
 %%% Each county conducting a comparison audit must upload:
@@ -1977,7 +2000,7 @@ BEGIN
 %%% machines and features are modeled in the dashboard modules
 %%% below. We focus only on authentication here.
 
-%%% \todojrk{Introduce an authentication monad and a state monad for
+%%% \todokiniry{Introduce an authentication monad and a state monad for
 %%% our ASMs.}
 
 % @description Authenticate this county administrator to that county
@@ -2356,7 +2379,7 @@ BEGIN
 %%% All of the information on the public dashboard is derived from the
 %%% above data.
 
-%%% \todojrk{Add election as first column to every table? Or have a
+%%% \todokiniry{Add election as first column to every table? Or have a
 %%% different DB per election?}
 
 END data_model
@@ -2539,10 +2562,10 @@ BEGIN
 %%% codomain of the function must indicate such. See, for example,
 %%% \texttt{county\_upload\_verified\_ballot\_manifest}.
 %%%
-%%% \todojrk{Add citation or explanation of encoding of sets and
+%%% \todokiniry{Add citation or explanation of encoding of sets and
 %%% pairs.}
 %%%
-%%% \todojrk{Add response code for all external public events.}
+%%% \todokiniry{Add response code for all external public events.}
 %%%
 %%% \tododmz{Explan how we are doing the definition of data types and
 %%% the derivation of JSON encodings.}
