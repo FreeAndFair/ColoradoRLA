@@ -16,7 +16,7 @@ const oneOfManyContest = {
 
 const yesNoContest = {
     name: 'Proposition 107 (Statutory)',
-    description: '',
+    description: 'Like a one-of-many contest, with exactly two choices.',
     id: '2',
     choices: [
         { id: '4', name: 'Yes' },
