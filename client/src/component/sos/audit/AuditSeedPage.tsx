@@ -23,7 +23,7 @@ const Breadcrumb = () => (
     </ul>
 );
 
-const Audit = () => {
+const AuditSeedPage = () => {
     return (
         <div>
             <Nav />
@@ -47,4 +47,4 @@ const Audit = () => {
 };
 
 
-export default Audit;
+export default AuditSeedPage;
