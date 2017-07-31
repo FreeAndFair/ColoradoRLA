@@ -24,7 +24,11 @@ const CountyTableRow = ({ county }: any) => {
     return (
         <tr>
             <td>{ county.id }</td>
-            <td>{ county.name }</td>
+            <td>
+                <a href={ `/sos/county/${county.id}` }>
+                    { county.name }
+                </a>
+            </td>
             <td>{ county.started }</td>
             <td>{ county.submitted }</td>
             <td>{ county.discrepancies }</td>
