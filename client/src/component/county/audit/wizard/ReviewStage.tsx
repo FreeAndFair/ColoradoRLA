@@ -54,13 +54,13 @@ const BallotContestReview = ({ comments, contest, marks, noConsensus }: any) => 
 
     const noConsensusDiv = (
         <div>
-            No consensus was reached for this contest's marks.
+            The Audit Board did not reach consensus.
         </div>
     );
 
     const noMarksDiv = (
         <div>
-            No voter marks were observed for this contest.
+            Blank Vote
         </div>
     );
 
@@ -83,7 +83,7 @@ const BallotContestReview = ({ comments, contest, marks, noConsensus }: any) => 
 
         return (
             <div>
-                <strong>Marks:</strong>
+                <strong>Votes for:</strong>
                 { markedChoiceDivs.length ? markedChoiceDivs : noMarksDiv }
             </div>
         );
