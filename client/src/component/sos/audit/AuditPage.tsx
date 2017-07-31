@@ -3,6 +3,7 @@ import * as React from 'react';
 import Nav from '../Nav';
 
 import { NumericInput, Radio, RadioGroup } from '@blueprintjs/core';
+import { DateInput } from '@blueprintjs/datetime';
 
 
 const Breadcrumb = () => (
@@ -32,7 +33,10 @@ const Audit = () => {
             <h3>Audit Definition</h3>
             <div>Enter the date the election will take place, and the type of election.</div>
             <div>
+                <label>
                 Election date.
+                    <DateInput />
+                </label>
             </div>
             <div>
                 <RadioGroup onChange={ nop } label='Election Type'>
