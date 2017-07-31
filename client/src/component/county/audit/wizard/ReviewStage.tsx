@@ -83,7 +83,7 @@ const BallotContestReview = ({ comments, contest, marks, noConsensus }: any) => 
 
         return (
             <div>
-                <strong>Marks:</strong>
+                <strong>Votes for:</strong>
                 { markedChoiceDivs.length ? markedChoiceDivs : noMarksDiv }
             </div>
         );
