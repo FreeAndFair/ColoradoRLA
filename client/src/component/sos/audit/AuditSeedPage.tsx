@@ -38,6 +38,10 @@ const Audit = () => {
                     <input className='pt-input' type='text' />
                 </label>
             </div>
+            <div>
+                <button className='pt-button'>Back</button>
+                <button className='pt-button pt-intent-primary'>Save & Next</button>
+            </div>
         </div>
     );
 };
