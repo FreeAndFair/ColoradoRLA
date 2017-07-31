@@ -60,7 +60,7 @@ const BallotContestReview = ({ comments, contest, marks, noConsensus }: any) => 
 
     const noMarksDiv = (
         <div>
-            No voter marks were observed for this contest.
+            Blank Vote
         </div>
     );
 
