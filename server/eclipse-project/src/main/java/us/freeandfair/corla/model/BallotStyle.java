@@ -12,6 +12,7 @@
 package us.freeandfair.corla.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -70,13 +71,16 @@ public class BallotStyle implements Serializable {
    */
   @Id
   @GeneratedValue(strategy = GenerationType.TABLE)
+  // not immutable because of JPA
   @SuppressWarnings("PMD.ImmutableField")
   private long my_id = getID();
 
   /**
    * The ballot style ID.
    */
-  private final String my_identifier;
+  // not immutable because of JPA
+  @SuppressWarnings("PMD.ImmutableField")
+  private String my_identifier;
   
   /**
    * The list of contests on a ballot of this style.
@@ -84,14 +88,13 @@ public class BallotStyle implements Serializable {
   @ElementCollection
   @Cascade({CascadeType.ALL})
   @JsonAdapter(ContestsJsonAdapter.class)
-  private final List<Contest> my_contests;
+  private List<Contest> my_contests;
   
   /**
    * Constructs an empty ballot style, solely for persistence.
    */
   protected BallotStyle() {
     my_identifier = "";
-    my_contests = null;
   }
   
   /**
@@ -102,8 +105,7 @@ public class BallotStyle implements Serializable {
    */
   protected BallotStyle(final String the_name, final List<Contest> the_contests) {
     my_identifier = the_name;
-    // TODO: clone to make immutable
-    my_contests = the_contests;
+    my_contests = new ArrayList<Contest>(the_contests);
   }
   
   /**
