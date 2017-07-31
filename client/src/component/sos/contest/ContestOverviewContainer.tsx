@@ -6,11 +6,11 @@ import ContestOverviewPage from './ContestOverviewPage';
 
 class ContestOverviewContainer extends React.Component<any, any> {
     public render() {
-        return <ContestOverviewPage />;
+        return <ContestOverviewPage { ...this.props } />;
     }
 }
 
-const mapStateToProps = () => ({});
+const mapStateToProps = ({ contests }: any) => ({ contests });
 
 const mapDispatchToProps = (dispatch: any) => ({});
 
