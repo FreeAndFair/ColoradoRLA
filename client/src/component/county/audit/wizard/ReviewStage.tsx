@@ -54,7 +54,7 @@ const BallotContestReview = ({ comments, contest, marks, noConsensus }: any) => 
 
     const noConsensusDiv = (
         <div>
-            No consensus was reached for this contest's marks.
+            The Audit Board did not reach consensus.
         </div>
     );
 
