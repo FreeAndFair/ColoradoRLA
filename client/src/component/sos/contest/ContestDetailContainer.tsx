@@ -6,16 +6,14 @@ import ContestDetailPage from './ContestDetailPage';
 
 class ContestDetailContainer extends React.Component<any, any> {
     public render() {
-        const contest = {
-            id: 123,
-            name: 'Proposition 107 (Statutory)',
-        };
+        const { contestId } = this.props.match.params;
+        const contest = this.props.contests[contestId];
 
         return <ContestDetailPage contest={ contest } />;
     }
 }
 
-const mapStateToProps = () => ({});
+const mapStateToProps = ({ contests }: any) => ({ contests });
 
 const mapDispatchToProps = (dispatch: any) => ({});
 
