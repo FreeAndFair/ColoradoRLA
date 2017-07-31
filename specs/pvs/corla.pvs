@@ -1,61 +1,92 @@
-%%% \title{Formal Specification of the Colorado Risk Limiting Audit (CORLA) tool}
+%%% \title{DRAFT Formal Specification of the Colorado Risk Limiting Audit (CORLA) Tool}
 %%% \author{Joseph R. Kiniry and Daniel M. Zimmerman\\with input from\\Neal McBurnett, Stephanie Singer, and Joey Dodds}
 %%% \date{July 2017}
 %%%
 %%% \maketitle
 %%%
 %%% \section{Introduction}
-%%% This document contains a formal specification of the ColoradoRLA
-%%% system/tool.  It contains a detailed technical specification of
-%%% the system, annotated with prose designed to help readers who are
-%%% not expert in formal system specification understand the scope and
-%%% interpretations of the elements of the specification. The details
-%%% of the specification itself will guide deployment, management,
-%%% maintenance, and evolution of the system delivered to the Colorado
-%%% Department of State. The prose annotations should help Colorado
-%%% Department of State elections domain experts and technical staff
-%%% to assess the completeness and correctness of the ColoradoRLA
-%%% system/tool.
+%%% The RLA Tool is a computer system developed by Free \& Fair for the Colorado
+%%% Department of State (CDOS henceforth). The RLA Tool facilitates
+%%% running a risk limiting audit across several jurisdictions. In the
+%%% case of Colorado, it facilitates running risk limiting audits
+%%% across all counties in the state simultaneously.
 %%%
-%%% This document is written in a literate style using the PVS theorem
-%%% prover. Writing system specifications in this fashion is called
-%%% (formal) domain engineering and system specification. Our formal
-%%% domain model is written in PVS's higher-order logic (HOL). Our
-%%% informal domain model is written in the Free \& Fair System
-%%% Specification Language, or FAFESSL for short. FAFESSL is a
-%%% daughter of Extended BON which was, in turn, a daughter of BON,
-%%% the Business Object Notation.
+%%% The Colorado election law pertaining to election audits is
+%%% \href{http://law.justia.com/codes/colorado/2016/title-1/general-primary-recall-and-congressional-vacancy-elections/article-7/part-5/section-1-7-515/}
+%%% {Section 1-7-515, C.R.S.}, where ``C.R.S." denotes ``Colorado Revised Statutes". The rules pertaining to election audits are
+%%% found in the ``Revised Draft of Proposed Rules" whose latest
+%%% version is labeled CCR 1505-1 and dated July 6, 2017. Section 25,
+%%% Post-Election Audit, of that document is the salient portion of
+%%% that document for our purposes. We will call that document RDPR-6-Jul-2017 for the
+%%% purpose of traceability in this specification.
 %%%
-%%% See our Bibliography project at GitHub,
-%%% \url{https://github.com/FreeAndFair/Bibliography}, for more
-%%% information.
+%%% This domain model is based upon that law, its rules,
+%%% the procurement contract between CDOS and Free \& Fair,
+%%% our bibliography of publications about risk-limiting audits, etc.
 %%%
-%%% \section{Refinement}
+%%% The core of this document is a formal specification of the RLA
+%%% tool.
+%%% The specification documents our
+%%% thinking and the system design, from domain modeling and
+%%% engineering all of the way to formal specification and
+%%% verification.
+%%% In keeping with the spirit of open source development, the 
+%%% publication of this specification should support any interested
+%%% parties with the requisite technological skills to deploy, manage
+%%% maintain or evolve the system. 
 %%%
-%%% In order to relate PVS to FAFESSL, we must define a refinement
+%%% This document is
+%%% annotated to help readers who are not expert
+%%% in formal system specification understand the scope and interpretations
+%%% of the elements of the specification. 
+%%% The prose
+%%% annotations will help elections domain experts
+%%% assess the completeness and correctness of the
+%%% RLA tool built for Colorado.
+%%%
+%%% \subsection{Technical Context}
+%%% The RLA Tool is a client-server system. The server is implemented
+%%% in Java and runs on servers hosted by CDOS. The client is
+%%% implemented in TypeScript and JavaScript and runs in modern web
+%%% browsers.
+%%% CDOS provides
+%%% the hosting servers, network, and a number of services
+%%% in support of the tools deployment and management.
+%%%
+%%% This document is written in the 
+%%% \href{https://en.wikipedia.org/wiki/Literate_programming}
+%%% {literate style} promoted by 
+%%% \href{https://en.wikipedia.org/wiki/Donald_Knuth}{Donald Knuth},
+%%% using the PVS
+%%% theorem prover. Writing system specifications in this fashion is
+%%% called (formal) domain engineering. It allows the production of typeset books
+%%% and interactive hypertext directly from the specification.
+%%% In order to write literate PVS we use our old friend Adriaan de
+%%% Groot's scripts, available at
+%%% \url{http://www.cs.kun.nl/~adridg/research/PVS-literate.html}. The formal domain model is
+%%% written in PVS's higher-order logic (HOL). 
+
+%%% There is a corresponding informal domain
+%%% model written in the Free \& Fair System Specification Language,
+%%% or FAFSSL for short. FAFSSL is a daughter of Extended BON which
+%%% was, in turn, a daughter of BON, the Business Object Notation.
+%%%
+%%% In order to relate PVS to FAFSSL, we must define a refinement
 %%% relationship between their two type systems. Informally, that
 %%% mapping is described in the following paragraph.
 %%%
-%%% We map PVS public theories and their contents to FAFESSL
-%%% constructs.  The top-level corla theory maps to the FAFESSL system
+%%% We map PVS public theories and their contents to FAFSSL
+%%% constructs.  The top-level corla theory maps to the FAFSSL system
 %%% specification, theories map to clusters, (PVS) types map to
-%%% (FAFESSL) types, and functions map to features.  We use special
-%%% comments to denote informal specifications which will be extracted
-%%% using a shell script into a well-typed FAFESSL informal domain
-%%% model specification.
+%%% (FAFSSL) types, and functions map to features.  
 %%%
-%%% As mentioned above, we write formal specifications using a
-%%% literate style, a la Knuth. Doing so permits us to document our
-%%% thinking and the system design, from domain modeling and
-%%% engineering all of the way to formal specification and
-%%% verification, in a fashion that produces beautifully printed books
-%%% and interactive hypertext.
-%%%
-%%% In order to write literate PVS we use our old friend Adriaan de
-%%% Groot's scripts, originally available at Dr. de Groot's
-%%% website\footnote{\url{http://www.cs.kun.nl/~adridg/research/PVS-literate.html}}
-%%% and archived in our repository in its \texttt{tools} subdirectory
-%%% at the top-level.
+%%% The formal domain model is annotated with structured comments
+%%% in precise natural language using a standard set of annotations.
+%%% A shell script processes these annotations and generates a
+%%% well-typed informal FAFSSL specification.
+%%% See our Bibliography project at GitHub,
+%%% \url{https://github.com/FreeAndFair/Bibliography}, for more
+%%% information.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%% Here is a cheat sheet for literate PVS.
@@ -75,15 +106,19 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%% Our formal domain model is also annotated with structured comments
-%%% in precise natural language using a standard set of annotations.
-%%% A shell script will process these annotations and generates a
-%%% well-typed informal FAFESSL specification.
+%+BEGIN background
+
+%%% \section{Formal Model Description}
+
+%%% \subsection{Basic Technical Infrastructure}
 %%%
-%%% The FAFESSL annotations we use are as follows:
+%%% It is necessary to summarize a number of background concepts from
+%%% computer science in order to formalize the RLA Tool.
+%%
+%%% The Free \& Fair System Specification Language (FAFSSL) annotations we use are as follows:
 %%% \begin{description}
-%%% \item[\@system] the FAFESSL name of the system
-%%% \item[\@cluster] the FAFESSL name of a cluster
+%%% \item[\@system] the FAFSSL name of the system
+%%% \item[\@cluster] the FAFSSL name of a cluster
 %%% \item[\@description] a short description of an artifact
 %%% \item[\@explanation] the (potentially longer) explanation for an
 %%% artifact
@@ -99,24 +134,12 @@
 %%% \item[github] the URL for the GitHub project containing an artifact
 %%% \end{description}
 %%%
-%%% \section{System Overview}
+%%% \subsection{Kinds of Concepts}
 %%%
-%%% The RLA Tool is being developed by
-%%% \href{http://freeandfair.us/}{Free \& Fair} for the
-%%% \href{https://www.sos.state.co.us/}{Colorado Department of State}
-%%% (CDOS henceforth). The RLA Tool facilitates running a risk
-%%% limiting audit across several jurisdictions. In the case of
-%%% Colorado, it facilitates running risk limiting audits across all
-%%% counties in the state simultaneously.
-%%%
-%%% \todojrk{Provide a bit more context in the System Overview.}
-%%%
-%%% \section{Kinds of Concepts}
-%%%
-%%% There are basically three kinds of concepts, each of which is a
-%%% part of speech, that are introduced in any specification:
+%%% Three kinds of concepts, each of which is a
+%%% part of speech, are introduced in any specification:
 %%% \begin{itemize}
-
+%%%
 %%% \item \textbf{Nouns} are formalized by regular (composite)
 %%% types. The set of types available in the prelude of PVS is large,
 %%% ranging from booleans to real-world concepts like time and
@@ -135,7 +158,7 @@
 %%% with no particular ordering, such as the color of something).
 %%% \end{itemize}
 %%%
-%%% Consequently, in what follows, when we formalize a concept from
+%%% Consequently, when we formalize a concept from
 %%% some background informal information, we identify all domain
 %%% specific nouns, verbs, adjectives, and adverbs in that source
 %%% material and capture the meaning of each and every idea relevant
@@ -144,23 +167,21 @@
 %%% formalization generally increasing as we refine the model of the
 %%% system and being defining its implementation.
 %%%
-%%% \section{Refinement from Background Literature to Specification}
+%%% \subsection{Refinement from Background Literature to Specification}
 %%%
-%%% The Colorado \emph{statues} (i.e., the law) pertaining to election
+%%% The Colorado \emph{statutes} (i.e., the law) pertaining to election
 %%% audits is
 %%% \href{http://law.justia.com/codes/colorado/2016/title-1/general-primary-recall-and-congressional-vacancy-elections/article-7/part-5/section-1-7-515/}
-%%% {Section 1-7-515, of the Colorado Revised Statues}, or C.R.S. for
-%%% short. The \emph{rules} (i.e., the interpretation of the statutes
+%%% {Section 1-7-515, of the C.R.S.}. The \emph{rules} (i.e., the interpretation of the statutes
 %%% and an explanation for how to realize their goals) pertaining to
 %%% such are found in the "Revised Draft of Proposed Rules" whose
 %%% latest version is labeled CCR 1505-1 and dated July 6,
 %%% 2017. Section 25, Post-Election Audit, of that document is the
 %%% salient portion of that document. We will call that particular
 %%% version of the document RDPR-6-Jul-2017 for the purpose of
-%%% traceability in this specification. We refer to Colorado election
-%%% law as "C.R.S.".
+%%% traceability in this specification. 
 %%%
-%%% This domain model is based upon these statues, its associated
+%%% This domain model is based upon these statutes, their associated
 %%% rules, our contract with CDOS for the RLA Tool or requirements
 %%% stipulated in refinement of the contract through written exchanges
 %%% with CDOS, and our bibliography of publications about
@@ -190,7 +211,7 @@
 %%% the background literature but need not be formalized to specify
 %%% the RLA Tool's behavior.
 %%%
-%%% At the moment, our glossary is a hand-written Appendix on the RLA
+%%% Currently, our glossary is a hand-written Appendix in the RLA
 %%% Tool Book, found in the \texttt{docs} directory of the project
 %%% repository. Before the final system delivery, that book will be
 %%% integrated with this formal specification and the glossary
@@ -200,12 +221,12 @@
 %%% correctness, completeness, and traceability of our specification,
 %%% both formal and informal.
 %%%
-%%% \section{Refinement from Specification to Implementation}
+%%% \subsection{Refinement from Specification to Implementation}
 %%%
 %%% In order to turn a specification like this one into an
 %%% implementation we must take the following steps.
 %%% \begin{enumerate}
-
+%%%
 %%% \item We must decide how each type is going to be concretized into
 %%% the implementation the system. Generally, modules in the
 %%% formalization refine into comparable modules in the
@@ -251,6 +272,10 @@
 %%% wholesale in the system, ensuring that properties hold for all
 %%% possible inputs in all possible environments.
 %%% \end{enumerate}
+% @todo Explain how refinement works and how the reader can understand
+% exactly what is built vs. what is just designed.
+% @review kiniry what's the point of including the FAFESSL annotations in the printed
+% book, where their use is invisible? @sfsinger
 
 %%%%%% Literate PVS comments +BEGIN and +END denote blocks. A block
 %%%%%% named "foo" is written to a LaTeX file "foo.tex".
@@ -261,7 +286,7 @@
 
 %%% \todojrk{Add annotation functions coupled to milestones.}
 
-fafessl: THEORY
+FAFSSL: THEORY
 BEGIN
   TBD: bool = TRUE
 %  first_release: []
@@ -269,29 +294,12 @@ BEGIN
 %  third_release: []
 %  final_release: []
 %  someday: []
-END fafessl
+END FAFSSL
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%+BEGIN background
-
-%%% \section{Background Model Elements}
-%%% \label{sec:Background_Model_Elements}
-%%%
-%%% It is necessary to summarize a number of background concepts from
-%%% computer science in order to formalize the RLA Tool.
-%%
-%%% The RLA Tool is a client-server system. The server is implemented
-%%% in Java and runs on servers hosted by CDOS. The client is
-%%% implemented in TypeScript and JavaScript and runs in modern web
-%%% browsers.
-%%%
-%%% As we are hosting the RLA Tool in CDOS's system, they are
-%%% providing the hosting servers, network, and a number of services
-%%% in support of the tools deployment and management.
-%%%
-%%% A database is used to store all of the data relevant to
-%%% audits. Databases contain tables that describe the information
+%%% All of the data relevant to the audit is stored in a database.
+%%% Databases contain tables that describe the information
 %%% they contain. We need not formalize database elements in any more
 %%% detail than what follows.
 
@@ -306,7 +314,7 @@ BEGIN
   read: [database, database_table -> data]
 END database
 
-%%% We also need to be able to talk about some pretty simple ideas
+%%% We also need to be able to talk about some ideas
 %%% from information systems.  For example, many files in election
 %%% systems are syntactically just lists of comma-separated
 %%% values. Email is used for communication between officials and
@@ -335,15 +343,19 @@ BEGIN
 END information_systems
 
 %%% Several kinds of servers are necessary to deploy this system.  At
-%%% the minimum, two of each of a web server, an application server, a
-%%% time (NTP) server, a firewall, and a database server are
-%%% necessary. Two servers of each class are required for redundancy
-%%% to fulfill availability requirements. Preferably redundant servers
-%%% would be hosted in separate facilities, with separate and
-%%% independent power systems and networks.
+%%% the minimum, two of each of a web server, a time (NTP) server, a
+%%% firewall, and a database server are necessary. Two servers of each
+%%% class are required for redundancy to fulfill availability
+%%% requirements. Preferably redundant servers would be hosted in
+%%% separate facilities, with separate and independent power systems
+%%% and networks.
 %%%
 %%% An Election Night Reporting (ENR) server is mentioned repeatedly
 %%% in the RDPR-6-Jul-2017, so we model it here.
+%%%
+%%% The next few lines of the specification encode the process of establishing
+%%% the necessary servers.
+% @review kiniry dmz pls OK or delete the previous sentence written by sfsinger
 
 % @relation web_server inherit server
 % @relation application_server inherit server
@@ -372,25 +384,22 @@ BEGIN
   enr_server?: make_enr_server: enr_server
 END server
 
-%%% Over time, as we need to introduce more background concepts, we
-%%% will add them to this theory.
-
 %+END background
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %+BEGIN elections
 
-%%% \section{Elections}
+%%% \subsection{Elections}
 
 %%% A number of general elections concepts are necessary to specify
 %%% the RLA Tool. Some are generic to all elections, and others are
 %%% specific to Colorado.
 
+
 elections: THEORY
 BEGIN
-%%% Voters are the most important concept in elections, as they are
-%%% who elections are for, and who make the choices that determine the
+%%% Voters make the choices that determine the
 %%% outcome of legitimate elections.
 %%%
 %%% Voters have first and lastnames and a political party affiliation.
@@ -412,14 +421,16 @@ BEGIN
 %%% voter, a candidate, both, or neither.
   candidate: TYPE FROM person
 
-%%% Elections focus on contests, each of which represents a set of
-%%% choices that voters can make. Making a legal choice ranges
+%%% Elections focus on contests, each of which represents a 
+%%% choice that voters can make. Making a legal choice ranges
 %%% enormously across the Earth, from marking a vote for a candidate
 %%% by filling in a single bubble to enumerating a total order on all
-%%% choices in a contest. Across the state, each contest has a
+%%% choices in a contest. Within any single election, each contest has a
 %%% unique name.
 %%% \todojrk{Need to break the cycle between the contest type and
-%%% the ballots theory.}
+%%% the ballots theory. sfsinger suggests: contests are grouped into elections,
+%%% not ballots. So define contests first. Then a ballot is created to 
+%%% represent a set of contests.}
   contest: TYPE =
     [# name: string, description: string #] % , choices: choice #]
 
@@ -434,6 +445,11 @@ BEGIN
 %%% \todojrk{These types will be refined when we review the
 %%% information provided by CDOS on 20 July 2017 about Dominion's file
 %%% formats.}
+%%% After a tabulation, each contest has an outcome. For some contests,
+%%% the outcome is the candidate who won; for others the outcome is a set of 
+%%% candidates (say, in a contest for five at-large seats where the top five 
+%%% vote-getters win); for ballot questions the outcome is either ``yes" or ``no".
+%%% The set of outcomes from all contests in a single election are the outcome of the election.
   contest_outcome: TYPE
   election_outcomes: TYPE = set[contest_outcome]
   wrong_outcome: TYPE FROM election_outcomes
@@ -464,12 +480,10 @@ BEGIN
 % ENR, and should match the CVR data exactly.
   rla_tabulation_outcome: TYPE FROM election_outcomes
 
-%%% Elections are defined across cohorts of voters arranged in any
+%%% Elections are defined across cohorts of voters paritioned in any
 %%% number of ways---geographic, political, professional, and more. In
 %%% Colorado, elections are organized across counties and the entire
-%%% state. Each county has a name and a county number, both of which
-%%% are unique across the state.
-
+%%% state. 
   county_id: TYPE = nat
   county_name: TYPE = string
   county: TYPE =
@@ -477,6 +491,9 @@ BEGIN
   state: TYPE = set[county]
   nation: TYPE = set[state]
   organization: TYPE
+
+%%% Each county has a name and a county number, both of which
+%%% are unique across the state.
 
   s: VAR state
   c1, c2: VAR county
@@ -530,24 +547,37 @@ END election
 
 %+BEGIN ballots
 
-%%% \section{Ballots}
+%%% \subsection{Ballots}
 
 %%% The second basic concept of elections that we need to specify is
-%%% the ballot. Ballots are the means by which voters indicate their
-%%% preferences for candidates in contests and choices in ballot
-%%% questions.
+%%% the ballot. A ballot is a (possibly flawed) representation of the choices
+%%% made by a voter in all contests in the election.
+%%% A ballot may be paper, or it may be electronic -- for example in Colorado
+%%% UOCAVA voters can return their voted ballots by email. In Colorado these electronic ballots 
+%%% are printed out, producing paper ballots. In some situations, say, if a
+%%% voter has marked a paper ballot with ink of a color that the scanners cannot read,
+%%% Election Board workers will create a duplicate ballot from the voter's original.
+% @todo sfsinger find sources for these, other than "Dwight Shellman said so".
 %%%
-%%% Ballots are stored by one of several possible means. Some ballot
+% @review kiniry dmz I think of contests_with_candidates and ballot_questions
+% as subsets of "contests". A ballot question is a contest between "yes" and "no".
+%%%
+%%% There are a variety of ways to store ballots. Some ballot
 %%% storage containers are secure, others are not. Some facilitate an
 %%% easy means by which to find a particular ballots, others do not.
 
 % @relation box inherit storage_container
 % @relation bin inherit storage_container
 % @relation ballot_box inherit storage_container
+
+%%% An important part of any election process is the creation of the storage
+%%% containers for the ballots.
 storage_container: DATATYPE
   WITH SUBTYPES box,
                 bin,
                 ballot_box
+
+Another crucial element of an election is the vote-counting equipment.
 BEGIN
   IMPORTING elections
 
@@ -586,10 +616,10 @@ BEGIN
             elections_equipment,
             storage_container
 
-%%% Several of our concepts are simply numbers or strings. For example,
-%%% ballot identifiers (ids) and batch sizes are just
-%%% natural numbers (integers starting from zero).  Batch ids are
-%%% strings.
+%%% Several of our concepts are simply whole numbers (denoted ``nat'', for 
+%%% natural numbers, in the specification). For example, ballot
+%%% identifiers (ids), batch numbers, and batch sizes are all just
+%%% natural numbers, 0, 1, 2, etc.
 
   ballot_id: TYPE = nat
   batch_id: TYPE = string
@@ -613,8 +643,9 @@ BEGIN
 %%% a digital fashion (a scan, PDF, etc.), or are paper ballots, or
 %%% both. Ballots are also classified based upon where they originate,
 %%% such as delivery via mail, UOCAVA ballots, early ballots,
-%%% etc. Ballots are also either tabulated or not. Note that none of
+%%% etc. Ballots are also either tabulated or not. Note that not all of
 %%% these categories of ballots are mutually exclusive.
+% @review kiniry dmz some of these are in fact mutually exclusive (e.g., digital_ballot and paper_ballot).
 
 % @description The legally recognized means by which a voter can
 % express his or her choices in one or more contests in an election.
@@ -648,10 +679,12 @@ BEGIN
 % more candidates for an office or the choice of a course of action.
 %%% \todojrk{Need to clarify choices vs options vs votes.}
 %%% \todojrk{Need to add model information for write-in votes.}
+% @review kiniry dmz Isn't every contest a ballot contest?
   ballot_contest: TYPE = contest
   option: TYPE = string
   choice: TYPE = set[option]
 
+%%% Ballots are often grouped into batches.
 % @description A batch is a set of ballots.
   batch: TYPE = set[ballot]
 
@@ -692,7 +725,11 @@ END ballots
 %%% tabulated ballot the scanner on which the ballot is scanned, the
 %%% ballot batch of which the ballot is a part, the number of ballots
 %%% in the batch, and the storage container in which the ballot batch
-%%% is stored after tabulation.
+%%% is stored after tabulation. 
+%%% In the RLA Tool, a ballot manifest uploaded by a county must eventually
+%%% be verified, using the cryptographic hash (described in a future section).
+% @review kiniry dmz perhaps we should introduce the "verified" predicate after
+% we've introduced the cryptography?
 
 ballot_manifests: THEORY
 BEGIN
@@ -720,9 +757,21 @@ BEGIN
 
 END ballot_manifests
 
+% @review kiniry dmz these (votes, cvrs) belongs in the ballot section, not the ballot manifest section.
 %%% The interpretation of the meaning of a voter's choice in a single
-%%% ballot contest is either a legal vote, an overvote, or an
+%%% ballot contest is either a well-formed vote 
+%%% an overvote, or an
 %%% undervote.
+%%% In any contest there is a maximum number of selections a voter may make,
+%%% usually one for Mayor, but often more than one for at-large seats on a Council.
+%%% In a well-formed vote, the interpretation of the voter's marks is 
+%%% that the voter made the maximum number of allowable selections.
+%%% In an undervote, the interpretation of the voter's marks is that the
+%%% voter made fewer selections than allowed. Undervotes are legitimate,
+%%% and the selections are added to the tallies.
+%%% In an overvote, the interpretation of the voter's marks is that the 
+%%% voter made more selections then were allowed. In this case 
+%%% none of the voter's selections are added to the tallies.
 
 % @relation well_formed_vote inherit vote
 % @relation overvote inherit vote
@@ -759,8 +808,14 @@ BEGIN
   IMPORTING ballots,
             vote
 
+%%% A Cast Vote Record (commonly called a ``CVR") is a catalog of 
+%%% choices from one or more ballots representing distinct voters. 
+%%% In the Colorado system, CVRs are produced as comma-separated-value files
+%%% from the Dominion voting system.
+% @review kiniry dmz are we thinking of one CVR for the whole election?
 % @description A CVR is a cast vote record denoting the interpretation
 % of a set of votes for a specific election and a single voter.
+% @review kiniry dmz but a CVR has more info than just the choices.
   cast_vote_record: TYPE = set[set[choice]]
 
 END ballot_interpretation
@@ -787,11 +842,11 @@ END ballots_collections
 
 %+BEGIN ifr
 
-%%% \section{Instructions, Forms, and Reports}
+%%% \subsection{Instructions, Forms, and Reports}
 
 %%% Elections have all kinds of different published instructions,
 %%% forms, and reports. We enumerate a few here that are specific to
-%%% Colorado, and the RLA Tool in particular.
+%%% Colorado, and relevant to the RLA Tool in particular.
 
 instructions_forms_reports: THEORY
 BEGIN
@@ -859,7 +914,7 @@ END instructions_forms_reports
 
 %+BEGIN roles
 
-%%% \section{Roles}
+%%% \subsection{Roles}
 
 %%% Within the RLA Tool, a person involved with the system can have a
 %%% number of roles. Some of these roles are mutually exclusive for
@@ -868,10 +923,10 @@ END instructions_forms_reports
 roles: THEORY
 BEGIN
   IMPORTING elections,
-            fafessl
+            FAFSSL
 
   audit_board_member: TYPE FROM person
-  canvas_board: TYPE = set[person]
+  canvass_board: TYPE = set[person]
 
   colorado_department_of_state: TYPE
   cdos: TYPE = colorado_department_of_state
@@ -903,6 +958,8 @@ BEGIN
   county_administrator: TYPE FROM administrator
   state_administrator: TYPE FROM administrator
 
+% @review kinry dmz shouldn't a county_administrator be associated with a 
+% county, just as a county_clerk is?
 % @review CDOS Who bootstraps authentication? Who has the right to
 % identify people who should have credentials and generate and issue
 % those credentials? How do they (singular or plural) authenticate to
@@ -912,6 +969,13 @@ BEGIN
 % @review CDOS while members of the audit board might not be
 % authenticated users of the RLA tool, they do "sign off" on the audit
 % they performed.  Do they also "sign in" before audit starts?
+% Per sfsinger conversation with CDOS, yes, audit board members sign in 
+% before each round and before resuming work after a pause within a round. 
+
+% @review kiniry dmz ranweiler what happens when Audit Board takes a break?
+% Is there an option for user to tell system "let's take a break now"? 
+% Or will the system time-out after some period of inactivity?
+
 
 % @review CDOS what happens if the Audit Board cannot find
 % the ballot expected by the RLA tool?
@@ -924,21 +988,24 @@ BEGIN
 
 END roles
 
-canvas_boards: THEORY
+canvass_boards: THEORY
 BEGIN
   IMPORTING election,
             roles
 
-  canvas_board?: [election -> canvas_board]
-END canvas_boards
+  canvass_board?: [election -> canvass_board]
+END canvass_boards
 
 %+END roles
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%% \section{Cryptography}
+%%% \subsection{Cryptography}
 
-%%% We will add additional cryptographic primitives here as required.
+% We will add additional cryptographic primitives here as required.
+% @review kiniry dmz Is it correct to say that the cryptography is used
+% (via hashing) to verify that the ballot manifests and cvrs stored in the 
+% database are actually the ones uploaded by the Counties?
 
 cryptography: THEORY
 BEGIN
@@ -948,16 +1015,19 @@ END cryptography
 
 %%% \subsection{Randomness}
 
-%%% High quality randomness is key to the legitimacy of any
-%%% risk-limiting audit.
+%%% Choosing a random sample of ballots is key to the legitimacy of any
+%%% risk-limiting audit. Legitimacy depends on a high-quality process for
+%%% the random samples. The Colorado RLA Tool will produce a random order 
+%%% of all the ballots once and for all; then random samples 
+%%% of any size, or restricted to any County or set of Counties, can be created 
+%%% as needed by considering the ballots in that random order.
+
 
 randomness: THEORY
 BEGIN
   unit: TYPE
 
 % @trace RDPR-6-Jul-2017 Section 25.2.2(H)
-
-%%% \subsubsection{Random Seed}
 
 %%% As stated in RDPR-6-Jul-2017 Section 25.2.2(K):
 %%% \begin{quotation}
@@ -993,7 +1063,7 @@ END randomness
 
 %+BEGIN audits
 
-%%% \section{Audits}
+%%% \subsection{Audits}
 
 %%% Election audits come in many forms. The two main kinds of audits
 %%% we focus on in this system are ballot polling audits and
@@ -1093,13 +1163,14 @@ END audits
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%% \section{RLAs}
+%%% \subsection{Colorado RLAs}
 
 %%% Audits ideally come after all the votes are tabulated, canvassed
 %%% and reconciled. In Colorado, however, since the certification
 %%% deadline comes shortly after the last date for voters to cure
-%%% signature verification problems, etc., there is not always enough
-%%% time to do them sequentially.  An updated vote count may be
+%%% signature verification problems, etc., 
+%%% it is highly unlikely that a RLA could be postponed until after
+%%% the canvass.  An updated vote count may be
 %%% released at the end of the tabulation and canvass, and the risk
 %%% limit of the audit needs to apply to the updated outcome.
 %%%
@@ -1180,16 +1251,22 @@ END rlas
 
 %+BEGIN cvrs
 
-%%% \section{Cast Vote Records}
+%%% \subsection{Cast Vote Records}
 
 %%% Cast vote records, also known as CVRs, are the digital
 %%% interpretations of paper ballot records by a computer. They
 %%% frequently, but not always, contain an interpretation of all voter
-%%% choicdes in all contests on a ballot. CVRs are sometimes
+%%% choices in all contests on a ballot. CVRs are sometimes
 %%% syntactically written as comma-separated values, and other times
 %%% in plain English. Some CVRs use a election-specific encoding
 %%% scheme to represent choices (e.g., a '1' means "John Doe"); others
 %%% use plain English.
+%%%
+%%% CVRs may (and in the case of CVRs exported from Colorado's Dominion system, do)
+%%% contain information about the ballot beyond the voter choices. For 
+%%% example, ballot style (which encodes, at a minimum, the set of contests on the ballot), precinct id and information about 
+%%% voting method (e.g., in-person vs. mail)
+%%% may be included.
 %%%
 %%% CDOS requirements mandate that CVRs are exported and uploaded to
 %%% the RLA back-end as CSV files by county officials using their
@@ -1226,7 +1303,7 @@ END cast_vote_records
 
 %+BEGIN ui
 
-%%% \section{User Interfaces}
+%%% \subsection{User Interfaces}
 
 %%% The user interfaces of the system are the visible interactive
 %%% parts of the application. There are three different user
@@ -1234,6 +1311,10 @@ END cast_vote_records
 %%% are still under discussion; one is for CDOS personnel responsible
 %%% for the audit at the state-level, one is for county personnel at
 %%% the county-level, and one is for audit board members.
+%%% Note that all these user interfaces both receive and 
+%%% provide information.
+%%% Because the public dashboard only pushes information out, 
+%%% we do not consider it a "user interface".
 
 user_interface: DATATYPE
   WITH SUBTYPES uploading_interface,
@@ -1304,11 +1385,11 @@ END authentication_message
 
 %+BEGIN dashboards
 
-%%% \section{Dashboards}
+%%% \subsection{Dashboards}
 %%% \label{sec:Dashboards}
-%%%
-%%% The system has several dashboards that are the main user
-%%% interfaces to the system. State officials use the state-wide
+
+%%% The system has several dashboards aimed at
+%%% specific users and stakeholders. Department of State officials use the state-wide
 %%% dashboard; county officials use the county dashboard; audit board
 %%% members use the audit board dashboard; and the general public uses
 %%% the public dashboard.
@@ -1360,7 +1441,7 @@ department_of_state_dashboard: THEORY
 BEGIN
   IMPORTING dashboard,
             elections,
-            fafessl,
+            FAFSSL,
             instructions_forms_reports,
             randomness,
             rlas
@@ -1378,14 +1459,15 @@ BEGIN
       audit_results_published }
 
 % @trace RDPR-6-Jul-2017 Section 25.2.2(A)
-%%% \begin{quotation}
+%%% The state-wide dashboard will provide a way for the Secretary
+%%% of State to enter the risk limit(s), as required by RDPR-6-Jul-2017 Section 25.2.2(A).
+%%%
 %%% No later than 30 days before Election Day, the Secretary of State
 %%% will establish and publish on the audit center the risk limit(s)
 %%% that will apply in RLAs for that election. The Secretary of State
 %%% may establish different risk limits for comparison audits and
 %%% ballot polling audits, but in no event will the risk limit exceed
 %%% five percent.
-%%% \end{quotation}
   establish_risk_limit_for_comparison_audits:
     [department_of_state_dashboard, risk_limit ->
      department_of_state_dashboard]
@@ -1410,7 +1492,8 @@ BEGIN
 
 % @trace RDPR-6-Jul-2017 Section 25.2.2(I)
 
-%%% \subsubsection{Selection of Audited Contests}
+%%% The state-wide dashboard will provide a mechanism for the Secretary of 
+%%% State to enter and publish the list of contests to be audited.
 %%%
 %%% No later than 5:00 PM MT on the Friday after Election Day, the
 %%% Secretary of State will select for audit at least one statewide
@@ -1465,12 +1548,15 @@ BEGIN
 %  someday_support_opportunistic_audit:
 %    AXIOM someday(select_contest_for_opportunistic_audit)
 
+%%% The state-wide dashboard will allow the Secretary of State
+%%% to select ballots at random as required by law
+%%% (assuming that a truly random seed has been entered).
 %%% Ballots can be randomly selected for audit in two ways, either by:
 
 %%% \begin{enumerate}
 
 %%% \item permuting all ballots and auditing a prefix of ballots
-%%% (thereby auditing ballots "with no replacement"); or
+%%% (thereby auditing ballots ``with no replacement"); or
 
 %%% \item randomly selecting ballots ballot-by-ballot (thereby
 %%% auditing ballots "with replacement" as the same ballot may be
@@ -1496,8 +1582,6 @@ BEGIN
     [county, list[ballot] -> ballots_under_audit_instructions]
 
 % @trace RDPR-6-Jul-2017 Section 25.2.2(K)
-
-%%% \subsection{Random Selection of Ballots for Audit}
 
 %%% The Secretary of State will randomly select the individual ballots
 %%% to audit. The Secretary of State will use a pseudo-random number
@@ -1534,7 +1618,7 @@ BEGIN
 
 END department_of_state_dashboard
 
-%%% \subsection{County Dashboard}
+%%% \subsubsection{County Dashboard}
 
 %%% The County dashboard is used by county officials to communicate
 %%% with the Secretary of State for the purpose of planning and
@@ -1578,7 +1662,6 @@ BEGIN
   establish_audit_board:
     [county_dashboard, set[elector] -> county_dashboard]
 
-%%% \subsubsection{Verification of Election Report Artifacts}
 
 %%% To prepare for uploading of artifacts to the Secretary of State,
 %%% counties conducting a comparison audit must verify several
@@ -1587,7 +1670,6 @@ BEGIN
 %%% properties, counties must generate a digest of the CVR file using
 %%% a hash designated by the Secretary of State.
 
-%%% \subsubsection{Digest Generation}
 
 % @trace RDPR-6-Jul-2017 Section 25.2.2(E)(5)
 % @trace RDPR-6-Jul-2017 Section 25.2.2(F)
@@ -1616,7 +1698,6 @@ BEGIN
 
   generate_ballot_manifest_digest: [ballot_manifest_file -> digest]
 
-%%% \subsubsection{Comparison Audit Uploads}
 
 %%% \todojrk{Improve/strengthen the dependent types in these upload
 %%% signatures below.}
@@ -1645,11 +1726,10 @@ BEGIN
   upload_tabulation_results:
     [enr_server, cvr_tabulation_outcome -> enr_server]
 
-%%% \subsubsection{Ballot Polling Audit Uploads}
 
 % @trace RDPR-6-Jul-2017 Section 25.2.2(G)
 
-%%% Mo later than 11:59 PM MT on the ninth day after Election Day,
+%%% No later than 11:59 PM MT on the ninth day after Election Day,
 %%% each county conducting a ballot polling audit must upload:
 
 %%% \begin{enumerate}
@@ -1667,7 +1747,7 @@ BEGIN
 
 END county_dashboard
 
-%%% \subsection{Audit Board Dashboard}
+%%% \subsubsection{Audit Board Dashboard}
 
 % @trace RDPR-6-Jul-2017 Section 25.2.3
 
@@ -1780,7 +1860,7 @@ BEGIN
 
 END audit_board_dashboard
 
-%%% \subsection{Public Dashboard}
+%%% \subsubsection{Public Dashboard}
 
 public_dashboard: THEORY
 BEGIN
@@ -1823,7 +1903,7 @@ END public_dashboard
 
 %+BEGIN authentication
 
-%%% \section{Authentication}
+%%% \subsection{Authentication}
 
 %%% Authentication is currently underspecified in our system design as
 %%% we do not yet have information from CDOS on the nature and kind of
@@ -1916,11 +1996,13 @@ END authentication
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%%% \section{Computer System}
+
 %+BEGIN architecture
 
-%%% \section{System Architecture}
+%%% \subsection{System Architecture}
 %%% \label{sec:System_Architecture}
-%%%
+
 %%% As mentioned early in this chapter, the RLA Tool is a
 %%% client-server system. As usual for these kinds of systems, the
 %%% server part of this architectural style is known as the back-end
@@ -2038,7 +2120,7 @@ END system_architecture
 
 %+BEGIN system_assumptions
 
-%%% \section{System Assumptions}
+%%% \subsection{System Assumptions}
 %%% \label{sec:System_Assumptions}
 
 %%% This system architecture includes a number of explicit assumptions
@@ -2047,12 +2129,12 @@ END system_architecture
 system_assumptions: THEORY
 BEGIN
   IMPORTING election,
-            fafessl
+            FAFSSL
 
   e: VAR county_election
 % @trace RDPR-6-Jul-2017 Section 25.2.2(E)
 
-%%% According to the section entitled "CVR Export Verification",
+%%% According to the section entitled ``CVR Export Verification",
 %%% counties conducting a comparison audit must verify that:
 
 %%% \begin{enumerate}
@@ -2089,14 +2171,14 @@ END system_assumptions
 
 %+BEGIN logging
 
-%%% \section{System Logging}
+%%% \subsection{System Logging}
 
 %%% The system must log a variety of events. One reason to log
 %%% information is to help understand how the system is operating, fix
 %%% bugs post-facto, understand how users are using the system,
 %%% etc. Another, reason to log in this context of this system is to
 %%% provide an indelible record of administrator and auditor actions
-%%% so that any audit can be "replayed" by any third party.
+%%% so that any audit can be ``replayed" by any third party.
 
 logging: THEORY
 BEGIN
@@ -2114,7 +2196,7 @@ END logging
 
 %+BEGIN data_model
 
-%%% \section{Data Model}
+%%% \subsection{Data Model}
 
 %%% A single, mirrored relational database is used to store all
 %%% persistent information for the RLA Tool.  In order to define the
@@ -2135,7 +2217,7 @@ END logging
 
 data_model: THEORY
 BEGIN
-  IMPORTING fafessl,
+  IMPORTING FAFSSL,
             database,
             information_systems,
             roles,
@@ -2288,8 +2370,7 @@ END data_model
 %%% \section{Protocol}
 %%% \label{sec:Protocol}
 %%%
-%%% As discussed
-%%% in~\Cref{sec:Background_Model_Elements,sec:System_Architecture},
+%%% As discussed in~\Cref{sec:System_Architecture},
 %%% the RLA Tool is a client-server system. In this section we
 %%% describe the protocol used by the client and server to communicate
 %%% with each other.
