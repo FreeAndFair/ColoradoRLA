@@ -288,10 +288,7 @@ the set of properties that we wish to measure and the what the optimal
 ranges are for the measure of each property. We automate this
 evaluation, both in the IDE and in continuous integration.
 The current status of our continuous integration checks is displayed
-via a dynamic status image here
-and on our [repository's home page](../README.md).
-
-[![Build Status](https://travis-ci.org/FreeAndFair/ColoradoRLA.svg?branch=master)](https://travis-ci.org/FreeAndFair/ColoradoRLA)
+via a dynamic status image on our [repository's home page](../README.md).
 
 Also, we have a tool called the AutoGrader that automatically combines
 the output of multiple analyses and "grades" the system, and
@@ -368,9 +365,19 @@ November, 2016.
 Project Dashboard
 -----------------
 
-*TBD discussion of what build status means, where build failure
-notifications go, where build logs are archived, and a link to our
-live dashboard.*
+We use [Travis CI](https://travis-ci.org/) for continuous integration.
+It produces new builds for every check-in and runs our test suites, as
+specified in our [`.travis.yml`](../.travis.yml) file and in the
+[`ci`](../ci) directory.
+
+Current build status for the `master` branch status is reflected in the
+`README.md` of our main github page. Build status logs, can be found at
+our dashboard:
+[FreeAndFair/ColoradoRLA](https://travis-ci.org/FreeAndFair/ColoradoRLA).
+
+The raw build logs provide details on which versions of our build tools
+and libraries were used each step along the way.
+
 
 Bibliography
 ------------
