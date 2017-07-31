@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import * as _ from 'lodash';
+
 import Nav from '../Nav';
 
 
@@ -23,34 +25,46 @@ const Breadcrumb = ({ contest }: any) => (
     </ul>
 );
 
+const ContestChoices = ({ contest }: any) => {
+    const choiceItems = _.map(contest.choices, (c: any) => (
+        <li key={ c.id }>{ c.name }</li>
+    ));
+
+    return (
+        <div>
+            <h4>Choices:</h4>
+            <ul>{ choiceItems }</ul>
+        </div>
+    );
+};
 
 const ContestDetailPage = (props: any) => {
     const { contest } = props;
+
+    const row = (k: any, v: any) => (
+        <tr>
+            <td>{ k }</td>
+            <td>{ v }</td>
+        </tr>
+    );
 
     return (
         <div>
             <Nav />
             <Breadcrumb contest={ contest } />
             <h2>Status</h2>
-            <h3>County Data</h3>
-            <div>Ballot manifest: uploaded</div>
-            <div>CVR export: uploaded</div>
-            <div>Projected start date: 11/15/2017</div>
-            <div>
-                <h3>Progress</h3>
-                <div>
-                    Audit board:
-                    <div>John Doe (Democratic Party)</div>
-                    <div>Jane Smith (RepublicanParty)</div>
-                </div>
-                <div>
-                    <div>Round 1</div>
-                    <div>Start time: 11/15/2016, 11:00 a.m. MST</div>
-                    <div>Ballots submitted: 1001</div>
-                    <div>Discrepancies: 3</div>
-                </div>
-
-            </div>
+            <h3>Contest Data</h3>
+            <table className='pt-table pt-bordered pt-condensed'>
+                <tbody>
+                    { row('ID', contest.id) }
+                    { row('Name', contest.name) }
+                    { row('Description', contest.description) }
+                    { row('Vote For', contest.votesAllowed) }
+                    { row('Ballot Manifest', 'Uploaded') }
+                    { row('CVR Export', 'Uploaded') }
+                </tbody>
+            </table>
+            <ContestChoices contest={ contest } />
         </div>
     );
 };
