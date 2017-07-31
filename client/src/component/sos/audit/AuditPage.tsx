@@ -2,6 +2,8 @@ import * as React from 'react';
 
 import Nav from '../Nav';
 
+import { NumericInput } from '@blueprintjs/core';
+
 
 const Breadcrumb = () => (
     <ul className='pt-breadcrumbs'>
@@ -38,8 +40,16 @@ const Audit = () => {
                 class, change the percentage shown. To change the risk limit for a particular
                 contest use the link below to add an exception from the default.
             </div>
-            <h4>Ballot Polling Audits</h4>
-            <h4>Comparison Audits</h4>
+            <div>
+                <label>Ballot Polling Audits
+                    <NumericInput />
+                </label>
+            </div>
+            <div>
+                <label>Comparison Audits
+                    <NumericInput />
+                </label>
+            </div>
         </div>
     );
 };
