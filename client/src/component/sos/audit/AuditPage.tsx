@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import Nav from '../Nav';
 
-import { NumericInput } from '@blueprintjs/core';
+import { NumericInput, Radio, RadioGroup } from '@blueprintjs/core';
 
 
 const Breadcrumb = () => (
@@ -22,6 +22,8 @@ const Breadcrumb = () => (
 
 
 const Audit = () => {
+    const nop = () => ({});
+
     return (
         <div>
             <Nav />
@@ -33,7 +35,10 @@ const Audit = () => {
                 Election date.
             </div>
             <div>
-                Election type.
+                <RadioGroup onChange={ nop } label='Election Type'>
+                    <Radio label='Coordinated Election' value='coordinated' />
+                    <Radio label='Primary Election' value='primary' />
+                </RadioGroup>
             </div>
             <h3>Risk Limits</h3>
             <div>Each contest type has a default risk limit set. To change the risk limit for a
