@@ -43,6 +43,9 @@ import us.freeandfair.corla.gson.ContestsJsonAdapter;
  */
 @Entity
 @Table(name = "ballot_style")
+// this class has many fields that would normally be declared final, but
+// cannot be for compatibility with Hibernate and JPA.
+@SuppressWarnings("PMD.ImmutableField")
 public class BallotStyle implements Serializable {  
   /**
    * The serialVersionUID.
@@ -71,15 +74,11 @@ public class BallotStyle implements Serializable {
    */
   @Id
   @GeneratedValue(strategy = GenerationType.TABLE)
-  // not immutable because of JPA
-  @SuppressWarnings("PMD.ImmutableField")
   private long my_id = getID();
 
   /**
    * The ballot style ID.
    */
-  // not immutable because of JPA
-  @SuppressWarnings("PMD.ImmutableField")
   private String my_identifier;
   
   /**

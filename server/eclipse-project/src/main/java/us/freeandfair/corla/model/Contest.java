@@ -43,6 +43,9 @@ import org.hibernate.annotations.CascadeType;
  */
 @Entity
 @Table(name = "contest")
+//this class has many fields that would normally be declared final, but
+//cannot be for compatibility with Hibernate and JPA.
+@SuppressWarnings("PMD.ImmutableField")
 public class Contest implements Serializable {
   /**
    * The serialVersionUID.

@@ -32,6 +32,9 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "ballot_manifest_info")
+// this class has many fields that would normally be declared final, but
+// cannot be for compatibility with Hibernate and JPA.
+@SuppressWarnings("PMD.ImmutableField")
 public class BallotManifestInfo {
   /**
    * The current ID number to be used.
@@ -55,39 +58,38 @@ public class BallotManifestInfo {
    */
   @Id
   @GeneratedValue(strategy = GenerationType.TABLE)
-  @SuppressWarnings("PMD.ImmutableField")
   private long my_id = getID();
   
   /**
    * The timestamp for this ballot manifest info, in milliseconds since the epoch.
    */
-  private final Instant my_timestamp;
+  private Instant my_timestamp;
   
   /**
    * The ID number of the county in which the batch was scanned.
    */
-  private final String my_county_id;
+  private String my_county_id;
   //@ private invariant my_county_id >= 0;
   
   /**
    * The ID number of the scanner that scanned the batch.
    */
-  private final String my_scanner_id;
+  private String my_scanner_id;
 
   /**
    * The batch number.
    */
-  private final String my_batch_id;
+  private String my_batch_id;
   
   /**
    * The size of the batch.
    */
-  private final int my_batch_size;
+  private int my_batch_size;
   
   /**
    * The storage location for the batch.
    */
-  private final String my_storage_location;
+  private String my_storage_location;
  
   /** 
    * Constructs an empty ballot manifest information record, solely for persistence.

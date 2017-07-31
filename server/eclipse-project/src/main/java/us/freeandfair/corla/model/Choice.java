@@ -29,6 +29,9 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "choice")
+// this class has many fields that would normally be declared final, but
+// cannot be for compatibility with Hibernate and JPA.
+@SuppressWarnings("PMD.ImmutableField")
 public class Choice implements Serializable {
   /**
    * The serialVersionUID.
@@ -57,18 +60,17 @@ public class Choice implements Serializable {
    */
   @Id
   @GeneratedValue(strategy = GenerationType.TABLE)
-  @SuppressWarnings("PMD.ImmutableField")
   private long my_id = getID();
 
   /**
    * The choice name.
    */
-  private final String my_name;
+  private String my_name;
 
   /**
    * The choice description.
    */
-  private final String my_description;
+  private String my_description;
   
   /**
    * Constructs an empty choice, solely for persistence. 
