@@ -19,14 +19,14 @@ import ManualContainer from './help/ManualContainer';
 
 import LoginContainer from './login/LoginContainer';
 
-import AuditContainer from './sos/AuditContainer';
-import AuditRiskLimitContainer from './sos/AuditRiskLimitContainer';
-import AuditRoundContainer from './sos/AuditRoundContainer';
-import AuditSeedContainer from './sos/AuditSeedContainer';
-import ContestDetailContainer from './sos/ContestDetailContainer';
-import ContestOverviewContainer from './sos/ContestOverviewContainer';
-import CountyDetailContainer from './sos/CountyDetailContainer';
-import CountyOverviewContainer from './sos/CountyOverviewContainer';
+import AuditContainer from './sos/audit/AuditContainer';
+import AuditRiskLimitContainer from './sos/audit/AuditRiskLimitContainer';
+import AuditRoundContainer from './sos/audit/AuditRoundContainer';
+import AuditSeedContainer from './sos/audit/AuditSeedContainer';
+import ContestDetailContainer from './sos/contest/ContestDetailContainer';
+import ContestOverviewContainer from './sos/contest/ContestOverviewContainer';
+import CountyDetailContainer from './sos/county/CountyDetailContainer';
+import CountyOverviewContainer from './sos/county/CountyOverviewContainer';
 import SoSRootContainer from './sos/SoSRootContainer';
 
 
