@@ -121,8 +121,17 @@ const contests = {
     '3': someOfManyContest,
 };
 
+const c = (id: any, name: any, started: any, submitted: any, discrepancies: any) =>
+    ({ id, name, started, submitted, discrepancies });
+
+const exampleCounties: any = {
+    1001: c(1001, 'County 1001', '11/15/2017 15:00 MST', 207, 6),
+    1002: c(1002, 'County 1002', false, 359, 2),
+    1003: c(1003, 'County 1003', false, 999, 25),
+};
+
 const exampleSoSState: any = {
-    counties: {},
+    counties: exampleCounties,
 };
 
 export const exampleState = {
