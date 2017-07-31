@@ -59,6 +59,10 @@ const Audit = () => {
                     <NumericInput />
                 </label>
             </div>
+            <div>
+                Once the election has started, this information will not be able to be changed.
+            </div>
+            <button className='pt-button pt-intent-primary'>Save</button>
         </div>
     );
 };
