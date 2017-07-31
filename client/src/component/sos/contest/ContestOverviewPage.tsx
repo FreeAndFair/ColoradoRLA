@@ -5,6 +5,21 @@ import * as _ from 'lodash';
 import Nav from '../Nav';
 
 
+const Breadcrumb = () => (
+    <ul className='pt-breadcrumbs'>
+        <li>
+            <a className='pt-breadcrumb' href='/sos'>
+                SoS
+            </a>
+        </li>
+        <li>
+            <a className='pt-breadcrumb pt-breadcrumb-current'>
+                Contest
+            </a>
+        </li>
+    </ul>
+);
+
 const ContestTableRow = ({ contest }: any) => (
     <tr>
         <td>{ contest.id }</td>
@@ -42,6 +57,7 @@ const ContestOverviewPage = (props: any) => {
     return (
         <div>
             <Nav />
+            <Breadcrumb />
             <ContestTable contests={ contests } />
         </div>
     );
