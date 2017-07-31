@@ -38,7 +38,7 @@ const CountyTable = ({ counties }: any) => {
     ));
 
     return (
-        <table>
+        <table className='pt-table pt-bordered pt-condensed'>
             <thead>
                 <tr>
                     <td>ID</td>

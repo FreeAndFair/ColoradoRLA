@@ -35,7 +35,7 @@ const ContestTable = ({ contests }: any) => {
     ));
 
     return (
-        <table>
+        <table className='pt-table pt-bordered pt-condensed'>
             <thead>
                 <tr>
                     <td>ID</td>
