@@ -34,7 +34,7 @@ const Audit = () => {
             <div>Enter the date the election will take place, and the type of election.</div>
             <div>
                 <label>
-                Election date.
+                    Election date.
                     <DateInput />
                 </label>
             </div>
