@@ -121,11 +121,16 @@ const contests = {
     '3': someOfManyContest,
 };
 
+const exampleSoSState: any = {
+    counties: {},
+};
+
 export const exampleState = {
     loggedIn: false,
     county: exampleCountyState,
     ballotStyles,
     contests,
+    sos: exampleSoSState,
 };
 
 

@@ -6,11 +6,16 @@ import CountyOverviewPage from './CountyOverviewPage';
 
 class CountyOverviewContainer extends React.Component<any, any> {
     public render() {
-        return <CountyOverviewPage />;
+        return <CountyOverviewPage { ...this.props }/>;
     }
 }
 
-const mapStateToProps = () => ({});
+const mapStateToProps = (state: any) => {
+    const { sos } = state;
+    const { counties } = sos;
+
+    return { counties, sos };
+};
 
 const mapDispatchToProps = (dispatch: any) => ({});
 
