@@ -6,16 +6,16 @@ import CountyDetailPage from './CountyDetailPage';
 
 class CountyDetailContainer extends React.Component<any, any> {
     public render() {
-        const county = {
-            id: 123,
-            name: 'Acme County',
-        };
+        const { countyId } = this.props.match.params;
+        const county = this.props.counties[countyId];
 
         return <CountyDetailPage county={ county } />;
     }
 }
 
-const mapStateToProps = () => ({});
+const mapStateToProps = (state: any) => ({
+    counties: state.sos.counties,
+});
 
 const mapDispatchToProps = (dispatch: any) => ({});
 

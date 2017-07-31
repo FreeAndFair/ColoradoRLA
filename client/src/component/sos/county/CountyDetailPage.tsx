@@ -23,6 +23,35 @@ const Breadcrumb = ({ county }: any) => (
     </ul>
 );
 
+const CountyDetails = ({ county }: any) => {
+    return (
+        <table className='pt-table pt-bordered pt-condensed'>
+            <tbody>
+                <tr>
+                    <td>ID:</td>
+                    <td>{ county.id }</td>
+                </tr>
+                <tr>
+                    <td>Name:</td>
+                    <td>{ county.name }</td>
+                </tr>
+                <tr>
+                    <td>Started:</td>
+                    <td>{ county.started }</td>
+                </tr>
+                <tr>
+                    <td>Ballots Submitted:</td>
+                    <td>{ county.submitted }</td>
+                </tr>
+                <tr>
+                    <td>Discrepancies:</td>
+                    <td>{ county.discrepancies }</td>
+                </tr>
+            </tbody>
+        </table>
+    );
+};
+
 
 const CountyDetailPage = (props: any) => {
     const { county } = props;
@@ -31,9 +60,8 @@ const CountyDetailPage = (props: any) => {
         <div>
             <Nav />
             <Breadcrumb county={ county } />
-            <div>
-                County details.
-            </div>
+            <h3>{ county.name }</h3>
+            <CountyDetails county={ county } />
         </div>
     );
 };
