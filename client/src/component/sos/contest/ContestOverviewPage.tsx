@@ -23,7 +23,11 @@ const Breadcrumb = () => (
 const ContestTableRow = ({ contest }: any) => (
     <tr>
         <td>{ contest.id }</td>
-        <td>{ contest.name }</td>
+        <td>
+            <a href={ `/sos/contest/${contest.id}` }>
+                { contest.name }
+            </a>
+        </td>
         <td>{ contest.choices.length }</td>
         <td>{ contest.votesAllowed }</td>
     </tr>
