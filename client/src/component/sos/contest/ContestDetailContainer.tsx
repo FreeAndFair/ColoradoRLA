@@ -6,7 +6,12 @@ import ContestDetailPage from './ContestDetailPage';
 
 class ContestDetailContainer extends React.Component<any, any> {
     public render() {
-        return <ContestDetailPage />;
+        const contest = {
+            id: 123,
+            name: 'Proposition 107 (Statutory)',
+        };
+
+        return <ContestDetailPage contest={ contest } />;
     }
 }
 
