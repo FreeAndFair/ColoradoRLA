@@ -6,7 +6,12 @@ import CountyDetailPage from './CountyDetailPage';
 
 class CountyDetailContainer extends React.Component<any, any> {
     public render() {
-        return <CountyDetailPage />;
+        const county = {
+            id: 123,
+            name: 'Acme County',
+        };
+
+        return <CountyDetailPage county={ county } />;
     }
 }
 
