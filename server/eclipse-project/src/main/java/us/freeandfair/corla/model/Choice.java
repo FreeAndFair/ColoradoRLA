@@ -60,7 +60,7 @@ public class Choice implements Serializable {
    */
   @Id
   @GeneratedValue(strategy = GenerationType.TABLE)
-  private long my_id = getID();
+  private Long my_id = getID();
 
   /**
    * The choice name.

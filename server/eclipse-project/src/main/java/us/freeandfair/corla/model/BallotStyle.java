@@ -74,7 +74,7 @@ public class BallotStyle implements Serializable {
    */
   @Id
   @GeneratedValue(strategy = GenerationType.TABLE)
-  private long my_id = getID();
+  private Long my_id = getID();
 
   /**
    * The ballot style ID.

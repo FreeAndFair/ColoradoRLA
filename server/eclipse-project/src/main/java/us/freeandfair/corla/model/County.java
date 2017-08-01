@@ -29,6 +29,9 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "county")
+// this class has many fields that would normally be declared final, but
+// cannot be for compatibility with Hibernate and JPA.
+@SuppressWarnings("PMD.ImmutableField")
 public class County implements Serializable {
   /**
    * The serialVersionUID.
@@ -58,17 +61,17 @@ public class County implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.TABLE)
   @SuppressWarnings("PMD.ImmutableField")
-  private long my_id = getID();
+  private Long my_id = getID();
 
   /**
    * The county name.
    */
-  private final String my_name;
+  private String my_name;
 
   /**
    * The county ID.
    */
-  private final String my_identifier;
+  private String my_identifier;
   
   /**
    * Constructs an empty county, solely for persistence. 
