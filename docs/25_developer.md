@@ -264,6 +264,18 @@ top-level [Makefile](../Makefile). That build system not only compiles
 the RLA tool, but also generates documentation, analyzes the system
 for quality and correctness, and more.
 
+But the Make-based system is not implemented yet, and the server and
+client are not integrated yet. In the meantime, you can build the client
+via:
+
+```
+cd client
+script/dist
+```
+
+You can run the server using the instructions at
+[README-ECLIPSE.md](../server/README-ECLIPSE.md)
+
 Quality Assurance
 -----------------
 
