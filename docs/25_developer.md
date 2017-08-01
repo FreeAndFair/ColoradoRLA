@@ -272,9 +272,21 @@ via:
 cd client
 script/dist
 ```
+Run it via:
+```
+cd dist
+python3 -m http.server
+```
 
-You can run the server using the instructions at
-[README-ECLIPSE.md](../server/README-ECLIPSE.md)
+For the server, package it by running `mvn package` in the
+`server/eclipse-project` directory. This will create
+`colorado_rla-0.0.1-shaded.jar` (potentially with a more
+recent version number) in the `target` directory.
+
+Run it via:
+```
+java -jar target/colorado_rla-0.0.1-shaded.jar
+```
 
 Quality Assurance
 -----------------
