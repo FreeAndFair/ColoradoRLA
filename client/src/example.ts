@@ -158,7 +158,7 @@ const exampleSoSState: any = {
 };
 
 export const exampleState = {
-    loggedIn: true,
+    loggedIn: false,
     county: exampleCountyState,
     ballotStyles,
     contests,
