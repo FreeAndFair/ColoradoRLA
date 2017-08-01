@@ -15,8 +15,8 @@ const Heading = () =>
 const Divider = () =>
     <span className='pt-navbar-divider' />;
 
-const HomeButton = () => (
-    <Link to='/'>
+const HomeButton = ({ path }: any) => (
+    <Link to={ path }>
         <button className='pt-button pt-minimal pt-icon-home'>Home</button>
     </Link>
 );
@@ -28,7 +28,7 @@ const SettingsButton = () =>
     <button className='pt-button pt-minimal pt-icon-cog' />;
 
 
-export default function withNav(Menu: any): any {
+export default function withNav(Menu: any, path: any): any {
     return () => (
         <nav className='pt-navbar'>
             <div className='pt-navbar-group pt-align-left'>
@@ -38,7 +38,7 @@ export default function withNav(Menu: any): any {
                 <Heading />
             </div>
             <div className='pt-navbar-group pt-align-right'>
-                <HomeButton />
+                <HomeButton path={ path } />
                 <Divider />
                 <UserButton />
                 <SettingsButton />

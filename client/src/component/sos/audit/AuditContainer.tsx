@@ -1,12 +1,14 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
+import AuditPage from './AuditPage';
 
-class AuditRiskLimitContainer extends React.Component<any, any> {
+
+class AuditContainer extends React.Component<any, any> {
     public render() {
-        return (
-            <div>Audit Risk Limit</div>
-        );
+        const saveAndNext = () => this.props.history.push('/sos/audit/seed');
+
+        return <AuditPage saveAndNext={ saveAndNext } />;
     }
 }
 
@@ -17,4 +19,4 @@ const mapDispatchToProps = (dispatch: any) => ({});
 export default connect(
     mapStateToProps,
     mapDispatchToProps,
-)(AuditRiskLimitContainer);
+)(AuditContainer);

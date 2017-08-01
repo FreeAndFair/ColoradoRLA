@@ -18,16 +18,16 @@ import HelpRootContainer from './help/HelpRootContainer';
 import ManualContainer from './help/ManualContainer';
 
 import LoginContainer from './login/LoginContainer';
+import TempUserLoginContainer from './login/TempUserLoginContainer';
 
-import AuditContainer from './sos/AuditContainer';
-import AuditRiskLimitContainer from './sos/AuditRiskLimitContainer';
-import AuditRoundContainer from './sos/AuditRoundContainer';
-import AuditSeedContainer from './sos/AuditSeedContainer';
-import ContestDetailContainer from './sos/ContestDetailContainer';
-import ContestOverviewContainer from './sos/ContestOverviewContainer';
-import CountyDetailContainer from './sos/CountyDetailContainer';
-import CountyOverviewContainer from './sos/CountyOverviewContainer';
-import SoSRootContainer from './sos/SoSRootContainer';
+import AuditBallotListContainer from './sos/audit/AuditBallotListContainer';
+import AuditContainer from './sos/audit/AuditContainer';
+import AuditSeedContainer from './sos/audit/AuditSeedContainer';
+import ContestDetailContainer from './sos/contest/ContestDetailContainer';
+import ContestOverviewContainer from './sos/contest/ContestOverviewContainer';
+import CountyDetailContainer from './sos/county/CountyDetailContainer';
+import CountyOverviewContainer from './sos/county/CountyOverviewContainer';
+import SoSHomeContainer from './sos/SoSHomeContainer';
 
 
 export interface RootContainerProps {
@@ -42,7 +42,12 @@ const LoginRoute = ({ store, page: Page, ...rest }: any) => {
             return <Page { ...props } />;
         }
 
-        return <Redirect to='/login' />;
+        const from  = props.location.pathname || '/';
+        const to = {
+            pathname: '/login',
+            state: { from },
+        };
+        return <Redirect to={ to } />;
     };
 
     return <Route render={ render } { ...rest } />;
@@ -71,15 +76,15 @@ const routes: RouteDef[] = [
     ['/help', HelpRootContainer],
     ['/help/glossary', GlossaryContainer],
     ['/help/manual', ManualContainer],
-    ['/sos', SoSRootContainer],
+    ['/sos', SoSHomeContainer],
     ['/sos/audit', AuditContainer],
-    ['/sos/audit/risk-limit', AuditRiskLimitContainer],
-    ['/sos/audit/round', AuditRoundContainer],
+    ['/sos/audit/ballots', AuditBallotListContainer],
     ['/sos/audit/seed', AuditSeedContainer],
     ['/sos/contest', ContestOverviewContainer],
     ['/sos/contest/:contestId', ContestDetailContainer],
     ['/sos/county', CountyOverviewContainer],
     ['/sos/county/:countyId', CountyDetailContainer],
+    ['/temp-login', TempUserLoginContainer],
 ];
 
 export class RootContainer extends React.Component<RootContainerProps, void> {
@@ -92,7 +97,7 @@ export class RootContainer extends React.Component<RootContainerProps, void> {
                     <Switch>
                         <Route exact path='/login' component={ LoginContainer } />
                         { routes.map(makeRoute(store)) }
-                        <Redirect from='/' to='/county' />
+                        <Redirect from='/' to='/temp-login' />
                     </Switch>
                 </Router>
             </Provider>
