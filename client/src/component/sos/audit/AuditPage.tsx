@@ -22,7 +22,7 @@ const Breadcrumb = () => (
 );
 
 
-const Audit = ({ saveAndNext }: any) => {
+const AuditPage = ({ saveAndNext }: any) => {
     const nop = () => ({});
 
     return (
@@ -70,4 +70,4 @@ const Audit = ({ saveAndNext }: any) => {
 };
 
 
-export default Audit;
+export default AuditPage;
