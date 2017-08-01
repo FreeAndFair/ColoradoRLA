@@ -190,11 +190,25 @@ code review. The development worfklow is as follows:
 1. If appropriate, use the GitHub "Reviewers" dropdown to formally
    request a review from a specific person. Either way, paste a link
    to the PR in Slack to alert others who may wish to review it.
-1. Ensure at least one other person has reviewed your changes and
-   informally but explicitly "signed off" in the PR comments.
-1. Have a _reviewer_ merge the PR when it is ready and all comments
-   are addressed. The reviewer should check that all new commits are
-   signed, then merge the PR using the GitHub "Merge pull request"
+1. At least one other person must review any changes to the `master`
+   branch and approve it via the github PR interfice comments. A
+   _reviewer_ should check that all new commits are signed, and all
+   necessary comments are addressed.
+1. Before it can be merged, you will generally have to `rebase` your
+   branch on to the `master` branch in order to preserve a clean commit
+   history. You can do this with commands in your branch: `git fetch`,
+   then `git rebase origin/master` (addressing any merge conflicts if
+   necessary), and finally `git push -f origin <yourbranch>`.
+1. Note that *force-pushes can be dangerous*, so make sure that you know
+   that no one else has pushed changes to the branch which aren't in the
+   history of your branch.  If others on the team are pulling and
+   testing it locally, they will need fix up their local branches with
+   `git checkout <yourbranch>`, `git fetch`, and
+   `git reset --hard origin/<yourbranch>`.
+   For more details, see
+   [The Dark Side of the Force Push - Will Anderson](http://willi.am/blog/2014/08/12/the-dark-side-of-the-force-push/)
+1. Finally, a _reviewer_ with merge permissions can merge the PR using the
+   GitHub "Merge pull request"
    button. This will introduce an _unsigned_ merge commit, but
    preserve the signatures on the actual branch's commits. Finally,
    the PR submitter, not the reviewer, should delete the merged
