@@ -26,7 +26,7 @@ import ContestDetailContainer from './sos/contest/ContestDetailContainer';
 import ContestOverviewContainer from './sos/contest/ContestOverviewContainer';
 import CountyDetailContainer from './sos/county/CountyDetailContainer';
 import CountyOverviewContainer from './sos/county/CountyOverviewContainer';
-import SoSRootContainer from './sos/SoSRootContainer';
+import SoSHomeContainer from './sos/SoSHomeContainer';
 
 
 export interface RootContainerProps {
@@ -75,7 +75,7 @@ const routes: RouteDef[] = [
     ['/help', HelpRootContainer],
     ['/help/glossary', GlossaryContainer],
     ['/help/manual', ManualContainer],
-    ['/sos', SoSRootContainer],
+    ['/sos', SoSHomeContainer],
     ['/sos/audit', AuditContainer],
     ['/sos/audit/ballots', AuditBallotListContainer],
     ['/sos/audit/seed', AuditSeedContainer],

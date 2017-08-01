@@ -3,7 +3,7 @@ import * as React from 'react';
 import SoSNav from './Nav';
 
 
-const SoSRootPage = () => {
+const SoSHomePage = () => {
     return (
         <div>
             <SoSNav />
@@ -47,7 +47,7 @@ const SoSRootPage = () => {
             </div>
         </div>
     );
-}
+};
 
 
-export default SoSRootPage;
+export default SoSHomePage;
