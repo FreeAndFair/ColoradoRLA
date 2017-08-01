@@ -21,16 +21,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 
 import com.google.gson.annotations.JsonAdapter;
 
@@ -78,7 +75,8 @@ public class CastVoteRecord implements Serializable {
    * The database ID of this record.
    */
   @Id
-  @GeneratedValue(strategy = GenerationType.TABLE)
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  @Column(name = "id", updatable = false, nullable = false)
   private Long my_id = getID();
   
   /**
@@ -120,8 +118,7 @@ public class CastVoteRecord implements Serializable {
   /**
    * The ballot style of this cast vote record.
    */
-  @ManyToOne
-  @Cascade({CascadeType.ALL})
+  @ManyToMany
   @JsonAdapter(BallotStyleJsonAdapter.class)
   private BallotStyle my_ballot_style;
   
@@ -129,8 +126,7 @@ public class CastVoteRecord implements Serializable {
    * The contests in this cast vote record and the choices
    * made in them.
    */
-  @OneToMany
-  @Cascade({CascadeType.MERGE})
+  @ManyToMany
   @JsonAdapter(ChoicesMapJsonAdapter.class)
   private Map<Contest, Set<Choice>> my_contest_choices;
   
