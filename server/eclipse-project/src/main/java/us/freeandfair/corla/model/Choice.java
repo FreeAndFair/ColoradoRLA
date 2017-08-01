@@ -11,6 +11,8 @@
 
 package us.freeandfair.corla.model;
 
+import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -169,8 +171,8 @@ public class Choice implements Serializable {
     boolean result = true;
     if (the_other instanceof Choice) {
       final Choice other_choice = (Choice) the_other;
-      result &= other_choice.name().equals(name());
-      result &= other_choice.description().equals(description());
+      result &= nullableEquals(other_choice.name(), name());
+      result &= nullableEquals(other_choice.description(), description());
     } else {
       result = false;
     }

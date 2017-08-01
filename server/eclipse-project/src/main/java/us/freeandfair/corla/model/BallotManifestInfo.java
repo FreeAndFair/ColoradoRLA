@@ -11,6 +11,8 @@
 
 package us.freeandfair.corla.model;
 
+import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
+
 import java.time.Instant;
 import java.util.Collection;
 import java.util.HashMap;
@@ -24,6 +26,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 /**
  * Information about the locations of specific batches of ballots.
@@ -65,6 +69,7 @@ public class BallotManifestInfo {
   /**
    * The timestamp for this ballot manifest info, in milliseconds since the epoch.
    */
+  @Temporal(TemporalType.TIMESTAMP)
   private Instant my_timestamp;
   
   /**
@@ -86,7 +91,7 @@ public class BallotManifestInfo {
   /**
    * The size of the batch.
    */
-  private int my_batch_size;
+  private Integer my_batch_size;
   
   /**
    * The storage location for the batch.
@@ -97,12 +102,7 @@ public class BallotManifestInfo {
    * Constructs an empty ballot manifest information record, solely for persistence.
    */
   protected BallotManifestInfo() {
-    my_timestamp = Instant.now();
-    my_county_id = "";
-    my_scanner_id = "";
-    my_batch_id = "";
-    my_batch_size = 0;
-    my_storage_location = "";
+    // default values for everything
   }
   
   /**
@@ -247,7 +247,7 @@ public class BallotManifestInfo {
   /**
    * @return the batch size.
    */
-  public int batchSize() {
+  public Integer batchSize() {
     return my_batch_size;
   }
   
@@ -280,12 +280,12 @@ public class BallotManifestInfo {
     boolean result = true;
     if (the_other instanceof BallotManifestInfo) {
       final BallotManifestInfo other_bmi = (BallotManifestInfo) the_other;
-      result &= other_bmi.timestamp().equals(timestamp());
-      result &= other_bmi.countyID().equals(countyID());
-      result &= other_bmi.scannerID().equals(scannerID());
-      result &= other_bmi.batchID().equals(batchID());
-      result &= other_bmi.batchSize() == batchSize();
-      result &= other_bmi.storageLocation().equals(storageLocation());
+      result &= nullableEquals(other_bmi.timestamp(), timestamp());
+      result &= nullableEquals(other_bmi.countyID(), countyID());
+      result &= nullableEquals(other_bmi.scannerID(), scannerID());
+      result &= nullableEquals(other_bmi.batchID(), batchID());
+      result &= nullableEquals(other_bmi.batchSize(), batchSize());
+      result &= nullableEquals(other_bmi.storageLocation(), storageLocation());
     } else {
       result = false;
     }
