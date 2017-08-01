@@ -11,6 +11,8 @@
 
 package us.freeandfair.corla.model;
 
+import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -205,8 +207,8 @@ public class BallotStyle implements Serializable {
     boolean result = true;
     if (the_other instanceof BallotStyle) {
       final BallotStyle other_style = (BallotStyle) the_other;
-      result &= other_style.identifier().equals(identifier());
-      result &= other_style.contests().equals(contests());
+      result &= nullableEquals(other_style.identifier(), identifier());
+      result &= nullableEquals(other_style.contests(), contests());
     } else {
       result = false;
     }

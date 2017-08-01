@@ -16,6 +16,8 @@
 
 package us.freeandfair.corla.model;
 
+import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
@@ -94,7 +96,7 @@ public class Contest implements Serializable {
   /**
    * The maximum number of votes that can be made in this contest.
    */
-  private final int my_votes_allowed;
+  private final Integer my_votes_allowed;
   
   /**
    * Constructs an empty contest, solely for persistence.
@@ -228,10 +230,10 @@ public class Contest implements Serializable {
     boolean result = true;
     if (the_other instanceof Contest) {
       final Contest other_contest = (Contest) the_other;
-      result &= other_contest.name().equals(name());
-      result &= other_contest.description().equals(description());
-      result &= other_contest.choices().equals(choices());
-      result &= other_contest.votesAllowed() == votesAllowed();
+      result &= nullableEquals(other_contest.name(), name());
+      result &= nullableEquals(other_contest.description(), description());
+      result &= nullableEquals(other_contest.choices(), choices());
+      result &= nullableEquals(other_contest.votesAllowed(), votesAllowed());
     } else {
       result = false;
     }
