@@ -198,7 +198,8 @@ code review. The development worfklow is as follows:
    branch on to the `master` branch in order to preserve a clean commit
    history. You can do this with commands in your branch: `git fetch`,
    then `git rebase origin/master` (addressing any merge conflicts if
-   necessary), and finally `git push -f origin <yourbranch>`.
+   necessary), and finally
+   `git push --force-with-lease origin <yourbranch>`.
 1. Note that *force-pushes can be dangerous*, so make sure that you know
    that no one else has pushed changes to the branch which aren't in the
    history of your branch.  If others on the team are pulling and
@@ -207,6 +208,7 @@ code review. The development worfklow is as follows:
    `git reset --hard origin/<yourbranch>`.
    For more details, see
    [The Dark Side of the Force Push - Will Anderson](http://willi.am/blog/2014/08/12/the-dark-side-of-the-force-push/)
+   and [--force considered harmful; understanding git's --force-with-lease - Atlassian Developers](https://developer.atlassian.com/blog/2015/04/force-with-lease/)
 1. Finally, a _reviewer_ with merge permissions can merge the PR using the
    GitHub "Merge pull request" button.
    This will introduce an _unsigned_ merge commit, but
