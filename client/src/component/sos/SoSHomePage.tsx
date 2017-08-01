@@ -47,20 +47,35 @@ const ContestUpdates = ({ contests, seed }: any) => {
     );
 };
 
-const CountyUpdates = () => {
+const CountyUpdates = ({ counties }: any) => {
+    const countyStatuses = _.map(counties, (c: any) => (
+        <tr key={ c.id }>
+            <td>{ c.id }</td>
+            <td>{ c.name }</td>
+            <td>{ c.started }</td>
+            <td>{ c.submitted }</td>
+            <td>{ c.progress }</td>
+        </tr>
+    ));
+
     return (
         <div className='pt-card'>
             <h3>County Updates</h3>
-            <div>
-                County Ballot Manifests, CVRs and Hashes (status & download links)
-            </div>
-            <div>
-                [Ballot Order]
-                [For each audited contest, total number of ballots to be audited
-                (including previous rounds)]
-            </div>
-            <div>
-                Updates based on county progress, discrepencies.
+            <div className='pt-card'>
+                <table className='pt-table'>
+                    <thead>
+                        <tr>
+                            <td>ID</td>
+                            <td>Name</td>
+                            <td>Started</td>
+                            <td>Submitted</td>
+                            <td>Progress</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        { ...countyStatuses }
+                    </tbody>
+                </table>
             </div>
         </div>
     );
@@ -68,8 +83,8 @@ const CountyUpdates = () => {
 
 
 const SoSHomePage = (props: any) => {
-    const { contests, seed } = props;
-    console.log(contests);
+    const { contests, counties, seed } = props;
+
     return (
         <div className='sos-home'>
             <SoSNav />
@@ -77,7 +92,7 @@ const SoSHomePage = (props: any) => {
                 <em>No notifications.</em>
             </div>
             <div className='sos-info pt-card'>
-                <CountyUpdates />
+                <CountyUpdates counties={ counties} />
                 <ContestUpdates contests={ contests } seed={ seed } />
             </div>
             <div>

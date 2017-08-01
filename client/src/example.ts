@@ -12,6 +12,7 @@ const oneOfManyContest = {
         { id: '3', name: 'Regina Robles' },
     ],
     votesAllowed: 1,
+    status: 'Audited Required',
 };
 
 const yesNoContest = {
@@ -23,6 +24,7 @@ const yesNoContest = {
         { id: '5', name: 'No' },
     ],
     votesAllowed: 1,
+    status: 'Audited In-Progress',
 };
 
 const someOfManyContest = {
@@ -37,6 +39,7 @@ const someOfManyContest = {
         { id: '11', name: 'Julian Jenkins' },
     ],
     votesAllowed: 3,
+    status: 'Audit Complete',
 };
 
 const ballotStyles = {
@@ -121,21 +124,35 @@ const contests = {
     '3': someOfManyContest,
 };
 
-const c = (id: any, name: any, started: any, submitted: any, discrepancies: any) =>
-    ({ id, name, started, submitted, discrepancies });
+const c = (
+    id: any,
+    name: any,
+    started: any,
+    submitted: any,
+    discrepancies: any,
+    progress: any,
+) => ({
+    id,
+    name,
+    started,
+    submitted,
+    discrepancies,
+    progress,
+});
 
 const exampleCounties: any = {
-    1001: c(1001, 'County 1001', '11/15/2017 15:00 MST', 207, 6),
-    1002: c(1002, 'County 1002', false, 359, 2),
-    1003: c(1003, 'County 1003', false, 999, 25),
+    1001: c(1001, 'County 1001', '11/15/2017 15:00 MST', 207, 6, '50%'),
+    1002: c(1002, 'County 1002', false, 359, 2, '67%'),
+    1003: c(1003, 'County 1003', false, 999, 25, '31%'),
 };
 
 const exampleSoSState: any = {
     counties: exampleCounties,
+    seed: '3141592653',
 };
 
 export const exampleState = {
-    loggedIn: false,
+    loggedIn: true,
     county: exampleCountyState,
     ballotStyles,
     contests,
