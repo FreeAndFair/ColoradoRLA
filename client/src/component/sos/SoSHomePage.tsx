@@ -27,9 +27,6 @@ const ContestUpdates = ({ contests, seed }: any) => {
     return (
         <div className='pt-card'>
             <h3>Contest Updates</h3>
-            <div>
-                Target and Current Risk Limits by Contest
-            </div>
             <div className='pt-card'>
                 <table className='pt-table'>
                     <thead>
