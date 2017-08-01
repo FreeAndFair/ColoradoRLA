@@ -24,15 +24,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.ElementCollection;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 
 /**
  * The definition of a contest; comprises a contest name and a set of possible
@@ -73,8 +71,8 @@ public class Contest implements Serializable {
    * The database ID of this contest.
    */
   @Id
-  @GeneratedValue(strategy = GenerationType.TABLE)
-  @SuppressWarnings("PMD.ImmutableField")
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  @Column(name = "id", updatable = false, nullable = false)
   private Long my_id = getID();
   
   /**
@@ -90,8 +88,7 @@ public class Contest implements Serializable {
   /**
    * The set of contest choices.
    */
-  @ElementCollection
-  @Cascade({CascadeType.MERGE})
+  @ManyToMany
   private final List<Choice> my_choices;
   
   /**

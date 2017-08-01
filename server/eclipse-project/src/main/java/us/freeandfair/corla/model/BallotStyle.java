@@ -21,15 +21,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.ElementCollection;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 
 import com.google.gson.annotations.JsonAdapter;
 
@@ -73,7 +71,8 @@ public class BallotStyle implements Serializable {
    * The ballot style database ID.
    */
   @Id
-  @GeneratedValue(strategy = GenerationType.TABLE)
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  @Column(name = "id", updatable = false, nullable = false)
   private Long my_id = getID();
 
   /**
@@ -84,8 +83,7 @@ public class BallotStyle implements Serializable {
   /**
    * The list of contests on a ballot of this style.
    */
-  @ElementCollection
-  @Cascade({CascadeType.ALL})
+  @ManyToMany
   @JsonAdapter(ContestsJsonAdapter.class)
   private List<Contest> my_contests;
   
