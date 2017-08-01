@@ -147,9 +147,9 @@ const c = (
 });
 
 const exampleCounties: any = {
-    1001: c(1001, 'County 1001', '11/15/2017 15:00 MST', 207, 6, '50%'),
-    1002: c(1002, 'County 1002', false, 359, 2, '67%'),
-    1003: c(1003, 'County 1003', false, 999, 25, '31%'),
+    1001: c(1001, 'County 1001', '11/15/2017 15:02 MST', 207, 6, '50%'),
+    1002: c(1002, 'County 1002', 'Not started', 359, 2, '0%'),
+    1003: c(1003, 'County 1003', '11/15/2017 12:28 MST', 999, 25, '31%'),
 };
 
 const exampleSoSState: any = {
