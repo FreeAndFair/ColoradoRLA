@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import * as _ from 'lodash';
+
 import SoSNav from './Nav';
 
 
@@ -11,27 +13,44 @@ const AuditRounds = () => {
     );
 };
 
-const SeedInfo = () => {
+const SeedInfo = ({ seed }: any) => {
     return (
-        <div>
+        <div className='pt-card'>
+            <strong>Seed: </strong> { seed }
         </div>
     );
 };
 
-const ContestUpdates = () => {
+const ContestUpdates = ({ contests, seed }: any) => {
+    const contestStatuses = _.map(contests, (c: any) => (
+        <tr key={ c.id}>
+            <td>{ c.id }</td>
+            <td>{ c.name }</td>
+            <td>{ c.status }</td>
+        </tr>
+    ));
+
     return (
         <div className='pt-card'>
             <h3>Contest updates.</h3>
             <div>
                 Target and Current Risk Limits by Contest
             </div>
-            <div>
-                Status (audit required, audit in progress, audit complete, hand
-                count required, hand count complete) by Audited Contest
+            <div className='pt-card'>
+                <table className='pt-table'>
+                    <thead>
+                        <tr>
+                            <td>ID</td>
+                            <td>Name</td>
+                            <td>Status</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        { ...contestStatuses }
+                    </tbody>
+                </table>
             </div>
-            <div>
-                Seed: 23781234
-            </div>
+            <SeedInfo seed={ seed } />
             <AuditRounds />
         </div>
     );
@@ -58,6 +77,8 @@ const CountyUpdates = () => {
 
 
 const SoSHomePage = (props: any) => {
+    const { contests, seed } = props;
+    console.log(contests);
     return (
         <div className='sos-home'>
             <SoSNav />
@@ -66,7 +87,7 @@ const SoSHomePage = (props: any) => {
             </div>
             <div className='sos-info pt-card'>
                 <CountyUpdates />
-                <ContestUpdates />
+                <ContestUpdates contests={ contests } seed={ seed } />
             </div>
             <div>
                 <button disabled className='pt-button pt-intent-primary'>

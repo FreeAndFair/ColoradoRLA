@@ -11,7 +11,9 @@ class SoSHomeContainer extends React.Component<any, any> {
 }
 
 const mapStateToProps = (state: any) => ({
+    contests: state.contests,
     counties: state.sos.counties,
+    seed: state.sos.seed,
     sos: state.sos,
 });
 
