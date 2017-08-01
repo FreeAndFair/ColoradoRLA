@@ -24,7 +24,7 @@ const Breadcrumb = () => (
 );
 
 
-const Audit = () => {
+const Audit = ({ back, saveAndDone }: any) => {
     const nop = () => ({});
 
     return (
@@ -48,8 +48,12 @@ const Audit = () => {
                 </div>
             </div>
             <div>
-                <button className='pt-button'>Back</button>
-                <button className='pt-button pt-intent-primary'>Launch Audit</button>
+                <button onClick={ back } className='pt-button'>
+                    Back
+                </button>
+                <button onClick={ saveAndDone } className='pt-button pt-intent-primary'>
+                    Launch Audit
+                </button>
             </div>
         </div>
     );

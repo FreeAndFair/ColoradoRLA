@@ -6,7 +6,10 @@ import AuditBallotListPage from './AuditBallotListPage';
 
 class AuditBallotListContainer extends React.Component<any, any> {
     public render() {
-        return <AuditBallotListPage />;
+        const back = () => this.props.history.push('/sos/audit/seed');
+        const saveAndDone = () => this.props.history.push('/sos');
+
+        return <AuditBallotListPage { ...{ back, saveAndDone} } />;
     }
 }
 
