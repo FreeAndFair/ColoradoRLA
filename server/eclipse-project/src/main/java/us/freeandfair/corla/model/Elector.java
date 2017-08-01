@@ -29,6 +29,9 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "choice")
+// this class has many fields that would normally be declared final, but
+// cannot be for compatibility with Hibernate and JPA.
+@SuppressWarnings("PMD.ImmutableField")
 public class Elector implements Serializable {
   /**
    * The serialVersionUID.
@@ -58,22 +61,22 @@ public class Elector implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.TABLE)
   @SuppressWarnings("PMD.ImmutableField")
-  private long my_id = getID();
+  private Long my_id = getID();
 
   /**
    * The first name.
    */
-  private final String my_first_name;
+  private String my_first_name;
 
   /**
    * The last name.
    */
-  private final String my_last_name;
+  private String my_last_name;
 
   /**
    * The political party
    */
-  private final String my_political_party;
+  private String my_political_party;
   
   /**
    * Constructs an empty elector, solely for persistence. 

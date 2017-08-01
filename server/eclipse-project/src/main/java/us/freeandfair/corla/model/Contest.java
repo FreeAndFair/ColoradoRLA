@@ -75,7 +75,7 @@ public class Contest implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.TABLE)
   @SuppressWarnings("PMD.ImmutableField")
-  private long my_id = getID();
+  private Long my_id = getID();
   
   /**
    * The contest name.
