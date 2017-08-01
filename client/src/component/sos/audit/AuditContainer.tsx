@@ -6,7 +6,9 @@ import AuditPage from './AuditPage';
 
 class AuditContainer extends React.Component<any, any> {
     public render() {
-        return <AuditPage />;
+        const saveAndNext = () => this.props.history.push('/sos/audit/seed');
+
+        return <AuditPage saveAndNext={ saveAndNext } />;
     }
 }
 

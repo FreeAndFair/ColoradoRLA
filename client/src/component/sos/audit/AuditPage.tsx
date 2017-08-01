@@ -22,7 +22,7 @@ const Breadcrumb = () => (
 );
 
 
-const Audit = () => {
+const Audit = ({ saveAndNext }: any) => {
     const nop = () => ({});
 
     return (
@@ -62,7 +62,9 @@ const Audit = () => {
             <div>
                 Once the election has started, this information will not be able to be changed.
             </div>
-            <button className='pt-button pt-intent-primary'>Save</button>
+            <button onClick={ saveAndNext } className='pt-button pt-intent-primary'>
+                Save
+            </button>
         </div>
     );
 };
