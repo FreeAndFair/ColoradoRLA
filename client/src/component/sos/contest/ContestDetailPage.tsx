@@ -31,7 +31,7 @@ const ContestChoices = ({ contest }: any) => {
     ));
 
     return (
-        <div>
+        <div className='pt-card'>
             <h4>Choices:</h4>
             <ul>{ choiceItems }</ul>
         </div>
@@ -53,17 +53,19 @@ const ContestDetailPage = (props: any) => {
             <Nav />
             <Breadcrumb contest={ contest } />
             <h2>Status</h2>
-            <h3>Contest Data</h3>
-            <table className='pt-table pt-bordered pt-condensed'>
-                <tbody>
-                    { row('ID', contest.id) }
-                    { row('Name', contest.name) }
-                    { row('Description', contest.description) }
-                    { row('Vote For', contest.votesAllowed) }
-                    { row('Ballot Manifest', 'Uploaded') }
-                    { row('CVR Export', 'Uploaded') }
-                </tbody>
-            </table>
+            <div className='pt-card'>
+                <h3>Contest Data</h3>
+                <table className='pt-table pt-bordered pt-condensed'>
+                    <tbody>
+                        { row('ID', contest.id) }
+                        { row('Name', contest.name) }
+                        { row('Description', contest.description) }
+                        { row('Vote For', contest.votesAllowed) }
+                        { row('Ballot Manifest', 'Uploaded') }
+                        { row('CVR Export', 'Uploaded') }
+                    </tbody>
+                </table>
+            </div>
             <ContestChoices contest={ contest } />
         </div>
     );

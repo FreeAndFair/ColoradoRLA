@@ -25,7 +25,7 @@ const Breadcrumb = ({ county }: any) => (
 
 const CountyDetails = ({ county }: any) => {
     return (
-        <div>
+        <div className='pt-card'>
             <table className='pt-table pt-bordered pt-condensed'>
                 <tbody>
                     <tr>
@@ -50,11 +50,12 @@ const CountyDetails = ({ county }: any) => {
                     </tr>
                 </tbody>
             </table>
-            <div>Audit board:</div>
-            <ul>
-                <li>John Doe (Democratic Party)</li>
-                <li>Jane Smith (RepublicanParty)</li>
-            </ul>
+            <div className='pt-card'>Audit board:
+                <ul>
+                    <li>John Doe (Democratic Party)</li>
+                    <li>Jane Smith (RepublicanParty)</li>
+                </ul>
+            </div>
         </div>
     );
 };
