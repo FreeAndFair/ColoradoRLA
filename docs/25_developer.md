@@ -191,7 +191,7 @@ code review. The development worfklow is as follows:
    request a review from a specific person. Either way, paste a link
    to the PR in Slack to alert others who may wish to review it.
 1. At least one other person must review any changes to the `master`
-   branch and approve it via the github PR interfice comments. A
+   branch and approve it via the GitHub PR interface comments. A
    _reviewer_ should check that all new commits are signed, and all
    necessary comments are addressed.
 1. Before it can be merged, you will generally have to `rebase` your
@@ -208,8 +208,8 @@ code review. The development worfklow is as follows:
    For more details, see
    [The Dark Side of the Force Push - Will Anderson](http://willi.am/blog/2014/08/12/the-dark-side-of-the-force-push/)
 1. Finally, a _reviewer_ with merge permissions can merge the PR using the
-   GitHub "Merge pull request"
-   button. This will introduce an _unsigned_ merge commit, but
+   GitHub "Merge pull request" button.
+   This will introduce an _unsigned_ merge commit, but
    preserve the signatures on the actual branch's commits. Finally,
    the PR submitter, not the reviewer, should delete the merged
    branch.
@@ -385,7 +385,7 @@ specified in our [`.travis.yml`](../.travis.yml) file and in the
 [`ci`](../ci) directory.
 
 Current build status for the `master` branch status is reflected in the
-`README.md` of our main github page. Build status logs, can be found at
+`README.md` of our main GitHub page. Build status logs, can be found at
 our dashboard:
 [FreeAndFair/ColoradoRLA](https://travis-ci.org/FreeAndFair/ColoradoRLA).
 
