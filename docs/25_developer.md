@@ -288,6 +288,9 @@ Run it via:
 java -jar target/colorado_rla-0.0.1-shaded.jar
 ```
 
+You can test it by opening this simple html page in a browser:
+[`test/corla-server-test.html`](../test/corla-server-test.html)
+
 Quality Assurance
 -----------------
 
