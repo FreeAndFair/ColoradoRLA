@@ -19,6 +19,8 @@ const ContestUpdates = ({ contests, seed }: any) => {
             <td>{ c.id }</td>
             <td>{ c.name }</td>
             <td>{ c.status }</td>
+            <td>{ c.riskLimit }</td>
+            <td>{ c.riskLevel }</td>
         </tr>
     ));
 
@@ -35,6 +37,8 @@ const ContestUpdates = ({ contests, seed }: any) => {
                             <td>ID</td>
                             <td>Name</td>
                             <td>Status</td>
+                            <td>Target Risk Limit</td>
+                            <td>Risk Level</td>
                         </tr>
                     </thead>
                     <tbody>

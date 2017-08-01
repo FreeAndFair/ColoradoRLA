@@ -13,6 +13,8 @@ const oneOfManyContest = {
     ],
     votesAllowed: 1,
     status: 'Audited Required',
+    riskLevel: '13%',
+    riskLimit: '5%',
 };
 
 const yesNoContest = {
@@ -25,6 +27,8 @@ const yesNoContest = {
     ],
     votesAllowed: 1,
     status: 'Audited In-Progress',
+    riskLevel: '22.1%',
+    riskLimit: '10%',
 };
 
 const someOfManyContest = {
@@ -40,6 +44,8 @@ const someOfManyContest = {
     ],
     votesAllowed: 3,
     status: 'Audit Complete',
+    riskLevel: '18.2%',
+    riskLimit: '5%',
 };
 
 const ballotStyles = {
