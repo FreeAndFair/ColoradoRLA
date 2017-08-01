@@ -216,6 +216,7 @@ code review. The development worfklow is as follows:
 
 
 **Guidelines:**
+
 - Do not commit directly to `master`.
 - To support bisecting, do not merge WIP commits that break the build.
   On topic branches, squash commits as needed before merging.
