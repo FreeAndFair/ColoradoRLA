@@ -5,14 +5,6 @@ import * as _ from 'lodash';
 import SoSNav from './Nav';
 
 
-const AuditRounds = () => {
-    return (
-        <div>
-            List of Audit Rounds (number of ballots, status by County, download links)
-        </div>
-    );
-};
-
 const SeedInfo = ({ seed }: any) => {
     return (
         <div className='pt-card'>
@@ -51,7 +43,6 @@ const ContestUpdates = ({ contests, seed }: any) => {
                 </table>
             </div>
             <SeedInfo seed={ seed } />
-            <AuditRounds />
         </div>
     );
 };
