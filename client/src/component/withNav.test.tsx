@@ -12,7 +12,7 @@ test('withNav', t => {
 
     const Menu = () => <div>Example</div>;
 
-    const Nav = withNav(Menu);
+    const Nav = withNav(Menu, '/root');
 
     const c = shallow(<Nav />);
 
