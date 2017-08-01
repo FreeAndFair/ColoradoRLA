@@ -25,3 +25,22 @@ body {
 .county-root .county-info {
     flex: 1;
 }
+
+.sos-home {
+    display: flex;
+    flex-direction: column;
+}
+
+.sos-home .sos-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.sos-home .sos-info .contest-info {
+    flex: 1;
+}
+
+.sos-home .sos-info .county-info {
+    flex: 1;
+}
