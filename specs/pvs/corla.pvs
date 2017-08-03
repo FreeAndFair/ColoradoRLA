@@ -13,8 +13,8 @@
 %%%
 %%% The Colorado election law pertaining to election audits is
 %%% \href{http://law.justia.com/codes/colorado/2016/title-1/general-primary-recall-and-congressional-vacancy-elections/article-7/part-5/section-1-7-515/}
-%%% {Section 1-7-515, C.R.S.}, where ``C.R.S." denotes ``Colorado Revised Statutes". The rules pertaining to election audits are
-%%% found in the ``Revised Draft of Proposed Rules" whose latest
+%%% {Section 1-7-515, C.R.S.}, where ``C.R.S.'' denotes ``Colorado Revised Statutes''. The rules pertaining to election audits are
+%%% found in the ``Revised Draft of Proposed Rules'' whose latest
 %%% version is labeled CCR 1505-1 and dated July 6, 2017. Section 25,
 %%% Post-Election Audit, of that document is the salient portion of
 %%% that document for our purposes. We will call that document RDPR-6-Jul-2017 for the
@@ -174,7 +174,7 @@
 %%% \href{http://law.justia.com/codes/colorado/2016/title-1/general-primary-recall-and-congressional-vacancy-elections/article-7/part-5/section-1-7-515/}
 %%% {Section 1-7-515, of the C.R.S.}. The \emph{rules} (i.e., the interpretation of the statutes
 %%% and an explanation for how to realize their goals) pertaining to
-%%% such are found in the "Revised Draft of Proposed Rules" whose
+%%% such are found in the ``Revised Draft of Proposed Rules'' whose
 %%% latest version is labeled CCR 1505-1 and dated July 6,
 %%% 2017. Section 25, Post-Election Audit, of that document is the
 %%% salient portion of that document. We will call that particular
@@ -271,6 +271,16 @@
 %%% analysis or interactive theorem proving---can check properties
 %%% wholesale in the system, ensuring that properties hold for all
 %%% possible inputs in all possible environments.
+%%%
+%%% Given the short period of performance for this first version of
+%%% the CORLA system, we are formally annotating some of the code with
+%%% JML. Doing so helps us trace and think carefully about refinement
+%%% from our formal specification to our implemenation. It will also
+%%% permit us, after this initial burst of work is complete,
+%%% automatically generate a test bench using
+%%% \href{http://insttech.secretninjaformalmethods.org/software/jmlunitng/}{JMLunitNG}
+%%% and automatically reason about the implementation using the
+%%% \href{http://www.openjml.org/}{OpenJML tools suite}.
 %%% \end{enumerate}
 % @todo Explain how refinement works and how the reader can understand
 % exactly what is built vs. what is just designed.
@@ -448,7 +458,7 @@ BEGIN
 %%% After a tabulation, each contest has an outcome. For some contests,
 %%% the outcome is the candidate who won; for others the outcome is a set of 
 %%% candidates (say, in a contest for five at-large seats where the top five 
-%%% vote-getters win); for ballot questions the outcome is either ``yes" or ``no".
+%%% vote-getters win); for ballot questions the outcome is either ``yes'' or ``no''.
 %%% The set of outcomes from all contests in a single election are the outcome of the election.
   contest_outcome: TYPE
   election_outcomes: TYPE = set[contest_outcome]
@@ -576,8 +586,6 @@ storage_container: DATATYPE
   WITH SUBTYPES box,
                 bin,
                 ballot_box
-
-Another crucial element of an election is the vote-counting equipment.
 BEGIN
   IMPORTING elections
 
@@ -588,6 +596,9 @@ BEGIN
 % @todo add "secure: pred[ballot_storage]"
 
 END storage_container
+
+%%% Another crucial element of an election is the vote-counting
+%%% equipment.
 
 elections_equipment: THEORY
 BEGIN
@@ -808,7 +819,7 @@ BEGIN
   IMPORTING ballots,
             vote
 
-%%% A Cast Vote Record (commonly called a ``CVR") is a catalog of 
+%%% A Cast Vote Record (commonly called a ``CVR'') is a catalog of 
 %%% choices from one or more ballots representing distinct voters. 
 %%% In the Colorado system, CVRs are produced as comma-separated-value files
 %%% from the Dominion voting system.
@@ -1015,17 +1026,21 @@ END cryptography
 
 %%% \subsection{Randomness}
 
-%%% Choosing a random sample of ballots is key to the legitimacy of any
-%%% risk-limiting audit. Legitimacy depends on a high-quality process for
-%%% the random samples. The Colorado RLA Tool will produce a random order 
-%%% of all the ballots once and for all; then random samples 
-%%% of any size, or restricted to any County or set of Counties, can be created 
-%%% as needed by considering the ballots in that random order.
-
+%%% Choosing a random sample of ballots is key to the legitimacy of
+%%% any risk-limiting audit. Legitimacy depends on a high-quality
+%%% process for the random samples. The Colorado RLA Tool will produce
+%%% a random order of all the ballots once and for all; then random
+%%% samples of any size, or restricted to any County or set of
+%%% Counties, can be created as needed by considering the ballots in
+%%% that random order.
 
 randomness: THEORY
 BEGIN
   unit: TYPE
+
+%%% There are many algorithms available to produce a pseudorandom
+%%% sequence of numbers. The relevant text from Colorado's RDPR is
+%%% quoted below.
 
 % @trace RDPR-6-Jul-2017 Section 25.2.2(H)
 
@@ -1054,9 +1069,85 @@ BEGIN
 %%% publish the seed on the audit center immediately after it is
 %%% established.
 %%% \end{quotation}
+
+%%% As such, the seed of our pseudorandom algorithm must be a natural
+%%% number that is at least twenty digits long.
   seed: TYPE = {n: nat | 9999999999999999999 < n}
-  rng: TYPE = [unit -> nat]
-  seeded_prng: TYPE = [seed -> rng]
+%%% The random number generator itself must be seeded with the seed
+%%% provided by the Department of State, and then after being seeded
+%%% it must deterministically produce new pseudorandom numbers in a
+%%% specified range.
+  rng: TYPE = [the_minimum: nat, the_maximum: nat ->
+               {n: nat | the_minimum <= n AND n <= the_maximum}]
+  seed_prng: TYPE = [seed, with_replacement: boolean,
+                     the_minimum: nat, the_maximum: nat  -> rng]
+%%% The algorithm used by Rivest and Stark in the aforementioned
+%%% sample code uses the SHA-256 cryptographic hash function in
+%%% counter mode to obtain deterministic random input. Here is the
+%%% relevant documentation from Rivest's Python implementation,
+%%% available via \href{https://github.com/FreeAndFair/RLA/blob/master/StarkRLAJS/sampler.py}{StarkRLAJS}.
+%%% \begin{quotation}
+%%% The cryptographic hash function SHA-256 is used in this program.
+%%% This hash function maps arbitrary strings of input text to
+%%% ``pseudo-random'' 256-bit integers.  The pseudo-randomness of this
+%%% function is of the highest quality: SHA-256 is a U.S. government
+%%% standard and has passed the most stringest testing.
+%%%
+%%% The SHA-256 hash function is used in ``counter mode'' to obtain the
+%%% desired sample.  The sample elements are picked one by one from
+%%% a..b, with the i-th pick is generated by applying SHA-256 to the
+%%% text string obtained by following the seed by a comma and then the
+%%% decimal representation of i.  This value reduced modulo (b-a+1)
+%%% and added to a to obtain a value in the range a..b.  This value is
+%%% rejected if sampling is done without replacement and the value
+%%% obtained is a duplicate of a previously obtained value.
+%%% \end{quotation}
+%%%
+%%% We will use this \texttt{randomness} module as our first and
+%%% simplest example of \emph{refinement} from our formal
+%%% specification to our implementation. The following table
+%%% summarizes the refinement relationship between \texttt{randomness}
+%%% and our implementation.
+%%%
+%%% \begin{table}
+%%% \caption{Example Refinement for CORLA Randomness Subsystem}
+%%% \label{tab:example_refinement}
+%%% \begin{center}
+%%% \begin{tabular}{|l|l|}
+%%% Formal Specification Artifact & Implementation Artifact \\
+%%% \texttt{randomness} theory & Java class \texttt{us.freeandfair.corla.crypto.PseudoRandomNumberGenerator} \\
+%%% \texttt{seed} & \texttt{PseudoRandomNumberGenerator.my\_seed} \\
+%%% \texttt{seed\_prng(seed, replace, min, max)} & \texttt{new PseudoRandomNumberGenerator(seed, replace, min, max)} \\
+%%% \texttt{rng(min, max)} & \texttt{rng = new PseudoRandomNumberGenerator(seed, replace, min, max); rng.getRandomNumbers(min, max).get(0)} \\
+%%% \end{tabular}
+%%% \end{center}
+%%% \end{table}
+%%%
+%%% There are a few things to note about this refinement.
+%%% \begin{enumerate}
+
+%%% \item The size constraint on the type \texttt{seed} is expressed
+%%% in the implementation via a precondition on its constructor,
+%%% expressed both in JML and in an inline assert, and two class
+%%% invariants, one which constrains seed's length and the other which
+%%% characterizes its content. Note that the latter is necessary
+%%% because we are mapping from a PVS \texttt{nat} (natural number, a
+%%% non-negative integer) to a \texttt{java.lang.String} (which
+%%% encodes arbitrary unicode characters).
+%%%
+%%% \item A specification function, such as \texttt{rng}, is refined
+%%% to a sequence of actions in the implementations. In this example,
+%%% rng maps to a call to the constructor of
+%%% \texttt{PseudoRandomNumberGenerator} followed by a call to
+%%% \texttt{getRandomNumbers}.
+%%%
+%%% \item The implementation often has more functionality than is
+%%% specified in the formal specification. This is normal, as the
+%%% specification is an abstraction of the \emph{necessary}
+%%% functionality
+%%%
+%%% \end{enumerate}
+
 END randomness
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1259,7 +1350,7 @@ END rlas
 %%% choices in all contests on a ballot. CVRs are sometimes
 %%% syntactically written as comma-separated values, and other times
 %%% in plain English. Some CVRs use a election-specific encoding
-%%% scheme to represent choices (e.g., a '1' means "John Doe"); others
+%%% scheme to represent choices (e.g., a `1' means ``John Doe''); others
 %%% use plain English.
 %%%
 %%% CVRs may (and in the case of CVRs exported from Colorado's Dominion system, do)
@@ -1314,7 +1405,7 @@ END cast_vote_records
 %%% Note that all these user interfaces both receive and 
 %%% provide information.
 %%% Because the public dashboard only pushes information out, 
-%%% we do not consider it a "user interface".
+%%% we do not consider it a ``user interface''.
 
 user_interface: DATATYPE
   WITH SUBTYPES uploading_interface,
@@ -1556,10 +1647,10 @@ BEGIN
 %%% \begin{enumerate}
 
 %%% \item permuting all ballots and auditing a prefix of ballots
-%%% (thereby auditing ballots ``with no replacement"); or
+%%% (thereby auditing ballots ``with no replacement''); or
 
 %%% \item randomly selecting ballots ballot-by-ballot (thereby
-%%% auditing ballots "with replacement" as the same ballot may be
+%%% auditing ballots ``with replacement'' as the same ballot may be
 %%% audited multiple times).
 
 %%% \end{enumerate}
@@ -1847,7 +1938,7 @@ BEGIN
      audit_board_dashboard]
 
 % @review CDOS We also do not have requirements from CDOS as to how to
-% complete the audit process and have the audit board members "sign"
+% complete the audit process and have the audit board members ``sign''
 % the audit.
   submit_audit_report:
     [audit_board_dashboard, audit_report -> audit_board_dashboard]
@@ -1868,7 +1959,7 @@ BEGIN
 
 % @review CDOS The public dashboard is very underspecified at the
 % moment. The only thing that the contract mandates is that the public
-% must be able to "download data and reports".
+% must be able to ``download data and reports''.
 
 % @trace CORLA System Spec v1.0
 
@@ -2134,7 +2225,7 @@ BEGIN
   e: VAR county_election
 % @trace RDPR-6-Jul-2017 Section 25.2.2(E)
 
-%%% According to the section entitled ``CVR Export Verification",
+%%% According to the section entitled ``CVR Export Verification'',
 %%% counties conducting a comparison audit must verify that:
 
 %%% \begin{enumerate}
@@ -2178,7 +2269,7 @@ END system_assumptions
 %%% bugs post-facto, understand how users are using the system,
 %%% etc. Another, reason to log in this context of this system is to
 %%% provide an indelible record of administrator and auditor actions
-%%% so that any audit can be ``replayed" by any third party.
+%%% so that any audit can be ``replayed'' by any third party.
 
 logging: THEORY
 BEGIN
@@ -2464,7 +2555,7 @@ BEGIN
 %%% load testing.
 %%%
 %%% Each of these functions is a public feature of the system encoding
-%%% what we call a "public inbound event" to the RLA Tool's servers.
+%%% what we call a ``public inbound event'' to the RLA Tool's servers.
 %%% By examining one such event in detail, we will elucidate how to
 %%% read and understand its specification and derive from it our
 %%% network data model.
