@@ -80,32 +80,29 @@ public class Contest implements Serializable {
   /**
    * The contest name.
    */
-  private final String my_name;
+  private String my_name;
 
   /**
    * The contest description.
    */
-  private final String my_description;
+  private String my_description;
   
   /**
    * The set of contest choices.
    */
   @ManyToMany
-  private final List<Choice> my_choices;
+  private List<Choice> my_choices;
   
   /**
    * The maximum number of votes that can be made in this contest.
    */
-  private final Integer my_votes_allowed;
+  private Integer my_votes_allowed;
   
   /**
    * Constructs an empty contest, solely for persistence.
    */
   protected Contest() {
-    my_name = "";
-    my_description = "";
-    my_choices = null;
-    my_votes_allowed = 0;
+    // default values for everything
   }
   
   /**

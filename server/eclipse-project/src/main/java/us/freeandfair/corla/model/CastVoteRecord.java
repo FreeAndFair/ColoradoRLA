@@ -33,12 +33,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import com.google.gson.annotations.JsonAdapter;
 
-import us.freeandfair.corla.gson.BallotStyleJsonAdapter;
 import us.freeandfair.corla.gson.ChoicesMapJsonAdapter;
 import us.freeandfair.corla.gson.CommentsMapJsonAdapter;
 import us.freeandfair.corla.gson.ConsensusMapJsonAdapter;
@@ -51,7 +48,7 @@ import us.freeandfair.corla.gson.ConsensusMapJsonAdapter;
  * @version 0.0.1
  */
 @Entity
-@Table(name = "cast_vote_record")
+@Table(name = "cvr")
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
@@ -96,7 +93,6 @@ public class CastVoteRecord implements Serializable {
   /**
    * The timestamp of this cast vote record.
    */
-  @Temporal(TemporalType.TIMESTAMP)
   @Column(name = "timestamp", updatable = false, nullable = false)
   private Instant my_timestamp;
   
@@ -133,10 +129,15 @@ public class CastVoteRecord implements Serializable {
   /**
    * The ballot style of this cast vote record.
    */
+  @Column(name = "ballot_type", updatable = false, nullable = false)
+  private String my_ballot_type;
+
+  /**
+   * The contest information in this cast vote record.
+   */
   @ManyToMany
-  @Column(name = "ballot_style", updatable = false, nullable = false)
-  @JsonAdapter(BallotStyleJsonAdapter.class)
-  private BallotStyle my_ballot_style;
+  @ElementCollection(fetch = FetchType.EAGER)
+  private Set<CVRContestInfo> my_contest_info;
   
   /**
    * The contests in this cast vote record and the choices
@@ -165,12 +166,7 @@ public class CastVoteRecord implements Serializable {
    * Constructs an empty cast vote record, solely for persistence.
    */
   protected CastVoteRecord() {
-    my_timestamp = Instant.now();
-    my_county_id = "";
-    my_scanner_id = "";
-    my_batch_id = "";
-    my_record_id = "";
-    my_imprinted_id = "";
+    // default values for everything
   }
   
   /**
@@ -183,7 +179,7 @@ public class CastVoteRecord implements Serializable {
    * @param the_batch_id The batch ID.
    * @param the_record_id The record ID.
    * @param the_imprinted_id The imprinted ID.
-   * @param the_ballot_style The ballot style.
+   * @param the_ballot_type The ballot type.
    * @param the_choices A map of the choices made in each contest.
    */
   @SuppressWarnings("PMD.ExcessiveParameterList")
@@ -192,7 +188,7 @@ public class CastVoteRecord implements Serializable {
                            final String the_county_id, final String the_scanner_id,
                            final String the_batch_id, final String the_record_id,
                            final String the_imprinted_id,
-                           final BallotStyle the_ballot_style,
+                           final String the_ballot_type,
                            final Map<Contest, Set<Choice>> the_choices,
                            final Map<Contest, String> the_comments,
                            final Map<Contest, Boolean> the_consensus) {
@@ -203,7 +199,7 @@ public class CastVoteRecord implements Serializable {
     my_batch_id = the_batch_id;
     my_record_id = the_record_id;
     my_imprinted_id = the_imprinted_id;
-    my_ballot_style = the_ballot_style;
+    my_ballot_type = the_ballot_type;
     // TODO: make a clean copy of the_choices so it can't be tampered with
     my_contest_choices = the_choices;
     my_contest_comments = the_comments;
@@ -227,7 +223,7 @@ public class CastVoteRecord implements Serializable {
    * @param the_batch_id The batch ID.
    * @param the_record_id The record ID.
    * @param the_imprinted_id The imprinted ID.
-   * @param the_ballot_style The ballot style.
+   * @param the_ballot_type The ballot type.
    * @param the_contests The contests.
    * @param the_choices The contest choices.
    */
@@ -236,14 +232,14 @@ public class CastVoteRecord implements Serializable {
       instance(final RecordType the_record_type, final Instant the_timestamp,
                final String the_county_id, final String the_scanner_id,
                final String the_batch_id, final String the_record_id,
-               final String the_imprinted_id, final BallotStyle the_ballot_style,
+               final String the_imprinted_id, final String the_ballot_type,
                final Map<Contest, Set<Choice>> the_choices,
                final Map<Contest, String> the_comments,
                final Map<Contest, Boolean> the_consensus) {
     CastVoteRecord result = 
         new CastVoteRecord(the_record_type, the_timestamp, the_county_id, 
                            the_scanner_id, the_batch_id, the_record_id,
-                           the_imprinted_id, the_ballot_style, the_choices, 
+                           the_imprinted_id, the_ballot_type, the_choices, 
                            the_comments, the_consensus);
     if (CACHE.containsKey(result)) {
       result = CACHE.get(result);
@@ -356,11 +352,11 @@ public class CastVoteRecord implements Serializable {
   }
   
   /**
-   * @return the ballot style for this cast vote record.
+   * @return the ballot type for this cast vote record.
    */
   
-  public BallotStyle ballotStyle() {
-    return my_ballot_style;
+  public String ballotType() {
+    return my_ballot_type;
   }
   
   /**
@@ -392,8 +388,8 @@ public class CastVoteRecord implements Serializable {
     return "CastVoteRecord [record_type=" + my_record_type + ", timestamp=" + 
            my_timestamp + ", county_id=" + my_county_id + ", scanner_id=" +
            my_scanner_id + ", batch_id=" + my_batch_id + ", record_id=" + 
-           my_record_id + ", imprinted_id=" + my_imprinted_id + ", ballot_style=" +
-           my_ballot_style.identifier() + ", contests=" + my_contest_choices + 
+           my_record_id + ", imprinted_id=" + my_imprinted_id + ", ballot_type=" +
+           my_ballot_type + ", contests=" + my_contest_choices + 
            ", choices=" + my_contest_choices + ", comments=" + 
            my_contest_comments + ", consensus=" + my_contest_consensus + "]";
   }
@@ -416,7 +412,7 @@ public class CastVoteRecord implements Serializable {
       result &= nullableEquals(other_cvr.batchID(), batchID());
       result &= nullableEquals(other_cvr.recordID(), recordID());
       result &= nullableEquals(other_cvr.imprintedID(), imprintedID());
-      result &= nullableEquals(other_cvr.ballotStyle(), ballotStyle());
+      result &= nullableEquals(other_cvr.ballotType(), ballotType());
       result &= nullableEquals(other_cvr.choices(), choices());
       result &= nullableEquals(other_cvr.comments(), comments());
       result &= nullableEquals(other_cvr.consensus(), consensus());
@@ -433,7 +429,7 @@ public class CastVoteRecord implements Serializable {
   public int hashCode() {
     // can't just use toString() because order of choices may differ
     return (my_county_id + my_scanner_id + my_batch_id + my_record_id + 
-            nullableHashCode(my_ballot_style) + 
+            nullableHashCode(my_ballot_type) + 
             nullableHashCode(my_contest_choices) + 
             nullableHashCode(my_contest_comments) + 
             nullableHashCode(my_contest_consensus)).hashCode();

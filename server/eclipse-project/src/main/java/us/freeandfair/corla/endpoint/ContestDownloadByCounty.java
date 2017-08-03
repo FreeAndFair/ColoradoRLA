@@ -59,7 +59,7 @@ public class ContestDownloadByCounty implements Endpoint {
         CastVoteRecord.getMatching(county_set, RecordType.UPLOADED);
     final Set<Contest> contest_set = new HashSet<Contest>();
     for (final CastVoteRecord cvr : cvr_set) {
-      contest_set.addAll(cvr.ballotStyle().contests());
+      contest_set.addAll(cvr.choices().keySet());
     }
     return Main.GSON.toJson(contest_set);
   }

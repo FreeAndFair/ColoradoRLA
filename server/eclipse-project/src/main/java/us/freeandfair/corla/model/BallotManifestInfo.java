@@ -26,8 +26,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 /**
  * Information about the locations of specific batches of ballots.
@@ -69,7 +67,6 @@ public class BallotManifestInfo {
   /**
    * The timestamp for this ballot manifest info, in milliseconds since the epoch.
    */
-  @Temporal(TemporalType.TIMESTAMP)
   private Instant my_timestamp;
   
   /**
