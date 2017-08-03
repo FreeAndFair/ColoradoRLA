@@ -80,8 +80,7 @@ public class Choice implements Serializable {
    * Constructs an empty choice, solely for persistence. 
    */
   protected Choice() {
-    my_name = "";
-    my_description = "";
+    // default values for everything
   }
     
   /**

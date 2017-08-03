@@ -12,9 +12,7 @@
 package us.freeandfair.corla.csv;
 
 import java.util.List;
-import java.util.Set;
 
-import us.freeandfair.corla.model.BallotStyle;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.Contest;
 
@@ -43,10 +41,4 @@ public interface CVRExportParser {
    * @return the contest information inferred from the export data. 
    */
   List<Contest> contests();
-  
-  /**
-   * @return the ballot style information inferred from the export data.
-   */
-  Set<BallotStyle> ballotStyles();
-  
 }

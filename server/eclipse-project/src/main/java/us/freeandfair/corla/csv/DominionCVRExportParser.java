@@ -32,7 +32,6 @@ import org.hibernate.Transaction;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.hibernate.Persistence;
-import us.freeandfair.corla.model.BallotStyle;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.Choice;
@@ -98,12 +97,6 @@ public class DominionCVRExportParser implements CVRExportParser {
    * The list of contests parsed from the supplied data export.
    */
   private final List<Contest> my_contests = new ArrayList<Contest>();
-  
-  /**
-   * The ballot styles inferred from the supplied data export.
-   */
-  private final Map<String, BallotStyle> my_ballot_styles = 
-      new HashMap<String, BallotStyle>();
   
   /**
    * The ID of the county whose CVRs we are parsing.
@@ -221,8 +214,7 @@ public class DominionCVRExportParser implements CVRExportParser {
       while (index < end) {
         final String ch = the_choice_line.get(index).trim();
         final String ex = the_expl_line.get(index).trim();
-        choices.add(Persistence.getEntity(Choice.instance(ch, ex), Choice.class,
-                                          my_session));
+        choices.add(Persistence.getEntity(Choice.instance(ch, ex), Choice.class));
         index = index + 1;
       }
       // now that we have all the choices, we can create a Contest object for 
@@ -230,7 +222,7 @@ public class DominionCVRExportParser implements CVRExportParser {
       // as that's not in the CVR files and may not actually be used)
       my_contests.add(Persistence.getEntity(Contest.instance(cn, "", choices, 
                                                              the_votes_allowed.get(cn)),
-                                            Contest.class, my_session));
+                                            Contest.class));
     }
   }
   
@@ -252,7 +244,7 @@ public class DominionCVRExportParser implements CVRExportParser {
           stripEqualQuotes(the_line.get(RECORD_ID_COLUMN));
       final String imprinted_id = 
           stripEqualQuotes(the_line.get(IMPRINTED_ID_COLUMN));
-      final String ballot_style_name = 
+      final String ballot_type = 
           stripEqualQuotes(the_line.get(BALLOT_TYPE_COLUMN));
       final List<Contest> contests = new ArrayList<Contest>();
       final Map<Contest, Set<Choice>> choices = new HashMap<Contest, Set<Choice>>();
@@ -280,23 +272,10 @@ public class DominionCVRExportParser implements CVRExportParser {
         }
       }
       
-      // we should now have the votes for each contest; if the ballot style
-      // doesn't exist for this ballot style name, create it now
-      
-      if (!my_ballot_styles.containsKey(ballot_style_name)) {
-        final BallotStyle bs = BallotStyle.instance(ballot_style_name, contests);
-        /*
-        if (my_session != Persistence.NO_SESSION) {
-          my_session.save(bs);
-        }
-        */
-        my_ballot_styles.put(ballot_style_name, bs);
-      }
-      
       return CastVoteRecord.instance(RecordType.UPLOADED, 
                                      the_timestamp, my_county_id, 
                                      tabulator_id, batch_id, record_id, imprinted_id, 
-                                     my_ballot_styles.get(ballot_style_name), choices,
+                                     ballot_type, choices,
                                      new HashMap<Contest, String>(), 
                                      new HashMap<Contest, Boolean>());
     } catch (final NumberFormatException e) {
@@ -417,13 +396,5 @@ public class DominionCVRExportParser implements CVRExportParser {
   @Override
   public synchronized List<Contest> contests() {
     return Collections.unmodifiableList(my_contests);
-  }
-
-  /**
-   * @return the ballot styles inferred from the supplied data export.
-   */
-  @Override
-  public synchronized Set<BallotStyle> ballotStyles() {
-    return new HashSet<BallotStyle>(my_ballot_styles.values());
   }
 }
