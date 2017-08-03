@@ -90,6 +90,9 @@ are at [README-ECLIPSE.md](../server/README-ECLIPSE.md).
 * the [OpenJML tools suite](http://www.openjml.org/) for performing
   runtime verification, extended static checking, and full functional
   verification of Java implementations against JML specifications
+* the [JMLunitNG](http://insttech.secretninjaformalmethods.org/software/jmlunitng/)
+  tool for automatically generating test benches from JML-annotated
+  Java code
 * the [Coq proof assistant](https://coq.inria.fr/) for formally
   specifying and reasoning about various formal models of the system
   and elections in general
