@@ -2319,7 +2319,6 @@ END logging
 %%%         relationships
 %%%   \end{enumerate}
 %%% \end{enumerate}
-
 data_model: THEORY
 BEGIN
   IMPORTING FAFSSL,
@@ -2334,7 +2333,6 @@ BEGIN
 
   be: VAR back_end
   db: VAR database
-
 %%% The first set of data persistently stored relates to
 %%% authentication. Some of this data will be stored in the two-factor
 %%% authentication system provided by CDOS. All other data must be
@@ -2343,19 +2341,16 @@ BEGIN
 %%% authentication credential pair.
   authentication_table: TYPE =
     sequence[[administrator, two_factor_authentication]]
-
 %%% The Department of State dashboard permits State administrators to
 %%% establish risk limits for each contest, specify which kinds of
 %%% audits are used for which races and in which counties, etc.  Most
 %%% of the dynamic data available to State administrators is provided
 %%% via County administrators using the County dashboard.
-
   state_status_table: TYPE =
     sequence[[# county: county,
                 general_status: county_status,
                 audit_status: audit_stage,
                 date: string #]]
-
 %%% There is also some background information that relates to the RLA
 %%% overall, much of which is relevant to the Department of State
 %%% dashboard. In particular, geographic (such as the identity of the
@@ -2386,7 +2381,6 @@ BEGIN
     sequence[[contest, sequence[ballot_manifest_info]]]
   audited_ballot_by_county_list_table: TYPE =
     sequence[[county, sequence[ballot_manifest_info]]]
-
 %%% County administator actions create and update several kinds of
 %%% data. For example, they define who is on their audit boards, they
 %%% generate digests of files critical to the audit (principly, ballot
@@ -2395,7 +2389,6 @@ BEGIN
 %%% For general county information, we currently model the data as
 %%% property/value pairs in a record. For example, we imagine that
 %%% each county will want to display who their County Clerk is, etc.
-
   county_general_information_table: TYPE =
     sequence[[# property: string, value: string #]]
   audit_board_table: TYPE =
@@ -2412,7 +2405,6 @@ BEGIN
                 data: cvr_file #]]
   ballot_manifest_table: TYPE =
     sequence[[county, ballot_manifest_info]]
-
 %%% Cast vote records uploaded by counties contain CVRs of three
 %%% kinds: CVRs for local (county) contests, CVRs for contests that
 %%% span counties, and CVRs for contests that span the whole
@@ -2423,28 +2415,21 @@ BEGIN
 %%% We can store and organize this information in several different
 %%% ways. First, we can simply store the individual CVRs uploaded by
 %%% a given county in a table.
-
   cvr_table: TYPE =
     sequence[[county, cvr]]
-
 %%% But we also need to store all CVRs for each contest, aggregating
 %%% all CVRs across the upload from all counties in which the contest
 %%% was on the ballot.
-
   contest_cvr_table: TYPE =
     sequence[[contest, cvr]]
-
 %%% Tabulation results as calculated from the CVRs.
-
   tabulation_result_table: TYPE =
     sequence[[contest, cvr_tabulation_outcome]]
-
 %%% While running the RLA, the Audit Board uploads information about
 %%% each ballot they audit. Also, if any investigations are made and
 %%% remedied during the audit, that information must be stored as
 %%% well. Finally, after an audit is complete an audit report is
 %%% uploaded and stored.
-
   ballots_under_audit_table: TYPE =
     sequence[[ballot,
               list[ballot_mark],
@@ -2457,13 +2442,11 @@ BEGIN
     sequence[[county, audit_report]]
   rla_summary_results_table: TYPE =
     sequence[[contest, summary_results_report]]
-
 %%% All of the information on the public dashboard is derived from the
 %%% above data.
 
 %%% \todokiniry{Add election as first column to every table? Or have a
 %%% different DB per election?}
-
 END data_model
 
 %+END data_model
