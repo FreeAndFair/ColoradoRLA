@@ -19,20 +19,22 @@ package us.freeandfair.corla.model;
 import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
@@ -77,7 +79,7 @@ public class Contest implements Serializable {
    * The database ID of this contest.
    */
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
   @Column(updatable = false, nullable = false)
   private Long my_id = getID();
   
@@ -94,11 +96,17 @@ public class Contest implements Serializable {
   private String my_description;
   
   /**
-   * The set of contest choices.
+   * The contest choices.
    */
-  @ManyToMany(fetch = FetchType.EAGER)
+  @ElementCollection(fetch = FetchType.EAGER)
   @OrderColumn(name = "index")
-  private List<Choice> my_choices;
+  private List<String> my_choice_names;
+  
+  /**
+   * The contest choice descriptions.
+   */
+  @ElementCollection(fetch = FetchType.EAGER)
+  private Map<String, String> my_choice_descriptions;
   
   /**
    * The maximum number of votes that can be made in this contest.
@@ -127,7 +135,12 @@ public class Contest implements Serializable {
     super();
     my_name = the_name;
     my_description = the_description;
-    my_choices = the_choices;
+    my_choice_names = new ArrayList<String>();
+    my_choice_descriptions = new HashMap<String, String>();
+    for (final Choice c : the_choices) {
+      my_choice_names.add(c.name());
+      my_choice_descriptions.put(c.name(), c.description());
+    }
     my_votes_allowed = the_votes_allowed;
   }
   
@@ -142,7 +155,15 @@ public class Contest implements Serializable {
    * @return all known contests.
    */
   public static synchronized Collection<Contest> getAll() {
-    return new HashSet<Contest>(CACHE.keySet());
+    final Set<Contest> result = new HashSet<Contest>();
+    
+    if (Persistence.isEnabled()) {
+      result.addAll(Persistence.matchingEntities(new Contest(), Contest.class));
+    } else {
+      result.addAll(CACHE.keySet());
+    }
+    
+    return result;
   }
 
   /**
@@ -161,18 +182,19 @@ public class Contest implements Serializable {
     Contest result = 
         Persistence.matchingEntity(new Contest(the_name, the_description, the_choices,
                                           the_votes_allowed), 
-                              Contest.class);
+                                   Contest.class);
+
     if (!Persistence.isEnabled()) {
-      // assign an ID ourselves because persistence is not enabled
-      result.my_id = getID();
+      // cache ourselves because persistence is not enabled
+      if (CACHE.containsKey(result)) {
+        result = CACHE.get(result);
+      } else {
+        result.my_id = getID();
+        CACHE.put(result, result);
+        BY_ID.put(result.id(), result);
+      }
     }
-    // eventually: disable caching entirely in the presence of persistence
-    if (CACHE.containsKey(result)) {
-      result = CACHE.get(result);
-    } else {
-      CACHE.put(result, result);
-      BY_ID.put(result.id(), result);
-    }
+    
     return result;
   }
   
@@ -183,7 +205,15 @@ public class Contest implements Serializable {
    * @return the contest, or null if it doesn't exist.
    */
   public static synchronized Contest byID(final long the_id) {
-    return BY_ID.get(the_id);
+    final Contest result;
+    
+    if (Persistence.isEnabled()) {
+      result = Persistence.entityByID(the_id, Contest.class);
+    } else {
+      result = BY_ID.get(the_id);
+    }
+    
+    return result;
   }
 
   /**
@@ -208,10 +238,24 @@ public class Contest implements Serializable {
   }
   
   /**
+   * Checks to see if the specified choice is valid for this contest.
+   * 
+   * @param the_choice The choice.
+   * @return true if the choice is valid, false otherwise.
+   */
+  public boolean isValidChoice(final String the_choice) {
+    return my_choice_descriptions.containsKey(the_choice);
+  }
+  
+  /**
    * @return the contest choices.
    */
   public List<Choice> choices() {
-    return Collections.unmodifiableList(my_choices);
+    final List<Choice> result = new ArrayList<Choice>();
+    for (final String name : my_choice_names) {
+      result.add(new Choice(name, my_choice_descriptions.get(name)));
+    }
+    return Collections.unmodifiableList(result);
   }
   
   /**
@@ -227,7 +271,7 @@ public class Contest implements Serializable {
   @Override
   public String toString() {
     return "Contest [name=" + my_name + ", description=" +
-           my_description + ", choices=" + my_choices + 
+           my_description + ", choices=" + choices() + 
            ", votes_allowed=" + my_votes_allowed + "]";
   }
 
@@ -244,7 +288,10 @@ public class Contest implements Serializable {
       final Contest other_contest = (Contest) the_other;
       result &= nullableEquals(other_contest.name(), name());
       result &= nullableEquals(other_contest.description(), description());
-      result &= nullableEquals(other_contest.choices(), choices());
+      // note that the next two compare private fields instead of accessors
+      // but still maintain the contract on equals/hashCode
+      result &= nullableEquals(other_contest.my_choice_names, my_choice_names);
+      result &= nullableEquals(other_contest.my_choice_descriptions, my_choice_descriptions);
       result &= nullableEquals(other_contest.votesAllowed(), votesAllowed());
     } else {
       result = false;

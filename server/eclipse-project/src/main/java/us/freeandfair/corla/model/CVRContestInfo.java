@@ -17,17 +17,17 @@ import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableHashCode;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
@@ -54,18 +54,6 @@ public class CVRContestInfo implements Serializable {
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1L;
-
-  /**
-   * The table of objects that have been created.
-   */
-  private static final Map<CVRContestInfo, CVRContestInfo> CACHE = 
-      new HashMap<CVRContestInfo, CVRContestInfo>();
-  
-  /**
-   * The table of objects by ID.
-   */
-  private static final Map<Long, CVRContestInfo> BY_ID =
-      new HashMap<Long, CVRContestInfo>();
   
   /**
    * The current ID number to be used.
@@ -76,13 +64,21 @@ public class CVRContestInfo implements Serializable {
    * The database ID of this record.
    */
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
   @Column(updatable = false, nullable = false)
   private Long my_id;
-
+  
+  /**
+   * The CVR to which this record belongs. 
+   */
+  @ManyToOne(optional = false)
+  @JoinColumn
+  private CastVoteRecord my_cvr;
+  
   /**
    * The contest in this record.
    */
+  @ManyToOne(optional = false)
   private Contest my_contest;
   
   /** 
@@ -100,9 +96,12 @@ public class CVRContestInfo implements Serializable {
   /**
    * The choices for this contest.
    */
-  @ManyToMany(fetch = FetchType.EAGER)
+  // this is a list of choice names to make persistence more straightforward; if it
+  // were a list of Choice, then the mapping between contests and choices would
+  // need to be more complex
+  @ElementCollection(fetch = FetchType.EAGER)
   @OrderColumn(name = "index")
-  private List<Choice> my_choices;
+  private List<String> my_choices;
 
   /**
    * Constructs an empty CVRContestInfo, solely for persistence.
@@ -119,14 +118,22 @@ public class CVRContestInfo implements Serializable {
    * @param the_comment The comment.
    * @param the_consensus The consensus value.
    * @param the_choices The choices.
+   * @exception IllegalArgumentException if any choice is not a valid choice
+   * for the specified contest.
    */
   protected CVRContestInfo(final Contest the_contest, final String the_comment,
                            final ConsensusValue the_consensus,
-                           final List<Choice> the_choices) {
+                           final List<String> the_choices) {
     my_contest = the_contest;
     my_comment = the_comment;
     my_consensus = the_consensus;
-    my_choices = new ArrayList<Choice>(the_choices);
+    my_choices = new ArrayList<String>(the_choices);
+    for (final String s : my_choices) {
+      if (!my_contest.isValidChoice(s)) {
+        throw new IllegalArgumentException("invalid choice " + s + 
+                                           " for contest " + my_contest);
+      }
+    }
   }
   
   /**
@@ -147,43 +154,42 @@ public class CVRContestInfo implements Serializable {
   public static synchronized CVRContestInfo instance(final Contest the_contest, 
                                                      final String the_comment,
                                                      final ConsensusValue the_consensus,
-                                                     final List<Choice> the_choices) {
-    CVRContestInfo result = new CVRContestInfo(the_contest, the_comment,
-                                               the_consensus, the_choices);
+                                                     final List<String> the_choices) {
+    final CVRContestInfo result = new CVRContestInfo(the_contest, the_comment,
+                                                     the_consensus, the_choices);
     
-    if (Persistence.isEnabled()) {
-      // we don't need to disambiguate these, because they are constructed new for
-      // each CVR
-      Persistence.saveEntity(result);
-    } else {
-      // assign an ID ourselves because persistence is not enabled
+    // persistence is handled by CastVoteRecord, and there's no independent caching,
+    // but we'll assign an ID if persistence is not enabled
+    
+    if (!Persistence.isEnabled()) {
       result.my_id = getID();
     }
-    // eventually: disable caching entirely in the presence of persistence
-    if (CACHE.containsKey(result)) {
-      result = CACHE.get(result);
-    } else {
-      CACHE.put(result, result);
-      BY_ID.put(result.id(), result);
-    }
+    
     return result;
   }
 
   /**
-   * Returns the CVR contest information record with the specified ID.
+   * Sets the CVR that owns this record; this should only be called by
+   * the CastVoteRecord class.
    * 
-   * @param the_id The ID.
-   * @return the record, or null if it doesn't exist.
+   * @param the_cvr The CVR.
    */
-  public static synchronized CVRContestInfo byID(final long the_id) {
-    return BY_ID.get(the_id);
+  protected void setCVR(final CastVoteRecord the_cvr) {
+    my_cvr = the_cvr;
   }
-
+  
   /**
    * @return the ID of this record.
    */
   public Long id() {
     return my_id;
+  }
+  
+  /**
+   * @return the CVR that owns this record.
+   */
+  public CastVoteRecord cvr() {
+    return my_cvr;
   }
   
   /**
@@ -210,7 +216,7 @@ public class CVRContestInfo implements Serializable {
   /**
    * @return the choices in this record.
    */
-  public List<Choice> choices() {
+  public List<String> choices() {
     return Collections.unmodifiableList(my_choices);
   }
   

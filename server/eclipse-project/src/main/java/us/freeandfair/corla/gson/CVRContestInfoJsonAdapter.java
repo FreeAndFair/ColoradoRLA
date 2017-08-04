@@ -21,7 +21,6 @@ import com.google.gson.stream.JsonWriter;
 
 import us.freeandfair.corla.model.CVRContestInfo;
 import us.freeandfair.corla.model.CVRContestInfo.ConsensusValue;
-import us.freeandfair.corla.model.Choice;
 import us.freeandfair.corla.model.Contest;
 
 /**
@@ -53,7 +52,6 @@ public final class CVRContestInfoJsonAdapter
    * The "consensus" string (for JSON serialization).
    */
   private static final String CONSENSUS = "consensus";
-  
 
   /**
    * Writes a CVR contest info object.
@@ -71,8 +69,8 @@ public final class CVRContestInfoJsonAdapter
     the_writer.name(CONSENSUS).value(the_info.consensus().toString());
     the_writer.name(CHOICES);
     the_writer.beginArray();
-    for (final Choice c : the_info.choices()) {
-      the_writer.value(c.id());
+    for (final String c : the_info.choices()) {
+      the_writer.value(c);
     }
     the_writer.endArray();
     the_writer.endObject();
@@ -81,21 +79,43 @@ public final class CVRContestInfoJsonAdapter
   /**
    * Reads a set of choices.
    */
-  private List<Choice> readChoices(final JsonReader the_reader)
+  private List<String> readChoices(final JsonReader the_reader)
       throws IOException {
-    final List<Choice> result = new ArrayList<Choice>();
+    final List<String> result = new ArrayList<String>();
     the_reader.beginArray();
     while (the_reader.hasNext()) {
-      final Long choice_id = the_reader.nextLong();
-      final Choice c = Choice.byID(choice_id);
-      if (c == null) {
-        throw new IOException("invalid choice ID (" + choice_id + ") read");
-      } else {
-        result.add(c);
-      }
+      result.add(the_reader.nextString());
     }
     the_reader.endArray();
     return result;
+  }
+  
+  /**
+   * Checks the sanity of a contest against a set of choices.
+   * 
+   * @param the_id The contest ID.
+   * @param the_choices The choices.
+   * @return the resulting contest, if the data is sane, or null if the
+   * data is invalid.
+   */
+  private Contest contestSanityCheck(final Long the_id, 
+                                     final List<String> the_choices) {
+    final Contest result = Contest.byID(the_id);
+    boolean error = false;
+    
+    if (result != null) {
+      for (final String c : the_choices) {
+        if (!result.isValidChoice(c)) {
+          error = true;
+        }
+      }
+    }
+    
+    if (error) {
+      return null;
+    } else {
+      return result;
+    }
   }
   
   /**
@@ -105,7 +125,7 @@ public final class CVRContestInfoJsonAdapter
   public CVRContestInfo read(final JsonReader the_reader) 
       throws IOException {
     boolean error = false;
-    List<Choice> choices = null;
+    List<String> choices = null;
     long contest_id = -1;
     String comment = null;
     ConsensusValue consensus = ConsensusValue.UNDEFINED;
@@ -141,7 +161,11 @@ public final class CVRContestInfoJsonAdapter
     }
     the_reader.endObject();
     
-    if (error) {
+    // check the sanity of the contest
+    
+    final Contest contest = contestSanityCheck(contest_id, choices);
+    
+    if (error || contest == null) {
       throw new IOException("invalid data detected in CVR contest info");
     }
     

@@ -62,7 +62,7 @@ public class BallotManifestInfo {
    * The database ID for this ballot manifest info.
    */
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
   @Column(updatable = false, nullable = false)
   private Long my_id = getID();
   
@@ -161,17 +161,18 @@ public class BallotManifestInfo {
                                                      the_scanner_id, the_batch_id,
                                                      the_batch_size, the_storage_location),
                               BallotManifestInfo.class);
+
     if (!Persistence.isEnabled()) {
-      // assign an ID ourselves because persistence is not enabled
-      result.my_id = getID();
+      // cache ourselves because persistence is not enabled
+      if (CACHE.containsKey(result)) {
+        result = CACHE.get(result);
+      } else {
+        result.my_id = getID();
+        CACHE.put(result, result);
+        BY_ID.put(result.id(), result);
+      }
     }
-    // eventually: disable caching entirely in the presence of persistence
-    if (CACHE.containsKey(result)) {
-      result = CACHE.get(result);
-    } else {
-      CACHE.put(result, result);
-      BY_ID.put(result.id(), result);
-    }
+    
     return result;
   }
   
@@ -182,7 +183,15 @@ public class BallotManifestInfo {
    * @return the ballot manifest info, or null if it doesn't exist.
    */
   public static synchronized BallotManifestInfo byID(final long the_id) {
-    return BY_ID.get(the_id);
+    final BallotManifestInfo result;
+    
+    if (Persistence.isEnabled()) {
+      result = Persistence.entityByID(the_id, BallotManifestInfo.class);
+    } else {
+      result = BY_ID.get(the_id);
+    }
+    
+    return result;
   }
   
   /**
@@ -190,9 +199,17 @@ public class BallotManifestInfo {
    * 
    * @param the_bmi The info to "forget".
    */
-  public static synchronized void forget(final BallotManifestInfo the_bmi) {
-    CACHE.remove(the_bmi);
-    BY_ID.remove(the_bmi.id());
+  public static synchronized boolean forget(final BallotManifestInfo the_bmi) {
+    boolean result = true;
+    
+    if (Persistence.isEnabled()) {
+      result = Persistence.removeEntity(the_bmi);
+    } else {
+      CACHE.remove(the_bmi);
+      BY_ID.remove(the_bmi.id());
+    }
+    
+    return result;
   }
   
   /**
