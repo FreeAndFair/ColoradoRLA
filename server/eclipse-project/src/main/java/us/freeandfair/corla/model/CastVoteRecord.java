@@ -16,6 +16,7 @@ import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableHashCode;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -25,13 +26,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
@@ -45,7 +47,7 @@ import us.freeandfair.corla.hibernate.Persistence;
  * @version 0.0.1
  */
 @Entity
-@Table(name = "cvr")
+@Table(name = "cast_vote_record")
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
@@ -76,7 +78,7 @@ public class CastVoteRecord implements Serializable {
    * The database ID of this record.
    */
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
   @Column(updatable = false, nullable = false)
   private Long my_id = getID();
   
@@ -132,7 +134,8 @@ public class CastVoteRecord implements Serializable {
   /**
    * The contest information in this cast vote record.
    */
-  @ManyToMany(fetch = FetchType.EAGER)
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "my_cvr", 
+             fetch = FetchType.EAGER)
   @OrderColumn(name = "index")
   private List<CVRContestInfo> my_contest_info;
   
@@ -172,7 +175,10 @@ public class CastVoteRecord implements Serializable {
     my_record_id = the_record_id;
     my_imprinted_id = the_imprinted_id;
     my_ballot_type = the_ballot_type;
-    my_contest_info = the_contest_info;
+    my_contest_info = new ArrayList<CVRContestInfo>(the_contest_info);
+    for (final CVRContestInfo ci : my_contest_info) {
+      ci.setCVR(this);
+    }
   }
 
   /**
@@ -208,19 +214,19 @@ public class CastVoteRecord implements Serializable {
                                                  the_batch_id, the_record_id,
                                                  the_imprinted_id, the_ballot_type, 
                                                  the_contest_info), 
-                              CastVoteRecord.class);
+                                   CastVoteRecord.class);
     if (!Persistence.isEnabled()) {
-      // assign an ID ourselves because persistence is not enabled
-      result.my_id = getID();
+      // cache ourselves because persistence is not enabled
+      if (CACHE.containsKey(result)) {
+        result = CACHE.get(result);
+      } else {
+        result.my_id = getID();
+        CACHE.put(result, result);
+        BY_ID.put(result.id(), result);
+      }
     }
-    // eventually: disable caching entirely in the presence of persistence
-    if (CACHE.containsKey(result)) {
-      result = CACHE.get(result);
-    } else {
-      CACHE.put(result, result);
-      BY_ID.put(result.id(), result);
-    }
-    return result;
+      
+    return result;  
   }
   
   /**
@@ -230,17 +236,34 @@ public class CastVoteRecord implements Serializable {
    * @return the CVR, or null if it doesn't exist.
    */
   public static synchronized CastVoteRecord byID(final long the_id) {
-    return BY_ID.get(the_id);
+    final CastVoteRecord result;
+    
+    if (Persistence.isEnabled()) {
+      result = Persistence.entityByID(the_id, CastVoteRecord.class);
+    } else {
+      result = BY_ID.get(the_id);
+    }
+    
+    return result;
   }
   
   /**
    * "Forgets" the specified CVR.
    * 
    * @param the_cvr The CVR to "forget".
+   * @return true if forgetting was successful, false otherwise.
    */
-  public static synchronized void forget(final CastVoteRecord the_cvr) {
-    CACHE.remove(the_cvr);
-    BY_ID.remove(the_cvr.id());
+  public static synchronized boolean forget(final CastVoteRecord the_cvr) {
+    boolean result = true;
+    
+    if (Persistence.isEnabled()) {
+      result = Persistence.removeEntity(the_cvr);
+    } else {
+      CACHE.remove(the_cvr);
+      BY_ID.remove(the_cvr.id());
+    }
+    
+    return result;
   }
   
   /**

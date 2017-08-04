@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.persistence.PersistenceException;
+
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -142,7 +144,7 @@ public final class Persistence {
       settings.put(Environment.DIALECT, 
                    system_properties.getProperty("hibernate.dialect", ""));
       settings.put(Environment.HBM2DDL_AUTO, "update");
-      settings.put(Environment.SHOW_SQL, "true");
+      settings.put(Environment.SHOW_SQL, "false");
       settings.put(Environment.PHYSICAL_NAMING_STRATEGY, 
                    "us.freeandfair.corla.hibernate.FreeAndFairNamingStrategy");
       settings.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
@@ -180,12 +182,20 @@ public final class Persistence {
    */
   public static boolean saveEntity(final Object the_object) {
     boolean result = true;
+    Transaction transaction = null;
     
     try {
-      final Transaction t = currentSession().beginTransaction();
+      transaction = currentSession().beginTransaction();
       currentSession().save(the_object);
-      t.commit();
+      transaction.commit();
     } catch (final HibernateException e) {
+      if (transaction != null) {
+        try {
+          transaction.rollback();
+        } catch (final IllegalStateException | PersistenceException ex) {
+          // ignore
+        }
+      }
       Main.LOGGER.info("Exception while saving entity " + the_object + ": " + e);
       result = false;
     }
@@ -193,6 +203,33 @@ public final class Persistence {
     return result;
   }
   
+  /** 
+   * Removes the specified object from the database.
+   * 
+   * @return true if the remove succeeded, false otherwise.
+   */
+  public static boolean removeEntity(final Object the_object) {
+    boolean result = true;
+    Transaction transaction = null;
+    
+    try {
+      transaction = currentSession().beginTransaction();
+      currentSession().remove(the_object);
+      transaction.commit();
+    } catch (final HibernateException e) {
+      if (transaction != null) {
+        try {
+          transaction.rollback();
+        } catch (final IllegalStateException | PersistenceException ex) {
+          // ignore
+        }
+        Main.LOGGER.info("Exception while forgetting entity " + the_object + ": " + e);
+        result = false;
+      }     
+    }
+    
+    return result;
+  }
   /**
    * Gets the entity in the current session that has the specified ID and class.
    * 
@@ -202,12 +239,20 @@ public final class Persistence {
    */
   public static <T> T entityByID(final Serializable the_id, final Class<T> the_class) {
     T result = null;
+    Transaction transaction = null;
     
     try {
-      final Transaction t = currentSession().beginTransaction();
+      transaction = currentSession().beginTransaction();
       result = currentSession().get(the_class, the_id);
-      t.commit();
+      transaction.commit();
     } catch (final HibernateException e) {
+      if (transaction != null) {
+        try {
+          transaction.rollback();
+        } catch (final IllegalStateException | PersistenceException ex) {
+          // ignore
+        }
+      }
       Main.LOGGER.info("Exception while attempting to retrieve " + 
                        the_class + ", id " + the_id + ": " + e);
     }
@@ -247,6 +292,7 @@ public final class Persistence {
         final Object match = cr.uniqueResult();
         if (match == null) {
           Main.LOGGER.info("object not found");
+          session.save(result); 
         } else if (match.equals(the_object)) {
           // this is a checked cast even though Java thinks it isn't
           Main.LOGGER.info("object found: " + match);
@@ -254,17 +300,21 @@ public final class Persistence {
         } else {
           // we found an object but it didn't match
           Main.LOGGER.info("search returned mismatched object " + match);
+          session.save(result); 
         }
-        session.save(result); 
+        transaction.commit();
       } catch (final HibernateException e) {
+        if (transaction != null) {
+          try {
+            transaction.rollback();
+          } catch (final IllegalStateException | PersistenceException ex) {
+            // ignore
+          }        
+        }
         Main.LOGGER.info("exception when searching for object matching " + 
                          the_object + ": " + e);
         result = the_object;
       }
-    }
-    
-    if (transaction != null) {
-      transaction.commit();
     }
     
     return result;
@@ -318,27 +368,5 @@ public final class Persistence {
     
     return result;
   }
-  
-  public static void main(final String... the_args) {
-    // test entity lookup
-    
-    setProperties(Main.defaultProperties());
-    
-    Choice c1 = Choice.instance("name1", "description1");
-    Choice c2 = Choice.instance("name2", "description2");
-    
-    Choice e1 = matchingEntity(c1, Choice.class);
-    Choice e2 = matchingEntity(c2, Choice.class);
-    
-    Choice e3 = matchingEntity(Choice.instance("name1", "description1"), Choice.class);
-    Choice e4 = matchingEntity(Choice.instance("name2", "description2"), Choice.class);
-    System.err.println(c1.id() + ": " + c1);
-    System.err.println(e1.id() + ": " + e1);
-    System.err.println(e3.id() + ": " + e3);
-    System.err.println(c2.id() + ": " + c2);
-    System.err.println(e2.id() + ": " + e2);
-    System.err.println(e4.id() + ": " + e4);
-    
-    
-  }
 }
+

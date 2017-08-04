@@ -214,7 +214,7 @@ public class DominionCVRExportParser implements CVRExportParser {
       while (index < end) {
         final String ch = the_choice_line.get(index).trim();
         final String ex = the_expl_line.get(index).trim();
-        choices.add(Persistence.matchingEntity(Choice.instance(ch, ex), Choice.class));
+        choices.add(new Choice(ch, ex));
         index = index + 1;
       }
       // now that we have all the choices, we can create a Contest object for 
@@ -253,14 +253,14 @@ public class DominionCVRExportParser implements CVRExportParser {
       int index = FIRST_CHOICE_COLUMN;
       for (final Contest co : my_contests) {
         boolean present = false;
-        final List<Choice> votes = new ArrayList<Choice>();
+        final List<String> votes = new ArrayList<String>();
         for (final Choice ch : co.choices()) {
           final String mark_string = the_line.get(index);
           final boolean p = !mark_string.isEmpty();
           final boolean mark = "1".equals(mark_string);
           present |= p;
           if (p && mark) {
-            votes.add(ch);
+            votes.add(ch.name());
           }
           index = index + 1;
         }

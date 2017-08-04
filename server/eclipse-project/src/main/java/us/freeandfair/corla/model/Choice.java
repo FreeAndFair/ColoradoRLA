@@ -14,17 +14,6 @@ package us.freeandfair.corla.model;
 import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-import us.freeandfair.corla.hibernate.Persistence;
 
 /**
  * A contest choice; has a name and a description.
@@ -32,11 +21,6 @@ import us.freeandfair.corla.hibernate.Persistence;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-@Entity
-@Table(name = "choice")
-// this class has many fields that would normally be declared final, but
-// cannot be for compatibility with Hibernate and JPA.
-@SuppressWarnings("PMD.ImmutableField")
 public class Choice implements Serializable {
   /**
    * The serialVersionUID.
@@ -44,114 +28,24 @@ public class Choice implements Serializable {
   private static final long serialVersionUID = 1L;
 
   /**
-   * The table of objects that have been created.
-   */
-  private static final Map<Choice, Choice> CACHE = 
-      new HashMap<Choice, Choice>();
-  
-  /**
-   * The table of objects by ID.
-   */
-  private static final Map<Long, Choice> BY_ID =
-      new HashMap<Long, Choice>();
-  
-  /**
-   * The current ID number to be used.
-   */
-  private static long current_id;
- 
-  /**
-   * The database ID of this choice.
-   */
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  @Column(updatable = false, nullable = false)
-  private Long my_id;
-
-  /**
    * The choice name.
    */
-  @Column(updatable = false, nullable = false)
-  private String my_name;
+  private final String my_name;
 
   /**
    * The choice description.
    */
-  @Column(updatable = false, nullable = false)
-  private String my_description;
+  private final String my_description;
   
-  /**
-   * Constructs an empty choice, solely for persistence. 
-   */
-  protected Choice() {
-    // default values for everything
-  }
-    
   /**
    * Constructs a choice with the specified parameters.
    * 
    * @param the_name The choice name.
    * @param the_description The choice description.
    */
-  protected Choice(final String the_name, final String the_description) {
+  public Choice(final String the_name, final String the_description) {
     my_name = the_name;
     my_description = the_description;
-  }
-  
-  /**
-   * @return the next ID
-   */
-  private static synchronized long getID() {
-    return current_id++;
-  }
-
-  /**
-   * Returns a choice with the specified parameters.
-   * 
-   * @param the_name The choice name.
-   * @param the_description The choice description.
-   */
-  public static synchronized Choice instance(final String the_name, 
-                                             final String the_description) {
-    Choice result = 
-        Persistence.matchingEntity(new Choice(the_name, the_description), Choice.class);
-    if (!Persistence.isEnabled()) {
-      // assign an ID ourselves because persistence is not enabled
-      result.my_id = getID();
-    }
-    // eventually: disable caching entirely in the presence of persistence
-    if (CACHE.containsKey(result)) {
-      result = CACHE.get(result);
-    } else {
-      CACHE.put(result, result);
-      BY_ID.put(result.id(), result);
-    }
-    return result;
-  }
-  
-  /**
-   * Returns the choice with the specified ID.
-   * 
-   * @param the_id The ID.
-   * @return the choice, or null if it doesn't exist.
-   */
-  public static synchronized Choice byID(final long the_id) {
-    final Choice result;
-    
-    if (Persistence.isEnabled()) {
-      result = Persistence.entityByID(the_id, Choice.class);
-    } else {
-      result = BY_ID.get(the_id);
-    }
-    
-    return result;
-  }
-  
-  /**
-   * @return the database ID.
-   */
-  public long id() {
-    return my_id;
   }
   
   /**
