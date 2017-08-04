@@ -11,6 +11,8 @@
 
 package us.freeandfair.corla.endpoint;
 
+import java.util.HashSet;
+
 import spark.Request;
 import spark.Response;
 
@@ -47,6 +49,7 @@ public class CVRDownload implements Endpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    return Main.GSON.toJson(CastVoteRecord.getMatching(null, RecordType.UPLOADED));
+    return Main.GSON.toJson(CastVoteRecord.getMatching(new HashSet<String>(), 
+                                                       RecordType.UPLOADED));
   }
 }

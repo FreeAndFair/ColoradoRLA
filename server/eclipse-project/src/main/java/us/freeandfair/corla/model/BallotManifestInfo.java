@@ -27,6 +27,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import us.freeandfair.corla.hibernate.Persistence;
+
 /**
  * Information about the locations of specific batches of ballots.
  * 
@@ -61,38 +63,44 @@ public class BallotManifestInfo {
    */
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  @Column(name = "id", updatable = false, nullable = false)
+  @Column(updatable = false, nullable = false)
   private Long my_id = getID();
   
   /**
    * The timestamp for this ballot manifest info, in milliseconds since the epoch.
    */
+  @Column(updatable = false, nullable = false)
   private Instant my_timestamp;
   
   /**
    * The ID number of the county in which the batch was scanned.
    */
+  @Column(updatable = false, nullable = false)
   private String my_county_id;
   //@ private invariant my_county_id >= 0;
   
   /**
    * The ID number of the scanner that scanned the batch.
    */
+  @Column(updatable = false, nullable = false)
   private String my_scanner_id;
 
   /**
    * The batch number.
    */
+  @Column(updatable = false, nullable = false)
   private String my_batch_id;
   
   /**
    * The size of the batch.
    */
+  @Column(updatable = false, nullable = false)
   private Integer my_batch_size;
   
   /**
    * The storage location for the batch.
    */
+  @Column(updatable = false, nullable = false)
   private String my_storage_location;
  
   /** 
@@ -134,8 +142,12 @@ public class BallotManifestInfo {
   /**
    * Returns a ballot manifest info with the specified parameters.
    * 
-   * @param the_name The ballot style name.
-   * @param the_contests The list of contests on a ballot of this style.
+   * @param the_timestamp The timestamp.
+   * @param the_county_id The county ID.
+   * @param the_scanner_id The scanner ID.
+   * @param the_batch_id The batch ID.
+   * @param the_batch_size The batch size.
+   * @param the_storage_location The storage location.
    */
   @SuppressWarnings("PMD.UseObjectForClearerAPI")
   public static synchronized BallotManifestInfo instance(final Instant the_timestamp,
@@ -144,9 +156,16 @@ public class BallotManifestInfo {
                                                          final String the_batch_id, 
                                                          final int the_batch_size, 
                                                          final String the_storage_location) {
-    BallotManifestInfo result = new BallotManifestInfo(the_timestamp, the_county_id,
-                                                       the_scanner_id, the_batch_id,
-                                                       the_batch_size, the_storage_location);
+    BallotManifestInfo result = 
+        Persistence.matchingEntity(new BallotManifestInfo(the_timestamp, the_county_id,
+                                                     the_scanner_id, the_batch_id,
+                                                     the_batch_size, the_storage_location),
+                              BallotManifestInfo.class);
+    if (!Persistence.isEnabled()) {
+      // assign an ID ourselves because persistence is not enabled
+      result.my_id = getID();
+    }
+    // eventually: disable caching entirely in the presence of persistence
     if (CACHE.containsKey(result)) {
       result = CACHE.get(result);
     } else {
@@ -187,13 +206,29 @@ public class BallotManifestInfo {
   public static synchronized Collection<BallotManifestInfo> 
       getMatching(final Set<String> the_county_ids) {
     final Set<BallotManifestInfo> result = new HashSet<BallotManifestInfo>();
-    final boolean check_county = the_county_ids != null && !the_county_ids.isEmpty();
+    final Set<String> counties_to_check = new HashSet<String>(); 
     
-    for (final BallotManifestInfo bmi : CACHE.keySet()) {
-      if (check_county && !the_county_ids.contains(bmi.countyID())) {
-        continue;
+    if (the_county_ids != null) {
+      counties_to_check.addAll(the_county_ids);
+    }
+    
+    if (Persistence.isEnabled()) {
+      final BallotManifestInfo template = new BallotManifestInfo();
+      if (counties_to_check.isEmpty()) {
+        result.addAll(Persistence.matchingEntities(template, BallotManifestInfo.class));
+      } else {
+        for (final String county_id : counties_to_check) {
+          template.my_county_id = county_id;
+          result.addAll(Persistence.matchingEntities(template, 
+                                                     BallotManifestInfo.class));
+        }
+      } 
+    } else {
+      for (final BallotManifestInfo bmi : CACHE.keySet()) {
+        if (counties_to_check.contains(bmi.countyID())) {
+          result.add(bmi);
+        }
       }
-      result.add(bmi);
     }
     
     return result;
@@ -203,7 +238,16 @@ public class BallotManifestInfo {
    * @return all known ballot manifest information.
    */
   public static synchronized Collection<BallotManifestInfo> getAll() {
-    return new HashSet<BallotManifestInfo>(CACHE.keySet());
+    final Set<BallotManifestInfo> result = new HashSet<BallotManifestInfo>();
+    
+    if (Persistence.isEnabled()) {
+      result.addAll(Persistence.matchingEntities(new BallotManifestInfo(), 
+                                                 BallotManifestInfo.class));
+    } else {
+      result.addAll(CACHE.keySet());
+    }
+    
+    return result;
   }
 
   /**

@@ -20,6 +20,7 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.model.CVRContestInfo;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.Contest;
@@ -59,7 +60,9 @@ public class ContestDownloadByCounty implements Endpoint {
         CastVoteRecord.getMatching(county_set, RecordType.UPLOADED);
     final Set<Contest> contest_set = new HashSet<Contest>();
     for (final CastVoteRecord cvr : cvr_set) {
-      contest_set.addAll(cvr.choices().keySet());
+      for (final CVRContestInfo c : cvr.contestInfo()) {
+        contest_set.add(c.contest());
+      }
     }
     return Main.GSON.toJson(contest_set);
   }

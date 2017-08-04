@@ -11,6 +11,10 @@
 
 package us.freeandfair.corla.endpoint;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import spark.Request;
 import spark.Response;
 
@@ -39,7 +43,7 @@ public class ACVRDownloadByCounty implements Endpoint {
    */
   @Override
   public String endpointName() {
-    return "/acvr";
+    return "/acvr/:counties";
   }
 
   /**
@@ -47,6 +51,9 @@ public class ACVRDownloadByCounty implements Endpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    return Main.GSON.toJson(CastVoteRecord.getMatching(null, RecordType.AUDITOR_ENTERED));
+    final String[] counties = the_request.params(":counties").split(",");
+    final Set<String> county_set = new HashSet<String>(Arrays.asList(counties));
+    return Main.GSON.toJson(CastVoteRecord.getMatching(county_set, 
+                                                       RecordType.AUDITOR_ENTERED));
   }
 }
