@@ -24,6 +24,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import us.freeandfair.corla.hibernate.Persistence;
+
 /**
  * A contest choice; has a name and a description.
  * 
@@ -63,17 +65,19 @@ public class Choice implements Serializable {
    */
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  @Column(name = "id", updatable = false, nullable = false)
-  private Long my_id = getID();
+  @Column(updatable = false, nullable = false)
+  private Long my_id;
 
   /**
    * The choice name.
    */
+  @Column(updatable = false, nullable = false)
   private String my_name;
 
   /**
    * The choice description.
    */
+  @Column(updatable = false, nullable = false)
   private String my_description;
   
   /**
@@ -109,7 +113,13 @@ public class Choice implements Serializable {
    */
   public static synchronized Choice instance(final String the_name, 
                                              final String the_description) {
-    Choice result = new Choice(the_name, the_description);
+    Choice result = 
+        Persistence.matchingEntity(new Choice(the_name, the_description), Choice.class);
+    if (!Persistence.isEnabled()) {
+      // assign an ID ourselves because persistence is not enabled
+      result.my_id = getID();
+    }
+    // eventually: disable caching entirely in the presence of persistence
     if (CACHE.containsKey(result)) {
       result = CACHE.get(result);
     } else {
@@ -126,7 +136,15 @@ public class Choice implements Serializable {
    * @return the choice, or null if it doesn't exist.
    */
   public static synchronized Choice byID(final long the_id) {
-    return BY_ID.get(the_id);
+    final Choice result;
+    
+    if (Persistence.isEnabled()) {
+      result = Persistence.entityByID(the_id, Choice.class);
+    } else {
+      result = BY_ID.get(the_id);
+    }
+    
+    return result;
   }
   
   /**

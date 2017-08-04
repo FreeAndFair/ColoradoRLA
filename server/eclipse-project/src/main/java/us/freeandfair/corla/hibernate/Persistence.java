@@ -11,6 +11,7 @@
 
 package us.freeandfair.corla.hibernate;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +32,7 @@ import org.hibernate.criterion.Example;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.BallotManifestInfo;
+import us.freeandfair.corla.model.CVRContestInfo;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.Choice;
 import us.freeandfair.corla.model.Contest;
@@ -68,10 +70,22 @@ public final class Persistence {
   private static SessionFactory session_factory;
   
   /**
+   * A flag indicating whether persistence has failed to start or not.
+   */
+  private static boolean failed;
+  
+  /**
    * Private constructor to prevent instantiation.
    */
   private Persistence() {
     // do nothing
+  }
+  
+  /**
+   * @return true if persistence is enabled, false otherwise.
+   */
+  public static synchronized boolean isEnabled() {
+    return !failed && currentSession() != null;
   }
   
   /**
@@ -86,21 +100,27 @@ public final class Persistence {
   /**
    * @return a new Session to use for persistence, or null if one cannot be created.
    */
-  public static synchronized Session getCurrentSession() {
-    if (session_factory == null) {
-      setupSessionFactory();
-    } 
+  public static synchronized Session currentSession() {
+    Session result = null;
     
-    if (session_factory == null) {
-      return null;
-    } else {
-      try {
-        return session_factory.getCurrentSession();
-      } catch (final HibernateException e) {
-        Main.LOGGER.info("Exception getting Hibernate session: " + e);
-        return null;
+    if (!failed) {
+      if (session_factory == null) {
+        setupSessionFactory();
+      } 
+      
+      if (session_factory == null) {
+        failed = true;
+      } else {
+        try {
+          result = session_factory.getCurrentSession();
+        } catch (final HibernateException e) {
+          Main.LOGGER.info("Exception getting Hibernate session: " + e);
+          failed = true;
+        }
       }
     }
+    
+    return result;
   }
   
   /**
@@ -125,6 +145,7 @@ public final class Persistence {
       settings.put(Environment.SHOW_SQL, "true");
       settings.put(Environment.PHYSICAL_NAMING_STRATEGY, 
                    "us.freeandfair.corla.hibernate.FreeAndFairNamingStrategy");
+      settings.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
       
       // apply settings
       rb.applySettings(settings);
@@ -138,6 +159,7 @@ public final class Persistence {
       sources.addAnnotatedClass(CastVoteRecord.class);
       sources.addAnnotatedClass(Choice.class);
       sources.addAnnotatedClass(Contest.class);
+      sources.addAnnotatedClass(CVRContestInfo.class);
       final Metadata metadata = sources.getMetadataBuilder().build();
       
       // create session factory
@@ -151,6 +173,48 @@ public final class Persistence {
     }
   }
 
+  /**
+   * Saves the specified object as an entity in the current session.
+   * 
+   * @return true if the save succeeded, false otherwise.
+   */
+  public static boolean saveEntity(final Object the_object) {
+    boolean result = true;
+    
+    try {
+      final Transaction t = currentSession().beginTransaction();
+      currentSession().save(the_object);
+      t.commit();
+    } catch (final HibernateException e) {
+      Main.LOGGER.info("Exception while saving entity " + the_object + ": " + e);
+      result = false;
+    }
+    
+    return result;
+  }
+  
+  /**
+   * Gets the entity in the current session that has the specified ID and class.
+   * 
+   * @param the_id The ID.
+   * @param the_class The class.
+   * @return the result entity, or null if no such entity exists.
+   */
+  public static <T> T entityByID(final Serializable the_id, final Class<T> the_class) {
+    T result = null;
+    
+    try {
+      final Transaction t = currentSession().beginTransaction();
+      result = currentSession().get(the_class, the_id);
+      t.commit();
+    } catch (final HibernateException e) {
+      Main.LOGGER.info("Exception while attempting to retrieve " + 
+                       the_class + ", id " + the_id + ": " + e);
+    }
+    
+    return result;
+  }
+  
   /**
    * Gets a single entity in the current session matching the specified object, 
    * or saves the specified object in the current session if there is no match. 
@@ -167,28 +231,40 @@ public final class Persistence {
   // the one unchecked cast that Java thinks is in this method is actually 
   // a checked cast
   @SuppressWarnings("unchecked")
-  public static <T> T getEntity(final T the_object, final Class<T> the_class) {
+  public static <T> T matchingEntity(final T the_object, final Class<T> the_class) {
     T result = the_object;
-    final Session session = getCurrentSession();
+    final Session session = currentSession();
+    Transaction transaction = null;
     
     if (session != null) {
+      Main.LOGGER.info("searching session for object " + the_object);
       // try to use the provided object as an example
+      transaction = session.beginTransaction();
       @SuppressWarnings("deprecation") // no query by example in JPA
       final Criteria cr = session.createCriteria(the_class);
       cr.add(Example.create(the_object));
       try {
         final Object match = cr.uniqueResult();
         if (match == null) {
-          session.save(the_object); 
-        } else if (the_class.isAssignableFrom(match.getClass())) {
+          Main.LOGGER.info("object not found");
+        } else if (match.equals(the_object)) {
           // this is a checked cast even though Java thinks it isn't
+          Main.LOGGER.info("object found: " + match);
           result = (T) match;
+        } else {
+          // we found an object but it didn't match
+          Main.LOGGER.info("search returned mismatched object " + match);
         }
+        session.save(result); 
       } catch (final HibernateException e) {
         Main.LOGGER.info("exception when searching for object matching " + 
                          the_object + ": " + e);
         result = the_object;
       }
+    }
+    
+    if (transaction != null) {
+      transaction.commit();
     }
     
     return result;
@@ -207,15 +283,17 @@ public final class Persistence {
   // the one unchecked cast that Java thinks is in this method is actually
   // a checked cast
   @SuppressWarnings("unchecked")
-  public static <T> List<T> getMatchingEntities(final T the_object, 
-                                                final Class<T> the_class) {
+  public static <T> List<T> matchingEntities(final T the_object, 
+                                             final Class<T> the_class) {
     final List<T> result = new ArrayList<T>();
-    final Session session = getCurrentSession();
+    final Session session = currentSession();
+    Transaction transaction = null;
     
     if (session == null) {
       result.add(the_object);
     } else {
       // try to use the provided object as an example
+      transaction = session.beginTransaction();
       @SuppressWarnings("deprecation") // no query by example in JPA
       final Criteria cr = session.createCriteria(the_class);
       cr.add(Example.create(the_object));
@@ -233,6 +311,10 @@ public final class Persistence {
         result.add(the_object);
       }
     }
+
+    if (transaction != null) {
+      transaction.commit();
+    }
     
     return result;
   }
@@ -245,11 +327,11 @@ public final class Persistence {
     Choice c1 = Choice.instance("name1", "description1");
     Choice c2 = Choice.instance("name2", "description2");
     
-    Choice e1 = getEntity(c1, Choice.class);
-    Choice e2 = getEntity(c2, Choice.class);
+    Choice e1 = matchingEntity(c1, Choice.class);
+    Choice e2 = matchingEntity(c2, Choice.class);
     
-    Choice e3 = getEntity(Choice.instance("name1", "description1"), Choice.class);
-    Choice e4 = getEntity(Choice.instance("name2", "description2"), Choice.class);
+    Choice e3 = matchingEntity(Choice.instance("name1", "description1"), Choice.class);
+    Choice e4 = matchingEntity(Choice.instance("name2", "description2"), Choice.class);
     System.err.println(c1.id() + ": " + c1);
     System.err.println(e1.id() + ": " + e1);
     System.err.println(e3.id() + ": " + e3);

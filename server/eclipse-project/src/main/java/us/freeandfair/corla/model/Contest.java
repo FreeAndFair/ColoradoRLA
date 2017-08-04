@@ -28,11 +28,15 @@ import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.OrderColumn;
 import javax.persistence.Table;
+
+import us.freeandfair.corla.hibernate.Persistence;
 
 /**
  * The definition of a contest; comprises a contest name and a set of possible
@@ -74,28 +78,32 @@ public class Contest implements Serializable {
    */
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  @Column(name = "id", updatable = false, nullable = false)
+  @Column(updatable = false, nullable = false)
   private Long my_id = getID();
   
   /**
    * The contest name.
    */
+  @Column(updatable = false, nullable = false)
   private String my_name;
 
   /**
    * The contest description.
    */
+  @Column(updatable = false, nullable = false)
   private String my_description;
   
   /**
    * The set of contest choices.
    */
-  @ManyToMany
+  @ManyToMany(fetch = FetchType.EAGER)
+  @OrderColumn(name = "index")
   private List<Choice> my_choices;
   
   /**
    * The maximum number of votes that can be made in this contest.
    */
+  @Column(updatable = false, nullable = false)
   private Integer my_votes_allowed;
   
   /**
@@ -150,8 +158,15 @@ public class Contest implements Serializable {
                                               final String the_description, 
                                               final List<Choice> the_choices, 
                                               final int the_votes_allowed) {
-    Contest result = new Contest(the_name, the_description, the_choices,
-                                 the_votes_allowed);
+    Contest result = 
+        Persistence.matchingEntity(new Contest(the_name, the_description, the_choices,
+                                          the_votes_allowed), 
+                              Contest.class);
+    if (!Persistence.isEnabled()) {
+      // assign an ID ourselves because persistence is not enabled
+      result.my_id = getID();
+    }
+    // eventually: disable caching entirely in the presence of persistence
     if (CACHE.containsKey(result)) {
       result = CACHE.get(result);
     } else {

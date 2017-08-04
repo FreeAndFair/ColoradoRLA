@@ -17,12 +17,10 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -32,6 +30,8 @@ import org.hibernate.Transaction;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.hibernate.Persistence;
+import us.freeandfair.corla.model.CVRContestInfo;
+import us.freeandfair.corla.model.CVRContestInfo.ConsensusValue;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.Choice;
@@ -214,13 +214,13 @@ public class DominionCVRExportParser implements CVRExportParser {
       while (index < end) {
         final String ch = the_choice_line.get(index).trim();
         final String ex = the_expl_line.get(index).trim();
-        choices.add(Persistence.getEntity(Choice.instance(ch, ex), Choice.class));
+        choices.add(Persistence.matchingEntity(Choice.instance(ch, ex), Choice.class));
         index = index + 1;
       }
       // now that we have all the choices, we can create a Contest object for 
       // this contest (note the empty contest description at the moment, below, 
       // as that's not in the CVR files and may not actually be used)
-      my_contests.add(Persistence.getEntity(Contest.instance(cn, "", choices, 
+      my_contests.add(Persistence.matchingEntity(Contest.instance(cn, "", choices, 
                                                              the_votes_allowed.get(cn)),
                                             Contest.class));
     }
@@ -246,15 +246,14 @@ public class DominionCVRExportParser implements CVRExportParser {
           stripEqualQuotes(the_line.get(IMPRINTED_ID_COLUMN));
       final String ballot_type = 
           stripEqualQuotes(the_line.get(BALLOT_TYPE_COLUMN));
-      final List<Contest> contests = new ArrayList<Contest>();
-      final Map<Contest, Set<Choice>> choices = new HashMap<Contest, Set<Choice>>();
+      final List<CVRContestInfo> contest_info = new ArrayList<CVRContestInfo>();
       
       // for each contest, see if choices exist on the CVR; "0" or "1" are
       // votes or absences of votes; "" means that the contest is not in this style
       int index = FIRST_CHOICE_COLUMN;
       for (final Contest co : my_contests) {
         boolean present = false;
-        final Set<Choice> votes = new HashSet<Choice>();
+        final List<Choice> votes = new ArrayList<Choice>();
         for (final Choice ch : co.choices()) {
           final String mark_string = the_line.get(index);
           final boolean p = !mark_string.isEmpty();
@@ -267,17 +266,15 @@ public class DominionCVRExportParser implements CVRExportParser {
         }
         // if this contest was on the ballot, add it to the votes
         if (present) {
-          contests.add(co);
-          choices.put(co, votes);
+          contest_info.add(CVRContestInfo.instance(co, null, 
+                                                   ConsensusValue.UNDEFINED, votes));
         }
       }
       
       return CastVoteRecord.instance(RecordType.UPLOADED, 
                                      the_timestamp, my_county_id, 
                                      tabulator_id, batch_id, record_id, imprinted_id, 
-                                     ballot_type, choices,
-                                     new HashMap<Contest, String>(), 
-                                     new HashMap<Contest, Boolean>());
+                                     ballot_type, contest_info);
     } catch (final NumberFormatException e) {
       return null;
     } catch (final ArrayIndexOutOfBoundsException e) {

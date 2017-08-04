@@ -11,17 +11,30 @@
 
 package us.freeandfair.corla.model;
 
+import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
+import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableHashCode;
+
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.OrderColumn;
 import javax.persistence.Table;
+
+import com.google.gson.annotations.JsonAdapter;
+
+import us.freeandfair.corla.gson.CVRContestInfoJsonAdapter;
+import us.freeandfair.corla.hibernate.Persistence;
 
 /**
  * A cast vote record contains information about a single ballot, either 
@@ -35,6 +48,7 @@ import javax.persistence.Table;
 //this class has many fields that would normally be declared final, but
 //cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
+@JsonAdapter(CVRContestInfoJsonAdapter.class)
 public class CVRContestInfo implements Serializable {
   /**
    * The serialVersionUID.
@@ -63,8 +77,8 @@ public class CVRContestInfo implements Serializable {
    */
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  @Column(name = "id", updatable = false, nullable = false)
-  private Long my_id = getID();
+  @Column(updatable = false, nullable = false)
+  private Long my_id;
 
   /**
    * The contest in this record.
@@ -74,17 +88,21 @@ public class CVRContestInfo implements Serializable {
   /** 
    * The comment for this contest.
    */
+  @Column(updatable = false)
   private String my_comment;
   
   /**
-   * The consensus flag for this contest
+   * The consensus value for this contest
    */
-  private Boolean my_consensus;
+  @Column(updatable = false, nullable = false)
+  private ConsensusValue my_consensus;
   
   /**
    * The choices for this contest.
    */
-  private Set<Choice> my_choices;
+  @ManyToMany(fetch = FetchType.EAGER)
+  @OrderColumn(name = "index")
+  private List<Choice> my_choices;
 
   /**
    * Constructs an empty CVRContestInfo, solely for persistence.
@@ -94,11 +112,155 @@ public class CVRContestInfo implements Serializable {
   }
   
   /**
+   * Constructs a CVR contest information record with the specified 
+   * parameters.
+   * 
+   * @param the_contest The contest.
+   * @param the_comment The comment.
+   * @param the_consensus The consensus value.
+   * @param the_choices The choices.
+   */
+  protected CVRContestInfo(final Contest the_contest, final String the_comment,
+                           final ConsensusValue the_consensus,
+                           final List<Choice> the_choices) {
+    my_contest = the_contest;
+    my_comment = the_comment;
+    my_consensus = the_consensus;
+    my_choices = new ArrayList<Choice>(the_choices);
+  }
+  
+  /**
    * @return the next ID
    */
   private static synchronized long getID() {
     return current_id++;
   }
   
+  /**
+   * Returns a CVR contest information record with the specified parameters.
+   * 
+   * @param the_contest The contest.
+   * @param the_comment The comment.
+   * @param the_consensus The consensus value.
+   * @param the_choices The choices.
+   */
+  public static synchronized CVRContestInfo instance(final Contest the_contest, 
+                                                     final String the_comment,
+                                                     final ConsensusValue the_consensus,
+                                                     final List<Choice> the_choices) {
+    CVRContestInfo result = new CVRContestInfo(the_contest, the_comment,
+                                               the_consensus, the_choices);
+    
+    if (Persistence.isEnabled()) {
+      // we don't need to disambiguate these, because they are constructed new for
+      // each CVR
+      Persistence.saveEntity(result);
+    } else {
+      // assign an ID ourselves because persistence is not enabled
+      result.my_id = getID();
+    }
+    // eventually: disable caching entirely in the presence of persistence
+    if (CACHE.containsKey(result)) {
+      result = CACHE.get(result);
+    } else {
+      CACHE.put(result, result);
+      BY_ID.put(result.id(), result);
+    }
+    return result;
+  }
+
+  /**
+   * Returns the CVR contest information record with the specified ID.
+   * 
+   * @param the_id The ID.
+   * @return the record, or null if it doesn't exist.
+   */
+  public static synchronized CVRContestInfo byID(final long the_id) {
+    return BY_ID.get(the_id);
+  }
+
+  /**
+   * @return the ID of this record.
+   */
+  public Long id() {
+    return my_id;
+  }
   
+  /**
+   * @return the contest in this record.
+   */
+  public Contest contest() {
+    return my_contest;
+  }
+  
+  /**
+   * @return the comment in this record.
+   */
+  public String comment() {
+    return my_comment;
+  }
+  
+  /**
+   * @return the consensus flag in this record.
+   */
+  public ConsensusValue consensus() {
+    return my_consensus;
+  }
+  
+  /**
+   * @return the choices in this record.
+   */
+  public List<Choice> choices() {
+    return Collections.unmodifiableList(my_choices);
+  }
+  
+  /**
+   * @return a String representation of this cast vote record.
+   */
+  @Override
+  public String toString() {
+    return "CVRContestInfo [contest=" + my_contest + ", comment=" + 
+           my_comment + ", consensus=" + my_consensus + ", choices=" +
+           my_choices + "]";
+  }
+  
+  /**
+   * Compare this object with another for equivalence.
+   * 
+   * @param the_other The other object.
+   * @return true if the objects are equivalent, false otherwise.
+   */
+  @Override
+  public boolean equals(final Object the_other) {
+    boolean result = true;
+    if (the_other instanceof CVRContestInfo) {
+      final CVRContestInfo other_info = (CVRContestInfo) the_other;
+      result &= nullableEquals(other_info.contest(), contest());
+      result &= nullableEquals(other_info.comment(), comment());
+      result &= nullableEquals(other_info.consensus(), consensus());
+      result &= nullableEquals(other_info.choices(), choices());
+    } else {
+      result = false;
+    }
+    return result;
+  }
+  
+  /**
+   * @return a hash code for this object.
+   */
+  @Override
+  public int hashCode() {
+    // can't just use toString() because order of choices may differ
+    return (contest() + comment() + nullableHashCode(consensus()) + 
+            nullableHashCode(choices())).hashCode();
+  }
+
+  /**
+   * The possible values for consensus.
+   */
+  public enum ConsensusValue {
+    UNDEFINED,
+    YES,
+    NO
+  }
 }

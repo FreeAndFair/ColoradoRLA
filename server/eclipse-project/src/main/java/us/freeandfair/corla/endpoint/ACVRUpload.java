@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 import javax.servlet.MultipartConfigElement;
@@ -85,9 +86,10 @@ public class ACVRUpload implements Endpoint {
           CastVoteRecord.instance(RecordType.AUDITOR_ENTERED, Instant.now(), 
                                   acvr.countyID(), acvr.scannerID(), acvr.batchID(), 
                                   acvr.recordID(), acvr.imprintedID(), acvr.ballotType(), 
-                                  acvr.choices(), acvr.comments(), acvr.consensus());
+                                  acvr.contestInfo());
       Main.LOGGER.info("Audit CVR parsed and stored as id " + real_acvr.id());
-      Main.LOGGER.info(CastVoteRecord.getMatching(null, RecordType.AUDITOR_ENTERED).size() + 
+      Main.LOGGER.info(CastVoteRecord.getMatching(new HashSet<String>(), 
+                                                  RecordType.AUDITOR_ENTERED).size() + 
                        " audit CVRs in storage");
     } catch (final JsonSyntaxException | IOException | ServletException | 
                    NullPointerException e) {

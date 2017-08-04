@@ -15,6 +15,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 import javax.servlet.MultipartConfigElement;
@@ -80,10 +81,11 @@ public class CVRExportUpload implements Endpoint {
       ok = parser.parse();
       Main.LOGGER.info(parser.cvrs().size() + " CVRs parsed from " + county + 
                        " county upload file");
-      Main.LOGGER.info(CastVoteRecord.getMatching(null, RecordType.UPLOADED).size() + 
+      Main.LOGGER.info(CastVoteRecord.getMatching(new HashSet<String>(), 
+                                                  RecordType.UPLOADED).size() + 
                        " uploaded CVRs in storage");
     } catch (final RuntimeException | IOException | ServletException e) {
-      Main.LOGGER.info("could not parse malformed CVR export file");
+      Main.LOGGER.info("could not parse malformed CVR export file: " + e);
       ok = false;
     }
     
