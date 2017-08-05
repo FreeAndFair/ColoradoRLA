@@ -38,6 +38,7 @@ import us.freeandfair.corla.model.CVRContestInfo;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.Choice;
 import us.freeandfair.corla.model.Contest;
+import us.freeandfair.corla.model.UploadedFile;
 
 /**
  * Manages persistence through Hibernate, and provides several utility methods.
@@ -148,6 +149,7 @@ public final class Persistence {
       settings.put(Environment.PHYSICAL_NAMING_STRATEGY, 
                    "us.freeandfair.corla.hibernate.FreeAndFairNamingStrategy");
       settings.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
+      settings.put(Environment.USE_STREAMS_FOR_BINARY, "true");
       
       // apply settings
       rb.applySettings(settings);
@@ -162,6 +164,7 @@ public final class Persistence {
       sources.addAnnotatedClass(Choice.class);
       sources.addAnnotatedClass(Contest.class);
       sources.addAnnotatedClass(CVRContestInfo.class);
+      sources.addAnnotatedClass(UploadedFile.class);
       final Metadata metadata = sources.getMetadataBuilder().build();
       
       // create session factory

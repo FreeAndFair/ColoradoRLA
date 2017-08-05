@@ -11,6 +11,7 @@
         <label for="cvr_file">Select a CVR export file</label>
         <input type="file" id="cvr_file" name="cvr_file"/>
         County: <input type="text" name="county"/>
+        Hash: <input type="text" name="hash"/>
         <input type="submit" id="buttonUpload" value="Upload"/>
     </form>
 </div>
@@ -36,6 +37,7 @@ Manually go to <tt>http://localhost:8888/cvr/county/C</tt>, replacing <tt>C</tt>
     <form action="http://localhost:8888/upload-ballot-manifest" method="post" enctype="multipart/form-data">
         <label for="bmi_file">Select a ballot manifest file</label>
         <input type="file" id="bmi_file" name="bmi_file"/>
+        Hash: <input type="text" name="hash"/>
         <input type="submit" id="buttonUpload" value="Upload"/>
     </form>
 </div>

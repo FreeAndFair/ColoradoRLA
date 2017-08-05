@@ -11,10 +11,11 @@
 
 package us.freeandfair.corla.model;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.Blob;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,8 +24,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+
+import us.freeandfair.corla.hibernate.Persistence;
 
 /**
  * An uploaded file, kept in persistent storage for archival.
@@ -39,60 +44,48 @@ import javax.persistence.TemporalType;
 @SuppressWarnings("PMD.ImmutableField")
 public class UploadedFile {
   /**
-   * The current ID number to be used.
-   */
-  private static long current_id;
-
-  /**
-   * The table of objects that have been created.
-   */
-  private static final Map<UploadedFile, UploadedFile> CACHE = 
-      new HashMap<UploadedFile, UploadedFile>();
-  
-  /**
-   * The table of objects by ID.
-   */
-  private static final Map<Long, UploadedFile> BY_ID =
-      new HashMap<Long, UploadedFile>();
-  
-  /**
-   * The database ID for this ballot manifest info.
+   * The database ID for this uploaded file.
    */
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  @Column(name = "id", updatable = false, nullable = false)
-  private Long my_id = getID();
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  @Column(updatable = false, nullable = false)
+  private Long my_id;
   
   /**
    * The timestamp for this ballot manifest info, in milliseconds since the epoch.
    */
-  @Temporal(TemporalType.TIMESTAMP)
+  @Column(updatable = false, nullable = false)
   private Instant my_timestamp;
 
   /**
    * The county that uploaded the file.
    */
+  @Column(updatable = false, nullable = false)
   private String my_county_id;
   
   /**
    * The type of the file.
    */
+  @Column(updatable = false, nullable = false)
   private FileType my_type;
   
   /**
    * The hash of the file.
    */
+  @Column(updatable = false, nullable = false)
   private String my_hash;
   
   /**
    * The status of hash verification.
    */
+  @Column(nullable = false)
   private HashStatus my_hash_status;
   
   /**
    * The uploaded file. 
    */
   @Lob
+  @Column(updatable = false, nullable = false)
   private Blob my_file;
   
   /**
@@ -109,7 +102,7 @@ public class UploadedFile {
    * @param the_county_id The county that uploaded the file.
    * @param the_type The file type.
    * @param the_hash The hash entered at upload time.
-   * @param the_hash_ok A flag indicating whether the file matches
+   * @param the_hash_status A flag indicating whether the file matches
    * the hash.
    * @param the_file The file (as a Blob).
    */
@@ -128,16 +121,17 @@ public class UploadedFile {
   }
   
   /**
-   * Returns an uploaded file with the specified parameters.
+   * Returns an uploaded file with the specified parameters after persisting it to
+   * the database.
    * 
    * @param the_timestamp The timestamp.
    * @param the_county_id The county that uploaded the file.
    * @param the_type The file type.
    * @param the_hash The hash entered at upload time.
-   * @param the_hash_ok A flag indicating whether the file matches
+   * @param the_hash_status A flag indicating whether the file matches
    * the hash.
-   * @param the_file The file (as a Blob).
-   * @return the resulting uploaded file.
+   * @param the_file The file (as a java.io.File).
+   * @return the resulting uploaded file, or null if persistence is not available.
    */
   @SuppressWarnings("PMD.UseObjectForClearerAPI")
   public static synchronized UploadedFile instance(final Instant the_timestamp,
@@ -145,24 +139,31 @@ public class UploadedFile {
                                                    final FileType the_type,
                                                    final String the_hash,
                                                    final HashStatus the_hash_status,
-                                                   final Blob the_file) {
-    UploadedFile result = new UploadedFile(the_timestamp, the_county_id,
-                                           the_type, the_hash, the_hash_status,
-                                           the_file);
-    if (CACHE.containsKey(result)) {
-      result = CACHE.get(result);
-    } else {
-      CACHE.put(result, result);
-      BY_ID.put(result.id(), result);
+                                                   final File the_file) {
+    UploadedFile result = null;
+    Transaction transaction = null;
+    
+    if (Persistence.isEnabled()) {
+      try {
+        final Session session = Persistence.currentSession();
+        transaction = session.beginTransaction();
+        final Blob blob = 
+            Persistence.currentSession().getLobHelper().
+            createBlob(new FileInputStream(the_file), the_file.length());
+        final UploadedFile uploaded_file = new UploadedFile(the_timestamp, the_county_id,
+                                                            the_type, the_hash, 
+                                                            the_hash_status, blob);
+        session.save(uploaded_file);
+        transaction.commit();
+        result = uploaded_file;
+      } catch (final HibernateException | IOException e) {
+        if (transaction != null) {
+          transaction.rollback();
+        }
+      }
     }
+    
     return result;
-  }
-
-  /**
-   * @return the next ID
-   */
-  private static synchronized long getID() {
-    return current_id++;
   }
 
   /**
@@ -227,7 +228,7 @@ public class UploadedFile {
    */
   public enum HashStatus {
     VERIFIED,
-    DOES_NOT_VERIFY,
-    VERIFICATION_NOT_ATTEMPTED;
+    MISMATCH,
+    NOT_CHECKED;
   }
 }
