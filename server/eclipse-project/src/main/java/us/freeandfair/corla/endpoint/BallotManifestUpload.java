@@ -11,14 +11,26 @@
 
 package us.freeandfair.corla.endpoint;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload.util.Streams;
 import org.eclipse.jetty.http.HttpStatus;
+import org.hibernate.HibernateException;
 
 import spark.Request;
 import spark.Response;
@@ -26,7 +38,13 @@ import spark.Response;
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.csv.BallotManifestParser;
 import us.freeandfair.corla.csv.ColoradoBallotManifestParser;
+import us.freeandfair.corla.hibernate.Persistence;
 import us.freeandfair.corla.model.BallotManifestInfo;
+import us.freeandfair.corla.model.UploadedFile;
+import us.freeandfair.corla.model.UploadedFile.FileType;
+import us.freeandfair.corla.model.UploadedFile.HashStatus;
+import us.freeandfair.corla.util.FileHelper;
+import us.freeandfair.corla.util.SparkHelper;
 
 /**
  * The "ballot manifest upload" endpoint.
@@ -34,8 +52,18 @@ import us.freeandfair.corla.model.BallotManifestInfo;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-@SuppressWarnings("PMD.AtLeastOneConstructor")
+@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.ExcessiveImports"})
 public class BallotManifestUpload implements Endpoint {
+  /**
+   * The upload buffer size, in bytes.
+   */
+  private static final int BUFFER_SIZE = 1048576; // 1 MB
+  
+  /**
+   * The maximum upload size, in bytes.
+   */
+  private static final int MAX_UPLOAD_SIZE = 314572800; // 300 MB
+  
   /**
    * {@inheritDoc}
    */
@@ -53,34 +81,192 @@ public class BallotManifestUpload implements Endpoint {
   }
 
   /**
+   * Attempts to save the specified file in the database.
+   * 
+   * @param the_file The file.
+   * @param the_county The county that uploaded the file.
+   * @param the_hash The claimed hash of the file.
+   * @return the resulting entity if successful, null otherwise
+ w */
+  private UploadedFile attemptFilePersistence(final File the_file, 
+                                              final String the_county,
+                                              final String the_hash) {
+    UploadedFile result = null;
+    
+    if (Persistence.isEnabled()) {
+      try {
+        result = UploadedFile.instance(Instant.now(), the_county, 
+                                       FileType.BALLOT_MANIFEST, 
+                                       the_hash, HashStatus.NOT_CHECKED, the_file);
+      } catch (final HibernateException e) {
+        Main.LOGGER.info("could not persist uploaded file of size " + 
+                         the_file.length() + ": " + e);
+      }
+    }
+    
+    return result;
+  }
+  
+  /**
+   * Handles the upload of the file, updating the provided UploadInformation.
+   * 
+   * @param the_request The request to use.
+   * @param the_info The upload information to update.
+   */
+  // I don't see any other way to implement the buffered reading 
+  // than a deeply nested if statement
+  @SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts")
+  private void handleUpload(final Request the_request,
+                            final UploadInformation the_info) {
+    try {
+      final HttpServletRequest raw = SparkHelper.getRawRequest(the_request);
+      the_info.my_ok = ServletFileUpload.isMultipartContent(raw);
+      
+      Main.LOGGER.info("handling ballot manifest upload request from " + 
+                       raw.getRemoteHost());
+      if (the_info.my_ok) {
+        final ServletFileUpload upload = new ServletFileUpload();
+        final FileItemIterator fii = upload.getItemIterator(raw);
+        while (fii.hasNext()) {
+          final FileItemStream item = fii.next();
+          final String name = item.getFieldName();
+          final InputStream stream = item.openStream();
+          
+          if (item.isFormField()) {
+            the_info.my_form_fields.put(item.getFieldName(), 
+                                        Streams.asString(stream));
+          } else if ("bmi_file".equals(name)) {
+            // save the file
+            the_info.my_file = File.createTempFile("upload", ".csv");
+            final OutputStream os = new FileOutputStream(the_info.my_file);
+            final int total =
+                FileHelper.bufferedCopy(stream, os, BUFFER_SIZE, MAX_UPLOAD_SIZE);
+
+            if (total >= MAX_UPLOAD_SIZE) {
+              Main.LOGGER.info("attempt to upload file greater than max size from " + 
+                               raw.getRemoteHost());
+              the_info.my_response_string = "Upload Failed";
+              the_info.my_response_status = HttpStatus.UNPROCESSABLE_ENTITY_422;
+              the_info.my_ok = false;
+            } else {
+              Main.LOGGER.info("successfully saved file of size " + total + " from " + 
+                               raw.getRemoteHost());
+            }
+            os.close();
+          }
+        }
+      }
+    } catch (final IOException | FileUploadException e) {
+      the_info.my_response_string = "Upload Failed";
+      the_info.my_response_status = HttpStatus.UNPROCESSABLE_ENTITY_422;
+      the_info.my_ok = false;
+    }
+  }
+
+  /**
+   * Parses an uploaded ballot manifest and attempts to persist it to the database.
+   * 
+   * @param the_info The upload information to use and update.
+   */
+  // the CSV parser can throw arbitrary runtime exceptions, which we must catch
+  @SuppressWarnings({"PMD.AvoidCatchingGenericException", "PMD.AvoidCatchingNPE"})
+  private void parseAndPersistFile(final UploadInformation the_info) {
+    String county = the_info.my_form_fields.get("county");
+    final String hash = the_info.my_form_fields.get("hash");
+    
+    if (hash == null || the_info.my_file == null) {
+      the_info.my_response_string = "Bad Request";
+      the_info.my_response_status = HttpStatus.BAD_REQUEST_400;
+      the_info.my_ok = false;
+    }
+
+    // it's not required to specify a county on a ballot manifest, since they 
+    // have the county as a column
+    
+    if (county == null) {
+      county = "unknown";
+    }
+    
+    if (the_info.my_ok) {
+      try (InputStream bmi_is = new FileInputStream(the_info.my_file)) {
+        final InputStreamReader bmi_isr = new InputStreamReader(bmi_is, "UTF-8");
+        final BallotManifestParser parser = new ColoradoBallotManifestParser(bmi_isr);
+        if (!parser.parse()) {
+          the_info.my_response_status = HttpStatus.UNPROCESSABLE_ENTITY_422;
+          the_info.my_ok = false;
+          the_info.my_response_string = "Malformed Ballot Manifest File";
+        }
+        Main.LOGGER.info(parser.ballotManifestInfo().size() + 
+                         " ballot manifest records parsed from upload file");
+        Main.LOGGER.info(BallotManifestInfo.getMatching(null).size() + 
+                         " uploaded ballot manifest records in storage");
+        attemptFilePersistence(the_info.my_file, county, hash);
+      } catch (final RuntimeException | IOException e) {
+        Main.LOGGER.info("could not parse malformed ballot manifest file: " + e);
+        the_info.my_ok = false;
+        the_info.my_response_status = HttpStatus.UNPROCESSABLE_ENTITY_422;
+        the_info.my_response_string = "Malformed Ballot Manifest File";
+      } 
+    }
+  }
+  
+  /**
    * {@inheritDoc}
    */
   @Override
   // the CSV parser can throw arbitrary runtime exceptions, which we must catch
   @SuppressWarnings("PMD.AvoidCatchingGenericException")
   public String endpoint(final Request the_request, final Response the_response) {
-    // this is a multipart request, even though there's only one file
-    the_request.attribute("org.eclipse.jetty.multipartConfig", 
-                          new MultipartConfigElement("/tmp"));
-    boolean ok = true;
-    try (InputStream is = the_request.raw().getPart("bmi_file").getInputStream()) {
-      final InputStreamReader isr = new InputStreamReader(is, "UTF-8");
-      final BallotManifestParser parser = new ColoradoBallotManifestParser(isr);
-      ok = parser.parse();
-      Main.LOGGER.info(parser.ballotManifestInfo().size() + 
-                       " ballot manifest records parsed from upload file");
-      Main.LOGGER.info(BallotManifestInfo.getMatching(null).size() + 
-                       " uploaded ballot manifest records in storage");
-    } catch (final RuntimeException | IOException | ServletException e) {
-      Main.LOGGER.info("could not parse malformed ballot manifest");
-      ok = false;
+    final UploadInformation info = new UploadInformation();
+    info.my_ok = true;
+    
+    handleUpload(the_request, info);
+    
+    // process the temp file, putting it in the database if persistence is enabled 
+    
+    if (info.my_ok) {
+      parseAndPersistFile(info);
     }
     
-    if (ok) {
-      return "OK";
-    } else {
-      the_response.status(HttpStatus.UNPROCESSABLE_ENTITY_422);
-      return "Not OK";
+    if (info.my_file != null) {
+      try {
+        info.my_file.delete(); 
+      } catch (final SecurityException e) {
+        // ignored - should never happen
+      }
     }
+
+    the_response.status(info.my_response_status);
+    return info.my_response_string;
+  }
+  
+  /**
+   * A small class to encapsulate data dealt with during an upload.
+   */
+  private static class UploadInformation {
+    /**
+     * The uploaded file.
+     */
+    protected File my_file;
+    
+    /**
+     * A flag indicating whether the upload is "ok".
+     */
+    protected boolean my_ok = true;
+    
+    /**
+     * A map of form field names and values.
+     */
+    protected Map<String, String> my_form_fields = new HashMap<String, String>();
+    
+    /**
+     * An HTTP response status.
+     */
+    protected int my_response_status = HttpStatus.OK_200;
+    
+    /**
+     * A response string.
+     */
+    protected String my_response_string = "OK";
   }
 }
