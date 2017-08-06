@@ -61,7 +61,7 @@ public class BallotManifestDownloadByCounty implements Endpoint {
     final Set<String> county_set = new HashSet<String>(Arrays.asList(counties));
     try {
       final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
-      final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
+      final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
       
       Main.GSON.toJson(BallotManifestInfo.getMatching(county_set), bw);
       bw.flush();

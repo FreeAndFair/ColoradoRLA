@@ -58,7 +58,7 @@ public class ACVRDownload implements Endpoint {
   public String endpoint(final Request the_request, final Response the_response) {
     try {
       final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
-      final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
+      final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
       
       Main.GSON.toJson(CastVoteRecord.getMatching(new HashSet<String>(), 
                                                   RecordType.AUDITOR_ENTERED),

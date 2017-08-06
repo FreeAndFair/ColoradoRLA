@@ -14,6 +14,7 @@ package us.freeandfair.corla.model;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Blob;
 import java.time.Instant;
 
@@ -142,14 +143,16 @@ public class UploadedFile {
                                                    final File the_file) {
     UploadedFile result = null;
     Transaction transaction = null;
+    InputStream is = null;
     
     if (Persistence.isEnabled()) {
       try {
         final Session session = Persistence.currentSession();
         transaction = session.beginTransaction();
+        is = new FileInputStream(the_file);
         final Blob blob = 
             Persistence.currentSession().getLobHelper().
-            createBlob(new FileInputStream(the_file), the_file.length());
+            createBlob(is, the_file.length());
         final UploadedFile uploaded_file = new UploadedFile(the_timestamp, the_county_id,
                                                             the_type, the_hash, 
                                                             the_hash_status, blob);
@@ -159,6 +162,14 @@ public class UploadedFile {
       } catch (final HibernateException | IOException e) {
         if (transaction != null) {
           transaction.rollback();
+        }
+      } finally {
+        if (is != null) {
+          try {
+            is.close();
+          } catch (final IOException e) {
+            // ignored
+          }
         }
       }
     }

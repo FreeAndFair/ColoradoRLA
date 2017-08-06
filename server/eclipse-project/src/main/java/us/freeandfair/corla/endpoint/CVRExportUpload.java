@@ -224,7 +224,9 @@ public class CVRExportUpload implements Endpoint {
     
     if (info.my_file != null) {
       try {
-        info.my_file.delete(); 
+        if (!info.my_file.delete()) {
+          Main.LOGGER.error("Unable to delete temp file " + info.my_file);
+        }
       } catch (final SecurityException e) {
         // ignored - should never happen
       }

@@ -73,7 +73,7 @@ public class ContestDownloadByCounty implements Endpoint {
     }
     try {
       final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
-      final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
+      final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
       
       Main.GSON.toJson(contest_set, bw);
       bw.flush();
