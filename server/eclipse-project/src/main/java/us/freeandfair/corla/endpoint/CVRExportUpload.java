@@ -192,12 +192,13 @@ public class CVRExportUpload implements Endpoint {
         }
         Main.LOGGER.info(parser.parsedIDs().size() + " CVRs parsed from " + county + 
                          " county upload file");
-        Main.LOGGER.info(CastVoteRecord.getMatching(new HashSet<String>(), 
-                                                    RecordType.UPLOADED).size() + 
+        Main.LOGGER.info(CastVoteRecord.countMatching(new HashSet<String>(), 
+                                                      RecordType.UPLOADED) + 
                          " uploaded CVRs in storage");
         attemptFilePersistence(the_info.my_file, county, hash);
       } catch (final RuntimeException | IOException e) {
         Main.LOGGER.info("could not parse malformed CVR export file: " + e);
+        e.printStackTrace();
         the_info.my_ok = false;
         the_info.my_response_status = HttpStatus.UNPROCESSABLE_ENTITY_422;
         the_info.my_response_string = "Malformed CVR Export File";

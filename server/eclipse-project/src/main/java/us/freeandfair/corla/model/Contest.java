@@ -77,7 +77,7 @@ public class Contest implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
   @Column(updatable = false, nullable = false)
-  private Long my_id = getID();
+  private Long my_id;
   
   /**
    * The contest name.
@@ -179,7 +179,7 @@ public class Contest implements Serializable {
                                               final int the_votes_allowed) {
     Contest result = 
         Persistence.matchingEntity(new Contest(the_name, the_description, the_choices,
-                                          the_votes_allowed), 
+                                               the_votes_allowed), 
                                    Contest.class);
 
     if (!Persistence.isEnabled()) {

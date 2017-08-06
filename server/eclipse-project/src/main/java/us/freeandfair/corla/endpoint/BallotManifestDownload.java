@@ -11,7 +11,9 @@
 
 package us.freeandfair.corla.endpoint;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -56,7 +58,7 @@ public class BallotManifestDownload implements Endpoint {
     try {
       final HttpServletResponse raw = SparkHelper.getRaw(the_response);
       Main.GSON.toJson(BallotManifestInfo.getAll(),
-                       raw.getWriter());
+                       new BufferedWriter(new OutputStreamWriter(raw.getOutputStream())));
       return "";
     } catch (final IOException e) {
       the_response.status(HttpStatus.INTERNAL_SERVER_ERROR_500);

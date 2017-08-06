@@ -191,7 +191,7 @@ public final class Persistence {
     
     try {
       transaction = currentSession().beginTransaction();
-      currentSession().save(the_object);
+      currentSession().saveOrUpdate(the_object);
       transaction.commit();
     } catch (final HibernateException e) {
       if (transaction != null) {
@@ -330,7 +330,7 @@ public final class Persistence {
         final Object match = cr.uniqueResult();
         if (match == null) {
           Main.LOGGER.info("object not found");
-          session.save(result); 
+          session.saveOrUpdate(result); 
         } else if (match.equals(the_object)) {
           // this is a checked cast even though Java thinks it isn't
           Main.LOGGER.info("object found: " + match);
@@ -338,7 +338,7 @@ public final class Persistence {
         } else {
           // we found an object but it didn't match
           Main.LOGGER.info("search returned mismatched object " + match);
-          session.save(result); 
+          session.saveOrUpdate(result); 
         }
         transaction.commit();
       } catch (final HibernateException e) {
