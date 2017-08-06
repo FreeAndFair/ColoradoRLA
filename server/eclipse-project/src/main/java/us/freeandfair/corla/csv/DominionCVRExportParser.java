@@ -25,8 +25,6 @@ import java.util.NoSuchElementException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.hibernate.Persistence;
@@ -102,18 +100,7 @@ public class DominionCVRExportParser implements CVRExportParser {
    * The ID of the county whose CVRs we are parsing.
    */
   private final String my_county_id;
-  
-  /**
-   * The session we're using for persistence.
-   */
-  // note that we have not turned on persistence yet
-  private final Session my_session = Persistence.NO_SESSION;
-  
-  /**
-   * The transaction we're using for persistence.
-   */
-  private Transaction my_transaction = Persistence.NO_TRANSACTION; 
-  
+   
   /**
    * Construct a new Dominion CVR export parser using the specified Reader,
    * for CVRs provided by the specified county.
@@ -283,23 +270,9 @@ public class DominionCVRExportParser implements CVRExportParser {
   }
   
   /**
-   * Commits the changes from the parsing to persistent storage.
-   */
-  private void commit() {
-    if (my_transaction != Persistence.NO_TRANSACTION) {
-      my_transaction.commit();
-      my_session.close();
-    }
-  }
-  
-  /**
    * Aborts the changes from parsing.
    */
   private void abort() {
-    if (my_transaction != Persistence.NO_TRANSACTION) {
-      my_transaction.rollback();
-      my_session.close();
-    }
     for (final Long id : my_cvr_ids) {
       CastVoteRecord.forget(id);
     }
@@ -321,11 +294,6 @@ public class DominionCVRExportParser implements CVRExportParser {
     boolean result = true; // presume the parse will succeed
     final Iterator<CSVRecord> records = my_parser.iterator();
     final Instant timestamp = Instant.now();
-    // we are not doing persistence for now
-    // my_session = Persistence.openSession();
-    if (my_session != Persistence.NO_SESSION) {
-      my_transaction = my_session.beginTransaction();
-    }
     
     try {
       // we expect the first line to be the election name, which we currently discard
@@ -369,11 +337,10 @@ public class DominionCVRExportParser implements CVRExportParser {
     
     // if we had any kind of parse error, we scrap the whole import
     
-    my_parse_success = result;
     my_parse_status = true;
-    if (my_parse_success) {
-      commit();
-    } else {
+    my_parse_success = result;
+    
+    if (!my_parse_success) {
       abort();
     }
     return result;

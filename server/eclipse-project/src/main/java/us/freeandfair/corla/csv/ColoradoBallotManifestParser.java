@@ -174,7 +174,8 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
     }
     
     my_parse_status = true;
-
+    my_parse_success = result;
+    
     // if we had any kind of parse error, we scrap the whole import
     
     if (!result) {
