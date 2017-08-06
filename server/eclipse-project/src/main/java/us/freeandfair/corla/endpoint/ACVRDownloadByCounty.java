@@ -13,6 +13,7 @@ package us.freeandfair.corla.endpoint;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -62,10 +63,13 @@ public class ACVRDownloadByCounty implements Endpoint {
     final String[] counties = the_request.params(":counties").split(",");
     final Set<String> county_set = new HashSet<String>(Arrays.asList(counties));
     try {
-      final HttpServletResponse raw = SparkHelper.getRaw(the_response);
+      final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
+      final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
+      
       Main.GSON.toJson(CastVoteRecord.getMatching(county_set, 
                                                   RecordType.AUDITOR_ENTERED),
-                       new BufferedWriter(new OutputStreamWriter(raw.getOutputStream())));
+                       bw);
+      bw.flush();
       return "";
     } catch (final IOException e) {
       the_response.status(HttpStatus.INTERNAL_SERVER_ERROR_500);
