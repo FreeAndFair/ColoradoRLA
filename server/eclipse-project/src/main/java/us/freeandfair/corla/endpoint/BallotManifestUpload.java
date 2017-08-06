@@ -119,7 +119,7 @@ public class BallotManifestUpload implements Endpoint {
   private void handleUpload(final Request the_request,
                             final UploadInformation the_info) {
     try {
-      final HttpServletRequest raw = SparkHelper.getRawRequest(the_request);
+      final HttpServletRequest raw = SparkHelper.getRaw(the_request);
       the_info.my_ok = ServletFileUpload.isMultipartContent(raw);
       
       Main.LOGGER.info("handling ballot manifest upload request from " + 
@@ -196,7 +196,7 @@ public class BallotManifestUpload implements Endpoint {
           the_info.my_ok = false;
           the_info.my_response_string = "Malformed Ballot Manifest File";
         }
-        Main.LOGGER.info(parser.ballotManifestInfo().size() + 
+        Main.LOGGER.info(parser.parsedIDs().size() + 
                          " ballot manifest records parsed from upload file");
         Main.LOGGER.info(BallotManifestInfo.getMatching(null).size() + 
                          " uploaded ballot manifest records in storage");

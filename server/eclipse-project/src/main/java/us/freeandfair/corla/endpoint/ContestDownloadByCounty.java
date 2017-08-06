@@ -11,10 +11,15 @@
 
 package us.freeandfair.corla.endpoint;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.eclipse.jetty.http.HttpStatus;
 
 import spark.Request;
 import spark.Response;
@@ -24,6 +29,7 @@ import us.freeandfair.corla.model.CVRContestInfo;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.Contest;
+import us.freeandfair.corla.util.SparkHelper;
 
 /**
  * The contest by county download endpoint.
@@ -64,6 +70,13 @@ public class ContestDownloadByCounty implements Endpoint {
         contest_set.add(c.contest());
       }
     }
-    return Main.GSON.toJson(contest_set);
+    try {
+      final HttpServletResponse raw = SparkHelper.getRaw(the_response);
+      Main.GSON.toJson(contest_set, raw.getWriter());
+      return "";
+    } catch (final IOException e) {
+      the_response.status(HttpStatus.INTERNAL_SERVER_ERROR_500);
+      return "Unable to stream response.";
+    }
   }
 }

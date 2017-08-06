@@ -217,6 +217,23 @@ public class BallotManifestInfo {
   }
   
   /**
+   * "Forgets" the ballot manifest info with the specified ID.
+   * 
+   * @param the_id The ID to forget.
+   */
+  public static synchronized boolean forget(final Long the_id) {
+    boolean result = true;
+    
+    if (Persistence.isEnabled()) {
+      result = Persistence.removeEntity(the_id, BallotManifestInfo.class);
+    } else {
+      forget(BY_ID.get(the_id));
+    }
+    
+    return result;
+  }
+  
+  /**
    * Gets all known ballot manifest information for the specified counties.
    * 
    * @param the_county_ids The county ID to retrieve ballot manifest information 

@@ -41,6 +41,7 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
+// TODO: consider rewriting along the same lines as CVRExportUpload
 public class ACVRUpload implements Endpoint {
   /**
    * {@inheritDoc}

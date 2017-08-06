@@ -23,6 +23,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import us.freeandfair.corla.hibernate.Persistence;
+
 /**
  * A county involved in an audit.
  * 
@@ -61,36 +63,34 @@ public class County implements Serializable {
    * The database ID of this county.
    */
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  @Column(name = "id", updatable = false, nullable = false)
-  private Long my_id = getID();
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  @Column(updatable = false, nullable = false)
+  private Long my_id;
 
   /**
    * The county name.
    */
+  @Column(nullable = false, updatable = false)
   private String my_name;
 
   /**
    * The county ID.
    */
+  @Column(nullable = false, updatable = false)
   private String my_identifier;
   
   /**
    * Constructs an empty county, solely for persistence. 
    */
   protected County() {
-    my_name = "";
-    my_identifier = "";
+    // default values
   }
     
   /**
    * Constructs a county with the specified parameters.
    * 
    * @param the_name The county name.
-   * @param the_id The county description.
-   * @review kiniry Counties should have IDs that are nats, not
-   * strings.  I presume some of the Javadoc text in this file was
-   * copied from Choice and not updated for County?
+   * @param the_id The county ID.
    */
   protected County(final String the_name, final String the_id) {
     my_name = the_name;
@@ -105,31 +105,47 @@ public class County implements Serializable {
   }
 
   /**
-   * Returns a choice with the specified parameters.
+   * Returns a county with the specified parameters.
    * 
-   * @param the_name The choice name.
-   * @param the_description The choice description.
+   * @param the_name The county name.
+   * @param the_description The county ID.
    */
   public static synchronized County instance(final String the_name, 
                                              final String the_id) {
-    County result = new County(the_name, the_id);
-    if (CACHE.containsKey(result)) {
-      result = CACHE.get(result);
-    } else {
-      CACHE.put(result, result);
-      BY_ID.put(result.id(), result);
+    County result = 
+        Persistence.matchingEntity(new County(the_name, the_id), 
+                                   County.class);
+
+    if (!Persistence.isEnabled()) {
+      // cache ourselves because persistence is not enabled
+      if (CACHE.containsKey(result)) {
+        result = CACHE.get(result);
+      } else {
+        result.my_id = getID();
+        CACHE.put(result, result);
+        BY_ID.put(result.id(), result);
+      }
     }
+    
     return result;
   }
   
   /**
-   * Returns the choice with the specified ID.
+   * Returns the county with the specified ID.
    * 
    * @param the_id The ID.
-   * @return the choice, or null if it doesn't exist.
+   * @return the county, or null if it doesn't exist.
    */
   public static synchronized County byID(final long the_id) {
-    return BY_ID.get(the_id);
+    final County result;
+    
+    if (Persistence.isEnabled()) {
+      result = Persistence.entityByID(the_id, County.class);
+    } else {
+      result = BY_ID.get(the_id);
+    }
+    
+    return result;
   }
   
   /**

@@ -15,9 +15,13 @@ import java.io.IOException;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletRequestWrapper;
+import javax.servlet.ServletResponse;
+import javax.servlet.ServletResponseWrapper;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import spark.Request;
+import spark.Response;
 
 /**
  * A class of helper methods for use with Spark.
@@ -42,7 +46,7 @@ public final class SparkHelper {
    * @param the_request The request.
    * @return the raw request, unwrapped if possible.
    */
-  public static HttpServletRequest getRawRequest(final Request the_request) 
+  public static HttpServletRequest getRaw(final Request the_request) 
       throws IOException {
     HttpServletRequest raw = the_request.raw();
     
@@ -50,6 +54,29 @@ public final class SparkHelper {
       final ServletRequest sr = ((ServletRequestWrapper) raw).getRequest();
       if (sr instanceof HttpServletRequest) {
         raw = (HttpServletRequest) sr;
+      }
+    }
+
+    return raw;
+  }
+  
+  /**
+   * Gets the unwrapped raw response from a Spark response, if available;
+   * otherwise, gets the output of the_response.raw().
+   * This is used primarily to circumvent Spark's caching mechanism
+   * to handle large file downloads.
+   * 
+   * @param the_response The response.
+   * @return the raw response, unwrapped if possible.
+   */
+  public static HttpServletResponse getRaw(final Response the_response) 
+      throws IOException {
+    HttpServletResponse raw = the_response.raw();
+    
+    if (raw instanceof ServletResponseWrapper) {
+      final ServletResponse sr = ((ServletResponseWrapper) raw).getResponse();
+      if (sr instanceof HttpServletResponse) {
+        raw = (HttpServletResponse) sr;
       }
     }
 

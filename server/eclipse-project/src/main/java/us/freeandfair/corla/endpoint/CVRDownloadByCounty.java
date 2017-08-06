@@ -11,9 +11,14 @@
 
 package us.freeandfair.corla.endpoint;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.eclipse.jetty.http.HttpStatus;
 
 import spark.Request;
 import spark.Response;
@@ -21,6 +26,7 @@ import spark.Response;
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
+import us.freeandfair.corla.util.SparkHelper;
 
 /**
  * The ballot manifest download endpoint.
@@ -53,6 +59,14 @@ public class CVRDownloadByCounty implements Endpoint {
   public String endpoint(final Request the_request, final Response the_response) {
     final String[] counties = the_request.params(":counties").split(",");
     final Set<String> county_set = new HashSet<String>(Arrays.asList(counties));
-    return Main.GSON.toJson(CastVoteRecord.getMatching(county_set, RecordType.UPLOADED));
+    try {
+      final HttpServletResponse raw = SparkHelper.getRaw(the_response);
+      Main.GSON.toJson(CastVoteRecord.getMatching(county_set, RecordType.UPLOADED), 
+                       raw.getWriter());
+      return "";
+    } catch (final IOException e) {
+      the_response.status(HttpStatus.INTERNAL_SERVER_ERROR_500);
+      return "Unable to stream response.";
+    }
   }
 }

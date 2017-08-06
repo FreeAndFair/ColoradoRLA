@@ -13,13 +13,10 @@ package us.freeandfair.corla.csv;
 
 import java.util.List;
 
-import us.freeandfair.corla.model.CastVoteRecord;
-import us.freeandfair.corla.model.Contest;
-
 /**
  * A common interface to parsers for CVR info in various formats.
  * 
- * @author Joey Dodds <jdodds@freeandfair.us>
+ * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 0.0.1
  */
 public interface CVRExportParser {
@@ -33,12 +30,7 @@ public interface CVRExportParser {
   boolean parse();
   
   /**
-   * @return the CVRs parsed from the export data. 
+   * @return the IDs of the CVRs parsed from the export data. 
    */
-  List<CastVoteRecord> cvrs();
-  
-  /**
-   * @return the contest information inferred from the export data. 
-   */
-  List<Contest> contests();
+  List<Long> parsedIDs();
 }
