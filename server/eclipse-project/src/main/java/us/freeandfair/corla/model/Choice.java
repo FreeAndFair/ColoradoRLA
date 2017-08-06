@@ -6,6 +6,8 @@
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
  * @author Joey Dodds <jdodds@galois.com>
+ * @model_review Joe Kiniry <kiniry@freeandfair.us>
+ * @design In the formal model this concept is currently called "option".
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 

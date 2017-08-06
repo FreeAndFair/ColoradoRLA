@@ -6,6 +6,7 @@
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
+ * @model_review Joe Kiniry <kiniry@freeandfair.us>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
@@ -87,6 +88,9 @@ public class County implements Serializable {
    * 
    * @param the_name The county name.
    * @param the_id The county description.
+   * @review kiniry Counties should have IDs that are nats, not
+   * strings.  I presume some of the Javadoc text in this file was
+   * copied from Choice and not updated for County?
    */
   protected County(final String the_name, final String the_id) {
     my_name = the_name;

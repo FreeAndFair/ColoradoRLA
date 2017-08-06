@@ -6,6 +6,7 @@
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
  * @author Joey Dodds <jdodds@galois.com>
+ * @model_review Joe Kiniry <kiniry@freeandfair.us>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
@@ -95,7 +96,8 @@ public class Elector implements Serializable {
    * @param the_last_name The last name.
    * @param the_political_party The political party.
    */
-  protected Elector(final String the_first_name, final String the_last_name,
+  protected Elector(final String the_first_name,
+                    final String the_last_name,
                     final String the_political_party) {
     my_first_name = the_first_name;
     my_last_name = the_last_name;
@@ -118,7 +120,8 @@ public class Elector implements Serializable {
   public static synchronized Elector instance(final String the_first_name, 
                                               final String the_last_name,
                                               final String the_political_party) {
-    Elector result = new Elector(the_first_name, the_last_name, the_political_party);
+    Elector result =
+      new Elector(the_first_name, the_last_name, the_political_party);
     if (CACHE.containsKey(result)) {
       result = CACHE.get(result);
     } else {

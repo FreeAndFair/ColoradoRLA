@@ -6,6 +6,7 @@
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
+ * @model_review Joe Kiniry <kiniry@freeandfair.us>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
@@ -116,7 +117,8 @@ public class AuditBoardDashboard {
   }
   
   /**
-   * @return all the aCVRs that have been submitted to this dashboard in this round.
+   * @return all the aCVRs that have been submitted to this dashboard in 
+   * this round.
    */
   public Set<CastVoteRecord> auditCVRs() {
     final Set<CastVoteRecord> result = 

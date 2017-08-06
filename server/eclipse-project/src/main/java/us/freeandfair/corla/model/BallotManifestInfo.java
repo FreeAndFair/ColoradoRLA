@@ -67,7 +67,8 @@ public class BallotManifestInfo {
   private Long my_id = getID();
   
   /**
-   * The timestamp for this ballot manifest info, in milliseconds since the epoch.
+   * The timestamp for this ballot manifest info, in milliseconds
+   * since the epoch.
    */
   @Column(updatable = false, nullable = false)
   private Instant my_timestamp;
@@ -104,7 +105,8 @@ public class BallotManifestInfo {
   private String my_storage_location;
  
   /** 
-   * Constructs an empty ballot manifest information record, solely for persistence.
+   * Constructs an empty ballot manifest information record, solely
+   * for persistence.
    */
   protected BallotManifestInfo() {
     // default values for everything
@@ -121,8 +123,10 @@ public class BallotManifestInfo {
    * @param the_storage_location The storage location.
    */
   protected BallotManifestInfo(final Instant the_timestamp,
-                               final String the_county_id, final String the_scanner_id, 
-                               final String the_batch_id, final int the_batch_size, 
+                               final String the_county_id,
+                               final String the_scanner_id, 
+                               final String the_batch_id,
+                               final int the_batch_size, 
                                final String the_storage_location) {
     my_timestamp = the_timestamp;
     my_county_id = the_county_id;

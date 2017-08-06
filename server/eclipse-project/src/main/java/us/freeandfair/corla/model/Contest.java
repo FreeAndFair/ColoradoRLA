@@ -2,15 +2,11 @@
  * Free & Fair Colorado RLA System
  * 
  * @title ColoradoRLA
- * 
  * @created Jul 25, 2017
- * 
  * @copyright 2017 Free & Fair
- * 
  * @license GNU General Public License 3.0
- * 
  * @author Joey Dodds <jdodds@galois.com>
- * 
+ * @model_review Joe Kiniry <kiniry@freeandfair.us>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
@@ -41,8 +37,8 @@ import javax.persistence.Table;
 import us.freeandfair.corla.hibernate.Persistence;
 
 /**
- * The definition of a contest; comprises a contest name and a set of possible
- * choices.
+ * The definition of a contest; comprises a contest name and a set of
+ * possible choices.
  * 
  * @author Daniel M. Zimmerman
  * @version 0.0.1
@@ -130,8 +126,10 @@ public class Contest implements Serializable {
    * @param the_votes_allowed The maximum number of votes that can
    * be made in this contest.
    */
+  //@ requires 1 <= the_votes_allowed;
+  //@ requires the_votes_allowed <= the_choices.size();
   protected Contest(final String the_name, final String the_description, 
-                    final List<Choice> the_choices, final int the_votes_allowed) {
+                    final List<Choice> the_choices, final int the_votes_allowed)  {
     super();
     my_name = the_name;
     my_description = the_description;
