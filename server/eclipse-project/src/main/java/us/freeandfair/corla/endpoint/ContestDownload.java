@@ -16,8 +16,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jetty.http.HttpStatus;
 
 import spark.Request;

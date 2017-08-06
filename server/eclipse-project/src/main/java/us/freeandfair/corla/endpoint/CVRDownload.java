@@ -17,8 +17,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.HashSet;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jetty.http.HttpStatus;
 
 import spark.Request;

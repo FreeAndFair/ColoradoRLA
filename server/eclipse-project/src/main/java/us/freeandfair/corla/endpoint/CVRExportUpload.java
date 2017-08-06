@@ -20,7 +20,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.time.Instant;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,8 +39,6 @@ import us.freeandfair.corla.Main;
 import us.freeandfair.corla.csv.CVRExportParser;
 import us.freeandfair.corla.csv.DominionCVRExportParser;
 import us.freeandfair.corla.hibernate.Persistence;
-import us.freeandfair.corla.model.CastVoteRecord;
-import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.model.UploadedFile.FileType;
 import us.freeandfair.corla.model.UploadedFile.HashStatus;
@@ -192,13 +189,14 @@ public class CVRExportUpload implements Endpoint {
         }
         Main.LOGGER.info(parser.parsedIDs().size() + " CVRs parsed from " + county + 
                          " county upload file");
+        /*
         Main.LOGGER.info(CastVoteRecord.countMatching(new HashSet<String>(), 
                                                       RecordType.UPLOADED) + 
                          " uploaded CVRs in storage");
+                         */
         attemptFilePersistence(the_info.my_file, county, hash);
       } catch (final RuntimeException | IOException e) {
         Main.LOGGER.info("could not parse malformed CVR export file: " + e);
-        e.printStackTrace();
         the_info.my_ok = false;
         the_info.my_response_status = HttpStatus.UNPROCESSABLE_ENTITY_422;
         the_info.my_response_string = "Malformed CVR Export File";

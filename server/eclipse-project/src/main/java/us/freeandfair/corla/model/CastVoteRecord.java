@@ -37,11 +37,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.hibernate.query.Query;
-
 import us.freeandfair.corla.hibernate.Persistence;
 
 /**
@@ -326,64 +321,6 @@ public class CastVoteRecord implements Serializable {
       }
     }
     
-    return result;
-  }
-  
-  /**
-   * Counts the number of CVRs that match the specified counties and record type.
-   * 
-   * @param the_county_ids The county ID to retrieve CVRs for; if this set is 
-   * empty or null, all CVRs for all counties are retrieved.
-   * @param the_record_type The record type to retrieve.
-   * @return the number of requested CVRs, or -1 if there was an error counting them.
-   */
-  //TODO think of a better way to do this, or eliminate it entirely
-  public static synchronized long countMatching(final Set<String> the_county_ids,
-                                                final RecordType the_record_type) {
-    long result = 0;
-    final Set<String> counties_to_check = new HashSet<String>();
-
-    if (the_county_ids != null) {
-      counties_to_check.addAll(the_county_ids);
-    }
-
-    if (Persistence.isEnabled()) {
-      // do this as a database query
-      Transaction t = null;
-      try {
-        final Session s = Persistence.currentSession();
-        t = s.beginTransaction();
-        if (counties_to_check.isEmpty()) {
-          final Query<Long> query = 
-              s.createQuery("select count(1) from CastVoteRecord where record_type = " +
-                            the_record_type.ordinal(), 
-                            Long.class);
-          result = result + query.getSingleResult();         
-        } else {
-          for (final String county_id : the_county_ids) {
-            final Query<Long> query = 
-                s.createQuery("select count(1) from CastVoteRecord where record_type = " +
-                              the_record_type.ordinal() + " and county_id = " + county_id, 
-                              Long.class);
-            result = result + query.getSingleResult();
-          }
-        }
-        t.commit();
-      } catch (final HibernateException e) {
-        if (t != null) {
-          t.rollback();
-        }
-        result = -1;
-      }
-    } else {
-      for (final CastVoteRecord cvr : CACHE.keySet()) {
-        if ((counties_to_check.isEmpty() || counties_to_check.contains(cvr.countyID())) &&
-            the_record_type == cvr.recordType()) {
-          result = result + 1;
-        }
-      }
-    }
-
     return result;
   }
 
