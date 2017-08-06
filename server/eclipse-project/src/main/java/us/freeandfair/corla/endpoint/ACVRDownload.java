@@ -13,10 +13,9 @@ package us.freeandfair.corla.endpoint;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.HashSet;
-
-import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.http.HttpStatus;
 
@@ -58,10 +57,13 @@ public class ACVRDownload implements Endpoint {
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
     try {
-      final HttpServletResponse raw = SparkHelper.getRaw(the_response);
+      final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
+      final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
+      
       Main.GSON.toJson(CastVoteRecord.getMatching(new HashSet<String>(), 
                                                   RecordType.AUDITOR_ENTERED),
-                       new BufferedWriter(new OutputStreamWriter(raw.getOutputStream())));
+                       bw);
+      bw.flush();
       return "";
     } catch (final IOException e) {
       the_response.status(HttpStatus.INTERNAL_SERVER_ERROR_500);
