@@ -17,12 +17,10 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -32,7 +30,8 @@ import org.hibernate.Transaction;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.hibernate.Persistence;
-import us.freeandfair.corla.model.BallotStyle;
+import us.freeandfair.corla.model.CVRContestInfo;
+import us.freeandfair.corla.model.CVRContestInfo.ConsensusValue;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.Choice;
@@ -92,18 +91,12 @@ public class DominionCVRExportParser implements CVRExportParser {
   /**
    * The list of CVRs parsed from the supplied data export.
    */
-  private final List<CastVoteRecord> my_cvrs = new ArrayList<CastVoteRecord>();
+  private final List<Long> my_cvr_ids = new ArrayList<Long>();
   
   /**
    * The list of contests parsed from the supplied data export.
    */
   private final List<Contest> my_contests = new ArrayList<Contest>();
-  
-  /**
-   * The ballot styles inferred from the supplied data export.
-   */
-  private final Map<String, BallotStyle> my_ballot_styles = 
-      new HashMap<String, BallotStyle>();
   
   /**
    * The ID of the county whose CVRs we are parsing.
@@ -221,16 +214,15 @@ public class DominionCVRExportParser implements CVRExportParser {
       while (index < end) {
         final String ch = the_choice_line.get(index).trim();
         final String ex = the_expl_line.get(index).trim();
-        choices.add(Persistence.getEntity(Choice.instance(ch, ex), Choice.class,
-                                          my_session));
+        choices.add(new Choice(ch, ex));
         index = index + 1;
       }
       // now that we have all the choices, we can create a Contest object for 
       // this contest (note the empty contest description at the moment, below, 
       // as that's not in the CVR files and may not actually be used)
-      my_contests.add(Persistence.getEntity(Contest.instance(cn, "", choices, 
+      my_contests.add(Persistence.matchingEntity(Contest.instance(cn, "", choices, 
                                                              the_votes_allowed.get(cn)),
-                                            Contest.class, my_session));
+                                                 Contest.class));
     }
   }
   
@@ -252,53 +244,37 @@ public class DominionCVRExportParser implements CVRExportParser {
           stripEqualQuotes(the_line.get(RECORD_ID_COLUMN));
       final String imprinted_id = 
           stripEqualQuotes(the_line.get(IMPRINTED_ID_COLUMN));
-      final String ballot_style_name = 
+      final String ballot_type = 
           stripEqualQuotes(the_line.get(BALLOT_TYPE_COLUMN));
-      final List<Contest> contests = new ArrayList<Contest>();
-      final Map<Contest, Set<Choice>> choices = new HashMap<Contest, Set<Choice>>();
+      final List<CVRContestInfo> contest_info = new ArrayList<CVRContestInfo>();
       
       // for each contest, see if choices exist on the CVR; "0" or "1" are
       // votes or absences of votes; "" means that the contest is not in this style
       int index = FIRST_CHOICE_COLUMN;
       for (final Contest co : my_contests) {
         boolean present = false;
-        final Set<Choice> votes = new HashSet<Choice>();
+        final List<String> votes = new ArrayList<String>();
         for (final Choice ch : co.choices()) {
           final String mark_string = the_line.get(index);
           final boolean p = !mark_string.isEmpty();
           final boolean mark = "1".equals(mark_string);
           present |= p;
           if (p && mark) {
-            votes.add(ch);
+            votes.add(ch.name());
           }
           index = index + 1;
         }
         // if this contest was on the ballot, add it to the votes
         if (present) {
-          contests.add(co);
-          choices.put(co, votes);
+          contest_info.add(CVRContestInfo.instance(co, null, 
+                                                   ConsensusValue.UNDEFINED, votes));
         }
-      }
-      
-      // we should now have the votes for each contest; if the ballot style
-      // doesn't exist for this ballot style name, create it now
-      
-      if (!my_ballot_styles.containsKey(ballot_style_name)) {
-        final BallotStyle bs = BallotStyle.instance(ballot_style_name, contests);
-        /*
-        if (my_session != Persistence.NO_SESSION) {
-          my_session.save(bs);
-        }
-        */
-        my_ballot_styles.put(ballot_style_name, bs);
       }
       
       return CastVoteRecord.instance(RecordType.UPLOADED, 
                                      the_timestamp, my_county_id, 
                                      tabulator_id, batch_id, record_id, imprinted_id, 
-                                     my_ballot_styles.get(ballot_style_name), choices,
-                                     new HashMap<Contest, String>(), 
-                                     new HashMap<Contest, Boolean>());
+                                     ballot_type, contest_info);
     } catch (final NumberFormatException e) {
       return null;
     } catch (final ArrayIndexOutOfBoundsException e) {
@@ -324,8 +300,8 @@ public class DominionCVRExportParser implements CVRExportParser {
       my_transaction.rollback();
       my_session.close();
     }
-    for (final CastVoteRecord cvr : my_cvrs) {
-      CastVoteRecord.forget(cvr);
+    for (final Long id : my_cvr_ids) {
+      CastVoteRecord.forget(id);
     }
   }
   
@@ -382,7 +358,7 @@ public class DominionCVRExportParser implements CVRExportParser {
           Main.LOGGER.error("Could not parse malformed CVR record (" + cvr_line + ")");
           result = false;          
         } else {
-          my_cvrs.add(cvr);
+          my_cvr_ids.add(cvr.id());
         }
       }
     } catch (final NoSuchElementException | StringIndexOutOfBoundsException |
@@ -407,23 +383,7 @@ public class DominionCVRExportParser implements CVRExportParser {
    * @return the CVRs parsed from the supplied data export.
    */
   @Override
-  public synchronized List<CastVoteRecord> cvrs() {
-    return Collections.unmodifiableList(my_cvrs);
-  }
-
-  /**
-   * @return the contests inferred from the supplied data export.
-   */
-  @Override
-  public synchronized List<Contest> contests() {
-    return Collections.unmodifiableList(my_contests);
-  }
-
-  /**
-   * @return the ballot styles inferred from the supplied data export.
-   */
-  @Override
-  public synchronized Set<BallotStyle> ballotStyles() {
-    return new HashSet<BallotStyle>(my_ballot_styles.values());
+  public synchronized List<Long> parsedIDs() {
+    return Collections.unmodifiableList(my_cvr_ids);
   }
 }

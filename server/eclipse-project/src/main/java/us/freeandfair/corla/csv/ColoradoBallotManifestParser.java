@@ -74,10 +74,9 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
   private final CSVParser my_parser;
   
   /**
-   * The list of ballot manifest information parsed from the supplied data.
+   * The list of ballot manifest information IDs parsed from the supplied data.
    */
-  private final List<BallotManifestInfo> my_manifest_info = 
-      new ArrayList<BallotManifestInfo>();
+  private final List<Long> my_manifest_info = new ArrayList<Long>();
   
   
   /**
@@ -126,18 +125,11 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
   }
   
   /**
-   * Commits the changes from the parsing to persistent storage.
-   */
-  private void commit() {
-    // nothing to do here, because we don't have persistence yet
-  }
-  
-  /**
    * Aborts the changes from parsing.
    */
   private void abort() {
-    for (final BallotManifestInfo bmi : my_manifest_info) {
-      BallotManifestInfo.forget(bmi);
+    for (final Long id : my_manifest_info) {
+      BallotManifestInfo.forget(id);
     }
   }
   
@@ -172,7 +164,7 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
                             bmi_line + ")");
           result = false;          
         } else {
-          my_manifest_info.add(bmi);
+          my_manifest_info.add(bmi.id());
         }
       }
     } catch (final NoSuchElementException e) {
@@ -181,13 +173,11 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
       result = false;
     }
     
+    my_parse_status = true;
+
     // if we had any kind of parse error, we scrap the whole import
     
-    my_parse_success = result;
-    my_parse_status = true;
-    if (my_parse_success) {
-      commit();
-    } else {
+    if (!result) {
       abort();
     }
 
@@ -198,7 +188,7 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
    * @return the CVRs parsed from the supplied data export.
    */
   @Override
-  public synchronized List<BallotManifestInfo> ballotManifestInfo() {
+  public synchronized List<Long> parsedIDs() {
     return Collections.unmodifiableList(my_manifest_info);
   }
 }

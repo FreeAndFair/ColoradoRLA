@@ -15,11 +15,14 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import us.freeandfair.corla.hibernate.Persistence;
 
 /**
  * A county involved in an audit.
@@ -29,6 +32,9 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "county")
+// this class has many fields that would normally be declared final, but
+// cannot be for compatibility with Hibernate and JPA.
+@SuppressWarnings("PMD.ImmutableField")
 public class County implements Serializable {
   /**
    * The serialVersionUID.
@@ -56,33 +62,34 @@ public class County implements Serializable {
    * The database ID of this county.
    */
   @Id
-  @GeneratedValue(strategy = GenerationType.TABLE)
-  @SuppressWarnings("PMD.ImmutableField")
-  private long my_id = getID();
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  @Column(updatable = false, nullable = false)
+  private Long my_id;
 
   /**
    * The county name.
    */
-  private final String my_name;
+  @Column(nullable = false, updatable = false)
+  private String my_name;
 
   /**
    * The county ID.
    */
-  private final String my_identifier;
+  @Column(nullable = false, updatable = false)
+  private String my_identifier;
   
   /**
    * Constructs an empty county, solely for persistence. 
    */
   protected County() {
-    my_name = "";
-    my_identifier = "";
+    // default values
   }
     
   /**
    * Constructs a county with the specified parameters.
    * 
    * @param the_name The county name.
-   * @param the_id The county description.
+   * @param the_id The county ID.
    */
   protected County(final String the_name, final String the_id) {
     my_name = the_name;
@@ -97,31 +104,47 @@ public class County implements Serializable {
   }
 
   /**
-   * Returns a choice with the specified parameters.
+   * Returns a county with the specified parameters.
    * 
-   * @param the_name The choice name.
-   * @param the_description The choice description.
+   * @param the_name The county name.
+   * @param the_description The county ID.
    */
   public static synchronized County instance(final String the_name, 
                                              final String the_id) {
-    County result = new County(the_name, the_id);
-    if (CACHE.containsKey(result)) {
-      result = CACHE.get(result);
-    } else {
-      CACHE.put(result, result);
-      BY_ID.put(result.id(), result);
+    County result = 
+        Persistence.matchingEntity(new County(the_name, the_id), 
+                                   County.class);
+
+    if (!Persistence.isEnabled()) {
+      // cache ourselves because persistence is not enabled
+      if (CACHE.containsKey(result)) {
+        result = CACHE.get(result);
+      } else {
+        result.my_id = getID();
+        CACHE.put(result, result);
+        BY_ID.put(result.id(), result);
+      }
     }
+    
     return result;
   }
   
   /**
-   * Returns the choice with the specified ID.
+   * Returns the county with the specified ID.
    * 
    * @param the_id The ID.
-   * @return the choice, or null if it doesn't exist.
+   * @return the county, or null if it doesn't exist.
    */
   public static synchronized County byID(final long the_id) {
-    return BY_ID.get(the_id);
+    final County result;
+    
+    if (Persistence.isEnabled()) {
+      result = Persistence.entityByID(the_id, County.class);
+    } else {
+      result = BY_ID.get(the_id);
+    }
+    
+    return result;
   }
   
   /**

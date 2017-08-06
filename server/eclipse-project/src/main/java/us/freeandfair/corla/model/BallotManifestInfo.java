@@ -11,6 +11,8 @@
 
 package us.freeandfair.corla.model;
 
+import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
+
 import java.time.Instant;
 import java.util.Collection;
 import java.util.HashMap;
@@ -18,11 +20,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import us.freeandfair.corla.hibernate.Persistence;
 
 /**
  * Information about the locations of specific batches of ballots.
@@ -32,6 +37,9 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "ballot_manifest_info")
+// this class has many fields that would normally be declared final, but
+// cannot be for compatibility with Hibernate and JPA.
+@SuppressWarnings("PMD.ImmutableField")
 public class BallotManifestInfo {
   /**
    * The current ID number to be used.
@@ -54,51 +62,52 @@ public class BallotManifestInfo {
    * The database ID for this ballot manifest info.
    */
   @Id
-  @GeneratedValue(strategy = GenerationType.TABLE)
-  @SuppressWarnings("PMD.ImmutableField")
-  private long my_id = getID();
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  @Column(updatable = false, nullable = false)
+  private Long my_id;
   
   /**
    * The timestamp for this ballot manifest info, in milliseconds since the epoch.
    */
-  private final Instant my_timestamp;
+  @Column(updatable = false, nullable = false)
+  private Instant my_timestamp;
   
   /**
    * The ID number of the county in which the batch was scanned.
    */
-  private final String my_county_id;
+  @Column(updatable = false, nullable = false)
+  private String my_county_id;
   //@ private invariant my_county_id >= 0;
   
   /**
    * The ID number of the scanner that scanned the batch.
    */
-  private final String my_scanner_id;
+  @Column(updatable = false, nullable = false)
+  private String my_scanner_id;
 
   /**
    * The batch number.
    */
-  private final String my_batch_id;
+  @Column(updatable = false, nullable = false)
+  private String my_batch_id;
   
   /**
    * The size of the batch.
    */
-  private final int my_batch_size;
+  @Column(updatable = false, nullable = false)
+  private Integer my_batch_size;
   
   /**
    * The storage location for the batch.
    */
-  private final String my_storage_location;
+  @Column(updatable = false, nullable = false)
+  private String my_storage_location;
  
   /** 
    * Constructs an empty ballot manifest information record, solely for persistence.
    */
   protected BallotManifestInfo() {
-    my_timestamp = Instant.now();
-    my_county_id = "";
-    my_scanner_id = "";
-    my_batch_id = "";
-    my_batch_size = 0;
-    my_storage_location = "";
+    // default values for everything
   }
   
   /**
@@ -133,8 +142,12 @@ public class BallotManifestInfo {
   /**
    * Returns a ballot manifest info with the specified parameters.
    * 
-   * @param the_name The ballot style name.
-   * @param the_contests The list of contests on a ballot of this style.
+   * @param the_timestamp The timestamp.
+   * @param the_county_id The county ID.
+   * @param the_scanner_id The scanner ID.
+   * @param the_batch_id The batch ID.
+   * @param the_batch_size The batch size.
+   * @param the_storage_location The storage location.
    */
   @SuppressWarnings("PMD.UseObjectForClearerAPI")
   public static synchronized BallotManifestInfo instance(final Instant the_timestamp,
@@ -143,15 +156,23 @@ public class BallotManifestInfo {
                                                          final String the_batch_id, 
                                                          final int the_batch_size, 
                                                          final String the_storage_location) {
-    BallotManifestInfo result = new BallotManifestInfo(the_timestamp, the_county_id,
-                                                       the_scanner_id, the_batch_id,
-                                                       the_batch_size, the_storage_location);
-    if (CACHE.containsKey(result)) {
-      result = CACHE.get(result);
-    } else {
-      CACHE.put(result, result);
-      BY_ID.put(result.id(), result);
+    BallotManifestInfo result = 
+        Persistence.matchingEntity(new BallotManifestInfo(the_timestamp, the_county_id,
+                                                     the_scanner_id, the_batch_id,
+                                                     the_batch_size, the_storage_location),
+                              BallotManifestInfo.class);
+
+    if (!Persistence.isEnabled()) {
+      // cache ourselves because persistence is not enabled
+      if (CACHE.containsKey(result)) {
+        result = CACHE.get(result);
+      } else {
+        result.my_id = getID();
+        CACHE.put(result, result);
+        BY_ID.put(result.id(), result);
+      }
     }
+    
     return result;
   }
   
@@ -162,7 +183,15 @@ public class BallotManifestInfo {
    * @return the ballot manifest info, or null if it doesn't exist.
    */
   public static synchronized BallotManifestInfo byID(final long the_id) {
-    return BY_ID.get(the_id);
+    final BallotManifestInfo result;
+    
+    if (Persistence.isEnabled()) {
+      result = Persistence.entityByID(the_id, BallotManifestInfo.class);
+    } else {
+      result = BY_ID.get(the_id);
+    }
+    
+    return result;
   }
   
   /**
@@ -170,9 +199,34 @@ public class BallotManifestInfo {
    * 
    * @param the_bmi The info to "forget".
    */
-  public static synchronized void forget(final BallotManifestInfo the_bmi) {
-    CACHE.remove(the_bmi);
-    BY_ID.remove(the_bmi.id());
+  public static synchronized boolean forget(final BallotManifestInfo the_bmi) {
+    boolean result = true;
+    
+    if (Persistence.isEnabled()) {
+      result = Persistence.removeEntity(the_bmi);
+    } else {
+      CACHE.remove(the_bmi);
+      BY_ID.remove(the_bmi.id());
+    }
+    
+    return result;
+  }
+  
+  /**
+   * "Forgets" the ballot manifest info with the specified ID.
+   * 
+   * @param the_id The ID to forget.
+   */
+  public static synchronized boolean forget(final Long the_id) {
+    boolean result = true;
+    
+    if (Persistence.isEnabled()) {
+      result = Persistence.removeEntity(the_id, BallotManifestInfo.class);
+    } else {
+      forget(BY_ID.get(the_id));
+    }
+    
+    return result;
   }
   
   /**
@@ -186,13 +240,29 @@ public class BallotManifestInfo {
   public static synchronized Collection<BallotManifestInfo> 
       getMatching(final Set<String> the_county_ids) {
     final Set<BallotManifestInfo> result = new HashSet<BallotManifestInfo>();
-    final boolean check_county = the_county_ids != null && !the_county_ids.isEmpty();
+    final Set<String> counties_to_check = new HashSet<String>(); 
     
-    for (final BallotManifestInfo bmi : CACHE.keySet()) {
-      if (check_county && !the_county_ids.contains(bmi.countyID())) {
-        continue;
+    if (the_county_ids != null) {
+      counties_to_check.addAll(the_county_ids);
+    }
+    
+    if (Persistence.isEnabled()) {
+      final BallotManifestInfo template = new BallotManifestInfo();
+      if (counties_to_check.isEmpty()) {
+        result.addAll(Persistence.matchingEntities(template, BallotManifestInfo.class));
+      } else {
+        for (final String county_id : counties_to_check) {
+          template.my_county_id = county_id;
+          result.addAll(Persistence.matchingEntities(template, 
+                                                     BallotManifestInfo.class));
+        }
+      } 
+    } else {
+      for (final BallotManifestInfo bmi : CACHE.keySet()) {
+        if (counties_to_check.contains(bmi.countyID())) {
+          result.add(bmi);
+        }
       }
-      result.add(bmi);
     }
     
     return result;
@@ -202,7 +272,16 @@ public class BallotManifestInfo {
    * @return all known ballot manifest information.
    */
   public static synchronized Collection<BallotManifestInfo> getAll() {
-    return new HashSet<BallotManifestInfo>(CACHE.keySet());
+    final Set<BallotManifestInfo> result = new HashSet<BallotManifestInfo>();
+    
+    if (Persistence.isEnabled()) {
+      result.addAll(Persistence.matchingEntities(new BallotManifestInfo(), 
+                                                 BallotManifestInfo.class));
+    } else {
+      result.addAll(CACHE.keySet());
+    }
+    
+    return result;
   }
 
   /**
@@ -243,7 +322,7 @@ public class BallotManifestInfo {
   /**
    * @return the batch size.
    */
-  public int batchSize() {
+  public Integer batchSize() {
     return my_batch_size;
   }
   
@@ -276,12 +355,12 @@ public class BallotManifestInfo {
     boolean result = true;
     if (the_other instanceof BallotManifestInfo) {
       final BallotManifestInfo other_bmi = (BallotManifestInfo) the_other;
-      result &= other_bmi.timestamp().equals(timestamp());
-      result &= other_bmi.countyID().equals(countyID());
-      result &= other_bmi.scannerID().equals(scannerID());
-      result &= other_bmi.batchID().equals(batchID());
-      result &= other_bmi.batchSize() == batchSize();
-      result &= other_bmi.storageLocation().equals(storageLocation());
+      result &= nullableEquals(other_bmi.timestamp(), timestamp());
+      result &= nullableEquals(other_bmi.countyID(), countyID());
+      result &= nullableEquals(other_bmi.scannerID(), scannerID());
+      result &= nullableEquals(other_bmi.batchID(), batchID());
+      result &= nullableEquals(other_bmi.batchSize(), batchSize());
+      result &= nullableEquals(other_bmi.storageLocation(), storageLocation());
     } else {
       result = false;
     }

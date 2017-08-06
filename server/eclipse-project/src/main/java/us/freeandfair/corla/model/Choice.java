@@ -11,15 +11,9 @@
 
 package us.freeandfair.corla.model;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import java.io.Serializable;
 
 /**
  * A contest choice; has a name and a description.
@@ -27,38 +21,11 @@ import javax.persistence.Table;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-@Entity
-@Table(name = "choice")
 public class Choice implements Serializable {
   /**
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1L;
-
-  /**
-   * The table of objects that have been created.
-   */
-  private static final Map<Choice, Choice> CACHE = 
-      new HashMap<Choice, Choice>();
-  
-  /**
-   * The table of objects by ID.
-   */
-  private static final Map<Long, Choice> BY_ID =
-      new HashMap<Long, Choice>();
-  
-  /**
-   * The current ID number to be used.
-   */
-  private static long current_id;
- 
-  /**
-   * The database ID of this choice.
-   */
-  @Id
-  @GeneratedValue(strategy = GenerationType.TABLE)
-  @SuppressWarnings("PMD.ImmutableField")
-  private long my_id = getID();
 
   /**
    * The choice name.
@@ -71,64 +38,14 @@ public class Choice implements Serializable {
   private final String my_description;
   
   /**
-   * Constructs an empty choice, solely for persistence. 
-   */
-  protected Choice() {
-    my_name = "";
-    my_description = "";
-  }
-    
-  /**
    * Constructs a choice with the specified parameters.
    * 
    * @param the_name The choice name.
    * @param the_description The choice description.
    */
-  protected Choice(final String the_name, final String the_description) {
+  public Choice(final String the_name, final String the_description) {
     my_name = the_name;
     my_description = the_description;
-  }
-  
-  /**
-   * @return the next ID
-   */
-  private static synchronized long getID() {
-    return current_id++;
-  }
-
-  /**
-   * Returns a choice with the specified parameters.
-   * 
-   * @param the_name The choice name.
-   * @param the_description The choice description.
-   */
-  public static synchronized Choice instance(final String the_name, 
-                                             final String the_description) {
-    Choice result = new Choice(the_name, the_description);
-    if (CACHE.containsKey(result)) {
-      result = CACHE.get(result);
-    } else {
-      CACHE.put(result, result);
-      BY_ID.put(result.id(), result);
-    }
-    return result;
-  }
-  
-  /**
-   * Returns the choice with the specified ID.
-   * 
-   * @param the_id The ID.
-   * @return the choice, or null if it doesn't exist.
-   */
-  public static synchronized Choice byID(final long the_id) {
-    return BY_ID.get(the_id);
-  }
-  
-  /**
-   * @return the database ID.
-   */
-  public long id() {
-    return my_id;
   }
   
   /**
@@ -165,8 +82,8 @@ public class Choice implements Serializable {
     boolean result = true;
     if (the_other instanceof Choice) {
       final Choice other_choice = (Choice) the_other;
-      result &= other_choice.name().equals(name());
-      result &= other_choice.description().equals(description());
+      result &= nullableEquals(other_choice.name(), name());
+      result &= nullableEquals(other_choice.description(), description());
     } else {
       result = false;
     }
