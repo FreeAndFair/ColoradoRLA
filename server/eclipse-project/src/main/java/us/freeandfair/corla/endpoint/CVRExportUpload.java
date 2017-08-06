@@ -121,7 +121,7 @@ public class CVRExportUpload implements Endpoint {
   private void handleUpload(final Request the_request,
                             final UploadInformation the_info) {
     try {
-      final HttpServletRequest raw = SparkHelper.getRawRequest(the_request);
+      final HttpServletRequest raw = SparkHelper.getRaw(the_request);
       the_info.my_ok = ServletFileUpload.isMultipartContent(raw);
       
       Main.LOGGER.info("handling CVR upload request from " + raw.getRemoteHost());
@@ -190,7 +190,7 @@ public class CVRExportUpload implements Endpoint {
           the_info.my_ok = false;
           the_info.my_response_string = "Malformed CVR Export File";
         }
-        Main.LOGGER.info(parser.cvrs().size() + " CVRs parsed from " + county + 
+        Main.LOGGER.info(parser.parsedIDs().size() + " CVRs parsed from " + county + 
                          " county upload file");
         Main.LOGGER.info(CastVoteRecord.getMatching(new HashSet<String>(), 
                                                     RecordType.UPLOADED).size() + 

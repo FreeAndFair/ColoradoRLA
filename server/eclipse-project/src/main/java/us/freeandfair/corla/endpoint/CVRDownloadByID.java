@@ -49,6 +49,8 @@ public class CVRDownloadByID implements Endpoint {
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
     String result = null;
+    int status = HttpStatus.OK_200;
+    
     try {
       final CastVoteRecord c = 
           CastVoteRecord.byID(Long.parseLong(the_request.params(":id")));
@@ -56,12 +58,15 @@ public class CVRDownloadByID implements Endpoint {
         result = Main.GSON.toJson(c);
       }
     } catch (final NumberFormatException e) {
-      // ignore
+      status = HttpStatus.BAD_REQUEST_400;
+      result = "Bad CVR ID";
     }
     if (result == null) {
-      the_response.status(HttpStatus.BAD_REQUEST_400);
-      result = "Not OK";
+      status = HttpStatus.NOT_FOUND_404;
+      result = "CVR not found";
     }
+    
+    the_response.status(status);
     return result;
   }
 }

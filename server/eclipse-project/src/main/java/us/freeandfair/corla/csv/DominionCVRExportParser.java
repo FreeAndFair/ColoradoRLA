@@ -91,7 +91,7 @@ public class DominionCVRExportParser implements CVRExportParser {
   /**
    * The list of CVRs parsed from the supplied data export.
    */
-  private final List<CastVoteRecord> my_cvrs = new ArrayList<CastVoteRecord>();
+  private final List<Long> my_cvr_ids = new ArrayList<Long>();
   
   /**
    * The list of contests parsed from the supplied data export.
@@ -300,8 +300,8 @@ public class DominionCVRExportParser implements CVRExportParser {
       my_transaction.rollback();
       my_session.close();
     }
-    for (final CastVoteRecord cvr : my_cvrs) {
-      CastVoteRecord.forget(cvr);
+    for (final Long id : my_cvr_ids) {
+      CastVoteRecord.forget(id);
     }
   }
   
@@ -358,7 +358,7 @@ public class DominionCVRExportParser implements CVRExportParser {
           Main.LOGGER.error("Could not parse malformed CVR record (" + cvr_line + ")");
           result = false;          
         } else {
-          my_cvrs.add(cvr);
+          my_cvr_ids.add(cvr.id());
         }
       }
     } catch (final NoSuchElementException | StringIndexOutOfBoundsException |
@@ -383,15 +383,7 @@ public class DominionCVRExportParser implements CVRExportParser {
    * @return the CVRs parsed from the supplied data export.
    */
   @Override
-  public synchronized List<CastVoteRecord> cvrs() {
-    return Collections.unmodifiableList(my_cvrs);
-  }
-
-  /**
-   * @return the contests inferred from the supplied data export.
-   */
-  @Override
-  public synchronized List<Contest> contests() {
-    return Collections.unmodifiableList(my_contests);
+  public synchronized List<Long> parsedIDs() {
+    return Collections.unmodifiableList(my_cvr_ids);
   }
 }

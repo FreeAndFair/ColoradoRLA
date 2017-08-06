@@ -267,6 +267,23 @@ public class CastVoteRecord implements Serializable {
   }
   
   /**
+   * "Forgets" the cast vote record with the specified ID.
+   * 
+   * @param the_id The ID to forget.
+   */
+  public static synchronized boolean forget(final Long the_id) {
+    boolean result = true;
+    
+    if (Persistence.isEnabled()) {
+      result = Persistence.removeEntity(the_id, CastVoteRecord.class);
+    } else {
+      forget(BY_ID.get(the_id));
+    }
+    
+    return result;
+  }
+  
+  /**
    * Gets all CVRs that match the specified counties and record type.
    * 
    * @param the_county_ids The county ID to retrieve CVRs for; if this set is 

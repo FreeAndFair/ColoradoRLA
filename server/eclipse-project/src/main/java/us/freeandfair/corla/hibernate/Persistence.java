@@ -38,6 +38,7 @@ import us.freeandfair.corla.model.CVRContestInfo;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.Choice;
 import us.freeandfair.corla.model.Contest;
+import us.freeandfair.corla.model.Elector;
 import us.freeandfair.corla.model.UploadedFile;
 
 /**
@@ -164,6 +165,7 @@ public final class Persistence {
       sources.addAnnotatedClass(Choice.class);
       sources.addAnnotatedClass(Contest.class);
       sources.addAnnotatedClass(CVRContestInfo.class);
+      sources.addAnnotatedClass(Elector.class);
       sources.addAnnotatedClass(UploadedFile.class);
       final Metadata metadata = sources.getMetadataBuilder().build();
       
@@ -217,7 +219,7 @@ public final class Persistence {
     
     try {
       transaction = currentSession().beginTransaction();
-      currentSession().remove(the_object);
+      currentSession().delete(the_object);
       transaction.commit();
     } catch (final HibernateException e) {
       if (transaction != null) {
@@ -233,6 +235,39 @@ public final class Persistence {
     
     return result;
   }
+  
+  /**
+   * Removes the specified object from the database, by ID and class.
+   * 
+   * @param the_id The object ID.
+   * @param the_class The class of the object to remove.
+   * @return true if the remove succeeded, false otherwise.
+   */
+  public static boolean removeEntity(final Serializable the_id, final Class<?> the_class) {
+    boolean result = true;
+    Transaction transaction = null;
+    
+    try {
+      transaction = currentSession().beginTransaction();
+      final Object o = currentSession().load(the_class, the_id);
+      currentSession().delete(o);
+      transaction.commit();
+    } catch (final HibernateException e) {
+      if (transaction != null) {
+        try {
+          transaction.rollback();
+        } catch (final IllegalStateException | PersistenceException ex) {
+          // ignore
+        }
+        Main.LOGGER.info("Exception while forgetting entity " + the_class + "/" + the_id + 
+                         ": " + e);
+        result = false;
+      }     
+    }
+    
+    return result;    
+  }
+  
   /**
    * Gets the entity in the current session that has the specified ID and class.
    * 
