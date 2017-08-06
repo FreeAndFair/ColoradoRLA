@@ -11,7 +11,9 @@
 
 package us.freeandfair.corla.endpoint;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.HashSet;
 
 import javax.servlet.http.HttpServletResponse;
@@ -59,7 +61,7 @@ public class CVRDownload implements Endpoint {
       final HttpServletResponse raw = SparkHelper.getRaw(the_response);
       Main.GSON.toJson(CastVoteRecord.getMatching(new HashSet<String>(), 
                                                   RecordType.UPLOADED), 
-                       raw.getWriter());
+                       new BufferedWriter(new OutputStreamWriter(raw.getOutputStream())));
       return "";
     } catch (final IOException e) {
       the_response.status(HttpStatus.INTERNAL_SERVER_ERROR_500);

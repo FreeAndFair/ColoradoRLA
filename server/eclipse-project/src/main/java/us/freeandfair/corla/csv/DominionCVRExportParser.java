@@ -222,7 +222,7 @@ public class DominionCVRExportParser implements CVRExportParser {
       // as that's not in the CVR files and may not actually be used)
       my_contests.add(Persistence.matchingEntity(Contest.instance(cn, "", choices, 
                                                              the_votes_allowed.get(cn)),
-                                            Contest.class));
+                                                 Contest.class));
     }
   }
   

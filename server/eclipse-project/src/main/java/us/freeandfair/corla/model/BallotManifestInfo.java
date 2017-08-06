@@ -64,7 +64,7 @@ public class BallotManifestInfo {
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
   @Column(updatable = false, nullable = false)
-  private Long my_id = getID();
+  private Long my_id;
   
   /**
    * The timestamp for this ballot manifest info, in milliseconds since the epoch.
