@@ -280,17 +280,20 @@ votes.
 
 * **ballot storage bin** A physical container for a set of paper ballots.
 
-* **batch** a subset of the set of Ballots.
+* **batch** a set of ballots which has a numeric id and a size (the
+  number of ballots contained in the batch).
 
-* **batch size** the number of Ballots in the Batch.
+* **batch size** the size of a batch, and virtually all batches are
+  identically sized.
 
 * **chain of custody** Given an item (e.g., Marked Ballots, Unmarked
 Ballots) in need of security over a certain time period, the chain of
 custody is the sequence of people, organizations or locations where the
 item remains secured over the given time period.
 
-* **county** A political subdivision of a State, responsible for conducting
-elections
+* **county** (in the US) a political and administrative division of a
+  state, providing certain local governmental services, including 
+  conducting elections.
 
 * **scanner** A machine that can take Paper Ballots as input and whose output is 
 a CVR for each Paper Ballot @review TBD each scanner has an ID number
