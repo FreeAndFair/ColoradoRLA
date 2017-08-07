@@ -22,17 +22,36 @@ Terms and process for the RLA are defined and prescribed in Rule 25.
 other physical aspects of the RLA process which are not ‘in’ the RLA
 tool/system?
 
-For Department of State Users
-========
+#### What the RLA Tool Does Not Do
 
-Logging In
+Although the RLA process requires Counties to 
+generate and preserve
+a Summary Results Report and a Results File Export, the RLA Tool 
+does not interact with these files in any way. Nor does the RLA Tool 
+aid in any way with the CVR Export Verification required by the 
+RLA process. 
+
+Finally, while the RLA Tool does provide for upload of the 
+hashed Ballot Manifest, the hashed CVR file and their hashes, 
+the RLA Tool does not provide a hashing utility.
+***review please!
+
+
+## For Department of State Users
+
+#### Logging In
 
 Screenshot (SoS authentication) ---
 
-Entering the Risk Limit
+#### Entering the Risk Limit
 
 To enter the Risk Limit for comparison audits:`
 Screenshot (SoS dash?) --- 
+
+#### Entering the Random Seed
+
+To enter the random seed:
+Screenshot (SoS dash?) ---
 
 
 Basic overview: Screenshots of the dashboard/tool, ordered in the sequence
@@ -41,35 +60,47 @@ is expected of the user(s) at each step, starting with the login screen
 and proceeding through the completion of the audit, or determination that
 a full hand count is required. First SOS, then County, then Public.
 
-For County Administrators
-========
-
-The RLA Tool is designed for comparison audits, which require a voting
-system capable of exporting CVR files. Counties whose voting systems do not
-export CVR files can use the RLA Tool to upload ballot manifests.
+## For County Administrators
 
 For the 2017 Colorado implementation, the full functionality of the RLA Tool requires exports from the 
 Dominion System ???. 
 ***Colorado2017
 ***which Dominion system?
 
-Logging In
+#### Logging In
 
 Screenshot (County Admin Authentication) ---
 
-Ballot Manifest Upload
 
-To prepare a ballot manifest for upload ...
+#### <a name="comparison-audit-upload"></a>Comparison Audit Upload
+
+To prepare for upload the 
+ballot manifest and the CVR file must be first verified and hashed. 
+The RLA Tool does not provide a utility for the 
+verification and hashing. 
 ***ballot manifest upload prep
 
-Once the ballot manifest is ready for upload 
+Once the ballot manifest and CVR files are verified and hashed, 
+they can be uploaded.
 
 Screenshot (Ballot Manifest Upload) ---
+
+Screenshot (CVR Upload)
+
+Note that the RLA Tool does not support export of the
+tabulation results to the Election Night Reporting System. 
+
+#### Ballot Polling Audit Upload
+The RLA Tool is designed for comparison audits, which require a voting
+system capable of exporting CVR files. However, Counties whose voting systems do not
+export CVR files can use the RLA Tool to upload ballot manifests, described
+in the [Comparison Audit Upload](#comparison-audit-upload) 
+section.
 
 For County Audit Boards
 ========
 
-Logging In
+#### Signing In
 
 The Audit Board does not log directly into the RLA Tool with
 computer system usernames and passwords. However, whenever 
