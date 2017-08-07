@@ -1,27 +1,36 @@
 \pagebreak
 
-Run Book outline
-========
+# Run Book 
 
-***should the run book deal with the SOS establishing the risk
-limit, or any of their pre-audit responsibilities like the selection
-of which races to audit? (SS says, yes, briefly, in the context of 
-what needs to be entered into the tool.)
+## Introduction
 
-Brief introduction to RLAs in non-technical, human friendly language.
-At the county level, something along the lines of "This tool is going
-to help you cross reference votes recorded on paper ballots with how 
-the computers read those ballots, to determine whether the computers
-did their job accurately…” Try to put their minds at ease about the
-process. :)
+### What the RLA Tool Does
 
-Terms and process for the RLA are defined and prescribed in Rule 25.
+The Risk-Limiting Audit (RLA) tool, developed by Free & Fair 
+for the Colorado Department of
+State for use in elections from November 2017 forward, supports a 
+Risk-Limiting Audit as required by Colorado statute and 
+as described in the Colorado Secretary of State's Rule 25 for
+elections. RLA-related terms and processes are defined and prescribed in Rule 25.
 *** citation for Rule 25.
 
-***should the run book cover the mechanics of storing ballots and the
-other physical aspects of the RLA process which are not ‘in’ the RLA
-tool/system?
+The RLA Tool enables the Secretary of State and each individual 
+County to carry out a Risk-Limiting Audit. The Secretary of State can
+enter the risk limit, the random seed and the contests that drive
+the audit process. The Secretary of State can also identify 
+contests that should go to a full hand count. Counties can upload
+ballot manifests and cast vote record (CVR) files. The
+RLA tool performs the necessary statistics (such as 
+choosing random samples of ballots for audit and determining 
+actual risk levels)
+County Audit Boards can 
+enter interpretations of ballots into the tool. And the Secretary of
+State can monitor the progress of the individual Counties.
 
+The RLA Tool also creates export files for use in the Audit
+Center, a website disseminating audit-related information
+to the public.
+ 
 ### What the RLA Tool Does Not Do
 
 Although the RLA process requires Counties to 
@@ -45,6 +54,14 @@ interpretation.
 ### Logging In
 
 Screenshot (SoS authentication) ---
+
+### Identifying County Users
+
+The Secretary of State will determine, for each individual
+County, which user will be able to log in to the County-facing
+part of the RLA Tool.
+
+Screenshot (SoS County User Identification)
 
 ### Entering the Risk Limit
 
@@ -169,8 +186,12 @@ click "Submit and Next Ballot". This submission is final. There
 is no way to revise a ballot interpretation once it has been submitted
 from the Review Screen.
 
+# Comments and Questions on Draft
 
-
+***should the run book deal with the SOS establishing the risk
+limit, or any of their pre-audit responsibilities like the selection
+of which races to audit? (SS says, yes, briefly, in the context of 
+what needs to be entered into the tool.)
 
 ***should the run book cover the preparation/creation of these artifacts
 they’ll be uploading? SS says: no, but should specify requirements for 
@@ -207,3 +228,16 @@ offer to create a tutorial video (videos, probably) where we film people using
 the tool/dashboards, with narration describing what they are doing, and what comes
 next depending on what’s happening.
 ***SS says, it would be nice, but out of scope. We're so far over budget already....
+
+Brief introduction to RLAs in non-technical, human friendly language.
+At the county level, something along the lines of "This tool is going
+to help you cross reference votes recorded on paper ballots with how 
+the computers read those ballots, to determine whether the computers
+did their job accurately…” Try to put their minds at ease about the
+process. :)
+
+***should the run book cover the mechanics of storing ballots and the
+other physical aspects of the RLA process which are not ‘in’ the RLA
+tool/system? SS says, no.
+
+
