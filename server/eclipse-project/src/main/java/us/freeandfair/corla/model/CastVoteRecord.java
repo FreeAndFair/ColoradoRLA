@@ -37,6 +37,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
+import us.freeandfair.corla.hibernate.EntityOperations;
 import us.freeandfair.corla.hibernate.Persistence;
 
 /**
@@ -209,7 +210,7 @@ public class CastVoteRecord implements Serializable {
                final String the_imprinted_id, final String the_ballot_type,
                final List<CVRContestInfo> the_contest_info) {
     CastVoteRecord result = 
-        Persistence.matchingEntity(new CastVoteRecord(the_record_type, the_timestamp, 
+        EntityOperations.matchingEntity(new CastVoteRecord(the_record_type, the_timestamp, 
                                                  the_county_id, the_scanner_id, 
                                                  the_batch_id, the_record_id,
                                                  the_imprinted_id, the_ballot_type, 
@@ -239,7 +240,7 @@ public class CastVoteRecord implements Serializable {
     final CastVoteRecord result;
     
     if (Persistence.isEnabled()) {
-      result = Persistence.entityByID(the_id, CastVoteRecord.class);
+      result = EntityOperations.entityByID(the_id, CastVoteRecord.class);
     } else {
       result = BY_ID.get(the_id);
     }
@@ -257,7 +258,7 @@ public class CastVoteRecord implements Serializable {
     boolean result = true;
     
     if (Persistence.isEnabled()) {
-      result = Persistence.removeEntity(the_cvr);
+      result = EntityOperations.removeEntity(the_cvr);
     } else {
       CACHE.remove(the_cvr);
       BY_ID.remove(the_cvr.id());
@@ -275,7 +276,7 @@ public class CastVoteRecord implements Serializable {
     boolean result = true;
     
     if (Persistence.isEnabled()) {
-      result = Persistence.removeEntity(the_id, CastVoteRecord.class);
+      result = EntityOperations.removeEntity(the_id, CastVoteRecord.class);
     } else {
       forget(BY_ID.get(the_id));
     }
@@ -305,11 +306,11 @@ public class CastVoteRecord implements Serializable {
       final CastVoteRecord template = new CastVoteRecord();
       template.my_record_type = the_record_type;
       if (counties_to_check.isEmpty()) {
-        result.addAll(Persistence.matchingEntities(template, CastVoteRecord.class));
+        result.addAll(EntityOperations.matchingEntities(template, CastVoteRecord.class));
       } else {
         for (final String county_id : the_county_ids) {
           template.my_county_id = county_id;
-          result.addAll(Persistence.matchingEntities(template, CastVoteRecord.class));
+          result.addAll(EntityOperations.matchingEntities(template, CastVoteRecord.class));
         }
       }
     } else {
@@ -344,11 +345,11 @@ public class CastVoteRecord implements Serializable {
       // do this as a database query
       final CastVoteRecord template = new CastVoteRecord();
       if (the_county_ids.isEmpty()) {
-        result.addAll(Persistence.matchingEntities(template, CastVoteRecord.class));
+        result.addAll(EntityOperations.matchingEntities(template, CastVoteRecord.class));
       } else {
         for (final String county_id : counties_to_check) {
           template.my_county_id = county_id;
-          result.addAll(Persistence.matchingEntities(template, CastVoteRecord.class));
+          result.addAll(EntityOperations.matchingEntities(template, CastVoteRecord.class));
         }
       }
     } else {

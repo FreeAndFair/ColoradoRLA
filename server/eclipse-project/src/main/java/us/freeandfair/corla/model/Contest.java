@@ -34,6 +34,7 @@ import javax.persistence.Id;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
+import us.freeandfair.corla.hibernate.EntityOperations;
 import us.freeandfair.corla.hibernate.Persistence;
 
 /**
@@ -156,7 +157,7 @@ public class Contest implements Serializable {
     final Set<Contest> result = new HashSet<Contest>();
     
     if (Persistence.isEnabled()) {
-      result.addAll(Persistence.matchingEntities(new Contest(), Contest.class));
+      result.addAll(EntityOperations.matchingEntities(new Contest(), Contest.class));
     } else {
       result.addAll(CACHE.keySet());
     }
@@ -178,7 +179,7 @@ public class Contest implements Serializable {
                                               final List<Choice> the_choices, 
                                               final int the_votes_allowed) {
     Contest result = 
-        Persistence.matchingEntity(new Contest(the_name, the_description, the_choices,
+        EntityOperations.matchingEntity(new Contest(the_name, the_description, the_choices,
                                                the_votes_allowed), 
                                    Contest.class);
 
@@ -206,7 +207,7 @@ public class Contest implements Serializable {
     final Contest result;
     
     if (Persistence.isEnabled()) {
-      result = Persistence.entityByID(the_id, Contest.class);
+      result = EntityOperations.entityByID(the_id, Contest.class);
     } else {
       result = BY_ID.get(the_id);
     }

@@ -23,6 +23,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import us.freeandfair.corla.hibernate.EntityOperations;
 import us.freeandfair.corla.hibernate.Persistence;
 import us.freeandfair.corla.util.EqualsHashcodeHelper;
 
@@ -126,7 +127,7 @@ public class Elector implements Serializable {
                                               final String the_last_name,
                                               final String the_political_party) {
     Elector result = 
-        Persistence.matchingEntity(new Elector(the_first_name, the_last_name,
+        EntityOperations.matchingEntity(new Elector(the_first_name, the_last_name,
                                                the_political_party), 
                                    Elector.class);
 
@@ -154,7 +155,7 @@ public class Elector implements Serializable {
     final Elector result;
     
     if (Persistence.isEnabled()) {
-      result = Persistence.entityByID(the_id, Elector.class);
+      result = EntityOperations.entityByID(the_id, Elector.class);
     } else {
       result = BY_ID.get(the_id);
     }

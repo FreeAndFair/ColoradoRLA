@@ -27,7 +27,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.hibernate.Persistence;
+import us.freeandfair.corla.hibernate.EntityOperations;
 import us.freeandfair.corla.model.CVRContestInfo;
 import us.freeandfair.corla.model.CVRContestInfo.ConsensusValue;
 import us.freeandfair.corla.model.CastVoteRecord;
@@ -207,7 +207,7 @@ public class DominionCVRExportParser implements CVRExportParser {
       // now that we have all the choices, we can create a Contest object for 
       // this contest (note the empty contest description at the moment, below, 
       // as that's not in the CVR files and may not actually be used)
-      my_contests.add(Persistence.matchingEntity(Contest.instance(cn, "", choices, 
+      my_contests.add(EntityOperations.matchingEntity(Contest.instance(cn, "", choices, 
                                                              the_votes_allowed.get(cn)),
                                                  Contest.class));
     }

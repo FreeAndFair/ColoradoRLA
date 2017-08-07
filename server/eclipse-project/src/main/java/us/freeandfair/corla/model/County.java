@@ -23,6 +23,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import us.freeandfair.corla.hibernate.EntityOperations;
 import us.freeandfair.corla.hibernate.Persistence;
 
 /**
@@ -113,7 +114,7 @@ public class County implements Serializable {
   public static synchronized County instance(final String the_name, 
                                              final String the_id) {
     County result = 
-        Persistence.matchingEntity(new County(the_name, the_id), 
+        EntityOperations.matchingEntity(new County(the_name, the_id), 
                                    County.class);
 
     if (!Persistence.isEnabled()) {
@@ -140,7 +141,7 @@ public class County implements Serializable {
     final County result;
     
     if (Persistence.isEnabled()) {
-      result = Persistence.entityByID(the_id, County.class);
+      result = EntityOperations.entityByID(the_id, County.class);
     } else {
       result = BY_ID.get(the_id);
     }

@@ -27,6 +27,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import us.freeandfair.corla.hibernate.EntityOperations;
 import us.freeandfair.corla.hibernate.Persistence;
 
 /**
@@ -161,7 +162,7 @@ public class BallotManifestInfo {
                                                          final int the_batch_size, 
                                                          final String the_storage_location) {
     BallotManifestInfo result = 
-        Persistence.matchingEntity(new BallotManifestInfo(the_timestamp, the_county_id,
+        EntityOperations.matchingEntity(new BallotManifestInfo(the_timestamp, the_county_id,
                                                      the_scanner_id, the_batch_id,
                                                      the_batch_size, the_storage_location),
                               BallotManifestInfo.class);
@@ -190,7 +191,7 @@ public class BallotManifestInfo {
     final BallotManifestInfo result;
     
     if (Persistence.isEnabled()) {
-      result = Persistence.entityByID(the_id, BallotManifestInfo.class);
+      result = EntityOperations.entityByID(the_id, BallotManifestInfo.class);
     } else {
       result = BY_ID.get(the_id);
     }
@@ -207,7 +208,7 @@ public class BallotManifestInfo {
     boolean result = true;
     
     if (Persistence.isEnabled()) {
-      result = Persistence.removeEntity(the_bmi);
+      result = EntityOperations.removeEntity(the_bmi);
     } else {
       CACHE.remove(the_bmi);
       BY_ID.remove(the_bmi.id());
@@ -225,7 +226,7 @@ public class BallotManifestInfo {
     boolean result = true;
     
     if (Persistence.isEnabled()) {
-      result = Persistence.removeEntity(the_id, BallotManifestInfo.class);
+      result = EntityOperations.removeEntity(the_id, BallotManifestInfo.class);
     } else {
       forget(BY_ID.get(the_id));
     }
@@ -253,11 +254,11 @@ public class BallotManifestInfo {
     if (Persistence.isEnabled()) {
       final BallotManifestInfo template = new BallotManifestInfo();
       if (counties_to_check.isEmpty()) {
-        result.addAll(Persistence.matchingEntities(template, BallotManifestInfo.class));
+        result.addAll(EntityOperations.matchingEntities(template, BallotManifestInfo.class));
       } else {
         for (final String county_id : counties_to_check) {
           template.my_county_id = county_id;
-          result.addAll(Persistence.matchingEntities(template, 
+          result.addAll(EntityOperations.matchingEntities(template, 
                                                      BallotManifestInfo.class));
         }
       } 
@@ -279,7 +280,7 @@ public class BallotManifestInfo {
     final Set<BallotManifestInfo> result = new HashSet<BallotManifestInfo>();
     
     if (Persistence.isEnabled()) {
-      result.addAll(Persistence.matchingEntities(new BallotManifestInfo(), 
+      result.addAll(EntityOperations.matchingEntities(new BallotManifestInfo(), 
                                                  BallotManifestInfo.class));
     } else {
       result.addAll(CACHE.keySet());

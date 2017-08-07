@@ -11,16 +11,13 @@
 
 package us.freeandfair.corla.hibernate;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import javax.persistence.PersistenceException;
+import javax.persistence.RollbackException;
 
-import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -30,7 +27,6 @@ import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Environment;
-import org.hibernate.criterion.Example;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.BallotManifestInfo;
@@ -40,6 +36,7 @@ import us.freeandfair.corla.model.Choice;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.Elector;
 import us.freeandfair.corla.model.UploadedFile;
+import us.freeandfair.corla.util.Pair;
 
 /**
  * Manages persistence through Hibernate, and provides several utility methods.
@@ -74,6 +71,13 @@ public final class Persistence {
   private static SessionFactory session_factory;
   
   /**
+   * A thread-local containing the active session and transaction on this 
+   * thread.
+   */
+  private static ThreadLocal<Pair<Session, Transaction>> transaction_info =
+      new ThreadLocal<Pair<Session, Transaction>>();
+  
+  /**
    * A flag indicating whether persistence has failed to start or not.
    */
   private static boolean failed;
@@ -105,7 +109,7 @@ public final class Persistence {
    * @return a new Session to use for persistence, or null if one cannot be created.
    */
   public static synchronized Session currentSession() {
-    Session result = null;
+    Session result = NO_SESSION;
     
     if (!failed) {
       if (session_factory == null) {
@@ -181,177 +185,48 @@ public final class Persistence {
   }
 
   /**
-   * Saves the specified object as an entity in the current session.
-   * 
-   * @return true if the save succeeded, false otherwise.
+   * @return true if a long-lived transaction is running in this thread, 
+   * false otherwise.
    */
-  public static boolean saveEntity(final Object the_object) {
-    boolean result = true;
-    Transaction transaction = null;
-    
-    try {
-      transaction = currentSession().beginTransaction();
-      currentSession().saveOrUpdate(the_object);
-      transaction.commit();
-    } catch (final HibernateException e) {
-      if (transaction != null) {
-        try {
-          transaction.rollback();
-        } catch (final IllegalStateException | PersistenceException ex) {
-          // ignore
-        }
-      }
-      Main.LOGGER.info("Exception while saving entity " + the_object + ": " + e);
-      result = false;
-    }
-    
-    return result;
+  public static synchronized boolean isTransactionRunning() {
+    final Pair<Session, Transaction> session_transaction = transaction_info.get();
+   
+    return session_transaction != null && 
+           session_transaction.getFirst().equals(Persistence.currentSession()) &&
+           session_transaction.getSecond().isActive();
   }
   
-  /** 
-   * Removes the specified object from the database.
+  /**
+   * Begins a long-lived transaction in this thread that will span several 
+   * operations. If such a transaction is running, other persistence
+   * operations (such as saveEntity, removeEntity, etc.) will occur within it. 
+   * If a long-lived transaction is already running, it is returned by this
+   * method.
    * 
-   * @return true if the remove succeeded, false otherwise.
+   * @return true if a new transaction is started, false if a transaction was
+   * already running.
+   * @exception HibernateException if a transaction cannot be started or
+   * continued.
    */
-  public static boolean removeEntity(final Object the_object) {
+  public static synchronized boolean beginTransaction() 
+      throws HibernateException {
     boolean result = true;
-    Transaction transaction = null;
     
-    try {
-      transaction = currentSession().beginTransaction();
-      currentSession().delete(the_object);
-      transaction.commit();
-    } catch (final HibernateException e) {
-      if (transaction != null) {
-        try {
-          transaction.rollback();
-        } catch (final IllegalStateException | PersistenceException ex) {
-          // ignore
-        }
-        Main.LOGGER.info("Exception while forgetting entity " + the_object + ": " + e);
+    if (Persistence.isEnabled()) {
+      Pair<Session, Transaction> session_transaction = transaction_info.get();
+      final Session session = Persistence.currentSession(); 
+      
+      if (session_transaction == null ||
+          !session_transaction.getFirst().equals(session) ||
+          !session_transaction.getSecond().isActive()) {
+        // there was no existing session/transaction pair saved, or the session
+        // didn't match the current session, or the transaction had ended already
+        session_transaction = 
+            new Pair<Session, Transaction>(session, 
+                                           session.beginTransaction());
+        transaction_info.set(session_transaction);
+      } else {
         result = false;
-      }     
-    }
-    
-    return result;
-  }
-  
-  /**
-   * Removes the specified object from the database, by ID and class.
-   * 
-   * @param the_id The object ID.
-   * @param the_class The class of the object to remove.
-   * @return true if the remove succeeded, false otherwise.
-   */
-  public static boolean removeEntity(final Serializable the_id, final Class<?> the_class) {
-    boolean result = true;
-    Transaction transaction = null;
-    
-    try {
-      transaction = currentSession().beginTransaction();
-      final Object o = currentSession().load(the_class, the_id);
-      currentSession().delete(o);
-      transaction.commit();
-    } catch (final HibernateException e) {
-      if (transaction != null) {
-        try {
-          transaction.rollback();
-        } catch (final IllegalStateException | PersistenceException ex) {
-          // ignore
-        }
-        Main.LOGGER.info("Exception while forgetting entity " + the_class + "/" + the_id + 
-                         ": " + e);
-        result = false;
-      }     
-    }
-    
-    return result;    
-  }
-  
-  /**
-   * Gets the entity in the current session that has the specified ID and class.
-   * 
-   * @param the_id The ID.
-   * @param the_class The class.
-   * @return the result entity, or null if no such entity exists.
-   */
-  public static <T> T entityByID(final Serializable the_id, final Class<T> the_class) {
-    T result = null;
-    Transaction transaction = null;
-    
-    try {
-      transaction = currentSession().beginTransaction();
-      result = currentSession().get(the_class, the_id);
-      transaction.commit();
-    } catch (final HibernateException e) {
-      if (transaction != null) {
-        try {
-          transaction.rollback();
-        } catch (final IllegalStateException | PersistenceException ex) {
-          // ignore
-        }
-      }
-      Main.LOGGER.info("Exception while attempting to retrieve " + 
-                       the_class + ", id " + the_id + ": " + e);
-    }
-    
-    return result;
-  }
-  
-  /**
-   * Gets a single entity in the current session matching the specified object, 
-   * or saves the specified object in the current session if there is no match. 
-   * If persistence is not running, the specified object is returned. This method
-   * is meant to be used with completely specified entities only, and will neither
-   * save the specified object nor return a result from the database if there
-   * are multiple matches in the database.
-   * 
-   * @param the_object The object.
-   * @param the_class The class of the object to search for.
-   * @return the result entity, or the original object if no result entity can
-   * be acquired.
-   */
-  // the one unchecked cast that Java thinks is in this method is actually 
-  // a checked cast
-  @SuppressWarnings("unchecked")
-  public static <T> T matchingEntity(final T the_object, final Class<T> the_class) {
-    T result = the_object;
-    final Session session = currentSession();
-    Transaction transaction = null;
-    
-    if (session != null) {
-      Main.LOGGER.info("searching session for object " + the_object);
-      // try to use the provided object as an example
-      transaction = session.beginTransaction();
-      @SuppressWarnings("deprecation") // no query by example in JPA
-      final Criteria cr = session.createCriteria(the_class);
-      cr.add(Example.create(the_object));
-      try {
-        final Object match = cr.uniqueResult();
-        if (match == null) {
-          Main.LOGGER.info("object not found");
-          session.saveOrUpdate(result); 
-        } else if (match.equals(the_object)) {
-          // this is a checked cast even though Java thinks it isn't
-          Main.LOGGER.info("object found: " + match);
-          result = (T) match;
-        } else {
-          // we found an object but it didn't match
-          Main.LOGGER.info("search returned mismatched object " + match);
-          session.saveOrUpdate(result); 
-        }
-        transaction.commit();
-      } catch (final HibernateException e) {
-        if (transaction != null) {
-          try {
-            transaction.rollback();
-          } catch (final IllegalStateException | PersistenceException ex) {
-            // ignore
-          }        
-        }
-        Main.LOGGER.info("exception when searching for object matching " + 
-                         the_object + ": " + e);
-        result = the_object;
       }
     }
     
@@ -359,52 +234,54 @@ public final class Persistence {
   }
   
   /**
-   * Gets a list of entities in the current session that match the filled
-   * fields of the specified object. If persistence is not running, or an
-   * error occurs while performing the search, the returned list contains
-   * only the specified object.
+   * Commits a long-lived transaction.
    * 
-   * @param the_object The object.
-   * @param the_class The class of the object to search for.
-   * @return a list of result entities.
+   * @exception IllegalStateException if no such transaction is running.
+   * @exception HibernateException if there is a problem committing the
+   * transaction.
+   * @exception RollbackException if the commit fails.
    */
-  // the one unchecked cast that Java thinks is in this method is actually
-  // a checked cast
-  @SuppressWarnings("unchecked")
-  public static <T> List<T> matchingEntities(final T the_object, 
-                                             final Class<T> the_class) {
-    final List<T> result = new ArrayList<T>();
-    final Session session = currentSession();
-    Transaction transaction = null;
-    
-    if (session == null) {
-      result.add(the_object);
-    } else {
-      // try to use the provided object as an example
-      transaction = session.beginTransaction();
-      @SuppressWarnings("deprecation") // no query by example in JPA
-      final Criteria cr = session.createCriteria(the_class);
-      cr.add(Example.create(the_object));
-      try {
-        final List<?> matches = cr.list();
-        for (final Object o : matches) {
-          if (the_class.isAssignableFrom(o.getClass())) {
-            // this is a checked cast even though Java thinks it isn't
-            result.add((T) o);
-          }
-        }
-      } catch (final HibernateException e) {
-        Main.LOGGER.info("exception when searching for object matching " + 
-                         the_object + ": " + e);
-        result.add(the_object);
+  public static synchronized void commitTransaction() 
+      throws IllegalStateException, HibernateException, RollbackException { 
+    if (Persistence.isEnabled()) {
+      final Pair<Session, Transaction> session_transaction = transaction_info.get();
+     
+      if (session_transaction == null ||
+          !session_transaction.getFirst().equals(Persistence.currentSession())) {
+        // there was no existing session/transaction pair saved, or the session
+        // didn't match the current session
+        transaction_info.set(null);
+        throw new IllegalStateException("Attempted to commit nonexistent transaction.");
+      } else {
+        session_transaction.getSecond().commit();
+        transaction_info.set(null);
       }
     }
-
-    if (transaction != null) {
-      transaction.commit();
+  }
+  
+  /**
+   * Rolls back a long lived transaction.
+   * 
+   * @exception IllegalStateException if no such transaction is running.
+   * @exception PersistenceException if there is a problem rolling back the 
+   * transaction.
+   */
+  public static synchronized void rollbackTransaction() 
+      throws IllegalStateException, PersistenceException {
+    if (isEnabled()) {
+      final Pair<Session, Transaction> session_transaction = transaction_info.get();
+      
+      if (session_transaction == null || 
+          !session_transaction.getFirst().equals(currentSession())) {
+        // there was no existing session/transaction pair saved, or the session
+        // didn't match the current session
+        transaction_info.set(null);
+        throw new IllegalStateException("Attempted to commit nonexistent transaction.");
+      } else {
+        session_transaction.getSecond().rollback();
+        transaction_info.set(null);
+      }
     }
-    
-    return result;
   }
 }
 
