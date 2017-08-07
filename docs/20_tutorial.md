@@ -102,9 +102,7 @@ verification and hashing.
 Once the ballot manifest and CVR files are verified and hashed, 
 they can be uploaded.
 
-Screenshot (Ballot Manifest Upload) ---
-
-Screenshot (CVR Upload)
+Screenshot (page:county) ---
 
 Note that the RLA Tool does not support export of the
 tabulation results to the Election Night Reporting System. 
@@ -133,11 +131,43 @@ the Audit Board begins to interact with the RLA Tool, either
 at the beginning of an audit round or after taking a break, 
 the Audit Board must sign in.
 
-Screenshot (Audit Board Sign In) ---
+Screenshot (page:Acme County) ---
+
+Click on "Start Audit"
+
+Screenshot (page:Audit Board Sign In) ---
+
+Click "Next"
 
 ### Auditing Ballots
 
-Screenshots ---
+Note: do *not* use your browser's "back" arrow during the audit process.
+
+Screenshot (Ballot Verification) ---
+
+Before recording voter intent, please double-check that the paper ballot
+ID and Ballot Style match the ID and ballot style listed on the screen.
+Then record on the screen all final voter intent marked on the paper ballot.
+In case of an overvote, mark each of the (too many) choices the voter 
+intended; the RLA tool will recognize the overvote. In case the Audit 
+Board cannot reach consensus, mark the "No Consensus" box on the screen.
+
+Click "Review"
+
+Screenshot (Review Screen) ---
+
+Check that the information on the review screen reflects the 
+Audit Board's interpretation of the ballot. Note that in case of 
+an overvote, the review screen will say, simply, "overvote".
+
+Note: do *not* use your browser's "back" arrow during the audit process.
+If the review screen does not match the Audit Board's interpretation,
+click "Back".
+
+If the review screen matches the Audit Board's interpretation,
+click "Submit and Next Ballot". This submission is final. There 
+is no way to revise a ballot interpretation once it has been submitted
+from the Review Screen.
 
 
 Basic overview: Screenshots of the dashboard/tool, ordered in the sequence
