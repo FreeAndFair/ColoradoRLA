@@ -35,7 +35,7 @@ public class FreeAndFairNamingStrategy implements FieldNamingStrategy {
    * @param the_field The field to translate the name of.
    */
   @Override
-  public String translateName(final /*@ non_null */ Field the_field) {
+  public String translateName(final Field the_field) {
     return the_field.getName().replaceFirst("^my_", "");
   }
 }
