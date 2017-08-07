@@ -65,7 +65,8 @@ public final class Main {
   /**
    * The name of the default properties resource.
    */
-  public static final String DEFAULT_PROPERTIES = "us/freeandfair/corla/default.properties";
+  public static final String DEFAULT_PROPERTIES =
+    "us/freeandfair/corla/default.properties";
 
   /**
    * The name of the logger.
@@ -103,6 +104,12 @@ public final class Main {
    * any custom Gson serializers/deserializers we use must also be
    * thread-safe.
    */
+  // @review kiniry Should we configure Gson to serialize nulls via
+  // serializeNulls() as well?  This will, of course, cost more in
+  // bandwidth, but the tradeoff is completeness and clarity of wire
+  // format. Perhaps we should just bandwidth and performance
+  // benchmark with and without serializeNulls() and
+  // setPrettyPrinting()?
   public static final Gson GSON = 
       new GsonBuilder().
       setFieldNamingStrategy(new FreeAndFairNamingStrategy()).
@@ -135,7 +142,7 @@ public final class Main {
    * 
    * @param the_properties The properties.
    */
-  public Main(final /*@ non_null */ Properties the_properties) {
+  public Main(final Properties the_properties) {
     my_properties = the_properties;
   }
   
@@ -303,13 +310,14 @@ public final class Main {
   }
 
   /**
-   * The main method. Starts the server using the specified properties file.
+   * The main method. Starts the server using the specified properties
+   * file.
    * 
-   * @param the_args Command line arguments. Only the first one is considered,
-   *          and it is interpreted as the path to a properties file. If no
-   *          arguments are supplied, default properties are used. If the 
-   *          specified properties file cannot be loaded, the server does not
-   *          start.
+   * @param the_args Command line arguments. Only the first one is
+   * considered, and it is interpreted as the path to a properties
+   * file. If no arguments are supplied, default properties are
+   * used. If the specified properties file cannot be loaded, the
+   * server does not start.
    */
   public static void main(final String... the_args) {
     Properties properties;
