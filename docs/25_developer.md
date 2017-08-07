@@ -174,13 +174,30 @@ level, complete with versioning information. Note that we prefer that
 this dependency list is automatically generated and kept up-to-date by
 the build system.*
 
-### Apache Spark
+### Spark
 
-*TBD: Describe [Apache Spark](https://spark.apache.org/) and its use.*
+*TBD: Describe [Spark](http://sparkjava.com/) and its use.*
 
 ### Data Persistence
 
 *TBD: Describe [PostgresSQL]() and its use.*
+
+In order to use the Postgres database in development, one must:
+
+1. Install PostgreSQL (brew install postgres, apt-get install
+   postgres, or whatever is appropriate) and start it running.
+2. Create a database called "corla", and grant all privileges on it to
+   a user called "corla" with password "corla".
+   
+For example, to accomplish the above on OS X using brew, one issues
+the following commands:
+```brew install postgres
+   createuser -P corla
+   createdb -O corla corla```
+   
+That's it. If the database is there the server will use it (and will,
+at this stage, create all its tables and such automatically); if not,
+it will use in-memory persistence.
 
 *TBD: Describe the [Hibernate ORM](http://hibernate.org/orm/) and its
 use.*
