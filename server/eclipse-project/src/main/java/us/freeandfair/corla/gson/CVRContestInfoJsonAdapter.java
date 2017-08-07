@@ -19,6 +19,7 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
+import us.freeandfair.corla.hibernate.Persistence;
 import us.freeandfair.corla.model.CVRContestInfo;
 import us.freeandfair.corla.model.CVRContestInfo.ConsensusValue;
 import us.freeandfair.corla.model.Contest;
@@ -100,7 +101,7 @@ public final class CVRContestInfoJsonAdapter
    */
   private Contest contestSanityCheck(final Long the_id, 
                                      final List<String> the_choices) {
-    final Contest result = Contest.byID(the_id);
+    final Contest result = Persistence.getByID(the_id, Contest.class);
     boolean error = false;
     
     if (result != null) {
@@ -169,7 +170,8 @@ public final class CVRContestInfoJsonAdapter
       throw new IOException("invalid data detected in CVR contest info");
     }
     
-    return CVRContestInfo.instance(Contest.byID(contest_id), comment, 
-                                   consensus, choices);
+    return Persistence.get(new CVRContestInfo(Persistence.getByID(contest_id, Contest.class), 
+                                              comment, consensus, choices),
+                           CVRContestInfo.class);
   }
 }

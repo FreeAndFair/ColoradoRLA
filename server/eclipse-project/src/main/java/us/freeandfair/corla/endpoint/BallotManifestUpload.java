@@ -22,6 +22,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItemIterator;
@@ -31,6 +32,8 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
 import org.eclipse.jetty.http.HttpStatus;
 import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
 
 import spark.Request;
 import spark.Response;
@@ -39,7 +42,6 @@ import us.freeandfair.corla.Main;
 import us.freeandfair.corla.csv.BallotManifestParser;
 import us.freeandfair.corla.csv.ColoradoBallotManifestParser;
 import us.freeandfair.corla.hibernate.Persistence;
-import us.freeandfair.corla.model.BallotManifestInfo;
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.model.UploadedFile.FileType;
 import us.freeandfair.corla.model.UploadedFile.HashStatus;
@@ -93,7 +95,7 @@ public class BallotManifestUpload implements Endpoint {
                                               final String the_hash) {
     UploadedFile result = null;
     
-    if (Persistence.isEnabled()) {
+    if (Persistence.hasDB()) {
       try {
         result = UploadedFile.instance(Instant.now(), the_county, 
                                        FileType.BALLOT_MANIFEST, 
@@ -198,8 +200,10 @@ public class BallotManifestUpload implements Endpoint {
         }
         Main.LOGGER.info(parser.parsedIDs().size() + 
                          " ballot manifest records parsed from upload file");
-        Main.LOGGER.info(BallotManifestInfo.getMatching(null).size() + 
-                         " uploaded ballot manifest records in storage");
+        final long count = count();
+        if (count >= 0) {
+          Main.LOGGER.info(count + " uploaded ballot manifest records in storage");
+        }
         attemptFilePersistence(the_info.my_file, county, hash);
       } catch (final RuntimeException | IOException e) {
         Main.LOGGER.info("could not parse malformed ballot manifest file: " + e);
@@ -240,6 +244,28 @@ public class BallotManifestUpload implements Endpoint {
 
     the_response.status(info.my_response_status);
     return info.my_response_string;
+  }
+  
+  /**
+   * Count the ballot manifests in storage.
+   * 
+   * @return the number of ACVRs, or -1 if the count could not be determined.
+   */
+  private long count() {
+    long result = -1;
+    
+    try {
+      Persistence.beginTransaction();
+      final Session s = Persistence.currentSession();
+      final Query<Long> query = 
+          s.createQuery("select count(1) from BallotManifestInfo", Long.class);
+      result = query.getSingleResult();
+      Persistence.commitTransaction();
+    } catch (final PersistenceException e) {
+      // ignore
+    }
+    
+    return result;
   }
   
   /**

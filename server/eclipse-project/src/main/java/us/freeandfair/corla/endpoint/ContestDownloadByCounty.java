@@ -16,9 +16,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.persistence.PersistenceException;
 
 import org.eclipse.jetty.http.HttpStatus;
 
@@ -26,6 +27,7 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.hibernate.Persistence;
 import us.freeandfair.corla.model.CVRContestInfo;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
@@ -63,24 +65,59 @@ public class ContestDownloadByCounty implements Endpoint {
   public String endpoint(final Request the_request, final Response the_response) {
     final String[] counties = the_request.params(":counties").split(",");
     final Set<String> county_set = new HashSet<String>(Arrays.asList(counties));
-    final Collection<CastVoteRecord> cvr_set = 
-        CastVoteRecord.getMatching(county_set, RecordType.UPLOADED);
-    final Set<Contest> contest_set = new HashSet<Contest>();
-    for (final CastVoteRecord cvr : cvr_set) {
-      for (final CVRContestInfo c : cvr.contestInfo()) {
-        contest_set.add(c.contest());
+    final Set<Contest> contest_set = getMatchingContests(county_set);
+    String result = "";
+    int status = HttpStatus.OK_200;
+    if (contest_set == null) {
+      status = HttpStatus.INTERNAL_SERVER_ERROR_500;
+      result = "Error retrieving records from database";
+    } else {
+      try {
+        final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
+        final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+        
+        Main.GSON.toJson(contest_set, bw);
+        bw.flush();
+      } catch (final IOException e) {
+        status = HttpStatus.INTERNAL_SERVER_ERROR_500;
+        result = "Unable to stream response.";
       }
     }
+    
+    the_response.status(status);
+    return result;
+  }
+  
+  /**
+   * Gets contests that are in the specified set of counties.
+   * 
+   * @param the_counties The counties.
+   * @return the matching contests.
+   */
+  private Set<Contest> getMatchingContests(final Set<String> the_counties) {
+    Set<Contest> result = null;
+    
     try {
-      final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
-      final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-      
-      Main.GSON.toJson(contest_set, bw);
-      bw.flush();
-      return "";
-    } catch (final IOException e) {
-      the_response.status(HttpStatus.INTERNAL_SERVER_ERROR_500);
-      return "Unable to stream response.";
+      final Set<Contest> query_results = new HashSet<>();
+      Persistence.beginTransaction();
+      //this is very naive - it should be a single query that joins CVRs and contests
+      for (final String c : the_counties) {
+        final CastVoteRecord template =
+            new CastVoteRecord(RecordType.UPLOADED, null, c, null, null, 
+                               null, null, null, null);
+        for (final CastVoteRecord cvr : 
+             Persistence.getMatching(template, CastVoteRecord.class)) {
+          for (final CVRContestInfo i : cvr.contestInfo()) {
+            query_results.add(i.contest());
+          }
+        }
+      }
+      Persistence.commitTransaction();
+      result = query_results;
+    } catch (final PersistenceException e) {
+      Main.LOGGER.error("Error retrieving CVRs from database: " + e);
     }
+    
+    return result;
   }
 }

@@ -27,7 +27,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.hibernate.EntityOperations;
+import us.freeandfair.corla.hibernate.Persistence;
 import us.freeandfair.corla.model.CVRContestInfo;
 import us.freeandfair.corla.model.CVRContestInfo.ConsensusValue;
 import us.freeandfair.corla.model.CastVoteRecord;
@@ -207,9 +207,9 @@ public class DominionCVRExportParser implements CVRExportParser {
       // now that we have all the choices, we can create a Contest object for 
       // this contest (note the empty contest description at the moment, below, 
       // as that's not in the CVR files and may not actually be used)
-      my_contests.add(EntityOperations.matchingEntity(Contest.instance(cn, "", choices, 
-                                                             the_votes_allowed.get(cn)),
-                                                 Contest.class));
+      my_contests.add(Persistence.get(new Contest(cn, "", choices, 
+                                                  the_votes_allowed.get(cn)),
+                                      Contest.class));
     }
   }
   
@@ -253,15 +253,17 @@ public class DominionCVRExportParser implements CVRExportParser {
         }
         // if this contest was on the ballot, add it to the votes
         if (present) {
-          contest_info.add(CVRContestInfo.instance(co, null, 
-                                                   ConsensusValue.UNDEFINED, votes));
+          contest_info.add(new CVRContestInfo(co, null, 
+                                              ConsensusValue.UNDEFINED, votes));
         }
       }
       
-      return CastVoteRecord.instance(RecordType.UPLOADED, 
-                                     the_timestamp, my_county_id, 
-                                     tabulator_id, batch_id, record_id, imprinted_id, 
-                                     ballot_type, contest_info);
+      return Persistence.get(new CastVoteRecord(RecordType.UPLOADED, 
+                                                the_timestamp, my_county_id, 
+                                                tabulator_id, batch_id, record_id, 
+                                                imprinted_id, ballot_type, 
+                                                contest_info),
+                             CastVoteRecord.class);
     } catch (final NumberFormatException e) {
       return null;
     } catch (final ArrayIndexOutOfBoundsException e) {
@@ -274,7 +276,7 @@ public class DominionCVRExportParser implements CVRExportParser {
    */
   private void abort() {
     for (final Long id : my_cvr_ids) {
-      CastVoteRecord.forget(id);
+      Persistence.delete(CastVoteRecord.class, id);
     }
   }
   

@@ -145,7 +145,7 @@ public class UploadedFile {
     Transaction transaction = null;
     InputStream is = null;
     
-    if (Persistence.isEnabled()) {
+    if (Persistence.hasDB()) {
       try {
         final Session session = Persistence.currentSession();
         transaction = session.beginTransaction();

@@ -19,12 +19,17 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.PersistenceException;
+
 import org.eclipse.jetty.http.HttpStatus;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
 
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.hibernate.Persistence;
 import us.freeandfair.corla.model.BallotManifestInfo;
 import us.freeandfair.corla.util.SparkHelper;
 
@@ -63,12 +68,45 @@ public class BallotManifestDownloadByCounty implements Endpoint {
       final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
       final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
       
-      Main.GSON.toJson(BallotManifestInfo.getMatching(county_set), bw);
+      Main.GSON.toJson(getMatching(county_set), bw);
       bw.flush();
       return "";
     } catch (final IOException e) {
       the_response.status(HttpStatus.INTERNAL_SERVER_ERROR_500);
       return "Unable to stream response.";
     }
+  }
+  
+  /**
+   * Returns the set of ballot manifests matching the specified county IDs.
+   * 
+   * @param the_county_ids The set of county IDs.
+   * @return the ballot manifests matching the specified set of county IDs.
+   */
+  private Set<BallotManifestInfo> getMatching(final Set<String> the_county_ids) {
+    final Set<BallotManifestInfo> result = new HashSet<>();
+    
+    if (Persistence.hasDB()) {
+      try {
+        Persistence.beginTransaction();
+        final Session s = Persistence.currentSession();
+        for (final String county_id : the_county_ids) {
+          final Query<BallotManifestInfo> query = 
+              s.createQuery("from BallotManifestInfo where county_id = '" + 
+                            county_id + "'", BallotManifestInfo.class);
+          result.addAll(query.getResultList());
+        }
+      } catch (final PersistenceException e) {
+        Main.LOGGER.error("Exception when reading ballot manifests from database: " + e);
+      }
+    } else {
+      for (final BallotManifestInfo bmi : 
+           Persistence.getAll(BallotManifestInfo.class)) {
+        if (the_county_ids.contains(bmi.countyID())) {
+          result.add(bmi);
+        }
+      }
+    }
+    return result;
   }
 }

@@ -17,6 +17,7 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.hibernate.Persistence;
 import us.freeandfair.corla.model.Contest;
 
 /**
@@ -53,7 +54,8 @@ public class ContestDownloadByID implements Endpoint {
     
     try {
       final Contest c = 
-          Contest.byID(Long.parseLong(the_request.params(":id")));
+          Persistence.getByID(Long.parseLong(the_request.params(":id")),
+                              Contest.class);
       if (c != null) {
         result = Main.GSON.toJson(c);
       }

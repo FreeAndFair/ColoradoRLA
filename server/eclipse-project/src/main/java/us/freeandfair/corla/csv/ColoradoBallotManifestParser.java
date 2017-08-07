@@ -25,6 +25,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.hibernate.Persistence;
 import us.freeandfair.corla.model.BallotManifestInfo;
 
 /**
@@ -111,12 +112,14 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
   private BallotManifestInfo extractBMI(final CSVRecord the_line,
                                         final Instant the_timestamp) {
     try {
-      return BallotManifestInfo.instance(the_timestamp, 
-                                         the_line.get(COUNTY_ID_COLUMN),
-                                         the_line.get(SCANNER_ID_COLUMN),
-                                         the_line.get(BATCH_NUMBER_COLUMN),
-                                         Integer.parseInt(the_line.get(NUM_BALLOTS_COLUMN)),
-                                         the_line.get(BATCH_LOCATION_COLUMN));
+      return Persistence.get(new BallotManifestInfo(the_timestamp, 
+                                                    the_line.get(COUNTY_ID_COLUMN),
+                                                    the_line.get(SCANNER_ID_COLUMN),
+                                                    the_line.get(BATCH_NUMBER_COLUMN),
+                                                    Integer.parseInt(the_line.
+                                                                     get(NUM_BALLOTS_COLUMN)),
+                                                    the_line.get(BATCH_LOCATION_COLUMN)),
+                             BallotManifestInfo.class);
     } catch (final NumberFormatException e) {
       return null;
     } catch (final ArrayIndexOutOfBoundsException e) {
@@ -129,7 +132,7 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
    */
   private void abort() {
     for (final Long id : my_manifest_info) {
-      BallotManifestInfo.forget(id);
+      Persistence.delete(BallotManifestInfo.class, id);
     }
   }
   

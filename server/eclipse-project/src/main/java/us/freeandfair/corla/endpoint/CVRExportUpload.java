@@ -92,7 +92,7 @@ public class CVRExportUpload implements Endpoint {
                                               final String the_hash) {
     UploadedFile result = null;
     
-    if (Persistence.isEnabled()) {
+    if (Persistence.hasDB()) {
       try {
         result = UploadedFile.instance(Instant.now(), the_county, 
                                        FileType.CAST_VOTE_RECORD_EXPORT, 

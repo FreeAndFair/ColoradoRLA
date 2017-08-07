@@ -14,28 +14,20 @@ package us.freeandfair.corla.model;
 
 import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
-import us.freeandfair.corla.hibernate.EntityOperations;
-import us.freeandfair.corla.hibernate.Persistence;
+import us.freeandfair.corla.hibernate.AbstractEntity;
 
 /**
  * The definition of a contest; comprises a contest name and a set of
@@ -49,36 +41,11 @@ import us.freeandfair.corla.hibernate.Persistence;
 //this class has many fields that would normally be declared final, but
 //cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
-public class Contest implements Serializable {
+public class Contest extends AbstractEntity {
   /**
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1L;
-
-  /**
-   * The table of objects that have been created.
-   */
-  private static final Map<Contest, Contest> CACHE = 
-      new HashMap<Contest, Contest>();
-  
-  /**
-   * The table of objects by ID.
-   */
-  private static final Map<Long, Contest> BY_ID =
-      new HashMap<Long, Contest>();
-
-  /**
-   * The current ID number to be used.
-   */
-  private static long current_id;
-  
-  /**
-   * The database ID of this contest.
-   */
-  @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE)
-  @Column(updatable = false, nullable = false)
-  private Long my_id;
   
   /**
    * The contest name.
@@ -114,7 +81,8 @@ public class Contest implements Serializable {
   /**
    * Constructs an empty contest, solely for persistence.
    */
-  protected Contest() {
+  public Contest() {
+    super();
     // default values for everything
   }
   
@@ -129,8 +97,8 @@ public class Contest implements Serializable {
    */
   //@ requires 1 <= the_votes_allowed;
   //@ requires the_votes_allowed <= the_choices.size();
-  protected Contest(final String the_name, final String the_description, 
-                    final List<Choice> the_choices, final int the_votes_allowed)  {
+  public Contest(final String the_name, final String the_description, 
+                 final List<Choice> the_choices, final int the_votes_allowed)  {
     super();
     my_name = the_name;
     my_description = the_description;
@@ -142,86 +110,7 @@ public class Contest implements Serializable {
     }
     my_votes_allowed = the_votes_allowed;
   }
-  
-  /**
-   * @return the next ID
-   */
-  private static synchronized long getID() {
-    return current_id++;
-  }
-  
-  /**
-   * @return all known contests.
-   */
-  public static synchronized Collection<Contest> getAll() {
-    final Set<Contest> result = new HashSet<Contest>();
-    
-    if (Persistence.isEnabled()) {
-      result.addAll(EntityOperations.matchingEntities(new Contest(), Contest.class));
-    } else {
-      result.addAll(CACHE.keySet());
-    }
-    
-    return result;
-  }
 
-  /**
-   * Returns a contest with the specified parameters.
-   * 
-   * @param the_name The contest name.
-   * @param the_description The contest description.
-   * @param the_choices The set of contest choices.
-   * @param the_votes_allowed The maximum number of votes that can
-   * be made in this contest.
-   */
-  public static synchronized Contest instance(final String the_name, 
-                                              final String the_description, 
-                                              final List<Choice> the_choices, 
-                                              final int the_votes_allowed) {
-    Contest result = 
-        EntityOperations.matchingEntity(new Contest(the_name, the_description, the_choices,
-                                               the_votes_allowed), 
-                                   Contest.class);
-
-    if (!Persistence.isEnabled()) {
-      // cache ourselves because persistence is not enabled
-      if (CACHE.containsKey(result)) {
-        result = CACHE.get(result);
-      } else {
-        result.my_id = getID();
-        CACHE.put(result, result);
-        BY_ID.put(result.id(), result);
-      }
-    }
-    
-    return result;
-  }
-  
-  /**
-   * Returns the contest with the specified ID.
-   * 
-   * @param the_id The ID.
-   * @return the contest, or null if it doesn't exist.
-   */
-  public static synchronized Contest byID(final long the_id) {
-    final Contest result;
-    
-    if (Persistence.isEnabled()) {
-      result = EntityOperations.entityByID(the_id, Contest.class);
-    } else {
-      result = BY_ID.get(the_id);
-    }
-    
-    return result;
-  }
-
-  /**
-   * @return the database ID.
-   */
-  public long id() {
-    return my_id;
-  }
-  
   /**
    * @return the contest name.
    */

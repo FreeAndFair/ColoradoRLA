@@ -22,6 +22,7 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.hibernate.Persistence;
 import us.freeandfair.corla.model.BallotManifestInfo;
 import us.freeandfair.corla.util.SparkHelper;
 
@@ -58,7 +59,7 @@ public class BallotManifestDownload implements Endpoint {
       final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
       final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
       
-      Main.GSON.toJson(BallotManifestInfo.getAll(), bw);
+      Main.GSON.toJson(Persistence.getAll(BallotManifestInfo.class), bw);
       bw.flush();
       return "";
     } catch (final IOException e) {

@@ -12,19 +12,11 @@
 
 package us.freeandfair.corla.model;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Table;
 
-import us.freeandfair.corla.hibernate.EntityOperations;
-import us.freeandfair.corla.hibernate.Persistence;
+import us.freeandfair.corla.hibernate.AbstractEntity;
 import us.freeandfair.corla.util.EqualsHashcodeHelper;
 
 /**
@@ -38,36 +30,11 @@ import us.freeandfair.corla.util.EqualsHashcodeHelper;
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
-public class Elector implements Serializable {
+public class Elector extends AbstractEntity {
   /**
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1L;
-
-  /**
-   * The table of objects that have been created.
-   */
-  private static final Map<Elector, Elector> CACHE = 
-      new HashMap<Elector, Elector>();
-  
-  /**
-   * The table of objects by ID.
-   */
-  private static final Map<Long, Elector> BY_ID =
-      new HashMap<Long, Elector>();
-  
-  /**
-   * The current ID number to be used.
-   */
-  private static long current_id;
- 
-  /**
-   * The database ID of this choice.
-   */
-  @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE)
-  @Column(updatable = false, nullable = false)
-  private Long my_id;
 
   /**
    * The first name.
@@ -90,8 +57,8 @@ public class Elector implements Serializable {
   /**
    * Constructs an empty elector, solely for persistence. 
    */
-  protected Elector() {
-    // default values
+  public Elector() {
+    super();
   }
     
   /**
@@ -101,73 +68,13 @@ public class Elector implements Serializable {
    * @param the_last_name The last name.
    * @param the_political_party The political party.
    */
-  protected Elector(final String the_first_name,
-                    final String the_last_name,
-                    final String the_political_party) {
+  public Elector(final String the_first_name,
+                 final String the_last_name,
+                 final String the_political_party) {
+    super();
     my_first_name = the_first_name;
     my_last_name = the_last_name;
     my_political_party = the_political_party;
-  }
-  
-  /**
-   * @return the next ID
-   */
-  private static synchronized long getID() {
-    return current_id++;
-  }
-
-  /**
-   * Returns an elector with the specified parameters.
-   * 
-   * @param the_first_name The first name.
-   * @param the_last_name The last name.
-   * @param the_political_party The political party.
-   */
-  public static synchronized Elector instance(final String the_first_name, 
-                                              final String the_last_name,
-                                              final String the_political_party) {
-    Elector result = 
-        EntityOperations.matchingEntity(new Elector(the_first_name, the_last_name,
-                                               the_political_party), 
-                                   Elector.class);
-
-    if (!Persistence.isEnabled()) {
-      // cache ourselves because persistence is not enabled
-      if (CACHE.containsKey(result)) {
-        result = CACHE.get(result);
-      } else {
-        result.my_id = getID();
-        CACHE.put(result, result);
-        BY_ID.put(result.id(), result);
-      }
-    }
-    
-    return result;
-  }
-  
-  /**
-   * Returns the elector with the specified ID.
-   * 
-   * @param the_id The ID.
-   * @return the elector, or null if it doesn't exist.
-   */
-  public static synchronized Elector byID(final long the_id) {
-    final Elector result;
-    
-    if (Persistence.isEnabled()) {
-      result = EntityOperations.entityByID(the_id, Elector.class);
-    } else {
-      result = BY_ID.get(the_id);
-    }
-    
-    return result;
-  }
-  
-  /**
-   * @return the database ID.
-   */
-  public long id() {
-    return my_id;
   }
   
   /**
