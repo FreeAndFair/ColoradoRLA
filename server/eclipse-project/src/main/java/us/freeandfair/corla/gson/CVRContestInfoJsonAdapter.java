@@ -170,8 +170,7 @@ public final class CVRContestInfoJsonAdapter
       throw new IOException("invalid data detected in CVR contest info");
     }
     
-    return Persistence.get(new CVRContestInfo(Persistence.getByID(contest_id, Contest.class), 
-                                              comment, consensus, choices),
-                           CVRContestInfo.class);
+    return new CVRContestInfo(Persistence.getByID(contest_id, Contest.class), 
+                              comment, consensus, choices);
   }
 }

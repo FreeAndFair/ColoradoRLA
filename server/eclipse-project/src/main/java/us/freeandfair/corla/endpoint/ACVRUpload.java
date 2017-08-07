@@ -94,7 +94,7 @@ public class ACVRUpload implements Endpoint {
                           CastVoteRecord.class);
       Main.LOGGER.info("Audit CVR parsed and stored as id " + real_acvr.id());
       final long count = count();
-      if (count > 0) {
+      if (count >= 0) {
         Main.LOGGER.info(count + " ACVRs in storage");
       }
     } catch (final JsonSyntaxException | IOException | ServletException | 

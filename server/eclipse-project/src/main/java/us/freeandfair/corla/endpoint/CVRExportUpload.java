@@ -22,6 +22,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItemIterator;
@@ -31,6 +32,8 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
 import org.eclipse.jetty.http.HttpStatus;
 import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
 
 import spark.Request;
 import spark.Response;
@@ -39,6 +42,7 @@ import us.freeandfair.corla.Main;
 import us.freeandfair.corla.csv.CVRExportParser;
 import us.freeandfair.corla.csv.DominionCVRExportParser;
 import us.freeandfair.corla.hibernate.Persistence;
+import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.model.UploadedFile.FileType;
 import us.freeandfair.corla.model.UploadedFile.HashStatus;
@@ -189,11 +193,10 @@ public class CVRExportUpload implements Endpoint {
         }
         Main.LOGGER.info(parser.parsedIDs().size() + " CVRs parsed from " + county + 
                          " county upload file");
-        /*
-        Main.LOGGER.info(CastVoteRecord.countMatching(new HashSet<String>(), 
-                                                      RecordType.UPLOADED) + 
-                         " uploaded CVRs in storage");
-                         */
+        final long count = count();
+        if (count >= 0) {
+          Main.LOGGER.info(count + " uploaded CVRs in storage");
+        }
         attemptFilePersistence(the_info.my_file, county, hash);
       } catch (final RuntimeException | IOException e) {
         Main.LOGGER.info("could not parse malformed CVR export file: " + e);
@@ -236,6 +239,30 @@ public class CVRExportUpload implements Endpoint {
     return info.my_response_string;
   }
   
+  /**
+   * Count the uploaded CVRs in storage.
+   * 
+   * @return the number of uploaded CVRs, or -1 if the count could not 
+   * be determined.
+   */
+  private long count() {
+    long result = -1;
+    
+    try {
+      Persistence.beginTransaction();
+      final Session s = Persistence.currentSession();
+      final Query<Long> query = 
+          s.createQuery("select count(1) from CastVoteRecord where record_type = '" + 
+                        RecordType.UPLOADED + "'", Long.class);
+      result = query.getSingleResult();
+      Persistence.commitTransaction();
+    } catch (final PersistenceException e) {
+      // ignore
+    }
+    
+    return result;
+  }
+
   /**
    * A small class to encapsulate data dealt with during an upload.
    */

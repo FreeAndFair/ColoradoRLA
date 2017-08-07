@@ -491,14 +491,25 @@ public final class Persistence {
       throws PersistenceException {
     if (hasDB()) {
       T result = null;
-
+      boolean transaction = false;
+      Main.LOGGER.info("searching session for object " + the_class + "/" + the_id);
       try {
-        result = currentSession().load(the_class, the_id);
+        transaction = beginTransaction();
+        result = currentSession().get(the_class, the_id);
+        if (transaction) {
+          commitTransaction();
+        }
       } catch (final HibernateException e) {
-        Main.LOGGER.info("Exception while attempting to retrieve " + 
-            the_class + ", id " + the_id + ": " + e);
+        if (transaction) {
+          try {
+            rollbackTransaction();
+          } catch (final IllegalStateException | PersistenceException ex) {
+            // ignore
+          }        
+        }
+        Main.LOGGER.info("exception when searching for " + the_class + "/" + the_id + 
+                         ": " + e);
       }
-
       return result;
     } else {
       throw new PersistenceException(NO_DATABASE);

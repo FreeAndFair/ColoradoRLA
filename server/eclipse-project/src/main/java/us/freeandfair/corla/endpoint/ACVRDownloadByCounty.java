@@ -55,7 +55,7 @@ public class ACVRDownloadByCounty implements Endpoint {
    */
   @Override
   public String endpointName() {
-    return "/acvr/:counties";
+    return "/acvr/county/:counties";
   }
 
   /**
