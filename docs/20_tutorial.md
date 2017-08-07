@@ -5,7 +5,8 @@ Run Book outline
 
 ***should the run book deal with the SOS establishing the risk
 limit, or any of their pre-audit responsibilities like the selection
-of which races to audit?
+of which races to audit? (SS says, yes, briefly, in the context of 
+what needs to be entered into the tool.)
 
 Brief introduction to RLAs in non-technical, human friendly language.
 At the county level, something along the lines of "This tool is going
@@ -14,9 +15,72 @@ the computers read those ballots, to determine whether the computers
 did their job accurately…” Try to put their minds at ease about the
 process. :)
 
+Terms and process for the RLA are defined and prescribed in Rule 25.
+*** citation for Rule 25.
+
 ***should the run book cover the mechanics of storing ballots and the
 other physical aspects of the RLA process which are not ‘in’ the RLA
 tool/system?
+
+For Department of State Users
+========
+
+Logging In
+
+Screenshot (SoS authentication) ---
+
+Entering the Risk Limit
+
+To enter the Risk Limit for comparison audits:`
+Screenshot (SoS dash?) --- 
+
+
+Basic overview: Screenshots of the dashboard/tool, ordered in the sequence
+they will be encountered, with brief, clear instructions describing what
+is expected of the user(s) at each step, starting with the login screen
+and proceeding through the completion of the audit, or determination that
+a full hand count is required. First SOS, then County, then Public.
+
+For County Administrators
+========
+
+The RLA Tool is designed for comparison audits, which require a voting
+system capable of exporting CVR files. Counties whose voting systems do not
+export CVR files can use the RLA Tool to upload ballot manifests.
+
+For the 2017 Colorado implementation, the full functionality of the RLA Tool requires exports from the 
+Dominion System ???. 
+***Colorado2017
+***which Dominion system?
+
+Logging In
+
+Screenshot (County Admin Authentication) ---
+
+Ballot Manifest Upload
+
+To prepare a ballot manifest for upload ...
+***ballot manifest upload prep
+
+Once the ballot manifest is ready for upload 
+
+Screenshot (Ballot Manifest Upload) ---
+
+For County Audit Boards
+========
+
+Logging In
+
+The Audit Board does not log directly into the RLA Tool with
+computer system usernames and passwords. However, whenever 
+the Audit Board begins to interact with the RLA Tool, either 
+at the beginning of an audit round or after taking a break, 
+the Audit Board must sign in.
+
+Screenshot (Audit Board Sign In) ---
+
+
+
 
 Basic overview: Screenshots of the dashboard/tool, ordered in the sequence
 they will be encountered, with brief, clear instructions describing what
