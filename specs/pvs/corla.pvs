@@ -1123,6 +1123,10 @@ BEGIN
   audit_board: TYPE = set[audit_board_member]
   audit_board_size: AXIOM TBD
   audit_board_members_political_parties_disjoint: AXIOM TBD
+% @todo in real world political parties must be disjoint, however
+% this tool enforces only that the two audit board members are neither
+% both Republicans nor both Democrats.
+
 
 %%% These two terms are used but underdefined at this time.  When the
 %%% C.R.S. or CO law is further refined to explain audit
