@@ -46,7 +46,8 @@ challenges in multi-platform development and deployment.  We would
 rather have a straightforward cross-platform system development and
 deployment story, thus we use Java 8 on the server-side.
 
-We are using [PostgreSQL](https://www.postgresql.org/) for data persistence.
+We are using [PostgreSQL](https://www.postgresql.org/), via
+the [Hibernate ORM](http://hibernate.org/orm/), for data persistence.
 
 The user interface (UI) is browser-based. The client is written in
 TypeScript, a mainstream, Microsoft-supported variant of JavaScript
@@ -172,6 +173,22 @@ Dependencies
 level, complete with versioning information. Note that we prefer that
 this dependency list is automatically generated and kept up-to-date by
 the build system.*
+
+### Apache Spark
+
+*TBD: Describe [Apache Spark](https://spark.apache.org/) and its use.*
+
+### Data Persistence
+
+*TBD: Describe [PostgresSQL]() and its use.*
+
+*TBD: Describe the [Hibernate ORM](http://hibernate.org/orm/) and its
+use.*
+
+### Communication Formats
+
+*TBD: Describe
+the [Google GSON library and tools](https://github.com/google/gson).*
 
 Code Review and Source Management
 ---------------------------------
