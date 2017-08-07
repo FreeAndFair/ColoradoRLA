@@ -11,10 +11,16 @@
 
 package us.freeandfair.corla.hibernate;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.persistence.PersistenceException;
+
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -24,13 +30,16 @@ import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Environment;
+import org.hibernate.criterion.Example;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.BallotManifestInfo;
-import us.freeandfair.corla.model.BallotStyle;
+import us.freeandfair.corla.model.CVRContestInfo;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.Choice;
 import us.freeandfair.corla.model.Contest;
+import us.freeandfair.corla.model.Elector;
+import us.freeandfair.corla.model.UploadedFile;
 
 /**
  * Manages persistence through Hibernate, and provides several utility methods.
@@ -65,10 +74,22 @@ public final class Persistence {
   private static SessionFactory session_factory;
   
   /**
+   * A flag indicating whether persistence has failed to start or not.
+   */
+  private static boolean failed;
+  
+  /**
    * Private constructor to prevent instantiation.
    */
   private Persistence() {
     // do nothing
+  }
+  
+  /**
+   * @return true if persistence is enabled, false otherwise.
+   */
+  public static synchronized boolean isEnabled() {
+    return !failed && currentSession() != null;
   }
   
   /**
@@ -83,21 +104,27 @@ public final class Persistence {
   /**
    * @return a new Session to use for persistence, or null if one cannot be created.
    */
-  public static synchronized Session openSession() {
-    if (session_factory == null) {
-      setupSessionFactory();
-    } 
+  public static synchronized Session currentSession() {
+    Session result = null;
     
-    if (session_factory == null) {
-      return null;
-    } else {
-      try {
-        return session_factory.openSession();
-      } catch (final HibernateException e) {
-        Main.LOGGER.info("Exception opening Hibernate session: " + e);
-        return null;
+    if (!failed) {
+      if (session_factory == null) {
+        setupSessionFactory();
+      } 
+      
+      if (session_factory == null) {
+        failed = true;
+      } else {
+        try {
+          result = session_factory.getCurrentSession();
+        } catch (final HibernateException e) {
+          Main.LOGGER.info("Exception getting Hibernate session: " + e);
+          failed = true;
+        }
       }
     }
+    
+    return result;
   }
   
   /**
@@ -119,9 +146,11 @@ public final class Persistence {
       settings.put(Environment.DIALECT, 
                    system_properties.getProperty("hibernate.dialect", ""));
       settings.put(Environment.HBM2DDL_AUTO, "update");
-      settings.put(Environment.SHOW_SQL, "true");
+      settings.put(Environment.SHOW_SQL, "false");
       settings.put(Environment.PHYSICAL_NAMING_STRATEGY, 
                    "us.freeandfair.corla.hibernate.FreeAndFairNamingStrategy");
+      settings.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
+      settings.put(Environment.USE_STREAMS_FOR_BINARY, "true");
       
       // apply settings
       rb.applySettings(settings);
@@ -132,10 +161,12 @@ public final class Persistence {
       // create metadata sources and metadata
       final MetadataSources sources = new MetadataSources(service_registry);
       sources.addAnnotatedClass(BallotManifestInfo.class);
-      sources.addAnnotatedClass(BallotStyle.class);
       sources.addAnnotatedClass(CastVoteRecord.class);
       sources.addAnnotatedClass(Choice.class);
       sources.addAnnotatedClass(Contest.class);
+      sources.addAnnotatedClass(CVRContestInfo.class);
+      sources.addAnnotatedClass(Elector.class);
+      sources.addAnnotatedClass(UploadedFile.class);
       final Metadata metadata = sources.getMetadataBuilder().build();
       
       // create session factory
@@ -150,37 +181,230 @@ public final class Persistence {
   }
 
   /**
-   * Gets an entity in the specified session matching the filled fields of the 
-   * specified object, or saves the specified object in the session if there is 
-   * no match.
+   * Saves the specified object as an entity in the current session.
+   * 
+   * @return true if the save succeeded, false otherwise.
+   */
+  public static boolean saveEntity(final Object the_object) {
+    boolean result = true;
+    Transaction transaction = null;
+    
+    try {
+      transaction = currentSession().beginTransaction();
+      currentSession().saveOrUpdate(the_object);
+      transaction.commit();
+    } catch (final HibernateException e) {
+      if (transaction != null) {
+        try {
+          transaction.rollback();
+        } catch (final IllegalStateException | PersistenceException ex) {
+          // ignore
+        }
+      }
+      Main.LOGGER.info("Exception while saving entity " + the_object + ": " + e);
+      result = false;
+    }
+    
+    return result;
+  }
+  
+  /** 
+   * Removes the specified object from the database.
+   * 
+   * @return true if the remove succeeded, false otherwise.
+   */
+  public static boolean removeEntity(final Object the_object) {
+    boolean result = true;
+    Transaction transaction = null;
+    
+    try {
+      transaction = currentSession().beginTransaction();
+      currentSession().delete(the_object);
+      transaction.commit();
+    } catch (final HibernateException e) {
+      if (transaction != null) {
+        try {
+          transaction.rollback();
+        } catch (final IllegalStateException | PersistenceException ex) {
+          // ignore
+        }
+        Main.LOGGER.info("Exception while forgetting entity " + the_object + ": " + e);
+        result = false;
+      }     
+    }
+    
+    return result;
+  }
+  
+  /**
+   * Removes the specified object from the database, by ID and class.
+   * 
+   * @param the_id The object ID.
+   * @param the_class The class of the object to remove.
+   * @return true if the remove succeeded, false otherwise.
+   */
+  public static boolean removeEntity(final Serializable the_id, final Class<?> the_class) {
+    boolean result = true;
+    Transaction transaction = null;
+    
+    try {
+      transaction = currentSession().beginTransaction();
+      final Object o = currentSession().load(the_class, the_id);
+      currentSession().delete(o);
+      transaction.commit();
+    } catch (final HibernateException e) {
+      if (transaction != null) {
+        try {
+          transaction.rollback();
+        } catch (final IllegalStateException | PersistenceException ex) {
+          // ignore
+        }
+        Main.LOGGER.info("Exception while forgetting entity " + the_class + "/" + the_id + 
+                         ": " + e);
+        result = false;
+      }     
+    }
+    
+    return result;    
+  }
+  
+  /**
+   * Gets the entity in the current session that has the specified ID and class.
+   * 
+   * @param the_id The ID.
+   * @param the_class The class.
+   * @return the result entity, or null if no such entity exists.
+   */
+  public static <T> T entityByID(final Serializable the_id, final Class<T> the_class) {
+    T result = null;
+    Transaction transaction = null;
+    
+    try {
+      transaction = currentSession().beginTransaction();
+      result = currentSession().get(the_class, the_id);
+      transaction.commit();
+    } catch (final HibernateException e) {
+      if (transaction != null) {
+        try {
+          transaction.rollback();
+        } catch (final IllegalStateException | PersistenceException ex) {
+          // ignore
+        }
+      }
+      Main.LOGGER.info("Exception while attempting to retrieve " + 
+                       the_class + ", id " + the_id + ": " + e);
+    }
+    
+    return result;
+  }
+  
+  /**
+   * Gets a single entity in the current session matching the specified object, 
+   * or saves the specified object in the current session if there is no match. 
+   * If persistence is not running, the specified object is returned. This method
+   * is meant to be used with completely specified entities only, and will neither
+   * save the specified object nor return a result from the database if there
+   * are multiple matches in the database.
    * 
    * @param the_object The object.
-   * @param the_class The class of the object.
-   * @param the_session The session.
-   * @return the result entity.
+   * @param the_class The class of the object to search for.
+   * @return the result entity, or the original object if no result entity can
+   * be acquired.
    */
-  public static <T> T getEntity(final T the_object, final Class<T> the_class, 
-                                final Session the_session) {
-    /*
-    // this is very much work in progress
-    if (the_session == null) {
-      return the_object;
-    }
-    final Criteria cr = 
-      the_session.createCriteria(the_class).add(Example.create(the_object));
-    try {
-      T result = (T) cr.uniqueResult();
-      if (result == null) {
-        the_session.save(the_object);
+  // the one unchecked cast that Java thinks is in this method is actually 
+  // a checked cast
+  @SuppressWarnings("unchecked")
+  public static <T> T matchingEntity(final T the_object, final Class<T> the_class) {
+    T result = the_object;
+    final Session session = currentSession();
+    Transaction transaction = null;
+    
+    if (session != null) {
+      Main.LOGGER.info("searching session for object " + the_object);
+      // try to use the provided object as an example
+      transaction = session.beginTransaction();
+      @SuppressWarnings("deprecation") // no query by example in JPA
+      final Criteria cr = session.createCriteria(the_class);
+      cr.add(Example.create(the_object));
+      try {
+        final Object match = cr.uniqueResult();
+        if (match == null) {
+          Main.LOGGER.info("object not found");
+          session.saveOrUpdate(result); 
+        } else if (match.equals(the_object)) {
+          // this is a checked cast even though Java thinks it isn't
+          Main.LOGGER.info("object found: " + match);
+          result = (T) match;
+        } else {
+          // we found an object but it didn't match
+          Main.LOGGER.info("search returned mismatched object " + match);
+          session.saveOrUpdate(result); 
+        }
+        transaction.commit();
+      } catch (final HibernateException e) {
+        if (transaction != null) {
+          try {
+            transaction.rollback();
+          } catch (final IllegalStateException | PersistenceException ex) {
+            // ignore
+          }        
+        }
+        Main.LOGGER.info("exception when searching for object matching " + 
+                         the_object + ": " + e);
         result = the_object;
       }
-      return result;
-    } catch (final HibernateException e) {
-      Main.LOGGER.info("exception when searching for object matching " + the_object); 
-      e.printStackTrace();
-      return the_object;
     }
-    */
-    return the_object;
+    
+    return result;
+  }
+  
+  /**
+   * Gets a list of entities in the current session that match the filled
+   * fields of the specified object. If persistence is not running, or an
+   * error occurs while performing the search, the returned list contains
+   * only the specified object.
+   * 
+   * @param the_object The object.
+   * @param the_class The class of the object to search for.
+   * @return a list of result entities.
+   */
+  // the one unchecked cast that Java thinks is in this method is actually
+  // a checked cast
+  @SuppressWarnings("unchecked")
+  public static <T> List<T> matchingEntities(final T the_object, 
+                                             final Class<T> the_class) {
+    final List<T> result = new ArrayList<T>();
+    final Session session = currentSession();
+    Transaction transaction = null;
+    
+    if (session == null) {
+      result.add(the_object);
+    } else {
+      // try to use the provided object as an example
+      transaction = session.beginTransaction();
+      @SuppressWarnings("deprecation") // no query by example in JPA
+      final Criteria cr = session.createCriteria(the_class);
+      cr.add(Example.create(the_object));
+      try {
+        final List<?> matches = cr.list();
+        for (final Object o : matches) {
+          if (the_class.isAssignableFrom(o.getClass())) {
+            // this is a checked cast even though Java thinks it isn't
+            result.add((T) o);
+          }
+        }
+      } catch (final HibernateException e) {
+        Main.LOGGER.info("exception when searching for object matching " + 
+                         the_object + ": " + e);
+        result.add(the_object);
+      }
+    }
+
+    if (transaction != null) {
+      transaction.commit();
+    }
+    
+    return result;
   }
 }
+

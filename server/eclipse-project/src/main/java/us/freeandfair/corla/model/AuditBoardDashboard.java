@@ -6,6 +6,7 @@
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
+ * @model_review Joe Kiniry <kiniry@freeandfair.us>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
@@ -26,6 +27,8 @@ import java.util.TreeMap;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
+// TODO: either this needs to be an entity, or it needs to contain an entity
+// that encapsulates its state
 public class AuditBoardDashboard {
   /**
    * The county of this dashboard.
@@ -116,7 +119,8 @@ public class AuditBoardDashboard {
   }
   
   /**
-   * @return all the aCVRs that have been submitted to this dashboard in this round.
+   * @return all the aCVRs that have been submitted to this dashboard in 
+   * this round.
    */
   public Set<CastVoteRecord> auditCVRs() {
     final Set<CastVoteRecord> result = 

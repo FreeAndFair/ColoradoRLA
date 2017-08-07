@@ -13,8 +13,6 @@ package us.freeandfair.corla.csv;
 
 import java.util.List;
 
-import us.freeandfair.corla.model.BallotManifestInfo;
-
 /**
  * A common interface to parsers for ballot manifest info in various formats.
  * 
@@ -32,7 +30,7 @@ public interface BallotManifestParser {
   boolean parse();
   
   /**
-   * @return the ballot manifest information parsed from the export data. 
+   * @return the IDs of the ballot manifest information parsed from the export data. 
    */
-  List<BallotManifestInfo> ballotManifestInfo();
+  List<Long> parsedIDs();
 }

@@ -11,18 +11,26 @@
 
 package us.freeandfair.corla.endpoint;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jetty.http.HttpStatus;
+
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.model.CVRContestInfo;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.Contest;
+import us.freeandfair.corla.util.SparkHelper;
 
 /**
  * The contest by county download endpoint.
@@ -59,8 +67,20 @@ public class ContestDownloadByCounty implements Endpoint {
         CastVoteRecord.getMatching(county_set, RecordType.UPLOADED);
     final Set<Contest> contest_set = new HashSet<Contest>();
     for (final CastVoteRecord cvr : cvr_set) {
-      contest_set.addAll(cvr.ballotStyle().contests());
+      for (final CVRContestInfo c : cvr.contestInfo()) {
+        contest_set.add(c.contest());
+      }
     }
-    return Main.GSON.toJson(contest_set);
+    try {
+      final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
+      final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+      
+      Main.GSON.toJson(contest_set, bw);
+      bw.flush();
+      return "";
+    } catch (final IOException e) {
+      the_response.status(HttpStatus.INTERNAL_SERVER_ERROR_500);
+      return "Unable to stream response.";
+    }
   }
 }

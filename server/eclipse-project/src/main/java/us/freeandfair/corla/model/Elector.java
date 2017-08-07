@@ -6,6 +6,7 @@
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
  * @author Joey Dodds <jdodds@galois.com>
+ * @model_review Joe Kiniry <kiniry@freeandfair.us>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
@@ -15,11 +16,15 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import us.freeandfair.corla.hibernate.Persistence;
+import us.freeandfair.corla.util.EqualsHashcodeHelper;
 
 /**
  * An elector; has a first name, a last name, and a political party.
@@ -29,6 +34,9 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "choice")
+// this class has many fields that would normally be declared final, but
+// cannot be for compatibility with Hibernate and JPA.
+@SuppressWarnings("PMD.ImmutableField")
 public class Elector implements Serializable {
   /**
    * The serialVersionUID.
@@ -56,32 +64,33 @@ public class Elector implements Serializable {
    * The database ID of this choice.
    */
   @Id
-  @GeneratedValue(strategy = GenerationType.TABLE)
-  @SuppressWarnings("PMD.ImmutableField")
-  private long my_id = getID();
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  @Column(updatable = false, nullable = false)
+  private Long my_id;
 
   /**
    * The first name.
    */
-  private final String my_first_name;
+  @Column(nullable = false, updatable = false)
+  private String my_first_name;
 
   /**
    * The last name.
    */
-  private final String my_last_name;
+  @Column(nullable = false, updatable = false)
+  private String my_last_name;
 
   /**
    * The political party
    */
-  private final String my_political_party;
+  @Column(nullable = false, updatable = false)
+  private String my_political_party;
   
   /**
    * Constructs an empty elector, solely for persistence. 
    */
   protected Elector() {
-    my_first_name = "";
-    my_last_name = "";
-    my_political_party = "";
+    // default values
   }
     
   /**
@@ -91,7 +100,8 @@ public class Elector implements Serializable {
    * @param the_last_name The last name.
    * @param the_political_party The political party.
    */
-  protected Elector(final String the_first_name, final String the_last_name,
+  protected Elector(final String the_first_name,
+                    final String the_last_name,
                     final String the_political_party) {
     my_first_name = the_first_name;
     my_last_name = the_last_name;
@@ -106,32 +116,50 @@ public class Elector implements Serializable {
   }
 
   /**
-   * Returns a choice with the specified parameters.
+   * Returns an elector with the specified parameters.
    * 
-   * @param the_name The choice name.
-   * @param the_description The choice description.
+   * @param the_first_name The first name.
+   * @param the_last_name The last name.
+   * @param the_political_party The political party.
    */
   public static synchronized Elector instance(final String the_first_name, 
                                               final String the_last_name,
                                               final String the_political_party) {
-    Elector result = new Elector(the_first_name, the_last_name, the_political_party);
-    if (CACHE.containsKey(result)) {
-      result = CACHE.get(result);
-    } else {
-      CACHE.put(result, result);
-      BY_ID.put(result.id(), result);
+    Elector result = 
+        Persistence.matchingEntity(new Elector(the_first_name, the_last_name,
+                                               the_political_party), 
+                                   Elector.class);
+
+    if (!Persistence.isEnabled()) {
+      // cache ourselves because persistence is not enabled
+      if (CACHE.containsKey(result)) {
+        result = CACHE.get(result);
+      } else {
+        result.my_id = getID();
+        CACHE.put(result, result);
+        BY_ID.put(result.id(), result);
+      }
     }
+    
     return result;
   }
   
   /**
-   * Returns the choice with the specified ID.
+   * Returns the elector with the specified ID.
    * 
    * @param the_id The ID.
-   * @return the choice, or null if it doesn't exist.
+   * @return the elector, or null if it doesn't exist.
    */
   public static synchronized Elector byID(final long the_id) {
-    return BY_ID.get(the_id);
+    final Elector result;
+    
+    if (Persistence.isEnabled()) {
+      result = Persistence.entityByID(the_id, Elector.class);
+    } else {
+      result = BY_ID.get(the_id);
+    }
+    
+    return result;
   }
   
   /**
@@ -182,9 +210,10 @@ public class Elector implements Serializable {
     boolean result = true;
     if (the_other instanceof Elector) {
       final Elector other_choice = (Elector) the_other;
-      result &= other_choice.firstName().equals(firstName());
-      result &= other_choice.lastName().equals(lastName());
-      result &= other_choice.politicalParty().equals(politicalParty());
+      result &= EqualsHashcodeHelper.nullableEquals(other_choice.firstName(), firstName());
+      result &= EqualsHashcodeHelper.nullableEquals(other_choice.lastName(), lastName());
+      result &= EqualsHashcodeHelper.nullableEquals(other_choice.politicalParty(), 
+                                                    politicalParty());
     } else {
       result = false;
     }

@@ -11,12 +11,23 @@
 
 package us.freeandfair.corla.endpoint;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.eclipse.jetty.http.HttpStatus;
+
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
+import us.freeandfair.corla.util.SparkHelper;
 
 /**
  * The ballot manifest download endpoint.
@@ -39,7 +50,7 @@ public class ACVRDownloadByCounty implements Endpoint {
    */
   @Override
   public String endpointName() {
-    return "/acvr";
+    return "/acvr/:counties";
   }
 
   /**
@@ -47,6 +58,20 @@ public class ACVRDownloadByCounty implements Endpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    return Main.GSON.toJson(CastVoteRecord.getMatching(null, RecordType.AUDITOR_ENTERED));
+    final String[] counties = the_request.params(":counties").split(",");
+    final Set<String> county_set = new HashSet<String>(Arrays.asList(counties));
+    try {
+      final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
+      final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+      
+      Main.GSON.toJson(CastVoteRecord.getMatching(county_set, 
+                                                  RecordType.AUDITOR_ENTERED),
+                       bw);
+      bw.flush();
+      return "";
+    } catch (final IOException e) {
+      the_response.status(HttpStatus.INTERNAL_SERVER_ERROR_500);
+      return "Unable to stream response.";
+    }
   }
 }

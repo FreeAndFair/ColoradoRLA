@@ -39,9 +39,6 @@ import us.freeandfair.corla.endpoint.ACVRUpload;
 import us.freeandfair.corla.endpoint.BallotManifestDownload;
 import us.freeandfair.corla.endpoint.BallotManifestDownloadByCounty;
 import us.freeandfair.corla.endpoint.BallotManifestUpload;
-import us.freeandfair.corla.endpoint.BallotStyleDownload;
-import us.freeandfair.corla.endpoint.BallotStyleDownloadByCounty;
-import us.freeandfair.corla.endpoint.BallotStyleDownloadByID;
 import us.freeandfair.corla.endpoint.CVRDownload;
 import us.freeandfair.corla.endpoint.CVRDownloadByCounty;
 import us.freeandfair.corla.endpoint.CVRDownloadByID;
@@ -281,9 +278,6 @@ public final class Main {
     my_endpoints.add(new BallotManifestUpload());
     my_endpoints.add(new BallotManifestDownloadByCounty());
     my_endpoints.add(new BallotManifestDownload());
-    my_endpoints.add(new BallotStyleDownloadByCounty());
-    my_endpoints.add(new BallotStyleDownloadByID());
-    my_endpoints.add(new BallotStyleDownload());
     my_endpoints.add(new ContestDownloadByCounty());
     my_endpoints.add(new ContestDownloadByID());
     my_endpoints.add(new ContestDownload());
@@ -297,7 +291,7 @@ public final class Main {
    * 
    * @return The default properties.
    */
-  private static Properties defaultProperties() {
+  public static Properties defaultProperties() {
     final Properties properties = new Properties();
     try {
       properties.load(ClassLoader.getSystemResourceAsStream(DEFAULT_PROPERTIES));

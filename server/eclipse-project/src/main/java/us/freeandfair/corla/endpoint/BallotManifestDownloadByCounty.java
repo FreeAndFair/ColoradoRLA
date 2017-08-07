@@ -11,15 +11,22 @@
 
 package us.freeandfair.corla.endpoint;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.eclipse.jetty.http.HttpStatus;
 
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.BallotManifestInfo;
+import us.freeandfair.corla.util.SparkHelper;
 
 /**
  * The ballot manifest by county download endpoint.
@@ -52,6 +59,16 @@ public class BallotManifestDownloadByCounty implements Endpoint {
   public String endpoint(final Request the_request, final Response the_response) {
     final String[] counties = the_request.params(":counties").split(",");
     final Set<String> county_set = new HashSet<String>(Arrays.asList(counties));
-    return Main.GSON.toJson(BallotManifestInfo.getMatching(county_set));
+    try {
+      final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
+      final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+      
+      Main.GSON.toJson(BallotManifestInfo.getMatching(county_set), bw);
+      bw.flush();
+      return "";
+    } catch (final IOException e) {
+      the_response.status(HttpStatus.INTERNAL_SERVER_ERROR_500);
+      return "Unable to stream response.";
+    }
   }
 }
