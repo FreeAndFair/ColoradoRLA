@@ -2708,7 +2708,7 @@ BEGIN
 % ENDTABLE
 
   audit_board_dashboard_state: TYPE = % SUBTYPE asm_state
-    { i_s,    % intial_state
+    { i_s,    % initial_state
       aip_s,  % audit_in_progress_state
       siar_s, % signoff_intermediate_audit_report_state
       sar_s   % submit_audit_report_state
