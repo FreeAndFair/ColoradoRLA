@@ -1,3 +1,6 @@
+import { apiHost } from '../config';
+
+
 function createInitialState(data: any) {
     const state = { ...data };
 
@@ -7,13 +10,13 @@ function createInitialState(data: any) {
 export default function fetchInitialState(dispatch: any) {
     dispatch({ type: 'FETCH_INITIAL_STATE_SEND' });
 
-    const fetchBallotStyles = fetch('http://localhost:4000/ballot-style')
+    const fetchBallotStyles = fetch(`http://${apiHost}/ballot-style`)
         .then((res: any) => res.json());
 
-    const fetchCastVoteRecords = fetch('http://localhost:4000/cvr')
+    const fetchCastVoteRecords = fetch(`http://${apiHost}/cvr`)
         .then((res: any) => res.json());
 
-    const fetchContests = fetch('http://localhost:4000/contest')
+    const fetchContests = fetch(`http://${apiHost}/contest`)
         .then((res: any) => res.json());
 
     Promise.all([fetchBallotStyles, fetchCastVoteRecords, fetchContests])
