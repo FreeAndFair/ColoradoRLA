@@ -310,7 +310,7 @@
 
 FAFSSL: THEORY
 BEGIN
-  TBD: bool = TRUE
+  TBD: boolean = TRUE
 %  first_release: []
 %  second_release: []
 %  third_release: []
@@ -362,6 +362,7 @@ BEGIN
   web_browser: TYPE
   browser: TYPE = web_browser
   javascript_code: TYPE
+  date_and_time: TYPE = string
 END information_systems
 
 %%% Several kinds of servers are necessary to deploy this system.  At
@@ -1491,14 +1492,20 @@ END user_interface
 % @relation too_late inherit upload_system_message
 upload_system_message: DATATYPE
   WITH SUBTYPES upload_successful,
+                checking_hash,
+                hash_verified,
                 hash_wrong,
                 file_type_wrong,
+                data_parsed,
                 data_transmission_interrupted,
                 too_late
 BEGIN
   upload_successful?: make_upload_successful: upload_successful
+  checking_hash?: make_checking_hash: checking_hash
+  hash_verified?: make_hash_verified: hash_verified
   hash_wrong?: make_hash_wrong: hash_wrong
   file_type_wrong?: make_file_type_wrong: file_type_wrong
+  data_parsed?: make_data_parsed: data_parsed
   data_transmission_interrupted?: make_data_transmission_interrupted:
     data_transmission_interrupted
   too_late?: make_too_late: too_late
@@ -1600,9 +1607,7 @@ BEGIN
 %%% stage.
 % @trace us.freeandfair.corla.model.AuditStage
   audit_stage: TYPE =
-    { initial, authenticated, risk_limits_set,
-      contests_to_audit_identified, random_seed_published,
-      ballot_order_defined, audit_ongoing, audit_complete,
+    { pre_audit, audit_ready_to_start, audit_ongoing, audit_complete,
       audit_results_published }
 % @trace us.freeandfair.corla.model.DepartmentOfStateDashboard.auditStage
   overall_audit_stage:
@@ -1642,9 +1647,8 @@ BEGIN
 %%% this data separate from all other election data.
 % @trace us.freeandfair.corla.model.dashBoardForCounty(county).status
   upload_status: [department_of_state_dashboard -> set[county_status]]
-
 % @trace RDPR-6-Jul-2017 Section 25.2.2(I)
-
+%%% \begin{quotation}
 %%% The state-wide dashboard will provide a mechanism for the Secretary of 
 %%% State to enter and publish the list of contests to be audited.
 %%%
@@ -1657,23 +1661,17 @@ BEGIN
 %%% publish a complete list of all audited contests on the audit
 %%% center. The Secretary of State will consider the following factors
 %%% in determining which contests to audit:
-%%%
 %%% \begin{enumerate}
-
 %%% \item The closeness of the reported tabulation outcome of the contests;
-
 %%% \item The geographical scope of the contests;
-
 %%% \item Any cause for concern regarding the accuracy of the reported
 %%% tabulation outcome of the contests;
-
 %%% \item Any benefits that may result from opportunistically auditing
 %%% certain contests; and
-
 %%% \item The ability of the county clerks to complete the audit before
 %%% the canvass deadline.
-
 %%% \end{enumerate}
+%%% \end{quotation}
 % @trace us.freeandfair.corla.model.AuditReason
   audit_reason: TYPE =
     { state_wide_contest, county_wide_contest, close_contest,
@@ -1690,7 +1688,6 @@ BEGIN
 % If there is at least one countywide contest, then at least one has
 % to be selected.
   at_least_one_countywide_contest_per_county: AXIOM TBD
-
 %%% At the moment, CDOS has not contracted support for the selection
 %%% of opportunistic audited contents. But, since we know that CDOS
 %%% wishes to support this feature in the future, we model it for 
@@ -1701,22 +1698,17 @@ BEGIN
 %  someday_support_opportunistic_audit:
 %    AXIOM someday(select_contest_for_opportunistic_audit)
 
-%%% The state-wide dashboard will allow the Secretary of State
-%%% to select ballots at random as required by law
-%%% (assuming that a truly random seed has been entered).
-%%% Ballots can be randomly selected for audit in two ways, either by:
-
+%%% The state-wide dashboard will allow the Secretary of State to
+%%% select ballots at random as required by law (assuming that a truly
+%%% random seed has been entered).  Ballots can be randomly selected
+%%% for audit in two ways, either by:
 %%% \begin{enumerate}
-
 %%% \item permuting all ballots and auditing a prefix of ballots
 %%% (thereby auditing ballots ``with no replacement''); or
-
 %%% \item randomly selecting ballots ballot-by-ballot (thereby
 %%% auditing ballots ``with replacement'' as the same ballot may be
 %%% audited multiple times).
-
 %%% \end{enumerate}
-
 %%% \todokiniry{Obviously this type has to be strengthened considerably
 %%% to guarantee permutation. That is, that both the set and the list
 %%% are finite and converting the list into a set results in a set
@@ -1747,7 +1739,7 @@ BEGIN
 % @trace us.freeandfair.corla.model.DepartmentOfStateDashboard.setRandomSeed
   publish_seed:
     [department_of_state_dashboard, seed -> department_of_state_dashboard]
-  public_ballots_to_audit:
+  publish_ballots_to_audit:
     [department_of_state_dashboard ->
       [department_of_state_dashboard, list[[contest, list[ballot]]]]]
 %%% The Secretary of State can indicate that a contest must be a full
@@ -1762,13 +1754,14 @@ BEGIN
 %%% state of the election under audit and its RLAs.
   refresh: [department_of_state_dashboard ->
              [department_of_state_dashboard,
+              audit_stage,
               risk_limit,
               set[[audited_contest, audit_reason]],
               set[county_status],
               seed,
+              % @todo kiniry Shouldn't this just be list[ballot]?
               list[[contest, list[ballot]]],
               set[full_hand_count_contest]]]
-
 END department_of_state_dashboard
 
 %%% \subsubsection{County Dashboard}
@@ -1787,7 +1780,8 @@ BEGIN
             information_systems,
             roles,
             server,
-            upload_system_message
+            upload_system_message,
+            department_of_state_dashboard
 
 %%% Some of the generation information contained in the county
 %%% dashboard is stipulated by C.R.S.
@@ -1888,6 +1882,14 @@ BEGIN
   upload_tabulation_results:
     [enr_server, cvr_tabulation_outcome -> enr_server]
 
+%%% After the audit board is established, all CVRs and ballot
+%%% manifests are successfully uploaded, the county administator can
+%%% start the audit.  \todokiniry{@review cdos Must the Department of
+%%% State give an explicit go-ahead, or can the county simply
+%%% immediately start the audit?}
+  start_audit:
+    [county_dashboard -> audit_board_dashboard]
+
 % @trace RDPR-6-Jul-2017 Section 25.2.2(G)
 
 %%% No later than 11:59 PM MT on the ninth day after Election Day,
@@ -1911,6 +1913,26 @@ BEGIN
 %%% defined above, as their types do not mandate a particular kind of
 %%% audit on the county.
 
+%%% Lastly, county administrators can see updates on the current state
+%%% of their audit.
+  refresh: [county_dashboard ->
+             [county_dashboard,
+              string, % general_static_information
+              set[elector], % the audit board members
+              digest, % the CVR digest
+              digest, % the ballot manifest digest
+              set[contest], % the contests on the ballot in this county
+              set[[audited_contest, audit_reason]], % the contests under
+              % audit in this county
+              date_and_time, % start date and time of the audit
+              nat, % number of ballots according to CVR
+              nat, % total number of ballots to audit according to RLA
+              nat, % total number of ballots audited thus far
+              nat, % total number of discrepencies (overstatements +
+              % understatements) seen thus far
+              nat] % total number of times the audit board could not
+              % agree upon the interpretation of a ballot under audit
+           ]
 END county_dashboard
 
 %%% \subsubsection{Audit Board Dashboard}
@@ -1926,7 +1948,8 @@ BEGIN
             ballots,
             cast_vote_records,
             instructions_forms_reports,
-            storage_container
+            storage_container,
+            department_of_state_dashboard
 %%%% The audit board must locate and retrieve from the appropriate
 %%%% storage container each randomly selected ballot. The audit board
 %%%% must verify that the seals on the appropriate storage containers
@@ -2016,6 +2039,22 @@ BEGIN
 % audit completed.
   signoff_intermediate_audit_report:
     [audit_board_dashboard, audit_report -> audit_board_dashboard]
+%%% Lastly, audit board members see updates on the current state of
+%%% their audit.
+  refresh: [audit_board_dashboard ->
+             [audit_board_dashboard,
+              % general information
+              string,
+              % the set of contests under audit and why
+              set[[audited_contest, audit_reason]],
+              % the status of the county associated with this audit board
+              county_status,
+              % the list of ballots under audit and their locations
+              list[[ballot, storage_container]],
+              % the current ballot under audit
+              [ballot, ballot_id, ballot_style]
+             ]
+           ]
 END audit_board_dashboard
 
 %%% \subsubsection{Public Dashboard}
@@ -2503,6 +2542,181 @@ BEGIN
 END data_model
 
 %+END data_model
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%+BEGIN asm
+
+%%% \section{Abstract State Machine}
+%%% \label{sec:Abstract_State_Machine}
+%%%
+%%% Each dashboard has its own abstract state machine (ASM). The RLA
+%%% Tool's ASM is the composition of the composed of the three
+%%% dashboard ASMs. We specify ASMs using the finite automata standard
+%%% tabular format.
+asm: THEORY
+BEGIN
+  IMPORTING FAFSSL,
+            department_of_state_dashboard
+%%% In order to formalize ASMs in general, we need to define a few
+%%% relevant types. Note that we are modeling \emph{deterministic}
+%%% ASMs, thus transitions can depend upon not only the current state
+%%% and some event, but also an arbitrary boolean expression that
+%%% typically involves system state. Since our ASMs are deterministic,
+%%% transitions map to only a single target state, rather than a set
+%%% of states as one would see in a non-deterministic ASM.
+  asm_state: TYPE
+  asm_event: TYPE
+  asm_transition_function: TYPE =
+    [asm_state, asm_event, boolean -> asm_state]
+%%% Consequently, the core features of the ASM implementation in the
+%%% business logic of the RLA Tool are:
+%%% \begin{itemize}
+%%% \item What is the current state of the system?
+  current_state: TYPE = [dashboard -> asm_state]
+%%% \item What events are enabled?
+  enabled_events: TYPE = [dashboard -> set[asm_event]]
+%%% \item Transition to the next state based upon this event.
+  transition: TYPE = [[dashboard, asm_event] -> [dashboard, asm_state]]
+%%% \item Are we in a initial state?
+  initial?: TYPE = [dashboard -> boolean]
+%%% \item Are we in a final state?
+  final?: TYPE = [dashboard -> boolean]
+%%% \end{itemize}
+%%%
+%%% Also, in order to relate the ASM to the core implementation
+%%% constructs in a RESTful client-server architecture, we must relate
+%%% UI events to ASM events and ASM events to server endpoints.
+  ui_event: TYPE
+  server_endpoint: TYPE
+  ui_to_asm_event_relation: pred[[ui_event, asm_event]]
+  asm_event_to_endpoint_relation: pred[[asm_event, server_endpoint]]
+%%% We will first specify the ASM for the Department of State
+%%% dashboard. Its states describe the sequence of steps that state
+%%% administrators must take to start, observe, and complete an RLA.
+%%% The state \texttt{initial} is the initial state of the ASM; the
+%%% state \texttt{audit\_results\_published} is the final state of the
+%%% ASM.
+  department_of_state_dashboard_state: TYPE = % SUBTYPE asm_state
+    { i_s,    % initial_state
+      a_s,    % authenticated
+      rls_s,  % risk_limits_set
+      ctai_s, % contests_to_audit_identified
+      rsp_s,  % random_seed_published
+      bod_s,  % ballot_order_defined
+      art_s,  % audit_ready_to_start
+      ao_s,   % audit_ongoing
+      ac_s,   % audit_complete
+      arp_s   % audit_results_published
+    }
+%%% Various events, most of which are triggered by state
+%%% administrators using the RLA Tool, cause state changes. These
+%%% events are named according to their corresponding functional
+%%% definitions in earlier theories. E.g., the
+%%% \texttt{authenticate_state_administrator_event} relates to the
+%%% \texttt{authenticate_state_administrator} function and its
+%%% realization via an endpoint.
+  department_of_state_event: TYPE = % SUBTYPE asm_event
+    { asa_e,    % authenticate_state_administrator_event
+      erlfca_e, % establish_risk_limit_for_comparison_audits_event
+      scfca_e,  % select_contests_for_comparison_audit_event
+      ps_e,     % public_seed_event
+      pbta_e,   % publish_ballots_to_audit_event
+      ifhcc_e,  % indicate_full_hand_count_contest
+      r_e       % refresh
+    }
+
+  dos_state: VAR department_of_state_dashboard_state
+  dos_event: VAR department_of_state_event
+  dos_asm_function: VAR asm_transition_function
+
+%   dos_dashboard_next_state(dos_state, dos_event, dos_asm_function):
+%     department_of_state_dashboard_state =
+% TABLE dos_state, dos_event
+% % ----------------------------------------------------------------------
+%              |[ asae | erlfcae | scfcae | pse  | pbtae  | ifhcc_e | r_e ]|
+% % ----------------------------------------------------------------------
+%      | i_s    | a_s  |         |        |      |        |         |     ||
+%      | a_s    |      | rls_s   |        |      |        |         |     ||
+%      | rls_s  |      |         | ctai_s |      |        |         |     ||
+%      | ctai_s |      |         |        | rsp_s |       |         |     ||
+%      | rsp_s  |      |         |        |      | bod_s  |         |     ||
+%      | bod_s  |      |         |        |      |        | art_s   |     ||
+%      | art_s  |      |         |        |      |        |         |     ||
+%      | ao_s   |      |         |        |      |        |         |     ||
+%      | ac_s   |      |         |        |      |        |         |     ||
+%      | arp_s  |      |         |        |      |        |         |     ||
+% ENDTABLE
+
+  county_dashboard_state: TYPE = % SUBTYPE asm_state
+    { i_s,       % initial_state
+      a_s,       % authenticated
+      eab_s,     % estable_audit_board_state
+%%% @todo kiniry discuss upload_system_message
+      bm_us_s,   % county_upload_verified_ballot_manifest: upload_sucessful
+      bm_ch_s,   % county_upload_verified_ballot_manifest: checking_hash
+      bm_hv_s,   % county_upload_verified_ballot_manifest: hash_verified
+      bm_hw_s,   % county_upload_verified_ballot_manifest: hash_wrong
+      bm_ftw_s,  % county_upload_verified_ballot_manifest: file_type_wrong
+      bm_dp_s,   % county_upload_verified_ballot_manifest: data_parsed
+      bm_dti_s,  % county_upload_verified_ballot_manifest: data_transmission_interrupted
+      bm_tl_s,   % county_upload_verified_ballot_manifest: too_late
+      cvr_us_s,  % upload_verified_cvrs: upload_sucessful
+      cvr_ch_s,  % upload_verified_cvrs: checking_hash
+      cvr_hv_s,  % upload_verified_cvrs: hash_verified
+      cvr_hw_s,  % upload_verified_cvrs: hash_wrong
+      cvr_ftw_s, % upload_verified_cvrs: file_type_wrong
+      cvr_dp_s,  % upload_verified_cvrs: data_parsed
+      cvr_dti_s, % upload_verified_cvrs: data_transmission_interrupted
+      cvr_tl_s  % upload_verified_cvrs: too_late
+    }
+
+  county_dashboard_event: TYPE = % SUBTYPE asm_event
+    { aca_e,     % authenticate_county_administrator
+      eab_e,     % establish_audit_board_event
+      cuvbm_e,   % county_upload_verified_ballot_manifest_event
+      uvc_e,     % upload_verified_cvrs
+      sa_e,      % start_audit
+      r_e        % refresh
+    }
+
+  c_state: VAR county_dashboard_state
+  c_event: VAR county_dashboard_event
+  c_asm_function: VAR asm_transition_function
+
+%   county_dashboard_next_state(c_state, c_event, c_asm_function):
+%     county_dashboard_state =
+% TABLE c_state, c_event
+% % ----------------------------------------------------------------------
+%              |[ aca_e | eab_e | cuvbm_e | uvc_e | sa_e  ]|
+% % ----------------------------------------------------------------------
+%      | i_s    | a_s   |       |         |       |       ||
+%      | a_s    |       |       |         |       |       ||
+% ENDTABLE
+
+  audit_dashboard_state: TYPE = % SUBTYPE asm_state
+    { i_s,    % intial_state
+      aip_s,  % audit_in_progress_state
+      siar_s, % signoff_intermediate_audit_report_state
+      sar_s   % submit_audit_report_state
+    }
+
+  audit_dashboard_event: TYPE = % SUBTYPE asm_event
+    { rm_e,   % remote_markings_event
+      rbnf_e, % report_ballot_not_found_event
+      sair_e, % submit_audit_investigation_report_event
+      sar_e,  % submit_audit_report_event
+      siar_e, % submit_intermediate_audit_report_event
+      r_e     % refresh_event
+    }
+
+  % ab_state: VAR audit_board_dashboard_state
+  % ab_event: VAR audit_board_dashboard_event
+  % ab_asm_function: VAR asm_transition_function
+
+END asm
+
+%+END asm
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
