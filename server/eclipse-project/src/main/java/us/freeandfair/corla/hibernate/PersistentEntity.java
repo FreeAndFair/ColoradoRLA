@@ -17,7 +17,7 @@ package us.freeandfair.corla.hibernate;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-public interface Entity {
+public interface PersistentEntity {
   /**
    * @return the ID number of this entity.
    */

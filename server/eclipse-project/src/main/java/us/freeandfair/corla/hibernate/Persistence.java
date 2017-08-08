@@ -312,7 +312,7 @@ public final class Persistence {
    * @return true if the save/update was successful, false otherwise
    * @exception PersistenceException if the database isn't running.
    */
-  public static boolean saveOrUpdate(final Entity the_object) 
+  public static boolean saveOrUpdate(final PersistentEntity the_object) 
       throws PersistenceException {    
     if (hasDB()) {
       boolean result = true;
@@ -346,7 +346,7 @@ public final class Persistence {
    * the object did not exist, false is returned).
    * @exception PersistenceException if the database isn't running.
    */
-  public static boolean delete(final Entity the_object) 
+  public static boolean delete(final PersistentEntity the_object) 
       throws PersistenceException {    
     if (hasDB()) {
       boolean result = true;
@@ -382,7 +382,7 @@ public final class Persistence {
    * the object did not exist, false is returned).
    * @exception PersistenceException if the database isn't running.
    */
-  public static boolean delete(final Class<? extends Entity> the_class,
+  public static boolean delete(final Class<? extends PersistentEntity> the_class,
                                final Long the_id) 
       throws PersistenceException {    
     if (hasDB()) {
@@ -390,7 +390,7 @@ public final class Persistence {
       
       try {
         final boolean transaction = beginTransaction();
-        final Entity instance = currentSession().load(the_class, the_id);
+        final PersistentEntity instance = currentSession().load(the_class, the_id);
         if (instance == null) {
           result = false;
         } else {
@@ -430,7 +430,7 @@ public final class Persistence {
   // the one unchecked casts that Java thinks are in this method are actually 
   // checked casts
   @SuppressWarnings("unchecked")
-  public static <T extends Entity> T get(final T the_object, 
+  public static <T extends PersistentEntity> T get(final T the_object, 
                                          final Class<T> the_class) 
       throws PersistenceException {
     if (hasDB()) {
@@ -486,7 +486,7 @@ public final class Persistence {
    * @return the result entity, or null if no such entity exists.
    * @exception PersistenceException if the database isn't running.
    */
-  public static <T extends Entity> T getByID(final Serializable the_id, 
+  public static <T extends PersistentEntity> T getByID(final Serializable the_id, 
                                              final Class<T> the_class) 
       throws PersistenceException {
     if (hasDB()) {
@@ -524,7 +524,7 @@ public final class Persistence {
    * @exception PersistenceException if the database isn't running.
    */
   // TODO: make streaming or iterable
-  public static <T extends Entity> List<T> getAll(final Class<T> the_class) 
+  public static <T extends PersistentEntity> List<T> getAll(final Class<T> the_class) 
       throws PersistenceException {
     if (hasDB()) {
       try {

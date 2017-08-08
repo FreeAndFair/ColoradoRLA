@@ -12,10 +12,12 @@
 package us.freeandfair.corla.hibernate;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 
 /**
  * The base class for entities, implements the ID number mechanism.
@@ -23,8 +25,9 @@ import javax.persistence.MappedSuperclass;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-@MappedSuperclass
-public abstract class AbstractEntity implements Entity {
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public abstract class AbstractEntity implements PersistentEntity {
   /**
    * The ID number.
    */

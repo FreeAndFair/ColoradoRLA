@@ -15,14 +15,20 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.PersistenceException;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.eclipse.jetty.http.HttpStatus;
 import org.hibernate.Session;
-import org.hibernate.query.Query;
 
 import spark.Request;
 import spark.Response;
@@ -84,27 +90,24 @@ public class BallotManifestDownloadByCounty implements Endpoint {
   private Set<BallotManifestInfo> getMatching(final Set<String> the_county_ids) {
     final Set<BallotManifestInfo> result = new HashSet<>();
     
-    if (Persistence.hasDB()) {
-      try {
-        Persistence.beginTransaction();
-        final Session s = Persistence.currentSession();
-        for (final String county_id : the_county_ids) {
-          final Query<BallotManifestInfo> query = 
-              s.createQuery("from BallotManifestInfo where county_id = '" + 
-                            county_id + "'", BallotManifestInfo.class);
-          result.addAll(query.getResultList());
-        }
-      } catch (final PersistenceException e) {
-        Main.LOGGER.error("Exception when reading ballot manifests from database: " + e);
+    try {
+      Persistence.beginTransaction();
+      final Session s = Persistence.currentSession();
+      final CriteriaBuilder cb = s.getCriteriaBuilder();
+      final CriteriaQuery<BallotManifestInfo> cq = 
+          cb.createQuery(BallotManifestInfo.class);
+      final Root<BallotManifestInfo> root = cq.from(BallotManifestInfo.class);
+      final List<Predicate> disjuncts = new ArrayList<Predicate>();
+      for (final String county_id : the_county_ids) {
+        disjuncts.add(cb.equal(root.get("my_county_id"), county_id));
       }
-    } else {
-      for (final BallotManifestInfo bmi : 
-           Persistence.getAll(BallotManifestInfo.class)) {
-        if (the_county_ids.contains(bmi.countyID())) {
-          result.add(bmi);
-        }
-      }
+      cq.select(root).where(cb.or(disjuncts.toArray(new Predicate[disjuncts.size()])));
+      final TypedQuery<BallotManifestInfo> query = s.createQuery(cq);
+      result.addAll(query.getResultList());
+    } catch (final PersistenceException e) {
+      Main.LOGGER.error("Exception when reading ballot manifests from database: " + e);
     }
+
     return result;
   }
 }
