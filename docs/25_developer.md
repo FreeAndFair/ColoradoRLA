@@ -195,9 +195,8 @@ the following commands:
    createuser -P corla
    createdb -O corla corla```
    
-That's it. If the database is there the server will use it (and will,
-at this stage, create all its tables and such automatically); if not,
-it will use in-memory persistence.
+That's it. If the database is there the server will use it and will,
+at this stage, create all its tables and such automatically.
 
 *TBD: Describe the [Hibernate ORM](http://hibernate.org/orm/) and its
 use.*
@@ -205,7 +204,7 @@ use.*
 ### Communication Formats
 
 *TBD: Describe
-the [Google GSON library and tools](https://github.com/google/gson).*
+the [Google GSon library and tools](https://github.com/google/gson).*
 
 Code Review and Source Management
 ---------------------------------
