@@ -95,7 +95,7 @@ public class CVRExportUpload implements Endpoint {
    * @return the resulting entity if successful, null otherwise
  w */
   private UploadedFile attemptFilePersistence(final File the_file, 
-                                              final String the_county,
+                                              final Integer the_county,
                                               final String the_hash,
                                               final Instant the_timestamp) {
     UploadedFile result = null;
@@ -184,8 +184,14 @@ public class CVRExportUpload implements Endpoint {
   // the CSV parser can throw arbitrary runtime exceptions, which we must catch
   @SuppressWarnings({"PMD.AvoidCatchingGenericException", "PMD.AvoidCatchingNPE"})
   private void parseAndPersistFile(final UploadInformation the_info) {
-    final String county = the_info.my_form_fields.get("county");
     final String hash = the_info.my_form_fields.get("hash");
+    Integer county = null;
+    
+    try {
+      county = Integer.parseInt(the_info.my_form_fields.get("county"));
+    } catch (final NumberFormatException e) {
+      // do nothing, this is a bad request
+    }
     
     if (county == null || hash == null || the_info.my_file == null) {
       the_info.my_response_string = "Bad Request";

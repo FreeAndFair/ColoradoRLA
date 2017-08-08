@@ -67,18 +67,62 @@ public class BallotManifestDownloadByCounty implements Endpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    final Set<String> county_set = the_request.queryParams();
-    try {
-      final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
-      final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-      
-      Main.GSON.toJson(getMatching(county_set), bw);
-      bw.flush();
-      return "";
-    } catch (final IOException e) {
-      the_response.status(HttpStatus.INTERNAL_SERVER_ERROR_500);
-      return "Unable to stream response.";
+    String result = "";
+    int status = HttpStatus.OK_200;
+    
+    if (validateParameters(the_request)) {
+      final Set<Integer> county_set = new HashSet<Integer>();
+      for (final String s : the_request.queryParams()) {
+        try {
+          county_set.add(Integer.valueOf(s));
+        } catch (final NumberFormatException e) {
+          // cannot happen because we validated the parameters
+        }
+      }
+      final Set<BallotManifestInfo> matches = getMatching(county_set);
+      if (matches == null) {
+        status = HttpStatus.INTERNAL_SERVER_ERROR_500;
+        result = "Error retrieving records from database";
+      } else {
+        try {
+          final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
+          final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+
+          Main.GSON.toJson(matches, bw);
+          bw.flush();
+        } catch (final IOException e) {
+          status = HttpStatus.INTERNAL_SERVER_ERROR_500;
+          result = "Unable to stream response.";
+        }
+      }
+    } else {
+      status = HttpStatus.BAD_REQUEST_400;
+      result = "invalid county ID specified";
     }
+    the_response.status(status);
+    return result;
+  }
+  
+  /**
+   * Validates the parameters of a request. For this endpoint, 
+   * the paramter names must all be integers.
+   * 
+   * @param the_request The request.
+   * @return true if the parameters are valid, false otherwise.
+   */
+  private boolean validateParameters(final Request the_request) {
+    boolean result = true;
+    
+    for (final String s : the_request.queryParams()) {
+      try {
+        Integer.parseInt(s);
+      } catch (final NumberFormatException e) {
+        result = false;
+        break;
+      }
+    }
+    
+    return result;
   }
   
   /**
@@ -87,7 +131,7 @@ public class BallotManifestDownloadByCounty implements Endpoint {
    * @param the_county_ids The set of county IDs.
    * @return the ballot manifests matching the specified set of county IDs.
    */
-  private Set<BallotManifestInfo> getMatching(final Set<String> the_county_ids) {
+  private Set<BallotManifestInfo> getMatching(final Set<Integer> the_county_ids) {
     final Set<BallotManifestInfo> result = new HashSet<>();
     
     try {
@@ -98,7 +142,7 @@ public class BallotManifestDownloadByCounty implements Endpoint {
           cb.createQuery(BallotManifestInfo.class);
       final Root<BallotManifestInfo> root = cq.from(BallotManifestInfo.class);
       final List<Predicate> disjuncts = new ArrayList<Predicate>();
-      for (final String county_id : the_county_ids) {
+      for (final Integer county_id : the_county_ids) {
         disjuncts.add(cb.equal(root.get("my_county_id"), county_id));
       }
       cq.select(root).where(cb.or(disjuncts.toArray(new Predicate[disjuncts.size()])));

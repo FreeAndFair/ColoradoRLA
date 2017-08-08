@@ -62,27 +62,61 @@ public class ContestDownloadByCounty implements Endpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    final Set<String> county_set = the_request.queryParams();
-    final Set<Contest> contest_set = getMatchingContests(county_set);
     String result = "";
     int status = HttpStatus.OK_200;
-    if (contest_set == null) {
-      status = HttpStatus.INTERNAL_SERVER_ERROR_500;
-      result = "Error retrieving records from database";
-    } else {
-      try {
-        final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
-        final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-        
-        Main.GSON.toJson(contest_set, bw);
-        bw.flush();
-      } catch (final IOException e) {
+    
+    if (validateParameters(the_request)) {
+      final Set<Integer> county_set = new HashSet<Integer>();
+      for (final String s : the_request.queryParams()) {
+        try {
+          county_set.add(Integer.valueOf(s));
+        } catch (final NumberFormatException e) {
+          // cannot happen because we validated the parameters
+        }
+      }
+      final Set<Contest> contest_set = getMatchingContests(county_set);
+      if (contest_set == null) {
         status = HttpStatus.INTERNAL_SERVER_ERROR_500;
-        result = "Unable to stream response.";
+        result = "Error retrieving records from database";
+      } else {
+        try {
+          final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
+          final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+
+          Main.GSON.toJson(contest_set, bw);
+          bw.flush();
+        } catch (final IOException e) {
+          status = HttpStatus.INTERNAL_SERVER_ERROR_500;
+          result = "Unable to stream response.";
+        }
+      }
+    } else {
+      status = HttpStatus.BAD_REQUEST_400;
+      result = "invalid county ID specified";
+    }
+    the_response.status(status);
+    return result;
+  }
+  
+  /**
+   * Validates the parameters of a request. For this endpoint, 
+   * the paramter names must all be integers.
+   * 
+   * @param the_request The request.
+   * @return true if the parameters are valid, false otherwise.
+   */
+  private boolean validateParameters(final Request the_request) {
+    boolean result = true;
+    
+    for (final String s : the_request.queryParams()) {
+      try {
+        Integer.parseInt(s);
+      } catch (final NumberFormatException e) {
+        result = false;
+        break;
       }
     }
     
-    the_response.status(status);
     return result;
   }
   
@@ -92,14 +126,14 @@ public class ContestDownloadByCounty implements Endpoint {
    * @param the_counties The counties.
    * @return the matching contests.
    */
-  private Set<Contest> getMatchingContests(final Set<String> the_counties) {
+  private Set<Contest> getMatchingContests(final Set<Integer> the_counties) {
     Set<Contest> result = null;
     
     try {
       final Set<Contest> query_results = new HashSet<>();
       Persistence.beginTransaction();
       //this is very naive - it should be a single query that joins CVRs and contests
-      for (final String c : the_counties) {
+      for (final Integer c : the_counties) {
         final CastVoteRecord template =
             new CastVoteRecord(RecordType.UPLOADED, null, c, null, null, 
                                null, null, null, null);

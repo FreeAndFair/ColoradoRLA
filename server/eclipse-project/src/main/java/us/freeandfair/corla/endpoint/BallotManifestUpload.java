@@ -94,7 +94,7 @@ public class BallotManifestUpload implements Endpoint {
    * @return the resulting entity if successful, null otherwise
  w */
   private UploadedFile attemptFilePersistence(final File the_file, 
-                                              final String the_county,
+                                              final Integer the_county,
                                               final String the_hash,
                                               final Instant the_timestamp) {
     UploadedFile result = null;
@@ -162,6 +162,11 @@ public class BallotManifestUpload implements Endpoint {
               the_info.my_response_string = "Upload Failed";
               the_info.my_response_status = HttpStatus.UNPROCESSABLE_ENTITY_422;
               the_info.my_ok = false;
+            } else if (total == 0) {
+              Main.LOGGER.info("attempt to upload empty file from " + raw.getRemoteHost());
+              the_info.my_response_string = "Empty File";
+              the_info.my_response_status = HttpStatus.BAD_REQUEST_400;
+              the_info.my_ok = false;
             } else {
               Main.LOGGER.info("successfully saved file of size " + total + " from " + 
                                raw.getRemoteHost());
@@ -185,50 +190,53 @@ public class BallotManifestUpload implements Endpoint {
   // the CSV parser can throw arbitrary runtime exceptions, which we must catch
   @SuppressWarnings({"PMD.AvoidCatchingGenericException", "PMD.AvoidCatchingNPE"})
   private void parseAndPersistFile(final UploadInformation the_info) {
-    String county = the_info.my_form_fields.get("county");
     final String hash = the_info.my_form_fields.get("hash");
+    Integer county = null;
     
+    try {
+      final String county_string = the_info.my_form_fields.get("county");
+      if (county_string == null || county_string.isEmpty()) {
+        county = -1; // we accept the upload anyway for the moment
+      } else {
+        county = Integer.parseInt(county_string);
+      }
+    } catch (final NumberFormatException e) {
+      // do nothing, this is a bad request
+    }
+        
     if (hash == null || the_info.my_file == null) {
       the_info.my_response_string = "Bad Request";
       the_info.my_response_status = HttpStatus.BAD_REQUEST_400;
       the_info.my_ok = false;
-    }
-
-    // it's not required to specify a county on a ballot manifest, since they 
-    // have the county as a column
-    
-    if (county == null) {
-      county = "unknown";
+      return;
     }
     
-    if (the_info.my_ok) {
-      try (InputStream bmi_is = new FileInputStream(the_info.my_file)) {
-        final InputStreamReader bmi_isr = new InputStreamReader(bmi_is, "UTF-8");
-        final BallotManifestParser parser = 
-            new ColoradoBallotManifestParser(bmi_isr, the_info.my_timestamp);
-        if (parser.parse()) {
-          Main.LOGGER.info(parser.parsedIDs().size() + 
-              " ballot manifest records parsed from upload file");
-          final OptionalLong count = count();
-          if (count.isPresent()) {
-            Main.LOGGER.info(count.getAsLong() + 
-                             " uploaded ballot manifest records in storage");
-          }
-          attemptFilePersistence(the_info.my_file, county, hash, 
-                                 the_info.my_timestamp);          
-        } else {
-          Main.LOGGER.info("could not parse malformed ballot manifest file");
-          the_info.my_response_status = HttpStatus.UNPROCESSABLE_ENTITY_422;
-          the_info.my_ok = false;
-          the_info.my_response_string = "Malformed Ballot Manifest File";
+    try (InputStream bmi_is = new FileInputStream(the_info.my_file)) {
+      final InputStreamReader bmi_isr = new InputStreamReader(bmi_is, "UTF-8");
+      final BallotManifestParser parser = 
+          new ColoradoBallotManifestParser(bmi_isr, the_info.my_timestamp);
+      if (parser.parse()) {
+        Main.LOGGER.info(parser.parsedIDs().size() + 
+            " ballot manifest records parsed from upload file");
+        final OptionalLong count = count();
+        if (count.isPresent()) {
+          Main.LOGGER.info(count.getAsLong() + 
+                           " uploaded ballot manifest records in storage");
         }
-      } catch (final RuntimeException | IOException e) {
-        Main.LOGGER.info("could not parse malformed ballot manifest file: " + e);
-        the_info.my_ok = false;
+        attemptFilePersistence(the_info.my_file, county, hash, 
+                               the_info.my_timestamp);          
+      } else {
+        Main.LOGGER.info("could not parse malformed ballot manifest file");
         the_info.my_response_status = HttpStatus.UNPROCESSABLE_ENTITY_422;
+        the_info.my_ok = false;
         the_info.my_response_string = "Malformed Ballot Manifest File";
-      } 
-    }
+      }
+    } catch (final RuntimeException | IOException e) {
+      Main.LOGGER.info("could not parse malformed ballot manifest file: " + e);
+      the_info.my_ok = false;
+      the_info.my_response_status = HttpStatus.UNPROCESSABLE_ENTITY_422;
+      the_info.my_response_string = "Malformed Ballot Manifest File";
+    } 
   }
   
   /**
@@ -252,7 +260,9 @@ public class BallotManifestUpload implements Endpoint {
     
     if (info.my_file != null) {
       try {
-        if (!info.my_file.delete()) {
+        if (info.my_file.delete()) {
+          Main.LOGGER.info("Deleted temp file " + info.my_file);
+        } else {
           Main.LOGGER.error("Unable to delete temp file " + info.my_file);
         }
       } catch (final SecurityException e) {
