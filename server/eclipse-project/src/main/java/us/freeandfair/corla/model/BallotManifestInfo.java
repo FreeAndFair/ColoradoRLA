@@ -50,7 +50,7 @@ public class BallotManifestInfo extends AbstractEntity implements Serializable {
    * The ID number of the county in which the batch was scanned.
    */
   @Column(updatable = false, nullable = false)
-  private String my_county_id;
+  private Integer my_county_id;
   //@ private invariant my_county_id >= 0;
   
   /**
@@ -96,7 +96,7 @@ public class BallotManifestInfo extends AbstractEntity implements Serializable {
    * @param the_storage_location The storage location.
    */
   public BallotManifestInfo(final Instant the_timestamp,
-                            final String the_county_id,
+                            final Integer the_county_id,
                             final String the_scanner_id, 
                             final String the_batch_id,
                             final int the_batch_size, 
@@ -120,7 +120,7 @@ public class BallotManifestInfo extends AbstractEntity implements Serializable {
   /**
    * @return the county ID.
    */
-  public String countyID() {
+  public Integer countyID() {
     return my_county_id;
   }  
 

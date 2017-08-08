@@ -99,7 +99,7 @@ public class DominionCVRExportParser implements CVRExportParser {
   /**
    * The ID of the county whose CVRs we are parsing.
    */
-  private final String my_county_id;
+  private final Integer my_county_id;
    
   /**
    * The timestamp to apply to the parsed CVRs.
@@ -114,7 +114,7 @@ public class DominionCVRExportParser implements CVRExportParser {
    * @param the_county_id The ID of the county whose CVRs are to be parsed.
    * @exception IOException if an error occurs while constructing the parser.
    */
-  public DominionCVRExportParser(final Reader the_reader, final String the_county_id,
+  public DominionCVRExportParser(final Reader the_reader, final Integer the_county_id,
                                  final Instant the_timestamp) 
       throws IOException {
     my_parser = new CSVParser(the_reader, CSVFormat.DEFAULT);
@@ -130,7 +130,7 @@ public class DominionCVRExportParser implements CVRExportParser {
    * @param the_county_id The ID of the county whose CVRs are to be parsed.
    * @exception IOException if an error occurs while constructing the parser.
    */
-  public DominionCVRExportParser(final String the_string, final String the_county_id,
+  public DominionCVRExportParser(final String the_string, final Integer the_county_id,
                                  final Instant the_timestamp)
       throws IOException {
     my_parser = CSVParser.parse(the_string, CSVFormat.DEFAULT);
