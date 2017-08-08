@@ -130,10 +130,11 @@ public class CVRDownloadByCounty implements Endpoint {
    * Returns the set of ACVRs matching the specified county IDs.
    * 
    * @param the_county_ids The set of county IDs.
-   * @return the ACVRs matching the specified set of county IDs.
+   * @return the ACVRs matching the specified set of county IDs, or null
+   * if the query fails.
    */
   private Set<CastVoteRecord> getMatching(final Set<Integer> the_county_ids) {
-    final Set<CastVoteRecord> result = new HashSet<>();
+    Set<CastVoteRecord> result = null;
     
     try {
       Persistence.beginTransaction();
@@ -151,7 +152,7 @@ public class CVRDownloadByCounty implements Endpoint {
                                    cb.or(disjuncts.
                                          toArray(new Predicate[disjuncts.size()]))));
       final TypedQuery<CastVoteRecord> query = s.createQuery(cq);
-      result.addAll(query.getResultList());
+      result = new HashSet<CastVoteRecord>(query.getResultList());
     } catch (final PersistenceException e) {
       Main.LOGGER.error("Exception when reading ballot manifests from database: " + e);
     }

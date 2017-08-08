@@ -90,10 +90,11 @@ public class ACVRDownload implements Endpoint {
   }
   
   /**
-   * @return the set of cast vote records that were submitted by auditors.
+   * @return the set of cast vote records that were submitted by auditors, or 
+   * null if the query fails.
    */
   private Set<CastVoteRecord> getMatching() {
-    final Set<CastVoteRecord> result = new HashSet<>();
+    Set<CastVoteRecord> result = null;
     
     try {
       Persistence.beginTransaction();
@@ -105,7 +106,7 @@ public class ACVRDownload implements Endpoint {
       cq.select(root).where(cb.equal(root.get("my_record_type"), 
                                      RecordType.AUDITOR_ENTERED));
       final TypedQuery<CastVoteRecord> query = s.createQuery(cq);
-      result.addAll(query.getResultList());
+      result = new HashSet<CastVoteRecord>(query.getResultList());
     } catch (final PersistenceException e) {
       Main.LOGGER.error("Exception when reading ballot manifests from database: " + e);
     }

@@ -124,7 +124,7 @@ public class ContestDownloadByCounty implements Endpoint {
    * Gets contests that are in the specified set of counties.
    * 
    * @param the_counties The counties.
-   * @return the matching contests.
+   * @return the matching contests, or null if the query fails.
    */
   private Set<Contest> getMatchingContests(final Set<Integer> the_counties) {
     Set<Contest> result = null;

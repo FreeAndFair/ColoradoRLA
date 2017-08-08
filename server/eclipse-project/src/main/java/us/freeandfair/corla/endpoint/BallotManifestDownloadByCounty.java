@@ -129,10 +129,11 @@ public class BallotManifestDownloadByCounty implements Endpoint {
    * Returns the set of ballot manifests matching the specified county IDs.
    * 
    * @param the_county_ids The set of county IDs.
-   * @return the ballot manifests matching the specified set of county IDs.
+   * @return the ballot manifests matching the specified set of county IDs,
+   * or null if the query fails.
    */
   private Set<BallotManifestInfo> getMatching(final Set<Integer> the_county_ids) {
-    final Set<BallotManifestInfo> result = new HashSet<>();
+    Set<BallotManifestInfo> result = null;
     
     try {
       Persistence.beginTransaction();
@@ -147,7 +148,7 @@ public class BallotManifestDownloadByCounty implements Endpoint {
       }
       cq.select(root).where(cb.or(disjuncts.toArray(new Predicate[disjuncts.size()])));
       final TypedQuery<BallotManifestInfo> query = s.createQuery(cq);
-      result.addAll(query.getResultList());
+      result = new HashSet<BallotManifestInfo>(query.getResultList());
     } catch (final PersistenceException e) {
       Main.LOGGER.error("Exception when reading ballot manifests from database: " + e);
     }
