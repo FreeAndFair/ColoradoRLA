@@ -2628,7 +2628,7 @@ BEGIN
 %%% \texttt{authenticate_state_administrator_event} relates to the
 %%% \texttt{authenticate_state_administrator} function and its
 %%% realization via an endpoint.
-  department_of_state_event: TYPE = % SUBTYPE asm_event
+  department_of_state_dashboard_event: TYPE = % SUBTYPE asm_event
     { asa_e,    % authenticate_state_administrator_event
       erlfca_e, % establish_risk_limit_for_comparison_audits_event
       scfca_e,  % select_contests_for_comparison_audit_event
@@ -2639,7 +2639,7 @@ BEGIN
     }
 
   dos_state: VAR department_of_state_dashboard_state
-  dos_event: VAR department_of_state_event
+  dos_event: VAR department_of_state_dashboard_event
   dos_asm_function: VAR asm_transition_function
 
 %   dos_dashboard_next_state(dos_state, dos_event, dos_asm_function):
