@@ -43,9 +43,8 @@ RLA process.
 While the RLA Tool does provide for upload of the 
 hashed Ballot Manifest, the hashed CVR file and their hashes, 
 the RLA Tool does not provide a hashing utility.
-***review please!
 
-The RLA Tool does not provide any support for paper ballot retrieval or 
+The RLA Tool does not provide any support
 for chain of custody logs. Nor does it provide any guidance for ballot 
 interpretation. 
 
@@ -146,7 +145,9 @@ The Audit Board does not log directly into the RLA Tool with
 computer system usernames and passwords. However, whenever 
 the Audit Board begins to interact with the RLA Tool, either 
 at the beginning of an audit round or after taking a break, 
-the Audit Board must sign in.
+there is an informal sign-in process. After the authenticated County Audit 
+Administrator formally logs in, there is a screen where the identity and 
+party affiliation of Audit Board Members can be entered or changed.
 
 Screenshot (page:Acme County) ---
 
@@ -168,6 +169,7 @@ Then record on the screen all final voter intent marked on the paper ballot.
 In case of an overvote, mark each of the (too many) choices the voter 
 intended; the RLA tool will recognize the overvote. In case the Audit 
 Board cannot reach consensus, mark the "No Consensus" box on the screen.
+***Review CDOS
 
 Click "Review"
 
