@@ -66,7 +66,7 @@ public final class Main {
    * The name of the default properties resource.
    */
   public static final String DEFAULT_PROPERTIES =
-    "us/freeandfair/corla/default.properties";
+      "us/freeandfair/corla/default.properties";
 
   /**
    * The name of the logger.
