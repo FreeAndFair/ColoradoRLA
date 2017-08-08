@@ -15,7 +15,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -54,7 +53,7 @@ public class BallotManifestDownloadByCounty implements Endpoint {
    */
   @Override
   public String endpointName() {
-    return "/ballot-manifest/county/:counties";
+    return "/ballot-manifest/county";
   }
 
   /**
@@ -62,8 +61,7 @@ public class BallotManifestDownloadByCounty implements Endpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    final String[] counties = the_request.params(":counties").split(",");
-    final Set<String> county_set = new HashSet<String>(Arrays.asList(counties));
+    final Set<String> county_set = the_request.queryParams();
     try {
       final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
       final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
