@@ -18,11 +18,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.sql.Blob;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.OptionalLong;
 
 import javax.persistence.PersistenceException;
+import javax.persistence.RollbackException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItemIterator;
@@ -31,7 +34,6 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
 import org.eclipse.jetty.http.HttpStatus;
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
@@ -88,23 +90,33 @@ public class BallotManifestUpload implements Endpoint {
    * @param the_file The file.
    * @param the_county The county that uploaded the file.
    * @param the_hash The claimed hash of the file.
+   * @param the_timestamp The timestamp to apply to the file.
    * @return the resulting entity if successful, null otherwise
  w */
   private UploadedFile attemptFilePersistence(final File the_file, 
                                               final String the_county,
-                                              final String the_hash) {
+                                              final String the_hash,
+                                              final Instant the_timestamp) {
     UploadedFile result = null;
     
-    if (Persistence.hasDB()) {
-      try {
-        result = UploadedFile.instance(Instant.now(), the_county, 
-                                       FileType.BALLOT_MANIFEST, 
-                                       the_hash, HashStatus.NOT_CHECKED, the_file);
-      } catch (final HibernateException e) {
-        Main.LOGGER.info("could not persist uploaded file of size " + 
-                         the_file.length() + ": " + e);
+    try (FileInputStream is = new FileInputStream(the_file)) {
+      final boolean transaction = Persistence.beginTransaction();
+      final Session session = Persistence.currentSession();
+      
+      final Blob blob = session.getLobHelper().createBlob(is, the_file.length());
+      result = new UploadedFile(the_timestamp, the_county, FileType.BALLOT_MANIFEST,
+                                the_hash, HashStatus.NOT_CHECKED, blob);
+      Persistence.saveOrUpdate(result);
+      if (transaction) {
+        try {
+          Persistence.commitTransaction();
+        } catch (final RollbackException e) {
+          Persistence.rollbackTransaction();
+        }
       }
-    }
+    } catch (final PersistenceException | IOException e) {
+      Main.LOGGER.error("could not persist file of size " + the_file.length());
+    } 
     
     return result;
   }
@@ -192,19 +204,23 @@ public class BallotManifestUpload implements Endpoint {
     if (the_info.my_ok) {
       try (InputStream bmi_is = new FileInputStream(the_info.my_file)) {
         final InputStreamReader bmi_isr = new InputStreamReader(bmi_is, "UTF-8");
-        final BallotManifestParser parser = new ColoradoBallotManifestParser(bmi_isr);
-        if (!parser.parse()) {
+        final BallotManifestParser parser = 
+            new ColoradoBallotManifestParser(bmi_isr, the_info.my_timestamp);
+        if (parser.parse()) {
+          Main.LOGGER.info(parser.parsedIDs().size() + 
+              " ballot manifest records parsed from upload file");
+          final OptionalLong count = count();
+          if (count.isPresent()) {
+            Main.LOGGER.info(count + " uploaded ballot manifest records in storage");
+          }
+          attemptFilePersistence(the_info.my_file, county, hash, 
+                                 the_info.my_timestamp);          
+        } else {
+          Main.LOGGER.info("could not parse malformed ballot manifest file");
           the_info.my_response_status = HttpStatus.UNPROCESSABLE_ENTITY_422;
           the_info.my_ok = false;
           the_info.my_response_string = "Malformed Ballot Manifest File";
         }
-        Main.LOGGER.info(parser.parsedIDs().size() + 
-                         " ballot manifest records parsed from upload file");
-        final long count = count();
-        if (count >= 0) {
-          Main.LOGGER.info(count + " uploaded ballot manifest records in storage");
-        }
-        attemptFilePersistence(the_info.my_file, county, hash);
       } catch (final RuntimeException | IOException e) {
         Main.LOGGER.info("could not parse malformed ballot manifest file: " + e);
         the_info.my_ok = false;
@@ -222,6 +238,7 @@ public class BallotManifestUpload implements Endpoint {
   @SuppressWarnings("PMD.AvoidCatchingGenericException")
   public String endpoint(final Request the_request, final Response the_response) {
     final UploadInformation info = new UploadInformation();
+    info.my_timestamp = Instant.now();
     info.my_ok = true;
     
     handleUpload(the_request, info);
@@ -247,19 +264,19 @@ public class BallotManifestUpload implements Endpoint {
   }
   
   /**
-   * Count the ballot manifests in storage.
+   * Count the uploaded ballot manifest info records in storage.
    * 
-   * @return the number of ACVRs, or -1 if the count could not be determined.
+   * @return the number of uploaded records
    */
-  private long count() {
-    long result = -1;
+  private OptionalLong count() {
+    OptionalLong result = OptionalLong.empty();
     
     try {
       Persistence.beginTransaction();
       final Session s = Persistence.currentSession();
       final Query<Long> query = 
           s.createQuery("select count(1) from BallotManifestInfo", Long.class);
-      result = query.getSingleResult();
+      result = OptionalLong.of(query.getSingleResult());
       Persistence.commitTransaction();
     } catch (final PersistenceException e) {
       // ignore
@@ -276,6 +293,11 @@ public class BallotManifestUpload implements Endpoint {
      * The uploaded file.
      */
     protected File my_file;
+    
+    /**
+     * The timestamp of the upload.
+     */
+    protected Instant my_timestamp;
     
     /**
      * A flag indicating whether the upload is "ok".

@@ -11,15 +11,13 @@
 
 package us.freeandfair.corla.hibernate;
 
-import java.io.Serializable;
-
 /**
  * A persistable entity with an ID number.
  * 
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-public interface Entity extends Serializable {
+public interface Entity {
   /**
    * @return the ID number of this entity.
    */

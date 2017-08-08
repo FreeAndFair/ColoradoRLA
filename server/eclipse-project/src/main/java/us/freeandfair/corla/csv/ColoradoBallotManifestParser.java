@@ -79,6 +79,10 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
    */
   private final List<Long> my_manifest_info = new ArrayList<Long>();
   
+  /**
+   * The timestamp to apply to the parsed manifest lines.
+   */
+  private final Instant my_timestamp;
   
   /**
    * Construct a new Colorado ballot manifest parser using the specified Reader.
@@ -86,9 +90,10 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
    * @param the_reader The reader from which to read the CSV to parse.
    * @exception IOException if an error occurs while constructing the parser.
    */
-  public ColoradoBallotManifestParser(final Reader the_reader) 
+  public ColoradoBallotManifestParser(final Reader the_reader, final Instant the_timestamp) 
       throws IOException {
     my_parser = new CSVParser(the_reader, CSVFormat.DEFAULT);
+    my_timestamp = the_timestamp;
   }
   
   /**
@@ -97,9 +102,10 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
    * @param the_string The CSV string to parse.
    * @exception IOException if an error occurs while constructing the parser.
    */
-  public ColoradoBallotManifestParser(final String the_string)
+  public ColoradoBallotManifestParser(final String the_string, final Instant the_timestamp)
       throws IOException {
     my_parser = CSVParser.parse(the_string, CSVFormat.DEFAULT);
+    my_timestamp = the_timestamp;
   }
   
   /**
@@ -151,7 +157,6 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
     
     boolean result = true; // presume the parse will succeed
     final Iterator<CSVRecord> records = my_parser.iterator();
-    final Instant timestamp = Instant.now();
     
     try {
       // we expect the first line to be the headers, which we currently discard
@@ -160,12 +165,13 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
       // subsequent lines contain ballot manifest info
       while (records.hasNext()) {
         final CSVRecord bmi_line = records.next();
-        final BallotManifestInfo bmi = extractBMI(bmi_line, timestamp);
+        final BallotManifestInfo bmi = extractBMI(bmi_line, my_timestamp);
         if (bmi == null) {
           // we don't record the ballot manifest record since it didn't parse
           Main.LOGGER.error("Could not parse malformed ballot manifest record (" + 
                             bmi_line + ")");
-          result = false;          
+          result = false;
+          break;
         } else {
           my_manifest_info.add(bmi.id());
         }

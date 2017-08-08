@@ -13,6 +13,7 @@ package us.freeandfair.corla.model;
 
 import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 
+import java.io.Serializable;
 import java.time.Instant;
 
 import javax.persistence.Column;
@@ -32,7 +33,7 @@ import us.freeandfair.corla.hibernate.AbstractEntity;
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
-public class BallotManifestInfo extends AbstractEntity {
+public class BallotManifestInfo extends AbstractEntity implements Serializable {
   /**
    * The serialVersionUID.
    */

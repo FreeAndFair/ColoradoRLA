@@ -102,6 +102,11 @@ public class DominionCVRExportParser implements CVRExportParser {
   private final String my_county_id;
    
   /**
+   * The timestamp to apply to the parsed CVRs.
+   */
+  private final Instant my_timestamp;
+  
+  /**
    * Construct a new Dominion CVR export parser using the specified Reader,
    * for CVRs provided by the specified county.
    * 
@@ -109,10 +114,12 @@ public class DominionCVRExportParser implements CVRExportParser {
    * @param the_county_id The ID of the county whose CVRs are to be parsed.
    * @exception IOException if an error occurs while constructing the parser.
    */
-  public DominionCVRExportParser(final Reader the_reader, final String the_county_id) 
+  public DominionCVRExportParser(final Reader the_reader, final String the_county_id,
+                                 final Instant the_timestamp) 
       throws IOException {
     my_parser = new CSVParser(the_reader, CSVFormat.DEFAULT);
     my_county_id = the_county_id;
+    my_timestamp = the_timestamp;
   }
   
   /**
@@ -123,10 +130,12 @@ public class DominionCVRExportParser implements CVRExportParser {
    * @param the_county_id The ID of the county whose CVRs are to be parsed.
    * @exception IOException if an error occurs while constructing the parser.
    */
-  public DominionCVRExportParser(final String the_string, final String the_county_id)
+  public DominionCVRExportParser(final String the_string, final String the_county_id,
+                                 final Instant the_timestamp)
       throws IOException {
     my_parser = CSVParser.parse(the_string, CSVFormat.DEFAULT);
     my_county_id = the_county_id;
+    my_timestamp = the_timestamp;
   }
   
   /**
@@ -295,7 +304,6 @@ public class DominionCVRExportParser implements CVRExportParser {
     
     boolean result = true; // presume the parse will succeed
     final Iterator<CSVRecord> records = my_parser.iterator();
-    final Instant timestamp = Instant.now();
     
     try {
       // we expect the first line to be the election name, which we currently discard
@@ -322,11 +330,12 @@ public class DominionCVRExportParser implements CVRExportParser {
       // subsequent lines contain cast vote records
       while (records.hasNext()) {
         final CSVRecord cvr_line = records.next();
-        final CastVoteRecord cvr = extractCVR(cvr_line, timestamp);
+        final CastVoteRecord cvr = extractCVR(cvr_line, my_timestamp);
         if (cvr == null) {
           // we don't record the CVR since it didn't parse
           Main.LOGGER.error("Could not parse malformed CVR record (" + cvr_line + ")");
-          result = false;          
+          result = false;   
+          break;
         } else {
           my_cvr_ids.add(cvr.id());
         }

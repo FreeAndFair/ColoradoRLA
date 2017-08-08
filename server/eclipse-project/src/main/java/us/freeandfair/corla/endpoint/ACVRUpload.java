@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.time.Instant;
+import java.util.OptionalLong;
 import java.util.stream.Collectors;
 
 import javax.persistence.PersistenceException;
@@ -93,8 +94,8 @@ public class ACVRUpload implements Endpoint {
                                   acvr.contestInfo()),
                           CastVoteRecord.class);
       Main.LOGGER.info("Audit CVR parsed and stored as id " + real_acvr.id());
-      final long count = count();
-      if (count >= 0) {
+      final OptionalLong count = count();
+      if (count.isPresent()) {
         Main.LOGGER.info(count + " ACVRs in storage");
       }
     } catch (final JsonSyntaxException | IOException | ServletException | 
@@ -116,8 +117,8 @@ public class ACVRUpload implements Endpoint {
    * 
    * @return the number of ACVRs, or -1 if the count could not be determined.
    */
-  private long count() {
-    long result = -1;
+  private OptionalLong count() {
+    OptionalLong result = OptionalLong.empty();
     
     try {
       Persistence.beginTransaction();
@@ -125,7 +126,7 @@ public class ACVRUpload implements Endpoint {
       final Query<Long> query = 
           s.createQuery("select count(1) from CastVoteRecord where record_type = '" +
                         RecordType.AUDITOR_ENTERED + "'", Long.class);
-      result = query.getSingleResult();
+      result = OptionalLong.of(query.getSingleResult());
       Persistence.commitTransaction();
     } catch (final PersistenceException e) {
       // ignore

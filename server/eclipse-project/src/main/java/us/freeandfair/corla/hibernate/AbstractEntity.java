@@ -26,11 +26,6 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 public abstract class AbstractEntity implements Entity {
   /**
-   * The serialVersionUID.
-   */
-  private static final long serialVersionUID = 1; 
-  
-  /**
    * The ID number.
    */
   @Id

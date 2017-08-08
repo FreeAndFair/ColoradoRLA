@@ -14,6 +14,7 @@ package us.freeandfair.corla.model;
 import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableHashCode;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -47,7 +48,7 @@ import us.freeandfair.corla.hibernate.AbstractEntity;
 //cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
 @JsonAdapter(CVRContestInfoJsonAdapter.class)
-public class CVRContestInfo extends AbstractEntity {
+public class CVRContestInfo extends AbstractEntity implements Serializable {
   /**
    * The serialVersionUID.
    */

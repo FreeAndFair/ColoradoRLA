@@ -45,7 +45,7 @@ import us.freeandfair.corla.hibernate.AbstractEntity;
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
-public class CastVoteRecord extends AbstractEntity {
+public class CastVoteRecord extends AbstractEntity implements Serializable {
   /**
    * The serialVersionUID.
    */

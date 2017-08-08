@@ -12,8 +12,14 @@
 
 package us.freeandfair.corla.model;
 
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.Set;
+
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Table;
 
 import us.freeandfair.corla.hibernate.AbstractEntity;
@@ -29,7 +35,7 @@ import us.freeandfair.corla.hibernate.AbstractEntity;
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
-public class County extends AbstractEntity {
+public class County extends AbstractEntity implements Serializable {
   /**
    * The serialVersionUID.
    */
@@ -48,6 +54,12 @@ public class County extends AbstractEntity {
   private Integer my_identifier;
   
   /**
+   * The contests in this county.
+   */
+  @ElementCollection(fetch = FetchType.EAGER)
+  private Set<Contest> my_contests;
+  
+  /**
    * Constructs an empty county, solely for persistence. 
    */
   public County() {
@@ -58,12 +70,15 @@ public class County extends AbstractEntity {
    * Constructs a county with the specified parameters.
    * 
    * @param the_name The county name.
-   * @param the_id The county ID.
+   * @param the_identifier The county ID.
+   * @param the_contests The contests.
    */
-  public County(final String the_name, final Integer the_id) {
+  public County(final String the_name, final Integer the_identifier,
+                final Set<Contest> the_contests) {
     super();
     my_name = the_name;
-    my_identifier = the_id;
+    my_identifier = the_identifier;
+    my_contests = the_contests;
   }
 
   /**
@@ -78,6 +93,13 @@ public class County extends AbstractEntity {
    */
   public Integer identifier() {
     return my_identifier;
+  }
+  
+  /**
+   * @return the contests in this county.
+   */
+  public Set<Contest> contests() {
+    return Collections.unmodifiableSet(my_contests);
   }
   
   /**
@@ -102,6 +124,7 @@ public class County extends AbstractEntity {
       final County other_county = (County) the_other;
       result &= other_county.name().equals(name());
       result &= other_county.identifier().equals(identifier());
+      result &= other_county.contests().equals(contests());
     } else {
       result = false;
     }

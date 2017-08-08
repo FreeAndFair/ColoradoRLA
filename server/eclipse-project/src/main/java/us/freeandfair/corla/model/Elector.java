@@ -12,6 +12,8 @@
 
 package us.freeandfair.corla.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -30,7 +32,7 @@ import us.freeandfair.corla.util.EqualsHashcodeHelper;
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
-public class Elector extends AbstractEntity {
+public class Elector extends AbstractEntity implements Serializable {
   /**
    * The serialVersionUID.
    */
