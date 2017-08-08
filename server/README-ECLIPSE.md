@@ -37,7 +37,7 @@ tools and get the project ready for development, do the following:
   8. Wait some more. Eventually, there will be a flashing icon in the
   bottom of your Eclipse window that looks like a caution sign above a
   pair of arrows. Click it, then click "Finish". Your Eclipse will restart;
-  pick the same workspace you started with (it will be the default).
+  pick the same workspace you started with.
   10. Add the ColoradoRLA project by using "Import..." (from "File" or
   context menu) to import "Existing Projects into Workspace" (under
   "General"). Eclipse will ask you to select a root directory; select the
