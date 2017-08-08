@@ -26,7 +26,6 @@ import javax.persistence.criteria.Root;
 
 import org.eclipse.jetty.http.HttpStatus;
 import org.hibernate.Session;
-import org.hibernate.query.Query;
 
 import spark.Request;
 import spark.Response;
