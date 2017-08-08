@@ -129,7 +129,7 @@ public final class CVRContestInfoJsonAdapter
     List<String> choices = null;
     long contest_id = -1;
     String comment = null;
-    ConsensusValue consensus = ConsensusValue.UNDEFINED;
+    ConsensusValue consensus = null;
     
     the_reader.beginObject();
     while (the_reader.hasNext()) {
@@ -147,7 +147,7 @@ public final class CVRContestInfoJsonAdapter
           try {
             consensus = ConsensusValue.valueOf(the_reader.nextString());
           } catch (final IllegalArgumentException e) {
-            consensus = ConsensusValue.UNDEFINED;
+            // ignore
           }
           break;
           

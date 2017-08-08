@@ -76,7 +76,7 @@ public class CVRContestInfo extends AbstractEntity implements Serializable {
   /**
    * The consensus value for this contest
    */
-  @Column(updatable = false, nullable = false)
+  @Column(updatable = false)
   @Enumerated(EnumType.STRING)
   private ConsensusValue my_consensus;
   
@@ -214,7 +214,6 @@ public class CVRContestInfo extends AbstractEntity implements Serializable {
    * The possible values for consensus.
    */
   public enum ConsensusValue {
-    UNDEFINED,
     YES,
     NO
   }

@@ -251,9 +251,15 @@ public final class Main {
         try {
           final Integer id = Integer.valueOf(s);
           final String name = properties.getProperty(s);
-          County county = CountyQueries.getCountyMatching(name, id);
+          County county = CountyQueries.getCountyMatching(id);
           if (county == null) {
             county = new County(name, id, new HashSet<Contest>());
+          } else if (!county.name().equals(name)) {
+            // update the county's name while preserving the rest of its info
+            Main.LOGGER.info("Updating " + county.name() + " county name to " + name);
+            final County new_county = new County(name, id, county.contests());
+            new_county.setID(county.id());
+            county = new_county;
           }
           Persistence.saveOrUpdate(county);
         } catch (final NumberFormatException e) {

@@ -40,17 +40,15 @@ public final class CountyQueries {
   }
   
   /**
-   * Obtain the County object with a specific name and ID number
-   * (not database ID), if one exists.
-   * 
-   * @param the_name The name.
+   * Obtain the County object with a specific ID number, if one exists.
+   *
    * @param the_id The ID number.
-   * @return the matched County, if one exists, or null otherwise.
+   * @return the matched county, if one exists, or null otherwise.
    */
   // we are checking to see if exactly one result is in a list, and
   // PMD doesn't like it
   @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
-  public static County getCountyMatching(final String the_name, final Integer the_id) {
+  public static County getCountyMatching(final Integer the_id) {
     County result = null;
     
     try {
@@ -59,8 +57,7 @@ public final class CountyQueries {
       final CriteriaBuilder cb = s.getCriteriaBuilder();
       final CriteriaQuery<County> cq = cb.createQuery(County.class);
       final Root<County> root = cq.from(County.class);
-      cq.select(root).where(cb.or(cb.equal(root.get("my_name"), the_name),
-                                  cb.equal(root.get("my_identifier"), the_id)));
+      cq.select(root).where(cb.equal(root.get("my_identifier"), the_id));
       final TypedQuery<County> query = s.createQuery(cq);
       final List<County> query_results = query.getResultList();
       // if there's exactly one result, return that
@@ -78,7 +75,7 @@ public final class CountyQueries {
       Main.LOGGER.error("could not query database for county");
     }
     if (result == null) {
-      Main.LOGGER.info("found no county for " + the_name + " id " + the_id);
+      Main.LOGGER.info("found no county for id " + the_id);
     } else {
       Main.LOGGER.info("found county " + result);
     }

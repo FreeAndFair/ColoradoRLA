@@ -29,7 +29,6 @@ import org.apache.commons.csv.CSVRecord;
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.hibernate.Persistence;
 import us.freeandfair.corla.model.CVRContestInfo;
-import us.freeandfair.corla.model.CVRContestInfo.ConsensusValue;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.Choice;
@@ -262,8 +261,7 @@ public class DominionCVRExportParser implements CVRExportParser {
         }
         // if this contest was on the ballot, add it to the votes
         if (present) {
-          contest_info.add(new CVRContestInfo(co, null, 
-                                              ConsensusValue.UNDEFINED, votes));
+          contest_info.add(new CVRContestInfo(co, null, null, votes));
         }
       }
       
