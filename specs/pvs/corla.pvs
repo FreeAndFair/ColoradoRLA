@@ -596,7 +596,7 @@ END election
 %%% storage mechanism in Colorado, and (c) some mechanisms are secure
 %%% and provide a chain-of-custody evidence and others are not. This
 %%% latter point matters with regards to the meaning of
-%%% \emph{chain\_of\_custody\_secure?}  and \texttt{verified?} below.
+%%% \emph{chain\_of\_custody\_secure?} and \texttt{verified?} below.
 storage_container: DATATYPE
   WITH SUBTYPES box,
                 bin,
@@ -752,9 +752,12 @@ END ballots
 %%% tabulated ballot the scanner on which the ballot is scanned, the
 %%% ballot batch of which the ballot is a part, the number of ballots
 %%% in the batch, and the storage container in which the ballot batch
-%%% is stored after tabulation. 
-%%% In the RLA Tool, a ballot manifest uploaded by a county must eventually
-%%% be verified, using the cryptographic hash (described in a future section).
+%%% is stored after tabulation.
+
+%%% In the RLA Tool, a ballot manifest uploaded by a county must
+%%% eventually be verified, using the cryptographic hash (described in
+%%% a future section).
+
 % @review kiniry dmz perhaps we should introduce the "verified" predicate after
 % we've introduced the cryptography?
 
@@ -803,13 +806,14 @@ END ballot_manifests
 % @relation well_formed_vote inherit vote
 % @relation overvote inherit vote
 % @relation undervote inherit vote
+% @relation no_consensus inherit vote
 vote: DATATYPE
   WITH SUBTYPES well_formed_vote,
                 overvote,
-                undervote
+                undervote,
+                no_consensus
 BEGIN
   IMPORTING ballots
-
 % @description A legal selection of zero or more choices in a ballot
 % contest.
   well_formed_vote?(choices:set[choice]):
@@ -819,16 +823,22 @@ BEGIN
   overvote?(choices:set[choice]): make_overvote: overvote
 % @description A (sometimes deemed improper) selection of too few
 % choices in a ballot contest.
+%%% \todonealmcb{Should we define undervote specifically as 0 votes?}
   undervote?(choices:set[choice]): make_undervote: undervote
-%%% \todonealmcb{Should we define undervote specifically as 0 votes?
+% @description The no_consensus type is used to capture the situation
+% when the audit board cannot reach consensus on the interpretation of
+% the votes in a contest during the RLA.
+  no_consensus?: make_no_consensus: no_consensus
 %%% Note that
-%%% \href{https://github.com/usnistgov/ElectionResultsReporting/}{the
-%%% Election Results Reporting project} defines it as ``Undervote:
-%%% Occurs when the voter does not select a candidate in a 1-of-M
-%%% contest or selects fewer than N candidates in an N-of-M
-%%% contest.''} \todokiniry{Should we model a blank vote separately
-%%% from an undervote?  Or do they simply use the term blank vote to
-%%% denote an undervote?}
+%%% \href{https://github.com/usnistgov/ElectionResultsReporting/}{the Election Results Reporting project} 
+%%% defines it as ``Undervote: Occurs when the voter does not select a
+%%% candidate in a 1-of-M contest or selects fewer than N candidates
+%%% in an N-of-M contest.''
+
+%%% \todokiniry{Should we model a blank vote separately from an
+%%% undervote?  Or do they simply use the term blank vote to denote an
+%%% undervote?}
+
 % @trace CDOS Audit Board Utility Mock-up 21 July 2017
 END vote
 
@@ -1861,11 +1871,9 @@ END county_dashboard
 %%% \subsubsection{Audit Board Dashboard}
 
 % @trace RDPR-6-Jul-2017 Section 25.2.3
-
 %%% There are a number of assumptions that the RLA Tool audit board
 %%% dashboard makes with respect to the C.R.S. It also facilitates the
 %%% comparison audit.
-
 audit_board_dashboard: THEORY
 BEGIN
   IMPORTING dashboard,
@@ -1874,7 +1882,6 @@ BEGIN
             cast_vote_records,
             instructions_forms_reports,
             storage_container
-
 %%%% The audit board must locate and retrieve from the appropriate
 %%%% storage container each randomly selected ballot. The audit board
 %%%% must verify that the seals on the appropriate storage containers
@@ -1883,15 +1890,12 @@ BEGIN
     [list[ballot] -> list[storage_container]]
   verify_all_seals_on_storage_containers:
     [list[storage_container] -> list[storage_container]]
-
 %%% The audit board must examine each randomly selected ballot or
 %%% VVPAT and report the voter markings or choices using the RLA Tool
 %%% or other means specified by the Secretary of State.
-
   next_ballot_for_audit:
     [audit_board_dashboard ->
-     [ballot_manifest_info, audit_board_dashboard]]
-
+     [ballot_manifest_info, nat, audit_board_dashboard]]
 % @trace Per email from Jerome Lovato at CDOS on 19 July 2017: The
 % Audit Board will enter the choices for the entire ballot including
 % overvotes and undervotes. The tool must not allow the Audit Board to
@@ -1899,21 +1903,18 @@ BEGIN
   report_markings:
     [audit_board_dashboard, ballot_manifest_info,
      list[ballot_mark] -> audit_board_dashboard]
-
 % @trace Per email from Jerome Lovato at CDOS on 19 July 2017: If the
 % Audit Board cannot find a ballot, the tool should have a “ballot not
 % found” box that the Audit Board will select. This will be marked as
 % an error and the county may have to audit additional ballots.
   report_ballot_not_found:
     [audit_board_dashboard, phantom_ballot -> audit_board_dashboard]  
-
 %%% If a ballot does not have a voter-verifiable paper ballot
 %%% associated with it then the Audit Board reports the lack of
 %%% voter-verifiable paper ballot.
   report_ballot_has_no_voter_verifiable_paper_record:
     [audit_board_dashboard, non_voter_verifiable_ballot ->
      audit_board_dashboard]  
-
 %%% \begin{quotation}
 %%% If supported by the county's voting system, the audit board may
 %%% refer to the digital image of the audited ballot captured by the
@@ -1937,38 +1938,31 @@ BEGIN
   compare_reported_markings_to_cvr:
     [ballot, cvr, list[ballot_mark] ->
      [margin_overstatement, margin_understatement]]
-
 %%% The RLA will continue until the risk limit for for each audited
 %%% contests is met or until a full hand count results. If the county
 %%% audit reports reflect that the risk limit has not been satisfied
 %%% in an audited contest, the Secretary of State will randomly select
 %%% additional ballots for audit.
-
 % @review CDOS The details of this last fragment of the process are
 % very underspecified.  We need clarity on what they exactly want.
-
 %%% We presume at the moment that if errors are made during the
 %%% auditing process, we should capture information in the RLA
 %%% Tool about those errors and their mitigation and resolution.
-
 % @review CDOS We need input on how much, and what kind, of logging
 % they want to see of this nature.
   submit_audit_investigation_report:
     [audit_board_dashboard, audit_investigation_report ->
      audit_board_dashboard]
-
 % @review CDOS We also do not have requirements from CDOS as to how to
 % complete the audit process and have the audit board members ``sign''
 % the audit.
   submit_audit_report:
     [audit_board_dashboard, audit_report -> audit_board_dashboard]
-
 % @trace Per email from Jerome Lovato at CDOS on 19 July 2017: The
 % Audit Board and county admin will sign off on each round until the
 % audit completed.
   signoff_intermediate_audit_report:
     [audit_board_dashboard, audit_report -> audit_board_dashboard]
-
 END audit_board_dashboard
 
 %%% \subsubsection{Public Dashboard}
@@ -2672,11 +2666,33 @@ BEGIN
 %%% \subsection{Audit Board Dashboard Protocol}
 %%% \label{sec:Audit_Board_Dashboard_Protocol}
 %%%
-%%% 
-
+%%% The Audit Board Dashboard has seven (7) functions defined on it,
+%%% all of which are pubic external events:
+%%% \begin{enumerate}
+%%% \item \texttt{ballots\_to\_audit\_to\_storage\_container\_list},
+%%% which is used to help audit board members find the ballots that
+%%% they must audit,
+%%% \item \texttt{next\_ballot\_for\_audit}, which provides the ballot
+%%% manifest information necessary to inform the audit board members
+%%% of the ballot style of the pulled ballot as well as the CVR number
+%%% of the ballot under audit,
+%%% \item \texttt{report\_markings}, which permits the audit board
+%%% members to report the markings that they see on the current paper
+%%% ballot under audit,
+%%% \item \texttt{report\_ballot\_not\_found}, which permits the audit
+%%% board members to report that they cannot find the ballot that they
+%%% are supposed to audit,
+%%% \item \texttt{submit\_audit\_investigation\_report}, which permits
+%%% the audit board members to submit a report of an investigation
+%%% into a given discrepancy in the RLA process,
+%%% \item \texttt{submit\_audit\_report}, which permits the audit
+%%% board members to submit their final report on the RLA, and
+%%% \item \texttt{submit\_intermediate\_audit\_report}, which permits
+%%% the audit board members to submit an intermediate report on the
+%%% RLA so that they can, e.g., take a break and return to the audit
+%%% process later.
+%%% \end{enumerate}
 END protocol
-
-
 %+END protocol
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2686,55 +2702,59 @@ END protocol
 %%% The overall domain model and specification of this system is the
 %%% sum total of all concepts introduced in this chapter.
 
+specification_theories: THEORY
+BEGIN
+  IMPORTING
+    FAFSSL
+END specification_theories
+
+background_terminology: THEORY
+BEGIN
+  IMPORTING
+    database,
+    information_systems,
+    randomness,
+    cryptography
+END background_terminology
+
 terminology: THEORY
 BEGIN
   IMPORTING
-% @description "TBD"
-    ballots,
-% @description "TBD"
-    elections,
-% @description "TBD"
     audits,
-% @description "TBD"
-    instructions_forms_reports,
-% @description "TBD"
-    roles,
-% @description "TBD"
-    randomness,
-% @description "TBD"
-    cryptography,
-% @description "TBD"
-    rlas,
-% @description "TBD"
-    elections_equipment,
-% @description "TBD"
     authentication,
-% @description "TBD"
+    ballot_interpretation,
+    ballot_manifests,
+    ballots,
+    ballots_collections,
+    canvass_boards,
     cast_vote_records,
-% @description "TBD"
-% @review CDOS what is the source of info
-% presented to audit board to tell them which paper ballot
-% they should examine next? Is it the CVR alone that is 
-% the source? And what information must the audit board 
-% enter into the system to ascertain that the paper
-% ballot they are holding does in fact match the CVR
-% that will be compared to their interpretation? Will 
-% the audit board simply click "Yes, this is the right 
-% paper ballot"? Or will they have to enter some confirming 
-% piece of information (e.g., ballot style, a ballot ID number?).
-% @review CDOS if the audit has several "rounds",
-% does the Audit Board need to "sign" after each
-% round?
-    user_interface,
-% @description "TBD"
-    dashboard,
-% @description "TBD"
-    database,
-% @description "TBD"
-    information_systems,
-% @description "TBD"
-    system_architecture
+    elections,
+    elections_equipment,
+    instructions_forms_reports,
+    rlas,
+    roles
 END terminology
+
+dashboards: THEORY
+BEGIN
+  IMPORTING
+    dashboard,
+    department_of_state_dashboard,
+    county_dashboard,
+    audit_board_dashboard,
+    public_dashboard
+END dashboards
+
+system_specification: THEORY
+BEGIN
+  IMPORTING
+    data_model,
+    logging,
+    protocol,
+    system_architecture,
+    system_assumptions
+    %state_machine
+END system_specification
 
 % @system CORLA_SYSTEM
 % @indexing-author Joseph Kiniry <kiniry@freeandfair.us>
@@ -2746,6 +2766,21 @@ END terminology
 corla: THEORY
 BEGIN
   IMPORTING
-% @description "TBD"
-    terminology
+    specification_theories,
+    background_terminology,
+    terminology,
+    dashboards,
+    system_specification
 END corla
+
+% @review CDOS what is the source of info presented to audit board to
+% tell them which paper ballot they should examine next? Is it the CVR
+% alone that is the source? And what information must the audit board
+% enter into the system to ascertain that the paper ballot they are
+% holding does in fact match the CVR that will be compared to their
+% interpretation? Will the audit board simply click "Yes, this is the
+% right paper ballot"? Or will they have to enter some confirming
+% piece of information (e.g., ballot style, a ballot ID number?).
+
+% @review CDOS if the audit has several "rounds", does the Audit Board
+% need to "sign" after each round?
