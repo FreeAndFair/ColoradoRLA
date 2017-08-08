@@ -17,6 +17,7 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.hibernate.Persistence;
 import us.freeandfair.corla.model.CastVoteRecord;
 
 /**
@@ -53,7 +54,8 @@ public class CVRDownloadByID implements Endpoint {
     
     try {
       final CastVoteRecord c = 
-          CastVoteRecord.byID(Long.parseLong(the_request.params(":id")));
+          Persistence.getByID(Long.parseLong(the_request.params(":id")),
+                              CastVoteRecord.class);
       if (c != null) {
         result = Main.GSON.toJson(c);
       }

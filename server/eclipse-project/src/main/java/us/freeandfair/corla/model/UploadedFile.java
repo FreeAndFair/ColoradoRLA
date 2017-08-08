@@ -11,26 +11,15 @@
 
 package us.freeandfair.corla.model;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Blob;
 import java.time.Instant;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-
-import us.freeandfair.corla.hibernate.Persistence;
+import us.freeandfair.corla.hibernate.AbstractEntity;
 
 /**
  * An uploaded file, kept in persistent storage for archival.
@@ -38,20 +27,13 @@ import us.freeandfair.corla.hibernate.Persistence;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
+// note that unlike our other entities, uploaded files are not Serializable
 @Entity
 @Table(name = "uploaded_file")
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
-public class UploadedFile {
-  /**
-   * The database ID for this uploaded file.
-   */
-  @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE)
-  @Column(updatable = false, nullable = false)
-  private Long my_id;
-  
+public class UploadedFile extends AbstractEntity {
   /**
    * The timestamp for this ballot manifest info, in milliseconds since the epoch.
    */
@@ -92,8 +74,8 @@ public class UploadedFile {
   /**
    * Constructs an empty uploaded file, solely for persistence.
    */
-  protected UploadedFile() {
-    // default values for everything
+  public UploadedFile() {
+    super();
   }
   
   /**
@@ -107,81 +89,19 @@ public class UploadedFile {
    * the hash.
    * @param the_file The file (as a Blob).
    */
-  protected UploadedFile(final Instant the_timestamp,
-                         final String the_county_id,
-                         final FileType the_type,
-                         final String the_hash,
-                         final HashStatus the_hash_status,
-                         final Blob the_file) {
+  public UploadedFile(final Instant the_timestamp,
+                      final String the_county_id,
+                      final FileType the_type,
+                      final String the_hash,
+                      final HashStatus the_hash_status,
+                      final Blob the_file) {
+    super();
     my_timestamp = the_timestamp;
     my_county_id = the_county_id;
     my_type = the_type;
     my_hash = the_hash;
     my_hash_status = the_hash_status;
     my_file = the_file;
-  }
-  
-  /**
-   * Returns an uploaded file with the specified parameters after persisting it to
-   * the database.
-   * 
-   * @param the_timestamp The timestamp.
-   * @param the_county_id The county that uploaded the file.
-   * @param the_type The file type.
-   * @param the_hash The hash entered at upload time.
-   * @param the_hash_status A flag indicating whether the file matches
-   * the hash.
-   * @param the_file The file (as a java.io.File).
-   * @return the resulting uploaded file, or null if persistence is not available.
-   */
-  @SuppressWarnings("PMD.UseObjectForClearerAPI")
-  public static synchronized UploadedFile instance(final Instant the_timestamp,
-                                                   final String the_county_id,
-                                                   final FileType the_type,
-                                                   final String the_hash,
-                                                   final HashStatus the_hash_status,
-                                                   final File the_file) {
-    UploadedFile result = null;
-    Transaction transaction = null;
-    InputStream is = null;
-    
-    if (Persistence.isEnabled()) {
-      try {
-        final Session session = Persistence.currentSession();
-        transaction = session.beginTransaction();
-        is = new FileInputStream(the_file);
-        final Blob blob = 
-            Persistence.currentSession().getLobHelper().
-            createBlob(is, the_file.length());
-        final UploadedFile uploaded_file = new UploadedFile(the_timestamp, the_county_id,
-                                                            the_type, the_hash, 
-                                                            the_hash_status, blob);
-        session.save(uploaded_file);
-        transaction.commit();
-        result = uploaded_file;
-      } catch (final HibernateException | IOException e) {
-        if (transaction != null) {
-          transaction.rollback();
-        }
-      } finally {
-        if (is != null) {
-          try {
-            is.close();
-          } catch (final IOException e) {
-            // ignored
-          }
-        }
-      }
-    }
-    
-    return result;
-  }
-
-  /**
-   * @return the ID of this object.
-   */
-  public Long id() {
-    return my_id;
   }
   
   /**

@@ -102,6 +102,11 @@ public class DominionCVRExportParser implements CVRExportParser {
   private final String my_county_id;
    
   /**
+   * The timestamp to apply to the parsed CVRs.
+   */
+  private final Instant my_timestamp;
+  
+  /**
    * Construct a new Dominion CVR export parser using the specified Reader,
    * for CVRs provided by the specified county.
    * 
@@ -109,10 +114,12 @@ public class DominionCVRExportParser implements CVRExportParser {
    * @param the_county_id The ID of the county whose CVRs are to be parsed.
    * @exception IOException if an error occurs while constructing the parser.
    */
-  public DominionCVRExportParser(final Reader the_reader, final String the_county_id) 
+  public DominionCVRExportParser(final Reader the_reader, final String the_county_id,
+                                 final Instant the_timestamp) 
       throws IOException {
     my_parser = new CSVParser(the_reader, CSVFormat.DEFAULT);
     my_county_id = the_county_id;
+    my_timestamp = the_timestamp;
   }
   
   /**
@@ -123,10 +130,12 @@ public class DominionCVRExportParser implements CVRExportParser {
    * @param the_county_id The ID of the county whose CVRs are to be parsed.
    * @exception IOException if an error occurs while constructing the parser.
    */
-  public DominionCVRExportParser(final String the_string, final String the_county_id)
+  public DominionCVRExportParser(final String the_string, final String the_county_id,
+                                 final Instant the_timestamp)
       throws IOException {
     my_parser = CSVParser.parse(the_string, CSVFormat.DEFAULT);
     my_county_id = the_county_id;
+    my_timestamp = the_timestamp;
   }
   
   /**
@@ -207,9 +216,9 @@ public class DominionCVRExportParser implements CVRExportParser {
       // now that we have all the choices, we can create a Contest object for 
       // this contest (note the empty contest description at the moment, below, 
       // as that's not in the CVR files and may not actually be used)
-      my_contests.add(Persistence.matchingEntity(Contest.instance(cn, "", choices, 
-                                                             the_votes_allowed.get(cn)),
-                                                 Contest.class));
+      my_contests.add(Persistence.get(new Contest(cn, "", choices, 
+                                                  the_votes_allowed.get(cn)),
+                                      Contest.class));
     }
   }
   
@@ -253,15 +262,17 @@ public class DominionCVRExportParser implements CVRExportParser {
         }
         // if this contest was on the ballot, add it to the votes
         if (present) {
-          contest_info.add(CVRContestInfo.instance(co, null, 
-                                                   ConsensusValue.UNDEFINED, votes));
+          contest_info.add(new CVRContestInfo(co, null, 
+                                              ConsensusValue.UNDEFINED, votes));
         }
       }
       
-      return CastVoteRecord.instance(RecordType.UPLOADED, 
-                                     the_timestamp, my_county_id, 
-                                     tabulator_id, batch_id, record_id, imprinted_id, 
-                                     ballot_type, contest_info);
+      return Persistence.get(new CastVoteRecord(RecordType.UPLOADED, 
+                                                the_timestamp, my_county_id, 
+                                                tabulator_id, batch_id, record_id, 
+                                                imprinted_id, ballot_type, 
+                                                contest_info),
+                             CastVoteRecord.class);
     } catch (final NumberFormatException e) {
       return null;
     } catch (final ArrayIndexOutOfBoundsException e) {
@@ -274,7 +285,7 @@ public class DominionCVRExportParser implements CVRExportParser {
    */
   private void abort() {
     for (final Long id : my_cvr_ids) {
-      CastVoteRecord.forget(id);
+      Persistence.delete(CastVoteRecord.class, id);
     }
   }
   
@@ -293,7 +304,6 @@ public class DominionCVRExportParser implements CVRExportParser {
     
     boolean result = true; // presume the parse will succeed
     final Iterator<CSVRecord> records = my_parser.iterator();
-    final Instant timestamp = Instant.now();
     
     try {
       // we expect the first line to be the election name, which we currently discard
@@ -320,11 +330,12 @@ public class DominionCVRExportParser implements CVRExportParser {
       // subsequent lines contain cast vote records
       while (records.hasNext()) {
         final CSVRecord cvr_line = records.next();
-        final CastVoteRecord cvr = extractCVR(cvr_line, timestamp);
+        final CastVoteRecord cvr = extractCVR(cvr_line, my_timestamp);
         if (cvr == null) {
           // we don't record the CVR since it didn't parse
           Main.LOGGER.error("Could not parse malformed CVR record (" + cvr_line + ")");
-          result = false;          
+          result = false;   
+          break;
         } else {
           my_cvr_ids.add(cvr.id());
         }

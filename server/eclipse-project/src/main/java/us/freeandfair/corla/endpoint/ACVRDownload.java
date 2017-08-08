@@ -16,13 +16,19 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.PersistenceException;
 
 import org.eclipse.jetty.http.HttpStatus;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
 
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.hibernate.Persistence;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.util.SparkHelper;
@@ -56,18 +62,50 @@ public class ACVRDownload implements Endpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
+    String result = "";
+    int status = HttpStatus.OK_200;
+    
     try {
       final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
       final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-      
-      Main.GSON.toJson(CastVoteRecord.getMatching(new HashSet<String>(), 
-                                                  RecordType.AUDITOR_ENTERED),
-                       bw);
-      bw.flush();
-      return "";
+      final Set<CastVoteRecord> matches = getMatching();
+      if (matches == null) {
+        result = "Unable to fetch records from database";
+        status = HttpStatus.INTERNAL_SERVER_ERROR_500;
+      } else {
+        Main.GSON.toJson(matches, bw);
+        bw.flush();
+        result =  "";
+      }
     } catch (final IOException e) {
-      the_response.status(HttpStatus.INTERNAL_SERVER_ERROR_500);
-      return "Unable to stream response.";
+      status = HttpStatus.INTERNAL_SERVER_ERROR_500;
+      result = "Unable to stream response.";
     }
+    
+    the_response.status(status);
+    return result;
+  }
+  
+  /**
+   * @return the set of cast vote records that were submitted by auditors.
+   */
+  private Set<CastVoteRecord> getMatching() {
+    Set<CastVoteRecord> result = null;
+
+    try {
+      final Set<CastVoteRecord> query_result = new HashSet<>();
+      Persistence.beginTransaction();
+      final Session s = Persistence.currentSession();
+      final Query<CastVoteRecord> query = 
+          s.createQuery("from CastVoteRecord where record_type = '" + 
+              RecordType.AUDITOR_ENTERED + "'", CastVoteRecord.class);
+      query_result.addAll(query.getResultList());
+      Persistence.commitTransaction();
+      result = query_result;
+    } catch (final PersistenceException e) {
+      Main.LOGGER.error("Exception when reading ACVRs from database: " + e);
+    }
+
+    return result;
   }
 }

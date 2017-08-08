@@ -231,6 +231,10 @@ public final class Main {
     // provide properties to the persistence engine
     Persistence.setProperties(my_properties);
 
+    if (!Persistence.hasDB()) {
+      LOGGER.error("could not open database connection");
+      return;
+    }
     // get the port numbers from properties
     final int http_port = parsePortNumber("http_port", DEFAULT_HTTP_PORT);
     final int https_port = parsePortNumber("https_port", DEFAULT_HTTPS_PORT);

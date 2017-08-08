@@ -22,10 +22,9 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OrderColumn;
@@ -34,7 +33,7 @@ import javax.persistence.Table;
 import com.google.gson.annotations.JsonAdapter;
 
 import us.freeandfair.corla.gson.CVRContestInfoJsonAdapter;
-import us.freeandfair.corla.hibernate.Persistence;
+import us.freeandfair.corla.hibernate.AbstractEntity;
 
 /**
  * A cast vote record contains information about a single ballot, either 
@@ -49,24 +48,11 @@ import us.freeandfair.corla.hibernate.Persistence;
 //cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
 @JsonAdapter(CVRContestInfoJsonAdapter.class)
-public class CVRContestInfo implements Serializable {
+public class CVRContestInfo extends AbstractEntity implements Serializable {
   /**
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1L;
-  
-  /**
-   * The current ID number to be used.
-   */
-  private static int current_id;
-  
-  /**
-   * The database ID of this record.
-   */
-  @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE)
-  @Column(updatable = false, nullable = false)
-  private Long my_id;
   
   /**
    * The CVR to which this record belongs. 
@@ -91,6 +77,7 @@ public class CVRContestInfo implements Serializable {
    * The consensus value for this contest
    */
   @Column(updatable = false, nullable = false)
+  @Enumerated(EnumType.STRING)
   private ConsensusValue my_consensus;
   
   /**
@@ -106,8 +93,8 @@ public class CVRContestInfo implements Serializable {
   /**
    * Constructs an empty CVRContestInfo, solely for persistence.
    */
-  protected CVRContestInfo() {
-    // default values for everything
+  public CVRContestInfo() {
+    super();
   }
   
   /**
@@ -121,9 +108,10 @@ public class CVRContestInfo implements Serializable {
    * @exception IllegalArgumentException if any choice is not a valid choice
    * for the specified contest.
    */
-  protected CVRContestInfo(final Contest the_contest, final String the_comment,
-                           final ConsensusValue the_consensus,
-                           final List<String> the_choices) {
+  public CVRContestInfo(final Contest the_contest, final String the_comment,
+                        final ConsensusValue the_consensus,
+                        final List<String> the_choices) {
+    super();
     my_contest = the_contest;
     my_comment = the_comment;
     my_consensus = the_consensus;
@@ -137,38 +125,6 @@ public class CVRContestInfo implements Serializable {
   }
   
   /**
-   * @return the next ID
-   */
-  private static synchronized long getID() {
-    return current_id++;
-  }
-  
-  /**
-   * Returns a CVR contest information record with the specified parameters.
-   * 
-   * @param the_contest The contest.
-   * @param the_comment The comment.
-   * @param the_consensus The consensus value.
-   * @param the_choices The choices.
-   */
-  public static synchronized CVRContestInfo instance(final Contest the_contest, 
-                                                     final String the_comment,
-                                                     final ConsensusValue the_consensus,
-                                                     final List<String> the_choices) {
-    final CVRContestInfo result = new CVRContestInfo(the_contest, the_comment,
-                                                     the_consensus, the_choices);
-    
-    // persistence is handled by CastVoteRecord, and there's no independent caching,
-    // but we'll assign an ID if persistence is not enabled
-    
-    if (!Persistence.isEnabled()) {
-      result.my_id = getID();
-    }
-    
-    return result;
-  }
-
-  /**
    * Sets the CVR that owns this record; this should only be called by
    * the CastVoteRecord class.
    * 
@@ -177,14 +133,7 @@ public class CVRContestInfo implements Serializable {
   protected void setCVR(final CastVoteRecord the_cvr) {
     my_cvr = the_cvr;
   }
-  
-  /**
-   * @return the ID of this record.
-   */
-  public Long id() {
-    return my_id;
-  }
-  
+
   /**
    * @return the CVR that owns this record.
    */

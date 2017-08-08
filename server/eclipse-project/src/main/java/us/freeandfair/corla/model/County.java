@@ -13,17 +13,16 @@
 package us.freeandfair.corla.model;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
+import java.util.Set;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.FetchType;
 import javax.persistence.Table;
 
-import us.freeandfair.corla.hibernate.Persistence;
+import us.freeandfair.corla.hibernate.AbstractEntity;
 
 /**
  * A county involved in an audit.
@@ -36,36 +35,11 @@ import us.freeandfair.corla.hibernate.Persistence;
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
-public class County implements Serializable {
+public class County extends AbstractEntity implements Serializable {
   /**
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1L;
-
-  /**
-   * The table of objects that have been created.
-   */
-  private static final Map<County, County> CACHE = 
-      new HashMap<County, County>();
-  
-  /**
-   * The table of objects by ID.
-   */
-  private static final Map<Long, County> BY_ID =
-      new HashMap<Long, County>();
-  
-  /**
-   * The current ID number to be used.
-   */
-  private static long current_id;
- 
-  /**
-   * The database ID of this county.
-   */
-  @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE)
-  @Column(updatable = false, nullable = false)
-  private Long my_id;
 
   /**
    * The county name.
@@ -77,84 +51,36 @@ public class County implements Serializable {
    * The county ID.
    */
   @Column(nullable = false, updatable = false)
-  private String my_identifier;
+  private Integer my_identifier;
+  
+  /**
+   * The contests in this county.
+   */
+  @ElementCollection(fetch = FetchType.EAGER)
+  private Set<Contest> my_contests;
   
   /**
    * Constructs an empty county, solely for persistence. 
    */
-  protected County() {
-    // default values
+  public County() {
+    super();
   }
     
   /**
    * Constructs a county with the specified parameters.
    * 
    * @param the_name The county name.
-   * @param the_id The county ID.
+   * @param the_identifier The county ID.
+   * @param the_contests The contests.
    */
-  protected County(final String the_name, final String the_id) {
+  public County(final String the_name, final Integer the_identifier,
+                final Set<Contest> the_contests) {
+    super();
     my_name = the_name;
-    my_identifier = the_id;
-  }
-  
-  /**
-   * @return the next ID
-   */
-  private static synchronized long getID() {
-    return current_id++;
+    my_identifier = the_identifier;
+    my_contests = the_contests;
   }
 
-  /**
-   * Returns a county with the specified parameters.
-   * 
-   * @param the_name The county name.
-   * @param the_description The county ID.
-   */
-  public static synchronized County instance(final String the_name, 
-                                             final String the_id) {
-    County result = 
-        Persistence.matchingEntity(new County(the_name, the_id), 
-                                   County.class);
-
-    if (!Persistence.isEnabled()) {
-      // cache ourselves because persistence is not enabled
-      if (CACHE.containsKey(result)) {
-        result = CACHE.get(result);
-      } else {
-        result.my_id = getID();
-        CACHE.put(result, result);
-        BY_ID.put(result.id(), result);
-      }
-    }
-    
-    return result;
-  }
-  
-  /**
-   * Returns the county with the specified ID.
-   * 
-   * @param the_id The ID.
-   * @return the county, or null if it doesn't exist.
-   */
-  public static synchronized County byID(final long the_id) {
-    final County result;
-    
-    if (Persistence.isEnabled()) {
-      result = Persistence.entityByID(the_id, County.class);
-    } else {
-      result = BY_ID.get(the_id);
-    }
-    
-    return result;
-  }
-  
-  /**
-   * @return the database ID.
-   */
-  public long id() {
-    return my_id;
-  }
-  
   /**
    * @return the county name.
    */
@@ -165,8 +91,15 @@ public class County implements Serializable {
   /**
    * @return the county ID.
    */
-  public String identifier() {
+  public Integer identifier() {
     return my_identifier;
+  }
+  
+  /**
+   * @return the contests in this county.
+   */
+  public Set<Contest> contests() {
+    return Collections.unmodifiableSet(my_contests);
   }
   
   /**
@@ -191,6 +124,7 @@ public class County implements Serializable {
       final County other_county = (County) the_other;
       result &= other_county.name().equals(name());
       result &= other_county.identifier().equals(identifier());
+      result &= other_county.contests().equals(contests());
     } else {
       result = false;
     }

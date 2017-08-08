@@ -16,13 +16,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.time.Instant;
-import java.util.HashSet;
+import java.util.OptionalLong;
 import java.util.stream.Collectors;
 
+import javax.persistence.PersistenceException;
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
 
 import org.eclipse.jetty.http.HttpStatus;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
 
 import com.google.gson.JsonSyntaxException;
 
@@ -30,6 +33,7 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.hibernate.Persistence;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.util.SuppressFBWarnings;
@@ -84,14 +88,16 @@ public class ACVRUpload implements Endpoint {
       // we need to create a new CVR instance the "right" way, so it persists and also
       // has the right type
       final CastVoteRecord real_acvr = 
-          CastVoteRecord.instance(RecordType.AUDITOR_ENTERED, Instant.now(), 
+          Persistence.get(new CastVoteRecord(RecordType.AUDITOR_ENTERED, Instant.now(), 
                                   acvr.countyID(), acvr.scannerID(), acvr.batchID(), 
                                   acvr.recordID(), acvr.imprintedID(), acvr.ballotType(), 
-                                  acvr.contestInfo());
+                                  acvr.contestInfo()),
+                          CastVoteRecord.class);
       Main.LOGGER.info("Audit CVR parsed and stored as id " + real_acvr.id());
-      Main.LOGGER.info(CastVoteRecord.getMatching(new HashSet<String>(), 
-                                                  RecordType.AUDITOR_ENTERED).size() + 
-                       " audit CVRs in storage");
+      final OptionalLong count = count();
+      if (count.isPresent()) {
+        Main.LOGGER.info(count.getAsLong() + " ACVRs in storage");
+      }
     } catch (final JsonSyntaxException | IOException | ServletException | 
                    NullPointerException e) {
       Main.LOGGER.info("Unable to parse ACVR: " + e);
@@ -104,5 +110,28 @@ public class ACVRUpload implements Endpoint {
       the_response.status(HttpStatus.UNPROCESSABLE_ENTITY_422);
       return "Not OK";
     }
+  }
+  
+  /**
+   * Count the ACVRs in storage.
+   * 
+   * @return the number of ACVRs, or -1 if the count could not be determined.
+   */
+  private OptionalLong count() {
+    OptionalLong result = OptionalLong.empty();
+    
+    try {
+      Persistence.beginTransaction();
+      final Session s = Persistence.currentSession();
+      final Query<Long> query = 
+          s.createQuery("select count(1) from CastVoteRecord where record_type = '" +
+                        RecordType.AUDITOR_ENTERED + "'", Long.class);
+      result = OptionalLong.of(query.getSingleResult());
+      Persistence.commitTransaction();
+    } catch (final PersistenceException e) {
+      // ignore
+    }
+    
+    return result;
   }
 }

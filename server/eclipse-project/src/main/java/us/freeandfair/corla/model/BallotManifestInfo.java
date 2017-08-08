@@ -13,21 +13,14 @@ package us.freeandfair.corla.model;
 
 import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 
+import java.io.Serializable;
 import java.time.Instant;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Table;
 
-import us.freeandfair.corla.hibernate.Persistence;
+import us.freeandfair.corla.hibernate.AbstractEntity;
 
 /**
  * Information about the locations of specific batches of ballots.
@@ -40,31 +33,11 @@ import us.freeandfair.corla.hibernate.Persistence;
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
-public class BallotManifestInfo {
+public class BallotManifestInfo extends AbstractEntity implements Serializable {
   /**
-   * The current ID number to be used.
+   * The serialVersionUID.
    */
-  private static long current_id;
-
-  /**
-   * The table of objects that have been created.
-   */
-  private static final Map<BallotManifestInfo, BallotManifestInfo> CACHE = 
-      new HashMap<BallotManifestInfo, BallotManifestInfo>();
-  
-  /**
-   * The table of objects by ID.
-   */
-  private static final Map<Long, BallotManifestInfo> BY_ID =
-      new HashMap<Long, BallotManifestInfo>();
-  
-  /**
-   * The database ID for this ballot manifest info.
-   */
-  @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE)
-  @Column(updatable = false, nullable = false)
-  private Long my_id;
+  private static final long serialVersionUID = 1; 
   
   /**
    * The timestamp for this ballot manifest info, in milliseconds
@@ -108,8 +81,8 @@ public class BallotManifestInfo {
    * Constructs an empty ballot manifest information record, solely
    * for persistence.
    */
-  protected BallotManifestInfo() {
-    // default values for everything
+  public BallotManifestInfo() {
+    super();
   }
   
   /**
@@ -122,177 +95,19 @@ public class BallotManifestInfo {
    * @param the_batch_size The batch size.
    * @param the_storage_location The storage location.
    */
-  protected BallotManifestInfo(final Instant the_timestamp,
-                               final String the_county_id,
-                               final String the_scanner_id, 
-                               final String the_batch_id,
-                               final int the_batch_size, 
-                               final String the_storage_location) {
+  public BallotManifestInfo(final Instant the_timestamp,
+                            final String the_county_id,
+                            final String the_scanner_id, 
+                            final String the_batch_id,
+                            final int the_batch_size, 
+                            final String the_storage_location) {
+    super();
     my_timestamp = the_timestamp;
     my_county_id = the_county_id;
     my_scanner_id = the_scanner_id;
     my_batch_id = the_batch_id;
     my_batch_size = the_batch_size;
     my_storage_location = the_storage_location;
-  }
-  
-  /**
-   * @return the next ID
-   */
-  private static synchronized long getID() {
-    return current_id++;
-  }
-  
-  /**
-   * Returns a ballot manifest info with the specified parameters.
-   * 
-   * @param the_timestamp The timestamp.
-   * @param the_county_id The county ID.
-   * @param the_scanner_id The scanner ID.
-   * @param the_batch_id The batch ID.
-   * @param the_batch_size The batch size.
-   * @param the_storage_location The storage location.
-   */
-  @SuppressWarnings("PMD.UseObjectForClearerAPI")
-  public static synchronized BallotManifestInfo instance(final Instant the_timestamp,
-                                                         final String the_county_id, 
-                                                         final String the_scanner_id, 
-                                                         final String the_batch_id, 
-                                                         final int the_batch_size, 
-                                                         final String the_storage_location) {
-    BallotManifestInfo result = 
-        Persistence.matchingEntity(new BallotManifestInfo(the_timestamp, the_county_id,
-                                                     the_scanner_id, the_batch_id,
-                                                     the_batch_size, the_storage_location),
-                              BallotManifestInfo.class);
-
-    if (!Persistence.isEnabled()) {
-      // cache ourselves because persistence is not enabled
-      if (CACHE.containsKey(result)) {
-        result = CACHE.get(result);
-      } else {
-        result.my_id = getID();
-        CACHE.put(result, result);
-        BY_ID.put(result.id(), result);
-      }
-    }
-    
-    return result;
-  }
-  
-  /**
-   * Returns the ballot manifest info with the specified ID.
-   * 
-   * @param the_id The ID.
-   * @return the ballot manifest info, or null if it doesn't exist.
-   */
-  public static synchronized BallotManifestInfo byID(final long the_id) {
-    final BallotManifestInfo result;
-    
-    if (Persistence.isEnabled()) {
-      result = Persistence.entityByID(the_id, BallotManifestInfo.class);
-    } else {
-      result = BY_ID.get(the_id);
-    }
-    
-    return result;
-  }
-  
-  /**
-   * "Forgets" the specified ballot manifest info.
-   * 
-   * @param the_bmi The info to "forget".
-   */
-  public static synchronized boolean forget(final BallotManifestInfo the_bmi) {
-    boolean result = true;
-    
-    if (Persistence.isEnabled()) {
-      result = Persistence.removeEntity(the_bmi);
-    } else {
-      CACHE.remove(the_bmi);
-      BY_ID.remove(the_bmi.id());
-    }
-    
-    return result;
-  }
-  
-  /**
-   * "Forgets" the ballot manifest info with the specified ID.
-   * 
-   * @param the_id The ID to forget.
-   */
-  public static synchronized boolean forget(final Long the_id) {
-    boolean result = true;
-    
-    if (Persistence.isEnabled()) {
-      result = Persistence.removeEntity(the_id, BallotManifestInfo.class);
-    } else {
-      forget(BY_ID.get(the_id));
-    }
-    
-    return result;
-  }
-  
-  /**
-   * Gets all known ballot manifest information for the specified counties.
-   * 
-   * @param the_county_ids The county ID to retrieve ballot manifest information 
-   * for; if this set is empty or null, all ballot manifest information for all 
-   * counties is retrieved.
-   * @return the requested ballot manifest information.
-   */
-  public static synchronized Collection<BallotManifestInfo> 
-      getMatching(final Set<String> the_county_ids) {
-    final Set<BallotManifestInfo> result = new HashSet<BallotManifestInfo>();
-    final Set<String> counties_to_check = new HashSet<String>(); 
-    
-    if (the_county_ids != null) {
-      counties_to_check.addAll(the_county_ids);
-    }
-    
-    if (Persistence.isEnabled()) {
-      final BallotManifestInfo template = new BallotManifestInfo();
-      if (counties_to_check.isEmpty()) {
-        result.addAll(Persistence.matchingEntities(template, BallotManifestInfo.class));
-      } else {
-        for (final String county_id : counties_to_check) {
-          template.my_county_id = county_id;
-          result.addAll(Persistence.matchingEntities(template, 
-                                                     BallotManifestInfo.class));
-        }
-      } 
-    } else {
-      for (final BallotManifestInfo bmi : CACHE.keySet()) {
-        if (counties_to_check.contains(bmi.countyID())) {
-          result.add(bmi);
-        }
-      }
-    }
-    
-    return result;
-  }
-
-  /**
-   * @return all known ballot manifest information.
-   */
-  public static synchronized Collection<BallotManifestInfo> getAll() {
-    final Set<BallotManifestInfo> result = new HashSet<BallotManifestInfo>();
-    
-    if (Persistence.isEnabled()) {
-      result.addAll(Persistence.matchingEntities(new BallotManifestInfo(), 
-                                                 BallotManifestInfo.class));
-    } else {
-      result.addAll(CACHE.keySet());
-    }
-    
-    return result;
-  }
-
-  /**
-   * @return the database ID.
-   */
-  public long id() {
-    return my_id;
   }
   
   /**
