@@ -257,8 +257,7 @@ public class CVRExportUpload implements Endpoint {
   /**
    * Count the uploaded CVRs in storage.
    * 
-   * @return the number of uploaded CVRs, or -1 if the count could not 
-   * be determined.
+   * @return the number of uploaded CVRs.
    */
   private OptionalLong count() {
     OptionalLong result = OptionalLong.empty();

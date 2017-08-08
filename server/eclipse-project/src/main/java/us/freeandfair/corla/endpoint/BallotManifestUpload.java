@@ -267,7 +267,7 @@ public class BallotManifestUpload implements Endpoint {
   /**
    * Count the uploaded ballot manifest info records in storage.
    * 
-   * @return the number of uploaded records
+   * @return the number of uploaded records.
    */
   private OptionalLong count() {
     OptionalLong result = OptionalLong.empty();
