@@ -2586,9 +2586,21 @@ BEGIN
 %%%
 %%% Also, in order to relate the ASM to the core implementation
 %%% constructs in a RESTful client-server architecture, we must relate
-%%% UI events to ASM events and ASM events to server endpoints.
+%%% UI events to ASM events and ASM events to server
+%%% endpoints. Communication to and from those endpoints happens via
+%%% JSON streams over HTTPS. Thus, for any given endpoint, there is an
+%%% expected inbound JSON type and an expected outbound JSON type per
+%%% HTTP response code.
   ui_event: TYPE
-  server_endpoint: TYPE
+  json_type: TYPE = string
+  http_response_code: TYPE = nat
+  server_endpoint: TYPE =
+    [# callback: [dashboard -> dashboard],
+       uri: string,
+       in_stream: json_type,
+       out_stream: set[[http_response_code, json_type]],
+       inbound_event: asm_event
+     #]
   ui_to_asm_event_relation: pred[[ui_event, asm_event]]
   asm_event_to_endpoint_relation: pred[[asm_event, server_endpoint]]
 %%% We will first specify the ASM for the Department of State
@@ -2692,16 +2704,17 @@ BEGIN
 % % ----------------------------------------------------------------------
 %      | i_s    | a_s   |       |         |       |       ||
 %      | a_s    |       |       |         |       |       ||
+% ...etc...
 % ENDTABLE
 
-  audit_dashboard_state: TYPE = % SUBTYPE asm_state
+  audit_board_dashboard_state: TYPE = % SUBTYPE asm_state
     { i_s,    % intial_state
       aip_s,  % audit_in_progress_state
       siar_s, % signoff_intermediate_audit_report_state
       sar_s   % submit_audit_report_state
     }
 
-  audit_dashboard_event: TYPE = % SUBTYPE asm_event
+  audit_board_dashboard_event: TYPE = % SUBTYPE asm_event
     { rm_e,   % remote_markings_event
       rbnf_e, % report_ballot_not_found_event
       sair_e, % submit_audit_investigation_report_event
@@ -2710,9 +2723,21 @@ BEGIN
       r_e     % refresh_event
     }
 
-  % ab_state: VAR audit_board_dashboard_state
-  % ab_event: VAR audit_board_dashboard_event
-  % ab_asm_function: VAR asm_transition_function
+  ab_state: VAR audit_board_dashboard_state
+  ab_event: VAR audit_board_dashboard_event
+  ab_asm_function: VAR asm_transition_function
+
+%   audit_board_dashboard_next_state(ab_state, ab_event, ab_asm_function):
+%     audit_board_dashboard_state =
+% TABLE ab_state, ab_event
+% % ----------------------------------------------------------------------
+%              |[ rm_e | rmnf_e | sair_e | sar_e | siar_e | r_e ]|
+% % ----------------------------------------------------------------------
+%      | i_s    |      |        |        |       |        |     ||
+%      | aip_s  |      |        |        |       |        |     ||
+%      | sair_s |      |        |        |       |        |     ||
+%      | sar_s  |      |        |        |       |        |     ||
+% ENDTABLE
 
 END asm
 
