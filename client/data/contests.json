@@ -1,0 +1,1532 @@
+[
+    {
+        "id": 22,
+        "name": "State Representative - District 56",
+        "description": "",
+        "choices": [
+            {
+                "id": 86,
+                "name": "Matt Snider",
+                "description": "DEM"
+            },
+            {
+                "id": 87,
+                "name": "Phil Covarrubias",
+                "description": "REP"
+            },
+            {
+                "id": 88,
+                "name": "Kevin Gulbranson",
+                "description": "LBR"
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 63,
+        "name": "Proposition 108 (Statutory)",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 21,
+        "name": "State Representative - District 42",
+        "description": "",
+        "choices": [
+            {
+                "id": 84,
+                "name": "Mike Donald",
+                "description": "REP"
+            },
+            {
+                "id": 85,
+                "name": "Dominique Jackson",
+                "description": "DEM"
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 15,
+        "name": "State Representative - District 9",
+        "description": "",
+        "choices": [
+            {
+                "id": 72,
+                "name": "Paul Stevens Martin",
+                "description": "REP"
+            },
+            {
+                "id": 73,
+                "name": "Paul Rosenthal",
+                "description": "DEM"
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 68,
+        "name": "BALLOT QUESTION 301",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 41,
+        "name": "Colorado Court of Appeals Judge - Dunn",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 81,
+        "name": "BALLOT ISSUE 5D",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 42,
+        "name": "Colorado Court of Appeals Judge - Furman",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 14,
+        "name": "State Representative - District 3",
+        "description": "",
+        "choices": [
+            {
+                "id": 70,
+                "name": "Jeff Bridges",
+                "description": "DEM"
+            },
+            {
+                "id": 71,
+                "name": "Katy Brown",
+                "description": "REP"
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 16,
+        "name": "State Representative - District 36",
+        "description": "",
+        "choices": [
+            {
+                "id": 74,
+                "name": "Mike Weissman",
+                "description": "DEM"
+            },
+            {
+                "id": 75,
+                "name": "Richard J. Bowman",
+                "description": "REP"
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 66,
+        "name": "BALLOT ISSUE 2C",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 62,
+        "name": "Proposition 107 (Statutory)",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 5,
+        "name": "State Board of Education Member - Congressional District 6",
+        "description": "",
+        "choices": [
+            {
+                "id": 50,
+                "name": "Debora L. Scheffel",
+                "description": "REP"
+            },
+            {
+                "id": 51,
+                "name": "Rebecca McClellan",
+                "description": "DEM"
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 43,
+        "name": "Colorado Court of Appeals Judge - Hawthorne",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 37,
+        "name": "Colorado Supreme Court Justice - Hood",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 46,
+        "name": "Colorado Court of Appeals Judge - Román",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 26,
+        "name": "Regional Transportation District Director - District E",
+        "description": "",
+        "choices": [
+            {
+                "id": 95,
+                "name": "Claudia L. Folska",
+                "description": ""
+            },
+            {
+                "id": 96,
+                "name": "JM (Maria J) Fay",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 72,
+        "name": "BALLOT ISSUE 3C",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 49,
+        "name": "District Court Judge - 18th Judicial District - Holmes",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 44,
+        "name": "Colorado Court of Appeals Judge - Jones",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 18,
+        "name": "State Representative - District 38",
+        "description": "",
+        "choices": [
+            {
+                "id": 78,
+                "name": "Susan Beckman",
+                "description": "REP"
+            },
+            {
+                "id": 79,
+                "name": "Robert Bowen",
+                "description": "DEM"
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 69,
+        "name": "BALLOT QUESTION 302",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 60,
+        "name": "Amendment 72 (Constitutional)",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 33,
+        "name": "Mayor",
+        "description": "",
+        "choices": [
+            {
+                "id": 105,
+                "name": "Laura Christman",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 67,
+        "name": "BALLOT ISSUE 300",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 1,
+        "name": "United States Senator",
+        "description": "",
+        "choices": [
+            {
+                "id": 29,
+                "name": "Michael Bennet",
+                "description": "DEM"
+            },
+            {
+                "id": 30,
+                "name": "Darryl Glenn",
+                "description": "REP"
+            },
+            {
+                "id": 31,
+                "name": "Lily Tang Williams",
+                "description": "LBR"
+            },
+            {
+                "id": 32,
+                "name": "Arn Menconi",
+                "description": "GRN"
+            },
+            {
+                "id": 33,
+                "name": "Bill Hammons",
+                "description": "UNI"
+            },
+            {
+                "id": 34,
+                "name": "Dan Chapin",
+                "description": "UAF"
+            },
+            {
+                "id": 35,
+                "name": "Paul Noel Fiorino",
+                "description": "UAF"
+            },
+            {
+                "id": 22,
+                "name": "Write-in",
+                "description": ""
+            },
+            {
+                "id": 37,
+                "name": "Don Willoughby",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 3,
+        "name": "Representative to the 115th United States Congress - District 4",
+        "description": "",
+        "choices": [
+            {
+                "id": 41,
+                "name": "Bob Seay",
+                "description": "DEM"
+            },
+            {
+                "id": 42,
+                "name": "Ken Buck",
+                "description": "REP"
+            },
+            {
+                "id": 43,
+                "name": "Bruce Griffith",
+                "description": "LBR"
+            },
+            {
+                "id": 22,
+                "name": "Write-in",
+                "description": ""
+            },
+            {
+                "id": 45,
+                "name": "Donald Howbert",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 12,
+        "name": "State Senator - District 29",
+        "description": "",
+        "choices": [
+            {
+                "id": 65,
+                "name": "Sebastian Chunn",
+                "description": "REP"
+            },
+            {
+                "id": 66,
+                "name": "Rhonda Fields",
+                "description": "DEM"
+            },
+            {
+                "id": 67,
+                "name": "Michele Poague",
+                "description": "LBR"
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 38,
+        "name": "Colorado Court of Appeals Judge - Ashby",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 77,
+        "name": "BALLOT ISSUE 4C",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 51,
+        "name": "District Court Judge - 18th Judicial District - Samour",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 73,
+        "name": "BALLOT ISSUE 3D",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 7,
+        "name": "Regent of the University of Colorado - Congressional District 1",
+        "description": "",
+        "choices": [
+            {
+                "id": 54,
+                "name": "Jack Kroll",
+                "description": "DEM"
+            },
+            {
+                "id": 22,
+                "name": "Write-in",
+                "description": ""
+            },
+            {
+                "id": 56,
+                "name": "Jennifer Qualteri",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 59,
+        "name": "Amendment 71 (Constitutional)",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 23,
+        "name": "District Attorney--18th Judicial District",
+        "description": "",
+        "choices": [
+            {
+                "id": 89,
+                "name": "George H. Brauchler",
+                "description": "REP"
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 2,
+        "name": "Representative to the 115th United States Congress - District 1",
+        "description": "",
+        "choices": [
+            {
+                "id": 38,
+                "name": "Diana DeGette",
+                "description": "DEM"
+            },
+            {
+                "id": 39,
+                "name": "Charles \"Casper\" Stockham",
+                "description": "REP"
+            },
+            {
+                "id": 40,
+                "name": "Darrell Dinges",
+                "description": "LBR"
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 28,
+        "name": "Regional Transportation District Director - District G",
+        "description": "",
+        "choices": [
+            {
+                "id": 98,
+                "name": "Ken Mihalik",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 8,
+        "name": "Regent of the University of Colorado - Congressional District 4",
+        "description": "",
+        "choices": [
+            {
+                "id": 57,
+                "name": "Suzanne M. Sharkey",
+                "description": "REP"
+            },
+            {
+                "id": 58,
+                "name": "Bob Owens",
+                "description": "DEM"
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 40,
+        "name": "Colorado Court of Appeals Judge - Bernard",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 58,
+        "name": "Amendment 70 (Constitutional)",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 45,
+        "name": "Colorado Court of Appeals Judge - Navarro",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 74,
+        "name": "BALLOT ISSUE 3E",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 65,
+        "name": "BALLOT ISSUE 2B",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 35,
+        "name": "Councilmember District 3",
+        "description": "",
+        "choices": [
+            {
+                "id": 107,
+                "name": "Al Blum",
+                "description": ""
+            },
+            {
+                "id": 108,
+                "name": "Rose Lynch",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 54,
+        "name": "County Court Judge",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 24,
+        "name": "Regional Transportation District Director - District A",
+        "description": "",
+        "choices": [
+            {
+                "id": 90,
+                "name": "Regan Byrd",
+                "description": ""
+            },
+            {
+                "id": 91,
+                "name": "Kate Williams",
+                "description": ""
+            },
+            {
+                "id": 92,
+                "name": "Aaron D. Goldhamer",
+                "description": ""
+            },
+            {
+                "id": 93,
+                "name": "Mike Cerbo",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 55,
+        "name": "Amendment T (Constitutional)",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 52,
+        "name": "District Court Judge - 18th Judicial District - Stevens",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 53,
+        "name": "District Court Judge - 18th Judicial District - Weishaupl",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 71,
+        "name": "BALLOT ISSUE 3B",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 20,
+        "name": "State Representative - District 41",
+        "description": "",
+        "choices": [
+            {
+                "id": 82,
+                "name": "Linda Garrison",
+                "description": "REP"
+            },
+            {
+                "id": 83,
+                "name": "Jovan Melton",
+                "description": "DEM"
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 47,
+        "name": "Colorado Court of Appeals Judge - Terry",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 56,
+        "name": "Amendment U (Constitutional)",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 76,
+        "name": "BALLOT ISSUE 4B",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 48,
+        "name": "District Court Judge - 18th Judicial District - Chase",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 30,
+        "name": "COUNTY COMMISSIONER DISTRICT 1",
+        "description": "",
+        "choices": [
+            {
+                "id": 100,
+                "name": "Kathleen Conti",
+                "description": "REP"
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 29,
+        "name": "Regional Transportation District Director - District H",
+        "description": "",
+        "choices": [
+            {
+                "id": 99,
+                "name": "Doug Tisdale",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 61,
+        "name": "Proposition 106 (Statutory)",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 19,
+        "name": "State Representative - District 40",
+        "description": "",
+        "choices": [
+            {
+                "id": 80,
+                "name": "Janet Buckner",
+                "description": "DEM"
+            },
+            {
+                "id": 81,
+                "name": "Spencer A. Wellman",
+                "description": "REP"
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 31,
+        "name": "COUNTY COMMISSIONER DISTRICT 3",
+        "description": "",
+        "choices": [
+            {
+                "id": 101,
+                "name": "Jeff Baker",
+                "description": "REP"
+            },
+            {
+                "id": 102,
+                "name": "Janet Lee Cook",
+                "description": "DEM"
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 4,
+        "name": "Representative to the 115th United States Congress - District 6",
+        "description": "",
+        "choices": [
+            {
+                "id": 46,
+                "name": "Mike Coffman",
+                "description": "REP"
+            },
+            {
+                "id": 47,
+                "name": "Morgan Carroll",
+                "description": "DEM"
+            },
+            {
+                "id": 48,
+                "name": "Norm Olsen",
+                "description": "LBR"
+            },
+            {
+                "id": 49,
+                "name": "Robert Lee Worthey",
+                "description": "GRN"
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 50,
+        "name": "District Court Judge - 18th Judicial District - Martinez",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 0,
+        "name": "Presidential Electors",
+        "description": "",
+        "choices": [
+            {
+                "id": 0,
+                "name": "Hillary Clinton / Tim Kaine",
+                "description": "DEM"
+            },
+            {
+                "id": 1,
+                "name": "Donald J. Trump / Michael R. Pence",
+                "description": "REP"
+            },
+            {
+                "id": 2,
+                "name": "Darrell L. Castle / Scott N. Bradley",
+                "description": "ACN"
+            },
+            {
+                "id": 3,
+                "name": "Gary Johnson / Bill Weld",
+                "description": "LBR"
+            },
+            {
+                "id": 4,
+                "name": "Jill Stein / Ajamu Baraka",
+                "description": "GRN"
+            },
+            {
+                "id": 5,
+                "name": "Frank Atwood / Blake Huber",
+                "description": "AVP"
+            },
+            {
+                "id": 6,
+                "name": "\"Rocky\" Roque De La Fuente / Michael Steinberg",
+                "description": "ADE"
+            },
+            {
+                "id": 7,
+                "name": "James Hedges / Bill Bayes",
+                "description": "PRB"
+            },
+            {
+                "id": 8,
+                "name": "Tom Hoefling / Steve Schulin",
+                "description": "AMP"
+            },
+            {
+                "id": 9,
+                "name": "Chris Keniston / Deacon Taylor",
+                "description": "VOA"
+            },
+            {
+                "id": 10,
+                "name": "Alyson Kennedy / Osborne Hart",
+                "description": "SWP"
+            },
+            {
+                "id": 11,
+                "name": "Kyle Kenley Kopitke / Narthan R. Sorenson",
+                "description": "IAM"
+            },
+            {
+                "id": 12,
+                "name": "Laurence Kotlikoff / Edward Leamer",
+                "description": "KFF"
+            },
+            {
+                "id": 13,
+                "name": "Gloria Estela La Riva / Dennis J. Banks",
+                "description": "SLB"
+            },
+            {
+                "id": 14,
+                "name": "Bradford Lyttle / Hannah Walsh",
+                "description": "NRP"
+            },
+            {
+                "id": 15,
+                "name": "Joseph Allen Maldonado / Douglas K. Terranova",
+                "description": "IPC"
+            },
+            {
+                "id": 16,
+                "name": "Michael A. Maturen / Juan Munoz",
+                "description": "ASO"
+            },
+            {
+                "id": 17,
+                "name": "Evan McMullin / Nathan Johnson",
+                "description": "UAF"
+            },
+            {
+                "id": 18,
+                "name": "Ryan Alan Scott / Bruce Kendall Barnard",
+                "description": "UAF"
+            },
+            {
+                "id": 19,
+                "name": "Rod Silva / Richard C. Silva",
+                "description": "NUT"
+            },
+            {
+                "id": 20,
+                "name": "Mike Smith / Daniel White",
+                "description": "UAF"
+            },
+            {
+                "id": 21,
+                "name": "Emidio Soltysik / Angela Nicole Walker",
+                "description": "SPU"
+            },
+            {
+                "id": 22,
+                "name": "Write-in",
+                "description": ""
+            },
+            {
+                "id": 23,
+                "name": "Bruce Lohmiller / J.R. Smith",
+                "description": ""
+            },
+            {
+                "id": 24,
+                "name": "Thomas J. Nieman / Bernie Jackson",
+                "description": ""
+            },
+            {
+                "id": 25,
+                "name": "Corey Sterner / Jeff Ryan",
+                "description": ""
+            },
+            {
+                "id": 26,
+                "name": "David Perry / Eric \"Rick\" Seiley",
+                "description": ""
+            },
+            {
+                "id": 27,
+                "name": "Brian Anthony Perry / Michael Byron Nelson",
+                "description": ""
+            },
+            {
+                "id": 28,
+                "name": "Cherunda Fox / Roger Kushner",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 39,
+        "name": "Colorado Court of Appeals Judge - Berger",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 9,
+        "name": "State Senator - District 26",
+        "description": "",
+        "choices": [
+            {
+                "id": 59,
+                "name": "Daniel Kagan",
+                "description": "DEM"
+            },
+            {
+                "id": 60,
+                "name": "Nancy A. Doty",
+                "description": "REP"
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 25,
+        "name": "Regional Transportation District Director - District D",
+        "description": "",
+        "choices": [
+            {
+                "id": 94,
+                "name": "Jeffrey Allen Walker",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 6,
+        "name": "Regent of the University of Colorado - At Large",
+        "description": "",
+        "choices": [
+            {
+                "id": 52,
+                "name": "Alice Madden",
+                "description": "DEM"
+            },
+            {
+                "id": 53,
+                "name": "Heidi Ganahl",
+                "description": "REP"
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 57,
+        "name": "Amendment 69 (Constitutional)",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 27,
+        "name": "Regional Transportation District Director - District F",
+        "description": "",
+        "choices": [
+            {
+                "id": 97,
+                "name": "Bob Broom",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 70,
+        "name": "BALLOT ISSUE 3A",
+        "description": "",
+        "choices": [
+            {
+                "id": 110,
+                "name": "YES",
+                "description": ""
+            },
+            {
+                "id": 111,
+                "name": "NO",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 34,
+        "name": "Councilmember District 1",
+        "description": "",
+        "choices": [
+            {
+                "id": 106,
+                "name": "Randy Weil",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 13,
+        "name": "State Senator - District 31",
+        "description": "",
+        "choices": [
+            {
+                "id": 68,
+                "name": "Bob Lane",
+                "description": "REP"
+            },
+            {
+                "id": 69,
+                "name": "Lois Court",
+                "description": "DEM"
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 11,
+        "name": "State Senator - District 28",
+        "description": "",
+        "choices": [
+            {
+                "id": 63,
+                "name": "Nancy Todd",
+                "description": "DEM"
+            },
+            {
+                "id": 64,
+                "name": "James Woodley",
+                "description": "REP"
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 32,
+        "name": "COUNTY COMMISSIONER DISTRICT 5",
+        "description": "",
+        "choices": [
+            {
+                "id": 103,
+                "name": "Bill Holen",
+                "description": "DEM"
+            },
+            {
+                "id": 104,
+                "name": "Bob LeGare",
+                "description": "REP"
+            }
+        ],
+        "votes_allowed": 1
+    },
+    {
+        "id": 36,
+        "name": "Councilmember District 5",
+        "description": "",
+        "choices": [
+            {
+                "id": 109,
+                "name": "Daniel R. Sheldon",
+                "description": ""
+            }
+        ],
+        "votes_allowed": 1
+    }
+]
