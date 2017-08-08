@@ -26,6 +26,10 @@ import java.util.OptionalLong;
 
 import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItemIterator;
@@ -35,7 +39,6 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
 import org.eclipse.jetty.http.HttpStatus;
 import org.hibernate.Session;
-import org.hibernate.query.Query;
 
 import spark.Request;
 import spark.Response;
@@ -44,6 +47,7 @@ import us.freeandfair.corla.Main;
 import us.freeandfair.corla.csv.CVRExportParser;
 import us.freeandfair.corla.csv.DominionCVRExportParser;
 import us.freeandfair.corla.hibernate.Persistence;
+import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyQueries;
@@ -275,9 +279,12 @@ public class CVRExportUpload implements Endpoint {
     try {
       Persistence.beginTransaction();
       final Session s = Persistence.currentSession();
-      final Query<Long> query = 
-          s.createQuery("select count(1) from CastVoteRecord where record_type = '" + 
-                        RecordType.UPLOADED + "'", Long.class);
+      final CriteriaBuilder cb = s.getCriteriaBuilder();
+      final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+      final Root<CastVoteRecord> root = cq.from(CastVoteRecord.class);
+      cq.select(cb.count(root)).where(cb.equal(root.get("my_record_type"), 
+                                               RecordType.UPLOADED));
+      final TypedQuery<Long> query = s.createQuery(cq);
       result = OptionalLong.of(query.getSingleResult());
       Persistence.commitTransaction();
     } catch (final PersistenceException e) {
