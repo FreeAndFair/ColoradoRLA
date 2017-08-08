@@ -39,6 +39,7 @@ import us.freeandfair.corla.model.CVRContestInfo;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.Choice;
 import us.freeandfair.corla.model.Contest;
+import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.Elector;
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.util.Pair;
@@ -178,6 +179,7 @@ public final class Persistence {
       sources.addAnnotatedClass(CastVoteRecord.class);
       sources.addAnnotatedClass(Choice.class);
       sources.addAnnotatedClass(Contest.class);
+      sources.addAnnotatedClass(County.class);
       sources.addAnnotatedClass(CVRContestInfo.class);
       sources.addAnnotatedClass(Elector.class);
       sources.addAnnotatedClass(UploadedFile.class);
