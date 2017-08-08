@@ -211,7 +211,8 @@ public class BallotManifestUpload implements Endpoint {
               " ballot manifest records parsed from upload file");
           final OptionalLong count = count();
           if (count.isPresent()) {
-            Main.LOGGER.info(count + " uploaded ballot manifest records in storage");
+            Main.LOGGER.info(count.getAsLong() + 
+                             " uploaded ballot manifest records in storage");
           }
           attemptFilePersistence(the_info.my_file, county, hash, 
                                  the_info.my_timestamp);          

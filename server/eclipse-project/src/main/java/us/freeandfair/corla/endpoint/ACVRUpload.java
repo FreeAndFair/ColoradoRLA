@@ -96,7 +96,7 @@ public class ACVRUpload implements Endpoint {
       Main.LOGGER.info("Audit CVR parsed and stored as id " + real_acvr.id());
       final OptionalLong count = count();
       if (count.isPresent()) {
-        Main.LOGGER.info(count + " ACVRs in storage");
+        Main.LOGGER.info(count.getAsLong() + " ACVRs in storage");
       }
     } catch (final JsonSyntaxException | IOException | ServletException | 
                    NullPointerException e) {
