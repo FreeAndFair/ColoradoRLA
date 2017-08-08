@@ -16,15 +16,12 @@ package us.freeandfair.corla.model;
  * The various stages of an audit.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @author Joseph R. Kiniry 
+ * @version 0.0.2
  */
 public enum AuditStage {
-  INITIAL,
-  AUTHENTICATED,
-  RISK_LIMITS_SET,
-  CONTESTS_TO_AUDIT_IDENTIFIED,
-  RANDOM_SEED_PUBLISHED,
-  BALLOT_ORDER_DEFINED,
+  PRE_AUDIT,
+  AUDIT_READY_TO_START, // @todo kiniry Unclear if we need this state.
   AUDIT_ONGOING,
   AUDIT_COMPLETE,
   AUDIT_RESULTS_PUBLISHED;

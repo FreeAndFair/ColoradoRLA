@@ -71,7 +71,7 @@ public class DepartmentOfStateDashboard extends AbstractEntity implements Serial
    * The audit stage of the election.
    */
   @Enumerated(EnumType.STRING)
-  private AuditStage my_audit_stage = AuditStage.INITIAL;
+  private AuditStage my_audit_stage = AuditStage.PRE_AUDIT;
   
   /**
    * The set of contests to be hand counted.
@@ -161,6 +161,7 @@ public class DepartmentOfStateDashboard extends AbstractEntity implements Serial
   //@ ensures auditStage() == AuditStage.RISK_LIMITS_SET;
   public void setRiskLimitForComparisonAudits(final BigDecimal the_risk_limit) {
     my_risk_limit_for_comparison_audits = the_risk_limit;
+    // my_audit_stage = AuditStage.RISK_LIMITS_SET;
   }
   
   /**
@@ -171,6 +172,8 @@ public class DepartmentOfStateDashboard extends AbstractEntity implements Serial
    */
   public void selectContestsToAudit(final Map<Contest, AuditReason> the_contests) {
     my_audit_reasons.putAll(the_contests);
+    // TODO this state change doesn't necessarily happen here
+    // my_audit_stage = AuditStage.CONTESTS_TO_AUDIT_IDENTIFIED;
   }
   
   /**
