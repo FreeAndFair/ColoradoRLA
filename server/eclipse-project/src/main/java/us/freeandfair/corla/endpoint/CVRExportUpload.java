@@ -45,6 +45,8 @@ import us.freeandfair.corla.csv.CVRExportParser;
 import us.freeandfair.corla.csv.DominionCVRExportParser;
 import us.freeandfair.corla.hibernate.Persistence;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
+import us.freeandfair.corla.model.County;
+import us.freeandfair.corla.model.CountyQueries;
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.model.UploadedFile.FileType;
 import us.freeandfair.corla.model.UploadedFile.HashStatus;
@@ -95,7 +97,7 @@ public class CVRExportUpload implements Endpoint {
    * @return the resulting entity if successful, null otherwise
  w */
   private UploadedFile attemptFilePersistence(final File the_file, 
-                                              final Integer the_county,
+                                              final County the_county,
                                               final String the_hash,
                                               final Instant the_timestamp) {
     UploadedFile result = null;
@@ -104,7 +106,8 @@ public class CVRExportUpload implements Endpoint {
       final boolean transaction = Persistence.beginTransaction();
       final Session session = Persistence.currentSession();
       final Blob blob = session.getLobHelper().createBlob(is, the_file.length());
-      result = new UploadedFile(the_timestamp, the_county, FileType.CAST_VOTE_RECORD_EXPORT,
+      result = new UploadedFile(the_timestamp, the_county.identifier(), 
+                                FileType.CAST_VOTE_RECORD_EXPORT,
                                 the_hash, HashStatus.NOT_CHECKED, blob);
       Persistence.saveOrUpdate(result);
       if (transaction) {
@@ -185,10 +188,11 @@ public class CVRExportUpload implements Endpoint {
   @SuppressWarnings({"PMD.AvoidCatchingGenericException", "PMD.AvoidCatchingNPE"})
   private void parseAndPersistFile(final UploadInformation the_info) {
     final String hash = the_info.my_form_fields.get("hash");
-    Integer county = null;
+    County county = null;
     
     try {
-      county = Integer.parseInt(the_info.my_form_fields.get("county"));
+      county = 
+          CountyQueries.byID(Integer.parseInt(the_info.my_form_fields.get("county")));
     } catch (final NumberFormatException e) {
       // do nothing, this is a bad request
     }

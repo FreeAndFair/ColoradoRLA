@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.PersistenceException;
+import javax.persistence.RollbackException;
 
 import org.eclipse.jetty.http.HttpStatus;
 
@@ -27,10 +28,9 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.hibernate.Persistence;
-import us.freeandfair.corla.model.CVRContestInfo;
-import us.freeandfair.corla.model.CastVoteRecord;
-import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.Contest;
+import us.freeandfair.corla.model.County;
+import us.freeandfair.corla.model.CountyQueries;
 import us.freeandfair.corla.util.SparkHelper;
 
 /**
@@ -123,33 +123,31 @@ public class ContestDownloadByCounty implements Endpoint {
   /**
    * Gets contests that are in the specified set of counties.
    * 
-   * @param the_counties The counties.
+   * @param the_county_ids The counties.
    * @return the matching contests, or null if the query fails.
    */
-  private Set<Contest> getMatchingContests(final Set<Integer> the_counties) {
+  private Set<Contest> getMatchingContests(final Set<Integer> the_county_ids) {
     Set<Contest> result = null;
     
     try {
-      final Set<Contest> query_results = new HashSet<>();
       Persistence.beginTransaction();
-      //this is very naive - it should be a single query that joins CVRs and contests
-      for (final Integer c : the_counties) {
-        final CastVoteRecord template =
-            new CastVoteRecord(RecordType.UPLOADED, null, c, null, null, 
-                               null, null, null, null);
-        for (final CastVoteRecord cvr : 
-             Persistence.getMatching(template, CastVoteRecord.class)) {
-          for (final CVRContestInfo i : cvr.contestInfo()) {
-            query_results.add(i.contest());
-          }
+      final Set<Contest> query_results = new HashSet<Contest>();
+      for (final Integer county_id : the_county_ids) {
+        final County c = CountyQueries.byID(county_id);
+        if (c != null) {
+          query_results.addAll(c.contests());
         }
       }
-      Persistence.commitTransaction();
       result = query_results;
+      try {
+        Persistence.commitTransaction();
+      } catch (final RollbackException e) {
+        Persistence.rollbackTransaction();
+      }
     } catch (final PersistenceException e) {
-      Main.LOGGER.error("Error retrieving CVRs from database: " + e);
+      Main.LOGGER.error("Exception when reading ballot manifests from database: " + e);
     }
-    
+
     return result;
   }
 }

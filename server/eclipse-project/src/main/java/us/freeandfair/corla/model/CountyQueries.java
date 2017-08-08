@@ -48,7 +48,7 @@ public final class CountyQueries {
   // we are checking to see if exactly one result is in a list, and
   // PMD doesn't like it
   @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
-  public static County getCountyMatching(final Integer the_id) {
+  public static County byID(final Integer the_id) {
     County result = null;
     
     try {
@@ -94,7 +94,7 @@ public final class CountyQueries {
   // we are checking to see if exactly one result is in a list, and
   // PMD doesn't like it
   @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
-  public static County getCountyFromString(final String the_string) {
+  public static County fromString(final String the_string) {
     County result = null;
     Integer parsed_id;
     

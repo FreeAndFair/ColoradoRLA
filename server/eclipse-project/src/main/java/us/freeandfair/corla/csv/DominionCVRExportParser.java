@@ -17,10 +17,12 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -33,6 +35,7 @@ import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.Choice;
 import us.freeandfair.corla.model.Contest;
+import us.freeandfair.corla.model.County;
 
 /**
  * @description <description>
@@ -94,12 +97,12 @@ public class DominionCVRExportParser implements CVRExportParser {
    * The list of contests parsed from the supplied data export.
    */
   private final List<Contest> my_contests = new ArrayList<Contest>();
-  
+
   /**
-   * The ID of the county whose CVRs we are parsing.
+   * The county whose CVRs we are parsing.
    */
-  private final Integer my_county_id;
-   
+  private final County my_county;
+  
   /**
    * The timestamp to apply to the parsed CVRs.
    */
@@ -110,14 +113,14 @@ public class DominionCVRExportParser implements CVRExportParser {
    * for CVRs provided by the specified county.
    * 
    * @param the_reader The reader from which to read the CSV to parse.
-   * @param the_county_id The ID of the county whose CVRs are to be parsed.
+   * @param the_county The county whose CVRs are to be parsed.
    * @exception IOException if an error occurs while constructing the parser.
    */
-  public DominionCVRExportParser(final Reader the_reader, final Integer the_county_id,
+  public DominionCVRExportParser(final Reader the_reader, final County the_county,
                                  final Instant the_timestamp) 
       throws IOException {
     my_parser = new CSVParser(the_reader, CSVFormat.DEFAULT);
-    my_county_id = the_county_id;
+    my_county = the_county;
     my_timestamp = the_timestamp;
   }
   
@@ -126,14 +129,14 @@ public class DominionCVRExportParser implements CVRExportParser {
    * CSV string, for CVRs provided by the specified county.
    * 
    * @param the_string The CSV string to parse.
-   * @param the_county_id The ID of the county whose CVRs are to be parsed.
+   * @param the_county The county whose CVRs are to be parsed.
    * @exception IOException if an error occurs while constructing the parser.
    */
-  public DominionCVRExportParser(final String the_string, final Integer the_county_id,
+  public DominionCVRExportParser(final String the_string, final County the_county,
                                  final Instant the_timestamp)
       throws IOException {
     my_parser = CSVParser.parse(the_string, CSVFormat.DEFAULT);
-    my_county_id = the_county_id;
+    my_county = the_county;
     my_timestamp = the_timestamp;
   }
   
@@ -266,7 +269,7 @@ public class DominionCVRExportParser implements CVRExportParser {
       }
       
       return Persistence.get(new CastVoteRecord(RecordType.UPLOADED, 
-                                                the_timestamp, my_county_id, 
+                                                the_timestamp, my_county.identifier(), 
                                                 tabulator_id, batch_id, record_id, 
                                                 imprinted_id, ballot_type, 
                                                 contest_info),
@@ -349,7 +352,16 @@ public class DominionCVRExportParser implements CVRExportParser {
     my_parse_status = true;
     my_parse_success = result;
     
-    if (!my_parse_success) {
+    if (my_parse_success) {
+      // add the contests to the county we're working with  
+      final Set<Contest> new_contest_set = new HashSet<Contest>(my_county.contests());
+      new_contest_set.addAll(my_contests);
+      final County new_county = new County(my_county.name(), my_county.identifier(), 
+                                           new_contest_set);
+      new_county.setID(my_county.id());
+      Persistence.saveOrUpdate(new_county);
+      
+    } else {
       abort();
     }
     return result;

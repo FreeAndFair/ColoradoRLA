@@ -251,7 +251,7 @@ public final class Main {
         try {
           final Integer id = Integer.valueOf(s);
           final String name = properties.getProperty(s);
-          County county = CountyQueries.getCountyMatching(id);
+          County county = CountyQueries.byID(id);
           if (county == null) {
             county = new County(name, id, new HashSet<Contest>());
           } else if (!county.name().equals(name)) {

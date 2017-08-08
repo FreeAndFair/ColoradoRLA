@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.PersistenceException;
+import javax.persistence.RollbackException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -107,6 +108,11 @@ public class ACVRDownload implements Endpoint {
                                      RecordType.AUDITOR_ENTERED));
       final TypedQuery<CastVoteRecord> query = s.createQuery(cq);
       result = new HashSet<CastVoteRecord>(query.getResultList());
+      try {
+        Persistence.commitTransaction();
+      } catch (final RollbackException e) {
+        Persistence.rollbackTransaction();
+      }
     } catch (final PersistenceException e) {
       Main.LOGGER.error("Exception when reading ballot manifests from database: " + e);
     }

@@ -123,7 +123,7 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
     
     try {
       // obtain the county from the ID or name in the line
-      final County c = CountyQueries.getCountyFromString(the_line.get(COUNTY_ID_COLUMN));
+      final County c = CountyQueries.fromString(the_line.get(COUNTY_ID_COLUMN));
       if (c != null) {
         result = 
             Persistence.get(new BallotManifestInfo(the_timestamp, 

@@ -67,7 +67,9 @@ public final class CVRContestInfoJsonAdapter
     the_writer.beginObject();
     the_writer.name(CONTEST).value(the_info.contest().id());
     the_writer.name(COMMENT).value(the_info.comment());
-    the_writer.name(CONSENSUS).value(the_info.consensus().toString());
+    if (the_info.consensus() != null) {
+      the_writer.name(CONSENSUS).value(the_info.consensus().toString());
+    }
     the_writer.name(CHOICES);
     the_writer.beginArray();
     for (final String c : the_info.choices()) {
