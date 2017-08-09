@@ -1,0 +1,85 @@
+/*
+ * Free & Fair Colorado RLA System
+ * 
+ * @title ColoradoRLA
+ * @created Aug 8, 2017
+ * @copyright 2017 Free & Fair
+ * @license GNU General Public License 3.0
+ * @author Daniel M. Zimmerman <dmz@galois.com>
+ * @description A system to assist in conducting statewide risk-limiting audits.
+ */
+
+package us.freeandfair.corla.model;
+
+import java.util.List;
+
+import javax.persistence.PersistenceException;
+import javax.persistence.RollbackException;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+
+import org.hibernate.Session;
+
+import us.freeandfair.corla.Main;
+import us.freeandfair.corla.hibernate.Persistence;
+
+/**
+ * Queries having to do with Administrator entities.
+ * 
+ * @author Daniel M. Zimmerman
+ * @version 0.0.1
+ */
+public final class AdministratorQueries {
+  /**
+   * Private constructor to prevent instantiation.
+   */
+  private AdministratorQueries() {
+    // do nothing
+  }
+  
+  /**
+   * Obtains the Administrator object with the specified username, if one exists. 
+   * 
+   * @param the_username The string.
+   * @return the matched Administrator. If the results are ambiguous or empty 
+   * (more than one match, or no match), returns null.
+   */
+  // we are checking to see if exactly one result is in a list, and
+  // PMD doesn't like it
+  @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
+  public static Administrator byUsername(final String the_username) {
+    Administrator result = null;
+    
+    try {
+      final boolean transaction = Persistence.beginTransaction();
+      final Session s = Persistence.currentSession();
+      final CriteriaBuilder cb = s.getCriteriaBuilder();
+      final CriteriaQuery<Administrator> cq = cb.createQuery(Administrator.class);
+      final Root<Administrator> root = cq.from(Administrator.class);
+      cq.select(root).where(cb.or(cb.equal(root.get("my_username"), the_username)));
+      final TypedQuery<Administrator> query = s.createQuery(cq);
+      final List<Administrator> query_results = query.getResultList();
+      // if there's exactly one result, return that
+      if (query_results.size() == 1) {
+        result = query_results.get(0);
+      } 
+      if (transaction) {
+        try {
+          Persistence.commitTransaction();
+        } catch (final RollbackException e) {
+          Persistence.rollbackTransaction();
+        }
+      }
+    } catch (final PersistenceException e) {
+      Main.LOGGER.error("could not query database for administrator");
+    }
+    if (result == null) {
+      Main.LOGGER.info("found no county for string " + the_username);
+    } else {
+      Main.LOGGER.info("found county " + result + " for string " + the_username);
+    }
+    return result;
+  }
+}
