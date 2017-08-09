@@ -49,7 +49,7 @@ public class DosDashboardAsm extends AbstractAsm {
     final Set<AsmState> final_states = new HashSet<AsmState>();
     final_states.add(DosDashboardState.AUDIT_RESULTS_PUBLISHED);
     initialize(states, events, map, 
-               DosDashboardState.INITIAL_STATE,
+               DosDashboardState.DOS_INITIAL_STATE,
                final_states);
   }
 }

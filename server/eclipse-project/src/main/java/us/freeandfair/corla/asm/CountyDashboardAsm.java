@@ -47,9 +47,11 @@ public class CountyDashboardAsm extends AbstractAsm {
       map.put(t.my_pair.getFirst(), t.my_pair.getSecond());
     }
     final Set<AsmState> final_states = new HashSet<AsmState>();
-    final_states.add(CountyDashboardState.UPLOAD_VERIFIED_CVRS_UPLOAD_SUCESSFUL);
+    final_states.add(CountyDashboardState.UPLOAD_BALLOT_MANIFEST_TOO_LATE);
+    final_states.add(CountyDashboardState.UPLOAD_CVRS_TOO_LATE);
+    final_states.add(CountyDashboardState.COUNTY_AUDIT_COMPLETE);
     initialize(states, events, map, 
-               CountyDashboardState.INITIAL_STATE,
+               CountyDashboardState.COUNTY_INITIAL_STATE,
                final_states);
   } 
 }

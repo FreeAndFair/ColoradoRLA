@@ -2739,7 +2739,7 @@ BEGIN
     { ai_s,   % audit_initial_state
       aip_s,  % audit_in_progress_state
       iars_s, % intermediate_audit_report_submitted_state
-      sar_s   % audit_report_submitted_state
+      ars_s   % audit_report_submitted_state
     }
 
   audit_board_dashboard_event: TYPE = % SUBTYPE asm_event

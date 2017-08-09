@@ -28,7 +28,6 @@ public interface AsmState {
     CONTESTS_TO_AUDIT_IDENTIFIED,
     RANDOM_SEED_PUBLISHED,
     BALLOT_ORDER_DEFINED,
-    // @todo kiniry This state is probably unnecessary.
     AUDIT_READY_TO_START,
     DOS_AUDIT_ONGOING,
     DOS_AUDIT_COMPLETE,
@@ -70,10 +69,9 @@ public interface AsmState {
    * @trace asm.audit_board_dashboard_state
    */
   enum AuditBoardDashboardState implements AsmState {
-    // @review kiniry Is an explicit independent initial state useful?
     AUDIT_INITIAL_STATE,
     AUDIT_IN_PROGRESS_STATE,
-    SIGNOFF_INTERMEDIATE_AUDIT_REPORT_STATE,
-    SUBMIT_AUDIT_REPORT_STATE
+    INTERMEDIATE_AUDIT_REPORT_SUBMITTED_STATE,
+    AUDIT_REPORT_SUBMITTED_STATE
   }
 }

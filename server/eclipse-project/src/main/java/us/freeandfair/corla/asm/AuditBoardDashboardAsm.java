@@ -48,9 +48,9 @@ public class AuditBoardDashboardAsm extends AbstractAsm {
       map.put(t.my_pair.getFirst(), t.my_pair.getSecond());
     }
     final Set<AsmState> final_states = new HashSet<AsmState>();
-    final_states.add(DosDashboardState.AUDIT_RESULTS_PUBLISHED);
+    final_states.add(AuditBoardDashboardState.AUDIT_REPORT_SUBMITTED_STATE);
     initialize(states, events, map, 
-               DosDashboardState.INITIAL_STATE,
+               AuditBoardDashboardState.AUDIT_INITIAL_STATE,
                final_states);
   }
 }
