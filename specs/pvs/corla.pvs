@@ -2679,7 +2679,7 @@ BEGIN
   county_dashboard_state: TYPE = % SUBTYPE asm_state
     { i_s,       % initial_state
       a_s,       % authenticated
-      eab_s,     % estable_audit_board_state
+      abe_s,     % audit_board_established_state
 %%% @todo kiniry discuss upload\_system\_message
       bm_us_s,   % county_upload_verified_ballot_manifest: upload_sucessful
       bm_ch_s,   % county_upload_verified_ballot_manifest: checking_hash
@@ -2696,17 +2696,19 @@ BEGIN
       cvr_ftw_s, % upload_verified_cvrs: file_type_wrong
       cvr_dp_s,  % upload_verified_cvrs: data_parsed
       cvr_dti_s, % upload_verified_cvrs: data_transmission_interrupted
-      cvr_tl_s  % upload_verified_cvrs: too_late
+      cvr_tl_s,  % upload_verified_cvrs: too_late
+      cau_s,     % county_audit_underway @todo kiniry
+      cac_s      % county_audit_complete @todo kiniry
     }
 
   county_dashboard_event: TYPE = % SUBTYPE asm_event
-    { aca_e,     % authenticate_county_administrator
+    { aca_e,     % authenticate_county_administrator_event
       eab_e,     % establish_audit_board_event
       cuvbm_e,   % county_upload_verified_ballot_manifest_event
-      uvc_e,     % upload_verified_cvrs
-      sa_e,      % start_audit
-      r_e,       % refresh
-      s_e        % skip
+      uvc_e,     % upload_verified_cvrs_event
+      sa_e,      % start_audit_event
+      r_e,       % refresh_event
+      s_e        % skip_event
     }
 
   c_state: VAR county_dashboard_state
@@ -2732,8 +2734,8 @@ BEGIN
   audit_board_dashboard_state: TYPE = % SUBTYPE asm_state
     { i_s,    % initial_state
       aip_s,  % audit_in_progress_state
-      siar_s, % signoff_intermediate_audit_report_state
-      sar_s   % submit_audit_report_state
+      iars_s, % intermediate_audit_report_submitted_state
+      sar_s   % audit_report_submitted_state
     }
 
   audit_board_dashboard_event: TYPE = % SUBTYPE asm_event

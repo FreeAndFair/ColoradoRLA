@@ -42,12 +42,13 @@ public interface AsmEvent {
    * @trace asm.county_dashboard_event
    */
   enum CountyDashboardEvent implements AsmEvent {
-    AUTHENTICATE_COUNTY_ADMINISTRATOR,
+    AUTHENTICATE_COUNTY_ADMINISTRATOR_EVENT,
     ESTABLISH_AUDIT_BOARD_EVENT,
     COUNTY_UPLOAD_VERIFIED_BALLOT_MANIFEST_EVENT,
-    UPLOAD_VERIFIED_CVRS,
-    START_AUDIT,
-    REFRESH
+    UPLOAD_VERIFIED_CVRS_EVENT,
+    START_AUDIT_EVENT,
+    REFRESH_EVENT,
+    SKIP_EVENT
   }
   
   /**
