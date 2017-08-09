@@ -68,11 +68,7 @@ public class ContestDownloadByCounty implements Endpoint {
     if (validateParameters(the_request)) {
       final Set<Integer> county_set = new HashSet<Integer>();
       for (final String s : the_request.queryParams()) {
-        try {
-          county_set.add(Integer.valueOf(s));
-        } catch (final NumberFormatException e) {
-          // cannot happen because we validated the parameters
-        }
+        county_set.add(Integer.valueOf(s));
       }
       final Set<Contest> contest_set = getMatchingContests(county_set);
       if (contest_set == null) {
