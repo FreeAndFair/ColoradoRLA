@@ -1,5 +1,23 @@
 # CORLA Browser Client
 
+## Setup
+
+The CORLA browser client is being developed on Node v7.10.1, NPM
+v4.2.0. After installing this on your platform, run `npm i` to pull in
+the project build dependencies.
+
+Most development tasks are exposed as NPM scripts. Available are:
+
+- Run a dev server with Hot Module Reloading: `npm start`
+- Build the development JS bundle: `npm run build`
+- Run unit tests: `npm test`
+- Watch files and run unit tests on change: `npm run watch`
+- Lint with TSLint: `npm run lint`
+
+To compile a stand-alone, distributable production build, run the
+`./script/dist` script. The output of this script can be found in the
+resulting `dist` folder.
+
 ## Site map
 
 Though implemented as a single-page browser application, we can use
