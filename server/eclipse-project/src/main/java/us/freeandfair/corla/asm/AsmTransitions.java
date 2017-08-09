@@ -11,6 +11,9 @@
 
 package us.freeandfair.corla.asm;
 
+import static us.freeandfair.corla.asm.AsmEvent.AuditBoardDashboardEvent.*;
+import static us.freeandfair.corla.asm.AsmState.AuditBoardDashboardState.*;
+
 import us.freeandfair.corla.util.Pair;
 
 /**
@@ -172,38 +175,30 @@ public interface AsmTransitions {
    * @trace asm.audit_board_dashboard_next_state
    */
   enum AuditBoardDashboardTransitions implements AsmTransitions {
-    START(
-        new Pair<AsmState, AsmEvent>(AsmState.AuditBoardDashboardState.INITIAL_STATE, 
-        AsmEvent.AuditBoardDashboardEvent.SKIP_EVENT),
-        AsmState.AuditBoardDashboardState.AUDIT_IN_PROGRESS_STATE),
-    REPORT_MARKING(
-        new Pair<AsmState, AsmEvent>(AsmState.AuditBoardDashboardState.AUDIT_IN_PROGRESS_STATE, 
-        AsmEvent.AuditBoardDashboardEvent.REPORT_MARKINGS_EVENT),
-        AsmState.AuditBoardDashboardState.AUDIT_IN_PROGRESS_STATE),
-    REPORT_BNF(
-        new Pair<AsmState, AsmEvent>(AsmState.AuditBoardDashboardState.AUDIT_IN_PROGRESS_STATE, 
-        AsmEvent.AuditBoardDashboardEvent.REPORT_BALLOT_NOT_FOUND_EVENT),
-        AsmState.AuditBoardDashboardState.AUDIT_IN_PROGRESS_STATE),
-    SUBMIT_AIR(
-        new Pair<AsmState, AsmEvent>(AsmState.AuditBoardDashboardState.AUDIT_IN_PROGRESS_STATE, 
-        AsmEvent.AuditBoardDashboardEvent.SUBMIT_AUDIT_INVESTIGATION_REPORT_EVENT),
-        AsmState.AuditBoardDashboardState.AUDIT_IN_PROGRESS_STATE),
-    SUBMIT_AR(
-        new Pair<AsmState, AsmEvent>(AsmState.AuditBoardDashboardState.AUDIT_IN_PROGRESS_STATE, 
-        AsmEvent.AuditBoardDashboardEvent.SUBMIT_AUDIT_REPORT_EVENT),
-        AsmState.AuditBoardDashboardState.SUBMIT_AUDIT_REPORT_STATE),
-    SUBMIT_IAR(
-        new Pair<AsmState, AsmEvent>(AsmState.AuditBoardDashboardState.AUDIT_IN_PROGRESS_STATE, 
-        AsmEvent.AuditBoardDashboardEvent.SUBMIT_INTERMEDIATE_AUDIT_REPORT_EVENT),
-        AsmState.AuditBoardDashboardState.SIGNOFF_INTERMEDIATE_AUDIT_REPORT_STATE),
-    RESTART(
-        new Pair<AsmState, AsmEvent>(AsmState.AuditBoardDashboardState.SIGNOFF_INTERMEDIATE_AUDIT_REPORT_STATE,
-        AsmEvent.AuditBoardDashboardEvent.SKIP_EVENT),
-        AsmState.AuditBoardDashboardState.AUDIT_IN_PROGRESS_STATE),
-    REFRESH(
-        new Pair<AsmState, AsmEvent>(AsmState.AuditBoardDashboardState.AUDIT_IN_PROGRESS_STATE, 
-        AsmEvent.AuditBoardDashboardEvent.REFRESH_EVENT),
-        AsmState.AuditBoardDashboardState.AUDIT_IN_PROGRESS_STATE);
+    ONE(new Pair<AsmState, AsmEvent>(AUDIT_INITIAL_STATE, 
+            AUDIT_SKIP_EVENT),
+        AUDIT_IN_PROGRESS_STATE),
+    TWO(new Pair<AsmState, AsmEvent>(AUDIT_IN_PROGRESS_STATE, 
+            REPORT_MARKINGS_EVENT),
+        AUDIT_IN_PROGRESS_STATE),
+    THREE(new Pair<AsmState, AsmEvent>(AUDIT_IN_PROGRESS_STATE, 
+              REPORT_BALLOT_NOT_FOUND_EVENT),
+          AUDIT_IN_PROGRESS_STATE),
+    FOUR(new Pair<AsmState, AsmEvent>(AUDIT_IN_PROGRESS_STATE, 
+             SUBMIT_AUDIT_INVESTIGATION_REPORT_EVENT),
+         AUDIT_IN_PROGRESS_STATE),
+    FIVE(new Pair<AsmState, AsmEvent>(AUDIT_IN_PROGRESS_STATE, 
+             SUBMIT_INTERMEDIATE_AUDIT_REPORT_EVENT),
+         SIGNOFF_INTERMEDIATE_AUDIT_REPORT_STATE),
+    SIX(new Pair<AsmState, AsmEvent>(AUDIT_IN_PROGRESS_STATE, 
+            SUBMIT_AUDIT_REPORT_EVENT),
+        SUBMIT_AUDIT_REPORT_STATE),
+    SEVEN(new Pair<AsmState, AsmEvent>(SIGNOFF_INTERMEDIATE_AUDIT_REPORT_STATE,
+              AUDIT_SKIP_EVENT),
+          AUDIT_IN_PROGRESS_STATE),
+    EIGHT(new Pair<AsmState, AsmEvent>(AUDIT_IN_PROGRESS_STATE, 
+              AUDIT_REFRESH_EVENT),
+          AUDIT_IN_PROGRESS_STATE);
     
     /**
      * The pair holding a single transition.

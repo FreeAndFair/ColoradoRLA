@@ -2732,7 +2732,7 @@ BEGIN
 %        transition_function = county_dashboard_next_state #]
 
   audit_board_dashboard_state: TYPE = % SUBTYPE asm_state
-    { i_s,    % initial_state
+    { ai_s,   % audit_initial_state
       aip_s,  % audit_in_progress_state
       iars_s, % intermediate_audit_report_submitted_state
       sar_s   % audit_report_submitted_state
@@ -2744,8 +2744,8 @@ BEGIN
       sair_e, % submit_audit_investigation_report_event
       sar_e,  % submit_audit_report_event
       siar_e, % submit_intermediate_audit_report_event
-      r_e,    % refresh_event
-      s_e     % skip
+      ar_e,   % audit_refresh_event
+      as_e    % audit_skip
     }
 
   ab_state: VAR audit_board_dashboard_state

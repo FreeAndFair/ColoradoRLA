@@ -67,7 +67,7 @@ public interface AsmState {
    */
   enum AuditBoardDashboardState implements AsmState {
     // @review kiniry Is an explicit independent initial state useful?
-    INITIAL_STATE,
+    AUDIT_INITIAL_STATE,
     AUDIT_IN_PROGRESS_STATE,
     SIGNOFF_INTERMEDIATE_AUDIT_REPORT_STATE,
     SUBMIT_AUDIT_REPORT_STATE
