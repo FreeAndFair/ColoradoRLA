@@ -5,6 +5,26 @@
     <title>CORLA Server Tests</title>
 </head>
 <body>
+<h2>State Admin Authentication Test</h2>
+<div style="display:block">
+    <form action="http://localhost:8888/auth-state-admin" method="post">
+        Username: <input type="text" name="username" />
+        Password: <input type="password" name="password" />
+        Second Factor: <input type="password" name="second_factor" />
+        <input type="submit" id="buttonUpload" value="Log In"/>
+    </form>
+</div>
+<hr>
+<h2>County Admin Authentication Test</h2>
+<div style="display:block">
+    <form action="http://localhost:8888/auth-county-admin" method="post">
+        Username: <input type="text" name="username" />
+        Password: <input type="password" name="password" />
+        Second Factor: <input type="password" name="second_factor" />
+        <input type="submit" id="buttonUpload" value="Log In"/>
+    </form>
+</div>
+<hr>
 <h2>CVR Export Upload Test</h2>
 <div style="display:block">
     <form action="http://localhost:8888/upload-cvr-export" method="post" enctype="multipart/form-data">

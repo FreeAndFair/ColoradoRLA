@@ -29,9 +29,9 @@ import us.freeandfair.corla.model.AdministratorQueries;
  */
 public final class Authentication {  
   /**
-   * The constant for the "user ID" property of the current session.
+   * The constant for the "admin" property of the current session.
    */
-  public static final String USER_ID = "user_id";
+  public static final String ADMIN = "admin";
   
   /**
    * The constant for the "username" request parameter.
@@ -63,28 +63,21 @@ public final class Authentication {
    * @param the_type The administrator type.
    * @return true if the request is authenticated, false otherwise.
    */
-  public boolean isAuthenticated(final Request the_request, 
-                                 final AdministratorType the_type) {
+  public static boolean isAuthenticated(final Request the_request, 
+                                        final AdministratorType the_type) {
     boolean result = false;
-    final Object user_id_attribute = the_request.session().attribute(USER_ID);
+    final Object admin_attribute = the_request.session().attribute(ADMIN);
     
-    if (user_id_attribute != null) {
-      try {
-        final Long user_id = (Long) user_id_attribute;
-        final Administrator admin = Persistence.getByID(user_id, Administrator.class);
-        if (admin != null) {
-          result = admin.type() == the_type;
-        }
-      } catch (final ClassCastException e) {
-        // this should never happen since we control what's in the session object,
-        // but if it does, we'll clear out that attribute and thereby force another
-        // authentication
-        the_request.session().removeAttribute(USER_ID);
-        Main.LOGGER.error("Invalid user ID type detected in session.");
-      } catch (final PersistenceException e) {
-        // there's nothing we can do about this except report that the request
-        // is unauthenticated
-      }
+    if (admin_attribute instanceof Administrator) {
+      final Administrator admin = (Administrator) admin_attribute;
+      result = admin.type() == the_type;
+      the_request.session().attribute(ADMIN, admin);
+    } else if (admin_attribute != null) {
+      // this should never happen since we control what's in the session object,
+      // but if it does, we'll clear out that attribute and thereby force another
+      // authentication
+      the_request.session().removeAttribute(ADMIN);
+      Main.LOGGER.error("Invalid admin type detected in session.");
     }
     
     return result;
@@ -99,17 +92,63 @@ public final class Authentication {
   // TODO: eventually this will use the password and second factor in the request
   // to do real authentication; right now, it authenticates anybody whose username
   // actually exists in the database
-  public boolean authenticate(final Request the_request) {
+  public static boolean authenticate(final Request the_request) {
     boolean result = false;
     final String username_param = the_request.queryParams(USERNAME);
     final String password_param = the_request.queryParams(PASSWORD);
     final String second_factor_param = the_request.queryParams(SECOND_FACTOR);
     
     if (username_param != null && password_param != null && second_factor_param != null) {
-      final Administrator admin = AdministratorQueries.byUsername(username_param);
-      if (admin != null) {
-        result = true;
-        the_request.session().attribute(USER_ID, admin.id());
+      try {
+        final Administrator admin = AdministratorQueries.byUsername(username_param);
+        if (admin != null) {
+          admin.updateLastLoginTime();
+          Persistence.saveOrUpdate(admin);
+          result = true;
+          the_request.session().attribute(ADMIN, admin);
+          Main.LOGGER.info("Authentication succeeded for user " + username_param + 
+                           " of type " + admin.type());
+        }
+      } catch (final PersistenceException e) {
+        // there's nothing we can really do here other than saying that the
+        // authentication failed; it's also possible we failed to update the last
+        // login time, but that's not critical
+      }
+    }
+    
+    if (!result) {
+      // a failed authentication attempt removes any existing session authentication 
+      the_request.session().removeAttribute(ADMIN);
+      Main.LOGGER.info("Authentication failed for user " + username_param);
+    }
+    
+    return result;
+  }
+  
+  /**
+   * Attempts to authenticate a particular type of administrator using the data
+   * in the specified request.
+   * 
+   * @param the_request The request.
+   * @param the_type The type of administrator to attempt to authenticate as.
+   * @return true if authentication is successful (including that the type of
+   * the administrator matches the specified type), false otherwise.
+   */
+  public static boolean authenticateAs(final Request the_request, 
+                                       final AdministratorType the_type) {
+    boolean result = authenticate(the_request);
+    
+    if (result) {
+      final Object admin_attribute = the_request.session().attribute(ADMIN);
+      if (admin_attribute instanceof Administrator) {
+        final Administrator admin = (Administrator) admin_attribute;
+        if (admin.type() != the_type) {
+          // remove the session authentication
+          result = false;
+          the_request.session().removeAttribute(ADMIN);
+          Main.LOGGER.info("User " + admin.username() + " was not of expected " +
+                           "type " + the_type);
+        }
       }
     }
     

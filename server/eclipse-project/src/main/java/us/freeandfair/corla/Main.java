@@ -14,6 +14,7 @@ package us.freeandfair.corla;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Scanner;
 
 import javax.persistence.PersistenceException;
 
@@ -36,21 +38,7 @@ import spark.Request;
 import spark.Response;
 import spark.Service;
 
-import us.freeandfair.corla.endpoint.ACVRDownload;
-import us.freeandfair.corla.endpoint.ACVRDownloadByCounty;
-import us.freeandfair.corla.endpoint.ACVRUpload;
-import us.freeandfair.corla.endpoint.BallotManifestDownload;
-import us.freeandfair.corla.endpoint.BallotManifestDownloadByCounty;
-import us.freeandfair.corla.endpoint.BallotManifestUpload;
-import us.freeandfair.corla.endpoint.CVRDownload;
-import us.freeandfair.corla.endpoint.CVRDownloadByCounty;
-import us.freeandfair.corla.endpoint.CVRDownloadByID;
-import us.freeandfair.corla.endpoint.CVRExportUpload;
-import us.freeandfair.corla.endpoint.ContestDownload;
-import us.freeandfair.corla.endpoint.ContestDownloadByCounty;
-import us.freeandfair.corla.endpoint.ContestDownloadByID;
 import us.freeandfair.corla.endpoint.Endpoint;
-import us.freeandfair.corla.endpoint.Root;
 import us.freeandfair.corla.gson.FreeAndFairNamingStrategy;
 import us.freeandfair.corla.hibernate.Persistence;
 import us.freeandfair.corla.model.Contest;
@@ -69,11 +57,17 @@ import us.freeandfair.corla.model.CountyQueries;
 @SuppressWarnings("PMD.ExcessiveImports")
 public final class Main {
   /**
-   * The name of the default properties resource.
+   * The path to the default properties resource.
    */
   public static final String DEFAULT_PROPERTIES =
       "us/freeandfair/corla/default.properties";
 
+  /**
+   * The path to the resource containing the list of endpoint classes.
+   */
+  public static final String ENDPOINT_CLASSES = 
+      "us/freeandfair/corla/endpoint/endpoint_classes";
+  
   /**
    * The name of the property that specifies county IDs.
    */
@@ -135,11 +129,6 @@ public final class Main {
    * The properties loaded from the properties file.
    */
   private final Properties my_properties;
-  
-  /**
-   * Our endpoints.
-   */
-  private final List<Endpoint> my_endpoints = new ArrayList<Endpoint>();
   
   /**
    * Our Spark service.
@@ -211,7 +200,30 @@ public final class Main {
    * Activate the endpoints.
    */
   private void activateEndpoints() {
-    for (final Endpoint e : my_endpoints) {
+    final List<Endpoint> endpoints = new ArrayList<>();
+    try (InputStream endpoint_stream = 
+        ClassLoader.getSystemResourceAsStream(ENDPOINT_CLASSES)) {
+      if (endpoint_stream == null) {
+        Main.LOGGER.error("could not load list of entity classes");          
+      } else {
+        final Scanner scanner = new Scanner(endpoint_stream, "UTF-8");
+        while (scanner.hasNextLine()) {
+          final String endpoint_class = scanner.nextLine();
+          final Endpoint endpoint = 
+              (Endpoint) Class.forName(endpoint_class).newInstance();
+          endpoints.add(endpoint);
+          Main.LOGGER.info("added endpoint class " + endpoint_class);
+        }
+        scanner.close();
+      }
+    } catch (final IOException e) {
+      Main.LOGGER.error("error reading list of endpoint classes: " + e);
+    } catch (final ClassNotFoundException | InstantiationException | 
+                   IllegalAccessException | ClassCastException e) {
+      Main.LOGGER.error("invalid endpoint class specified: " + e);
+    }
+
+    for (final Endpoint e : endpoints) {
       switch (e.endpointType()) {
         case GET:
           my_spark.get(e.endpointName(), (the_request, the_response) -> 
@@ -327,22 +339,7 @@ public final class Main {
     // static files location
     my_spark.staticFileLocation("/us/freeandfair/corla/static");
 
-    // available endpoints
-    
-    my_endpoints.add(new Root());
-    my_endpoints.add(new ACVRDownload());
-    my_endpoints.add(new ACVRDownloadByCounty());
-    my_endpoints.add(new ACVRUpload());
-    my_endpoints.add(new CVRDownloadByCounty());
-    my_endpoints.add(new CVRDownloadByID());
-    my_endpoints.add(new CVRDownload());
-    my_endpoints.add(new CVRExportUpload());
-    my_endpoints.add(new BallotManifestUpload());
-    my_endpoints.add(new BallotManifestDownloadByCounty());
-    my_endpoints.add(new BallotManifestDownload());
-    my_endpoints.add(new ContestDownloadByCounty());
-    my_endpoints.add(new ContestDownloadByID());
-    my_endpoints.add(new ContestDownload());
+    // start the endpoints
     activateEndpoints();
   }
     
