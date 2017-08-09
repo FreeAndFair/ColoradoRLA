@@ -15,6 +15,8 @@ import java.time.Instant;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
 import us.freeandfair.corla.hibernate.AbstractEntity;
@@ -38,6 +40,13 @@ public class Administrator extends AbstractEntity {
   private String my_username;
   
   /**
+   * The administrator type.
+   */
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false, updatable = false)
+  private AdministratorType my_type;
+  
+  /**
    * The user's full (display) name.
    */
   @Column(nullable = false, updatable = false)
@@ -47,6 +56,7 @@ public class Administrator extends AbstractEntity {
    * The two-factor authentication information.
    */
   // TODO this is a placeholder, the final format of this is not yet known
+  @Column(nullable = false, updatable = false)
   private String my_two_factor_auth_info;
   
   /**
@@ -88,6 +98,13 @@ public class Administrator extends AbstractEntity {
   }
   
   /**
+   * @return the type.
+   */
+  public AdministratorType type() {
+    return my_type;
+  }
+  
+  /**
    * @return the full name.
    */
   public String fullName() {
@@ -113,5 +130,12 @@ public class Administrator extends AbstractEntity {
    */
   public void updateLastLoginTime() {
     my_last_login_time = Instant.now();
+  }
+  
+  /**
+   * Types of administrator.
+   */
+  public enum AdministratorType {
+    COUNTY, STATE;
   }
 }
