@@ -50,7 +50,7 @@ public interface AsmTransitions {
         AUDIT_READY_TO_START),
     // @review kiniry Should this transition just be a DOS_SKIP?
     SEVEN(new Pair<AsmState, AsmEvent>(AUDIT_READY_TO_START, 
-        AUDIT_EVENT),
+        DOS_SKIP_EVENT),
           DOS_AUDIT_ONGOING),
     EIGHT(new Pair<AsmState, AsmEvent>(DOS_AUDIT_ONGOING, 
         AUDIT_EVENT),

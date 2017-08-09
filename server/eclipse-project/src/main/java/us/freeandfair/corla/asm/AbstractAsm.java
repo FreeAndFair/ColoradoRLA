@@ -27,27 +27,27 @@ public abstract class AbstractAsm {
   /**
    * This ASM's set of states.
    */
-  private Set<AsmState> my_states;
+  protected Set<AsmState> my_states;
   
   /**
    * This ASM's initial state.
    */
-  private AsmState my_initial_state;
+  protected AsmState my_initial_state;
   
   /**
    * This AMS's final states.
    */
-  private Set<AsmState> my_final_states;
+  protected Set<AsmState> my_final_states;
   
   /**
    * This ASM's set of transitions.
    */
-  private Set<AsmEvent> my_transitions;
+  protected Set<AsmEvent> my_transitions;
   
   /**
    * A map from (state, event) pairs to state.
    */
-  private Map<Pair<AsmState, AsmEvent>, AsmState> my_transition_function; 
+  protected Map<Pair<AsmState, AsmEvent>, AsmState> my_transition_function; 
   
   /**
    * The current state of this ASM. Initialized to the initial state provided

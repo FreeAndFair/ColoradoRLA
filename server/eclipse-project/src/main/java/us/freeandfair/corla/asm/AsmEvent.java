@@ -23,18 +23,18 @@ public interface AsmEvent {
    * @trace asm.department_of_state_dashboard_event
    */
   enum DosDashboardEvent implements AsmEvent {
-    AUTHENTICATE_STATE_ADMINISTRATOR_EVENT,
-    ESTABLISH_RISK_LIMIT_FOR_COMPARISON_AUDITS_EVENT,
-    SELECT_CONTESTS_FOR_COMPARISON_AUDIT_EVENT,
-    PUBLIC_SEED_EVENT,
-    PUBLISH_BALLOTS_TO_AUDIT_EVENT,
-    AUDIT_EVENT,
-    INDICATE_FULL_HAND_COUNT_CONTEST_EVENT,
-    COUNTY_AUDIT_COMPLETE_EVENT,
-    AUDIT_COMPLETE_EVENT,
-    PUBLISH_AUDIT_REPORT_EVENT,
-    DOS_REFRESH_EVENT,
-    DOS_SKIP_EVENT
+    AUTHENTICATE_STATE_ADMINISTRATOR_EVENT, // public inbound event
+    ESTABLISH_RISK_LIMIT_FOR_COMPARISON_AUDITS_EVENT, // public inbound event
+    SELECT_CONTESTS_FOR_COMPARISON_AUDIT_EVENT, // public inbound event
+    PUBLIC_SEED_EVENT, // public inbound event
+    PUBLISH_BALLOTS_TO_AUDIT_EVENT, // public inbound event
+    AUDIT_EVENT, // private internal event
+    INDICATE_FULL_HAND_COUNT_CONTEST_EVENT, // public inbound event
+    COUNTY_AUDIT_COMPLETE_EVENT, // private internal event
+    AUDIT_COMPLETE_EVENT, // private internal event
+    PUBLISH_AUDIT_REPORT_EVENT, // public inbound event
+    DOS_REFRESH_EVENT, // private internal event
+    DOS_SKIP_EVENT // private internal event
   }
   
   /**
@@ -42,13 +42,13 @@ public interface AsmEvent {
    * @trace asm.county_dashboard_event
    */
   enum CountyDashboardEvent implements AsmEvent {
-    AUTHENTICATE_COUNTY_ADMINISTRATOR_EVENT,
-    ESTABLISH_AUDIT_BOARD_EVENT,
-    UPLOAD_BALLOT_MANIFEST_EVENT,
-    UPLOAD_CVRS_EVENT,
-    START_AUDIT_EVENT,
-    COUNTY_REFRESH_EVENT,
-    COUNTY_SKIP_EVENT
+    AUTHENTICATE_COUNTY_ADMINISTRATOR_EVENT, // public inbound event
+    ESTABLISH_AUDIT_BOARD_EVENT, // public inbound event
+    UPLOAD_BALLOT_MANIFEST_EVENT, // public inbound event
+    UPLOAD_CVRS_EVENT, // public inbound event
+    START_AUDIT_EVENT, // public inbound event
+    COUNTY_REFRESH_EVENT, // private internal event
+    COUNTY_SKIP_EVENT // private internal event
   }
   
   /**
@@ -56,12 +56,12 @@ public interface AsmEvent {
    * @trace asm.audit_board_dashboard_event
    */
   enum AuditBoardDashboardEvent implements AsmEvent {
-    REPORT_MARKINGS_EVENT,
-    REPORT_BALLOT_NOT_FOUND_EVENT,
-    SUBMIT_AUDIT_INVESTIGATION_REPORT_EVENT,
-    SUBMIT_AUDIT_REPORT_EVENT,
-    SUBMIT_INTERMEDIATE_AUDIT_REPORT_EVENT,
-    AUDIT_SKIP_EVENT,
-    AUDIT_REFRESH_EVENT
+    REPORT_MARKINGS_EVENT, // public inbound event
+    REPORT_BALLOT_NOT_FOUND_EVENT, // public inbound event
+    SUBMIT_AUDIT_INVESTIGATION_REPORT_EVENT, // public inbound event
+    SUBMIT_AUDIT_REPORT_EVENT, // public inbound event
+    SUBMIT_INTERMEDIATE_AUDIT_REPORT_EVENT, // public inbound event
+    AUDIT_SKIP_EVENT, // private internal event
+    AUDIT_REFRESH_EVENT // private internal event
   }
 }
