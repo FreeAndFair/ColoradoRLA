@@ -83,7 +83,7 @@ public class CVRDownload implements Endpoint {
       }
     } catch (final IOException e) {
       status = HttpStatus.INTERNAL_SERVER_ERROR_500;
-      result = "Unable to stream response.";
+      result = "Unable to stream response";
     }
     
     the_response.status(status);
@@ -114,7 +114,7 @@ public class CVRDownload implements Endpoint {
         Persistence.rollbackTransaction();
       }
     } catch (final PersistenceException e) {
-      Main.LOGGER.error("Exception when reading ballot manifests from database: " + e);
+      Main.LOGGER.error("Exception when reading CVRs from database: " + e);
     }
 
     return result;

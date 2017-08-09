@@ -90,12 +90,12 @@ public class CVRDownloadByCounty implements Endpoint {
           bw.flush();
         } catch (final IOException e) {
           status = HttpStatus.INTERNAL_SERVER_ERROR_500;
-          result = "Unable to stream response.";
+          result = "Unable to stream response";
         }
       }
     } else {
       status = HttpStatus.BAD_REQUEST_400;
-      result = "invalid county ID specified";
+      result = "Invalid county ID specified";
     }
     the_response.status(status);
     return result;
@@ -156,7 +156,7 @@ public class CVRDownloadByCounty implements Endpoint {
         Persistence.rollbackTransaction();
       }
     } catch (final PersistenceException e) {
-      Main.LOGGER.error("Exception when reading ballot manifests from database: " + e);
+      Main.LOGGER.error("Exception when reading CVRs from database: " + e);
     }
 
     return result;

@@ -83,7 +83,7 @@ public class ACVRDownload implements Endpoint {
       }
     } catch (final IOException e) {
       status = HttpStatus.INTERNAL_SERVER_ERROR_500;
-      result = "Unable to stream response.";
+      result = "Unable to stream response";
     }
     
     the_response.status(status);

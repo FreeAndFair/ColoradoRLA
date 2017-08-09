@@ -64,7 +64,7 @@ public class ContestDownload implements Endpoint {
       return "";
     } catch (final IOException e) {
       the_response.status(HttpStatus.INTERNAL_SERVER_ERROR_500);
-      return "Unable to stream response.";
+      return "Unable to stream response";
     }
   }
 }
