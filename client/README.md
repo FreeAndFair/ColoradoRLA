@@ -4,11 +4,10 @@
 
 Though implemented as a single-page browser application, we can use
 URL paths to organize the activities provided by the application.
-There are two types of users: Secretary of State officials (SOSO's)
-and county officials (CO's). Different users will see different pages
-at a given URL path, and effectively have distinct site roots (which
-can share data and components). We thus describe each user type's site
-map separately.
+There are two types of users: Secretary of State officials (SSO's) and
+county officials (CO's). Different users may see different pages at a
+any given URL path, and have distinct site roots. We thus describe
+each user type's site map separately.
 
 Unauthenticated users will always be redirected to `/login`. If a
 logged-in SOS or County user navigates to `/`, they will be redirected
@@ -23,19 +22,18 @@ Authenticate as a user of either type. Should include a link to the
 public audit dashboard, which is not part of the CORLA browser client.
 
 
-### SOS Official
+### SoS Official
 
 | Path | Page |
 | ---- | ---- |
 | `/sos` | SOS Home |
 | `/sos/county` | County Overview |
-| `/sos/county/{county-id}`| County Detail |
+| `/sos/county/{countyId}`| County Detail |
 | `/sos/contest` | Contest Overview |
-| `/sos/contest/{contest-id}` | Contest Detail |
+| `/sos/contest/{contestId}` | Contest Detail |
 | `/sos/audit` | Audit |
-| `/sos/audit/risk-limit` | Risk Limit |
+| `/sos/audit/ballots` | Ballot Selection |
 | `/sos/audit/seed` | Seed |
-| `/sos/audit/round` | Round |
 
 
 ### County Official
@@ -44,7 +42,7 @@ public audit dashboard, which is not part of the CORLA browser client.
 | ---- | ---- |
 | `/county` | County Home
 | `/county/contest` | Contest Overview |
-| `/county/contest/{contest-id}` | Contest Detail |
+| `/county/contest/{contestId}` | Contest Detail |
 | `/county/audit` | Run Audit |
 
 ### SOS and County Officials
