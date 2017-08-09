@@ -122,33 +122,33 @@ public interface AsmTransitions {
                AsmEvent.CountyDashboardEvent.SKIP_EVENT),
         AsmState.CountyDashboardState.COUNTY_UPLOAD_VERIFIED_BALLOT_MANIFEST_HASH_WRONG),
     MANIFEST_TYPE(
-      new Pair<AsmState, AsmEvent>(AsmState.CountyDashboardState.ESTABLISH_AUDIT_BOARD_STATE, 
+      new Pair<AsmState, AsmEvent>(AsmState.CountyDashboardState.AUDIT_BOARD_ESTABLISHED_STATE, 
                AsmEvent.CountyDashboardEvent.COUNTY_UPLOAD_VERIFIED_BALLOT_MANIFEST_EVENT),
         AsmState.CountyDashboardState.COUNTY_UPLOAD_VERIFIED_BALLOT_MANIFEST_FILE_TYPE_WRONG),
     MANIFEST_PARSED(
-      new Pair<AsmState, AsmEvent>(AsmState.CountyDashboardState.ESTABLISH_AUDIT_BOARD_STATE, 
+      new Pair<AsmState, AsmEvent>(AsmState.CountyDashboardState.AUDIT_BOARD_ESTABLISHED_STATE, 
                AsmEvent.CountyDashboardEvent.COUNTY_UPLOAD_VERIFIED_BALLOT_MANIFEST_EVENT),
         AsmState.CountyDashboardState.COUNTY_UPLOAD_VERIFIED_BALLOT_MANIFEST_DATA_PARSED),
     MANIFEST_INTERRUPTED(
-      new Pair<AsmState, AsmEvent>(AsmState.CountyDashboardState.ESTABLISH_AUDIT_BOARD_STATE, 
+      new Pair<AsmState, AsmEvent>(AsmState.CountyDashboardState.AUDIT_BOARD_ESTABLISHED_STATE, 
                AsmEvent.CountyDashboardEvent.COUNTY_UPLOAD_VERIFIED_BALLOT_MANIFEST_EVENT),
         AsmState.CountyDashboardState.COUNTY_UPLOAD_VERIFIED_BALLOT_MANIFEST_DATA_TRANSMISSION_INTERRUPTED),
     MANIFEST_LATE(
-      new Pair<AsmState, AsmEvent>(AsmState.CountyDashboardState.ESTABLISH_AUDIT_BOARD_STATE, 
+      new Pair<AsmState, AsmEvent>(AsmState.CountyDashboardState.AUDIT_BOARD_ESTABLISHED_STATE, 
                AsmEvent.CountyDashboardEvent.COUNTY_UPLOAD_VERIFIED_BALLOT_MANIFEST_EVENT),
         AsmState.CountyDashboardState.COUNTY_UPLOAD_VERIFIED_BALLOT_MANIFEST_TOO_LATE),
     MANIFEST_RESTART_FROM_HASH_WRONG(
        new Pair<AsmState, AsmEvent>(AsmState.CountyDashboardState.COUNTY_UPLOAD_VERIFIED_BALLOT_MANIFEST_HASH_WRONG, 
                 AsmEvent.CountyDashboardEvent.SKIP_EVENT),
-         AsmState.CountyDashboardState.ESTABLISH_AUDIT_BOARD_STATE),
+         AsmState.CountyDashboardState.AUDIT_BOARD_ESTABLISHED_STATE),
     MANIFEST_RESTART_FROM_TYPE_WRONG(
        new Pair<AsmState, AsmEvent>(AsmState.CountyDashboardState.COUNTY_UPLOAD_VERIFIED_BALLOT_MANIFEST_FILE_TYPE_WRONG, 
                 AsmEvent.CountyDashboardEvent.SKIP_EVENT),
-         AsmState.CountyDashboardState.ESTABLISH_AUDIT_BOARD_STATE),
+         AsmState.CountyDashboardState.AUDIT_BOARD_ESTABLISHED_STATE),
     MANIFEST_RESTART_FROM_INTERRUPTED(
        new Pair<AsmState, AsmEvent>(AsmState.CountyDashboardState.COUNTY_UPLOAD_VERIFIED_BALLOT_MANIFEST_DATA_TRANSMISSION_INTERRUPTED, 
                 AsmEvent.CountyDashboardEvent.SKIP_EVENT),
-         AsmState.CountyDashboardState.ESTABLISH_AUDIT_BOARD_STATE);
+         AsmState.CountyDashboardState.AUDIT_BOARD_ESTABLISHED_STATE);
     // @todo kiniry Add all remaining transitions.
     
     /**
