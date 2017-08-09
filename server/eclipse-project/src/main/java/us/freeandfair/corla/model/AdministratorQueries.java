@@ -76,9 +76,9 @@ public final class AdministratorQueries {
       Main.LOGGER.error("could not query database for administrator");
     }
     if (result == null) {
-      Main.LOGGER.info("found no county for string " + the_username);
+      Main.LOGGER.info("found no administrator for username " + the_username);
     } else {
-      Main.LOGGER.info("found county " + result + " for string " + the_username);
+      Main.LOGGER.info("found administrator " + result + " for string " + the_username);
     }
     return result;
   }

@@ -12,6 +12,8 @@
 
 package us.freeandfair.corla.model;
 
+import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Set;
@@ -122,9 +124,9 @@ public class County extends AbstractEntity implements Serializable {
     boolean result = true;
     if (the_other instanceof County) {
       final County other_county = (County) the_other;
-      result &= other_county.name().equals(name());
-      result &= other_county.identifier().equals(identifier());
-      result &= other_county.contests().equals(contests());
+      result &= nullableEquals(other_county.name(), name());
+      result &= nullableEquals(other_county.identifier(), identifier());
+      result &= nullableEquals(other_county.contests(), contests());
     } else {
       result = false;
     }
