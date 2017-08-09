@@ -12,8 +12,9 @@
 
 package us.freeandfair.corla.model;
 
+import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
+
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -60,6 +61,12 @@ public class County extends AbstractEntity implements Serializable {
   private Set<Contest> my_contests;
   
   /**
+   * The administrators for this county.
+   */
+  @ElementCollection(fetch = FetchType.EAGER)
+  private Set<Administrator> my_administrators;
+
+  /**
    * Constructs an empty county, solely for persistence. 
    */
   public County() {
@@ -72,13 +79,16 @@ public class County extends AbstractEntity implements Serializable {
    * @param the_name The county name.
    * @param the_identifier The county ID.
    * @param the_contests The contests.
+   * @param the_administrators The administrators.
    */
   public County(final String the_name, final Integer the_identifier,
-                final Set<Contest> the_contests) {
+                final Set<Contest> the_contests, 
+                final Set<Administrator> the_administrators) {
     super();
     my_name = the_name;
     my_identifier = the_identifier;
     my_contests = the_contests;
+    my_administrators = the_administrators;
   }
 
   /**
@@ -96,10 +106,19 @@ public class County extends AbstractEntity implements Serializable {
   }
   
   /**
-   * @return the contests in this county.
+   * @return the contests in this county. The result set is mutable,
+   * and can be used to change the persistent county record.
    */
   public Set<Contest> contests() {
-    return Collections.unmodifiableSet(my_contests);
+    return my_contests;
+  }
+  
+  /**
+   * @return the administrators for this county. The result set is
+   * mutable, and can be used to change the persistent county record.
+   */
+  public Set<Administrator> administrators() {
+    return my_administrators;
   }
   
   /**
@@ -122,9 +141,9 @@ public class County extends AbstractEntity implements Serializable {
     boolean result = true;
     if (the_other instanceof County) {
       final County other_county = (County) the_other;
-      result &= other_county.name().equals(name());
-      result &= other_county.identifier().equals(identifier());
-      result &= other_county.contests().equals(contests());
+      result &= nullableEquals(other_county.name(), name());
+      result &= nullableEquals(other_county.identifier(), identifier());
+      result &= nullableEquals(other_county.contests(), contests());
     } else {
       result = false;
     }

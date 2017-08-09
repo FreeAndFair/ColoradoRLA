@@ -26,8 +26,6 @@ import java.util.Set;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-//TODO: either this needs to be an entity, or it needs to contain an entity
-//that encapsulates its state
 public class DepartmentOfStateDashboard {
   /**
    * The county dashboards for all counties (from which status and other
