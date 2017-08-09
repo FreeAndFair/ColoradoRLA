@@ -2625,8 +2625,8 @@ BEGIN
 %%% administrators using the RLA Tool, cause state changes. These
 %%% events are named according to their corresponding functional
 %%% definitions in earlier theories. E.g., the
-%%% \texttt{authenticate_state_administrator_event} relates to the
-%%% \texttt{authenticate_state_administrator} function and its
+%%% \texttt{authenticate\_state\_administrator\_event} relates to the
+%%% \texttt{authenticate\_state\_administrator} function and its
 %%% realization via an endpoint.
   department_of_state_dashboard_event: TYPE = % SUBTYPE asm_event
     { asa_e,    % authenticate_state_administrator_event
