@@ -12,7 +12,9 @@
 package us.freeandfair.corla.asm;
 
 import static us.freeandfair.corla.asm.AsmEvent.AuditBoardDashboardEvent.*;
+import static us.freeandfair.corla.asm.AsmEvent.DosDashboardEvent.*;
 import static us.freeandfair.corla.asm.AsmState.AuditBoardDashboardState.*;
+import static us.freeandfair.corla.asm.AsmState.DosDashboardState.*;
 
 import us.freeandfair.corla.util.Pair;
 
@@ -26,58 +28,46 @@ public interface AsmTransitions {
    * @trace asm.dos_dashboard_next_state
    */
   enum DosDashboardTransitions implements AsmTransitions {
-    AUTHENTICATE(
-      new Pair<AsmState, AsmEvent>(AsmState.DosDashboardState.INITIAL_STATE, 
-      AsmEvent.DosDashboardEvent.AUTHENTICATE_STATE_ADMINISTRATOR_EVENT),
-      AsmState.DosDashboardState.AUTHENTICATED),
-    SET_RISK_LIMIT(
-      new Pair<AsmState, AsmEvent>(AsmState.DosDashboardState.AUTHENTICATED, 
-      AsmEvent.DosDashboardEvent.ESTABLISH_RISK_LIMIT_FOR_COMPARISON_AUDITS_EVENT),
-      AsmState.DosDashboardState.RISK_LIMITS_SET),
-    CONTESTS_SELECTED(
-      new Pair<AsmState, AsmEvent>(AsmState.DosDashboardState.RISK_LIMITS_SET, 
-      AsmEvent.DosDashboardEvent.SELECT_CONTESTS_FOR_COMPARISON_AUDIT_EVENT),
-      AsmState.DosDashboardState.CONTESTS_TO_AUDIT_IDENTIFIED),
-    RANDOM_SEED(
-      new Pair<AsmState, AsmEvent>(AsmState.DosDashboardState.CONTESTS_TO_AUDIT_IDENTIFIED, 
-      AsmEvent.DosDashboardEvent.PUBLIC_SEED_EVENT),
-      AsmState.DosDashboardState.RANDOM_SEED_PUBLISHED),
-    PUBLISH_BALLOTS_TO_AUDIT(
-      new Pair<AsmState, AsmEvent>(AsmState.DosDashboardState.RANDOM_SEED_PUBLISHED, 
-      AsmEvent.DosDashboardEvent.PUBLISH_BALLOTS_TO_AUDIT_EVENT),
-      AsmState.DosDashboardState.BALLOT_ORDER_DEFINED),
-    AUDIT_READY(
-      new Pair<AsmState, AsmEvent>(AsmState.DosDashboardState.BALLOT_ORDER_DEFINED, 
-      AsmEvent.DosDashboardEvent.SKIP_EVENT),
-      AsmState.DosDashboardState.AUDIT_READY_TO_START),
-    AUDIT_START(
-      new Pair<AsmState, AsmEvent>(AsmState.DosDashboardState.AUDIT_READY_TO_START, 
-      AsmEvent.DosDashboardEvent.AUDIT_EVENT),
-      AsmState.DosDashboardState.AUDIT_ONGOING),
-    AUDIT_CONTINUES(
-      new Pair<AsmState, AsmEvent>(AsmState.DosDashboardState.AUDIT_ONGOING, 
-      AsmEvent.DosDashboardEvent.AUDIT_EVENT),
-      AsmState.DosDashboardState.AUDIT_ONGOING),
-    HAND_CONTEST_INIT(
-      new Pair<AsmState, AsmEvent>(AsmState.DosDashboardState.AUDIT_READY_TO_START, 
-      AsmEvent.DosDashboardEvent.INDICATE_FULL_HAND_COUNT_CONTEST_EVENT),
-      AsmState.DosDashboardState.AUDIT_READY_TO_START),
-    HAND_CONTEST_CONT(
-      new Pair<AsmState, AsmEvent>(AsmState.DosDashboardState.AUDIT_ONGOING, 
-      AsmEvent.DosDashboardEvent.INDICATE_FULL_HAND_COUNT_CONTEST_EVENT),
-      AsmState.DosDashboardState.AUDIT_ONGOING),
-    COUNTY_COMPLETE(
-      new Pair<AsmState, AsmEvent>(AsmState.DosDashboardState.AUDIT_ONGOING, 
-      AsmEvent.DosDashboardEvent.COUNTY_AUDIT_COMPLETE_EVENT),
-      AsmState.DosDashboardState.AUDIT_ONGOING),
-    AUDIT_COMPLETE(
-      new Pair<AsmState, AsmEvent>(AsmState.DosDashboardState.AUDIT_COMPLETE, 
-      AsmEvent.DosDashboardEvent.PUBLISH_AUDIT_REPORT_EVENT),
-      AsmState.DosDashboardState.AUDIT_RESULTS_PUBLISHED),
-    REFRESH(
-      new Pair<AsmState, AsmEvent>(AsmState.DosDashboardState.AUDIT_ONGOING, 
-      AsmEvent.DosDashboardEvent.REFRESH_EVENT),
-      AsmState.DosDashboardState.AUDIT_ONGOING);
+    ONE(new Pair<AsmState, AsmEvent>(DOS_INITIAL_STATE, 
+        AUTHENTICATE_STATE_ADMINISTRATOR_EVENT),
+        DOS_AUTHENTICATED),
+    TWO(new Pair<AsmState, AsmEvent>(DOS_AUTHENTICATED, 
+        ESTABLISH_RISK_LIMIT_FOR_COMPARISON_AUDITS_EVENT),
+        RISK_LIMITS_SET),
+    THREE(new Pair<AsmState, AsmEvent>(RISK_LIMITS_SET, 
+        SELECT_CONTESTS_FOR_COMPARISON_AUDIT_EVENT),
+          CONTESTS_TO_AUDIT_IDENTIFIED),
+    FOUR(new Pair<AsmState, AsmEvent>(CONTESTS_TO_AUDIT_IDENTIFIED, 
+        PUBLIC_SEED_EVENT),
+         RANDOM_SEED_PUBLISHED),
+    FIVE(new Pair<AsmState, AsmEvent>(RANDOM_SEED_PUBLISHED, 
+        PUBLISH_BALLOTS_TO_AUDIT_EVENT),
+         BALLOT_ORDER_DEFINED),
+    SIX(new Pair<AsmState, AsmEvent>(BALLOT_ORDER_DEFINED, 
+        DOS_SKIP_EVENT),
+        AUDIT_READY_TO_START),
+    // @review kiniry Should this transition just be a DOS_SKIP?
+    SEVEN(new Pair<AsmState, AsmEvent>(AUDIT_READY_TO_START, 
+        AUDIT_EVENT),
+          DOS_AUDIT_ONGOING),
+    EIGHT(new Pair<AsmState, AsmEvent>(DOS_AUDIT_ONGOING, 
+        AUDIT_EVENT),
+          DOS_AUDIT_ONGOING),
+    NINE(new Pair<AsmState, AsmEvent>(AUDIT_READY_TO_START, 
+        INDICATE_FULL_HAND_COUNT_CONTEST_EVENT),
+         AUDIT_READY_TO_START),
+    TEN(new Pair<AsmState, AsmEvent>(DOS_AUDIT_ONGOING, 
+        INDICATE_FULL_HAND_COUNT_CONTEST_EVENT),
+        DOS_AUDIT_ONGOING),
+    ELEVEN(new Pair<AsmState, AsmEvent>(DOS_AUDIT_ONGOING, 
+        COUNTY_AUDIT_COMPLETE_EVENT),
+           DOS_AUDIT_COMPLETE),
+    TWELVE(new Pair<AsmState, AsmEvent>(DOS_AUDIT_COMPLETE, 
+        PUBLISH_AUDIT_REPORT_EVENT),
+           AUDIT_RESULTS_PUBLISHED),
+    REFRESH(new Pair<AsmState, AsmEvent>(DOS_AUDIT_ONGOING, 
+        DOS_REFRESH_EVENT),
+            DOS_AUDIT_ONGOING);
     
     /**
      * The pair holding a single transition.

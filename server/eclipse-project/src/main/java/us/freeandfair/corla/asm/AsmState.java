@@ -22,16 +22,16 @@ public interface AsmState {
    * @trace asm.department_of_state_dashboard_state
    */
   enum DosDashboardState implements AsmState {
-    INITIAL_STATE,
-    AUTHENTICATED,
+    DOS_INITIAL_STATE,
+    DOS_AUTHENTICATED,
     RISK_LIMITS_SET,
     CONTESTS_TO_AUDIT_IDENTIFIED,
     RANDOM_SEED_PUBLISHED,
     BALLOT_ORDER_DEFINED,
     // @todo kiniry This state is probably unnecessary.
     AUDIT_READY_TO_START,
-    AUDIT_ONGOING,
-    AUDIT_COMPLETE,
+    DOS_AUDIT_ONGOING,
+    DOS_AUDIT_COMPLETE,
     AUDIT_RESULTS_PUBLISHED
   }
   
