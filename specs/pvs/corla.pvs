@@ -1928,7 +1928,7 @@ BEGIN
               nat, % number of ballots according to CVR
               nat, % total number of ballots to audit according to RLA
               nat, % total number of ballots audited thus far
-              nat, % total number of discrepencies (overstatements +
+              nat, % total number of discrepancies (overstatements +
               % understatements) seen thus far
               nat] % total number of times the audit board could not
               % agree upon the interpretation of a ballot under audit
@@ -2646,18 +2646,18 @@ BEGIN
 %     department_of_state_dashboard_state =
 % TABLE dos_state, dos_event
 % % ----------------------------------------------------------------------
-%              |[ asae | erlfcae | scfcae | pse  | pbtae  | ifhcc_e | r_e ]|
+%              |[ asa_e | erlfca_e | scfca_e | ps_e  | pbta_e  | ifhcc_e | r_e ]|
 % % ----------------------------------------------------------------------
-%      | i_s    | a_s  |         |        |      |        |         |     ||
-%      | a_s    |      | rls_s   |        |      |        |         |     ||
-%      | rls_s  |      |         | ctai_s |      |        |         |     ||
-%      | ctai_s |      |         |        | rsp_s |       |         |     ||
-%      | rsp_s  |      |         |        |      | bod_s  |         |     ||
-%      | bod_s  |      |         |        |      |        | art_s   |     ||
-%      | art_s  |      |         |        |      |        |         |     ||
-%      | ao_s   |      |         |        |      |        |         |     ||
-%      | ac_s   |      |         |        |      |        |         |     ||
-%      | arp_s  |      |         |        |      |        |         |     ||
+%      | i_s    | a_s   |         |        |      |        |         |     ||
+%      | a_s    |       | rls_s   |        |      |        |         |     ||
+%      | rls_s  |       |         | ctai_s |      |        |         |     ||
+%      | ctai_s |       |         |        | rsp_s |       |         |     ||
+%      | rsp_s  |       |         |        |      | bod_s  |         |     ||
+%      | bod_s  |       |         |        |      |        | art_s   |     ||
+%      | art_s  |       |         |        |      |        |         |     ||
+%      | ao_s   |       |         |        |      |        |         |     ||
+%      | ac_s   |       |         |        |      |        |         |     ||
+%      | arp_s  |       |         |        |      |        |         |     ||
 % ENDTABLE
 
   asm: TYPE =
@@ -2675,7 +2675,7 @@ BEGIN
     { i_s,       % initial_state
       a_s,       % authenticated
       eab_s,     % estable_audit_board_state
-%%% @todo kiniry discuss upload_system_message
+%%% @todo kiniry discuss upload\_system\_message
       bm_us_s,   % county_upload_verified_ballot_manifest: upload_sucessful
       bm_ch_s,   % county_upload_verified_ballot_manifest: checking_hash
       bm_hv_s,   % county_upload_verified_ballot_manifest: hash_verified
