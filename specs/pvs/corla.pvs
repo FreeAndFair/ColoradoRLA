@@ -2773,6 +2773,12 @@ BEGIN
 %        transitions = audit_board_dashboard_event
 %        transition_function = audit_board_dashboard_next_state #]
 
+%  rla_tool_asm: VAR asm =
+%     [# states = union of dos, county, and audit board asm states,
+%        transitions = union of dos, county, and audit board asm
+%                      transitions,
+%        transition_function = composition of dos, county, and audit
+%                              board transition functions #]
 END asm
 
 %+END asm
