@@ -61,7 +61,7 @@ public class ContestDownloadByID implements Endpoint {
       }
     } catch (final NumberFormatException e) {
       status = HttpStatus.BAD_REQUEST_400;
-      result = "Bad Contest ID";
+      result = "Bad contest ID";
     }
     if (result == null) {
       status = HttpStatus.NOT_FOUND_404;

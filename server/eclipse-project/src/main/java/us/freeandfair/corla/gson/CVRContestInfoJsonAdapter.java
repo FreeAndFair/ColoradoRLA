@@ -67,7 +67,9 @@ public final class CVRContestInfoJsonAdapter
     the_writer.beginObject();
     the_writer.name(CONTEST).value(the_info.contest().id());
     the_writer.name(COMMENT).value(the_info.comment());
-    the_writer.name(CONSENSUS).value(the_info.consensus().toString());
+    if (the_info.consensus() != null) {
+      the_writer.name(CONSENSUS).value(the_info.consensus().toString());
+    }
     the_writer.name(CHOICES);
     the_writer.beginArray();
     for (final String c : the_info.choices()) {
@@ -129,7 +131,7 @@ public final class CVRContestInfoJsonAdapter
     List<String> choices = null;
     long contest_id = -1;
     String comment = null;
-    ConsensusValue consensus = ConsensusValue.UNDEFINED;
+    ConsensusValue consensus = null;
     
     the_reader.beginObject();
     while (the_reader.hasNext()) {
@@ -147,7 +149,7 @@ public final class CVRContestInfoJsonAdapter
           try {
             consensus = ConsensusValue.valueOf(the_reader.nextString());
           } catch (final IllegalArgumentException e) {
-            consensus = ConsensusValue.UNDEFINED;
+            // assume undefined consensus, because enum value was invalid
           }
           break;
           

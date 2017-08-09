@@ -19,8 +19,11 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+
+import javax.persistence.PersistenceException;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -50,6 +53,9 @@ import us.freeandfair.corla.endpoint.Endpoint;
 import us.freeandfair.corla.endpoint.Root;
 import us.freeandfair.corla.gson.FreeAndFairNamingStrategy;
 import us.freeandfair.corla.hibernate.Persistence;
+import us.freeandfair.corla.model.Contest;
+import us.freeandfair.corla.model.County;
+import us.freeandfair.corla.model.CountyQueries;
 
 /**
  * The main executable for the ColoradoRLA server. 
@@ -68,6 +74,11 @@ public final class Main {
   public static final String DEFAULT_PROPERTIES =
       "us/freeandfair/corla/default.properties";
 
+  /**
+   * The name of the property that specifies county IDs.
+   */
+  public static final String COUNTY_IDS = "county_ids";
+  
   /**
    * The name of the logger.
    */
@@ -223,6 +234,44 @@ public final class Main {
   }
   
   /**
+   * Initializes the counties in the database using information from the 
+   * county properties.
+   */
+  private void initializeCounties() {
+    final Properties properties = new Properties();
+    try {
+      properties.load(ClassLoader.
+                      getSystemResourceAsStream(my_properties.getProperty(COUNTY_IDS)));
+    } catch (final IOException e) {
+      throw new IllegalStateException("Error loading county IDs, aborting.", e);
+    }
+    try {
+      for (final String s : properties.stringPropertyNames()) {
+        // if the property name is an integer, we assume it's a county ID
+        try {
+          final Integer id = Integer.valueOf(s);
+          final String name = properties.getProperty(s);
+          County county = CountyQueries.byID(id);
+          if (county == null) {
+            county = new County(name, id, new HashSet<Contest>());
+          } else if (!county.name().equals(name)) {
+            // update the county's name while preserving the rest of its info
+            Main.LOGGER.info("Updating " + county.name() + " county name to " + name);
+            final County new_county = new County(name, id, county.contests());
+            new_county.setID(county.id());
+            county = new_county;
+          }
+          Persistence.saveOrUpdate(county);
+        } catch (final NumberFormatException e) {
+          // we skip this property because it wasn't numeric
+        }
+      }
+    } catch (final PersistenceException e) {
+      throw new IllegalStateException("Error loading county IDs, aborting.", e);
+    }
+  }
+  
+  /**
    * Starts a ColoradoRLA server.
    */
   public void start() {
@@ -231,7 +280,9 @@ public final class Main {
     // provide properties to the persistence engine
     Persistence.setProperties(my_properties);
 
-    if (!Persistence.hasDB()) {
+    if (Persistence.hasDB()) {
+      initializeCounties();
+    } else {
       LOGGER.error("could not open database connection");
       return;
     }
@@ -324,18 +375,18 @@ public final class Main {
    * server does not start.
    */
   public static void main(final String... the_args) {
-    Properties properties;
+    final Properties default_properties = defaultProperties();
+    Properties properties = new Properties(default_properties);
     if (the_args.length > 0) {
       final File file = new File(the_args[0]);
       try {
         LOGGER.info("attempting to load properties from " + file);
-        properties = new Properties();
         properties.load(new FileInputStream(file));
       } catch (final IOException e) {
         // could not load properties that way, let's try XML
         try {
           LOGGER.info("load failed, attempting to load XML properties from " + file);
-          properties = new Properties();
+          properties = new Properties(default_properties);
           properties.loadFromXML(new FileInputStream(file));
         } catch (final IOException ex) {
           // could not load properties that way either, let's abort
@@ -344,8 +395,7 @@ public final class Main {
         }
       }
     } else {
-      LOGGER.info("no property file specified, loading default properties");
-      properties = defaultProperties();
+      LOGGER.info("no property file specified, using default properties");
     }
 
     final Main main = new Main(properties);

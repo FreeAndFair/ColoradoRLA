@@ -11,12 +11,15 @@
 
 package us.freeandfair.corla.hibernate;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Scanner;
 
 import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
@@ -34,13 +37,6 @@ import org.hibernate.cfg.Environment;
 import org.hibernate.criterion.Example;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.model.BallotManifestInfo;
-import us.freeandfair.corla.model.CVRContestInfo;
-import us.freeandfair.corla.model.CastVoteRecord;
-import us.freeandfair.corla.model.Choice;
-import us.freeandfair.corla.model.Contest;
-import us.freeandfair.corla.model.Elector;
-import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.util.Pair;
 
 /**
@@ -50,6 +46,12 @@ import us.freeandfair.corla.util.Pair;
  * @version 0.0.1
  */
 public final class Persistence {
+  /**
+   * The path to the resource containing the list of entity classes.
+   */
+  public static final String ENTITY_CLASSES = 
+      "us/freeandfair/corla/hibernate/entity_classes";
+  
   /**
    * The "NO SESSION" constant.
    */
@@ -174,19 +176,30 @@ public final class Persistence {
       
       // create metadata sources and metadata
       final MetadataSources sources = new MetadataSources(service_registry);
-      sources.addAnnotatedClass(BallotManifestInfo.class);
-      sources.addAnnotatedClass(CastVoteRecord.class);
-      sources.addAnnotatedClass(Choice.class);
-      sources.addAnnotatedClass(Contest.class);
-      sources.addAnnotatedClass(CVRContestInfo.class);
-      sources.addAnnotatedClass(Elector.class);
-      sources.addAnnotatedClass(UploadedFile.class);
+      try (InputStream entity_stream = 
+               ClassLoader.getSystemResourceAsStream(ENTITY_CLASSES)) {
+        if (entity_stream == null) {
+          Main.LOGGER.error("could not load list of entity classes");          
+        } else {
+          final Scanner scanner = new Scanner(entity_stream, "UTF-8");
+          while (scanner.hasNextLine()) {
+            final String entity_class = scanner.nextLine();
+            sources.addAnnotatedClass(Class.forName(entity_class));
+            Main.LOGGER.info("added entity class " + entity_class);
+          }
+          scanner.close();
+        }
+      } catch (final IOException e) {
+        Main.LOGGER.error("error reading list of entity classes: " + e);
+      } catch (final ClassNotFoundException e) {
+        Main.LOGGER.error("invalid entity class specified: " + e);
+      }
       final Metadata metadata = sources.getMetadataBuilder().build();
       
       // create session factory
       session_factory = metadata.getSessionFactoryBuilder().build();
       Main.LOGGER.info("started Hibernate");
-    } catch (final Exception e) {
+    } catch (final RuntimeException e) {
       Main.LOGGER.info("could not start Hibernate, persistence is disabled: " + e);
       if (service_registry != null) {
         StandardServiceRegistryBuilder.destroy(service_registry);

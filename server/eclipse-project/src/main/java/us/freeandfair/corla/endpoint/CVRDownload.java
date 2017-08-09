@@ -19,10 +19,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.PersistenceException;
+import javax.persistence.RollbackException;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import org.eclipse.jetty.http.HttpStatus;
 import org.hibernate.Session;
-import org.hibernate.query.Query;
 
 import spark.Request;
 import spark.Response;
@@ -79,7 +83,7 @@ public class CVRDownload implements Endpoint {
       }
     } catch (final IOException e) {
       status = HttpStatus.INTERNAL_SERVER_ERROR_500;
-      result = "Unable to stream response.";
+      result = "Unable to stream response";
     }
     
     the_response.status(status);
@@ -87,23 +91,30 @@ public class CVRDownload implements Endpoint {
   }
   
   /**
-   * @return the set of cast vote records that were uploaded by counties.
+   * @return the set of cast vote records that were uploaded by counties,
+   * or null if the query fails.
    */
   private Set<CastVoteRecord> getMatching() {
     Set<CastVoteRecord> result = null;
-
+    
     try {
-      final Set<CastVoteRecord> query_result = new HashSet<>();
       Persistence.beginTransaction();
       final Session s = Persistence.currentSession();
-      final Query<CastVoteRecord> query = 
-          s.createQuery("from CastVoteRecord where record_type = '" + 
-                        RecordType.UPLOADED + "'", CastVoteRecord.class);
-      query_result.addAll(query.getResultList());
-      Persistence.commitTransaction();
-      result = query_result;
+      final CriteriaBuilder cb = s.getCriteriaBuilder();
+      final CriteriaQuery<CastVoteRecord> cq = 
+          cb.createQuery(CastVoteRecord.class);
+      final Root<CastVoteRecord> root = cq.from(CastVoteRecord.class);
+      cq.select(root).where(cb.equal(root.get("my_record_type"), 
+                                     RecordType.UPLOADED));
+      final TypedQuery<CastVoteRecord> query = s.createQuery(cq);
+      result = new HashSet<CastVoteRecord>(query.getResultList());
+      try {
+        Persistence.commitTransaction();
+      } catch (final RollbackException e) {
+        Persistence.rollbackTransaction();
+      }
     } catch (final PersistenceException e) {
-      Main.LOGGER.error("Exception when reading ACVRs from database: " + e);
+      Main.LOGGER.error("Exception when reading CVRs from database: " + e);
     }
 
     return result;

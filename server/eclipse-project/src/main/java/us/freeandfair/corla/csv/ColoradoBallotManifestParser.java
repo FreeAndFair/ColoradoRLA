@@ -27,6 +27,8 @@ import org.apache.commons.csv.CSVRecord;
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.hibernate.Persistence;
 import us.freeandfair.corla.model.BallotManifestInfo;
+import us.freeandfair.corla.model.County;
+import us.freeandfair.corla.model.CountyQueries;
 
 /**
  * @description <description>
@@ -117,20 +119,27 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
    */
   private BallotManifestInfo extractBMI(final CSVRecord the_line,
                                         final Instant the_timestamp) {
+    BallotManifestInfo result = null;
+    
     try {
-      return Persistence.get(new BallotManifestInfo(the_timestamp, 
-                                                    the_line.get(COUNTY_ID_COLUMN),
-                                                    the_line.get(SCANNER_ID_COLUMN),
-                                                    the_line.get(BATCH_NUMBER_COLUMN),
-                                                    Integer.parseInt(the_line.
-                                                                     get(NUM_BALLOTS_COLUMN)),
-                                                    the_line.get(BATCH_LOCATION_COLUMN)),
-                             BallotManifestInfo.class);
-    } catch (final NumberFormatException e) {
-      return null;
-    } catch (final ArrayIndexOutOfBoundsException e) {
-      return null;
+      // obtain the county from the ID or name in the line
+      final County c = CountyQueries.fromString(the_line.get(COUNTY_ID_COLUMN));
+      if (c != null) {
+        result = 
+            Persistence.get(new BallotManifestInfo(the_timestamp, 
+                                                   c.identifier(),
+                                                   the_line.get(SCANNER_ID_COLUMN),
+                                                   the_line.get(BATCH_NUMBER_COLUMN),
+                                                   Integer.parseInt(the_line.
+                                                                    get(NUM_BALLOTS_COLUMN)),
+                                                   the_line.get(BATCH_LOCATION_COLUMN)),
+                            BallotManifestInfo.class);
+      }
+    } catch (final NumberFormatException | ArrayIndexOutOfBoundsException e) {
+      // return the null result
     }
+    
+    return result;
   }
   
   /**

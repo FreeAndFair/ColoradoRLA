@@ -20,12 +20,15 @@ import java.util.OptionalLong;
 import java.util.stream.Collectors;
 
 import javax.persistence.PersistenceException;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
 
 import org.eclipse.jetty.http.HttpStatus;
 import org.hibernate.Session;
-import org.hibernate.query.Query;
 
 import com.google.gson.JsonSyntaxException;
 
@@ -123,9 +126,12 @@ public class ACVRUpload implements Endpoint {
     try {
       Persistence.beginTransaction();
       final Session s = Persistence.currentSession();
-      final Query<Long> query = 
-          s.createQuery("select count(1) from CastVoteRecord where record_type = '" +
-                        RecordType.AUDITOR_ENTERED + "'", Long.class);
+      final CriteriaBuilder cb = s.getCriteriaBuilder();
+      final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+      final Root<CastVoteRecord> root = cq.from(CastVoteRecord.class);
+      cq.select(cb.count(root)).where(cb.equal(root.get("my_record_type"), 
+                                               RecordType.AUDITOR_ENTERED));
+      final TypedQuery<Long> query = s.createQuery(cq);
       result = OptionalLong.of(query.getSingleResult());
       Persistence.commitTransaction();
     } catch (final PersistenceException e) {
