@@ -94,7 +94,7 @@ public class ACVRDownloadByCounty implements Endpoint {
         }
       }
     } else {
-      status = HttpStatus.BAD_REQUEST_400;
+      status = HttpStatus.NOT_FOUND_404;
       result = "Invalid county ID specified";
     }
     the_response.status(status);
