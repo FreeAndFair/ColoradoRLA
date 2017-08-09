@@ -149,7 +149,7 @@ public final class CVRContestInfoJsonAdapter
           try {
             consensus = ConsensusValue.valueOf(the_reader.nextString());
           } catch (final IllegalArgumentException e) {
-            // ignore
+            // assume undefined consensus, because enum value was invalid
           }
           break;
           
