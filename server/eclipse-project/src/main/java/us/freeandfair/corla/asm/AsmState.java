@@ -11,26 +11,17 @@
 package us.freeandfair.corla.asm;
 
 /**
- * The states of the Colorado RLA Tool.
+ * The states of the Abstract State Machine (ASM) of the Colorado RLA Tool.
  * @trace asm.asm_state
  * @author Joseph R. Kiniry <kiniry@freeandfair.us>
  * @version 0.0.1
  */
-public class AsmStates {
-  /**
-   * We currently never instantiate this class. The class is nothing more than a
-   * container for nested state enumeration classes.
-   */
-  public AsmStates() {
-    assert false;
-    // @ assert false;
-  }
-
+public interface AsmState {
   /**
    * The Department of State Dashboard's states.
+   * @trace asm.department_of_state_dashboard_state
    */
-  // @trace asm.department_of_state_dashboard_state
-  public enum DosDashboardState {
+  enum DosDashboardState implements AsmState {
     INITIAL_STATE,
     AUTHENTICATED,
     RISK_LIMITS_SET,
@@ -45,8 +36,9 @@ public class AsmStates {
   
   /**
    * The County Dashboard's states.
+   * @trace asm.county_dashboard_state
    */
-  public enum CountyDashboardState {
+  enum CountyDashboardState implements AsmState {
     INITIAL_STATE,
     AUTHENTICATED,
     ESTABLE_AUDIT_BOARD_STATE,
@@ -70,8 +62,10 @@ public class AsmStates {
   
   /**
    * The Audit Board Dashboard's states.
+   * @trace asm.audit_board_dashboard_state
    */
-  public enum AuditBoardDashboardState {
+  enum AuditBoardDashboardState implements AsmState {
+    // @review kiniry Is an explicit independent initial state useful?
     INITIAL_STATE,
     AUDIT_IN_PROGRESS_STATE,
     SIGNOFF_INTERMEDIATE_AUDIT_REPORT_STATE,

@@ -2660,6 +2660,17 @@ BEGIN
 %      | arp_s  |      |         |        |      |        |         |     ||
 % ENDTABLE
 
+  asm: TYPE =
+    [# states: set[asm_state],
+       transitions: set[asm_event],
+       transition_function: asm_transition_function,
+       initial_state: asm_state,
+       final_states: set[asm_state] #]
+%  dos_asm: VAR asm =
+%     [# states = department_of_state_dashboard_state,
+%        transitions = department_of_state_dashboard_event
+%        transition_function = dos_dashboard_next_state #]
+
   county_dashboard_state: TYPE = % SUBTYPE asm_state
     { i_s,       % initial_state
       a_s,       % authenticated
@@ -2707,6 +2718,11 @@ BEGIN
 % ...etc...
 % ENDTABLE
 
+%  county_dashboard_asm: VAR asm =
+%     [# states = county_dashboard_state,
+%        transitions = county_dashboard_event
+%        transition_function = county_dashboard_next_state #]
+
   audit_board_dashboard_state: TYPE = % SUBTYPE asm_state
     { i_s,    % initial_state
       aip_s,  % audit_in_progress_state
@@ -2715,7 +2731,7 @@ BEGIN
     }
 
   audit_board_dashboard_event: TYPE = % SUBTYPE asm_event
-    { rm_e,   % remote_markings_event
+    { rm_e,   % report_markings_event
       rbnf_e, % report_ballot_not_found_event
       sair_e, % submit_audit_investigation_report_event
       sar_e,  % submit_audit_report_event
@@ -2738,6 +2754,11 @@ BEGIN
 %      | sair_s |      |        |        |       |        |     ||
 %      | sar_s  |      |        |        |       |        |     ||
 % ENDTABLE
+
+%  audit_board_dashboard_asm: VAR asm =
+%     [# states = audit_board_dashboard_state,
+%        transitions = audit_board_dashboard_event
+%        transition_function = audit_board_dashboard_next_state #]
 
 END asm
 
