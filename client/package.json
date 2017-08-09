@@ -4,7 +4,7 @@
     "description": "Browser-based client to facilitate risk-limiting audits for the State of Colorado.",
     "main": "index.js",
     "scripts": {
-        "build": "webpack",
+        "dist": "./script/dist",
         "lint": "tslint 'src/**/*.{ts,tsx}'",
         "start": "webpack-dev-server",
         "test": "ts-node $(npm bin)/tape '{src,test}/**/*.test.{ts,tsx}' | tap-spec",
