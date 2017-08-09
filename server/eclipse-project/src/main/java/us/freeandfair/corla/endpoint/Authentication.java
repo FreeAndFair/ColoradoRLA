@@ -63,8 +63,8 @@ public final class Authentication {
    * @param the_type The administrator type.
    * @return true if the request is authenticated, false otherwise.
    */
-  public static boolean isAuthenticated(final Request the_request, 
-                                        final AdministratorType the_type) {
+  public static boolean isAuthenticatedAs(final Request the_request, 
+                                          final AdministratorType the_type) {
     boolean result = false;
     final Object admin_attribute = the_request.session().attribute(ADMIN);
     
