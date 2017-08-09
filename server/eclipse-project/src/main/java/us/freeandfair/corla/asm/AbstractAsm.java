@@ -11,6 +11,7 @@
 
 package us.freeandfair.corla.asm;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -114,9 +115,13 @@ public abstract class AbstractAsm {
    * @trace asm.enabled_events
    */
   public Set<AsmEvent> enabledEvents() {
-    //@ assert false;
-    assert false;
-    return null;
+    final Set<AsmEvent> result = new HashSet<AsmEvent>();
+    for (final Pair<AsmState, AsmEvent> p : my_transition_function.keySet()) {
+      if (p.getFirst().equals(my_current_state)) {
+        result.add(p.getSecond());
+      }
+    }
+    return result;
   }
   
   /**
@@ -128,8 +133,12 @@ public abstract class AbstractAsm {
    */
   public AsmState transition(final AsmEvent the_event)
       throws IllegalStateException {
-    //@ assert false;
-    assert false;
-    return null;
+    final Pair<AsmState, AsmEvent> pair = 
+        new Pair<AsmState, AsmEvent>(my_current_state, the_event);
+    if (!my_transition_function.containsKey(pair)) {
+      throw new IllegalStateException("Illegal transition on ASM: (" + 
+        my_current_state + ", " + the_event + ")");
+    }
+    return my_transition_function.get(pair);
   }
 }
