@@ -10,6 +10,7 @@ Most development tasks are exposed as NPM scripts. Available are:
 
 - Run a dev server with Hot Module Reloading: `npm start`
 - Build a distributable stand-alone production bundle: `npm run dist`
+- Typecheck and build a development bundle (for CI): `npm run pack`
 - Run unit tests: `npm test`
 - Watch files and run unit tests on change: `npm run watch`
 - Lint with TSLint: `npm run lint`

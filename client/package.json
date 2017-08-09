@@ -6,6 +6,7 @@
     "scripts": {
         "dist": "./script/dist",
         "lint": "tslint 'src/**/*.{ts,tsx}'",
+        "pack": "webpack",
         "start": "webpack-dev-server",
         "test": "ts-node $(npm bin)/tape '{src,test}/**/*.test.{ts,tsx}' | tap-spec",
         "watch": "ts-node $(npm bin)/tape-watch '{src,test}/**/*.test.{ts,tsx}' | tap-spec"
