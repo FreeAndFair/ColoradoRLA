@@ -114,7 +114,7 @@ public class ACVRDownload implements Endpoint {
         Persistence.rollbackTransaction();
       }
     } catch (final PersistenceException e) {
-      Main.LOGGER.error("Exception when reading ballot manifests from database: " + e);
+      Main.LOGGER.error("Exception when reading ACVRs from database: " + e);
     }
 
     return result;
