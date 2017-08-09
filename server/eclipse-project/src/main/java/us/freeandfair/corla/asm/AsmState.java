@@ -74,4 +74,11 @@ public interface AsmState {
     INTERMEDIATE_AUDIT_REPORT_SUBMITTED_STATE,
     AUDIT_REPORT_SUBMITTED_STATE
   }
+  
+  /**
+   * The RLA Tool's states that are independent of the component ASMs. 
+   */
+  enum RlaToolState implements AsmState {
+    RLA_TOOL_INITIAL_STATE
+  }
 }

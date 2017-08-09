@@ -64,4 +64,12 @@ public interface AsmEvent {
     AUDIT_SKIP_EVENT, // private internal event
     AUDIT_REFRESH_EVENT // private internal event
   }
+  
+  /**
+   * The RLA Tool's events.
+   * @trace asm.rla_tool_event
+   */
+  enum RlaToolEvent implements AsmEvent {
+    RLA_TOOL_SKIP_EVENT // private internal event
+  }
 }

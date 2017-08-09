@@ -14,9 +14,11 @@ package us.freeandfair.corla.asm;
 import static us.freeandfair.corla.asm.AsmEvent.AuditBoardDashboardEvent.*;
 import static us.freeandfair.corla.asm.AsmEvent.CountyDashboardEvent.*;
 import static us.freeandfair.corla.asm.AsmEvent.DosDashboardEvent.*;
+import static us.freeandfair.corla.asm.AsmEvent.RlaToolEvent.*;
 import static us.freeandfair.corla.asm.AsmState.AuditBoardDashboardState.*;
 import static us.freeandfair.corla.asm.AsmState.CountyDashboardState.*;
 import static us.freeandfair.corla.asm.AsmState.DosDashboardState.*;
+import static us.freeandfair.corla.asm.AsmState.RlaToolState.*;
 
 import us.freeandfair.corla.util.Pair;
 
@@ -244,6 +246,61 @@ public interface AsmTransitions {
      */
     AuditBoardDashboardTransitions(final Pair<AsmState, AsmEvent> the_pair,
                                    final AsmState the_state) {
+      my_pair = new Pair<Pair<AsmState, AsmEvent>, AsmState>(the_pair, the_state);
+    }
+  }
+  
+  /**
+   * The RLA Tools transition function.
+   * @trace asm.rla_tool_asm
+   */
+  enum RlaTransitions implements AsmTransitions {
+    ONE(new Pair<AsmState, AsmEvent>(RLA_TOOL_INITIAL_STATE, 
+        RLA_TOOL_SKIP_EVENT),
+        DOS_INITIAL_STATE),
+    TWO(new Pair<AsmState, AsmEvent>(DOS_INITIAL_STATE, 
+        RLA_TOOL_SKIP_EVENT),
+        DOS_AUDIT_ONGOING),
+    THREE(new Pair<AsmState, AsmEvent>(DOS_AUDIT_ONGOING, 
+        RLA_TOOL_SKIP_EVENT),
+        COUNTY_INITIAL_STATE),
+    FOUR(new Pair<AsmState, AsmEvent>(COUNTY_INITIAL_STATE, 
+        RLA_TOOL_SKIP_EVENT),
+        UPLOAD_BALLOT_MANIFEST_TOO_LATE),
+    FIVE(new Pair<AsmState, AsmEvent>(COUNTY_INITIAL_STATE, 
+        RLA_TOOL_SKIP_EVENT),
+        UPLOAD_CVRS_TOO_LATE),
+    SIX(new Pair<AsmState, AsmEvent>(COUNTY_INITIAL_STATE, 
+        RLA_TOOL_SKIP_EVENT),
+        COUNTY_AUDIT_UNDERWAY),
+    SEVEN(new Pair<AsmState, AsmEvent>(COUNTY_AUDIT_UNDERWAY, 
+        RLA_TOOL_SKIP_EVENT),
+        AUDIT_INITIAL_STATE),
+    EIGHT(new Pair<AsmState, AsmEvent>(AUDIT_INITIAL_STATE, 
+        RLA_TOOL_SKIP_EVENT),
+        AUDIT_REPORT_SUBMITTED_STATE),
+    NINE(new Pair<AsmState, AsmEvent>(AUDIT_REPORT_SUBMITTED_STATE, 
+        RLA_TOOL_SKIP_EVENT),
+         COUNTY_AUDIT_COMPLETE),
+    TEN(new Pair<AsmState, AsmEvent>(COUNTY_AUDIT_COMPLETE, 
+        RLA_TOOL_SKIP_EVENT),
+        DOS_AUDIT_COMPLETE),
+    ELEVEN(new Pair<AsmState, AsmEvent>(DOS_AUDIT_COMPLETE, 
+        RLA_TOOL_SKIP_EVENT),
+        AUDIT_RESULTS_PUBLISHED);
+
+    /**
+     * The pair holding a single transition.
+     */
+    protected final Pair<Pair<AsmState, AsmEvent>, AsmState> my_pair;
+
+    /**
+     * Create a transition.
+     * @param the_pair the (current state, event) pair.
+     * @param the_state the state transitioned to when the pair is witnessed.
+     */
+    RlaTransitions(final Pair<AsmState, AsmEvent> the_pair,
+                   final AsmState the_state) {
       my_pair = new Pair<Pair<AsmState, AsmEvent>, AsmState>(the_pair, the_state);
     }
   }
