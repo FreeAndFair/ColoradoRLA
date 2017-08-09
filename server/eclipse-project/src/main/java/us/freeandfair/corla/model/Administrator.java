@@ -38,7 +38,7 @@ public class Administrator extends AbstractEntity {
   /**
    * The username.
    */
-  @Column(nullable = false, updatable = false)
+  @Column(unique = true, nullable = false, updatable = false)
   private String my_username;
   
   /**
