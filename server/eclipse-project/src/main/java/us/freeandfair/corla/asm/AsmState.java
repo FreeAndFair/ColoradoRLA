@@ -28,6 +28,7 @@ public interface AsmState {
     CONTESTS_TO_AUDIT_IDENTIFIED,
     RANDOM_SEED_PUBLISHED,
     BALLOT_ORDER_DEFINED,
+    // @todo kiniry This state is probably unnecessary.
     AUDIT_READY_TO_START,
     AUDIT_ONGOING,
     AUDIT_COMPLETE,

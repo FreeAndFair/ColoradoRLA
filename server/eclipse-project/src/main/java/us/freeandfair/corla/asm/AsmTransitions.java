@@ -23,10 +23,58 @@ public interface AsmTransitions {
    * @trace asm.dos_dashboard_next_state
    */
   enum DosDashboardTransitions implements AsmTransitions {
-    ONE(new Pair<AsmState, AsmEvent>(AsmState.DosDashboardState.INITIAL_STATE, 
-        AsmEvent.DosDashboardEvent.AUTHENTICATE_STATE_ADMINISTRATOR_EVENT),
-        AsmState.DosDashboardState.AUTHENTICATED);
-    // @todo kiniry Add all remaining transitions.
+    AUTHENTICATE(
+      new Pair<AsmState, AsmEvent>(AsmState.DosDashboardState.INITIAL_STATE, 
+      AsmEvent.DosDashboardEvent.AUTHENTICATE_STATE_ADMINISTRATOR_EVENT),
+      AsmState.DosDashboardState.AUTHENTICATED),
+    SET_RISK_LIMIT(
+      new Pair<AsmState, AsmEvent>(AsmState.DosDashboardState.AUTHENTICATED, 
+      AsmEvent.DosDashboardEvent.ESTABLISH_RISK_LIMIT_FOR_COMPARISON_AUDITS_EVENT),
+      AsmState.DosDashboardState.RISK_LIMITS_SET),
+    CONTESTS_SELECTED(
+      new Pair<AsmState, AsmEvent>(AsmState.DosDashboardState.RISK_LIMITS_SET, 
+      AsmEvent.DosDashboardEvent.SELECT_CONTESTS_FOR_COMPARISON_AUDIT_EVENT),
+      AsmState.DosDashboardState.CONTESTS_TO_AUDIT_IDENTIFIED),
+    RANDOM_SEED(
+      new Pair<AsmState, AsmEvent>(AsmState.DosDashboardState.CONTESTS_TO_AUDIT_IDENTIFIED, 
+      AsmEvent.DosDashboardEvent.PUBLIC_SEED_EVENT),
+      AsmState.DosDashboardState.RANDOM_SEED_PUBLISHED),
+    PUBLISH_BALLOTS_TO_AUDIT(
+      new Pair<AsmState, AsmEvent>(AsmState.DosDashboardState.RANDOM_SEED_PUBLISHED, 
+      AsmEvent.DosDashboardEvent.PUBLISH_BALLOTS_TO_AUDIT_EVENT),
+      AsmState.DosDashboardState.BALLOT_ORDER_DEFINED),
+    AUDIT_READY(
+      new Pair<AsmState, AsmEvent>(AsmState.DosDashboardState.BALLOT_ORDER_DEFINED, 
+      AsmEvent.DosDashboardEvent.SKIP_EVENT),
+      AsmState.DosDashboardState.AUDIT_READY_TO_START),
+    AUDIT_START(
+      new Pair<AsmState, AsmEvent>(AsmState.DosDashboardState.AUDIT_READY_TO_START, 
+      AsmEvent.DosDashboardEvent.AUDIT_EVENT),
+      AsmState.DosDashboardState.AUDIT_ONGOING),
+    AUDIT_CONTINUES(
+      new Pair<AsmState, AsmEvent>(AsmState.DosDashboardState.AUDIT_ONGOING, 
+      AsmEvent.DosDashboardEvent.AUDIT_EVENT),
+      AsmState.DosDashboardState.AUDIT_ONGOING),
+    HAND_CONTEST_INIT(
+      new Pair<AsmState, AsmEvent>(AsmState.DosDashboardState.AUDIT_READY_TO_START, 
+      AsmEvent.DosDashboardEvent.INDICATE_FULL_HAND_COUNT_CONTEST_EVENT),
+      AsmState.DosDashboardState.AUDIT_READY_TO_START),
+    HAND_CONTEST_CONT(
+      new Pair<AsmState, AsmEvent>(AsmState.DosDashboardState.AUDIT_ONGOING, 
+      AsmEvent.DosDashboardEvent.INDICATE_FULL_HAND_COUNT_CONTEST_EVENT),
+      AsmState.DosDashboardState.AUDIT_ONGOING),
+    COUNTY_COMPLETE(
+      new Pair<AsmState, AsmEvent>(AsmState.DosDashboardState.AUDIT_ONGOING, 
+      AsmEvent.DosDashboardEvent.COUNTY_AUDIT_COMPLETE_EVENT),
+      AsmState.DosDashboardState.AUDIT_ONGOING),
+    AUDIT_COMPLETE(
+       new Pair<AsmState, AsmEvent>(AsmState.DosDashboardState.AUDIT_COMPLETE, 
+       AsmEvent.DosDashboardEvent.PUBLISH_AUDIT_REPORT_EVENT),
+       AsmState.DosDashboardState.AUDIT_RESULTS_PUBLISHED),
+    REFRESH(
+       new Pair<AsmState, AsmEvent>(AsmState.DosDashboardState.AUDIT_ONGOING, 
+       AsmEvent.DosDashboardEvent.REFRESH_EVENT),
+       AsmState.DosDashboardState.AUDIT_ONGOING);
     
     /**
      * The pair holding a single transition.
@@ -75,10 +123,38 @@ public interface AsmTransitions {
    * @trace asm.audit_board_dashboard_next_state
    */
   enum AuditBoardDashboardTransitions implements AsmTransitions {
-    ONE(new Pair<AsmState, AsmEvent>(AsmState.AuditBoardDashboardState.INITIAL_STATE, 
+    START(
+        new Pair<AsmState, AsmEvent>(AsmState.AuditBoardDashboardState.INITIAL_STATE, 
+        AsmEvent.AuditBoardDashboardEvent.SKIP_EVENT),
+        AsmState.AuditBoardDashboardState.AUDIT_IN_PROGRESS_STATE),
+    REPORT_MARKING(
+        new Pair<AsmState, AsmEvent>(AsmState.AuditBoardDashboardState.AUDIT_IN_PROGRESS_STATE, 
         AsmEvent.AuditBoardDashboardEvent.REPORT_MARKINGS_EVENT),
+        AsmState.AuditBoardDashboardState.AUDIT_IN_PROGRESS_STATE),
+    REPORT_BNF(
+        new Pair<AsmState, AsmEvent>(AsmState.AuditBoardDashboardState.AUDIT_IN_PROGRESS_STATE, 
+        AsmEvent.AuditBoardDashboardEvent.REPORT_BALLOT_NOT_FOUND_EVENT),
+        AsmState.AuditBoardDashboardState.AUDIT_IN_PROGRESS_STATE),
+    SUBMIT_AIR(
+        new Pair<AsmState, AsmEvent>(AsmState.AuditBoardDashboardState.AUDIT_IN_PROGRESS_STATE, 
+        AsmEvent.AuditBoardDashboardEvent.SUBMIT_AUDIT_INVESTIGATION_REPORT_EVENT),
+        AsmState.AuditBoardDashboardState.AUDIT_IN_PROGRESS_STATE),
+    SUBMIT_AR(
+        new Pair<AsmState, AsmEvent>(AsmState.AuditBoardDashboardState.AUDIT_IN_PROGRESS_STATE, 
+        AsmEvent.AuditBoardDashboardEvent.SUBMIT_AUDIT_REPORT_EVENT),
+        AsmState.AuditBoardDashboardState.SUBMIT_AUDIT_REPORT_STATE),
+    SUBMIT_IAR(
+        new Pair<AsmState, AsmEvent>(AsmState.AuditBoardDashboardState.AUDIT_IN_PROGRESS_STATE, 
+        AsmEvent.AuditBoardDashboardEvent.SUBMIT_INTERMEDIATE_AUDIT_REPORT_EVENT),
+        AsmState.AuditBoardDashboardState.SIGNOFF_INTERMEDIATE_AUDIT_REPORT_STATE),
+    RESTART(
+        new Pair<AsmState, AsmEvent>(AsmState.AuditBoardDashboardState.SIGNOFF_INTERMEDIATE_AUDIT_REPORT_STATE,
+        AsmEvent.AuditBoardDashboardEvent.SKIP_EVENT),
+        AsmState.AuditBoardDashboardState.AUDIT_IN_PROGRESS_STATE),
+    REFRESH(
+        new Pair<AsmState, AsmEvent>(AsmState.AuditBoardDashboardState.AUDIT_IN_PROGRESS_STATE, 
+        AsmEvent.AuditBoardDashboardEvent.REFRESH_EVENT),
         AsmState.AuditBoardDashboardState.AUDIT_IN_PROGRESS_STATE);
-    // @todo kiniry Add all remaining transitions.
     
     /**
      * The pair holding a single transition.
