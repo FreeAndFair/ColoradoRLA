@@ -41,6 +41,7 @@ import spark.Service;
 import us.freeandfair.corla.endpoint.Endpoint;
 import us.freeandfair.corla.gson.FreeAndFairNamingStrategy;
 import us.freeandfair.corla.hibernate.Persistence;
+import us.freeandfair.corla.model.Administrator;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyQueries;
@@ -265,11 +266,13 @@ public final class Main {
           final String name = properties.getProperty(s);
           County county = CountyQueries.byID(id);
           if (county == null) {
-            county = new County(name, id, new HashSet<Contest>());
+            county = 
+                new County(name, id, new HashSet<Contest>(), new HashSet<Administrator>());
           } else if (!county.name().equals(name)) {
             // update the county's name while preserving the rest of its info
             Main.LOGGER.info("Updating " + county.name() + " county name to " + name);
-            final County new_county = new County(name, id, county.contests());
+            final County new_county = 
+                new County(name, id, county.contests(), county.administrators());
             new_county.setID(county.id());
             county = new_county;
           }

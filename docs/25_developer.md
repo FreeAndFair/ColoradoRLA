@@ -7,7 +7,7 @@ This document is for developers interested in contributing to this
 project. It describes the technologies used, the modules and
 libraries on which we depend, and how to build the system. It also
 covers how to perform quality assurance, validation, verification, and
-deployment of the system. 
+deployment of the system.
 
 Determining if the system is correct includes both checking behavioral
 properties and non-behavioral properties. Behavioral properties are
@@ -35,7 +35,7 @@ design and standard, well-understood web application technologies.
 
 We are using a Java-based web application running on a Linux server,
 hosted in the CDOS data center. Deployment is targeted for a JVM version
-that supports Java 8. 
+that supports Java 8.
 
 The choice of deployment on JVM is made due to IT constraints on the
 part of CDOS. (See page 11, "Hosting Environment", of the DQ.)  While
@@ -188,13 +188,18 @@ In order to use the Postgres database in development, one must:
    postgres, or whatever is appropriate) and start it running.
 2. Create a database called "corla", and grant all privileges on it to
    a user called "corla" with password "corla".
-   
+3. Initialize the "corla" database with test administrator data.
 For example, to accomplish the above on OS X using brew, one issues
 the following commands:
 ```brew install postgres
    createuser -P corla
    createdb -O corla corla```
-   
+4. Run the server (to create all the database tables).
+5. Load test authentication credentials into the database, by executing
+the SQL in the `corla-test-credentials.sql`. This can be done with the
+following command:
+```psql -U corla -d corla -a -f corla-test-credentials.sql```
+
 That's it. If the database is there the server will use it and will,
 at this stage, create all its tables and such automatically.
 
@@ -463,4 +468,3 @@ Bibliography
 ------------
 
 *TBD add references to appropriate papers*
-

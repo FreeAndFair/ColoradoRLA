@@ -17,12 +17,10 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -354,13 +352,8 @@ public class DominionCVRExportParser implements CVRExportParser {
     
     if (my_parse_success) {
       // add the contests to the county we're working with  
-      final Set<Contest> new_contest_set = new HashSet<Contest>(my_county.contests());
-      new_contest_set.addAll(my_contests);
-      final County new_county = new County(my_county.name(), my_county.identifier(), 
-                                           new_contest_set);
-      new_county.setID(my_county.id());
-      Persistence.saveOrUpdate(new_county);
-      
+      my_county.contests().addAll(my_contests);
+      Persistence.saveOrUpdate(my_county);
     } else {
       abort();
     }
