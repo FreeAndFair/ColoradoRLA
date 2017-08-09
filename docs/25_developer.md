@@ -191,14 +191,18 @@ In order to use the Postgres database in development, one must:
 3. Initialize the "corla" database with test administrator data.
 For example, to accomplish the above on OS X using brew, one issues
 the following commands:
-```brew install postgres
-   createuser -P corla
-   createdb -O corla corla```
+```
+brew install postgres
+createuser -P corla
+createdb -O corla corla
+```
 4. Run the server (to create all the database tables).
 5. Load test authentication credentials into the database, by executing
-the SQL in the `corla-test-credentials.sql`. This can be done with the
-following command:
-```psql -U corla -d corla -a -f corla-test-credentials.sql```
+the SQL in `corla-test-credentials.sql` (found in the `test` directory
+of the repository). This can be done with the following command:
+```
+psql -U corla -d corla -a -f corla-test-credentials.sql
+```
 
 That's it. If the database is there the server will use it and will,
 at this stage, create all its tables and such automatically.
