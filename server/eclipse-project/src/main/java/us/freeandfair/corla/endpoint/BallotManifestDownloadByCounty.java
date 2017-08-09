@@ -102,7 +102,7 @@ public class BallotManifestDownloadByCounty implements Endpoint {
   
   /**
    * Validates the parameters of a request. For this endpoint, 
-   * the paramter names must all be integers.
+   * the parameter names must all be integers.
    * 
    * @param the_request The request.
    * @return true if the parameters are valid, false otherwise.
