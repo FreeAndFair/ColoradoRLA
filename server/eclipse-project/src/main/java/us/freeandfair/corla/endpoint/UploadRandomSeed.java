@@ -76,9 +76,8 @@ public class UploadRandomSeed implements Endpoint {
 
       if (DepartmentOfStateDashboard.isValidSeed(random_seed)) {
         final DepartmentOfStateDashboard dosd = DepartmentOfStateDashboardQueries.get();
-        if (dosd != null && dosd.auditStage() == AuditStage.RISK_LIMITS_SET) {
+        if (dosd != null && dosd.auditStage() == AuditStage.PRE_AUDIT) {
           dosd.setRandomSeed(random_seed);
-          dosd.setAuditStage(AuditStage.RANDOM_SEED_PUBLISHED);
           try {
             Persistence.saveOrUpdate(dosd);
             Main.LOGGER.info("random seed set to " + random_seed);
