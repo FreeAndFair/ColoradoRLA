@@ -2664,24 +2664,24 @@ BEGIN
       caa_s,     % county_administrator_authenticated
       abe_s,     % audit_board_established_state
 %%% \todokiniry{Discuss upload\_system\_message.}
-      bm_tl_s,   % county_upload_verified_ballot_manifest: too_late
-      bm_dti_s,  % county_upload_verified_ballot_manifest: data_transmission_interrupted
-      bm_us_s,   % county_upload_verified_ballot_manifest: upload_sucessful
-      bm_ch_s,   % county_upload_verified_ballot_manifest: checking_hash
-      bm_hw_s,   % county_upload_verified_ballot_manifest: hash_wrong
-      bm_hv_s,   % county_upload_verified_ballot_manifest: hash_verified
-      bm_pd_s,   % county_upload_verified_ballot_manifest: parsing_data
-      bm_ftw_s,  % county_upload_verified_ballot_manifest: file_type_wrong
-      bm_dp_s,   % county_upload_verified_ballot_manifest: data_parsed
-      cvr_tl_s,  % upload_verified_cvrs: too_late
-      cvr_dti_s, % upload_verified_cvrs: data_transmission_interrupted
-      cvr_us_s,  % upload_verified_cvrs: upload_sucessful
-      cvr_ch_s,  % upload_verified_cvrs: checking_hash
-      cvr_hw_s,  % upload_verified_cvrs: hash_wrong
-      cvr_hv_s,  % upload_verified_cvrs: hash_verified
-      cvr_pd_s,  % upload_verified_cvrs: parsing_data
-      cvr_ftw_s, % upload_verified_cvrs: file_type_wrong
-      cvr_dp_s,  % upload_verified_cvrs: data_parsed
+      bm_tl_s,   % upload_ballot_manifest: too_late
+      bm_dti_s,  % upload_ballot_manifest: data_transmission_interrupted
+      bm_us_s,   % upload_ballot_manifest: upload_sucessful
+      bm_ch_s,   % upload_ballot_manifest: checking_hash
+      bm_hw_s,   % upload_ballot_manifest: hash_wrong
+      bm_hv_s,   % upload_ballot_manifest: hash_verified
+      bm_pd_s,   % upload_ballot_manifest: parsing_data
+      bm_ftw_s,  % upload_ballot_manifest: file_type_wrong
+      bm_dp_s,   % upload_ballot_manifest: data_parsed
+      cvr_tl_s,  % upload_cvrs: too_late
+      cvr_dti_s, % upload_cvrs: data_transmission_interrupted
+      cvr_us_s,  % upload_cvrs: upload_sucessful
+      cvr_ch_s,  % upload_cvrs: checking_hash
+      cvr_hw_s,  % upload_cvrs: hash_wrong
+      cvr_hv_s,  % upload_cvrs: hash_verified
+      cvr_pd_s,  % upload_cvrs: parsing_data
+      cvr_ftw_s, % upload_cvrs: file_type_wrong
+      cvr_dp_s,  % upload_cvrs: data_parsed
       cau_s,     % county_audit_underway
       cac_s      % county_audit_complete
     }
@@ -2689,8 +2689,8 @@ BEGIN
   county_dashboard_event: TYPE = % SUBTYPE asm_event
     { aca_e,     % 1. authenticate_county_administrator_event
       eab_e,     % 2. establish_audit_board_event
-      cuvbm_e,   % 3. 4. 5. 7. county_upload_verified_ballot_manifest_event
-      uvc_e,     % 16. 17. 19. 21. upload_verified_cvrs_event
+      cuvbm_e,   % 3. 4. 5. 7. county_upload_ballot_manifest_event
+      uvc_e,     % 16. 17. 19. 21. upload_cvrs_event
       sa_e,      % 29. start_audit_event
       r_e,       % 30. refresh_event
       s_e,       % 1. 6. 8. 9. 10. 11. 12. 13. 14. 15. 18. 20. skip_event
@@ -2793,21 +2793,36 @@ BEGIN
   }
   json_type: TYPE = {
     NOTHING,
-    AUTHENTICATE
+    AUTHENTICATE,
+    UPLOAD_RESPONSE
   }
-  AUTHENTICATE_PARAMS: list[string] =
-    (: "USERNAME", "PASSWORD", "SECOND_FACTOR" :)
+  http_inbound_spec: TYPE = list[string]
+  empty_request: http_inbound_spec = null
+  authenticate_params: http_inbound_spec =
+    (: "username", "password", "second_factor" :)
+  risk_limit_params: http_inbound_spec =
+    (: "risk_limit" :)
+  random_seed_params: http_inbound_spec =
+    (: "seed" :)
+  cvr_parts: http_inbound_spec =
+    (: "cvr_file", "county", "hash" :)
+  acvr_parts: http_inbound_spec =
+    (: "audit_cvr" :)
+  ballot_manifest_parts: http_inbound_spec =
+    (: "bmi_file", "county", "hash" :)
   http_response_code: TYPE = {
     OK_200,
     BAD_REQUEST_400,
-    UNAUTHORIZED_401
+    UNAUTHORIZED_401,
+    UNPROCESSABLE_ENTITY_422
   }
   endpoint_type: TYPE = { GET, POST, PUT }
   server_endpoint: TYPE =
     [# endpoint_type: endpoint_type,
        callback: [dashboard -> dashboard],
        uri: string,
-       in_stream: json_type,
+       implementation_class: string,
+       in_stream: http_inbound_spec,
        out_stream: set[[http_response_code, json_type]],
        dos_event: department_of_state_dashboard_event,
        county_event: county_dashboard_event,
@@ -2821,39 +2836,32 @@ BEGIN
     (# endpoint_type := GET,
        callback := undefined_callback,
        uri := "/",
-       in_stream := NOTHING,
+       implementation_class := "Root",
+       in_stream := empty_request,
        out_stream := singleton((OK_200, NOTHING)),
        dos_event := s_e,
        county_event := n_e,
        audit_event := n_e
      #)
+%%% \subsection{Department of State Dashboard Endpoints}
   auth_state_admin: server_endpoint =
     (# endpoint_type := POST,
        callback := undefined_callback,
        uri := "/auth-state-admin",
-       in_stream := NOTHING,
+       implementation_class := "AuthenticateStateAdministrator",
+       in_stream := authenticate_params,
        out_stream := add((UNAUTHORIZED_401, NOTHING),
                          singleton((OK_200, NOTHING))),
        dos_event := asa_e,
        county_event := n_e,
        audit_event := n_e
      #)
-  auth_county_admin: server_endpoint =
-    (# endpoint_type := POST,
-       callback := undefined_callback,
-       uri := "/auth-county-admin",
-       in_stream := NOTHING,
-       out_stream := add((UNAUTHORIZED_401, NOTHING),
-                         singleton((OK_200, NOTHING))),
-       dos_event := n_e,
-       county_event := aca_e,
-       audit_event := n_e
-     #)
   risk_limit: server_endpoint =
     (# endpoint_type := POST,
        callback := undefined_callback,
        uri := "/risk-limit-comp-audits",
-       in_stream := NOTHING,
+       implementation_class := "EstablishRiskLimitForComparisonAudits",
+       in_stream := risk_limit_params,
        out_stream := add((BAD_REQUEST_400, NOTHING),
                      add((UNAUTHORIZED_401, NOTHING),
                          singleton((OK_200, NOTHING)))),
@@ -2861,6 +2869,73 @@ BEGIN
        county_event := n_e,
        audit_event := n_e
      #)
+  publish_seed: server_endpoint =
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/random-seed", % placeholder
+       implementation_class := "UploadSeed", % placeholder
+       in_stream := random_seed_params,
+       out_stream := add((BAD_REQUEST_400, NOTHING),
+                     add((UNAUTHORIZED_401, NOTHING),
+                         singleton((OK_200, NOTHING)))),
+       dos_event := ps_e,
+       county_event := n_e,
+       audit_event := n_e
+     #)
+%%% \subsection{County Dashboard Endpoints}
+  auth_county_admin: server_endpoint =
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/auth-county-admin",
+       implementation_class := "AuthenticateCountyAdministrator",
+       in_stream := authenticate_params,
+       out_stream := add((UNAUTHORIZED_401, NOTHING),
+                         singleton((OK_200, NOTHING))),
+       dos_event := n_e,
+       county_event := aca_e,
+       audit_event := n_e
+     #)
+  ballot_manifest_upload: server_endpoint =
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/upload-ballot-manifest",
+       implementation_class := "BallotManifestUpload",
+       in_stream := empty_request,
+       out_stream := add((BAD_REQUEST_400, UPLOAD_RESPONSE),
+                     add((UNAUTHORIZED_401, NOTHING),
+                         singleton((OK_200, UPLOAD_RESPONSE)))),
+       dos_event := n_e,
+       county_event := cuvbm_e,
+       audit_event := n_e
+     #)
+  cvr_export_upload: server_endpoint =
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/upload-cvr-export",
+       implementation_class := "CVRExportUpload",
+       in_stream := cvr_parts,
+       out_stream := add((UNPROCESSABLE_ENTITY_422, UPLOAD_RESPONSE),
+                     add((UNAUTHORIZED_401, NOTHING),
+                         singleton((OK_200, UPLOAD_RESPONSE)))),
+       dos_event := n_e,
+       county_event := uvc_e,
+       audit_event := n_e
+     #)
+%%% \subsection{Audit Board Dashboard Endpoints}
+  acvr_upload: server_endpoint =
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/upload-audit-cvr",
+       implementation_class := "ACVRUpload",
+       in_stream := acvr_parts,
+       out_stream := add((UNPROCESSABLE_ENTITY_422, UPLOAD_RESPONSE),
+                     add((UNAUTHORIZED_401, NOTHING),
+                         singleton((OK_200, UPLOAD_RESPONSE)))),
+       dos_event := n_e,
+       county_event := n_e,
+       audit_event := rm_e
+     #)
+%%% \todokiniry{Explain these relations and their use.}
   ui_to_asm_event_relation: pred[[ui_event, asm_event]]
   asm_event_to_endpoint_relation: pred[[asm_event, server_endpoint]]
 END endpoints
