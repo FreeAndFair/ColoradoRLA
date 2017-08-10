@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.stream.Stream;
 
 import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
@@ -39,6 +40,7 @@ import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Environment;
 import org.hibernate.criterion.Example;
+import org.hibernate.query.Query;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.util.Pair;
@@ -49,6 +51,8 @@ import us.freeandfair.corla.util.Pair;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
+// we actually do need all these imports to run the persistence subsystem
+@SuppressWarnings("PMD.ExcessiveImports")
 public final class Persistence {
   /**
    * The path to the resource containing the list of entity classes.
@@ -460,7 +464,7 @@ public final class Persistence {
   // checked casts
   @SuppressWarnings("unchecked")
   public static <T extends PersistentEntity> T get(final T the_object, 
-                                         final Class<T> the_class) 
+                                                   final Class<T> the_class) 
       throws PersistenceException {
     if (hasDB()) {
       T result = the_object;
@@ -575,7 +579,51 @@ public final class Persistence {
           }
         }
       } catch (final PersistenceException e) {
-        Main.LOGGER.error("could not query database for county");
+        Main.LOGGER.error("could not query database");
+      }
+    } else {
+      throw new PersistenceException(NO_DATABASE);
+    }
+    
+    return result;
+  }
+  
+  /**
+   * Gets a stream of all the entities of the specified class. This method 
+   * <em>must</em> be called from within a transaction, and the result stream 
+   * must be used within the same transaction.
+   * 
+   * @param the_class The class.
+   * @return a stream containing all the entities of the_class, or null if
+   * one could not be acquired.
+   * @exception PersistenceException if the database isn't running.
+   * @exception IllegalStateException if no transaction is running.
+   */
+  public static <T extends PersistentEntity> Stream<T> 
+      getAllAsStream(final Class<T> the_class) throws PersistenceException {
+    if (!isTransactionRunning()) {
+      throw new IllegalStateException("no running transaction");
+    }
+   
+    Stream<T> result = null;
+    
+    if (hasDB()) {
+      try {
+        final Session s = Persistence.currentSession();
+        final CriteriaBuilder cb = s.getCriteriaBuilder();
+        final CriteriaQuery<T> cq = cb.createQuery(the_class);
+        final Root<T> root = cq.from(the_class);
+        cq.select(root);
+        final TypedQuery<T> query = s.createQuery(cq);
+        if (query instanceof Query) {
+          result = ((Query<T>) query).stream();
+        } else {
+          // this ought to never happen, but if it does we fall back to (gulp)
+          // streaming from memory
+          result = query.getResultList().stream();
+        }
+      } catch (final PersistenceException e) {
+        Main.LOGGER.error("could not query database");
       }
     } else {
       throw new PersistenceException(NO_DATABASE);
