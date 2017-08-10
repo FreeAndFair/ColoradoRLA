@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -87,7 +88,11 @@ public class CVRContestInfo extends AbstractEntity implements Serializable {
   // were a list of Choice, then the mapping between contests and choices would
   // need to be more complex
   @ElementCollection(fetch = FetchType.EAGER)
+  @CollectionTable(name = "cvr_contest_info_choice",
+                   joinColumns = @JoinColumn(name = "cvr_contest_info_id", 
+                                             referencedColumnName = "my_id"))
   @OrderColumn(name = "index")
+  @Column(name = "choice")
   private List<String> my_choices;
 
   /**
