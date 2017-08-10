@@ -64,7 +64,11 @@ public final class ContestToAuditJsonAdapter
       throws IOException {
     the_writer.beginObject();
     the_writer.name(CONTEST).value(the_contest.contest().id());
+<<<<<<< HEAD
     the_writer.name(AUDIT).value(the_contest.audit().toString());
+=======
+    the_writer.name(AUDIT).value(the_contest.auditType().toString());
+>>>>>>> Adding the endpoint for selecting contests to audit.
     if (the_contest.reason() != null) {
       the_writer.name(REASON).value(the_contest.reason().toString());
     }
@@ -72,6 +76,7 @@ public final class ContestToAuditJsonAdapter
   }
   
   /**
+<<<<<<< HEAD
    * Checks the sanity of a contest to audit.
    * 
    * @param the_id The contest ID.
@@ -95,6 +100,8 @@ public final class ContestToAuditJsonAdapter
   }
   
   /**
+=======
+>>>>>>> Adding the endpoint for selecting contests to audit.
    * Reads a contest to audit object.
    * 
    * @param the_reader The JSON reader.
@@ -104,7 +111,11 @@ public final class ContestToAuditJsonAdapter
   public ContestToAudit read(final JsonReader the_reader) 
       throws IOException {
     boolean error = false;
+<<<<<<< HEAD
     Long contest_id = null;
+=======
+    long contest_id = -1;
+>>>>>>> Adding the endpoint for selecting contests to audit.
     AuditReason reason = null;
     AuditType type = null;
     
@@ -141,7 +152,11 @@ public final class ContestToAuditJsonAdapter
     
     // check that the contest exists
     
+<<<<<<< HEAD
     final Contest contest = sanityCheck(contest_id, reason, type);
+=======
+    final Contest contest = Persistence.getByID(contest_id, Contest.class);
+>>>>>>> Adding the endpoint for selecting contests to audit.
         
     if (error || contest == null) {
       throw new JsonSyntaxException("invalid data detected in contest to audit");
