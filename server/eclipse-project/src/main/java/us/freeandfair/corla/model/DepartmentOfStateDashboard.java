@@ -53,6 +53,11 @@ public class DepartmentOfStateDashboard extends AbstractEntity implements Serial
       new BigInteger("9999999999999999999");
   
   /**
+   * The random seed precision for the database. 
+   */
+  public static final int RANDOM_SEED_PRECISION = 100;
+  
+  /**
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1; 
@@ -82,6 +87,7 @@ public class DepartmentOfStateDashboard extends AbstractEntity implements Serial
   @CollectionTable(name = "dos_dashboard_hand_count_contest",
                    joinColumns = @JoinColumn(name = "dos_dashboard_id", 
                                              referencedColumnName = "my_id"))
+  @Column(name = "contest_id")
   private Set<Contest> my_hand_count_contests = 
       new HashSet<Contest>();
   
@@ -93,6 +99,7 @@ public class DepartmentOfStateDashboard extends AbstractEntity implements Serial
   /**
    * The random seed.
    */
+  @Column(precision = RANDOM_SEED_PRECISION)
   private BigInteger my_random_seed;
   
   /**
