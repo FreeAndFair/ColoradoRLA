@@ -15,10 +15,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import us.freeandfair.corla.asm.UiToAsmEventRelation.UiEvent;
+import us.freeandfair.corla.endpoint.BallotManifestUpload;
 import us.freeandfair.corla.endpoint.Endpoint;
 import us.freeandfair.corla.util.Pair;
 
-import static us.freeandfair.corla.asm.AsmEventToEndpointRelation.Endpoint.*;
 import static us.freeandfair.corla.asm.AsmEvent.AuditBoardDashboardEvent.*;
 import static us.freeandfair.corla.asm.AsmEvent.CountyDashboardEvent.*;
 import static us.freeandfair.corla.asm.AsmEvent.DosDashboardEvent.*;
@@ -32,8 +32,8 @@ public class AsmEventToEndpointRelation {
   /**
    * The relation encoded via a set of pairs.
    */
-  private final Set<Pair<AsmEvent, Endpoint>> my_relation = 
-      new HashSet<Pair<AsmEvent, Endpoint>>();
+  private final Set<Pair<AsmEvent, Class>> my_relation = 
+      new HashSet<Pair<AsmEvent, Class>>();
    
   /**
    * Create an instance of this relation, which contains the full set of public 
@@ -48,65 +48,65 @@ public class AsmEventToEndpointRelation {
   
   private void addDosDashboardPairs() {
     // All Department of State Dashboard pairs.
-    my_relation.add(new Pair<AsmEvent, Endpoint>(
+    my_relation.add(new Pair<AsmEvent, Class>(
         AUTHENTICATE_STATE_ADMINISTRATOR_EVENT,
-        UNDEFINED));
-    my_relation.add(new Pair<AsmEvent, Endpoint>(
+        Endpoint.class));
+    my_relation.add(new Pair<AsmEvent, Class>(
         ESTABLISH_RISK_LIMIT_FOR_COMPARISON_AUDITS_EVENT,
-        UNDEFINED));
-    my_relation.add(new Pair<AsmEvent, Endpoint>(
+        Endpoint.class));
+    my_relation.add(new Pair<AsmEvent, Class>(
         SELECT_CONTESTS_FOR_COMPARISON_AUDIT_EVENT,
-        UNDEFINED));
-    my_relation.add(new Pair<AsmEvent, Endpoint>(
+        Endpoint.class));
+    my_relation.add(new Pair<AsmEvent, Class>(
         PUBLIC_SEED_EVENT,
-        UNDEFINED));
-    my_relation.add(new Pair<AsmEvent, Endpoint>(
+        Endpoint.class));
+    my_relation.add(new Pair<AsmEvent, Class>(
         PUBLISH_BALLOTS_TO_AUDIT_EVENT,
-        UNDEFINED));
-    my_relation.add(new Pair<AsmEvent, Endpoint>(
+        Endpoint.class));
+    my_relation.add(new Pair<AsmEvent, Class>(
         INDICATE_FULL_HAND_COUNT_CONTEST_EVENT,
-        UNDEFINED));
-    my_relation.add(new Pair<AsmEvent, Endpoint>(
+        Endpoint.class));
+    my_relation.add(new Pair<AsmEvent, Class>(
         PUBLISH_AUDIT_REPORT_EVENT,
-        UNDEFINED));
+        Endpoint.class));
   }
   
   private void addCountyDashboardPairs() {
     // All County Dashboard pairs.
-    my_relation.add(new Pair<AsmEvent, Endpoint>(
+    my_relation.add(new Pair<AsmEvent, Class>(
         AUTHENTICATE_COUNTY_ADMINISTRATOR_EVENT,
-        UNDEFINED));
-    my_relation.add(new Pair<AsmEvent, Endpoint>(
+        Endpoint.class));
+    my_relation.add(new Pair<AsmEvent, Class>(
         ESTABLISH_AUDIT_BOARD_EVENT,
-        UNDEFINED));
-    my_relation.add(new Pair<AsmEvent, Endpoint>(
+        Endpoint.class));
+    my_relation.add(new Pair<AsmEvent, Class>(
         UPLOAD_BALLOT_MANIFEST_EVENT,
-        UNDEFINED));
-    my_relation.add(new Pair<AsmEvent, Endpoint>(
+        BallotManifestUpload.class));
+    my_relation.add(new Pair<AsmEvent, Class>(
         UPLOAD_CVRS_EVENT,
-        UNDEFINED));
-    my_relation.add(new Pair<AsmEvent, Endpoint>(
+        Endpoint.class));
+    my_relation.add(new Pair<AsmEvent, Class>(
         START_AUDIT_EVENT,
-        UNDEFINED));
+        Endpoint.class));
   }
   
   private void addAuditBoardDashboardPairs() {
     // All Audit Board Dashboard pairs.
-    my_relation.add(new Pair<AsmEvent, Endpoint>(
+    my_relation.add(new Pair<AsmEvent, Class>(
         REPORT_MARKINGS_EVENT,
-        UNDEFINED));
-    my_relation.add(new Pair<AsmEvent, Endpoint>(
+        Endpoint.class));
+    my_relation.add(new Pair<AsmEvent, Class>(
         REPORT_BALLOT_NOT_FOUND_EVENT,
-        UNDEFINED));
-    my_relation.add(new Pair<AsmEvent, Endpoint>(
+        Endpoint.class));
+    my_relation.add(new Pair<AsmEvent, Class>(
         SUBMIT_AUDIT_INVESTIGATION_REPORT_EVENT,
-        UNDEFINED));
-    my_relation.add(new Pair<AsmEvent, Endpoint>(
+        Endpoint.class));
+    my_relation.add(new Pair<AsmEvent, Class>(
         SUBMIT_AUDIT_REPORT_EVENT,
-        UNDEFINED));
-    my_relation.add(new Pair<AsmEvent, Endpoint>(
+        Endpoint.class));
+    my_relation.add(new Pair<AsmEvent, Class>(
         SUBMIT_INTERMEDIATE_AUDIT_REPORT_EVENT,
-        UNDEFINED));
+        Endpoint.class));
   }
     
   /**
@@ -139,12 +139,5 @@ public class AsmEventToEndpointRelation {
     assert false;
     //@ assert false;
     return null;
-  }
-  
- /**
-   * An enumeration of all public endpoints in the system.
-   */
-  enum Endpoint {
-    UNDEFINED
   }
 }
