@@ -70,7 +70,7 @@
       <message key="executableStatementCount" value="Executable statement count is {0,number,integer} (max allowed for an instance initializer is {1,number,integer})."/>
     </module>
     <module name="LineLength">
-      <property name="ignorePattern" value="(^ *//\*@ .+$)|(^ *@.+$)"/>
+      <property name="ignorePattern" value="(^ *//\*@ .+$)|(^ *@.+$)|(^import static.+$)"/>
       <property name="max" value="95"/>
     </module>
     <module name="MethodLength">
