@@ -54,7 +54,7 @@ public final class Persistence {
    * The path to the resource containing the list of entity classes.
    */
   public static final String ENTITY_CLASSES = 
-      "us/freeandfair/corla/hibernate/entity_classes";
+      "us/freeandfair/corla/persistence/entity_classes";
   
   /**
    * The "NO SESSION" constant.
