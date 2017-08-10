@@ -107,6 +107,15 @@ public class DepartmentOfStateDashboard extends AbstractEntity implements Serial
   }
   
   /**
+   * Sets the audit stage.
+   * 
+   * @param the_audit_stage The new audit stage.
+   */ 
+  public void setAuditStage(final AuditStage the_audit_stage) {
+    my_audit_stage = the_audit_stage;
+  }
+  
+  /**
    * @return the risk limit for comparison audits, or null if none has been set.
    */
   public BigDecimal getRiskLimitForComparisonAudits() {
