@@ -41,7 +41,6 @@ import org.hibernate.cfg.Environment;
 import org.hibernate.criterion.Example;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.util.Pair;
 
 /**

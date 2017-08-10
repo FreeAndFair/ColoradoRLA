@@ -34,6 +34,15 @@
     </form>
 </div>
 <hr>
+<h2>Upload Random Seed Test</h2>
+<div style="display:block">
+    <b>Note: Must be authenticated as an administrator to carry out this action.</b>
+    <form action="http://localhost:8888/random-seed" method="post">
+        Random Seed: <input type="text" name="random_seed" />
+        <input type="submit" id="buttonUpload" value="Set Random Seed"/>
+    </form>
+</div>
+<hr>
 <h2>CVR Export Upload Test</h2>
 <div style="display:block">
     <form action="http://localhost:8888/upload-cvr-export" method="post" enctype="multipart/form-data">

@@ -47,6 +47,12 @@ import us.freeandfair.corla.hibernate.AbstractEntity;
 @SuppressWarnings("PMD.ImmutableField")
 public class DepartmentOfStateDashboard extends AbstractEntity implements Serializable {  
   /**
+   * The minimum valid random seed.
+   */
+  public static final BigInteger MIN_RANDOM_SEED =
+      new BigInteger("9999999999999999999");
+  
+  /**
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1; 

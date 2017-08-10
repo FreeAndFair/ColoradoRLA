@@ -58,7 +58,7 @@ public final class DepartmentOfStateDashboardQueries {
       } else if (db_list.size() > 1) {
         Main.LOGGER.error("multiple department of state dashboards found");
       } else {
-        result = db_list.get(0);
+        db = db_list.get(0);
       }
       if (transaction) {
         try {
