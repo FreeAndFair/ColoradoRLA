@@ -30,7 +30,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.Table;
 
-import us.freeandfair.corla.hibernate.AbstractEntity;
+import us.freeandfair.corla.persistence.AbstractEntity;
 
 /**
  * The Department of State dashboard.

@@ -46,11 +46,11 @@ import spark.Response;
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.csv.BallotManifestParser;
 import us.freeandfair.corla.csv.ColoradoBallotManifestParser;
-import us.freeandfair.corla.hibernate.Persistence;
 import us.freeandfair.corla.model.BallotManifestInfo;
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.model.UploadedFile.FileType;
 import us.freeandfair.corla.model.UploadedFile.HashStatus;
+import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.util.FileHelper;
 import us.freeandfair.corla.util.SparkHelper;
 

@@ -16,10 +16,10 @@ import javax.persistence.PersistenceException;
 import spark.Request;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.hibernate.Persistence;
 import us.freeandfair.corla.model.Administrator;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
-import us.freeandfair.corla.model.AdministratorQueries;
+import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.query.AdministratorQueries;
 
 /**
  * Authentication tasks used by many endpoints.

@@ -9,7 +9,7 @@
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
-package us.freeandfair.corla.gson;
+package us.freeandfair.corla.json;
 
 import java.lang.reflect.Field;
 

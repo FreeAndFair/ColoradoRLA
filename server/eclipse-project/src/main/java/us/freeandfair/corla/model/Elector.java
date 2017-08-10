@@ -18,7 +18,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import us.freeandfair.corla.hibernate.AbstractEntity;
+import us.freeandfair.corla.persistence.AbstractEntity;
 import us.freeandfair.corla.util.EqualsHashcodeHelper;
 
 /**

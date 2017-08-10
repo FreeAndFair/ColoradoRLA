@@ -31,7 +31,7 @@ import javax.persistence.MapKeyColumn;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
-import us.freeandfair.corla.hibernate.AbstractEntity;
+import us.freeandfair.corla.persistence.AbstractEntity;
 
 /**
  * The definition of a contest; comprises a contest name and a set of

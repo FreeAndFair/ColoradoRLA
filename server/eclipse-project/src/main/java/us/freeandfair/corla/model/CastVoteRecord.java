@@ -31,7 +31,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
-import us.freeandfair.corla.hibernate.AbstractEntity;
+import us.freeandfair.corla.persistence.AbstractEntity;
 
 /**
  * A cast vote record contains information about a single ballot, either 

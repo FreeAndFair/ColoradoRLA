@@ -20,7 +20,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import us.freeandfair.corla.hibernate.AbstractEntity;
+import us.freeandfair.corla.persistence.AbstractEntity;
 
 /**
  * Information about the locations of specific batches of ballots.

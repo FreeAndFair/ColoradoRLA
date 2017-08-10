@@ -9,7 +9,7 @@
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
-package us.freeandfair.corla.hibernate;
+package us.freeandfair.corla.persistence;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,7 +54,7 @@ public final class Persistence {
    * The path to the resource containing the list of entity classes.
    */
   public static final String ENTITY_CLASSES = 
-      "us/freeandfair/corla/hibernate/entity_classes";
+      "us/freeandfair/corla/persistence/entity_classes";
   
   /**
    * The "NO SESSION" constant.
@@ -168,7 +168,7 @@ public final class Persistence {
       settings.put(Environment.HBM2DDL_AUTO, "update");
       settings.put(Environment.SHOW_SQL, "false");
       settings.put(Environment.PHYSICAL_NAMING_STRATEGY, 
-                   "us.freeandfair.corla.hibernate.FreeAndFairNamingStrategy");
+                   "us.freeandfair.corla.persistence.FreeAndFairNamingStrategy");
       settings.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
       settings.put(Environment.USE_STREAMS_FOR_BINARY, "true");
       

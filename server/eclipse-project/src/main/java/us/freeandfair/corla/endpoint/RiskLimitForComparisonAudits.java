@@ -21,11 +21,11 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.hibernate.Persistence;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
 import us.freeandfair.corla.model.AuditStage;
 import us.freeandfair.corla.model.DepartmentOfStateDashboard;
-import us.freeandfair.corla.model.DepartmentOfStateDashboardQueries;
+import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.query.DepartmentOfStateDashboardQueries;
 
 /**
  * The endpoint for establishing the risk limit for comparison audits.

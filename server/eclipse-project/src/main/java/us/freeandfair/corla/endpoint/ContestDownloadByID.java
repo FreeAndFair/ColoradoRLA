@@ -17,8 +17,8 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.hibernate.Persistence;
 import us.freeandfair.corla.model.Contest;
+import us.freeandfair.corla.persistence.Persistence;
 
 /**
  * The contest by ID endpoint.
