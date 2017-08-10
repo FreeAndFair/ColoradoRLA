@@ -11,21 +11,34 @@
 
 package us.freeandfair.corla.asm;
 
+import static us.freeandfair.corla.asm.AsmState.RlaToolState.RLA_TOOL_INITIAL_STATE;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import us.freeandfair.corla.asm.AsmState.DosDashboardState;
+import us.freeandfair.corla.asm.AsmTransitions.RlaTransitions;
 import us.freeandfair.corla.util.Pair;
 
 /**
  * The ASM for the whole RLA Tool.
  * @trace asm.rla_tool_asm
+ * @author Joseph R. Kiniry <kiniry@freeandfair.us>
+ * @version 0.0.1
  */
-public class RlaToolAsm extends AbstractAsm {
+public class RlaToolAsm extends Asm {
+  /**
+   * The ASM for the Department of State Dashboard.
+   */
   private final DosDashboardAsm my_dos_asm = new DosDashboardAsm();
+  /**
+   * The ASM for the County Dashboard.
+   */
   private final CountyDashboardAsm my_county_asm = new CountyDashboardAsm();
+  /**
+   * The ASM for the Audit Board Dashboard.
+   */
   private final AuditBoardDashboardAsm my_audit_asm = new AuditBoardDashboardAsm();
 
   /**
@@ -40,9 +53,11 @@ public class RlaToolAsm extends AbstractAsm {
     final Set<AsmEvent> events = buildTransitions();
     final Map<Pair<AsmState, AsmEvent>, AsmState> transition_function =
         buildTransitionFunction();
-    final AsmState intial_state = my_dos_asm.my_initial_state;
-    // Add the necessary transitions to move between the component ASMs.
-    // @todo kiniry Add missing events and transitions.
+    for (final RlaTransitions t : RlaTransitions.values()) {
+      transition_function.put(t.my_pair.getFirst(), t.my_pair.getSecond());
+    }
+    initialize(states, events, transition_function,
+               RLA_TOOL_INITIAL_STATE, final_states);
   }
   
   private Set<AsmState> buildStates() {

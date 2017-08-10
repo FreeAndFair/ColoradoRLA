@@ -25,6 +25,8 @@ import us.freeandfair.corla.util.Pair;
 /**
  * The generic idea of a set of ASM transitions.
  * @trace asm.asm_transition_function
+ * @author Joseph R. Kiniry <kiniry@freeandfair.us>
+ * @version 0.0.1
  */
 public interface AsmTransitions {
   /**

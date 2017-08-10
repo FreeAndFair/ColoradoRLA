@@ -24,8 +24,10 @@ import us.freeandfair.corla.util.Pair;
 /**
  * The ASM for the Department of State Dashboard.
  * @trace asm.dos_dashboard_next_state
+ * @author Joseph R. Kiniry <kiniry@freeandfair.us>
+ * @version 0.0.1
  */
-public class DosDashboardAsm extends AbstractAsm {
+public class DosDashboardAsm extends Asm {
   /**
    * Create the Department of State Dashboard ASM.
    * @trace asm.dos_asm 

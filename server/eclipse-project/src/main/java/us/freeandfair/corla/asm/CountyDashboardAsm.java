@@ -24,8 +24,10 @@ import us.freeandfair.corla.util.Pair;
 /**
  * The ASM for the County Dashboard.
  * @trace asm.dos_dashboard_next_state
+ * @author Joseph R. Kiniry <kiniry@freeandfair.us>
+ * @version 0.0.1
  */
-public class CountyDashboardAsm extends AbstractAsm {
+public class CountyDashboardAsm extends Asm {
   /**
    * Create the County Dashboard ASM.
    * @trace asm.county_dashboard_asm

@@ -11,6 +11,24 @@
 
 package us.freeandfair.corla.asm;
 
+import static us.freeandfair.corla.asm.AsmEvent.AuditBoardDashboardEvent.REPORT_BALLOT_NOT_FOUND_EVENT;
+import static us.freeandfair.corla.asm.AsmEvent.AuditBoardDashboardEvent.REPORT_MARKINGS_EVENT;
+import static us.freeandfair.corla.asm.AsmEvent.AuditBoardDashboardEvent.SUBMIT_AUDIT_INVESTIGATION_REPORT_EVENT;
+import static us.freeandfair.corla.asm.AsmEvent.AuditBoardDashboardEvent.SUBMIT_AUDIT_REPORT_EVENT;
+import static us.freeandfair.corla.asm.AsmEvent.AuditBoardDashboardEvent.SUBMIT_INTERMEDIATE_AUDIT_REPORT_EVENT;
+import static us.freeandfair.corla.asm.AsmEvent.CountyDashboardEvent.AUTHENTICATE_COUNTY_ADMINISTRATOR_EVENT;
+import static us.freeandfair.corla.asm.AsmEvent.CountyDashboardEvent.ESTABLISH_AUDIT_BOARD_EVENT;
+import static us.freeandfair.corla.asm.AsmEvent.CountyDashboardEvent.START_AUDIT_EVENT;
+import static us.freeandfair.corla.asm.AsmEvent.CountyDashboardEvent.UPLOAD_BALLOT_MANIFEST_EVENT;
+import static us.freeandfair.corla.asm.AsmEvent.CountyDashboardEvent.UPLOAD_CVRS_EVENT;
+import static us.freeandfair.corla.asm.AsmEvent.DosDashboardEvent.AUTHENTICATE_STATE_ADMINISTRATOR_EVENT;
+import static us.freeandfair.corla.asm.AsmEvent.DosDashboardEvent.ESTABLISH_RISK_LIMIT_FOR_COMPARISON_AUDITS_EVENT;
+import static us.freeandfair.corla.asm.AsmEvent.DosDashboardEvent.INDICATE_FULL_HAND_COUNT_CONTEST_EVENT;
+import static us.freeandfair.corla.asm.AsmEvent.DosDashboardEvent.PUBLIC_SEED_EVENT;
+import static us.freeandfair.corla.asm.AsmEvent.DosDashboardEvent.PUBLISH_AUDIT_REPORT_EVENT;
+import static us.freeandfair.corla.asm.AsmEvent.DosDashboardEvent.PUBLISH_BALLOTS_TO_AUDIT_EVENT;
+import static us.freeandfair.corla.asm.AsmEvent.DosDashboardEvent.SELECT_CONTESTS_FOR_COMPARISON_AUDIT_EVENT;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,13 +37,11 @@ import us.freeandfair.corla.endpoint.BallotManifestUpload;
 import us.freeandfair.corla.endpoint.Endpoint;
 import us.freeandfair.corla.util.Pair;
 
-import static us.freeandfair.corla.asm.AsmEvent.AuditBoardDashboardEvent.*;
-import static us.freeandfair.corla.asm.AsmEvent.CountyDashboardEvent.*;
-import static us.freeandfair.corla.asm.AsmEvent.DosDashboardEvent.*;
-
 /**
  * @description The mapping between ASM events and server endpoints.
- * @trace asm.ui_to_asm_event_relation
+ * @trace asm.ui_to_asm_event_relation 
+ * @author Joseph R. Kiniry <kiniry@freeandfair.us>
+ * @version 0.0.1
  * @todo kiniry Introduce AbstractRelation parent class.
  */
 public class AsmEventToEndpointRelation {

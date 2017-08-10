@@ -24,6 +24,8 @@ import static us.freeandfair.corla.asm.AsmEvent.DosDashboardEvent.*;
 /**
  * @description The mapping between UI events and ASM events.
  * @trace asm.ui_to_asm_event_relation
+ * @author Joseph R. Kiniry <kiniry@freeandfair.us>
+ * @version 0.0.1
  */
 public class UiToAsmEventRelation {
   /**

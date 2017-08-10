@@ -19,11 +19,11 @@ import us.freeandfair.corla.util.Pair;
 
 /**
  * @description A generic Abstract State Machine (ASM).
- * @explanation <explanation>
- * @bon OPTIONAL_BON_TYPENAME
  * @trace asm.asm
+ * @author Joseph R. Kiniry <kiniry@freeandfair.us>
+ * @version 0.0.1
  */
-public abstract class AbstractAsm {
+public class Asm {
   /**
    * This ASM's set of states.
    */
@@ -59,7 +59,7 @@ public abstract class AbstractAsm {
    * Create an empty ASM. The very first call after the constructor must be
    * initialize().
    */
-  public AbstractAsm() {
+  public Asm() {
     // do nothing
   }
   

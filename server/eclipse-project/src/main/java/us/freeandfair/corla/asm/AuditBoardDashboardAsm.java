@@ -18,15 +18,16 @@ import java.util.Set;
 
 import us.freeandfair.corla.asm.AsmEvent.AuditBoardDashboardEvent;
 import us.freeandfair.corla.asm.AsmState.AuditBoardDashboardState;
-import us.freeandfair.corla.asm.AsmState.DosDashboardState;
 import us.freeandfair.corla.asm.AsmTransitions.AuditBoardDashboardTransitions;
 import us.freeandfair.corla.util.Pair;
 
 /**
  * The ASM for the Audit Board Dashboard.
  * @trace asm.dos_dashboard_next_state
+ * @author Joseph R. Kiniry <kiniry@freeandfair.us>
+ * @version 0.0.1
  */
-public class AuditBoardDashboardAsm extends AbstractAsm {
+public class AuditBoardDashboardAsm extends Asm {
   /**
    * Create the Audit Board Dashboard ASM.
    * @trace asm.county_dashboard_asm
