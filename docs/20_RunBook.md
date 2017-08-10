@@ -20,7 +20,7 @@ enter the risk limit, the random seed and the contests that drive
 the audit process. The Secretary of State can also identify 
 contests that should go to a full hand count. Counties can upload
 ballot manifests and cast vote record (CVR) files. The
-RLA tool performs the necessary statistics (such as 
+RLA tool performs the necessary calculations (such as 
 choosing random samples of ballots for audit and determining 
 actual risk levels)
 County Audit Boards can 
@@ -33,20 +33,24 @@ to the public.
  
 ### What the RLA Tool Does Not Do
 
-Although the RLA process requires Counties to 
+Although the rules governing the RLA requires Counties to 
 generate and preserve
-a Summary Results Report and a Results File Export, the RLA Tool 
-does not interact with these files in any way. Nor does the RLA Tool 
-aid in any way with the CVR Export Verification required by the 
-RLA process. 
+a Summary Results Report and a Results File Export, the 
+RLA Tool 
+does not interact with these particular files in any way. 
+Nor does the RLA Tool 
+aid the CVR Export Verification required by the 
+rules. These processes and files are not 
+discussed in this Run Book.
 
 While the RLA Tool does provide for upload of the 
 hashed Ballot Manifest, the hashed CVR file and their hashes, 
 the RLA Tool does not provide a hashing utility.
 
-The RLA Tool does not provide any support
-for chain of custody logs. Nor does it provide any guidance for ballot 
-interpretation. 
+The current version of the RLA Tool does not provide any support
+for chain of custody logs. Nor does it provide any rules 
+or suggestions for  
+interpretation of the marks on any particular ballot. 
 
 ## For Secretary of State Users
 
@@ -124,7 +128,7 @@ Note that the RLA Tool does not support export of the
 tabulation results to the Election Night Reporting System. 
 
 ### Ballot Polling Audit Upload
-The RLA Tool is designed for comparison audits, which require a voting
+The current version RLA Tool is designed for comparison audits, which require a voting
 system capable of exporting CVR files. However, Counties whose voting systems do not
 export CVR files can use the RLA Tool to upload ballot manifests, described
 in the [Comparison Audit Upload](#comparison-audit-upload) 
