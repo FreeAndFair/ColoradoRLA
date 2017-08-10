@@ -2592,25 +2592,6 @@ BEGIN
        initial_state: asm_state,
        final_states: set[asm_state] #]
 %%%
-%%% Also, in order to relate the ASM to the core implementation
-%%% constructs in a RESTful client-server architecture, we must relate
-%%% UI events to ASM events and ASM events to server
-%%% endpoints. Communication to and from those endpoints happens via
-%%% JSON streams over HTTPS. Thus, for any given endpoint, there is an
-%%% expected inbound JSON type and an expected outbound JSON type per
-%%% HTTP response code.
-  ui_event: TYPE
-  json_type: TYPE = string
-  http_response_code: TYPE = nat
-  server_endpoint: TYPE =
-    [# callback: [dashboard -> dashboard],
-       uri: string,
-       in_stream: json_type,
-       out_stream: set[[http_response_code, json_type]],
-       inbound_event: asm_event
-     #]
-  ui_to_asm_event_relation: pred[[ui_event, asm_event]]
-  asm_event_to_endpoint_relation: pred[[asm_event, server_endpoint]]
 %%% We will first specify the ASM for the Department of State
 %%% dashboard. Its states describe the sequence of steps that state
 %%% administrators must take to start, observe, and complete an RLA.
@@ -2647,7 +2628,8 @@ BEGIN
       cac_e,    % 11. county_audit_complete_event
       par_e,    % 12. publish_audit_report
       r_e,      % 13. refresh_event
-      s_e       % 6. skip_event
+      s_e,      % 6. skip_event
+      n_e       % no_event
     }
 
   dos_state: VAR department_of_state_dashboard_state
@@ -2711,8 +2693,9 @@ BEGIN
       uvc_e,     % 16. 17. 19. 21. upload_verified_cvrs_event
       sa_e,      % 29. start_audit_event
       r_e,       % 30. refresh_event
-      s_e        % 1. 6. 8. 9. 10. 11. 12. 13. 14. 15. 18. 20. skip_event
+      s_e,       % 1. 6. 8. 9. 10. 11. 12. 13. 14. 15. 18. 20. skip_event
                  % 22. 23. 24. 25. 26. 27. 28. 31. skip_event
+      n_e        % no_event                 
     }
 
   c_state: VAR county_dashboard_state
@@ -2749,7 +2732,8 @@ BEGIN
       siar_e, % 5. submit_intermediate_audit_report_event
       sar_e,  % 6. submit_audit_report_event
       ar_e,   % 8. audit_refresh_event
-      as_e    % 1. 7. audit_skip
+      as_e,   % 1. 7. audit_skip
+      n_e     % no_event
     }
 
   ab_state: VAR audit_board_dashboard_state
@@ -2780,8 +2764,107 @@ BEGIN
 %        transition_function = composition of dos, county, and audit
 %                              board transition functions #]
 END asm
-
 %+END asm
+
+%+BEGIN endpoints
+
+%%% \section{Endpoints}
+%%% \label{sec:Endpoints}
+%%%
+endpoints: THEORY
+BEGIN
+  IMPORTING dashboard,
+            asm
+%%% In order to relate the ASM to the core implementation constructs
+%%% in a RESTful client-server architecture, we must relate UI events
+%%% to ASM events and ASM events to server endpoints. Communication to
+%%% and from those endpoints happens via JSON streams over
+%%% HTTPS. Thus, for any given endpoint, there is an expected inbound
+%%% JSON type and an expected outbound JSON type per HTTP response
+%%% code.
+  ui_event: TYPE = {
+    LOGIN,
+    FETCH_INITIAL_STATE_SEND,
+    FETCH_INITIAL_STATE_RECEIVE,
+    SELECT_NEXT_BALLOT,
+    UPDATE_BOARD_MEMBER,
+    UPDATE_BALLOT_MARKS,
+    UNDEFINED
+  }
+  json_type: TYPE = {
+    NOTHING,
+    AUTHENTICATE
+  }
+  AUTHENTICATE_PARAMS: list[string] =
+    (: "USERNAME", "PASSWORD", "SECOND_FACTOR" :)
+  http_response_code: TYPE = {
+    OK_200,
+    BAD_REQUEST_400,
+    UNAUTHORIZED_401
+  }
+  endpoint_type: TYPE = { GET, POST, PUT }
+  server_endpoint: TYPE =
+    [# endpoint_type: endpoint_type,
+       callback: [dashboard -> dashboard],
+       uri: string,
+       in_stream: json_type,
+       out_stream: set[[http_response_code, json_type]],
+       dos_event: department_of_state_dashboard_event,
+       county_event: county_dashboard_event,
+       audit_event: audit_board_dashboard_event
+     #]
+  server_endpoints: TYPE = set[server_endpoint]
+  rla_tool_endpoints: VAR server_endpoints
+  undefined_callback: [dashboard -> dashboard]
+%%% Each RLA Tool system endpoint is specified below.
+  root_endpoint: server_endpoint =
+    (# endpoint_type := GET,
+       callback := undefined_callback,
+       uri := "/",
+       in_stream := NOTHING,
+       out_stream := singleton((OK_200, NOTHING)),
+       dos_event := s_e,
+       county_event := n_e,
+       audit_event := n_e
+     #)
+  auth_state_admin: server_endpoint =
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/auth-state-admin",
+       in_stream := NOTHING,
+       out_stream := add((UNAUTHORIZED_401, NOTHING),
+                         singleton((OK_200, NOTHING))),
+       dos_event := asa_e,
+       county_event := n_e,
+       audit_event := n_e
+     #)
+  auth_county_admin: server_endpoint =
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/auth-county-admin",
+       in_stream := NOTHING,
+       out_stream := add((UNAUTHORIZED_401, NOTHING),
+                         singleton((OK_200, NOTHING))),
+       dos_event := n_e,
+       county_event := aca_e,
+       audit_event := n_e
+     #)
+  risk_limit: server_endpoint =
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/risk-limit-comp-audits",
+       in_stream := NOTHING,
+       out_stream := add((BAD_REQUEST_400, NOTHING),
+                     add((UNAUTHORIZED_401, NOTHING),
+                         singleton((OK_200, NOTHING)))),
+       dos_event := erlfca_e,
+       county_event := n_e,
+       audit_event := n_e
+     #)
+  ui_to_asm_event_relation: pred[[ui_event, asm_event]]
+  asm_event_to_endpoint_relation: pred[[asm_event, server_endpoint]]
+END endpoints
+%+END endpoints
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -2790,7 +2873,7 @@ END asm
 %%% \section{Protocol}
 %%% \label{sec:Protocol}
 %%%
-%%% As discussed in~\Cref{sec:System_Architecture},
+%%% As discussed in~\Cref{sec:System_Architecture},%
 %%% the RLA Tool is a client-server system. In this section we
 %%% describe the protocol used by the client and server to communicate
 %%% with each other.
