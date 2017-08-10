@@ -11,8 +11,6 @@
 
 package us.freeandfair.corla.endpoint;
 
-import java.math.BigInteger;
-
 import javax.persistence.PersistenceException;
 
 import org.eclipse.jetty.http.HttpStatus;
@@ -70,17 +68,13 @@ public class UploadRandomSeed implements Endpoint {
   public String endpoint(final Request the_request, final Response the_response) {
     int status = HttpStatus.OK_200;
     String result = "Random seed set";
-    BigInteger random_seed = null;
+    String random_seed = null;
     
     if (Authentication.isAuthenticatedAs(the_request, AdministratorType.STATE)) {
       // see if a valid risk limit was passed in
-      random_seed = parseRandomSeed(the_request.queryParams(RANDOM_SEED));
+      random_seed = the_request.queryParams(RANDOM_SEED);
 
-      if (random_seed == null) {
-        Main.LOGGER.info("attempt to set an invalid random seed");
-        status = HttpStatus.BAD_REQUEST_400;
-        result = "Invalid random seed specified";
-      } else {
+      if (DepartmentOfStateDashboard.isValidSeed(random_seed)) {
         final DepartmentOfStateDashboard dosd = DepartmentOfStateDashboardQueries.get();
         if (dosd != null && dosd.auditStage() == AuditStage.RISK_LIMITS_SET) {
           dosd.setRandomSeed(random_seed);
@@ -101,7 +95,11 @@ public class UploadRandomSeed implements Endpoint {
           status = HttpStatus.FORBIDDEN_403;
           result = "Attempt to set the random seed in incorrect state";
         }
-      } 
+      } else {
+        Main.LOGGER.info("attempt to set an invalid random seed");
+        status = HttpStatus.BAD_REQUEST_400;
+        result = "Invalid random seed specified";
+      }
     } else {
       Main.LOGGER.info("unauthorized attempt to set the random seed");
       status = HttpStatus.UNAUTHORIZED_401;
@@ -109,29 +107,6 @@ public class UploadRandomSeed implements Endpoint {
     }
     
     the_response.status(status);
-    return result;
-  }
-  
-  /**
-   * Parses a string to obtain the random seed, or determine its invalidity.
-   * A valid random seed must be parsable as a BigInteger in base 10, and must
-   * be greater than 0.
-   * 
-   * @param the_string The string to parse.
-   * @return the random seed, or null if the string was not a valid random seed.
-   */
-  private BigInteger parseRandomSeed(final String the_string) {
-    BigInteger result = null;
-    
-    try {
-      final BigInteger parsed = new BigInteger(the_string, 10);
-      if (DepartmentOfStateDashboard.MIN_RANDOM_SEED.compareTo(parsed) <= 0) {
-        result = parsed;
-      } // else the parsed risk limit is out of range
-    } catch (final NumberFormatException e) {
-      // the string was invalid
-    }
-    
     return result;
   }
 }

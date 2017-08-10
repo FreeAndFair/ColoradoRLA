@@ -14,7 +14,6 @@ package us.freeandfair.corla.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -47,15 +46,9 @@ import us.freeandfair.corla.persistence.AbstractEntity;
 @SuppressWarnings("PMD.ImmutableField")
 public class DepartmentOfStateDashboard extends AbstractEntity implements Serializable {  
   /**
-   * The minimum valid random seed.
+   * The minimum number of random seed characters.
    */
-  public static final BigInteger MIN_RANDOM_SEED =
-      new BigInteger("9999999999999999999");
-  
-  /**
-   * The random seed precision for the database. 
-   */
-  public static final int RANDOM_SEED_PRECISION = 100;
+  public static final int MIN_SEED_LENGTH = 20;
   
   /**
    * The serialVersionUID.
@@ -99,8 +92,7 @@ public class DepartmentOfStateDashboard extends AbstractEntity implements Serial
   /**
    * The random seed.
    */
-  @Column(precision = RANDOM_SEED_PRECISION)
-  private BigInteger my_random_seed;
+  private String my_random_seed;
   
   /**
    * Constructs a new Department of State dashboard with default values.
@@ -110,6 +102,31 @@ public class DepartmentOfStateDashboard extends AbstractEntity implements Serial
   @SuppressWarnings("PMD.UnnecessaryConstructor")
   public DepartmentOfStateDashboard() {
     super();
+  }
+  
+  /**
+   * Checks the validity of a random seed. To be valid, a random seed must
+   * have at least MIN_SEED_CHARACTERS characters, and all characters must
+   * be digits.
+   * 
+   * @param the_seed The seed.
+   * @return true if the seed meets the validity requirements, false otherwise.
+   */
+  public static boolean isValidSeed(final String the_seed) {
+    boolean result = true;
+    
+    if (the_seed != null && the_seed.length() >= MIN_SEED_LENGTH) {
+      for (final char c : the_seed.toCharArray()) {
+        if (!Character.isDigit(c)) {
+          result = false;
+          break;
+        }
+      }
+    } else {
+      result = false;
+    }
+    
+    return result;
   }
   
   /**
@@ -170,14 +187,14 @@ public class DepartmentOfStateDashboard extends AbstractEntity implements Serial
    * 
    * @param the_seed The random seed.
    */
-  public void setRandomSeed(final BigInteger the_random_seed) {
+  public void setRandomSeed(final String the_random_seed) {
     my_random_seed = the_random_seed;
   }
   
   /**
    * @return the random seed.
    */
-  public BigInteger randomSeed() {
+  public String randomSeed() {
     return my_random_seed;
   }
 }
