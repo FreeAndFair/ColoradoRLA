@@ -74,6 +74,7 @@ public class SelectContestsForAudit implements Endpoint {
         status = HttpStatus.INTERNAL_SERVER_ERROR_500;
       } else {
         for (final ContestToAudit c : contests) {
+          Main.LOGGER.info("updating contest audit status: " + c);
           dosdb.updateContestToAudit(c);
         }
       }

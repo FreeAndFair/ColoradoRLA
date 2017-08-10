@@ -108,9 +108,9 @@ public final class CVRContestInfoJsonAdapter
   private Contest contestSanityCheck(final Long the_id, 
                                      final List<String> the_choices) {
     final Contest result = Persistence.getByID(the_id, Contest.class);
-    boolean error = false;
+    boolean error = the_choices == null;
     
-    if (result != null) {
+    if (!error && result != null) {
       for (final String c : the_choices) {
         if (!result.isValidChoice(c)) {
           error = true;

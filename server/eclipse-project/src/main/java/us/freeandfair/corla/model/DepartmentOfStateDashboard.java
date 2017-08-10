@@ -15,6 +15,7 @@ package us.freeandfair.corla.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -26,6 +27,7 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import us.freeandfair.corla.model.ContestToAudit.AuditType;
 import us.freeandfair.corla.persistence.AbstractEntity;
 
 /**
@@ -56,9 +58,9 @@ public class DepartmentOfStateDashboard extends AbstractEntity implements Serial
    * The contests to be audited and the reasons for auditing.
    */
   @OneToMany(cascade = CascadeType.ALL, mappedBy = "my_dashboard", 
-             fetch = FetchType.EAGER)
+             fetch = FetchType.EAGER, orphanRemoval = true)
   @Column(name = "contest_to_audit")
-  private Set<ContestToAudit> my_contests_to_audit;
+  private Set<ContestToAudit> my_contests_to_audit = new HashSet<>();
 
   /**
    * The audit stage of the election.
@@ -158,10 +160,13 @@ public class DepartmentOfStateDashboard extends AbstractEntity implements Serial
       if (c.contest().equals(the_contest_to_audit.contest())) {
         // remove the old entry
         my_contests_to_audit.remove(c);
+        c.setDashboard(null);
       }
     }
     the_contest_to_audit.setDashboard(this);
-    my_contests_to_audit.add(the_contest_to_audit);
+    if (the_contest_to_audit.audit() != AuditType.NONE) {
+      my_contests_to_audit.add(the_contest_to_audit);
+    }
   }
   
   /**

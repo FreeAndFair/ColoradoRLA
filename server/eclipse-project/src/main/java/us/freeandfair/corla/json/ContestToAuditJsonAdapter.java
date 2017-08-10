@@ -64,11 +64,34 @@ public final class ContestToAuditJsonAdapter
       throws IOException {
     the_writer.beginObject();
     the_writer.name(CONTEST).value(the_contest.contest().id());
-    the_writer.name(AUDIT).value(the_contest.auditType().toString());
+    the_writer.name(AUDIT).value(the_contest.audit().toString());
     if (the_contest.reason() != null) {
       the_writer.name(REASON).value(the_contest.reason().toString());
     }
     the_writer.endObject();
+  }
+  
+  /**
+   * Checks the sanity of a contest to audit.
+   * 
+   * @param the_id The contest ID.
+   * @param the_reason The reason for audit.
+   * @param the_audit_type The audit type.
+   * @return the corresponding contest, if the data is sane, or null if
+   * the data is not.
+   */
+  private Contest sanityCheck(final Long the_id, 
+                              final AuditReason the_reason,
+                              final AuditType the_type) {
+    Contest result = null;
+    final Contest contest = Persistence.getByID(the_id, Contest.class);
+    
+    if (contest != null && the_type != null &&
+        (the_reason != null || the_type != AuditType.COMPARISON)) {
+      result = contest;
+    }
+    
+    return result;
   }
   
   /**
@@ -81,7 +104,7 @@ public final class ContestToAuditJsonAdapter
   public ContestToAudit read(final JsonReader the_reader) 
       throws IOException {
     boolean error = false;
-    long contest_id = -1;
+    Long contest_id = null;
     AuditReason reason = null;
     AuditType type = null;
     
@@ -118,7 +141,7 @@ public final class ContestToAuditJsonAdapter
     
     // check that the contest exists
     
-    final Contest contest = Persistence.getByID(contest_id, Contest.class);
+    final Contest contest = sanityCheck(contest_id, reason, type);
         
     if (error || contest == null) {
       throw new JsonSyntaxException("invalid data detected in contest to audit");
