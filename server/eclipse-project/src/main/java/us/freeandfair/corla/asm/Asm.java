@@ -23,6 +23,7 @@ import us.freeandfair.corla.util.Pair;
  * @author Joseph R. Kiniry <kiniry@freeandfair.us>
  * @version 0.0.1
  */
+@SuppressWarnings("PMD.AtLeastOneConstructor")
 public class Asm {
   /**
    * This ASM's set of states.
@@ -54,14 +55,6 @@ public class Asm {
    * in the constructor.
    */
   private AsmState my_current_state;
-  
-  /**
-   * Create an empty ASM. The very first call after the constructor must be
-   * initialize().
-   */
-  public Asm() {
-    // do nothing
-  }
   
   /**
    * Create the ASM for the Colorado RLA Tool. Ownership transfer happens on the

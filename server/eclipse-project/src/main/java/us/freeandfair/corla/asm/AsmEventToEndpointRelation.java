@@ -33,7 +33,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import us.freeandfair.corla.asm.UiToAsmEventRelation.UiEvent;
-import us.freeandfair.corla.endpoint.BallotManifestUpload;
 import us.freeandfair.corla.endpoint.Endpoint;
 import us.freeandfair.corla.util.Pair;
 
@@ -44,12 +43,18 @@ import us.freeandfair.corla.util.Pair;
  * @version 0.0.1
  * @todo kiniry Introduce AbstractRelation parent class.
  */
+@SuppressWarnings("PMD.TooManyStaticImports")
 public class AsmEventToEndpointRelation {
+  /**
+   * A constant encoding that we have not yet implemented a particular endpoint.
+   */
+  public static final String UNIMPLEMENTED = "UNIMPLEMENTED";
+  
   /**
    * The relation encoded via a set of pairs.
    */
-  private final Set<Pair<AsmEvent, Class>> my_relation = 
-      new HashSet<Pair<AsmEvent, Class>>();
+  private final Set<Pair<AsmEvent, String>> my_relation = 
+      new HashSet<Pair<AsmEvent, String>>();
    
   /**
    * Create an instance of this relation, which contains the full set of public 
@@ -64,65 +69,65 @@ public class AsmEventToEndpointRelation {
   
   private void addDosDashboardPairs() {
     // All Department of State Dashboard pairs.
-    my_relation.add(new Pair<AsmEvent, Class>(
+    my_relation.add(new Pair<AsmEvent, String>(
         AUTHENTICATE_STATE_ADMINISTRATOR_EVENT,
-        Endpoint.class));
-    my_relation.add(new Pair<AsmEvent, Class>(
+        UNIMPLEMENTED));
+    my_relation.add(new Pair<AsmEvent, String>(
         ESTABLISH_RISK_LIMIT_FOR_COMPARISON_AUDITS_EVENT,
-        Endpoint.class));
-    my_relation.add(new Pair<AsmEvent, Class>(
+        UNIMPLEMENTED));
+    my_relation.add(new Pair<AsmEvent, String>(
         SELECT_CONTESTS_FOR_COMPARISON_AUDIT_EVENT,
-        Endpoint.class));
-    my_relation.add(new Pair<AsmEvent, Class>(
+        UNIMPLEMENTED));
+    my_relation.add(new Pair<AsmEvent, String>(
         PUBLIC_SEED_EVENT,
-        Endpoint.class));
-    my_relation.add(new Pair<AsmEvent, Class>(
+        UNIMPLEMENTED));
+    my_relation.add(new Pair<AsmEvent, String>(
         PUBLISH_BALLOTS_TO_AUDIT_EVENT,
-        Endpoint.class));
-    my_relation.add(new Pair<AsmEvent, Class>(
+        UNIMPLEMENTED));
+    my_relation.add(new Pair<AsmEvent, String>(
         INDICATE_FULL_HAND_COUNT_CONTEST_EVENT,
-        Endpoint.class));
-    my_relation.add(new Pair<AsmEvent, Class>(
+        UNIMPLEMENTED));
+    my_relation.add(new Pair<AsmEvent, String>(
         PUBLISH_AUDIT_REPORT_EVENT,
-        Endpoint.class));
+        UNIMPLEMENTED));
   }
   
   private void addCountyDashboardPairs() {
     // All County Dashboard pairs.
-    my_relation.add(new Pair<AsmEvent, Class>(
+    my_relation.add(new Pair<AsmEvent, String>(
         AUTHENTICATE_COUNTY_ADMINISTRATOR_EVENT,
-        Endpoint.class));
-    my_relation.add(new Pair<AsmEvent, Class>(
+        UNIMPLEMENTED));
+    my_relation.add(new Pair<AsmEvent, String>(
         ESTABLISH_AUDIT_BOARD_EVENT,
-        Endpoint.class));
-    my_relation.add(new Pair<AsmEvent, Class>(
+        UNIMPLEMENTED));
+    my_relation.add(new Pair<AsmEvent, String>(
         UPLOAD_BALLOT_MANIFEST_EVENT,
-        BallotManifestUpload.class));
-    my_relation.add(new Pair<AsmEvent, Class>(
+        "BallotManifestUpload"));
+    my_relation.add(new Pair<AsmEvent, String>(
         UPLOAD_CVRS_EVENT,
-        Endpoint.class));
-    my_relation.add(new Pair<AsmEvent, Class>(
+        UNIMPLEMENTED));
+    my_relation.add(new Pair<AsmEvent, String>(
         START_AUDIT_EVENT,
-        Endpoint.class));
+        UNIMPLEMENTED));
   }
   
   private void addAuditBoardDashboardPairs() {
     // All Audit Board Dashboard pairs.
-    my_relation.add(new Pair<AsmEvent, Class>(
+    my_relation.add(new Pair<AsmEvent, String>(
         REPORT_MARKINGS_EVENT,
-        Endpoint.class));
-    my_relation.add(new Pair<AsmEvent, Class>(
+        UNIMPLEMENTED));
+    my_relation.add(new Pair<AsmEvent, String>(
         REPORT_BALLOT_NOT_FOUND_EVENT,
-        Endpoint.class));
-    my_relation.add(new Pair<AsmEvent, Class>(
+        UNIMPLEMENTED));
+    my_relation.add(new Pair<AsmEvent, String>(
         SUBMIT_AUDIT_INVESTIGATION_REPORT_EVENT,
-        Endpoint.class));
-    my_relation.add(new Pair<AsmEvent, Class>(
+        UNIMPLEMENTED));
+    my_relation.add(new Pair<AsmEvent, String>(
         SUBMIT_AUDIT_REPORT_EVENT,
-        Endpoint.class));
-    my_relation.add(new Pair<AsmEvent, Class>(
+        UNIMPLEMENTED));
+    my_relation.add(new Pair<AsmEvent, String>(
         SUBMIT_INTERMEDIATE_AUDIT_REPORT_EVENT,
-        Endpoint.class));
+        UNIMPLEMENTED));
   }
     
   /**

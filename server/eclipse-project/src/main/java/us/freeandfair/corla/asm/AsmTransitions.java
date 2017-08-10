@@ -28,6 +28,7 @@ import us.freeandfair.corla.util.Pair;
  * @author Joseph R. Kiniry <kiniry@freeandfair.us>
  * @version 0.0.1
  */
+@SuppressWarnings({"PMD.TooManyStaticImports", "PMD.AvoidDuplicateLiterals"})
 public interface AsmTransitions {
   /**
    * The Department of State Dashboard's transition function.
@@ -37,7 +38,7 @@ public interface AsmTransitions {
     ONE(new Pair<AsmState, AsmEvent>(DOS_INITIAL_STATE, 
         AUTHENTICATE_STATE_ADMINISTRATOR_EVENT),
         DOS_AUTHENTICATED),
-    TWO(new Pair<AsmState, AsmEvent>(DOS_AUTHENTICATED, 
+    TWO(new Pair<AsmState, AsmEvent>(DOS_AUTHENTICATED,
         ESTABLISH_RISK_LIMIT_FOR_COMPARISON_AUDITS_EVENT),
         RISK_LIMITS_SET),
     THREE(new Pair<AsmState, AsmEvent>(RISK_LIMITS_SET, 
@@ -81,6 +82,7 @@ public interface AsmTransitions {
     /**
      * The pair holding a single transition.
      */
+    @SuppressWarnings("PMD.ConstantsInInterface")
     protected final Pair<Pair<AsmState, AsmEvent>, AsmState> my_pair;
     
     /**
@@ -196,6 +198,7 @@ public interface AsmTransitions {
     /**
      * The pair holding a single transition.
      */
+    @SuppressWarnings("PMD.ConstantsInInterface")
     protected final Pair<Pair<AsmState, AsmEvent>, AsmState> my_pair;
     
     /**
@@ -242,6 +245,7 @@ public interface AsmTransitions {
     /**
      * The pair holding a single transition.
      */
+    @SuppressWarnings("PMD.ConstantsInInterface")
     protected final Pair<Pair<AsmState, AsmEvent>, AsmState> my_pair;
     
     /**
@@ -297,6 +301,7 @@ public interface AsmTransitions {
     /**
      * The pair holding a single transition.
      */
+    @SuppressWarnings("PMD.ConstantsInInterface")
     protected final Pair<Pair<AsmState, AsmEvent>, AsmState> my_pair;
 
     /**
