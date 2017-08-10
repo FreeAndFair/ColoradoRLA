@@ -14,6 +14,7 @@ package us.freeandfair.corla.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -161,6 +162,14 @@ public class DepartmentOfStateDashboard extends AbstractEntity implements Serial
     }
     the_contest_to_audit.setDashboard(this);
     my_contests_to_audit.add(the_contest_to_audit);
+  }
+  
+  /**
+   * @return the current set of contests to audit. This is an unmodifiable
+   * set; to update, use updateContestToAudit().
+   */
+  public Set<ContestToAudit> contestsToAudit() {
+    return Collections.unmodifiableSet(my_contests_to_audit);
   }
   
   /**
