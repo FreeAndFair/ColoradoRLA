@@ -9,7 +9,7 @@
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
-package us.freeandfair.corla.model;
+package us.freeandfair.corla.query;
 
 import java.util.List;
 
@@ -23,7 +23,8 @@ import javax.persistence.criteria.Root;
 import org.hibernate.Session;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.hibernate.Persistence;
+import us.freeandfair.corla.model.Administrator;
+import us.freeandfair.corla.persistence.Persistence;
 
 /**
  * Queries having to do with Administrator entities.

@@ -39,12 +39,12 @@ import spark.Response;
 import spark.Service;
 
 import us.freeandfair.corla.endpoint.Endpoint;
-import us.freeandfair.corla.gson.FreeAndFairNamingStrategy;
-import us.freeandfair.corla.hibernate.Persistence;
+import us.freeandfair.corla.json.FreeAndFairNamingStrategy;
 import us.freeandfair.corla.model.Administrator;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.County;
-import us.freeandfair.corla.model.CountyQueries;
+import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.query.CountyQueries;
 
 /**
  * The main executable for the ColoradoRLA server. 

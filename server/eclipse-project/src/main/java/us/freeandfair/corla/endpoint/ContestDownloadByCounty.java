@@ -27,10 +27,10 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.hibernate.Persistence;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.County;
-import us.freeandfair.corla.model.CountyQueries;
+import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.query.CountyQueries;
 import us.freeandfair.corla.util.SparkHelper;
 
 /**

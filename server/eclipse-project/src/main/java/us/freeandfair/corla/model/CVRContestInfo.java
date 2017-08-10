@@ -33,8 +33,8 @@ import javax.persistence.Table;
 
 import com.google.gson.annotations.JsonAdapter;
 
-import us.freeandfair.corla.gson.CVRContestInfoJsonAdapter;
-import us.freeandfair.corla.hibernate.AbstractEntity;
+import us.freeandfair.corla.json.CVRContestInfoJsonAdapter;
+import us.freeandfair.corla.persistence.AbstractEntity;
 
 /**
  * A cast vote record contains information about a single ballot, either 

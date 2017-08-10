@@ -27,13 +27,13 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.hibernate.Persistence;
 import us.freeandfair.corla.model.CVRContestInfo;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.Choice;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.County;
+import us.freeandfair.corla.persistence.Persistence;
 
 /**
  * @description <description>

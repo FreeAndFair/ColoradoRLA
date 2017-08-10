@@ -9,7 +9,7 @@
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
-package us.freeandfair.corla.hibernate;
+package us.freeandfair.corla.persistence;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
