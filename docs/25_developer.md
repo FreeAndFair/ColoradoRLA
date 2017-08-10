@@ -201,7 +201,7 @@ createdb -O corla corla
 the SQL in `corla-test-credentials.sql` (found in the `test` directory
 of the repository). This can be done with the following command:
 ```
-psql -U corla -d corla -a -f corla-test-credentials.sql
+psql -U corla -d corla -a -f corla-test-credentials.psql
 ```
 
 That's it. If the database is there the server will use it and will,

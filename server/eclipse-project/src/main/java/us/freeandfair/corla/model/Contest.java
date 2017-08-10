@@ -21,10 +21,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.MapKeyColumn;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
@@ -65,12 +68,21 @@ public class Contest extends AbstractEntity implements Serializable {
    */
   @ElementCollection(fetch = FetchType.EAGER)
   @OrderColumn(name = "index")
+  @CollectionTable(name = "contest_choice",
+                   joinColumns = @JoinColumn(name = "contest_id", 
+                                             referencedColumnName = "my_id"))
+  @Column(name = "choice")
   private List<String> my_choice_names;
   
   /**
    * The contest choice descriptions.
    */
   @ElementCollection(fetch = FetchType.EAGER)
+  @CollectionTable(name = "contest_choice_description",
+                   joinColumns = @JoinColumn(name = "contest_id", 
+                                             referencedColumnName = "my_id"))
+  @MapKeyColumn(name = "choice")
+  @Column(name = "description")
   private Map<String, String> my_choice_descriptions;
   
   /**

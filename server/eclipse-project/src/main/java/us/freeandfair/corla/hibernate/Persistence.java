@@ -23,6 +23,10 @@ import java.util.Scanner;
 
 import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
@@ -539,15 +543,33 @@ public final class Persistence {
   // TODO: make streaming or iterable
   public static <T extends PersistentEntity> List<T> getAll(final Class<T> the_class) 
       throws PersistenceException {
+    final List<T> result = new ArrayList<>();
+    
     if (hasDB()) {
       try {
-        return getMatching(the_class.newInstance(), the_class);
-      } catch (final IllegalAccessException | InstantiationException e) {
-        return new ArrayList<>();
+        final boolean transaction = Persistence.beginTransaction();
+        final Session s = Persistence.currentSession();
+        final CriteriaBuilder cb = s.getCriteriaBuilder();
+        final CriteriaQuery<T> cq = cb.createQuery(the_class);
+        final Root<T> root = cq.from(the_class);
+        cq.select(root);
+        final TypedQuery<T> query = s.createQuery(cq);
+        result.addAll(query.getResultList());
+        if (transaction) {
+          try {
+            Persistence.commitTransaction();
+          } catch (final RollbackException e) {
+            Persistence.rollbackTransaction();
+          }
+        }
+      } catch (final PersistenceException e) {
+        Main.LOGGER.error("could not query database for county");
       }
     } else {
       throw new PersistenceException(NO_DATABASE);
     }
+    
+    return result;
   }
   
   /**

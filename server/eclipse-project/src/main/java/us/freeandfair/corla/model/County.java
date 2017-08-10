@@ -17,10 +17,12 @@ import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 import java.io.Serializable;
 import java.util.Set;
 
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 
 import us.freeandfair.corla.hibernate.AbstractEntity;
@@ -53,17 +55,25 @@ public class County extends AbstractEntity implements Serializable {
    */
   @Column(nullable = false, updatable = false)
   private Integer my_identifier;
-  
+ 
   /**
    * The contests in this county.
    */
   @ElementCollection(fetch = FetchType.EAGER)
+  @CollectionTable(name = "county_contest",
+                   joinColumns = @JoinColumn(name = "county_id", 
+                                             referencedColumnName = "my_id"))
+  @Column(name = "contest_id")
   private Set<Contest> my_contests;
   
   /**
    * The administrators for this county.
    */
   @ElementCollection(fetch = FetchType.EAGER)
+  @CollectionTable(name = "county_administrator",
+                   joinColumns = @JoinColumn(name = "county_id", 
+                                             referencedColumnName = "my_id"))
+  @Column(name = "administrator_id")
   private Set<Administrator> my_administrators;
 
   /**

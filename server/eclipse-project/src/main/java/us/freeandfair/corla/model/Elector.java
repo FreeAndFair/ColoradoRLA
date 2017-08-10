@@ -28,7 +28,7 @@ import us.freeandfair.corla.util.EqualsHashcodeHelper;
  * @version 0.0.1
  */
 @Entity
-@Table(name = "choice")
+@Table(name = "elector")
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")

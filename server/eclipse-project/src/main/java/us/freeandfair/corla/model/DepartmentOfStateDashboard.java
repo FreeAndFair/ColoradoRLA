@@ -12,13 +12,25 @@
 
 package us.freeandfair.corla.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
+import javax.persistence.MapKeyJoinColumn;
+import javax.persistence.Table;
+
+import us.freeandfair.corla.hibernate.AbstractEntity;
 
 /**
  * The Department of State dashboard.
@@ -26,29 +38,51 @@ import java.util.Set;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-public class DepartmentOfStateDashboard {
+// TODO this is an unusual entity in that it should really be a singleton; 
+// there may be a better way to handle this than what is being done now.
+@Entity
+@Table(name = "dos_dashboard")
+// this class has many fields that would normally be declared final, but
+// cannot be for compatibility with Hibernate and JPA.
+@SuppressWarnings("PMD.ImmutableField")
+public class DepartmentOfStateDashboard extends AbstractEntity implements Serializable {  
   /**
-   * The county dashboards for all counties (from which status and other
-   * information can be gathered).
+   * The minimum valid random seed.
    */
-  private final Map<County, CountyDashboard> my_county_dashboards = 
-      new HashMap<County, CountyDashboard>();
+  public static final BigInteger MIN_RANDOM_SEED =
+      new BigInteger("9999999999999999999");
+  
+  /**
+   * The serialVersionUID.
+   */
+  private static final long serialVersionUID = 1; 
   
   /**
    * The contests to be audited and the reasons for auditing.
    */
-  private final Map<Contest, AuditReason> my_audit_reasons = 
+  @ElementCollection
+  @CollectionTable(name = "dos_dashboard_contest_audit_reason",
+                   joinColumns = @JoinColumn(name = "dos_dashboard_id", 
+                                             referencedColumnName = "my_id"))
+  @MapKeyJoinColumn(name = "contest_id")
+  @Column(name = "audit_reason")
+  private Map<Contest, AuditReason> my_audit_reasons = 
       new HashMap<Contest, AuditReason>();
 
   /**
    * The audit stage of the election.
    */
+  @Enumerated(EnumType.STRING)
   private AuditStage my_audit_stage = AuditStage.INITIAL;
   
   /**
    * The set of contests to be hand counted.
    */
-  private final Set<Contest> my_hand_count_contests = 
+  @ElementCollection
+  @CollectionTable(name = "dos_dashboard_hand_count_contest",
+                   joinColumns = @JoinColumn(name = "dos_dashboard_id", 
+                                             referencedColumnName = "my_id"))
+  private Set<Contest> my_hand_count_contests = 
       new HashSet<Contest>();
   
   /**
@@ -62,16 +96,13 @@ public class DepartmentOfStateDashboard {
   private BigInteger my_random_seed;
   
   /**
-   * Constructs a new Department of State dashboard with the specified
-   * collection of counties. Each is given the initial status
-   * CountyStatus.NO_DATA.
-   * 
-   * @param the_counties The counties.
+   * Constructs a new Department of State dashboard with default values.
    */
-  public DepartmentOfStateDashboard(final Collection<County> the_counties) {
-    for (final County c : the_counties) {
-      my_county_dashboards.put(c, new CountyDashboard(c));
-    }
+  // if we delete this constructor, we get warned that each class should
+  // define at least one constructor; we can't win in this situation.
+  @SuppressWarnings("PMD.UnnecessaryConstructor")
+  public DepartmentOfStateDashboard() {
+    super();
   }
   
   /**
@@ -82,13 +113,12 @@ public class DepartmentOfStateDashboard {
   }
   
   /**
-   * Get the dashboard for the specified county.
+   * Sets the audit stage.
    * 
-   * @param the_county The county.
-   * @return the dashboard, or null if it does not exist.
-   */
-  public CountyDashboard dashboardForCounty(final County the_county) {
-    return my_county_dashboards.get(the_county);
+   * @param the_audit_stage The new audit stage.
+   */ 
+  public void setAuditStage(final AuditStage the_audit_stage) {
+    my_audit_stage = the_audit_stage;
   }
   
   /**
@@ -107,7 +137,6 @@ public class DepartmentOfStateDashboard {
   //@ ensures auditStage() == AuditStage.RISK_LIMITS_SET;
   public void setRiskLimitForComparisonAudits(final BigDecimal the_risk_limit) {
     my_risk_limit_for_comparison_audits = the_risk_limit;
-    my_audit_stage = AuditStage.RISK_LIMITS_SET;
   }
   
   /**
@@ -118,8 +147,6 @@ public class DepartmentOfStateDashboard {
    */
   public void selectContestsToAudit(final Map<Contest, AuditReason> the_contests) {
     my_audit_reasons.putAll(the_contests);
-    // TODO this state change doesn't necessarily happen here
-    my_audit_stage = AuditStage.CONTESTS_TO_AUDIT_IDENTIFIED;
   }
   
   /**

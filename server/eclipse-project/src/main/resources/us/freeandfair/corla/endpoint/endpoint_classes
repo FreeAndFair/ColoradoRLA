@@ -13,4 +13,6 @@ us.freeandfair.corla.endpoint.CVRDownload
 us.freeandfair.corla.endpoint.CVRDownloadByCounty
 us.freeandfair.corla.endpoint.CVRDownloadByID
 us.freeandfair.corla.endpoint.CVRExportUpload
+us.freeandfair.corla.endpoint.RiskLimitForComparisonAudits
 us.freeandfair.corla.endpoint.Root
+us.freeandfair.corla.endpoint.UploadRandomSeed
