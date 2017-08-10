@@ -50,6 +50,7 @@
       <property name="excludes" value="us.freeandfair.corla.asm.AsmState.CountyDashboardState"/>
       <property name="excludes" value="us.freeandfair.corla.asm.AsmState.DosDashboardState"/>
       <property name="excludes" value="us.freeandfair.corla.asm.AsmState.RlaToolState"/>
+      <property name="excludes" value="us.freeandfair.corla.asm.UiToAsmEventRelation.UiEvent"/>
     </module>
     <module name="IllegalImport"/>
     <module name="RedundantImport"/>
