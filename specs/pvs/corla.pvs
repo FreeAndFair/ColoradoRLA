@@ -1606,9 +1606,13 @@ BEGIN
 %%% the type and content of which is dependent upon the current audit
 %%% stage.
 % @trace us.freeandfair.corla.model.AuditStage
-  audit_stage: TYPE =
-    { pre_audit, audit_ready_to_start, audit_ongoing, audit_complete,
-      audit_results_published }
+  audit_stage: TYPE = {
+      pre_audit,
+      audit_ready_to_start,
+      audit_ongoing,
+      audit_complete,
+      audit_results_published
+    }
 % @trace us.freeandfair.corla.model.DepartmentOfStateDashboard.auditStage
   overall_audit_stage:
     [department_of_state_dashboard ->
@@ -2795,6 +2799,12 @@ BEGIN
 %%% \todokiniry{Specifications for the transport types.}
   json_spec: TYPE = list[string]
   nothing: json_spec = null
+%%% This is the standard response that the server gives to all public
+%%% inbound events to permit the UI (the view of the MVC architecture)
+%%% to know what state the server is in, which UI elements should be
+%%% enabled (and thus what transitions are legal).
+  server_response: json_spec =
+    (: "server_state", "ui_events" :)
 % Note that this type is used as a response for both ballot manifest
 % and CVR uploads.
   upload_response: json_spec =
