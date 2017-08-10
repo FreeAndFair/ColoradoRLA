@@ -11,8 +11,6 @@
 
 package us.freeandfair.corla.endpoint;
 
-import java.math.BigInteger;
-
 import javax.persistence.PersistenceException;
 
 import org.eclipse.jetty.http.HttpStatus;
