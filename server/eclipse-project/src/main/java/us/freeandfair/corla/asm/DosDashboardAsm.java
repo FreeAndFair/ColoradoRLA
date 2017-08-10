@@ -46,7 +46,7 @@ public class DosDashboardAsm extends Asm {
         new HashMap<Pair<AsmState, AsmEvent>, AsmState>();
     for (final DosDashboardTransitions t : 
         DosDashboardTransitions.values()) {
-      map.put(t.my_pair.getFirst(), t.my_pair.getSecond());
+      map.put(t.value().getFirst(), t.value().getSecond());
     }
     final Set<AsmState> final_states = new HashSet<AsmState>();
     final_states.add(DosDashboardState.AUDIT_RESULTS_PUBLISHED);

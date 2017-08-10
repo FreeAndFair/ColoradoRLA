@@ -83,8 +83,8 @@ public interface AsmTransitions {
      * The pair holding a single transition.
      */
     @SuppressWarnings("PMD.ConstantsInInterface")
-    protected final Pair<Pair<AsmState, AsmEvent>, AsmState> my_pair;
-    
+    private final transient Pair<Pair<AsmState, AsmEvent>, AsmState> my_pair;
+
     /**
      * Create a transition.
      * @param the_pair the (current state, event) pair.
@@ -94,6 +94,14 @@ public interface AsmTransitions {
                             final AsmState the_state) {
       my_pair = new Pair<Pair<AsmState, AsmEvent>, AsmState>(the_pair, the_state);
     }
+    
+    /**
+     * @return the pair encoding this enumeration.
+     */
+    public Pair<Pair<AsmState, AsmEvent>, AsmState> value() {
+      return my_pair;
+    }
+    
   }
   
   /**
@@ -199,9 +207,9 @@ public interface AsmTransitions {
      * The pair holding a single transition.
      */
     @SuppressWarnings("PMD.ConstantsInInterface")
-    protected final Pair<Pair<AsmState, AsmEvent>, AsmState> my_pair;
+    private final transient Pair<Pair<AsmState, AsmEvent>, AsmState> my_pair;
     
-    /**
+   /**
      * Create a transition.
      * @param the_pair the (current state, event) pair.
      * @param the_state the state transitioned to when the pair is witnessed.
@@ -209,6 +217,13 @@ public interface AsmTransitions {
     CountyDashboardTransitions(final Pair<AsmState, AsmEvent> the_pair,
                                final AsmState the_state) {
       my_pair = new Pair<Pair<AsmState, AsmEvent>, AsmState>(the_pair, the_state);
+    }
+    
+    /**
+     * @return the pair encoding this enumeration.
+     */
+    public Pair<Pair<AsmState, AsmEvent>, AsmState> value() {
+      return my_pair;
     }
   }
   
@@ -246,7 +261,7 @@ public interface AsmTransitions {
      * The pair holding a single transition.
      */
     @SuppressWarnings("PMD.ConstantsInInterface")
-    protected final Pair<Pair<AsmState, AsmEvent>, AsmState> my_pair;
+    private final transient Pair<Pair<AsmState, AsmEvent>, AsmState> my_pair;
     
     /**
      * Create a transition.
@@ -256,6 +271,13 @@ public interface AsmTransitions {
     AuditBoardDashboardTransitions(final Pair<AsmState, AsmEvent> the_pair,
                                    final AsmState the_state) {
       my_pair = new Pair<Pair<AsmState, AsmEvent>, AsmState>(the_pair, the_state);
+    }
+    
+    /**
+     * @return the pair encoding this enumeration.
+     */
+    public Pair<Pair<AsmState, AsmEvent>, AsmState> value() {
+      return my_pair;
     }
   }
   
@@ -302,7 +324,7 @@ public interface AsmTransitions {
      * The pair holding a single transition.
      */
     @SuppressWarnings("PMD.ConstantsInInterface")
-    protected final Pair<Pair<AsmState, AsmEvent>, AsmState> my_pair;
+    private final transient Pair<Pair<AsmState, AsmEvent>, AsmState> my_pair;
 
     /**
      * Create a transition.
@@ -313,5 +335,13 @@ public interface AsmTransitions {
                    final AsmState the_state) {
       my_pair = new Pair<Pair<AsmState, AsmEvent>, AsmState>(the_pair, the_state);
     }
+
+    /**
+     * @return the pair encoding this enumeration.
+     */
+    public Pair<Pair<AsmState, AsmEvent>, AsmState> value() {
+      return my_pair;
+    }
+    
   }
 }

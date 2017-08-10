@@ -54,7 +54,7 @@ public class RlaToolAsm extends Asm {
     final Map<Pair<AsmState, AsmEvent>, AsmState> transition_function =
         buildTransitionFunction();
     for (final RlaTransitions t : RlaTransitions.values()) {
-      transition_function.put(t.my_pair.getFirst(), t.my_pair.getSecond());
+      transition_function.put(t.value().getFirst(), t.value().getSecond());
     }
     initialize(states, events, transition_function,
                RLA_TOOL_INITIAL_STATE, final_states);

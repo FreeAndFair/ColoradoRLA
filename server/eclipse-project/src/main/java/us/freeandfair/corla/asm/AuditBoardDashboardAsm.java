@@ -46,7 +46,7 @@ public class AuditBoardDashboardAsm extends Asm {
         new HashMap<Pair<AsmState, AsmEvent>, AsmState>();
     for (final AuditBoardDashboardTransitions t : 
         AuditBoardDashboardTransitions.values()) {
-      map.put(t.my_pair.getFirst(), t.my_pair.getSecond());
+      map.put(t.value().getFirst(), t.value().getSecond());
     }
     final Set<AsmState> final_states = new HashSet<AsmState>();
     final_states.add(AuditBoardDashboardState.AUDIT_REPORT_SUBMITTED_STATE);
