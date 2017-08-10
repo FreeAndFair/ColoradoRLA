@@ -165,6 +165,16 @@ public final class Persistence {
       settings.put(Environment.PASS, system_properties.getProperty("hibernate.pass", ""));
       settings.put(Environment.DIALECT, 
                    system_properties.getProperty("hibernate.dialect", ""));
+      settings.put(Environment.C3P0_MIN_SIZE, 
+                   system_properties.getProperty("hibernate.c3p0.min_size", ""));
+      settings.put(Environment.C3P0_MAX_SIZE, 
+                   system_properties.getProperty("hibernate.c3p0.max_size", ""));
+      settings.put(Environment.C3P0_IDLE_TEST_PERIOD,
+                   system_properties.getProperty("hibernate.c3p0.idle_test_period", ""));
+      settings.put(Environment.C3P0_MAX_STATEMENTS, 
+                   system_properties.getProperty("hibernate.c3p0.max_statements", ""));
+      settings.put(Environment.C3P0_TIMEOUT, 
+                   system_properties.getProperty("hibernate.c3p0.timeout", ""));
       settings.put(Environment.HBM2DDL_AUTO, "update");
       settings.put(Environment.SHOW_SQL, "false");
       settings.put(Environment.PHYSICAL_NAMING_STRATEGY, 
