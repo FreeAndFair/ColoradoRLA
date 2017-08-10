@@ -27,7 +27,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
-import javax.persistence.MapKeyColumn;
+import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.Table;
 
 import us.freeandfair.corla.hibernate.AbstractEntity;
@@ -58,7 +58,7 @@ public class DepartmentOfStateDashboard extends AbstractEntity implements Serial
   @CollectionTable(name = "dos_dashboard_contest_audit_reason",
                    joinColumns = @JoinColumn(name = "dos_dashboard_id", 
                                              referencedColumnName = "my_id"))
-  @MapKeyColumn(name = "contest_id")
+  @MapKeyJoinColumn(name = "contest_id")
   @Column(name = "audit_reason")
   private Map<Contest, AuditReason> my_audit_reasons = 
       new HashMap<Contest, AuditReason>();
@@ -76,7 +76,6 @@ public class DepartmentOfStateDashboard extends AbstractEntity implements Serial
   @CollectionTable(name = "dos_dashboard_hand_count_contest",
                    joinColumns = @JoinColumn(name = "dos_dashboard_id", 
                                              referencedColumnName = "my_id"))
-  @Column(name = "contest_id")
   private Set<Contest> my_hand_count_contests = 
       new HashSet<Contest>();
   
