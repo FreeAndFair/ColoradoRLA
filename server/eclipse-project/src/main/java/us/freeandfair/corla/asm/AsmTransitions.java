@@ -43,7 +43,7 @@ public interface AsmTransitions {
     THREE(new Pair<AsmState, AsmEvent>(RISK_LIMITS_SET, 
         SELECT_CONTESTS_FOR_COMPARISON_AUDIT_EVENT),
           CONTESTS_TO_AUDIT_IDENTIFIED),
-    FOUR(new Pair<AsmState, AsmEvent>(CONTESTS_TO_AUDIT_IDENTIFIED, 
+    FOUR(new Pair<AsmState, AsmEvent>(DATA_TO_AUDIT_PUBLISHED, 
         PUBLIC_SEED_EVENT),
          RANDOM_SEED_PUBLISHED),
     FIVE(new Pair<AsmState, AsmEvent>(RANDOM_SEED_PUBLISHED, 
@@ -73,7 +73,10 @@ public interface AsmTransitions {
            AUDIT_RESULTS_PUBLISHED),
     THIRTEEN(new Pair<AsmState, AsmEvent>(DOS_AUDIT_ONGOING, 
         DOS_REFRESH_EVENT),
-            DOS_AUDIT_ONGOING);
+            DOS_AUDIT_ONGOING),
+    FOURTEEN(new Pair<AsmState, AsmEvent>(CONTESTS_TO_AUDIT_IDENTIFIED, 
+        PUBLISH_AUDIT_DATA_EVENT),
+             DATA_TO_AUDIT_PUBLISHED);
     
     /**
      * The pair holding a single transition.

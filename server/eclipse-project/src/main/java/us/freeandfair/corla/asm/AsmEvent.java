@@ -26,6 +26,7 @@ public interface AsmEvent {
     AUTHENTICATE_STATE_ADMINISTRATOR_EVENT, // public inbound event
     ESTABLISH_RISK_LIMIT_FOR_COMPARISON_AUDITS_EVENT, // public inbound event
     SELECT_CONTESTS_FOR_COMPARISON_AUDIT_EVENT, // public inbound event
+    PUBLISH_AUDIT_DATA_EVENT, // public inbound event @review CDOS
     PUBLIC_SEED_EVENT, // public inbound event
     PUBLISH_BALLOTS_TO_AUDIT_EVENT, // public inbound event
     AUDIT_EVENT, // private internal event

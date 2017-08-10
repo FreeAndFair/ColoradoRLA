@@ -1730,6 +1730,9 @@ BEGIN
   print_ballots_under_audit_list:
     [county, list[ballot] -> ballots_under_audit_instructions]
 
+%%% \todokiniry{Write a specification for publishing data to audit.}
+% @see PR #188 https://github.com/FreeAndFair/ColoradoRLA/pull/188
+
 % @trace RDPR-6-Jul-2017 Section 25.2.2(K)
 
 %%% The Secretary of State will randomly select the individual ballots
@@ -2626,6 +2629,7 @@ BEGIN
     { asa_e,    % 1. authenticate_state_administrator_event
       erlfca_e, % 2. establish_risk_limit_for_comparison_audits_event
       scfca_e,  % 3. select_contests_for_comparison_audit_event
+      pdta_e,   % 13. publish_data_to_audit @todo kiniry
       ps_e,     % 4. publish_seed_event
       pbta_e,   % 5. publish_ballots_to_audit_event
       rm_e,     % 7. 8. any report_markings call by any county
@@ -2928,6 +2932,19 @@ BEGIN
                      add((UNAUTHORIZED_401, nothing),
                          singleton((OK_200, nothing)))),
        dos_event := scfca_e,
+       county_event := n_e,
+       audit_event := n_e
+     #)
+  publish_data_to_audit: server_endpoint =
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/publish-data-to-audit",
+       implementation_class := "PublishDataToAudit",
+       in_stream := empty_request,
+       out_stream := add((BAD_REQUEST_400, nothing),
+                     add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing)))),
+       dos_event := pdta_e,
        county_event := n_e,
        audit_event := n_e
      #)
