@@ -14,19 +14,15 @@ package us.freeandfair.corla.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.CollectionTable;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.JoinColumn;
-import javax.persistence.MapKeyJoinColumn;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import us.freeandfair.corla.persistence.AbstractEntity;
@@ -58,31 +54,16 @@ public class DepartmentOfStateDashboard extends AbstractEntity implements Serial
   /**
    * The contests to be audited and the reasons for auditing.
    */
-  @ElementCollection
-  @CollectionTable(name = "dos_dashboard_contest_audit_reason",
-                   joinColumns = @JoinColumn(name = "dos_dashboard_id", 
-                                             referencedColumnName = "my_id"))
-  @MapKeyJoinColumn(name = "contest_id")
-  @Column(name = "audit_reason")
-  private Map<Contest, AuditReason> my_audit_reasons = 
-      new HashMap<Contest, AuditReason>();
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "my_dashboard", 
+             fetch = FetchType.EAGER)
+  @Column(name = "contest_to_audit")
+  private Set<ContestToAudit> my_contests_to_audit;
 
   /**
    * The audit stage of the election.
    */
   @Enumerated(EnumType.STRING)
   private AuditStage my_audit_stage = AuditStage.PRE_AUDIT;
-  
-  /**
-   * The set of contests to be hand counted.
-   */
-  @ElementCollection
-  @CollectionTable(name = "dos_dashboard_hand_count_contest",
-                   joinColumns = @JoinColumn(name = "dos_dashboard_id", 
-                                             referencedColumnName = "my_id"))
-  @Column(name = "contest_id")
-  private Set<Contest> my_hand_count_contests = 
-      new HashSet<Contest>();
   
   /**
    * The risk limit for comparison audits.
@@ -165,24 +146,21 @@ public class DepartmentOfStateDashboard extends AbstractEntity implements Serial
   }
   
   /**
-   * Select the contests to audit.
+   * Update the audit status of a contest. 
    * 
-   * @param the_contests A map from the contests to audit to reasons for 
-   * auditing them.
+   * @param the_contest_to_audit The new status of the contest to audit.
    */
-  public void selectContestsToAudit(final Map<Contest, AuditReason> the_contests) {
-    my_audit_reasons.putAll(the_contests);
-    // TODO this state change doesn't necessarily happen here
-    // my_audit_stage = AuditStage.CONTESTS_TO_AUDIT_IDENTIFIED;
-  }
-  
-  /**
-   * Select a contest for full hand count.
-   * 
-   * @param the_contest The contest.
-   */
-  public void selectContestForHandCount(final Contest the_contest) {
-    my_hand_count_contests.add(the_contest);
+  //@ requires the_contest_to_audit != null;
+  public void updateContestToAudit(final ContestToAudit the_contest_to_audit) {
+    // check to see if the contest is in our set
+    for (final ContestToAudit c : my_contests_to_audit) {
+      if (c.contest().equals(the_contest_to_audit.contest())) {
+        // remove the old entry
+        my_contests_to_audit.remove(c);
+      }
+    }
+    the_contest_to_audit.setDashboard(this);
+    my_contests_to_audit.add(the_contest_to_audit);
   }
   
   /**
