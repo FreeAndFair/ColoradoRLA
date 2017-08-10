@@ -2621,7 +2621,7 @@ BEGIN
     { asa_e,    % 1. authenticate_state_administrator_event
       erlfca_e, % 2. establish_risk_limit_for_comparison_audits_event
       scfca_e,  % 3. select_contests_for_comparison_audit_event
-      ps_e,     % 4. public_seed_event
+      ps_e,     % 4. publish_seed_event
       pbta_e,   % 5. publish_ballots_to_audit_event
       rm_e,     % 7. 8. any report_markings call by any county
       ifhcc_e,  % 9. 10. indicate_full_hand_count_contest_event
@@ -2731,7 +2731,7 @@ BEGIN
       sair_e, % 4. submit_audit_investigation_report_event
       siar_e, % 5. submit_intermediate_audit_report_event
       sar_e,  % 6. submit_audit_report_event
-      ar_e,   % 8. audit_refresh_event
+      r_e,    % 8. audit_refresh_event
       as_e,   % 1. 7. audit_skip
       n_e     % no_event
     }
@@ -2791,25 +2791,55 @@ BEGIN
     UPDATE_BALLOT_MARKS,
     UNDEFINED
   }
-  json_type: TYPE = {
-    NOTHING,
-    AUTHENTICATE,
-    UPLOAD_RESPONSE
-  }
+%%% \todokiniry{Specifications for the transport types.}
+  json_spec: TYPE = list[string]
+  nothing: json_spec = null
+% Note that this type is used as a response for both ballot manifest
+% and CVR uploads.
+  upload_response: json_spec =
+    % legal values for status are:
+    % "too_late", "data_transmission_interrupted", "upload_sucessful",
+    % "checking_hash", "hash_wrong", "hash_verified", "parsing_data",
+    % "file_type_wrong", "data_parsed"
+    (: "status" :)
   http_inbound_spec: TYPE = list[string]
   empty_request: http_inbound_spec = null
-  authenticate_params: http_inbound_spec =
+%%% \todokiniry{Transport specs for Department of State Dashboard.}
+  authenticate_params: http_inbound_spec = % reused for County Dashboard
     (: "username", "password", "second_factor" :)
   risk_limit_params: http_inbound_spec =
     (: "risk_limit" :)
+  select_contests_params: http_inbound_spec =
+    (: "contests" :)
   random_seed_params: http_inbound_spec =
     (: "seed" :)
-  cvr_parts: http_inbound_spec =
-    (: "cvr_file", "county", "hash" :)
-  acvr_parts: http_inbound_spec =
-    (: "audit_cvr" :)
+  ballots_to_audit_params: http_inbound_spec =
+    (: "county" :)
+  full_hand_count_params: http_inbound_spec =
+    (: "contest" :)
+  refresh_department_of_state_dashboard: json_spec =
+    null % @todo kiniry
+%%% \todokiniry{Transport specs for County Dashboard.}
+  audit_board: http_inbound_spec =
+    (: "firstname", "lastname", "party" :)
   ballot_manifest_parts: http_inbound_spec =
     (: "bmi_file", "county", "hash" :)
+  cvr_parts: http_inbound_spec =
+    (: "cvr_file", "county", "hash" :)
+  refresh_county_dashboard: json_spec =
+    null % @todo kiniry
+%%% \todokiniry{Transport specs for Audit Board Dashboard.}
+  acvr_parts: http_inbound_spec =
+    (: "audit_cvr" :)
+  ballot_not_found_params: http_inbound_spec =
+    (: "ballot_id" :)
+  audit_investigation_report: json_spec =
+    (: "report" :)
+  audit_report: json_spec =
+    (: "reason" :)
+  refresh_audit_board_dashboard: json_spec =
+    null % @todo kiniry
+%%% \todokiniry{Discuss HTTP, error codes, and endpoints.}
   http_response_code: TYPE = {
     OK_200,
     BAD_REQUEST_400,
@@ -2823,7 +2853,7 @@ BEGIN
        uri: string,
        implementation_class: string,
        in_stream: http_inbound_spec,
-       out_stream: set[[http_response_code, json_type]],
+       out_stream: set[[http_response_code, json_spec]],
        dos_event: department_of_state_dashboard_event,
        county_event: county_dashboard_event,
        audit_event: audit_board_dashboard_event
@@ -2838,7 +2868,7 @@ BEGIN
        uri := "/",
        implementation_class := "Root",
        in_stream := empty_request,
-       out_stream := singleton((OK_200, NOTHING)),
+       out_stream := singleton((OK_200, nothing)),
        dos_event := s_e,
        county_event := n_e,
        audit_event := n_e
@@ -2850,8 +2880,8 @@ BEGIN
        uri := "/auth-state-admin",
        implementation_class := "AuthenticateStateAdministrator",
        in_stream := authenticate_params,
-       out_stream := add((UNAUTHORIZED_401, NOTHING),
-                         singleton((OK_200, NOTHING))),
+       out_stream := add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing))),
        dos_event := asa_e,
        county_event := n_e,
        audit_event := n_e
@@ -2862,10 +2892,23 @@ BEGIN
        uri := "/risk-limit-comp-audits",
        implementation_class := "EstablishRiskLimitForComparisonAudits",
        in_stream := risk_limit_params,
-       out_stream := add((BAD_REQUEST_400, NOTHING),
-                     add((UNAUTHORIZED_401, NOTHING),
-                         singleton((OK_200, NOTHING)))),
+       out_stream := add((BAD_REQUEST_400, nothing),
+                     add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing)))),
        dos_event := erlfca_e,
+       county_event := n_e,
+       audit_event := n_e
+     #)
+  select_contests: server_endpoint =
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/select-contests",
+       implementation_class := "SelectContestsForAudit",
+       in_stream := select_contests_params,
+       out_stream := add((BAD_REQUEST_400, nothing),
+                     add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing)))),
+       dos_event := scfca_e,
        county_event := n_e,
        audit_event := n_e
      #)
@@ -2875,10 +2918,61 @@ BEGIN
        uri := "/random-seed", % placeholder
        implementation_class := "UploadSeed", % placeholder
        in_stream := random_seed_params,
-       out_stream := add((BAD_REQUEST_400, NOTHING),
-                     add((UNAUTHORIZED_401, NOTHING),
-                         singleton((OK_200, NOTHING)))),
+       out_stream := add((BAD_REQUEST_400, nothing),
+                     add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing)))),
        dos_event := ps_e,
+       county_event := n_e,
+       audit_event := n_e
+     #)
+  publish_ballots: server_endpoint =
+    (# endpoint_type := GET,
+       callback := undefined_callback,
+       uri := "/ballots-to-audit", % placeholder
+       implementation_class := "UploadSeed", % placeholder
+       in_stream := ballots_to_audit_params,
+       out_stream := add((BAD_REQUEST_400, nothing),
+                     add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing)))),
+       dos_event := pbta_e,
+       county_event := n_e,
+       audit_event := n_e
+     #)
+  full_hand_count: server_endpoint =
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/hand-count", % placeholder
+       implementation_class := "IndicateHandCount", % placeholder
+       in_stream := full_hand_count_params,
+       out_stream := add((BAD_REQUEST_400, nothing),
+                     add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing)))),
+       dos_event := ifhcc_e,
+       county_event := n_e,
+       audit_event := n_e
+     #)
+  publish_report: server_endpoint =
+    (# endpoint_type := GET,
+       callback := undefined_callback,
+       uri := "/publish-report", % placeholder
+       implementation_class := "PublishAuditReport",
+       in_stream := empty_request,
+       out_stream := add((BAD_REQUEST_400, nothing),
+                     add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing)))),
+       dos_event := par_e,
+       county_event := n_e,
+       audit_event := n_e
+     #)
+  refresh_department_of_state_dashboard: server_endpoint =
+    (# endpoint_type := GET,
+       callback := undefined_callback,
+       uri := "/dos-dashboard", % placeholder
+       implementation_class := "DepartmentOfStateDashboard",
+       in_stream := empty_request,
+       out_stream := add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing))),
+       dos_event := r_e,
        county_event := n_e,
        audit_event := n_e
      #)
@@ -2889,10 +2983,22 @@ BEGIN
        uri := "/auth-county-admin",
        implementation_class := "AuthenticateCountyAdministrator",
        in_stream := authenticate_params,
-       out_stream := add((UNAUTHORIZED_401, NOTHING),
-                         singleton((OK_200, NOTHING))),
+       out_stream := add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing))),
        dos_event := n_e,
        county_event := aca_e,
+       audit_event := n_e
+     #)
+  establish_audit_board: server_endpoint =
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/audit-board",
+       implementation_class := "EstablishAuditBoard",
+       in_stream := audit_board,
+       out_stream := add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing))),
+       dos_event := n_e,
+       county_event := eab_e,
        audit_event := n_e
      #)
   ballot_manifest_upload: server_endpoint =
@@ -2901,9 +3007,9 @@ BEGIN
        uri := "/upload-ballot-manifest",
        implementation_class := "BallotManifestUpload",
        in_stream := empty_request,
-       out_stream := add((BAD_REQUEST_400, UPLOAD_RESPONSE),
-                     add((UNAUTHORIZED_401, NOTHING),
-                         singleton((OK_200, UPLOAD_RESPONSE)))),
+       out_stream := add((BAD_REQUEST_400, upload_response),
+                     add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, upload_response)))),
        dos_event := n_e,
        county_event := cuvbm_e,
        audit_event := n_e
@@ -2914,26 +3020,98 @@ BEGIN
        uri := "/upload-cvr-export",
        implementation_class := "CVRExportUpload",
        in_stream := cvr_parts,
-       out_stream := add((UNPROCESSABLE_ENTITY_422, UPLOAD_RESPONSE),
-                     add((UNAUTHORIZED_401, NOTHING),
-                         singleton((OK_200, UPLOAD_RESPONSE)))),
+       out_stream := add((UNPROCESSABLE_ENTITY_422, upload_response),
+                     add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, upload_response)))),
        dos_event := n_e,
        county_event := uvc_e,
        audit_event := n_e
      #)
+  refresh_county_dashboard: server_endpoint =
+    (# endpoint_type := GET,
+       callback := undefined_callback,
+       uri := "/county-dashboard", % placeholder
+       implementation_class := "CountyDashboard",
+       in_stream := empty_request,
+       out_stream := add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, refresh_county_dashboard))),
+       dos_event := n_e,
+       county_event := r_e,
+       audit_event := n_e
+     #)
 %%% \subsection{Audit Board Dashboard Endpoints}
-  acvr_upload: server_endpoint =
+  acvr_upload: server_endpoint = % aka report markings event
     (# endpoint_type := POST,
        callback := undefined_callback,
        uri := "/upload-audit-cvr",
        implementation_class := "ACVRUpload",
        in_stream := acvr_parts,
-       out_stream := add((UNPROCESSABLE_ENTITY_422, UPLOAD_RESPONSE),
-                     add((UNAUTHORIZED_401, NOTHING),
-                         singleton((OK_200, UPLOAD_RESPONSE)))),
+       out_stream := add((UNPROCESSABLE_ENTITY_422, upload_response),
+                     add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing)))),
        dos_event := n_e,
        county_event := n_e,
        audit_event := rm_e
+     #)
+  ballot_not_found: server_endpoint =
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/ballot-not-found",
+       implementation_class := "BallotNotFound",
+       in_stream := ballot_not_found_params,
+       out_stream := add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing))),
+       dos_event := n_e,
+       county_event := n_e,
+       audit_event := rbnf_e
+     #)
+  audit_investigation_report: server_endpoint =
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/audit-investigation-report",
+       implementation_class := "AuditInvestigationReport",
+       in_stream := audit_investigation_report,
+       out_stream := add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing))),
+       dos_event := n_e,
+       county_event := n_e,
+       audit_event := sair_e
+     #)
+  intermediate_audit_report: server_endpoint =
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/intermediate-audit-report",
+       implementation_class := "IntermediateAuditReport",
+       in_stream := audit_report,
+       out_stream := add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing))),
+       dos_event := n_e,
+       county_event := n_e,
+       audit_event := siar_e
+     #)
+  audit_report: server_endpoint =
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/audit-report",
+       implementation_class := "AuditReport",
+       in_stream := audit_report,
+       out_stream := add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing))),
+       dos_event := n_e,
+       county_event := n_e,
+       audit_event := sar_e
+     #)
+  refresh_audit_board_dashboard: server_endpoint =
+    (# endpoint_type := GET,
+       callback := undefined_callback,
+       uri := "/audit-board-dashboard", % placeholder
+       implementation_class := "AuditBoardDashboard",
+       in_stream := empty_request,
+       out_stream := add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, refresh_audit_board_dashboard))),
+       dos_event := n_e,
+       county_event := n_e,
+       audit_event := r_e
      #)
 %%% \todokiniry{Explain these relations and their use.}
   ui_to_asm_event_relation: pred[[ui_event, asm_event]]
