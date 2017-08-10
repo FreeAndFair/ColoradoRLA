@@ -1760,7 +1760,8 @@ BEGIN
               set[county_status],
               seed,
               % @todo kiniry Shouldn't this just be list[ballot]?
-              list[[contest, list[ballot]]],
+              % @todo kiniry There isn't any reason why the DOS should have this.
+              %list[[contest, list[ballot]]],
               set[full_hand_count_contest]]]
 END department_of_state_dashboard
 
@@ -1919,14 +1920,14 @@ BEGIN
              [county_dashboard,
               string, % general_static_information
               set[elector], % the audit board members
-              digest, % the CVR digest
               digest, % the ballot manifest digest
+              digest, % the CVR digest
               set[contest], % the contests on the ballot in this county
               set[[audited_contest, audit_reason]], % the contests under
               % audit in this county
               date_and_time, % start date and time of the audit
               nat, % number of ballots according to CVR
-              nat, % total number of ballots to audit according to RLA
+              nat, % total estimated number of ballots to audit according to RLA
               nat, % total number of ballots audited thus far
               nat, % total number of discrepancies (overstatements +
               % understatements) seen thus far
@@ -2817,8 +2818,10 @@ BEGIN
     (: "county" :)
   full_hand_count_params: http_inbound_spec =
     (: "contest" :)
+  % @trace department_of_state_dashboard.refresh
   refresh_department_of_state_dashboard: json_spec =
-    null % @todo kiniry
+    (: "audit_stage", "risk_limit", "audited_contests",
+       "county_statuses", "seed", "full_hand_count_contests" :)
 %%% \todokiniry{Transport specs for County Dashboard.}
   audit_board: http_inbound_spec =
     (: "firstname", "lastname", "party" :)
@@ -2826,8 +2829,14 @@ BEGIN
     (: "bmi_file", "county", "hash" :)
   cvr_parts: http_inbound_spec =
     (: "cvr_file", "county", "hash" :)
+  % @trace county_dashboard.refresh
   refresh_county_dashboard: json_spec =
-    null % @todo kiniry
+    (: "general_information", "audit_board_members",
+       "ballot_manifest_digest", "CVR_digest",
+       "contests_on_ballot", "contests_under_audit_with_reasons",
+       "date_and_time_of_audit", "estimated_number_of_ballots_to_audit",
+       "number_of_ballots_audited", "number_of_descrepencies",
+       "number_of_disagreements" :)
 %%% \todokiniry{Transport specs for Audit Board Dashboard.}
   acvr_parts: http_inbound_spec =
     (: "audit_cvr" :)
