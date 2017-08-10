@@ -417,8 +417,6 @@ END server
 %%% A number of general elections concepts are necessary to specify
 %%% the RLA Tool. Some are generic to all elections, and others are
 %%% specific to Colorado.
-
-
 elections: THEORY
 BEGIN
 %%% Voters make the choices that determine the
@@ -432,6 +430,7 @@ BEGIN
     [# firstname: string,
        lastname: string,
        party_affiliation: political_party #]
+% @trace us.freeandfair.corla.model.Elector
   elector: TYPE = voter
 %%% Some voters are UOCAVA voters. What follows is one way to
 %%% formalize such, simply stating that the type
@@ -443,6 +442,13 @@ BEGIN
 %%% voter, a candidate, both, or neither.
   candidate: TYPE FROM person
 
+% @trace us.freeandfair.corla.model.Choice
+  option: TYPE =
+    [# name: string, description: string #]
+% @review kiniry Joey implemented option as Choice, so a choice on a
+% (a)CVR in a multi-seat race with refines to @tbd.
+  choice: TYPE = set[option]
+
 %%% Elections focus on contests, each of which represents a choice
 %%% that voters can make. Making a legal choice ranges enormously
 %%% across the Earth, from marking a vote for a candidate by filling
@@ -452,8 +458,12 @@ BEGIN
 %%% and the ballots theory. sfsinger suggests: contests are grouped
 %%% into elections, not ballots. So define contests first. Then a
 %%% ballot is created to represent a set of contests.}
+% @trace us.freeandfair.corla.model.Contest
   contest: TYPE =
-    [# name: string, description: string #] % , choices: choice #]
+    [# name: string,
+       description: string,
+       choices: choice,
+       votes_allowed: nat #]
 
 % @trace RDPR-6-Jul-2017 Section 25.1.2
 % @description A contest selected by the Secretary of State for a
@@ -506,8 +516,13 @@ BEGIN
 %%% state. 
   county_id: TYPE = nat
   county_name: TYPE = string
+% @trace us.freeandfair.corla.model.County
+% @todo kiniry dmz Correct refinement for county.
   county: TYPE =
     [# name: county_name, id: county_id #]
+% @trace us.freeandfair.corla.model.CountyStatus
+  county_status: TYPE =
+    { no_data, cvrs_uploaded_successfully, error_in_uploaded_data }
   state: TYPE = set[county]
   nation: TYPE = set[state]
   organization: TYPE
@@ -705,11 +720,10 @@ BEGIN
 %%% \todokiniry{Need to add model information for write-in votes.}
 % @review kiniry dmz Isn't every contest a ballot contest?
   ballot_contest: TYPE = contest
-  option: TYPE = string
-  choice: TYPE = set[option]
 
-% @review kiniry dmz I think of contests_with_candidates and ballot_questions
-% as subsets of "contests". A ballot question is a contest between "yes" and "no".
+% @review kiniry dmz I think of contests_with_candidates and
+% ballot_questions as subsets of "contests". A ballot question is a
+% contest between "yes" and "no".
 
 %%% Ballots are often grouped into batches.
 % @description A batch is a set of ballots.
@@ -772,6 +786,7 @@ BEGIN
 %%% \todokiniry{These types will be refined when we review the
 %%% information provided by CDOS on 20 July 2017 about Dominion's file
 %%% formats.}
+% @trace us.freeandfair.corla.model.BallotManifestInfo
   ballot_manifest_info: TYPE =
     [county_id,
      scanner_id,
@@ -787,7 +802,8 @@ BEGIN
 
 END ballot_manifests
 
-% @review kiniry dmz these (votes, cvrs) belongs in the ballot section, not the ballot manifest section.
+% @review kiniry dmz these (votes, cvrs) belongs in the ballot
+% section, not the ballot manifest section.
 %%% The interpretation of the meaning of a voter's choice in a single
 %%% ballot contest is either a well-formed vote 
 %%% an overvote, or an
@@ -1205,6 +1221,10 @@ BEGIN
   audit_board: TYPE = set[audit_board_member]
   audit_board_size: AXIOM TBD
   audit_board_members_political_parties_disjoint: AXIOM TBD
+% @todo in real world political parties must be disjoint, however
+% this tool enforces only that the two audit board members are neither
+% both Republicans nor both Democrats.
+
 
 %%% These two terms are used but underdefined at this time.  When the
 %%% C.R.S. or CO law is further refined to explain audit
@@ -1401,7 +1421,7 @@ BEGIN
             elections_equipment,
             information_systems,
             vote
-
+% @trace us.freeandfair.corla.model.CVRContestInfo
   cvr: TYPE = [# votes: set[vote],
                  description: ballot_manifest_info #]
   verified?: pred[cvr]
@@ -1530,19 +1550,26 @@ dashboard: DATATYPE
                 audit_board_dashboard,
                 public_dashboard
 BEGIN
+  IMPORTING elections
 % @description The overall status of the state-wide audit is
 % summarized in the state-wide dashboard.
-  department_of_state_dashboard?:
+% @trace us.freeandfair.corla.model.DepartmentOfStateDashboard
+  department_of_state_dashboard?(counties: set[county]):
     make_department_of_state_dashboard:
     department_of_state_dashboard
 % @description The county dashboard is used to communicate with CDOS,
 % setup the local RLA, and observe the status of the ongoing or
 % finished RLA.
-  county_dashboard?: make_county_dashboard: county_dashboard
+  county_dashboard?(county: county):
+    make_county_dashboard:
+    county_dashboard
 % @description The audit board dashboard is used by the audit board
 % members to understand the state of the audit and to facilitate the
 % audit each ballot under audit.
-  audit_board_dashboard?: make_audit_board_dashboard: audit_board_dashboard
+% @trace us.freeandfair.corla.model.AuditBoardDashboard
+  audit_board_dashboard?(county: county):
+    make_audit_board_dashboard:
+    audit_board_dashboard
 % @description The public dashboard is used by the general public to
 % understand the state of the current state RLA.
   public_dashboard?: make_public_dashboard: public_dashboard
@@ -1566,22 +1593,30 @@ BEGIN
             instructions_forms_reports,
             randomness,
             rlas
-
 %%% CDOS staff, after authenticating to the state-wide dashboard, can
 %%% see the status of the entire election. Various static information
 %%% about the election is displayed along with dynamic information,
 %%% the type and content of which is dependent upon the current audit
 %%% stage.
-
+% @trace us.freeandfair.corla.model.AuditStage
   audit_stage: TYPE =
     { initial, authenticated, risk_limits_set,
       contests_to_audit_identified, random_seed_published,
       ballot_order_defined, audit_ongoing, audit_complete,
       audit_results_published }
-
+% @trace us.freeandfair.corla.model.DepartmentOfStateDashboard.auditStage
+  overall_audit_stage:
+    [department_of_state_dashboard ->
+      [audit_stage, department_of_state_dashboard]]
+%%% State administrators can also pull up the dashboard for any county.
+% @trace us.freeandfair.corla.model.DepartmentOfStateDashboard.dashboardForCounty
+  dashboard_for_county:
+    [department_of_state_dashboard, county ->
+      county_dashboard]
 % @trace RDPR-6-Jul-2017 Section 25.2.2(A)
-%%% The state-wide dashboard will provide a way for the Secretary
-%%% of State to enter the risk limit(s), as required by RDPR-6-Jul-2017 Section 25.2.2(A).
+%%% The state-wide dashboard will provide a way for the Secretary of
+%%% State to enter the risk limit(s), as required by RDPR-6-Jul-2017
+%%% Section 25.2.2(A).
 %%%
 %%% No later than 30 days before Election Day, the Secretary of State
 %%% will establish and publish on the audit center the risk limit(s)
@@ -1589,10 +1624,10 @@ BEGIN
 %%% may establish different risk limits for comparison audits and
 %%% ballot polling audits, but in no event will the risk limit exceed
 %%% five percent.
+% @trace us.freeandfair.corla.model.DepartmentOfStateDashboard.setRiskLimitForComparisonAudits
   establish_risk_limit_for_comparison_audits:
     [department_of_state_dashboard, risk_limit ->
      department_of_state_dashboard]
-
 %%% Because ballot polling audits are mentioned in the current draft
 %%% rules, we must formalize the associated concepts, even though we
 %%% are not implementing support for ballot polling audits in this
@@ -1600,15 +1635,12 @@ BEGIN
   establish_risk_limit_for_ballot_polling_audits:
     [department_of_state_dashboard, risk_limit ->
      department_of_state_dashboard]
-
 %%% The RLA status of each county is a part of the Department of State
 %%% dashboard. At the moment, from a UX point of view, we are assuming
 %%% that it is simply rolled into the overall dashboard, thus there is
 %%% not a state administrator means by which to trigger an update of
 %%% this data separate from all other election data.
-
-  county_status: TYPE =
-    { no_data, cvrs_uploaded_successfully, error_in_uploaded_data }
+% @trace us.freeandfair.corla.model.dashBoardForCounty(county).status
   upload_status: [department_of_state_dashboard -> set[county_status]]
 
 % @trace RDPR-6-Jul-2017 Section 25.2.2(I)
@@ -1642,12 +1674,12 @@ BEGIN
 %%% the canvass deadline.
 
 %%% \end{enumerate}
-
+% @trace us.freeandfair.corla.model.AuditReason
   audit_reason: TYPE =
     { state_wide_contest, county_wide_contest, close_contest,
       geographical_scope, concern_regarding_accuracy,
       opportunitic_benefits, county_clerk_ability, no_audit }
-
+% @trace us.freeandfair.corla.model.DepartmentOfStateDashboard.selectContestsToAudit
   select_contests_for_comparison_audit:
     [department_of_state_dashboard, set[[contest, audit_reason]] ->
      [department_of_state_dashboard, set[audited_contest]]]
@@ -1712,20 +1744,20 @@ BEGIN
 %%% of, and publish on the audit center, the randomly selected ballots
 %%% that each county must audit no later than 11:59 PM MT on the
 %%% tenth day after Election Day.
+% @trace us.freeandfair.corla.model.DepartmentOfStateDashboard.setRandomSeed
   publish_seed:
     [department_of_state_dashboard, seed -> department_of_state_dashboard]
   public_ballots_to_audit:
     [department_of_state_dashboard ->
       [department_of_state_dashboard, list[[contest, list[ballot]]]]]
-
 %%% The Secretary of State can indicate that a contest must be a full
 %%% hand count contest.
 % @review CDOS We need to know what the process is that they want for
 % this functionality.
+% @trace us.freeandfair.corla.model.DepartmentOfStateDashboard.selectContestForHandCount
   indicate_full_hand_count_contest:
     [department_of_state_dashboard, contest ->
       [department_of_state_dashboard, full_hand_count_contest]]
-
 %%% Lastly, state administrators can simply get updates on the current
 %%% state of the election under audit and its RLAs.
   refresh: [department_of_state_dashboard ->
@@ -1763,6 +1795,18 @@ BEGIN
 % @trace RDPR-6-Jul-2017 Section 25.2
   general_static_information: string
 
+%%% The status of the county dashboard depends upon which stage of the
+%%% county has reached in its audit process. The status is obtained
+%%% via the following function. Briefly, either the county has
+%%% uploaded no information at all (\texttt{no\_data}), it has
+%%% uploaded its verified CVRs successfuly
+%%% (\texttt{cvrs\_uploaded\_successfully}), or county administrators
+%%% tried to upload their CVRs and there was an error of some kind
+%%% (\texttt{error\_in\_uploaded\_data}).
+% @trace us.freeandfair.corla.model.CountyDashboard.status
+  county_status:
+    [county -> county_status]
+
 % @trace RDPR-6-Jul-2017 Section 25.2.2(B)
 
 % @explanation No later than 15 days before election day, the
@@ -1780,17 +1824,15 @@ BEGIN
 % board in conducting the audit. To the extent practicable, the audit
 % board should not consist of individuals who participated in ballot
 % resolution or adjudication during the election being audited.
+% @trace us.freeandfair.corla.model.AuditBoardDashboard.setMembers
   establish_audit_board:
     [county_dashboard, set[elector] -> county_dashboard]
-
-
 %%% To prepare for uploading of artifacts to the Secretary of State,
 %%% counties conducting a comparison audit must verify several
 %%% properties (all of which are discussed in
 %%% \Cref{sec:System_Assumptions}). After verifying those
 %%% properties, counties must generate a digest of the CVR file using
 %%% a hash designated by the Secretary of State.
-
 
 % @trace RDPR-6-Jul-2017 Section 25.2.2(E)(5)
 % @trace RDPR-6-Jul-2017 Section 25.2.2(F)
@@ -1819,7 +1861,6 @@ BEGIN
 
   generate_ballot_manifest_digest: [ballot_manifest_file -> digest]
 
-
 %%% \todokiniry{Improve/strengthen the dependent types in these upload
 %%% signatures below.}
 
@@ -1834,7 +1875,7 @@ BEGIN
      [county_dashboard, email, upload_system_message]]
 
 %%% \item its verified and hashed CVR export to the RLA Tool; and
-
+% @trace us.freeandfair.corla.model.CountyDashboard.setCVRs
   upload_verified_cvrs:
     [county_dashboard, cvr_file, digest ->
      [county_dashboard, email, upload_system_message]]
@@ -1846,7 +1887,6 @@ BEGIN
 
   upload_tabulation_results:
     [enr_server, cvr_tabulation_outcome -> enr_server]
-
 
 % @trace RDPR-6-Jul-2017 Section 25.2.2(G)
 
@@ -1861,6 +1901,11 @@ BEGIN
 %%% election night reporting system.
 
 %%% \end{enumerate}
+
+%%% There is exactly one audit board dashboard for each county.
+% @trace us.freeandfair.corla.model.CountyDashboard.auditBoardDashboard
+  audit_board_dashboard:
+    [county_dashboard -> audit_board_dashboard]
 
 %%% Note that both of these uploads are facilitated by the functions
 %%% defined above, as their types do not mandate a particular kind of
@@ -1893,13 +1938,20 @@ BEGIN
 %%% The audit board must examine each randomly selected ballot or
 %%% VVPAT and report the voter markings or choices using the RLA Tool
 %%% or other means specified by the Secretary of State.
+% @trace us.freeandfair.corla.model.AuditBoardDashboard.setCVRsToAudit
   next_ballot_for_audit:
     [audit_board_dashboard ->
-     [ballot_manifest_info, nat, audit_board_dashboard]]
+     [ballot_manifest_info, audit_board_dashboard]]
+%%% A list of which ballots have been audited thus far is also
+%%% available on the UI.
+  audit_cvrs:
+    [audit_board_dashboard ->
+     [list[cvr], audit_board_dashboard]]
 % @trace Per email from Jerome Lovato at CDOS on 19 July 2017: The
 % Audit Board will enter the choices for the entire ballot including
 % overvotes and undervotes. The tool must not allow the Audit Board to
 % skip contests.
+% @trace us.freeandfair.corla.model.AuditBoardDashboard.submitAuditCVR
   report_markings:
     [audit_board_dashboard, ballot_manifest_info,
      list[ballot_mark] -> audit_board_dashboard]
@@ -1935,6 +1987,7 @@ BEGIN
 %%% CVRs and post the results of the comparison and any margin
 %%% overstatements or understatements on the audit center.
 %%% \end{quotation}
+% @trace us.freeandfair.corla.model.AuditBoardDashboard.submitAuditCVR
   compare_reported_markings_to_cvr:
     [ballot, cvr, list[ballot_mark] ->
      [margin_overstatement, margin_understatement]]
@@ -2319,7 +2372,6 @@ END logging
 %%%         relationships
 %%%   \end{enumerate}
 %%% \end{enumerate}
-
 data_model: THEORY
 BEGIN
   IMPORTING FAFSSL,
@@ -2334,7 +2386,6 @@ BEGIN
 
   be: VAR back_end
   db: VAR database
-
 %%% The first set of data persistently stored relates to
 %%% authentication. Some of this data will be stored in the two-factor
 %%% authentication system provided by CDOS. All other data must be
@@ -2343,19 +2394,16 @@ BEGIN
 %%% authentication credential pair.
   authentication_table: TYPE =
     sequence[[administrator, two_factor_authentication]]
-
 %%% The Department of State dashboard permits State administrators to
 %%% establish risk limits for each contest, specify which kinds of
 %%% audits are used for which races and in which counties, etc.  Most
 %%% of the dynamic data available to State administrators is provided
 %%% via County administrators using the County dashboard.
-
   state_status_table: TYPE =
     sequence[[# county: county,
                 general_status: county_status,
                 audit_status: audit_stage,
                 date: string #]]
-
 %%% There is also some background information that relates to the RLA
 %%% overall, much of which is relevant to the Department of State
 %%% dashboard. In particular, geographic (such as the identity of the
@@ -2386,7 +2434,6 @@ BEGIN
     sequence[[contest, sequence[ballot_manifest_info]]]
   audited_ballot_by_county_list_table: TYPE =
     sequence[[county, sequence[ballot_manifest_info]]]
-
 %%% County administator actions create and update several kinds of
 %%% data. For example, they define who is on their audit boards, they
 %%% generate digests of files critical to the audit (principly, ballot
@@ -2395,7 +2442,6 @@ BEGIN
 %%% For general county information, we currently model the data as
 %%% property/value pairs in a record. For example, we imagine that
 %%% each county will want to display who their County Clerk is, etc.
-
   county_general_information_table: TYPE =
     sequence[[# property: string, value: string #]]
   audit_board_table: TYPE =
@@ -2412,7 +2458,6 @@ BEGIN
                 data: cvr_file #]]
   ballot_manifest_table: TYPE =
     sequence[[county, ballot_manifest_info]]
-
 %%% Cast vote records uploaded by counties contain CVRs of three
 %%% kinds: CVRs for local (county) contests, CVRs for contests that
 %%% span counties, and CVRs for contests that span the whole
@@ -2423,28 +2468,21 @@ BEGIN
 %%% We can store and organize this information in several different
 %%% ways. First, we can simply store the individual CVRs uploaded by
 %%% a given county in a table.
-
   cvr_table: TYPE =
     sequence[[county, cvr]]
-
 %%% But we also need to store all CVRs for each contest, aggregating
 %%% all CVRs across the upload from all counties in which the contest
 %%% was on the ballot.
-
   contest_cvr_table: TYPE =
     sequence[[contest, cvr]]
-
 %%% Tabulation results as calculated from the CVRs.
-
   tabulation_result_table: TYPE =
     sequence[[contest, cvr_tabulation_outcome]]
-
 %%% While running the RLA, the Audit Board uploads information about
 %%% each ballot they audit. Also, if any investigations are made and
 %%% remedied during the audit, that information must be stored as
 %%% well. Finally, after an audit is complete an audit report is
 %%% uploaded and stored.
-
   ballots_under_audit_table: TYPE =
     sequence[[ballot,
               list[ballot_mark],
@@ -2457,13 +2495,11 @@ BEGIN
     sequence[[county, audit_report]]
   rla_summary_results_table: TYPE =
     sequence[[contest, summary_results_report]]
-
 %%% All of the information on the public dashboard is derived from the
 %%% above data.
 
 %%% \todokiniry{Add election as first column to every table? Or have a
 %%% different DB per election?}
-
 END data_model
 
 %+END data_model
