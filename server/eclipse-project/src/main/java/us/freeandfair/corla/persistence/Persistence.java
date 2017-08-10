@@ -168,7 +168,7 @@ public final class Persistence {
       settings.put(Environment.HBM2DDL_AUTO, "update");
       settings.put(Environment.SHOW_SQL, "false");
       settings.put(Environment.PHYSICAL_NAMING_STRATEGY, 
-                   "us.freeandfair.corla.hibernate.FreeAndFairNamingStrategy");
+                   "us.freeandfair.corla.persistence.FreeAndFairNamingStrategy");
       settings.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
       settings.put(Environment.USE_STREAMS_FOR_BINARY, "true");
       
