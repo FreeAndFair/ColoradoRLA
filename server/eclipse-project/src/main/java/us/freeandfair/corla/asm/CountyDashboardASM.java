@@ -45,14 +45,17 @@ public class CountyDashboardASM extends AbstractStateMachine {
   
   /**
    * Create the County Dashboard ASM.
+   * 
+   * @param the_county_id The county identifier.
    * @trace asm.county_dashboard_asm
    */
-  public CountyDashboardASM() {
+  public CountyDashboardASM(final Integer the_county_id) {
     super(new HashSet<ASMState>(Arrays.asList(CountyDashboardState.values())),
           new HashSet<ASMEvent>(Arrays.asList(CountyDashboardEvent.values())),
           transitionsFor(Arrays.
                          asList(CountyDashboardTransitionFunction.values())),
           CountyDashboardState.COUNTY_INITIAL_STATE,
-          new HashSet<ASMState>(Arrays.asList(FINAL_STATES)));
+          new HashSet<ASMState>(Arrays.asList(FINAL_STATES)),
+          String.valueOf(the_county_id));
   } 
 }

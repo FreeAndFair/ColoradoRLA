@@ -50,7 +50,9 @@ public class RLAToolASM extends AbstractStateMachine {
 
   static {
     final AbstractStateMachine[] asms = 
-        {new DoSDashboardASM(), new CountyDashboardASM(), new AuditBoardDashboardASM()};
+        {new DoSDashboardASM(), 
+         new CountyDashboardASM(null), // this will have to be rethought some
+         new AuditBoardDashboardASM(null)}; // this too
     
     for (final AbstractStateMachine asm : asms) {
       STATES.addAll(asm.my_states);
@@ -65,6 +67,7 @@ public class RLAToolASM extends AbstractStateMachine {
    */
   public RLAToolASM() {
     super(STATES, EVENTS, TRANSITION_FUNCTION, 
-          RLAToolState.RLA_TOOL_INITIAL_STATE, FINAL_STATES);
+          RLAToolState.RLA_TOOL_INITIAL_STATE, FINAL_STATES,
+          null); // there is only one RLA Tool ASM, so no identity passed
   }
 }

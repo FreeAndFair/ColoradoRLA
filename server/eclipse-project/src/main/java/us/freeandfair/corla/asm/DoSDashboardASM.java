@@ -51,6 +51,7 @@ public class DoSDashboardASM extends AbstractStateMachine {
           transitionsFor(Arrays.
                          asList(DoSDashboardTransitionFunction.values())),
           DoSDashboardState.DOS_INITIAL_STATE,
-          new HashSet<ASMState>(Arrays.asList(FINAL_STATES)));
+          new HashSet<ASMState>(Arrays.asList(FINAL_STATES)),
+          null); // there is only one DoS dashboard, so no identity specified
   }
 }

@@ -69,6 +69,12 @@ public abstract class AbstractStateMachine implements Serializable {
   protected ASMState my_current_state;
   
   /**
+   * The identity of this ASM. The structure of this string is child class
+   * implementation dependent.
+   */
+  protected String my_identity;
+  
+  /**
    * Constructs an ASM. This constructor takes ownership of all the 
    * Collections passed to it.
    * 
@@ -79,18 +85,21 @@ public abstract class AbstractStateMachine implements Serializable {
    * specify legal transitions; all unspecified transitions are considered illegal.
    * @param the_initial_state The initial state of the new ASM.
    * @param the_final_states The final states of the new ASM.
+   * @param the_identity The identity of the new ASM.
    */
   public AbstractStateMachine(final Set<ASMState> the_states,
                               final Set<ASMEvent> the_events,
                               final Set<ASMTransition> the_transition_function,
                               final ASMState the_initial_state,
-                              final Set<ASMState> the_final_states) {
+                              final Set<ASMState> the_final_states,
+                              final String the_identity) {
     my_states = the_states;
     my_events = the_events;
     my_transition_function = the_transition_function;
     my_initial_state = the_initial_state;
     my_current_state = the_initial_state;
     my_final_states = the_final_states;
+    my_identity = the_identity;
   }
   
   /**
@@ -113,6 +122,27 @@ public abstract class AbstractStateMachine implements Serializable {
    */
   public ASMState currentState() {
     return my_current_state;
+  }
+  
+  /**
+   * Sets the current state. This method ignores any constraints imposed
+   * by the current state, and should only be used as part of reconstructing
+   * an ASM at a particular state.
+   * 
+   * @param the_state The new state.
+   */
+  protected void setCurrentState(final ASMState the_state) {
+    my_current_state = the_state;
+  }
+  
+  /**
+   * Sets the ASM's identity. This method should only be used as part
+   * of reconstructing an ASM at a particular state.
+   * 
+   * @param the_identity The new identity.
+   */
+  protected void setIdentity(final String the_identity) {
+    my_identity = the_identity;
   }
   
   /**
