@@ -1,6 +1,6 @@
 # Smoketest of RLA server
 
-This smoketest has been tested against master commit f7da007.
+This smoketest has been tested against master commit 54a95d4.
 
 For now, you'll need to install
 [zerotest](https://github.com/jjyr/zerotest)
