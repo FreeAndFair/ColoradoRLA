@@ -17,12 +17,12 @@ package us.freeandfair.corla.asm;
  * @author Joseph R. Kiniry <kiniry@freeandfair.us>
  * @version 0.0.1
  */
-public interface AsmEvent {
+public interface ASMEvent extends Event {
   /**
    * The Department of State Dashboard's events.
    * @trace asm.department_of_state_dashboard_event
    */
-  enum DosDashboardEvent implements AsmEvent {
+  enum DoSDashboardEvent implements ASMEvent {
     AUTHENTICATE_STATE_ADMINISTRATOR_EVENT, // public inbound event
     ESTABLISH_RISK_LIMIT_FOR_COMPARISON_AUDITS_EVENT, // public inbound event
     SELECT_CONTESTS_FOR_COMPARISON_AUDIT_EVENT, // public inbound event
@@ -42,7 +42,7 @@ public interface AsmEvent {
    * The County Dashboard's events.
    * @trace asm.county_dashboard_event
    */
-  enum CountyDashboardEvent implements AsmEvent {
+  enum CountyDashboardEvent implements ASMEvent {
     AUTHENTICATE_COUNTY_ADMINISTRATOR_EVENT, // public inbound event
     ESTABLISH_AUDIT_BOARD_EVENT, // public inbound event
     UPLOAD_BALLOT_MANIFEST_EVENT, // public inbound event
@@ -56,7 +56,7 @@ public interface AsmEvent {
    * The Audit Board Dashboard's events.
    * @trace asm.audit_board_dashboard_event
    */
-  enum AuditBoardDashboardEvent implements AsmEvent {
+  enum AuditBoardDashboardEvent implements ASMEvent {
     REPORT_MARKINGS_EVENT, // public inbound event
     REPORT_BALLOT_NOT_FOUND_EVENT, // public inbound event
     SUBMIT_AUDIT_INVESTIGATION_REPORT_EVENT, // public inbound event
@@ -70,7 +70,7 @@ public interface AsmEvent {
    * The RLA Tool's events.
    * @trace asm.rla_tool_event
    */
-  enum RlaToolEvent implements AsmEvent {
+  enum RLAToolEvent implements ASMEvent {
     RLA_TOOL_SKIP_EVENT // private internal event
   }
 }

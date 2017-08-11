@@ -38,6 +38,8 @@ import spark.Request;
 import spark.Response;
 import spark.Service;
 
+import us.freeandfair.corla.asm.ASMTransitionFunction.RLATransitionFunction;
+import us.freeandfair.corla.asm.RLAToolASM;
 import us.freeandfair.corla.endpoint.Endpoint;
 import us.freeandfair.corla.json.FreeAndFairNamingStrategy;
 import us.freeandfair.corla.model.Administrator;
@@ -120,6 +122,11 @@ public final class Main {
       new GsonBuilder().
       setFieldNamingStrategy(new FreeAndFairNamingStrategy()).
       setPrettyPrinting().create();
+  
+  /**
+   * The ASM for this state machine.
+   */
+  private static RLAToolASM ASM = new RLAToolASM();
   
   /**
    * The "no spark" constant.
@@ -247,6 +254,19 @@ public final class Main {
   }
   
   /**
+   * Initializes the ASM. If it cannot be read from the database, it is created from 
+   * scratch and committed to the database.
+   * 
+   * @exception IllegalStateException if we can't get the ASM. 
+   */
+  private void initializeASM() throws IllegalStateException {
+    Persistence.beginTransaction();
+    ASM = new RLAToolASM();
+    // note that this resets the ASM every launch right now
+    ASM.stepTransition(RLATransitionFunction.ONE.value()); 
+  }
+  
+  /**
    * Initializes the counties in the database using information from the 
    * county properties.
    */
@@ -297,6 +317,7 @@ public final class Main {
 
     if (Persistence.hasDB()) {
       initializeCounties();
+      initializeASM();
     } else {
       LOGGER.error("could not open database connection");
       return;
@@ -365,6 +386,17 @@ public final class Main {
   }
 
   /**
+   * @todo dmz/kiniry We may want to rethink this API. In particular, 
+   * modifications to the ASM need some sort of concurrency or transactional 
+   * control, and we're probably only persisting another object that represents 
+   * the ASM state.
+   * @return the ASM of this state machine. 
+   */
+  public static RLAToolASM asm() {
+    return ASM;
+  }
+  
+  /**
    * The main method. Starts the server using the specified properties
    * file.
    * 
@@ -399,6 +431,10 @@ public final class Main {
     }
 
     final Main main = new Main(properties);
-    main.start();
+    try {
+      main.start();
+    } catch (final IllegalStateException e) {
+      LOGGER.error("unable to run: " + e);
+    }
   }
 }

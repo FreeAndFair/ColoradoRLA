@@ -1,0 +1,59 @@
+/*
+ * Free & Fair Colorado RLA System
+ * 
+ * @title ColoradoRLA
+ * @created Aug 8, 2017
+ * @copyright 2017 Free & Fair
+ * @license GNU General Public License 3.0
+ * @author Joe Kiniry <kiniry@freeandfair.us>
+ * @description A system to assist in conducting statewide risk-limiting audits.
+ */
+
+package us.freeandfair.corla.asm;
+
+import java.util.Arrays;
+import java.util.HashSet;
+
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+
+import us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent;
+import us.freeandfair.corla.asm.ASMState.AuditBoardDashboardState;
+import us.freeandfair.corla.asm.ASMTransitionFunction.AuditBoardDashboardTransitionFunction;
+
+/**
+ * The ASM for the Audit Board Dashboard.
+ * @trace asm.dos_dashboard_next_state
+ * @author Joseph R. Kiniry <kiniry@freeandfair.us>
+ * @version 0.0.1
+ */
+@Entity
+@DiscriminatorValue(value = "AuditBoardDashboardASM")
+public class AuditBoardDashboardASM extends AbstractStateMachine {
+  /**
+   * The serialVersionUID.
+   */
+  private static final long serialVersionUID = 1; 
+
+  /**
+   * The final states of this ASM.
+   */
+  private static final ASMState[] FINAL_STATES = 
+      {AuditBoardDashboardState.AUDIT_REPORT_SUBMITTED_STATE};
+  
+  /**
+   * Create the Audit Board Dashboard ASM for the specified county.
+   * 
+   * @param the_county_id The county identifier.
+   * @trace asm.county_dashboard_asm
+   */
+  public AuditBoardDashboardASM(final Integer the_county_id) {
+    super(new HashSet<ASMState>(Arrays.asList(AuditBoardDashboardState.values())),
+          new HashSet<ASMEvent>(Arrays.asList(AuditBoardDashboardEvent.values())),
+          transitionsFor(Arrays.
+                         asList(AuditBoardDashboardTransitionFunction.values())),
+          AuditBoardDashboardState.AUDIT_INITIAL_STATE,
+          new HashSet<ASMState>(Arrays.asList(FINAL_STATES)),
+          String.valueOf(the_county_id));
+  }
+}

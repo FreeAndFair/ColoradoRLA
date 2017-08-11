@@ -16,12 +16,12 @@ package us.freeandfair.corla.asm;
  * @author Joseph R. Kiniry <kiniry@freeandfair.us>
  * @version 0.0.1
  */
-public interface AsmState {
+public interface ASMState {
   /**
    * The Department of State Dashboard's states.
    * @trace asm.department_of_state_dashboard_state
    */
-  enum DosDashboardState implements AsmState {
+  enum DoSDashboardState implements ASMState {
     DOS_INITIAL_STATE,
     DOS_AUTHENTICATED,
     RISK_LIMITS_SET,
@@ -39,7 +39,7 @@ public interface AsmState {
    * The County Dashboard's states.
    * @trace asm.county_dashboard_state
    */
-  enum CountyDashboardState implements AsmState {
+  enum CountyDashboardState implements ASMState {
     COUNTY_INITIAL_STATE,
     COUNTY_AUTHENTICATED,
     AUDIT_BOARD_ESTABLISHED_STATE,
@@ -69,7 +69,7 @@ public interface AsmState {
    * The Audit Board Dashboard's states.
    * @trace asm.audit_board_dashboard_state
    */
-  enum AuditBoardDashboardState implements AsmState {
+  enum AuditBoardDashboardState implements ASMState {
     AUDIT_INITIAL_STATE,
     AUDIT_IN_PROGRESS_STATE,
     INTERMEDIATE_AUDIT_REPORT_SUBMITTED_STATE,
@@ -79,7 +79,7 @@ public interface AsmState {
   /**
    * The RLA Tool's states that are independent of the component ASMs. 
    */
-  enum RlaToolState implements AsmState {
+  enum RLAToolState implements ASMState {
     RLA_TOOL_INITIAL_STATE
   }
 }

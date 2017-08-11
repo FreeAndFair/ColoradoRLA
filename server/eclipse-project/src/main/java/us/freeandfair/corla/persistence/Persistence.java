@@ -198,16 +198,18 @@ public final class Persistence {
           final Scanner scanner = new Scanner(entity_stream, "UTF-8");
           while (scanner.hasNextLine()) {
             final String entity_class = scanner.nextLine();
-            sources.addAnnotatedClass(Class.forName(entity_class));
+            try {
+              sources.addAnnotatedClass(Class.forName(entity_class));
+            } catch (final ClassNotFoundException e) {
+              Main.LOGGER.error("could not add entity, no such class: " + entity_class);
+            }
             Main.LOGGER.info("added entity class " + entity_class);
           }
           scanner.close();
         }
       } catch (final IOException e) {
         Main.LOGGER.error("error reading list of entity classes: " + e);
-      } catch (final ClassNotFoundException e) {
-        Main.LOGGER.error("invalid entity class specified: " + e);
-      }
+      } 
       final Metadata metadata = sources.getMetadataBuilder().build();
       
       // create session factory
