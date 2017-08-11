@@ -23,7 +23,7 @@ import us.freeandfair.corla.asm.UiToAsmEventRelation.UiEvent;
  * @author Joseph R. Kiniry <kiniry@freeandfair.us>
  * @version 0.0.1
  */
-@SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
+@SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField", "URF_UNREAD_FIELD"})
 public class ServerAsmResponse {
   /**
    * The server's current state.
@@ -31,7 +31,7 @@ public class ServerAsmResponse {
   private final AsmState my_current_state;
   
   /**
-   * The permitted next UI events.
+   * The enabled UI events.
    */
   private final Set<UiEvent> my_enabled_ui_events;
   
@@ -44,5 +44,19 @@ public class ServerAsmResponse {
                            final Set<UiEvent> the_enabled_ui_events) {
     my_current_state = the_current_state;
     my_enabled_ui_events = the_enabled_ui_events;
+  }
+  
+  /**
+   * @return the current state.
+   */
+  public AsmState currentState() {
+    return my_current_state;
+  }
+  
+  /**
+   * @return the enabled UI events. 
+   */
+  public Set<UiEvent> enabledUiEvents() {
+    return my_enabled_ui_events;
   }
 }
