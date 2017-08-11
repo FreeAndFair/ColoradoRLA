@@ -11,8 +11,8 @@
 
 package us.freeandfair.corla.asm;
 
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Set;
 
 import us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent;
 import us.freeandfair.corla.asm.ASMState.CountyDashboardState;
@@ -26,30 +26,28 @@ import us.freeandfair.corla.asm.ASMTransitionFunction.CountyDashboardTransitionF
  */
 public class CountyDashboardASM extends ASM {
   /**
+   * The serialVersionUID.
+   */
+  private static final long serialVersionUID = 1; 
+
+  /**
+   * The final states of this ASM.
+   */
+  private static final ASMState[] FINAL_STATES = 
+      {CountyDashboardState.UPLOAD_BALLOT_MANIFEST_TOO_LATE,
+       CountyDashboardState.UPLOAD_CVRS_TOO_LATE,
+       CountyDashboardState.COUNTY_AUDIT_COMPLETE};
+  
+  /**
    * Create the County Dashboard ASM.
    * @trace asm.county_dashboard_asm
    */
   public CountyDashboardASM() {
-    super();
-    final Set<ASMState> states = new HashSet<>();
-    for (final ASMState s : CountyDashboardState.values()) {
-      states.add(s);
-    }
-    final Set<ASMEvent> events = new HashSet<>();
-    for (final ASMEvent e : CountyDashboardEvent.values()) {
-      events.add(e);
-    }
-    final Set<ASMTransition> set = new HashSet<>();
-    for (final CountyDashboardTransitionFunction t : 
-         CountyDashboardTransitionFunction.values()) {
-      set.add(t.value());
-    }
-    final Set<ASMState> final_states = new HashSet<ASMState>();
-    final_states.add(CountyDashboardState.UPLOAD_BALLOT_MANIFEST_TOO_LATE);
-    final_states.add(CountyDashboardState.UPLOAD_CVRS_TOO_LATE);
-    final_states.add(CountyDashboardState.COUNTY_AUDIT_COMPLETE);
-    initialize(states, events, set, 
-               CountyDashboardState.COUNTY_INITIAL_STATE,
-               final_states);
+    super(new HashSet<ASMState>(Arrays.asList(CountyDashboardState.values())),
+          new HashSet<ASMEvent>(Arrays.asList(CountyDashboardEvent.values())),
+          new HashSet<ASMTransitionFunction>(Arrays.
+              asList(CountyDashboardTransitionFunction.values())),
+          CountyDashboardState.COUNTY_INITIAL_STATE,
+          new HashSet<ASMState>(Arrays.asList(FINAL_STATES)));
   } 
 }

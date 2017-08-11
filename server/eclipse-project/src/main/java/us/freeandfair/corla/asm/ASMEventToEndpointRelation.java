@@ -13,7 +13,7 @@ package us.freeandfair.corla.asm;
 
 import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.*;
 import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.*;
-import static us.freeandfair.corla.asm.ASMEvent.DosDashboardEvent.*;
+import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -49,12 +49,12 @@ public class ASMEventToEndpointRelation {
    * @design kiniry This should probably be refactored as a singleton.
    */
   public ASMEventToEndpointRelation() {
-    addDosDashboardPairs();
+    addDoSDashboardPairs();
     addCountyDashboardPairs();
     addAuditBoardDashboardPairs();
   }
   
-  private void addDosDashboardPairs() {
+  private void addDoSDashboardPairs() {
     // All Department of State Dashboard pairs.
     my_relation.add(new Pair<ASMEvent, String>(
         AUTHENTICATE_STATE_ADMINISTRATOR_EVENT,

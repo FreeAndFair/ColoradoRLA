@@ -13,7 +13,7 @@ package us.freeandfair.corla.asm;
 
 import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.*;
 import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.*;
-import static us.freeandfair.corla.asm.ASMEvent.DosDashboardEvent.*;
+import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.*;
 import static us.freeandfair.corla.asm.UIToASMEventRelation.UiEvent.*;
 
 import java.util.HashSet;

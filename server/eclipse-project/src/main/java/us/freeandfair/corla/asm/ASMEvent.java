@@ -22,7 +22,7 @@ public interface ASMEvent {
    * The Department of State Dashboard's events.
    * @trace asm.department_of_state_dashboard_event
    */
-  enum DosDashboardEvent implements ASMEvent {
+  enum DoSDashboardEvent implements ASMEvent {
     AUTHENTICATE_STATE_ADMINISTRATOR_EVENT, // public inbound event
     ESTABLISH_RISK_LIMIT_FOR_COMPARISON_AUDITS_EVENT, // public inbound event
     SELECT_CONTESTS_FOR_COMPARISON_AUDIT_EVENT, // public inbound event
@@ -70,7 +70,7 @@ public interface ASMEvent {
    * The RLA Tool's events.
    * @trace asm.rla_tool_event
    */
-  enum RlaToolEvent implements ASMEvent {
+  enum RLAToolEvent implements ASMEvent {
     RLA_TOOL_SKIP_EVENT // private internal event
   }
 }

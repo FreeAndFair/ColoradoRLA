@@ -11,11 +11,11 @@
 
 package us.freeandfair.corla.asm;
 
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Set;
 
-import us.freeandfair.corla.asm.ASMEvent.DosDashboardEvent;
-import us.freeandfair.corla.asm.ASMState.DosDashboardState;
+import us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent;
+import us.freeandfair.corla.asm.ASMState.DoSDashboardState;
 import us.freeandfair.corla.asm.ASMTransitionFunction.DosDashboardTransitionFunction;
 
 /**
@@ -26,28 +26,26 @@ import us.freeandfair.corla.asm.ASMTransitionFunction.DosDashboardTransitionFunc
  */
 public class DoSDashboardASM extends ASM {
   /**
+   * The serialVersionUID.
+   */
+  private static final long serialVersionUID = 1; 
+
+  /**
+   * The final states of this ASM.
+   */
+  private static final ASMState[] FINAL_STATES = 
+      {DoSDashboardState.AUDIT_RESULTS_PUBLISHED};
+
+  /**
    * Create the Department of State Dashboard ASM.
    * @trace asm.dos_asm 
    */
   public DoSDashboardASM() {
-    super();
-    final Set<ASMState> states = new HashSet<>();
-    for (final ASMState s : DosDashboardState.values()) {
-      states.add(s);
-    }
-    final Set<ASMEvent> events = new HashSet<>();
-    for (final ASMEvent e : DosDashboardEvent.values()) {
-      events.add(e);
-    }
-    final Set<ASMTransition> set = new HashSet<>();
-    for (final DosDashboardTransitionFunction t : 
-        DosDashboardTransitionFunction.values()) {
-      set.add(t.value());
-    }
-    final Set<ASMState> final_states = new HashSet<ASMState>();
-    final_states.add(DosDashboardState.AUDIT_RESULTS_PUBLISHED);
-    initialize(states, events, set, 
-               DosDashboardState.DOS_INITIAL_STATE,
-               final_states);
+    super(new HashSet<ASMState>(Arrays.asList(DoSDashboardState.values())),
+          new HashSet<ASMEvent>(Arrays.asList(DoSDashboardEvent.values())),
+          new HashSet<ASMTransitionFunction>(Arrays.
+              asList(DosDashboardTransitionFunction.values())),
+          DoSDashboardState.DOS_INITIAL_STATE,
+          new HashSet<ASMState>(Arrays.asList(FINAL_STATES)));
   }
 }

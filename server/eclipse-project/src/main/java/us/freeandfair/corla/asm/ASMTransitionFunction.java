@@ -13,12 +13,12 @@ package us.freeandfair.corla.asm;
 
 import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.*;
 import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.*;
-import static us.freeandfair.corla.asm.ASMEvent.DosDashboardEvent.*;
-import static us.freeandfair.corla.asm.ASMEvent.RlaToolEvent.*;
+import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.*;
+import static us.freeandfair.corla.asm.ASMEvent.RLAToolEvent.RLA_TOOL_SKIP_EVENT;
 import static us.freeandfair.corla.asm.ASMState.AuditBoardDashboardState.*;
 import static us.freeandfair.corla.asm.ASMState.CountyDashboardState.*;
-import static us.freeandfair.corla.asm.ASMState.DosDashboardState.*;
-import static us.freeandfair.corla.asm.ASMState.RlaToolState.*;
+import static us.freeandfair.corla.asm.ASMState.DoSDashboardState.*;
+import static us.freeandfair.corla.asm.ASMState.RLAToolState.RLA_TOOL_INITIAL_STATE;
 
 /**
  * The generic idea of an ASM transition function.
@@ -331,10 +331,15 @@ public interface ASMTransitionFunction {
     }
     
     /**
-     * @return the pair encoding this enumeration.
+     * @return the transition.
      */
     public ASMTransition value() {
       return my_transition;
     }
   }
+  
+  /**
+   * @return the transition of this transition function element.
+   */
+  ASMTransition value();
 }

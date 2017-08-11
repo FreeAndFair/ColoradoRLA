@@ -11,14 +11,23 @@
 
 package us.freeandfair.corla.asm;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Table;
+
+import us.freeandfair.corla.persistence.AbstractEntity;
 
 /**
  * @description A generic Abstract State Machine (ASM).
@@ -27,14 +36,22 @@ import javax.persistence.MappedSuperclass;
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 0.0.1
  */
-@SuppressWarnings("PMD.AtLeastOneConstructor")
-@MappedSuperclass
-public class ASM {
+@Entity
+@Table(name = "abstract_state_machine")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "asm_type", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorValue("ASM")
+public class ASM extends AbstractEntity implements Serializable {
+  /**
+   * The serialVersionUID.
+   */
+  private static final long serialVersionUID = 1; 
+  
   /**
    * This ASM's set of states.
    */
   @ElementCollection(fetch = FetchType.EAGER)
-  protected Set<ASMState> my_states;
+  protected Set<ASMState> my_states = new HashSet<>();
   
   /**
    * This ASM's initial state.
@@ -46,19 +63,19 @@ public class ASM {
    * This AMS's final states.
    */
   @ElementCollection(fetch = FetchType.EAGER)
-  protected Set<ASMState> my_final_states;
+  protected Set<ASMState> my_final_states = new HashSet<>();
   
   /**
    * This ASM's set of events.
    */
   @ElementCollection(fetch = FetchType.EAGER)
-  protected Set<ASMEvent> my_events;
+  protected Set<ASMEvent> my_events = new HashSet<>();
   
   /**
    * A map from (state, event) pairs to state.
    */
   @ElementCollection(fetch = FetchType.EAGER)
-  protected Set<ASMTransition> my_transition_function; 
+  protected Set<ASMTransition> my_transition_function = new HashSet<>(); 
   
   /**
    * The current state of this ASM. Initialized to the initial state provided
@@ -68,23 +85,32 @@ public class ASM {
   private ASMState my_current_state;
   
   /**
-   * Create the ASM for the Colorado RLA Tool. Ownership transfer happens on the
-   * passed values.
+   * Constructs a new ASM with default values, solely for persistence.
+   */
+  public ASM() {
+    super();
+  }
+  
+  /**
+   * Constructs an ASM.
    * 
    * @param the_states the states of the new ASM.
    * @param the_events the events of the new ASM.
    * @param the_transition_function the transition function of the new ASM. This
-   * function, represented as a List of Transition, need only specify the legal
-   * transitions. All unspecified transitions are considered erroneous.
+   * function, represented as a set of ASMTransitionFunction elements, need only
+   * specify legal transitions; all unspecified transitions are considered illegal.
    */
-  public void initialize(final Set<ASMState> the_states,
-                         final Set<ASMEvent> the_events,
-                         final Set<ASMTransition> the_transition_function,
-                         final ASMState the_initial_state,
-                         final Set<ASMState> the_final_states) {
-    my_states = the_states;
-    my_events = the_events;
-    my_transition_function = the_transition_function;
+  public ASM(final Set<ASMState> the_states,
+             final Set<ASMEvent> the_events,
+             final Set<ASMTransitionFunction> the_transition_function,
+             final ASMState the_initial_state,
+             final Set<ASMState> the_final_states) {
+    super();
+    my_states.addAll(the_states);
+    my_events.addAll(the_events);
+    for (final ASMTransitionFunction atf : the_transition_function) {
+      my_transition_function.add(atf.value());
+    }
     my_initial_state = the_initial_state;
     my_current_state = the_initial_state;
     my_final_states = the_final_states;

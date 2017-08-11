@@ -11,8 +11,8 @@
 
 package us.freeandfair.corla.asm;
 
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Set;
 
 import us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent;
 import us.freeandfair.corla.asm.ASMState.AuditBoardDashboardState;
@@ -26,28 +26,26 @@ import us.freeandfair.corla.asm.ASMTransitionFunction.AuditBoardDashboardTransit
  */
 public class AuditBoardDashboardASM extends ASM {
   /**
+   * The serialVersionUID.
+   */
+  private static final long serialVersionUID = 1; 
+
+  /**
+   * The final states of this ASM.
+   */
+  private static final ASMState[] FINAL_STATES = 
+      {AuditBoardDashboardState.AUDIT_REPORT_SUBMITTED_STATE};
+  
+  /**
    * Create the Audit Board Dashboard ASM.
    * @trace asm.county_dashboard_asm
    */
   public AuditBoardDashboardASM() {
-    super();
-    final Set<ASMState> states = new HashSet<>();
-    for (final ASMState s : AuditBoardDashboardState.values()) {
-      states.add(s);
-    }
-    final Set<ASMEvent> events = new HashSet<>();
-    for (final ASMEvent e : AuditBoardDashboardEvent.values()) {
-      events.add(e);
-    }
-    final Set<ASMTransition> set = new HashSet<>();
-    for (final AuditBoardDashboardTransitionFunction t : 
-         AuditBoardDashboardTransitionFunction.values()) {
-      set.add(t.value());
-    }
-    final Set<ASMState> final_states = new HashSet<ASMState>();
-    final_states.add(AuditBoardDashboardState.AUDIT_REPORT_SUBMITTED_STATE);
-    initialize(states, events, set, 
-               AuditBoardDashboardState.AUDIT_INITIAL_STATE,
-               final_states);
+    super(new HashSet<ASMState>(Arrays.asList(AuditBoardDashboardState.values())),
+          new HashSet<ASMEvent>(Arrays.asList(AuditBoardDashboardEvent.values())),
+          new HashSet<ASMTransitionFunction>(Arrays.
+              asList(AuditBoardDashboardTransitionFunction.values())),
+          AuditBoardDashboardState.AUDIT_INITIAL_STATE,
+          new HashSet<ASMState>(Arrays.asList(FINAL_STATES)));
   }
 }

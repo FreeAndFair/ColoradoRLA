@@ -11,8 +11,6 @@
 
 package us.freeandfair.corla.asm;
 
-import static us.freeandfair.corla.asm.ASMState.RlaToolState.RLA_TOOL_INITIAL_STATE;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,6 +23,11 @@ import us.freeandfair.corla.asm.ASMTransitionFunction.RlaTransitionFunction;
  * @version 0.0.1
  */
 public class RLAToolASM extends ASM {
+  /**
+   * The serialVersionUID.
+   */
+  private static final long serialVersionUID = 1; 
+
   /**
    * The ASM for the Department of State Dashboard.
    */
@@ -45,16 +48,13 @@ public class RLAToolASM extends ASM {
     super();
     // Collect all states, events, and transition function pairs of
     // component ASMs.
-    final Set<ASMState> states = buildStates();
-    final Set<ASMState> final_states = buildFinalStates();
-    final Set<ASMEvent> events = buildTransitions();
-    final Set<ASMTransition> transition_function =
-        buildTransitionFunction();
+    my_states.addAll(buildStates());
+    my_final_states.addAll(buildFinalStates());
+    my_events.addAll(buildTransitions());
+    my_transition_function.addAll(buildTransitionFunction());
     for (final RlaTransitionFunction t : RlaTransitionFunction.values()) {
-      transition_function.add(t.value());
+      my_transition_function.add(t.value());
     }
-    initialize(states, events, transition_function,
-               RLA_TOOL_INITIAL_STATE, final_states);
   }
   
   private Set<ASMState> buildStates() {

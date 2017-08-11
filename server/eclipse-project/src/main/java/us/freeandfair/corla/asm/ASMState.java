@@ -21,7 +21,7 @@ public interface ASMState {
    * The Department of State Dashboard's states.
    * @trace asm.department_of_state_dashboard_state
    */
-  enum DosDashboardState implements ASMState {
+  enum DoSDashboardState implements ASMState {
     DOS_INITIAL_STATE,
     DOS_AUTHENTICATED,
     RISK_LIMITS_SET,
@@ -79,7 +79,7 @@ public interface ASMState {
   /**
    * The RLA Tool's states that are independent of the component ASMs. 
    */
-  enum RlaToolState implements ASMState {
+  enum RLAToolState implements ASMState {
     RLA_TOOL_INITIAL_STATE
   }
 }
