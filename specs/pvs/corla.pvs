@@ -2867,7 +2867,9 @@ BEGIN
     OK_200,
     BAD_REQUEST_400,
     UNAUTHORIZED_401,
-    UNPROCESSABLE_ENTITY_422
+    FORBIDDEN_403,
+    UNPROCESSABLE_ENTITY_422,
+    INTERNAL_SERVER_ERROR_500
   }
   endpoint_type: TYPE = { GET, POST, PUT }
   server_endpoint: TYPE =
@@ -2876,6 +2878,7 @@ BEGIN
        uri: string,
        implementation_class: string,
        in_stream: http_inbound_spec,
+       % @design kiniry Consider making this just a list of pairs.
        out_stream: set[[http_response_code, json_spec]],
        dos_event: department_of_state_dashboard_event,
        county_event: county_dashboard_event,
@@ -2915,9 +2918,11 @@ BEGIN
        uri := "/risk-limit-comp-audits",
        implementation_class := "EstablishRiskLimitForComparisonAudits",
        in_stream := risk_limit_params,
-       out_stream := add((BAD_REQUEST_400, nothing),
+       out_stream := add((INTERNAL_SERVER_ERROR_500, nothing),
+                     add((FORBIDDEN_403, nothing),
+                     add((BAD_REQUEST_400, nothing),
                      add((UNAUTHORIZED_401, nothing),
-                         singleton((OK_200, nothing)))),
+                         singleton((OK_200, server_response)))))),
        dos_event := erlfca_e,
        county_event := n_e,
        audit_event := n_e
