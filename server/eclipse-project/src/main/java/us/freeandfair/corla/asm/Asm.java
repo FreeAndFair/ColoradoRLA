@@ -12,22 +12,26 @@
 package us.freeandfair.corla.asm;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
-import us.freeandfair.corla.util.Pair;
+import javax.persistence.ElementCollection;
+import javax.persistence.FetchType;
+import javax.persistence.MappedSuperclass;
 
 /**
  * @description A generic Abstract State Machine (ASM).
  * @trace asm.asm
  * @author Joseph R. Kiniry <kiniry@freeandfair.us>
+ * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
+@MappedSuperclass
 public class Asm {
   /**
    * This ASM's set of states.
    */
+  @ElementCollection(fetch = FetchType.EAGER)
   protected Set<AsmState> my_states;
   
   /**
@@ -41,14 +45,14 @@ public class Asm {
   protected Set<AsmState> my_final_states;
   
   /**
-   * This ASM's set of transitions.
+   * This ASM's set of events.
    */
-  protected Set<AsmEvent> my_transitions;
+  protected Set<AsmEvent> my_events;
   
   /**
    * A map from (state, event) pairs to state.
    */
-  protected Map<Pair<AsmState, AsmEvent>, AsmState> my_transition_function; 
+  protected Set<AsmTransition> my_transition_function; 
   
   /**
    * The current state of this ASM. Initialized to the initial state provided
@@ -61,19 +65,18 @@ public class Asm {
    * passed values.
    * 
    * @param the_states the states of the new ASM.
-   * @param the_transitions the transitions of the new ASM.
+   * @param the_events the events of the new ASM.
    * @param the_transition_function the transition function of the new ASM. This
-   * function, represented as a Map, need only specify those transitions that are
-   * legal. All missing transitions are considered erroneous.
+   * function, represented as a List of Transition, need only specify the legal
+   * transitions. All unspecified transitions are considered erroneous.
    */
   public void initialize(final Set<AsmState> the_states,
-                         final Set<AsmEvent> the_transitions,
-                         final Map<Pair<AsmState, AsmEvent>, AsmState> 
-                           the_transition_function,
+                         final Set<AsmEvent> the_events,
+                         final Set<AsmTransition> the_transition_function,
                          final AsmState the_initial_state,
                          final Set<AsmState> the_final_states) {
     my_states = the_states;
-    my_transitions = the_transitions;
+    my_events = the_events;
     my_transition_function = the_transition_function;
     my_initial_state = the_initial_state;
     my_current_state = the_initial_state;
@@ -109,9 +112,9 @@ public class Asm {
    */
   public Set<AsmEvent> enabledEvents() {
     final Set<AsmEvent> result = new HashSet<AsmEvent>();
-    for (final Pair<AsmState, AsmEvent> p : my_transition_function.keySet()) {
-      if (p.getFirst().equals(my_current_state)) {
-        result.add(p.getSecond());
+    for (final AsmTransition t : my_transition_function) {
+      if (t.startState().equals(my_current_state)) {
+        result.add(t.event());
       }
     }
     return result;
@@ -126,12 +129,20 @@ public class Asm {
    */
   public AsmState transition(final AsmEvent the_event)
       throws IllegalStateException {
-    final Pair<AsmState, AsmEvent> pair = 
-        new Pair<AsmState, AsmEvent>(my_current_state, the_event);
-    if (!my_transition_function.containsKey(pair)) {
-      throw new IllegalStateException("Illegal transition on ASM: (" + 
-        my_current_state + ", " + the_event + ")");
+    AsmState result = null;
+    for (final AsmTransition t : my_transition_function) {
+      if (t.startState().equals(my_current_state) &&
+          t.event().equals(the_event)) {
+        result = t.endState();
+        break;
+      }
     }
-    return my_transition_function.get(pair);
+
+    if (result == null) {
+      throw new IllegalStateException("Illegal transition on ASM: (" + 
+                                      my_current_state + ", " + the_event + ")");
+    } else {
+      return result;
+    }
   }
 }

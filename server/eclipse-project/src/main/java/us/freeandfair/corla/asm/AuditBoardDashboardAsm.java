@@ -11,15 +11,12 @@
 
 package us.freeandfair.corla.asm;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import us.freeandfair.corla.asm.AsmEvent.AuditBoardDashboardEvent;
 import us.freeandfair.corla.asm.AsmState.AuditBoardDashboardState;
-import us.freeandfair.corla.asm.AsmTransitions.AuditBoardDashboardTransitions;
-import us.freeandfair.corla.util.Pair;
+import us.freeandfair.corla.asm.AsmTransitionFunction.AuditBoardDashboardTransitionFunction;
 
 /**
  * The ASM for the Audit Board Dashboard.
@@ -34,23 +31,22 @@ public class AuditBoardDashboardAsm extends Asm {
    */
   public AuditBoardDashboardAsm() {
     super();
-    final Set<AsmState> states = new HashSet<AsmState>();
+    final Set<AsmState> states = new HashSet<>();
     for (final AsmState s : AuditBoardDashboardState.values()) {
       states.add(s);
     }
-    final Set<AsmEvent> events = new HashSet<AsmEvent>();
+    final Set<AsmEvent> events = new HashSet<>();
     for (final AsmEvent e : AuditBoardDashboardEvent.values()) {
       events.add(e);
     }
-    final Map<Pair<AsmState, AsmEvent>, AsmState> map = 
-        new HashMap<Pair<AsmState, AsmEvent>, AsmState>();
-    for (final AuditBoardDashboardTransitions t : 
-        AuditBoardDashboardTransitions.values()) {
-      map.put(t.value().getFirst(), t.value().getSecond());
+    final Set<AsmTransition> set = new HashSet<>();
+    for (final AuditBoardDashboardTransitionFunction t : 
+         AuditBoardDashboardTransitionFunction.values()) {
+      set.add(t.value());
     }
     final Set<AsmState> final_states = new HashSet<AsmState>();
     final_states.add(AuditBoardDashboardState.AUDIT_REPORT_SUBMITTED_STATE);
-    initialize(states, events, map, 
+    initialize(states, events, set, 
                AuditBoardDashboardState.AUDIT_INITIAL_STATE,
                final_states);
   }

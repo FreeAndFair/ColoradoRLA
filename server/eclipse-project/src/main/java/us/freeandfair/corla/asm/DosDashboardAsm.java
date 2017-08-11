@@ -11,15 +11,12 @@
 
 package us.freeandfair.corla.asm;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import us.freeandfair.corla.asm.AsmEvent.DosDashboardEvent;
 import us.freeandfair.corla.asm.AsmState.DosDashboardState;
-import us.freeandfair.corla.asm.AsmTransitions.DosDashboardTransitions;
-import us.freeandfair.corla.util.Pair;
+import us.freeandfair.corla.asm.AsmTransitionFunction.DosDashboardTransitionFunction;
 
 /**
  * The ASM for the Department of State Dashboard.
@@ -34,23 +31,22 @@ public class DosDashboardAsm extends Asm {
    */
   public DosDashboardAsm() {
     super();
-    final Set<AsmState> states = new HashSet<AsmState>();
+    final Set<AsmState> states = new HashSet<>();
     for (final AsmState s : DosDashboardState.values()) {
       states.add(s);
     }
-    final Set<AsmEvent> events = new HashSet<AsmEvent>();
+    final Set<AsmEvent> events = new HashSet<>();
     for (final AsmEvent e : DosDashboardEvent.values()) {
       events.add(e);
     }
-    final Map<Pair<AsmState, AsmEvent>, AsmState> map = 
-        new HashMap<Pair<AsmState, AsmEvent>, AsmState>();
-    for (final DosDashboardTransitions t : 
-        DosDashboardTransitions.values()) {
-      map.put(t.value().getFirst(), t.value().getSecond());
+    final Set<AsmTransition> set = new HashSet<>();
+    for (final DosDashboardTransitionFunction t : 
+        DosDashboardTransitionFunction.values()) {
+      set.add(t.value());
     }
     final Set<AsmState> final_states = new HashSet<AsmState>();
     final_states.add(DosDashboardState.AUDIT_RESULTS_PUBLISHED);
-    initialize(states, events, map, 
+    initialize(states, events, set, 
                DosDashboardState.DOS_INITIAL_STATE,
                final_states);
   }

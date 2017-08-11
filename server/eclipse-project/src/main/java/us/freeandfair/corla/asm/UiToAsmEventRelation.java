@@ -26,6 +26,7 @@ import us.freeandfair.corla.util.Pair;
  * @trace asm.ui_to_asm_event_relation
  * @author Joseph R. Kiniry <kiniry@freeandfair.us>
  * @version 0.0.1
+ * @todo dmz/kiniry use an entity instead of Pair<> to enable persistence
  */
 @SuppressWarnings("PMD.TooManyStaticImports")
 public class UiToAsmEventRelation {

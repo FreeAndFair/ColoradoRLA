@@ -11,15 +11,12 @@
 
 package us.freeandfair.corla.asm;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import us.freeandfair.corla.asm.AsmEvent.CountyDashboardEvent;
 import us.freeandfair.corla.asm.AsmState.CountyDashboardState;
-import us.freeandfair.corla.asm.AsmTransitions.CountyDashboardTransitions;
-import us.freeandfair.corla.util.Pair;
+import us.freeandfair.corla.asm.AsmTransitionFunction.CountyDashboardTransitionFunction;
 
 /**
  * The ASM for the County Dashboard.
@@ -34,25 +31,24 @@ public class CountyDashboardAsm extends Asm {
    */
   public CountyDashboardAsm() {
     super();
-    final Set<AsmState> states = new HashSet<AsmState>();
+    final Set<AsmState> states = new HashSet<>();
     for (final AsmState s : CountyDashboardState.values()) {
       states.add(s);
     }
-    final Set<AsmEvent> events = new HashSet<AsmEvent>();
+    final Set<AsmEvent> events = new HashSet<>();
     for (final AsmEvent e : CountyDashboardEvent.values()) {
       events.add(e);
     }
-    final Map<Pair<AsmState, AsmEvent>, AsmState> map = 
-        new HashMap<Pair<AsmState, AsmEvent>, AsmState>();
-    for (final CountyDashboardTransitions t : 
-        CountyDashboardTransitions.values()) {
-      map.put(t.value().getFirst(), t.value().getSecond());
+    final Set<AsmTransition> set = new HashSet<>();
+    for (final CountyDashboardTransitionFunction t : 
+         CountyDashboardTransitionFunction.values()) {
+      set.add(t.value());
     }
     final Set<AsmState> final_states = new HashSet<AsmState>();
     final_states.add(CountyDashboardState.UPLOAD_BALLOT_MANIFEST_TOO_LATE);
     final_states.add(CountyDashboardState.UPLOAD_CVRS_TOO_LATE);
     final_states.add(CountyDashboardState.COUNTY_AUDIT_COMPLETE);
-    initialize(states, events, map, 
+    initialize(states, events, set, 
                CountyDashboardState.COUNTY_INITIAL_STATE,
                final_states);
   } 

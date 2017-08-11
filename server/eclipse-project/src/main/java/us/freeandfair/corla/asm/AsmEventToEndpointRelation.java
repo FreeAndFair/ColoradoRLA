@@ -28,6 +28,7 @@ import us.freeandfair.corla.util.Pair;
  * @author Joseph R. Kiniry <kiniry@freeandfair.us>
  * @version 0.0.1
  * @todo kiniry Introduce AbstractRelation parent class.
+ * @todo dmz use an entity instead of Pair<> to enable persistence
  */
 @SuppressWarnings("PMD.TooManyStaticImports")
 public class AsmEventToEndpointRelation {
