@@ -165,21 +165,18 @@ public class AuditBoardDashboard extends AbstractEntity implements Serializable 
                                 final CastVoteRecord the_audit_cvr) {
     // performs a sanity check to make sure the CVR under audit and the ACVR
     // are the same card
-    boolean result = true;
+    boolean result = false;
     final int index = my_cvrs_to_audit.indexOf(the_cvr_under_audit.id());
-    if (index > 0) {
-      // compare the CVR and aCVR
-      if (the_cvr_under_audit.equals(Persistence.getByID(the_cvr_under_audit.id(), 
-                                                         CastVoteRecord.class)) &&
-          the_cvr_under_audit.isAuditPairWith(the_audit_cvr) &&
-          the_cvr_under_audit.recordType() != RecordType.AUDITOR_ENTERED) {
-        my_submitted_audit_cvrs.set(index, the_audit_cvr.id());
-      } else {
-        // something didn't match
-        result = false;
-      }
-    }
-    
+    if (index >= 0 && 
+        the_cvr_under_audit.equals(Persistence.getByID(the_cvr_under_audit.id(), 
+                                                       CastVoteRecord.class)) &&
+        the_cvr_under_audit.isAuditPairWith(the_audit_cvr) &&
+        the_cvr_under_audit.recordType() != RecordType.AUDITOR_ENTERED) {
+      // the CVRs match!
+      my_submitted_audit_cvrs.set(index, the_audit_cvr.id());
+      result = true;
+    } 
+
     return result;
   }
   

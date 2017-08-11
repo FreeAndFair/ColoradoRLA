@@ -72,7 +72,6 @@ public final class ContestToAuditJsonAdapter
   }
   
   /**
-<<<<<<< HEAD
    * Checks the sanity of a contest to audit.
    * 
    * @param the_id The contest ID.

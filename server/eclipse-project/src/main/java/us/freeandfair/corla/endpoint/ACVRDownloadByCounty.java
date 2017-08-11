@@ -15,6 +15,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UncheckedIOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -64,6 +65,8 @@ public class ACVRDownloadByCounty implements Endpoint {
    * {@inheritDoc}
    */
   @Override
+  // necessary to break out of the lambda expression in case of IOException
+  @SuppressWarnings("PMD.ExceptionAsFlowControl")
   public String endpoint(final Request the_request, final Response the_response) {
     String result = "";
     int status = HttpStatus.OK_200;
@@ -87,8 +90,7 @@ public class ACVRDownloadByCounty implements Endpoint {
               jw.jsonValue(Main.GSON.toJson(the_cvr));
               Persistence.currentSession().evict(the_cvr);
             } catch (final IOException e) {
-              // ignore, there's nothing we can do about it and it probably
-              // means the HTTP connection broke
+              throw new UncheckedIOException(e);
             } 
           });
         }
@@ -100,7 +102,7 @@ public class ACVRDownloadByCounty implements Endpoint {
         } catch (final RollbackException e) {
           Persistence.rollbackTransaction();
         } 
-      } catch (final IOException | PersistenceException e) {
+      } catch (final UncheckedIOException | IOException | PersistenceException e) {
         status = HttpStatus.INTERNAL_SERVER_ERROR_500;
         result = "Unable to stream response";
       }
