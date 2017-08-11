@@ -34,7 +34,7 @@ public abstract class AbstractStateMachine implements Serializable {
   /**
    * This ASM's set of states.
    */
-  protected final Set<ASMState> my_states = new HashSet<>();
+  protected final Set<ASMState> my_states;
   
   /**
    * This ASM's initial state.
@@ -44,17 +44,17 @@ public abstract class AbstractStateMachine implements Serializable {
   /**
    * This AMS's final states.
    */
-  protected final Set<ASMState> my_final_states = new HashSet<>();
+  protected final Set<ASMState> my_final_states;
   
   /**
    * This ASM's set of events.
    */
-  protected final Set<ASMEvent> my_events = new HashSet<>();
+  protected final Set<ASMEvent> my_events;
   
   /**
    * A map from (state, event) pairs to state.
    */
-  protected final Set<ASMTransition> my_transition_function = new HashSet<>(); 
+  protected final Set<ASMTransition> my_transition_function; 
   
   /**
    * The relation between UI events and ASM transitions.
@@ -69,25 +69,28 @@ public abstract class AbstractStateMachine implements Serializable {
   protected ASMState my_current_state;
   
   /**
-   * Constructs an ASM.
+   * Constructs an ASM. This constructor takes ownership of all the 
+   * Collections passed to it.
    * 
    * @param the_states the states of the new ASM.
    * @param the_events the events of the new ASM.
    * @param the_transition_function the transition function of the new ASM. This
    * function, represented as a set of ASMTransitionFunction elements, need only
    * specify legal transitions; all unspecified transitions are considered illegal.
+   * @param the_initial_state The initial state of the new ASM.
+   * @param the_final_states The final states of the new ASM.
    */
   public AbstractStateMachine(final Set<ASMState> the_states,
                               final Set<ASMEvent> the_events,
                               final Set<ASMTransition> the_transition_function,
                               final ASMState the_initial_state,
                               final Set<ASMState> the_final_states) {
-    my_states.addAll(the_states);
-    my_events.addAll(the_events);
-    my_transition_function.addAll(the_transition_function);
+    my_states = the_states;
+    my_events = the_events;
+    my_transition_function = the_transition_function;
     my_initial_state = the_initial_state;
     my_current_state = the_initial_state;
-    my_final_states.addAll(the_final_states);
+    my_final_states = the_final_states;
   }
   
   /**
