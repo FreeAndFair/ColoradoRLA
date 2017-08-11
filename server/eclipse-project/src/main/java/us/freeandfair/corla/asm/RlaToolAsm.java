@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.AsmTransitions.RlaTransitions;
 import us.freeandfair.corla.util.Pair;
 
@@ -32,15 +33,19 @@ public class RlaToolAsm extends Asm {
    * The ASM for the Department of State Dashboard.
    */
   private final DosDashboardAsm my_dos_asm = new DosDashboardAsm();
+  
   /**
    * The ASM for the County Dashboard.
    */
   private final CountyDashboardAsm my_county_asm = new CountyDashboardAsm();
+
   /**
    * The ASM for the Audit Board Dashboard.
    */
   private final AuditBoardDashboardAsm my_audit_asm = new AuditBoardDashboardAsm();
 
+
+  
   /**
    * Create the RLA Tool ASM.
    */
@@ -58,6 +63,7 @@ public class RlaToolAsm extends Asm {
     }
     initialize(states, events, transition_function,
                RLA_TOOL_INITIAL_STATE, final_states);
+    Main.LOGGER.info("ASM started");
   }
   
   private Set<AsmState> buildStates() {

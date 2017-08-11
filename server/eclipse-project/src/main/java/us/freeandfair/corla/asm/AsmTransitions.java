@@ -31,6 +31,12 @@ import us.freeandfair.corla.util.Pair;
 @SuppressWarnings({"PMD.TooManyStaticImports", "PMD.AvoidDuplicateLiterals"})
 public interface AsmTransitions {
   /**
+   * @return the transition value, encoding a start state, a transition,
+   * and a terminal state.
+   */
+  Pair<Pair<AsmState, AsmEvent>, AsmState> value();
+  
+  /**
    * The Department of State Dashboard's transition function.
    * @trace asm.dos_dashboard_next_state
    */

@@ -38,6 +38,9 @@ import spark.Request;
 import spark.Response;
 import spark.Service;
 
+import us.freeandfair.corla.asm.Asm;
+import us.freeandfair.corla.asm.AsmTransitions.RlaTransitions;
+import us.freeandfair.corla.asm.RlaToolAsm;
 import us.freeandfair.corla.endpoint.Endpoint;
 import us.freeandfair.corla.json.FreeAndFairNamingStrategy;
 import us.freeandfair.corla.model.Administrator;
@@ -103,7 +106,7 @@ public final class Main {
    * The logger.
    */
   public static final Logger LOGGER = LogManager.getLogger(LOGGER_NAME);
- 
+  
   /**
    * The Gson object to use for translation to and from JSON; since 
    * Gson is thread-safe, we only need one for the system. Note that
@@ -121,6 +124,11 @@ public final class Main {
       setFieldNamingStrategy(new FreeAndFairNamingStrategy()).
       setPrettyPrinting().create();
   
+  /**
+   * The ASM.
+   */
+  private static RlaToolAsm my_asm;
+ 
   /**
    * The "no spark" constant.
    */
@@ -284,6 +292,27 @@ public final class Main {
     } catch (final PersistenceException e) {
       throw new IllegalStateException("Error loading county IDs, aborting.", e);
     }
+  }
+  
+  /**
+   * Initializes the ColoradoRLA ASM.
+   */
+  public static void initializeASM() {
+    // Check to see if an ASM was serialized into the DB.
+    // @todo kiniry Issue #207
+    // If not, intialize a new ASM.
+    Main.my_asm = new RlaToolAsm();
+    // The ASM is in the initial start of the RLA Tool.
+    // We must transition to the initial state of the DOS Dashboard to
+    // start the system.
+    my_asm.stepTransition(RlaTransitions.ONE);
+  }
+  
+  /**
+   * @return the ASM for the ColoradoRLA Tool.
+   */
+  public static Asm asm() {
+    return my_asm;
   }
   
   /**

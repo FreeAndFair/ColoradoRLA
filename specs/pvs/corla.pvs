@@ -2904,7 +2904,7 @@ BEGIN
        implementation_class := "AuthenticateStateAdministrator",
        in_stream := authenticate_params,
        out_stream := add((UNAUTHORIZED_401, nothing),
-                         singleton((OK_200, nothing))),
+                         singleton((OK_200, server_response))),
        dos_event := asa_e,
        county_event := n_e,
        audit_event := n_e

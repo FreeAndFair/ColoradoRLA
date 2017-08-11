@@ -16,6 +16,9 @@ import org.eclipse.jetty.http.HttpStatus;
 import spark.Request;
 import spark.Response;
 
+import us.freeandfair.corla.Main;
+import us.freeandfair.corla.asm.AsmEvent.DosDashboardEvent;
+import us.freeandfair.corla.json.ServerAsmResponse;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
 
 /**
@@ -61,8 +64,14 @@ public class AuthenticateStateAdministrator implements Endpoint {
       status = HttpStatus.UNAUTHORIZED_401;
       result = "Authentication failed";
     }
-    
+    // Take the transition triggered by this successful authentication.
+    Main.asm().stepEvent(DosDashboardEvent.AUTHENTICATE_STATE_ADMINISTRATOR_EVENT);
     the_response.status(status);
+    // Build the ASM server response. 
+    final ServerAsmResponse asm_response = 
+        new ServerAsmResponse(Main.asm().currentState(),
+                              Main.asm().enabledUiEvents());
+    the_response.body(Main.GSON.toJson(asm_response));
     return result;
   }
 }

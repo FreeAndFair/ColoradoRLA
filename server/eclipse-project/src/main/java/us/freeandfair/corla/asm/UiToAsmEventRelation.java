@@ -105,8 +105,16 @@ public class UiToAsmEventRelation {
    * @param a_ue the UI event to lookup.
    * @return the ASM event corresponding to 'a_ue', or null if no such event exists.
    */
-  public AsmEvent rightArrow(final UiEvent a_ue) {
-    return null;
+  public Set<AsmEvent> rightArrow(final UiEvent a_ue) {
+    // iterate over all elements in the map and, for each one whose 
+    // left element matches a_ue, include the right element in the resulting set.
+    final Set<AsmEvent> result = new HashSet<AsmEvent>();
+    for (final Pair<UiEvent, AsmEvent> p : my_relation) {
+      if (p.getFirst().equals(a_ue)) {
+        result.add(p.getSecond());
+      }
+    }
+    return result;
   }
   
   /**
@@ -114,14 +122,22 @@ public class UiToAsmEventRelation {
    * @param a_ae the ASM event to lookup.
    * @return the UI event corresponding to 'an_ae', or null if no such event exists.
    */
-  public UiEvent leftArrow(final AsmEvent an_ae) {
-    return null;
+  public Set<UiEvent> leftArrow(final AsmEvent an_ae) {
+    // iterate over all elements in the map and, for each one whose 
+    // right element matches an_ae, include the left element in the resulting set.
+    final Set<UiEvent> result = new HashSet<UiEvent>();
+    for (final Pair<UiEvent, AsmEvent> p : my_relation) {
+      if (p.getSecond().equals(an_ae)) {
+        result.add(p.getFirst());
+      }
+    }
+    return result;
   }
   
   /**
    * An enumeration of all user-triggered external inbound events in the client UI.
    */
-  enum UiEvent {
+  public enum UiEvent {
     LOGIN,
     FETCH_INITIAL_STATE_SEND,
     FETCH_INITIAL_STATE_RECEIVE,
