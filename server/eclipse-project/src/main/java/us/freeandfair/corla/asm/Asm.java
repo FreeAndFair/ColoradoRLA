@@ -15,6 +15,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import us.freeandfair.corla.Main;
+import us.freeandfair.corla.asm.UiToAsmEventRelation.UiEvent;
 import us.freeandfair.corla.util.Pair;
 
 /**
@@ -51,11 +53,17 @@ public class Asm {
   protected Map<Pair<AsmState, AsmEvent>, AsmState> my_transition_function; 
   
   /**
+   * The relation between UI events and Asm transitions.
+   */
+  protected final UiToAsmEventRelation my_ui_to_asm_relation = 
+      new UiToAsmEventRelation();
+  
+  /**
    * The current state of this ASM. Initialized to the initial state provided
    * in the constructor.
    */
   private AsmState my_current_state;
-  
+
   /**
    * Create the ASM for the Colorado RLA Tool. Ownership transfer happens on the
    * passed values.
@@ -103,11 +111,32 @@ public class Asm {
   }
   
   /**
+   * @return the relation between UI events and ASM transitions.
+   */
+  public UiToAsmEventRelation uiAsmRelation() {
+    return my_ui_to_asm_relation;
+  }
+
+  /**
+   * @return the UI events enabled in this ASM.  I.e., which UI events correspond
+   * to those states reachable from the current state?
+   */
+  public Set<UiEvent> enabledUiEvents() {
+    final Set<AsmEvent> asm_events_enabled = enabledAsmEvents();
+    final Set<UiEvent> result = new HashSet<UiEvent>();
+    // For each enabled ASM event, look up which UI events it corresponds to.
+    for (final AsmEvent e : asm_events_enabled) {
+      result.addAll(Main.asm().uiAsmRelation().leftArrow(e));
+    }
+    return result;
+  }
+  
+  /**
    * @return the transitions of this ASM that are enabled. I.e., which states are
    * reachable from the current state, given any possible event?
    * @trace asm.enabled_events
    */
-  public Set<AsmEvent> enabledEvents() {
+  public Set<AsmEvent> enabledAsmEvents() {
     final Set<AsmEvent> result = new HashSet<AsmEvent>();
     for (final Pair<AsmState, AsmEvent> p : my_transition_function.keySet()) {
       if (p.getFirst().equals(my_current_state)) {
@@ -118,13 +147,37 @@ public class Asm {
   }
   
   /**
+   * Transition to the next state of this ASM given the provided transition and
+   * its current state.
+   * @param the_transition the transition that is triggered.
+   * @return the new current state of the ASM after the transition.
+   * @throws IllegalStateException if this ASM cannot take a step given the provided
+   * transition.
+   */
+  public AsmState stepTransition(final AsmTransitions the_transition)
+      throws IllegalStateException {
+    // If we are in the right state then transition to the new state.
+    if (my_current_state.equals(the_transition.value().getFirst().getFirst())) {
+      my_current_state = the_transition.value().getSecond();
+      Main.LOGGER.info("ASM transition succeeded: " + the_transition); 
+    } else {
+      Main.LOGGER.error("ASM transition " + the_transition + 
+                        " failed from state " + my_current_state); 
+      throw new IllegalStateException("Attempted to transition from " +
+          my_current_state + " using transition " + the_transition);
+    }
+    return my_current_state;
+  }
+  
+  /**
    * Transition to the next state of this ASM given the provided event and its
    * current state.
-   * @return the next state given the specified event and input.
+   * @param the_event the event that is to trigger a transition.
+   * @return the new current state of the ASM after the event.
    * @throws IllegalStateException is this ASM cannot transition given the provided
    * event.
    */
-  public AsmState transition(final AsmEvent the_event)
+  public AsmState stepEvent(final AsmEvent the_event)
       throws IllegalStateException {
     final Pair<AsmState, AsmEvent> pair = 
         new Pair<AsmState, AsmEvent>(my_current_state, the_event);
