@@ -98,14 +98,8 @@ public final class CastVoteRecordQueries {
       final Root<CastVoteRecord> root = cq.from(CastVoteRecord.class);
       cq.select(root).where(cb.equal(root.get(RECORD_TYPE), the_type));
       cq.orderBy(cb.asc(root.get(IMPRINTED_ID)));
-      final TypedQuery<CastVoteRecord> query = s.createQuery(cq);
-      if (query instanceof Query) {
-        result = ((Query<CastVoteRecord>) query).stream();
-      } else {
-        // this ought to never happen, but if it does we fall back to (gulp)
-        // streaming from memory
-        result = query.getResultList().stream();
-      }
+      final Query<CastVoteRecord> query = s.createQuery(cq);
+      result = ((Query<CastVoteRecord>) query).stream();
     } catch (final PersistenceException e) {
       Main.LOGGER.error(COULD_NOT_QUERY_DATABASE);
     }
@@ -148,14 +142,8 @@ public final class CastVoteRecordQueries {
       conjuncts.add(cb.equal(root.get(RECORD_TYPE), the_type));
       cq.select(root).where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
       cq.orderBy(cb.asc(root.get(IMPRINTED_ID)));
-      final TypedQuery<CastVoteRecord> query = s.createQuery(cq);
-      if (query instanceof Query) {
-        result = ((Query<CastVoteRecord>) query).stream();
-      } else {
-        // this ought to never happen, but if it does we fall back to (gulp)
-        // streaming from memory
-        result = query.getResultList().stream();
-      }
+      final Query<CastVoteRecord> query = s.createQuery(cq);
+      result = query.stream();
     } catch (final PersistenceException e) {
       Main.LOGGER.error(COULD_NOT_QUERY_DATABASE);
     }
@@ -202,14 +190,8 @@ public final class CastVoteRecordQueries {
       conjuncts.add(cb.equal(root.get(RECORD_TYPE), the_type));
       cq.select(root).where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
       cq.orderBy(cb.asc(root.get(IMPRINTED_ID)));
-      final TypedQuery<CastVoteRecord> query = s.createQuery(cq);
-      if (query instanceof Query) {
-        result = ((Query<CastVoteRecord>) query).stream();
-      } else {
-        // this ought to never happen, but if it does we fall back to (gulp)
-        // streaming from memory
-        result = query.getResultList().stream();
-      }
+      final Query<CastVoteRecord> query = s.createQuery(cq);
+      result = query.stream();
     } catch (final PersistenceException e) {
       Main.LOGGER.error(COULD_NOT_QUERY_DATABASE);
     }

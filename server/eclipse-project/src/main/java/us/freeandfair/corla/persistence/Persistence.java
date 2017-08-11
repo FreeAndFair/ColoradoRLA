@@ -614,14 +614,8 @@ public final class Persistence {
         final CriteriaQuery<T> cq = cb.createQuery(the_class);
         final Root<T> root = cq.from(the_class);
         cq.select(root);
-        final TypedQuery<T> query = s.createQuery(cq);
-        if (query instanceof Query) {
-          result = ((Query<T>) query).stream();
-        } else {
-          // this ought to never happen, but if it does we fall back to (gulp)
-          // streaming from memory
-          result = query.getResultList().stream();
-        }
+        final Query<T> query = s.createQuery(cq);
+        result = query.stream();
       } catch (final PersistenceException e) {
         Main.LOGGER.error("could not query database");
       }
