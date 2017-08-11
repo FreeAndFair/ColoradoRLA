@@ -7,6 +7,7 @@ module.exports = config => {
         plugins: [
             require('karma-webpack'),
             require('karma-tap'),
+            require('karma-tap-pretty-reporter'),
             require('karma-chrome-launcher'),
         ],
 
@@ -55,8 +56,12 @@ module.exports = config => {
         browsers: ['ChromeHeadless'],
         port: 9876,
 
-        reporters: ['dots'],
+        reporters: ['tap-pretty'],
+        tapReporter: {
+            prettify: require('tap-spec'),
+        },
+
         colors: true,
-        logLevel: config.LOG_DEBUG,
+        logLevel: config.LOG_INFO,
     })
 };
