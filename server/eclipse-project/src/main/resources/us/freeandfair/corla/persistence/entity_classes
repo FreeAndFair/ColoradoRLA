@@ -3,6 +3,7 @@ us.freeandfair.corla.model.BallotManifestInfo
 us.freeandfair.corla.model.CastVoteRecord
 us.freeandfair.corla.model.Choice
 us.freeandfair.corla.model.Contest
+us.freeandfair.corla.model.ContestToAudit
 us.freeandfair.corla.model.County
 us.freeandfair.corla.model.CVRContestInfo
 us.freeandfair.corla.model.DepartmentOfStateDashboard

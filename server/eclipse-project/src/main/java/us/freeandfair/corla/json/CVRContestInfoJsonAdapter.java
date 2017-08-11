@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -25,7 +26,10 @@ import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.persistence.Persistence;
 
 /**
- * JSON adapter for a map from contests to choices.
+ * JSON adapter for CVR contest information.
+ * 
+ * @author Daniel M. Zimmerman
+ * @version 0.0.1
  */
 // the default constructor suffices for type adapters
 @SuppressWarnings("PMD.AtLeastOneConstructor")
@@ -104,9 +108,9 @@ public final class CVRContestInfoJsonAdapter
   private Contest contestSanityCheck(final Long the_id, 
                                      final List<String> the_choices) {
     final Contest result = Persistence.getByID(the_id, Contest.class);
-    boolean error = false;
+    boolean error = the_choices == null;
     
-    if (result != null) {
+    if (!error && result != null) {
       for (final String c : the_choices) {
         if (!result.isValidChoice(c)) {
           error = true;
@@ -122,7 +126,10 @@ public final class CVRContestInfoJsonAdapter
   }
   
   /**
-   * Reads a CVR contest info objects.
+   * Reads a CVR contest info object.
+   * 
+   * @param the_reader The JSON reader.
+   * @return the object.
    */
   @Override
   public CVRContestInfo read(final JsonReader the_reader) 
@@ -169,10 +176,9 @@ public final class CVRContestInfoJsonAdapter
     final Contest contest = contestSanityCheck(contest_id, choices);
     
     if (error || contest == null) {
-      throw new IOException("invalid data detected in CVR contest info");
+      throw new JsonSyntaxException("invalid data detected in CVR contest info");
     }
     
-    return new CVRContestInfo(Persistence.getByID(contest_id, Contest.class), 
-                              comment, consensus, choices);
+    return new CVRContestInfo(contest, comment, consensus, choices);
   }
 }

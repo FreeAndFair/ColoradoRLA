@@ -179,7 +179,7 @@ public class CVRContestInfo extends AbstractEntity implements Serializable {
    */
   @Override
   public String toString() {
-    return "CVRContestInfo [contest=" + my_contest + ", comment=" + 
+    return "CVRContestInfo [contest=" + my_contest.id() + ", comment=" + 
            my_comment + ", consensus=" + my_consensus + ", choices=" +
            my_choices + "]";
   }
