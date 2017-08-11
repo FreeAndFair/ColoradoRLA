@@ -1,3 +1,4 @@
+us.freeandfair.corla.asm.PersistentASMState
 us.freeandfair.corla.model.Administrator
 us.freeandfair.corla.model.BallotManifestInfo
 us.freeandfair.corla.model.CastVoteRecord
