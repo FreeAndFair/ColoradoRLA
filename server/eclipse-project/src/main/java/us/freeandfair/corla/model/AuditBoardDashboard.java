@@ -31,6 +31,7 @@ import javax.persistence.Table;
 
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.persistence.AbstractEntity;
+import us.freeandfair.corla.persistence.Persistence;
 
 /**
  * The county dashboard.
@@ -50,26 +51,33 @@ public class AuditBoardDashboard extends AbstractEntity implements Serializable 
   private static final long serialVersionUID = 1; 
 
   /**
-   * The county ID of this dashboard.
+   * The county identifier of this dashboard.
    */
   @Column(nullable = false, updatable = false)
-  private Long my_county_id;
+  private Integer my_county_id;
  
   /**
-   * The ids of the CVRs to audit.
+   * The ids of the CVRs to audit, in the order they should be audited.
    */
   @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name = "audit_board_dashboard_cvr_to_audit",
                    joinColumns = @JoinColumn(name = "audit_board_dashboard_id", 
                                              referencedColumnName = "my_id"))
   @OrderColumn(name = "index")
-  @Column(name = "cvr_to_audit")
-  private List<Long> my_cvrs_to_audit = new ArrayList<Long>();
+  @Column(name = "cvr_id")
+  private List<Long> my_cvrs_to_audit = new ArrayList<>();
   
   /**
-   * The index in the list of the current CVR being audited.
+   * The ids of the audit CVRs submitted, in the same order as the CVRs
+   * to audit. 
    */
-  private Integer my_current_cvr_index;
+  @ElementCollection(fetch = FetchType.EAGER)
+  @CollectionTable(name = "audit_board_dashboard_submitted_audit_cvr",
+                   joinColumns = @JoinColumn(name = "audit_board_dashboard_id", 
+                                             referencedColumnName = "my_id"))
+  @OrderColumn(name = "index")
+  @Column(name = "cvr_id")
+  private List<Long> my_submitted_audit_cvrs = new ArrayList<>();
   
   /**
    * The members of the audit board.
@@ -87,6 +95,16 @@ public class AuditBoardDashboard extends AbstractEntity implements Serializable 
    */
   public AuditBoardDashboard() {
     super();
+  }
+  
+  /**
+   * Constructs an audit board dashboard for the specified county.
+   * 
+   * @param the_county_id The county identifier.
+   */
+  public AuditBoardDashboard(final Integer the_county_id) {
+    super();
+    my_county_id = the_county_id;
   }
   
   /**
@@ -115,8 +133,8 @@ public class AuditBoardDashboard extends AbstractEntity implements Serializable 
   }
   
   /**
-   * Define the CVRs to audit. This also resets the current CVR to audit
-   * to be the first one in the list.
+   * Define the CVRs to audit. This also clears the list of submitted
+   * audit CVRs.
    * 
    * @param the_cvrs_to_audit A list of the IDs of the CVRs to audit,
    * in the order they should be examined. It must contain no duplicates.
@@ -129,33 +147,33 @@ public class AuditBoardDashboard extends AbstractEntity implements Serializable 
       throw new IllegalArgumentException("duplicate elements in audit cvr list");
     }
     my_cvrs_to_audit = new ArrayList<Long>(the_cvrs_to_audit);
-    my_current_cvr_index = 0;
+    my_submitted_audit_cvrs.clear();
   }
   
   /**
-   * Submit an aCVR for a CVR under audit.
+   * Submit an audit CVR for a CVR under audit.
    * 
    * @param the_cvr_under_audit The CVR under audit.
-   * @param the_acvr The corresponding aCVR.
-   * @return true if the aCVR is submitted successfully, false if it doesn't
-   * correspond to the CVR under audit or if the specified CVR under audit
-   * is not the next CVR in sequence.
+   * @param the_audit_cvr The corresponding audit CVR.
+   * @return true if the audit CVR is submitted successfully, false if it doesn't
+   * correspond to the CVR under audit, or the specified CVR under audit was
+   * not in fact under audit.
    */
   //@ require the_cvr_under_audit != null;
   //@ require the_acvr != null;
   public boolean submitAuditCVR(final CastVoteRecord the_cvr_under_audit, 
-                                final CastVoteRecord the_acvr) {
+                                final CastVoteRecord the_audit_cvr) {
     // performs a sanity check to make sure the CVR under audit and the ACVR
-    // are the same card, and that the CVR under audit is the next one in sequence
-    
+    // are the same card
     boolean result = true;
-    
-    if (my_cvrs_to_audit.get(my_current_cvr_index).equals(the_cvr_under_audit.id())) {
+    final int index = my_cvrs_to_audit.indexOf(the_cvr_under_audit.id());
+    if (index > 0) {
       // compare the CVR and aCVR
-      if (/* the_cvr_under_audit.equalsForAudit(the_acvr) && */
-          the_cvr_under_audit.recordType() != RecordType.AUDITOR_ENTERED &&
-          the_acvr.recordType() == RecordType.AUDITOR_ENTERED) {
-        // move on to the next CVR
+      if (the_cvr_under_audit.equals(Persistence.getByID(the_cvr_under_audit.id(), 
+                                                         CastVoteRecord.class)) &&
+          the_cvr_under_audit.isAuditPairWith(the_audit_cvr) &&
+          the_cvr_under_audit.recordType() != RecordType.AUDITOR_ENTERED) {
+        my_submitted_audit_cvrs.set(index, the_audit_cvr.id());
       } else {
         // something didn't match
         result = false;
@@ -166,13 +184,6 @@ public class AuditBoardDashboard extends AbstractEntity implements Serializable 
   }
   
   /**
-   * @return all the aCVRs that have been submitted to this dashboard in 
-   * this round.
+   * @return
    */
-  public Set<CastVoteRecord> auditCVRs() {
-    final Set<CastVoteRecord> result = 
-        new HashSet<CastVoteRecord>(my_cvrs_to_audit.values());
-    result.remove(null);
-    return result;
-  }
 }

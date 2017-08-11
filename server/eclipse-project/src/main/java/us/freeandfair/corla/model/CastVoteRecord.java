@@ -257,6 +257,36 @@ public class CastVoteRecord extends AbstractEntity implements Serializable {
   }
   
   /**
+   * Compares this CVR with another to determine whether
+   * one is an audit CVR for the other - that is, whether they have
+   * the same county ID, scanner ID, batch ID, record ID, 
+   * imprinted ID, and ballot type, and exactly one of them is an 
+   * auditor uploaded CVR.
+   * 
+   * @param the_other The other CVR.
+   * @return true if one CVR is an audit CVR for the other; false
+   * otherwise.
+   */
+  public boolean isAuditPairWith(final CastVoteRecord the_other) {
+    boolean result = true;
+    
+    if (the_other == null) {
+      result = false;
+    } else {
+      result &= nullableEquals(the_other.countyID(), countyID());
+      result &= nullableEquals(the_other.scannerID(), scannerID());
+      result &= nullableEquals(the_other.batchID(), batchID());
+      result &= nullableEquals(the_other.recordID(), recordID());
+      result &= nullableEquals(the_other.imprintedID(), imprintedID());
+      result &= nullableEquals(the_other.ballotType(), ballotType());
+      result &= recordType() == RecordType.AUDITOR_ENTERED ^ 
+                the_other.recordType() == RecordType.AUDITOR_ENTERED;
+    }
+    
+    return result;
+  }
+  
+  /**
    * @return a hash code for this object.
    */
   @Override
