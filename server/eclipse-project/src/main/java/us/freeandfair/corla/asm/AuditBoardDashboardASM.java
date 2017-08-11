@@ -14,6 +14,9 @@ package us.freeandfair.corla.asm;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+
 import us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent;
 import us.freeandfair.corla.asm.ASMState.AuditBoardDashboardState;
 import us.freeandfair.corla.asm.ASMTransitionFunction.AuditBoardDashboardTransitionFunction;
@@ -24,6 +27,8 @@ import us.freeandfair.corla.asm.ASMTransitionFunction.AuditBoardDashboardTransit
  * @author Joseph R. Kiniry <kiniry@freeandfair.us>
  * @version 0.0.1
  */
+@Entity
+@DiscriminatorValue("AuditBoardDashboardASM")
 public class AuditBoardDashboardASM extends ASM {
   /**
    * The serialVersionUID.

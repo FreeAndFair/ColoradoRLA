@@ -14,7 +14,7 @@ package us.freeandfair.corla.asm;
 import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.*;
 import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.*;
 import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.*;
-import static us.freeandfair.corla.asm.UIToASMEventRelation.UiEvent.*;
+import static us.freeandfair.corla.asm.UIEvent.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -28,13 +28,12 @@ import us.freeandfair.corla.util.Pair;
  * @version 0.0.1
  * @todo dmz/kiniry use an entity instead of Pair<> to enable persistence
  */
-@SuppressWarnings("PMD.TooManyStaticImports")
 public class UIToASMEventRelation {
   /**
    * The relation encoded via a set of pairs.
    */
-  private final Set<Pair<UiEvent, ASMEvent>> my_relation = 
-      new HashSet<Pair<UiEvent, ASMEvent>>();
+  private final Set<Pair<UIEvent, ASMEvent>> my_relation = 
+      new HashSet<Pair<UIEvent, ASMEvent>>();
   
   /**
    * Create an instance of this relation, which contains the full set of public 
@@ -42,54 +41,54 @@ public class UIToASMEventRelation {
    * @design kiniry This should probably be refactored as a singleton.
    */
   public UIToASMEventRelation() {
-    addDosDashboardPairs();
+    addDoSDashboardPairs();
     addCountyDashboardPairs();
     addAuditBoardDashboardPairs();
   }
   
-  private void addDosDashboardPairs() {
+  private void addDoSDashboardPairs() {
     // All Department of State Dashboard pairs.
-    my_relation.add(new Pair<UiEvent, ASMEvent>(LOGIN, 
+    my_relation.add(new Pair<UIEvent, ASMEvent>(LOGIN, 
         AUTHENTICATE_STATE_ADMINISTRATOR_EVENT));
-    my_relation.add(new Pair<UiEvent, ASMEvent>(UNDEFINED, 
+    my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         ESTABLISH_RISK_LIMIT_FOR_COMPARISON_AUDITS_EVENT));
-    my_relation.add(new Pair<UiEvent, ASMEvent>(UNDEFINED, 
+    my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         SELECT_CONTESTS_FOR_COMPARISON_AUDIT_EVENT));
-    my_relation.add(new Pair<UiEvent, ASMEvent>(UNDEFINED, 
+    my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         PUBLIC_SEED_EVENT));
-    my_relation.add(new Pair<UiEvent, ASMEvent>(UNDEFINED, 
+    my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         PUBLISH_BALLOTS_TO_AUDIT_EVENT));
-    my_relation.add(new Pair<UiEvent, ASMEvent>(UNDEFINED, 
+    my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         INDICATE_FULL_HAND_COUNT_CONTEST_EVENT));
-    my_relation.add(new Pair<UiEvent, ASMEvent>(UNDEFINED, 
+    my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         PUBLISH_AUDIT_REPORT_EVENT));
   }
   
   private void addCountyDashboardPairs() {
     // All County Dashboard pairs.
-    my_relation.add(new Pair<UiEvent, ASMEvent>(UNDEFINED, 
+    my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         AUTHENTICATE_COUNTY_ADMINISTRATOR_EVENT));
-    my_relation.add(new Pair<UiEvent, ASMEvent>(UNDEFINED, 
+    my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         ESTABLISH_AUDIT_BOARD_EVENT));
-    my_relation.add(new Pair<UiEvent, ASMEvent>(UNDEFINED, 
+    my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         UPLOAD_BALLOT_MANIFEST_EVENT));
-    my_relation.add(new Pair<UiEvent, ASMEvent>(UNDEFINED, 
+    my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         UPLOAD_CVRS_EVENT));
-    my_relation.add(new Pair<UiEvent, ASMEvent>(UNDEFINED, 
+    my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         START_AUDIT_EVENT));
   }
   
   private void addAuditBoardDashboardPairs() {
     // All Audit Board Dashboard pairs.
-    my_relation.add(new Pair<UiEvent, ASMEvent>(UNDEFINED, 
+    my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         REPORT_MARKINGS_EVENT));
-    my_relation.add(new Pair<UiEvent, ASMEvent>(UNDEFINED, 
+    my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         REPORT_BALLOT_NOT_FOUND_EVENT));
-    my_relation.add(new Pair<UiEvent, ASMEvent>(UNDEFINED, 
+    my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         SUBMIT_AUDIT_INVESTIGATION_REPORT_EVENT));
-    my_relation.add(new Pair<UiEvent, ASMEvent>(UNDEFINED, 
+    my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         SUBMIT_AUDIT_REPORT_EVENT));
-    my_relation.add(new Pair<UiEvent, ASMEvent>(UNDEFINED, 
+    my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         SUBMIT_INTERMEDIATE_AUDIT_REPORT_EVENT));
   }
   
@@ -97,8 +96,8 @@ public class UIToASMEventRelation {
    * Is a_pair a member of this relation?
    * @param a_pair the UI event/AsmEvent pair to check.
    */
-  public boolean member(final UiEvent a_ue, final ASMEvent an_ae) {
-    return my_relation.contains(new Pair<UiEvent, ASMEvent>(a_ue, an_ae));
+  public boolean member(final UIEvent a_ue, final ASMEvent an_ae) {
+    return my_relation.contains(new Pair<UIEvent, ASMEvent>(a_ue, an_ae));
   }
   
   /**
@@ -106,7 +105,7 @@ public class UIToASMEventRelation {
    * @param a_ue the UI event to lookup.
    * @return the ASM event corresponding to 'a_ue', or null if no such event exists.
    */
-  public ASMEvent rightArrow(final UiEvent a_ue) {
+  public ASMEvent rightArrow(final UIEvent a_ue) {
     return null;
   }
   
@@ -115,20 +114,7 @@ public class UIToASMEventRelation {
    * @param a_ae the ASM event to lookup.
    * @return the UI event corresponding to 'an_ae', or null if no such event exists.
    */
-  public UiEvent leftArrow(final ASMEvent an_ae) {
+  public UIEvent leftArrow(final ASMEvent an_ae) {
     return null;
-  }
-  
-  /**
-   * An enumeration of all user-triggered external inbound events in the client UI.
-   */
-  enum UiEvent {
-    LOGIN,
-    FETCH_INITIAL_STATE_SEND,
-    FETCH_INITIAL_STATE_RECEIVE,
-    SELECT_NEXT_BALLOT,
-    UPDATE_BOARD_MEMBER,
-    UPDATE_BALLOT_MARKS,
-    UNDEFINED
   }
 }

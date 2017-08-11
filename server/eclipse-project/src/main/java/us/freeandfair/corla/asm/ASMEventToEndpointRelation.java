@@ -18,7 +18,6 @@ import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.*;
 import java.util.HashSet;
 import java.util.Set;
 
-import us.freeandfair.corla.asm.UIToASMEventRelation.UiEvent;
 import us.freeandfair.corla.endpoint.Endpoint;
 import us.freeandfair.corla.util.Pair;
 
@@ -142,7 +141,7 @@ public class ASMEventToEndpointRelation {
    * @param a_ae the ASM event to lookup.
    * @return the UI event corresponding to 'an_ae', or null if no such event exists.
    */
-  public UiEvent leftArrow(final Endpoint an_e) {
+  public UIEvent leftArrow(final Endpoint an_e) {
     // @todo kiniry To be implemented.
     assert false;
     //@ assert false;

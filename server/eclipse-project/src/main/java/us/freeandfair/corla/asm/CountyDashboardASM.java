@@ -14,6 +14,9 @@ package us.freeandfair.corla.asm;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+
 import us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent;
 import us.freeandfair.corla.asm.ASMState.CountyDashboardState;
 import us.freeandfair.corla.asm.ASMTransitionFunction.CountyDashboardTransitionFunction;
@@ -24,6 +27,8 @@ import us.freeandfair.corla.asm.ASMTransitionFunction.CountyDashboardTransitionF
  * @author Joseph R. Kiniry <kiniry@freeandfair.us>
  * @version 0.0.1
  */
+@Entity
+@DiscriminatorValue("AuditBoardDashboardASM")
 public class CountyDashboardASM extends ASM {
   /**
    * The serialVersionUID.

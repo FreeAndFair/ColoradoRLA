@@ -14,6 +14,9 @@ package us.freeandfair.corla.asm;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+
 import us.freeandfair.corla.asm.ASMTransitionFunction.RlaTransitionFunction;
 
 /**
@@ -22,6 +25,8 @@ import us.freeandfair.corla.asm.ASMTransitionFunction.RlaTransitionFunction;
  * @author Joseph R. Kiniry <kiniry@freeandfair.us>
  * @version 0.0.1
  */
+@Entity
+@DiscriminatorValue("AuditBoardDashboardASM")
 public class RLAToolASM extends ASM {
   /**
    * The serialVersionUID.

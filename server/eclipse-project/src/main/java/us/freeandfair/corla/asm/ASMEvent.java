@@ -17,7 +17,7 @@ package us.freeandfair.corla.asm;
  * @author Joseph R. Kiniry <kiniry@freeandfair.us>
  * @version 0.0.1
  */
-public interface ASMEvent {
+public interface ASMEvent extends Event {
   /**
    * The Department of State Dashboard's events.
    * @trace asm.department_of_state_dashboard_event
