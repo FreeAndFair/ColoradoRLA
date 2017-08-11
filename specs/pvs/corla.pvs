@@ -2858,6 +2858,7 @@ BEGIN
     UNAUTHORIZED_401,
     FORBIDDEN_403,
     NOT_FOUND_404,
+    UNSUPPORTED_MEDIA_TYPE_415,
     UNPROCESSABLE_ENTITY_422,
     INTERNAL_SERVER_ERROR_500
   }
@@ -2880,11 +2881,14 @@ BEGIN
 %%% malformed and cannot be interpreted. This situation can happen,
 %%% for example, if the Election Management System used to export the
 %%% file has a bug, if the file is improperly edited by someone, or if
-%%% there is a bug in our parser. Additionally, if the file is of the
-%%% wrong type (i.e., a PDF was uploaded when the server expected a
-%%% CSV file), or if the uploaded file is too large, then we are in
-%%% the same erroneous case. In this situation, the server will
-%%% respond with a \texttt{UNPROCESSABLE\_ENTITY\_422} response.
+%%% there is a bug in our parser. In this situation, the server will
+%%% respond with a \texttt{UNPROCESSABLE\_ENTITY\_422}
+%%% response.
+%%%
+%%% \item Alternatively, if the file is of the wrong type (i.e., a PDF
+%%% was uploaded when the server expected a CSV file), or if the
+%%% uploaded file is too large, then the server will respond with a
+%%% \texttt{UNSUPPORTED\_MEDIA\_TYPE\_415} message.
 %%%
 %%% \item If the client is unauthenticated, or if authentication
 %%% fails, then the server will respond with a
@@ -2905,7 +2909,6 @@ BEGIN
 %%% non-official party.
 %%%
 %%% \end{enumerate}
-    
   http_inbound_spec: TYPE = list[string]
   empty_request: http_inbound_spec = null
 %%% \todokiniry{Transport specs for Department of State Dashboard.}

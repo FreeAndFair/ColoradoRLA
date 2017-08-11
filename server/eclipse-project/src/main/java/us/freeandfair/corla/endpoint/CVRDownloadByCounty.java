@@ -28,7 +28,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.eclipse.jetty.http.HttpStatus;
 import org.hibernate.Session;
 
 import spark.Request;
@@ -47,7 +46,7 @@ import us.freeandfair.corla.util.SparkHelper;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class CVRDownloadByCounty implements Endpoint {
+public class CVRDownloadByCounty extends AbstractEndpoint implements Endpoint {
   /**
    * {@inheritDoc}
    */
@@ -69,36 +68,25 @@ public class CVRDownloadByCounty implements Endpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    String result = "";
-    int status = HttpStatus.OK_200;
-    
-    if (validateParameters(the_request)) {
-      final Set<Integer> county_set = new HashSet<Integer>();
-      for (final String s : the_request.queryParams()) {
-        county_set.add(Integer.valueOf(s));
-      }
-      final Set<CastVoteRecord> matches = getMatching(county_set);
-      if (matches == null) {
-        status = HttpStatus.INTERNAL_SERVER_ERROR_500;
-        result = "Error retrieving records from database";
-      } else {
-        try {
-          final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
-          final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-
-          Main.GSON.toJson(matches, bw);
-          bw.flush();
-        } catch (final IOException e) {
-          status = HttpStatus.INTERNAL_SERVER_ERROR_500;
-          result = "Unable to stream response";
-        }
-      }
-    } else {
-      status = HttpStatus.NOT_FOUND_404;
-      result = "Invalid county ID specified";
+    final Set<Integer> county_set = new HashSet<Integer>();
+    for (final String s : the_request.queryParams()) {
+      county_set.add(Integer.valueOf(s));
     }
-    the_response.status(status);
-    return result;
+    final Set<CastVoteRecord> matches = getMatching(county_set);
+    if (matches == null) {
+      serverError(the_response, "Error retrieving records from database");
+    } else {
+      try {
+        final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
+        final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+
+        Main.GSON.toJson(matches, bw);
+        bw.flush();
+      } catch (final IOException e) {
+        serverError(the_response, "Unable to stream response");
+      }
+    }
+    return my_endpoint_result;
   }
   
   /**
@@ -108,7 +96,7 @@ public class CVRDownloadByCounty implements Endpoint {
    * @param the_request The request.
    * @return true if the parameters are valid, false otherwise.
    */
-  private boolean validateParameters(final Request the_request) {
+  protected boolean validateParameters(final Request the_request) {
     boolean result = true;
     
     for (final String s : the_request.queryParams()) {

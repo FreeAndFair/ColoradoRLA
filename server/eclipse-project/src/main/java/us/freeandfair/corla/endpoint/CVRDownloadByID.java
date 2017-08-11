@@ -11,8 +11,6 @@
 
 package us.freeandfair.corla.endpoint;
 
-import org.eclipse.jetty.http.HttpStatus;
-
 import spark.Request;
 import spark.Response;
 
@@ -27,7 +25,7 @@ import us.freeandfair.corla.persistence.Persistence;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class CVRDownloadByID implements Endpoint {
+public class CVRDownloadByID extends AbstractEndpoint implements Endpoint {
   /**
    * {@inheritDoc}
    */
@@ -49,9 +47,7 @@ public class CVRDownloadByID implements Endpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    String result = null;
-    int status = HttpStatus.OK_200;
-    
+    String result = "";
     try {
       final CastVoteRecord c = 
           Persistence.getByID(Long.parseLong(the_request.params(":id")),
@@ -60,15 +56,11 @@ public class CVRDownloadByID implements Endpoint {
         result = Main.GSON.toJson(c);
       }
     } catch (final NumberFormatException e) {
-      status = HttpStatus.BAD_REQUEST_400;
-      result = "Bad CVR ID";
+      invariantViolation(the_response, "Bad CVR ID");
     }
     if (result == null) {
-      status = HttpStatus.NOT_FOUND_404;
-      result = "CVR not found";
+      dataNotFound(the_response, "CVR not found");
     }
-    
-    the_response.status(status);
-    return result;
+    return my_endpoint_result;
   }
 }
