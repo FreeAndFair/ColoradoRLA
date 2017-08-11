@@ -310,7 +310,7 @@
 
 FAFSSL: THEORY
 BEGIN
-  TBD: bool = TRUE
+  TBD: boolean = TRUE
 %  first_release: []
 %  second_release: []
 %  third_release: []
@@ -362,6 +362,7 @@ BEGIN
   web_browser: TYPE
   browser: TYPE = web_browser
   javascript_code: TYPE
+  date_and_time: TYPE = string
 END information_systems
 
 %%% Several kinds of servers are necessary to deploy this system.  At
@@ -1491,14 +1492,20 @@ END user_interface
 % @relation too_late inherit upload_system_message
 upload_system_message: DATATYPE
   WITH SUBTYPES upload_successful,
+                checking_hash,
+                hash_verified,
                 hash_wrong,
                 file_type_wrong,
+                data_parsed,
                 data_transmission_interrupted,
                 too_late
 BEGIN
   upload_successful?: make_upload_successful: upload_successful
+  checking_hash?: make_checking_hash: checking_hash
+  hash_verified?: make_hash_verified: hash_verified
   hash_wrong?: make_hash_wrong: hash_wrong
   file_type_wrong?: make_file_type_wrong: file_type_wrong
+  data_parsed?: make_data_parsed: data_parsed
   data_transmission_interrupted?: make_data_transmission_interrupted:
     data_transmission_interrupted
   too_late?: make_too_late: too_late
@@ -1599,11 +1606,13 @@ BEGIN
 %%% the type and content of which is dependent upon the current audit
 %%% stage.
 % @trace us.freeandfair.corla.model.AuditStage
-  audit_stage: TYPE =
-    { initial, authenticated, risk_limits_set,
-      contests_to_audit_identified, random_seed_published,
-      ballot_order_defined, audit_ongoing, audit_complete,
-      audit_results_published }
+  audit_stage: TYPE = {
+      pre_audit,
+      audit_ready_to_start,
+      audit_ongoing,
+      audit_complete,
+      audit_results_published
+    }
 % @trace us.freeandfair.corla.model.DepartmentOfStateDashboard.auditStage
   overall_audit_stage:
     [department_of_state_dashboard ->
@@ -1642,9 +1651,8 @@ BEGIN
 %%% this data separate from all other election data.
 % @trace us.freeandfair.corla.model.dashBoardForCounty(county).status
   upload_status: [department_of_state_dashboard -> set[county_status]]
-
 % @trace RDPR-6-Jul-2017 Section 25.2.2(I)
-
+%%% \begin{quotation}
 %%% The state-wide dashboard will provide a mechanism for the Secretary of 
 %%% State to enter and publish the list of contests to be audited.
 %%%
@@ -1657,23 +1665,17 @@ BEGIN
 %%% publish a complete list of all audited contests on the audit
 %%% center. The Secretary of State will consider the following factors
 %%% in determining which contests to audit:
-%%%
 %%% \begin{enumerate}
-
 %%% \item The closeness of the reported tabulation outcome of the contests;
-
 %%% \item The geographical scope of the contests;
-
 %%% \item Any cause for concern regarding the accuracy of the reported
 %%% tabulation outcome of the contests;
-
 %%% \item Any benefits that may result from opportunistically auditing
 %%% certain contests; and
-
 %%% \item The ability of the county clerks to complete the audit before
 %%% the canvass deadline.
-
 %%% \end{enumerate}
+%%% \end{quotation}
 % @trace us.freeandfair.corla.model.AuditReason
   audit_reason: TYPE =
     { state_wide_contest, county_wide_contest, close_contest,
@@ -1690,7 +1692,6 @@ BEGIN
 % If there is at least one countywide contest, then at least one has
 % to be selected.
   at_least_one_countywide_contest_per_county: AXIOM TBD
-
 %%% At the moment, CDOS has not contracted support for the selection
 %%% of opportunistic audited contents. But, since we know that CDOS
 %%% wishes to support this feature in the future, we model it for 
@@ -1701,22 +1702,17 @@ BEGIN
 %  someday_support_opportunistic_audit:
 %    AXIOM someday(select_contest_for_opportunistic_audit)
 
-%%% The state-wide dashboard will allow the Secretary of State
-%%% to select ballots at random as required by law
-%%% (assuming that a truly random seed has been entered).
-%%% Ballots can be randomly selected for audit in two ways, either by:
-
+%%% The state-wide dashboard will allow the Secretary of State to
+%%% select ballots at random as required by law (assuming that a truly
+%%% random seed has been entered).  Ballots can be randomly selected
+%%% for audit in two ways, either by:
 %%% \begin{enumerate}
-
 %%% \item permuting all ballots and auditing a prefix of ballots
 %%% (thereby auditing ballots ``with no replacement''); or
-
 %%% \item randomly selecting ballots ballot-by-ballot (thereby
 %%% auditing ballots ``with replacement'' as the same ballot may be
 %%% audited multiple times).
-
 %%% \end{enumerate}
-
 %%% \todokiniry{Obviously this type has to be strengthened considerably
 %%% to guarantee permutation. That is, that both the set and the list
 %%% are finite and converting the list into a set results in a set
@@ -1734,6 +1730,9 @@ BEGIN
   print_ballots_under_audit_list:
     [county, list[ballot] -> ballots_under_audit_instructions]
 
+%%% \todokiniry{Write a specification for publishing data to audit.}
+% @see PR #188 https://github.com/FreeAndFair/ColoradoRLA/pull/188
+
 % @trace RDPR-6-Jul-2017 Section 25.2.2(K)
 
 %%% The Secretary of State will randomly select the individual ballots
@@ -1747,7 +1746,7 @@ BEGIN
 % @trace us.freeandfair.corla.model.DepartmentOfStateDashboard.setRandomSeed
   publish_seed:
     [department_of_state_dashboard, seed -> department_of_state_dashboard]
-  public_ballots_to_audit:
+  publish_ballots_to_audit:
     [department_of_state_dashboard ->
       [department_of_state_dashboard, list[[contest, list[ballot]]]]]
 %%% The Secretary of State can indicate that a contest must be a full
@@ -1762,13 +1761,15 @@ BEGIN
 %%% state of the election under audit and its RLAs.
   refresh: [department_of_state_dashboard ->
              [department_of_state_dashboard,
+              audit_stage,
               risk_limit,
               set[[audited_contest, audit_reason]],
               set[county_status],
               seed,
-              list[[contest, list[ballot]]],
+              % @todo kiniry Shouldn't this just be list[ballot]?
+              % @todo kiniry There isn't any reason why the DOS should have this.
+              %list[[contest, list[ballot]]],
               set[full_hand_count_contest]]]
-
 END department_of_state_dashboard
 
 %%% \subsubsection{County Dashboard}
@@ -1787,7 +1788,8 @@ BEGIN
             information_systems,
             roles,
             server,
-            upload_system_message
+            upload_system_message,
+            department_of_state_dashboard
 
 %%% Some of the generation information contained in the county
 %%% dashboard is stipulated by C.R.S.
@@ -1888,6 +1890,14 @@ BEGIN
   upload_tabulation_results:
     [enr_server, cvr_tabulation_outcome -> enr_server]
 
+%%% After the audit board is established, all CVRs and ballot
+%%% manifests are successfully uploaded, the county administator can
+%%% start the audit.  \todokiniry{@review cdos Must the Department of
+%%% State give an explicit go-ahead, or can the county simply
+%%% immediately start the audit?}
+  start_audit:
+    [county_dashboard -> audit_board_dashboard]
+
 % @trace RDPR-6-Jul-2017 Section 25.2.2(G)
 
 %%% No later than 11:59 PM MT on the ninth day after Election Day,
@@ -1911,6 +1921,26 @@ BEGIN
 %%% defined above, as their types do not mandate a particular kind of
 %%% audit on the county.
 
+%%% Lastly, county administrators can see updates on the current state
+%%% of their audit.
+  refresh: [county_dashboard ->
+             [county_dashboard,
+              string, % general_static_information
+              set[elector], % the audit board members
+              digest, % the ballot manifest digest
+              digest, % the CVR digest
+              set[contest], % the contests on the ballot in this county
+              set[[audited_contest, audit_reason]], % the contests under
+              % audit in this county
+              date_and_time, % start date and time of the audit
+              nat, % number of ballots according to CVR
+              nat, % total estimated number of ballots to audit according to RLA
+              nat, % total number of ballots audited thus far
+              nat, % total number of discrepancies (overstatements +
+              % understatements) seen thus far
+              nat] % total number of times the audit board could not
+              % agree upon the interpretation of a ballot under audit
+           ]
 END county_dashboard
 
 %%% \subsubsection{Audit Board Dashboard}
@@ -1926,7 +1956,8 @@ BEGIN
             ballots,
             cast_vote_records,
             instructions_forms_reports,
-            storage_container
+            storage_container,
+            department_of_state_dashboard
 %%%% The audit board must locate and retrieve from the appropriate
 %%%% storage container each randomly selected ballot. The audit board
 %%%% must verify that the seals on the appropriate storage containers
@@ -2016,6 +2047,22 @@ BEGIN
 % audit completed.
   signoff_intermediate_audit_report:
     [audit_board_dashboard, audit_report -> audit_board_dashboard]
+%%% Lastly, audit board members see updates on the current state of
+%%% their audit.
+  refresh: [audit_board_dashboard ->
+             [audit_board_dashboard,
+              % general information
+              string,
+              % the set of contests under audit and why
+              set[[audited_contest, audit_reason]],
+              % the status of the county associated with this audit board
+              county_status,
+              % the list of ballots under audit and their locations
+              list[[ballot, storage_container]],
+              % the current ballot under audit
+              [ballot, ballot_id, ballot_style]
+             ]
+           ]
 END audit_board_dashboard
 
 %%% \subsubsection{Public Dashboard}
@@ -2506,12 +2553,616 @@ END data_model
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%+BEGIN asm
+
+%%% \section{Abstract State Machine}
+%%% \label{sec:Abstract_State_Machine}
+%%%
+%%% Each dashboard has its own abstract state machine (ASM). The RLA
+%%% Tool's ASM is the composition of the composed of the three
+%%% dashboard ASMs. We specify ASMs using the finite automata standard
+%%% tabular format.
+asm: THEORY
+BEGIN
+  IMPORTING FAFSSL,
+            department_of_state_dashboard
+%%% In order to formalize ASMs in general, we need to define a few
+%%% relevant types. Note that we are modeling \emph{deterministic}
+%%% ASMs, thus transitions can depend upon not only the current state
+%%% and some event, but also an arbitrary boolean expression that
+%%% typically involves system state. Since our ASMs are deterministic,
+%%% transitions map to only a single target state, rather than a set
+%%% of states as one would see in a non-deterministic ASM.
+  asm_state: TYPE
+  asm_event: TYPE
+  asm_transition_function: TYPE =
+    [asm_state, asm_event, boolean -> asm_state]
+%%% Consequently, the core features of the ASM implementation in the
+%%% business logic of the RLA Tool are:
+%%% \begin{itemize}
+%%% \item What is the current state of the system?
+  current_state: TYPE = [dashboard -> asm_state]
+%%% \item What events are enabled?
+  enabled_events: TYPE = [dashboard -> set[asm_event]]
+%%% \item Transition to the next state based upon this event.
+  transition: TYPE = [[dashboard, asm_event] -> [dashboard, asm_state]]
+%%% \item Are we in a initial state?
+  initial?: TYPE = [dashboard -> boolean]
+%%% \item Are we in a final state?
+  final?: TYPE = [dashboard -> boolean]
+%%% \end{itemize}
+%%%
+%%% \todokiniry{Explain ASM definition.}
+  asm: TYPE =
+    [# states: set[asm_state],
+       transitions: set[asm_event],
+       transition_function: asm_transition_function,
+       initial_state: asm_state,
+       final_states: set[asm_state] #]
+%%%
+%%% We will first specify the ASM for the Department of State
+%%% dashboard. Its states describe the sequence of steps that state
+%%% administrators must take to start, observe, and complete an RLA.
+%%% The state \texttt{initial} is the initial state of the ASM; the
+%%% state \texttt{audit\_results\_published} is the final state of the
+%%% ASM.
+  department_of_state_dashboard_state: TYPE = % SUBTYPE asm_state
+    { di_s,   % dos_initial_state
+      daa_s,  % dos_administrator_authenticated
+      rls_s,  % risk_limits_set
+      ctai_s, % contests_to_audit_identified
+      rsp_s,  % random_seed_published
+      bod_s,  % ballot_order_defined
+      art_s,  % audit_ready_to_start
+      ao_s,   % audit_ongoing
+      ac_s,   % audit_complete
+      arp_s   % audit_results_published
+    }
+%%% Various events, most of which are triggered by state
+%%% administrators using the RLA Tool, cause state changes. These
+%%% events are named according to their corresponding functional
+%%% definitions in earlier theories. E.g., the
+%%% \texttt{authenticate\_state\_administrator\_event} relates to the
+%%% \texttt{authenticate\_state\_administrator} function and its
+%%% realization via an endpoint.
+  department_of_state_dashboard_event: TYPE = % SUBTYPE asm_event
+    { asa_e,    % 1. authenticate_state_administrator_event
+      erlfca_e, % 2. establish_risk_limit_for_comparison_audits_event
+      scfca_e,  % 3. select_contests_for_comparison_audit_event
+      pdta_e,   % 13. publish_data_to_audit @todo kiniry
+      ps_e,     % 4. publish_seed_event
+      pbta_e,   % 5. publish_ballots_to_audit_event
+      rm_e,     % 7. 8. any report_markings call by any county
+      ifhcc_e,  % 9. 10. indicate_full_hand_count_contest_event
+      cac_e,    % 11. county_audit_complete_event
+      par_e,    % 12. publish_audit_report
+      r_e,      % 13. refresh_event
+      s_e,      % 6. skip_event
+      n_e       % no_event
+    }
+
+  dos_state: VAR department_of_state_dashboard_state
+  dos_event: VAR department_of_state_dashboard_event
+  dos_asm_function: VAR asm_transition_function
+
+%   dos_dashboard_next_state(dos_state, dos_event, dos_asm_function):
+%     department_of_state_dashboard_state =
+% TABLE dos_state, dos_event
+% % ----------------------------------------------------------------------
+%              |[ asa_e | erlfca_e | scfca_e | ps_e  | pbta_e  | ifhcc_e | r_e ]|
+% % ----------------------------------------------------------------------
+%      | i_s    | a_s   |         |        |      |        |         |     ||
+%      | a_s    |       | rls_s   |        |      |        |         |     ||
+%      | rls_s  |       |         | ctai_s |      |        |         |     ||
+%      | ctai_s |       |         |        | rsp_s |       |         |     ||
+%      | rsp_s  |       |         |        |      | bod_s  |         |     ||
+%      | bod_s  |       |         |        |      |        | art_s   |     ||
+%      | art_s  |       |         |        |      |        |         |     ||
+%      | ao_s   |       |         |        |      |        |         |     ||
+%      | ac_s   |       |         |        |      |        |         |     ||
+%      | arp_s  |       |         |        |      |        |         |     ||
+% ENDTABLE
+
+%  dos_asm: VAR asm =
+%     [# states = department_of_state_dashboard_state,
+%        transitions = department_of_state_dashboard_event
+%        transition_function = dos_dashboard_next_state #]
+
+  county_dashboard_state: TYPE = % SUBTYPE asm_state
+    { ci_s,      % county_initial_state
+      caa_s,     % county_administrator_authenticated
+      abe_s,     % audit_board_established_state
+%%% \todokiniry{Discuss upload\_system\_message.}
+      bm_tl_s,   % upload_ballot_manifest: too_late
+      bm_dti_s,  % upload_ballot_manifest: data_transmission_interrupted
+      bm_us_s,   % upload_ballot_manifest: upload_sucessful
+      bm_ch_s,   % upload_ballot_manifest: checking_hash
+      bm_hw_s,   % upload_ballot_manifest: hash_wrong
+      bm_hv_s,   % upload_ballot_manifest: hash_verified
+      bm_pd_s,   % upload_ballot_manifest: parsing_data
+      bm_ftw_s,  % upload_ballot_manifest: file_type_wrong
+      bm_dp_s,   % upload_ballot_manifest: data_parsed
+      cvr_tl_s,  % upload_cvrs: too_late
+      cvr_dti_s, % upload_cvrs: data_transmission_interrupted
+      cvr_us_s,  % upload_cvrs: upload_sucessful
+      cvr_ch_s,  % upload_cvrs: checking_hash
+      cvr_hw_s,  % upload_cvrs: hash_wrong
+      cvr_hv_s,  % upload_cvrs: hash_verified
+      cvr_pd_s,  % upload_cvrs: parsing_data
+      cvr_ftw_s, % upload_cvrs: file_type_wrong
+      cvr_dp_s,  % upload_cvrs: data_parsed
+      cau_s,     % county_audit_underway
+      cac_s      % county_audit_complete
+    }
+
+  county_dashboard_event: TYPE = % SUBTYPE asm_event
+    { aca_e,     % 1. authenticate_county_administrator_event
+      eab_e,     % 2. establish_audit_board_event
+      cuvbm_e,   % 3. 4. 5. 7. county_upload_ballot_manifest_event
+      uvc_e,     % 16. 17. 19. 21. upload_cvrs_event
+      sa_e,      % 29. start_audit_event
+      r_e,       % 30. refresh_event
+      s_e,       % 1. 6. 8. 9. 10. 11. 12. 13. 14. 15. 18. 20. skip_event
+                 % 22. 23. 24. 25. 26. 27. 28. 31. skip_event
+      n_e        % no_event                 
+    }
+
+  c_state: VAR county_dashboard_state
+  c_event: VAR county_dashboard_event
+  c_asm_function: VAR asm_transition_function
+
+%   county_dashboard_next_state(c_state, c_event, c_asm_function):
+%     county_dashboard_state =
+% TABLE c_state, c_event
+% % ----------------------------------------------------------------------
+%              |[ aca_e | eab_e | cuvbm_e | uvc_e | sa_e  ]|
+% % ----------------------------------------------------------------------
+%      | i_s    | a_s   |       |         |       |       ||
+%      | a_s    |       |       |         |       |       ||
+% ...etc...
+% ENDTABLE
+
+%  county_dashboard_asm: VAR asm =
+%     [# states = county_dashboard_state,
+%        transitions = county_dashboard_event
+%        transition_function = county_dashboard_next_state #]
+
+  audit_board_dashboard_state: TYPE = % SUBTYPE asm_state
+    { ai_s,   % audit_initial_state
+      aip_s,  % audit_in_progress_state
+      iars_s, % intermediate_audit_report_submitted_state
+      ars_s   % audit_report_submitted_state
+    }
+
+  audit_board_dashboard_event: TYPE = % SUBTYPE asm_event
+    { rm_e,   % 2. report_markings_event
+      rbnf_e, % 3. report_ballot_not_found_event
+      sair_e, % 4. submit_audit_investigation_report_event
+      siar_e, % 5. submit_intermediate_audit_report_event
+      sar_e,  % 6. submit_audit_report_event
+      r_e,    % 8. audit_refresh_event
+      as_e,   % 1. 7. audit_skip
+      n_e     % no_event
+    }
+
+  ab_state: VAR audit_board_dashboard_state
+  ab_event: VAR audit_board_dashboard_event
+  ab_asm_function: VAR asm_transition_function
+
+%   audit_board_dashboard_next_state(ab_state, ab_event, ab_asm_function):
+%     audit_board_dashboard_state =
+% TABLE ab_state, ab_event
+% % ----------------------------------------------------------------------
+%              |[ rm_e | rmnf_e | sair_e | sar_e | siar_e | r_e ]|
+% % ----------------------------------------------------------------------
+%      | i_s    |      |        |        |       |        |     ||
+%      | aip_s  |      |        |        |       |        |     ||
+%      | sair_s |      |        |        |       |        |     ||
+%      | sar_s  |      |        |        |       |        |     ||
+% ENDTABLE
+
+%  audit_board_dashboard_asm: VAR asm =
+%     [# states = audit_board_dashboard_state,
+%        transitions = audit_board_dashboard_event
+%        transition_function = audit_board_dashboard_next_state #]
+
+%  rla_tool_asm: VAR asm =
+%     [# states = union of dos, county, and audit board asm states,
+%        transitions = union of dos, county, and audit board asm
+%                      transitions,
+%        transition_function = composition of dos, county, and audit
+%                              board transition functions #]
+END asm
+%+END asm
+
+%+BEGIN endpoints
+
+%%% \section{Endpoints}
+%%% \label{sec:Endpoints}
+%%%
+endpoints: THEORY
+BEGIN
+  IMPORTING dashboard,
+            asm
+%%% In order to relate the ASM to the core implementation constructs
+%%% in a RESTful client-server architecture, we must relate UI events
+%%% to ASM events and ASM events to server endpoints. Communication to
+%%% and from those endpoints happens via JSON streams over
+%%% HTTPS. Thus, for any given endpoint, there is an expected inbound
+%%% JSON type and an expected outbound JSON type per HTTP response
+%%% code.
+  ui_event: TYPE = {
+    LOGIN,
+    FETCH_INITIAL_STATE_SEND,
+    FETCH_INITIAL_STATE_RECEIVE,
+    SELECT_NEXT_BALLOT,
+    UPDATE_BOARD_MEMBER,
+    UPDATE_BALLOT_MARKS,
+    UNDEFINED
+  }
+%%% \todokiniry{Specifications for the transport types.}
+  json_spec: TYPE = list[string]
+  nothing: json_spec = null
+%%% This is the standard response that the server gives to all public
+%%% inbound events to permit the UI (the view of the MVC architecture)
+%%% to know what state the server is in, which UI elements should be
+%%% enabled (and thus what transitions are legal).
+  server_response: json_spec =
+    (: "server_state", "ui_events" :)
+% Note that this type is used as a response for both ballot manifest
+% and CVR uploads.
+  upload_response: json_spec =
+    % legal values for status are:
+    % "too_late", "data_transmission_interrupted", "upload_sucessful",
+    % "checking_hash", "hash_wrong", "hash_verified", "parsing_data",
+    % "file_type_wrong", "data_parsed"
+    (: "status" :)
+  http_inbound_spec: TYPE = list[string]
+  empty_request: http_inbound_spec = null
+%%% \todokiniry{Transport specs for Department of State Dashboard.}
+  authenticate_params: http_inbound_spec = % reused for County Dashboard
+    (: "username", "password", "second_factor" :)
+  risk_limit_params: http_inbound_spec =
+    (: "risk_limit" :)
+  select_contests_params: http_inbound_spec =
+    (: "contests" :)
+  random_seed_params: http_inbound_spec =
+    (: "seed" :)
+  ballots_to_audit_params: http_inbound_spec =
+    (: "county" :)
+  full_hand_count_params: http_inbound_spec =
+    (: "contest" :)
+  % @trace department_of_state_dashboard.refresh
+  refresh_department_of_state_dashboard: json_spec =
+    (: "audit_stage", "risk_limit", "audited_contests",
+       "county_statuses", "seed", "full_hand_count_contests" :)
+%%% \todokiniry{Transport specs for County Dashboard.}
+  audit_board: http_inbound_spec =
+    (: "firstname", "lastname", "party" :)
+  ballot_manifest_parts: http_inbound_spec =
+    (: "bmi_file", "county", "hash" :)
+  cvr_parts: http_inbound_spec =
+    (: "cvr_file", "county", "hash" :)
+  % @trace county_dashboard.refresh
+  refresh_county_dashboard: json_spec =
+    (: "general_information", "audit_board_members",
+       "ballot_manifest_digest", "CVR_digest",
+       "contests_on_ballot", "contests_under_audit_with_reasons",
+       "date_and_time_of_audit", "estimated_number_of_ballots_to_audit",
+       "number_of_ballots_audited", "number_of_descrepencies",
+       "number_of_disagreements" :)
+%%% \todokiniry{Transport specs for Audit Board Dashboard.}
+  acvr_parts: http_inbound_spec =
+    (: "audit_cvr" :)
+  ballot_not_found_params: http_inbound_spec =
+    (: "ballot_id" :)
+  audit_investigation_report: json_spec =
+    (: "report" :)
+  audit_report: json_spec =
+    (: "reason" :)
+  refresh_audit_board_dashboard: json_spec =
+    null % @todo kiniry
+%%% \todokiniry{Discuss HTTP, error codes, and endpoints.}
+  http_response_code: TYPE = {
+    OK_200,
+    BAD_REQUEST_400,
+    UNAUTHORIZED_401,
+    UNPROCESSABLE_ENTITY_422
+  }
+  endpoint_type: TYPE = { GET, POST, PUT }
+  server_endpoint: TYPE =
+    [# endpoint_type: endpoint_type,
+       callback: [dashboard -> dashboard],
+       uri: string,
+       implementation_class: string,
+       in_stream: http_inbound_spec,
+       out_stream: set[[http_response_code, json_spec]],
+       dos_event: department_of_state_dashboard_event,
+       county_event: county_dashboard_event,
+       audit_event: audit_board_dashboard_event
+     #]
+  server_endpoints: TYPE = set[server_endpoint]
+  rla_tool_endpoints: VAR server_endpoints
+  undefined_callback: [dashboard -> dashboard]
+%%% Each RLA Tool system endpoint is specified below.
+  root_endpoint: server_endpoint =
+    (# endpoint_type := GET,
+       callback := undefined_callback,
+       uri := "/",
+       implementation_class := "Root",
+       in_stream := empty_request,
+       out_stream := singleton((OK_200, nothing)),
+       dos_event := s_e,
+       county_event := n_e,
+       audit_event := n_e
+     #)
+%%% \subsection{Department of State Dashboard Endpoints}
+  auth_state_admin: server_endpoint =
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/auth-state-admin",
+       implementation_class := "AuthenticateStateAdministrator",
+       in_stream := authenticate_params,
+       out_stream := add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing))),
+       dos_event := asa_e,
+       county_event := n_e,
+       audit_event := n_e
+     #)
+  risk_limit: server_endpoint =
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/risk-limit-comp-audits",
+       implementation_class := "EstablishRiskLimitForComparisonAudits",
+       in_stream := risk_limit_params,
+       out_stream := add((BAD_REQUEST_400, nothing),
+                     add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing)))),
+       dos_event := erlfca_e,
+       county_event := n_e,
+       audit_event := n_e
+     #)
+  select_contests: server_endpoint =
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/select-contests",
+       implementation_class := "SelectContestsForAudit",
+       in_stream := select_contests_params,
+       out_stream := add((BAD_REQUEST_400, nothing),
+                     add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing)))),
+       dos_event := scfca_e,
+       county_event := n_e,
+       audit_event := n_e
+     #)
+  publish_data_to_audit: server_endpoint =
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/publish-data-to-audit",
+       implementation_class := "PublishDataToAudit",
+       in_stream := empty_request,
+       out_stream := add((BAD_REQUEST_400, nothing),
+                     add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing)))),
+       dos_event := pdta_e,
+       county_event := n_e,
+       audit_event := n_e
+     #)
+  publish_seed: server_endpoint =
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/random-seed", % placeholder
+       implementation_class := "UploadSeed", % placeholder
+       in_stream := random_seed_params,
+       out_stream := add((BAD_REQUEST_400, nothing),
+                     add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing)))),
+       dos_event := ps_e,
+       county_event := n_e,
+       audit_event := n_e
+     #)
+  publish_ballots: server_endpoint =
+    (# endpoint_type := GET,
+       callback := undefined_callback,
+       uri := "/ballots-to-audit", % placeholder
+       implementation_class := "UploadSeed", % placeholder
+       in_stream := ballots_to_audit_params,
+       out_stream := add((BAD_REQUEST_400, nothing),
+                     add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing)))),
+       dos_event := pbta_e,
+       county_event := n_e,
+       audit_event := n_e
+     #)
+  full_hand_count: server_endpoint =
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/hand-count", % placeholder
+       implementation_class := "IndicateHandCount", % placeholder
+       in_stream := full_hand_count_params,
+       out_stream := add((BAD_REQUEST_400, nothing),
+                     add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing)))),
+       dos_event := ifhcc_e,
+       county_event := n_e,
+       audit_event := n_e
+     #)
+  publish_report: server_endpoint =
+    (# endpoint_type := GET,
+       callback := undefined_callback,
+       uri := "/publish-report", % placeholder
+       implementation_class := "PublishAuditReport",
+       in_stream := empty_request,
+       out_stream := add((BAD_REQUEST_400, nothing),
+                     add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing)))),
+       dos_event := par_e,
+       county_event := n_e,
+       audit_event := n_e
+     #)
+  refresh_department_of_state_dashboard: server_endpoint =
+    (# endpoint_type := GET,
+       callback := undefined_callback,
+       uri := "/dos-dashboard", % placeholder
+       implementation_class := "DepartmentOfStateDashboard",
+       in_stream := empty_request,
+       out_stream := add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing))),
+       dos_event := r_e,
+       county_event := n_e,
+       audit_event := n_e
+     #)
+%%% \subsection{County Dashboard Endpoints}
+  auth_county_admin: server_endpoint =
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/auth-county-admin",
+       implementation_class := "AuthenticateCountyAdministrator",
+       in_stream := authenticate_params,
+       out_stream := add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing))),
+       dos_event := n_e,
+       county_event := aca_e,
+       audit_event := n_e
+     #)
+  establish_audit_board: server_endpoint =
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/audit-board",
+       implementation_class := "EstablishAuditBoard",
+       in_stream := audit_board,
+       out_stream := add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing))),
+       dos_event := n_e,
+       county_event := eab_e,
+       audit_event := n_e
+     #)
+  ballot_manifest_upload: server_endpoint =
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/upload-ballot-manifest",
+       implementation_class := "BallotManifestUpload",
+       in_stream := empty_request,
+       out_stream := add((BAD_REQUEST_400, upload_response),
+                     add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, upload_response)))),
+       dos_event := n_e,
+       county_event := cuvbm_e,
+       audit_event := n_e
+     #)
+  cvr_export_upload: server_endpoint =
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/upload-cvr-export",
+       implementation_class := "CVRExportUpload",
+       in_stream := cvr_parts,
+       out_stream := add((UNPROCESSABLE_ENTITY_422, upload_response),
+                     add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, upload_response)))),
+       dos_event := n_e,
+       county_event := uvc_e,
+       audit_event := n_e
+     #)
+  refresh_county_dashboard: server_endpoint =
+    (# endpoint_type := GET,
+       callback := undefined_callback,
+       uri := "/county-dashboard", % placeholder
+       implementation_class := "CountyDashboard",
+       in_stream := empty_request,
+       out_stream := add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, refresh_county_dashboard))),
+       dos_event := n_e,
+       county_event := r_e,
+       audit_event := n_e
+     #)
+%%% \subsection{Audit Board Dashboard Endpoints}
+  acvr_upload: server_endpoint = % aka report markings event
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/upload-audit-cvr",
+       implementation_class := "ACVRUpload",
+       in_stream := acvr_parts,
+       out_stream := add((UNPROCESSABLE_ENTITY_422, upload_response),
+                     add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing)))),
+       dos_event := n_e,
+       county_event := n_e,
+       audit_event := rm_e
+     #)
+  ballot_not_found: server_endpoint =
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/ballot-not-found",
+       implementation_class := "BallotNotFound",
+       in_stream := ballot_not_found_params,
+       out_stream := add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing))),
+       dos_event := n_e,
+       county_event := n_e,
+       audit_event := rbnf_e
+     #)
+  audit_investigation_report: server_endpoint =
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/audit-investigation-report",
+       implementation_class := "AuditInvestigationReport",
+       in_stream := audit_investigation_report,
+       out_stream := add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing))),
+       dos_event := n_e,
+       county_event := n_e,
+       audit_event := sair_e
+     #)
+  intermediate_audit_report: server_endpoint =
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/intermediate-audit-report",
+       implementation_class := "IntermediateAuditReport",
+       in_stream := audit_report,
+       out_stream := add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing))),
+       dos_event := n_e,
+       county_event := n_e,
+       audit_event := siar_e
+     #)
+  audit_report: server_endpoint =
+    (# endpoint_type := POST,
+       callback := undefined_callback,
+       uri := "/audit-report",
+       implementation_class := "AuditReport",
+       in_stream := audit_report,
+       out_stream := add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, nothing))),
+       dos_event := n_e,
+       county_event := n_e,
+       audit_event := sar_e
+     #)
+  refresh_audit_board_dashboard: server_endpoint =
+    (# endpoint_type := GET,
+       callback := undefined_callback,
+       uri := "/audit-board-dashboard", % placeholder
+       implementation_class := "AuditBoardDashboard",
+       in_stream := empty_request,
+       out_stream := add((UNAUTHORIZED_401, nothing),
+                         singleton((OK_200, refresh_audit_board_dashboard))),
+       dos_event := n_e,
+       county_event := n_e,
+       audit_event := r_e
+     #)
+%%% \todokiniry{Explain these relations and their use.}
+  ui_to_asm_event_relation: pred[[ui_event, asm_event]]
+  asm_event_to_endpoint_relation: pred[[asm_event, server_endpoint]]
+END endpoints
+%+END endpoints
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %+BEGIN protocol
 
 %%% \section{Protocol}
 %%% \label{sec:Protocol}
 %%%
-%%% As discussed in~\Cref{sec:System_Architecture},
+%%% As discussed in~\Cref{sec:System_Architecture},%
 %%% the RLA Tool is a client-server system. In this section we
 %%% describe the protocol used by the client and server to communicate
 %%% with each other.

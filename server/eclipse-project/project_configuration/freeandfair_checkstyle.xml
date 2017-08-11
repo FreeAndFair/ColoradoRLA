@@ -42,6 +42,15 @@
     </module>
     <module name="AvoidStarImport">
       <property name="excludes" value="org.junit.annotations,org.junit.Assert"/>
+      <property name="excludes" value="us.freeandfair.corla.asm.AsmEvent.AuditBoardDashboardEvent"/>
+      <property name="excludes" value="us.freeandfair.corla.asm.AsmEvent.CountyDashboardEvent"/>
+      <property name="excludes" value="us.freeandfair.corla.asm.AsmEvent.DosDashboardEvent"/>
+      <property name="excludes" value="us.freeandfair.corla.asm.AsmEvent.RlaToolEvent"/>
+      <property name="excludes" value="us.freeandfair.corla.asm.AsmState.AuditBoardDashboardState"/>
+      <property name="excludes" value="us.freeandfair.corla.asm.AsmState.CountyDashboardState"/>
+      <property name="excludes" value="us.freeandfair.corla.asm.AsmState.DosDashboardState"/>
+      <property name="excludes" value="us.freeandfair.corla.asm.AsmState.RlaToolState"/>
+      <property name="excludes" value="us.freeandfair.corla.asm.UiToAsmEventRelation.UiEvent"/>
     </module>
     <module name="IllegalImport"/>
     <module name="RedundantImport"/>
@@ -62,7 +71,7 @@
       <message key="executableStatementCount" value="Executable statement count is {0,number,integer} (max allowed for an instance initializer is {1,number,integer})."/>
     </module>
     <module name="LineLength">
-      <property name="ignorePattern" value="(^ *//\*@ .+$)|(^ *@.+$)"/>
+      <property name="ignorePattern" value="(^ *//\*@ .+$)|(^ *@.+$)|(^import static.+$)"/>
       <property name="max" value="95"/>
     </module>
     <module name="MethodLength">

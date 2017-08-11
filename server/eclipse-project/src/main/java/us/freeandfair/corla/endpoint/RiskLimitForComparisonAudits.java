@@ -81,9 +81,8 @@ public class RiskLimitForComparisonAudits implements Endpoint {
         result = "Invalid risk limit specified";
       } else {
         final DepartmentOfStateDashboard dosd = DepartmentOfStateDashboardQueries.get();
-        if (dosd != null && dosd.auditStage() == AuditStage.INITIAL) {
+        if (dosd != null && dosd.auditStage() == AuditStage.PRE_AUDIT) {
           dosd.setRiskLimitForComparisonAudits(risk_limit);
-          dosd.setAuditStage(AuditStage.RISK_LIMITS_SET);
           try {
             Persistence.saveOrUpdate(dosd);
             Main.LOGGER.info("risk limit for comparison audits set to " + risk_limit);
