@@ -41,16 +41,8 @@
       <message key="name.invalidPattern" value="Type name ''{0}'' must be formatted as CapitalizedWords."/>
     </module>
     <module name="AvoidStarImport">
-      <property name="excludes" value="org.junit.annotations,org.junit.Assert"/>
-      <property name="excludes" value="us.freeandfair.corla.asm.AsmEvent.AuditBoardDashboardEvent"/>
-      <property name="excludes" value="us.freeandfair.corla.asm.AsmEvent.CountyDashboardEvent"/>
-      <property name="excludes" value="us.freeandfair.corla.asm.AsmEvent.DosDashboardEvent"/>
-      <property name="excludes" value="us.freeandfair.corla.asm.AsmEvent.RlaToolEvent"/>
-      <property name="excludes" value="us.freeandfair.corla.asm.AsmState.AuditBoardDashboardState"/>
-      <property name="excludes" value="us.freeandfair.corla.asm.AsmState.CountyDashboardState"/>
-      <property name="excludes" value="us.freeandfair.corla.asm.AsmState.DosDashboardState"/>
-      <property name="excludes" value="us.freeandfair.corla.asm.AsmState.RlaToolState"/>
-      <property name="excludes" value="us.freeandfair.corla.asm.UiToAsmEventRelation.UiEvent"/>
+      <property name="excludes" value="org.junit.annotations"/>
+      <property name="allowStaticMemberImports" value="true"/>
     </module>
     <module name="IllegalImport"/>
     <module name="RedundantImport"/>

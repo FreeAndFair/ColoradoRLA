@@ -14,9 +14,9 @@ package us.freeandfair.corla.asm;
 import java.util.HashSet;
 import java.util.Set;
 
-import us.freeandfair.corla.asm.AsmEvent.CountyDashboardEvent;
-import us.freeandfair.corla.asm.AsmState.CountyDashboardState;
-import us.freeandfair.corla.asm.AsmTransitionFunction.CountyDashboardTransitionFunction;
+import us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent;
+import us.freeandfair.corla.asm.ASMState.CountyDashboardState;
+import us.freeandfair.corla.asm.ASMTransitionFunction.CountyDashboardTransitionFunction;
 
 /**
  * The ASM for the County Dashboard.
@@ -24,27 +24,27 @@ import us.freeandfair.corla.asm.AsmTransitionFunction.CountyDashboardTransitionF
  * @author Joseph R. Kiniry <kiniry@freeandfair.us>
  * @version 0.0.1
  */
-public class CountyDashboardAsm extends Asm {
+public class CountyDashboardASM extends ASM {
   /**
    * Create the County Dashboard ASM.
    * @trace asm.county_dashboard_asm
    */
-  public CountyDashboardAsm() {
+  public CountyDashboardASM() {
     super();
-    final Set<AsmState> states = new HashSet<>();
-    for (final AsmState s : CountyDashboardState.values()) {
+    final Set<ASMState> states = new HashSet<>();
+    for (final ASMState s : CountyDashboardState.values()) {
       states.add(s);
     }
-    final Set<AsmEvent> events = new HashSet<>();
-    for (final AsmEvent e : CountyDashboardEvent.values()) {
+    final Set<ASMEvent> events = new HashSet<>();
+    for (final ASMEvent e : CountyDashboardEvent.values()) {
       events.add(e);
     }
-    final Set<AsmTransition> set = new HashSet<>();
+    final Set<ASMTransition> set = new HashSet<>();
     for (final CountyDashboardTransitionFunction t : 
          CountyDashboardTransitionFunction.values()) {
       set.add(t.value());
     }
-    final Set<AsmState> final_states = new HashSet<AsmState>();
+    final Set<ASMState> final_states = new HashSet<ASMState>();
     final_states.add(CountyDashboardState.UPLOAD_BALLOT_MANIFEST_TOO_LATE);
     final_states.add(CountyDashboardState.UPLOAD_CVRS_TOO_LATE);
     final_states.add(CountyDashboardState.COUNTY_AUDIT_COMPLETE);

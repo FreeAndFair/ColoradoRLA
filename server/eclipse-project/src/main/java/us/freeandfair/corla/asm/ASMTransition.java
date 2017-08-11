@@ -33,7 +33,7 @@ import us.freeandfair.corla.persistence.AbstractEntity;
 //this class has many fields that would normally be declared final, but
 //cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
-public class AsmTransition extends AbstractEntity implements Serializable {
+public class ASMTransition extends AbstractEntity implements Serializable {
   /**
    * The serialVersionUID.
    */
@@ -43,24 +43,24 @@ public class AsmTransition extends AbstractEntity implements Serializable {
    * The start state for this transition.
    */
   @Enumerated(EnumType.STRING)
-  private AsmState my_start_state;
+  private ASMState my_start_state;
   
   /**
    * The event for this transition.
    */
   @Enumerated(EnumType.STRING)
-  private AsmEvent my_event;
+  private ASMEvent my_event;
   
   /**
    * The end state for this transition.
    */
   @Enumerated(EnumType.STRING)
-  private AsmState my_end_state;
+  private ASMState my_end_state;
   
   /**
    * Constructs an empty AsmTransition, solely for persistence.
    */
-  public AsmTransition() {
+  public ASMTransition() {
     super();
   }
   
@@ -72,9 +72,9 @@ public class AsmTransition extends AbstractEntity implements Serializable {
    * @param the_event The event.
    * @param the_end_state The end state.
    */
-  public AsmTransition(final AsmState the_start_state,
-                       final AsmEvent the_event,
-                       final AsmState the_end_state) {
+  public ASMTransition(final ASMState the_start_state,
+                       final ASMEvent the_event,
+                       final ASMState the_end_state) {
     super();
     my_start_state = the_start_state;
     my_event = the_event;
@@ -84,21 +84,21 @@ public class AsmTransition extends AbstractEntity implements Serializable {
   /**
    * @return the start state.
    */
-  public AsmState startState() {
+  public ASMState startState() {
     return my_start_state;
   }
   
   /**
    * @return the event.
    */
-  public AsmEvent event() {
+  public ASMEvent event() {
     return my_event;
   }
   
   /**
    * @return the end state.
    */
-  public AsmState endState() {
+  public ASMState endState() {
     return my_end_state;
   }
   
@@ -121,8 +121,8 @@ public class AsmTransition extends AbstractEntity implements Serializable {
   @Override
   public boolean equals(final Object the_other) {
     boolean result = true;
-    if (the_other instanceof AsmTransition) {
-      final AsmTransition other_transition = (AsmTransition) the_other;
+    if (the_other instanceof ASMTransition) {
+      final ASMTransition other_transition = (ASMTransition) the_other;
       result &= nullableEquals(other_transition.startState(), startState());
       result &= nullableEquals(other_transition.event(), event());
       result &= nullableEquals(other_transition.endState(), endState());

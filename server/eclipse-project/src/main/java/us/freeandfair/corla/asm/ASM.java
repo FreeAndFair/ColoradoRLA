@@ -29,43 +29,43 @@ import javax.persistence.MappedSuperclass;
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
 @MappedSuperclass
-public class Asm {
+public class ASM {
   /**
    * This ASM's set of states.
    */
   @ElementCollection(fetch = FetchType.EAGER)
-  protected Set<AsmState> my_states;
+  protected Set<ASMState> my_states;
   
   /**
    * This ASM's initial state.
    */
   @Enumerated(EnumType.STRING)
-  protected AsmState my_initial_state;
+  protected ASMState my_initial_state;
   
   /**
    * This AMS's final states.
    */
   @ElementCollection(fetch = FetchType.EAGER)
-  protected Set<AsmState> my_final_states;
+  protected Set<ASMState> my_final_states;
   
   /**
    * This ASM's set of events.
    */
   @ElementCollection(fetch = FetchType.EAGER)
-  protected Set<AsmEvent> my_events;
+  protected Set<ASMEvent> my_events;
   
   /**
    * A map from (state, event) pairs to state.
    */
   @ElementCollection(fetch = FetchType.EAGER)
-  protected Set<AsmTransition> my_transition_function; 
+  protected Set<ASMTransition> my_transition_function; 
   
   /**
    * The current state of this ASM. Initialized to the initial state provided
    * in the constructor.
    */
   @Enumerated(EnumType.STRING)
-  private AsmState my_current_state;
+  private ASMState my_current_state;
   
   /**
    * Create the ASM for the Colorado RLA Tool. Ownership transfer happens on the
@@ -77,11 +77,11 @@ public class Asm {
    * function, represented as a List of Transition, need only specify the legal
    * transitions. All unspecified transitions are considered erroneous.
    */
-  public void initialize(final Set<AsmState> the_states,
-                         final Set<AsmEvent> the_events,
-                         final Set<AsmTransition> the_transition_function,
-                         final AsmState the_initial_state,
-                         final Set<AsmState> the_final_states) {
+  public void initialize(final Set<ASMState> the_states,
+                         final Set<ASMEvent> the_events,
+                         final Set<ASMTransition> the_transition_function,
+                         final ASMState the_initial_state,
+                         final Set<ASMState> the_final_states) {
     my_states = the_states;
     my_events = the_events;
     my_transition_function = the_transition_function;
@@ -108,7 +108,7 @@ public class Asm {
    * @return the current state of this ASM.
    * @trace asm.current_state
    */
-  public AsmState currentState() {
+  public ASMState currentState() {
     return my_current_state;
   }
   
@@ -117,9 +117,9 @@ public class Asm {
    * reachable from the current state, given any possible event?
    * @trace asm.enabled_events
    */
-  public Set<AsmEvent> enabledEvents() {
-    final Set<AsmEvent> result = new HashSet<AsmEvent>();
-    for (final AsmTransition t : my_transition_function) {
+  public Set<ASMEvent> enabledEvents() {
+    final Set<ASMEvent> result = new HashSet<ASMEvent>();
+    for (final ASMTransition t : my_transition_function) {
       if (t.startState().equals(my_current_state)) {
         result.add(t.event());
       }
@@ -134,10 +134,10 @@ public class Asm {
    * @throws IllegalStateException is this ASM cannot transition given the provided
    * event.
    */
-  public AsmState transition(final AsmEvent the_event)
+  public ASMState transition(final ASMEvent the_event)
       throws IllegalStateException {
-    AsmState result = null;
-    for (final AsmTransition t : my_transition_function) {
+    ASMState result = null;
+    for (final ASMTransition t : my_transition_function) {
       if (t.startState().equals(my_current_state) &&
           t.event().equals(the_event)) {
         result = t.endState();
