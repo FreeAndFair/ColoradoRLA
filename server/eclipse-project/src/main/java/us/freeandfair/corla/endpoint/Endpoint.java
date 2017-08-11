@@ -48,4 +48,10 @@ public interface Endpoint {
    * @return the String response.
    */
   String endpoint(Request the_request, Response the_response);
+  
+  /**
+   * The before-filter for this endpoint.
+   * @param the_filter the filter to use for this precondition check.
+   */
+  void before(Request the_request, Response the_response);
 }

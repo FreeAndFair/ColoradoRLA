@@ -25,7 +25,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import org.eclipse.jetty.http.HttpStatus;
 import org.hibernate.Session;
 
 import spark.Request;
@@ -44,7 +43,7 @@ import us.freeandfair.corla.util.SparkHelper;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class CVRDownload implements Endpoint {
+public class CVRDownload extends AbstractEndpoint implements Endpoint {
   /**
    * {@inheritDoc}
    */
@@ -66,28 +65,20 @@ public class CVRDownload implements Endpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    String result = "";
-    int status = HttpStatus.OK_200;
-    
     try {
       final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
       final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
       final Set<CastVoteRecord> matches = getMatching();
       if (matches == null) {
-        result = "Unable to fetch records from database";
-        status = HttpStatus.INTERNAL_SERVER_ERROR_500;
+        serverError(the_response, "Unable to fetch records from database");
       } else {
         Main.GSON.toJson(getMatching(), bw);
         bw.flush();
-        result =  "";
       }
     } catch (final IOException e) {
-      status = HttpStatus.INTERNAL_SERVER_ERROR_500;
-      result = "Unable to stream response";
+      serverError(the_response, "Unable to stream response");
     }
-    
-    the_response.status(status);
-    return result;
+    return my_endpoint_result;
   }
   
   /**

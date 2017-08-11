@@ -16,8 +16,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
-import org.eclipse.jetty.http.HttpStatus;
-
 import spark.Request;
 import spark.Response;
 
@@ -33,7 +31,7 @@ import us.freeandfair.corla.util.SparkHelper;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class BallotManifestDownload implements Endpoint {
+public class BallotManifestDownload extends AbstractEndpoint implements Endpoint {
   /**
    * {@inheritDoc}
    */
@@ -61,10 +59,9 @@ public class BallotManifestDownload implements Endpoint {
       
       Main.GSON.toJson(Persistence.getAll(BallotManifestInfo.class), bw);
       bw.flush();
-      return "";
     } catch (final IOException e) {
-      the_response.status(HttpStatus.INTERNAL_SERVER_ERROR_500);
-      return "Unable to stream response";
+      serverError(the_response, "Unable to stream response");
     }
+    return my_endpoint_result;
   }
 }
