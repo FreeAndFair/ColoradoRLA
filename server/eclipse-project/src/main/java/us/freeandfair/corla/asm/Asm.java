@@ -15,6 +15,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.ElementCollection;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.MappedSuperclass;
 
@@ -37,27 +39,32 @@ public class Asm {
   /**
    * This ASM's initial state.
    */
+  @Enumerated(EnumType.STRING)
   protected AsmState my_initial_state;
   
   /**
    * This AMS's final states.
    */
+  @ElementCollection(fetch = FetchType.EAGER)
   protected Set<AsmState> my_final_states;
   
   /**
    * This ASM's set of events.
    */
+  @ElementCollection(fetch = FetchType.EAGER)
   protected Set<AsmEvent> my_events;
   
   /**
    * A map from (state, event) pairs to state.
    */
+  @ElementCollection(fetch = FetchType.EAGER)
   protected Set<AsmTransition> my_transition_function; 
   
   /**
    * The current state of this ASM. Initialized to the initial state provided
    * in the constructor.
    */
+  @Enumerated(EnumType.STRING)
   private AsmState my_current_state;
   
   /**
