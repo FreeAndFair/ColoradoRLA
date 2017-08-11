@@ -14,10 +14,8 @@ package us.freeandfair.corla.asm;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-
-import us.freeandfair.corla.asm.ASMTransitionFunction.RlaTransitionFunction;
+import us.freeandfair.corla.asm.ASMState.RLAToolState;
+import us.freeandfair.corla.asm.ASMTransitionFunction.RLATransitionFunction;
 
 /**
  * The ASM for the whole RLA Tool.
@@ -25,9 +23,7 @@ import us.freeandfair.corla.asm.ASMTransitionFunction.RlaTransitionFunction;
  * @author Joseph R. Kiniry <kiniry@freeandfair.us>
  * @version 0.0.1
  */
-@Entity
-@DiscriminatorValue("AuditBoardDashboardASM")
-public class RLAToolASM extends ASM {
+public class RLAToolASM extends AbstractStateMachine {
   /**
    * The serialVersionUID.
    */
@@ -57,9 +53,11 @@ public class RLAToolASM extends ASM {
     my_final_states.addAll(buildFinalStates());
     my_events.addAll(buildTransitions());
     my_transition_function.addAll(buildTransitionFunction());
-    for (final RlaTransitionFunction t : RlaTransitionFunction.values()) {
+    for (final RLATransitionFunction t : RLATransitionFunction.values()) {
       my_transition_function.add(t.value());
     }
+    my_initial_state = RLAToolState.RLA_TOOL_INITIAL_STATE;
+    my_current_state = my_initial_state;
   }
   
   private Set<ASMState> buildStates() {

@@ -38,6 +38,8 @@ import spark.Request;
 import spark.Response;
 import spark.Service;
 
+import us.freeandfair.corla.asm.ASMTransitionFunction.RLATransitionFunction;
+import us.freeandfair.corla.asm.RLAToolASM;
 import us.freeandfair.corla.endpoint.Endpoint;
 import us.freeandfair.corla.json.FreeAndFairNamingStrategy;
 import us.freeandfair.corla.model.Administrator;
@@ -120,6 +122,11 @@ public final class Main {
       new GsonBuilder().
       setFieldNamingStrategy(new FreeAndFairNamingStrategy()).
       setPrettyPrinting().create();
+  
+  /**
+   * The ASM for this state machine.
+   */
+  private static RLAToolASM ASM = new RLAToolASM();
   
   /**
    * The "no spark" constant.
@@ -247,6 +254,47 @@ public final class Main {
   }
   
   /**
+   * Initializes the ASM. If it cannot be read from the database, it is created from 
+   * scratch and committed to the database.
+   * 
+   * @exception IllegalStateException if we can't get the ASM. 
+   */
+  private void initializeASM() throws IllegalStateException {
+    Persistence.beginTransaction();
+    ASM = new RLAToolASM();
+    // note that this resets the ASM every launch right now
+    ASM.stepTransition(RLATransitionFunction.ONE.value()); 
+    
+// the following is some old database code from the initial persistence 
+// attempt, but it captures the general idea pretty well
+//    RLAToolASM asm = new RLAToolASM(ASMStateQueries.get(RLAToolASM.class, 
+//                                    ASMStateQueries.UNIQUE));
+/*
+    if (asm == null) {
+      asm = new RLAToolASM();
+      asm.stepTransition(RLATransitionFunction.ONE.value());
+      Main.LOGGER.info("new ASM created");
+    } else {
+      Main.LOGGER.info("ASM loaded from database");
+    }
+    Persistence.saveOrUpdate(asm);
+    try {
+      Persistence.commitTransaction();
+    } catch (final RollbackException e) {
+      // if we have to roll back here, that means somebody beat us to creating an
+      // ASM, so let's try reloading it again
+      Persistence.rollbackTransaction();
+//    RLAToolASM asm = new RLAToolASM(ASMStateQueries.get(RLAToolASM.class, 
+//                                    ASMStateQueries.UNIQUE));
+    }
+    
+    if (asm == null) {
+      Main.LOGGER.error("could not initialize abstract state machine");
+    }
+*/
+  }
+  
+  /**
    * Initializes the counties in the database using information from the 
    * county properties.
    */
@@ -297,6 +345,7 @@ public final class Main {
 
     if (Persistence.hasDB()) {
       initializeCounties();
+      initializeASM();
     } else {
       LOGGER.error("could not open database connection");
       return;
@@ -365,6 +414,14 @@ public final class Main {
   }
 
   /**
+   * @todo dmz/kiniry We may want to rethink this API.
+   * @return the ASM of this state machine. 
+   */
+  public RLAToolASM asm() {
+    return ASM;
+  }
+  
+  /**
    * The main method. Starts the server using the specified properties
    * file.
    * 
@@ -399,6 +456,10 @@ public final class Main {
     }
 
     final Main main = new Main(properties);
-    main.start();
+    try {
+      main.start();
+    } catch (final IllegalStateException e) {
+      LOGGER.error("unable to run: " + e);
+    }
   }
 }

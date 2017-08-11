@@ -19,7 +19,7 @@ import javax.persistence.Entity;
 
 import us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent;
 import us.freeandfair.corla.asm.ASMState.DoSDashboardState;
-import us.freeandfair.corla.asm.ASMTransitionFunction.DosDashboardTransitionFunction;
+import us.freeandfair.corla.asm.ASMTransitionFunction.DoSDashboardTransitionFunction;
 
 /**
  * The ASM for the Department of State Dashboard.
@@ -28,8 +28,8 @@ import us.freeandfair.corla.asm.ASMTransitionFunction.DosDashboardTransitionFunc
  * @version 0.0.1
  */
 @Entity
-@DiscriminatorValue("AuditBoardDashboardASM")
-public class DoSDashboardASM extends ASM {
+@DiscriminatorValue(value = "DoSDashboardASM")
+public class DoSDashboardASM extends AbstractStateMachine {
   /**
    * The serialVersionUID.
    */
@@ -49,7 +49,7 @@ public class DoSDashboardASM extends ASM {
     super(new HashSet<ASMState>(Arrays.asList(DoSDashboardState.values())),
           new HashSet<ASMEvent>(Arrays.asList(DoSDashboardEvent.values())),
           new HashSet<ASMTransitionFunction>(Arrays.
-              asList(DosDashboardTransitionFunction.values())),
+              asList(DoSDashboardTransitionFunction.values())),
           DoSDashboardState.DOS_INITIAL_STATE,
           new HashSet<ASMState>(Arrays.asList(FINAL_STATES)));
   }

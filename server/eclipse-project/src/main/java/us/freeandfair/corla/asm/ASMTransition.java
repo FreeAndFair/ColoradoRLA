@@ -15,25 +15,13 @@ import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 
 import java.io.Serializable;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
-
-import us.freeandfair.corla.persistence.AbstractEntity;
-
 /**
  * A single transition of an abstract state machine.
  * 
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 0.0.1
  */
-@Entity
-@Table(name = "asm_transition")
-//this class has many fields that would normally be declared final, but
-//cannot be for compatibility with Hibernate and JPA.
-@SuppressWarnings("PMD.ImmutableField")
-public class ASMTransition extends AbstractEntity implements Serializable {
+public class ASMTransition implements Serializable {
   /**
    * The serialVersionUID.
    */
@@ -42,27 +30,17 @@ public class ASMTransition extends AbstractEntity implements Serializable {
   /**
    * The start state for this transition.
    */
-  @Enumerated(EnumType.STRING)
-  private ASMState my_start_state;
+  private final ASMState my_start_state;
   
   /**
    * The event for this transition.
    */
-  @Enumerated(EnumType.STRING)
-  private ASMEvent my_event;
+  private final ASMEvent my_event;
   
   /**
    * The end state for this transition.
    */
-  @Enumerated(EnumType.STRING)
-  private ASMState my_end_state;
-  
-  /**
-   * Constructs an empty AsmTransition, solely for persistence.
-   */
-  public ASMTransition() {
-    super();
-  }
+  private final ASMState my_end_state;
   
   /**
    * Constructs an AsmTransition with the specified start state,
@@ -75,7 +53,6 @@ public class ASMTransition extends AbstractEntity implements Serializable {
   public ASMTransition(final ASMState the_start_state,
                        final ASMEvent the_event,
                        final ASMState the_end_state) {
-    super();
     my_start_state = the_start_state;
     my_event = the_event;
     my_end_state = the_end_state;
@@ -107,7 +84,7 @@ public class ASMTransition extends AbstractEntity implements Serializable {
    */
   @Override
   public String toString() {
-    return "AsmTransition [start=" + my_start_state + 
+    return "ASMTransition [start=" + my_start_state + 
            ", event=" + my_event + ", end=" + 
            my_end_state + "]";
   }

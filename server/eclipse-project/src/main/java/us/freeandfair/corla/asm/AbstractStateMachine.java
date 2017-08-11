@@ -15,18 +15,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.Table;
-
+import us.freeandfair.corla.Main;
 import us.freeandfair.corla.persistence.AbstractEntity;
 
 /**
@@ -36,12 +25,7 @@ import us.freeandfair.corla.persistence.AbstractEntity;
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 0.0.1
  */
-@Entity
-@Table(name = "abstract_state_machine")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "asm_type", discriminatorType = DiscriminatorType.STRING)
-@DiscriminatorValue("ASM")
-public class ASM extends AbstractEntity implements Serializable {
+public abstract class AbstractStateMachine extends AbstractEntity implements Serializable {
   /**
    * The serialVersionUID.
    */
@@ -50,44 +34,38 @@ public class ASM extends AbstractEntity implements Serializable {
   /**
    * This ASM's set of states.
    */
-  @ElementCollection(fetch = FetchType.EAGER)
   protected Set<ASMState> my_states = new HashSet<>();
   
   /**
    * This ASM's initial state.
    */
-  @Enumerated(EnumType.STRING)
   protected ASMState my_initial_state;
   
   /**
    * This AMS's final states.
    */
-  @ElementCollection(fetch = FetchType.EAGER)
   protected Set<ASMState> my_final_states = new HashSet<>();
   
   /**
    * This ASM's set of events.
    */
-  @ElementCollection(fetch = FetchType.EAGER)
   protected Set<ASMEvent> my_events = new HashSet<>();
   
   /**
    * A map from (state, event) pairs to state.
    */
-  @ElementCollection(fetch = FetchType.EAGER)
   protected Set<ASMTransition> my_transition_function = new HashSet<>(); 
   
   /**
    * The current state of this ASM. Initialized to the initial state provided
    * in the constructor.
    */
-  @Enumerated(EnumType.STRING)
-  private ASMState my_current_state;
+  protected ASMState my_current_state;
   
   /**
    * Constructs a new ASM with default values, solely for persistence.
    */
-  public ASM() {
+  public AbstractStateMachine() {
     super();
   }
   
@@ -100,11 +78,11 @@ public class ASM extends AbstractEntity implements Serializable {
    * function, represented as a set of ASMTransitionFunction elements, need only
    * specify legal transitions; all unspecified transitions are considered illegal.
    */
-  public ASM(final Set<ASMState> the_states,
-             final Set<ASMEvent> the_events,
-             final Set<ASMTransitionFunction> the_transition_function,
-             final ASMState the_initial_state,
-             final Set<ASMState> the_final_states) {
+  public AbstractStateMachine(final Set<ASMState> the_states,
+                              final Set<ASMEvent> the_events,
+                              final Set<ASMTransitionFunction> the_transition_function,
+                              final ASMState the_initial_state,
+                              final Set<ASMState> the_final_states) {
     super();
     my_states.addAll(the_states);
     my_events.addAll(the_events);
@@ -154,13 +132,37 @@ public class ASM extends AbstractEntity implements Serializable {
   }
   
   /**
+   * Transition to the next state of this ASM given the provided transition and
+   * its current state.
+   * @param the_transition the transition that is triggered.
+   * @return the new current state of the ASM after the transition.
+   * @throws IllegalStateException if this ASM cannot take a step given the provided
+   * transition.
+   */
+  public ASMState stepTransition(final ASMTransition the_transition)
+      throws IllegalStateException {
+    // If we are in the right state then transition to the new state.
+    if (my_current_state.equals(the_transition.startState())) {
+      my_current_state = the_transition.endState();
+      Main.LOGGER.info("ASM transition succeeded: " + the_transition); 
+    } else {
+      Main.LOGGER.error("ASM transition " + the_transition + 
+                        " failed from state " + my_current_state); 
+      throw new IllegalStateException("Attempted to transition from " +
+                                      my_current_state + " using transition " + 
+                                      the_transition);
+    }
+    return my_current_state;
+  }
+  
+  /**
    * Transition to the next state of this ASM given the provided event and its
    * current state.
    * @return the next state given the specified event and input.
    * @throws IllegalStateException is this ASM cannot transition given the provided
    * event.
    */
-  public ASMState transition(final ASMEvent the_event)
+  public ASMState stepEvent(final ASMEvent the_event)
       throws IllegalStateException {
     ASMState result = null;
     for (final ASMTransition t : my_transition_function) {
@@ -172,9 +174,13 @@ public class ASM extends AbstractEntity implements Serializable {
     }
 
     if (result == null) {
+      Main.LOGGER.error("ASM event " + the_event + 
+                        " failed from state " + my_current_state); 
       throw new IllegalStateException("Illegal transition on ASM: (" + 
                                       my_current_state + ", " + the_event + ")");
     } else {
+      Main.LOGGER.info("ASM event " + the_event + " caused transition to " + 
+                       my_current_state); 
       return result;
     }
   }

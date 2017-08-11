@@ -28,8 +28,8 @@ import us.freeandfair.corla.asm.ASMTransitionFunction.CountyDashboardTransitionF
  * @version 0.0.1
  */
 @Entity
-@DiscriminatorValue("AuditBoardDashboardASM")
-public class CountyDashboardASM extends ASM {
+@DiscriminatorValue(value = "CountyDashboardASM")
+public class CountyDashboardASM extends AbstractStateMachine {
   /**
    * The serialVersionUID.
    */

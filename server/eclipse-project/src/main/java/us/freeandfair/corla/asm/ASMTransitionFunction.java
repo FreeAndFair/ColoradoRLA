@@ -33,7 +33,7 @@ public interface ASMTransitionFunction {
    * The Department of State Dashboard's transition function.
    * @trace asm.dos_dashboard_next_state
    */
-  enum DosDashboardTransitionFunction implements ASMTransitionFunction {
+  enum DoSDashboardTransitionFunction implements ASMTransitionFunction {
     ONE(new ASMTransition(DOS_INITIAL_STATE, 
                           AUTHENTICATE_STATE_ADMINISTRATOR_EVENT,
                           DOS_AUTHENTICATED)),
@@ -89,7 +89,7 @@ public interface ASMTransitionFunction {
      * @param the_pair the (current state, event) pair.
      * @param the_state the state transitioned to when the pair is witnessed.
      */
-    DosDashboardTransitionFunction(final ASMTransition the_transition) {
+    DoSDashboardTransitionFunction(final ASMTransition the_transition) {
       my_transition = the_transition;
     }
     
@@ -280,7 +280,7 @@ public interface ASMTransitionFunction {
    * The RLA Tools transition function.
    * @trace asm.rla_tool_asm
    */
-  enum RlaTransitionFunction implements ASMTransitionFunction {
+  enum RLATransitionFunction implements ASMTransitionFunction {
     ONE(new ASMTransition(RLA_TOOL_INITIAL_STATE, 
                           RLA_TOOL_SKIP_EVENT,
                           DOS_INITIAL_STATE)),
@@ -326,7 +326,7 @@ public interface ASMTransitionFunction {
      * @param the_pair the (current state, event) pair.
      * @param the_state the state transitioned to when the pair is witnessed.
      */
-    RlaTransitionFunction(final ASMTransition the_transition) {
+    RLATransitionFunction(final ASMTransition the_transition) {
       my_transition = the_transition;
     }
     

@@ -35,7 +35,8 @@ public final class DepartmentOfStateDashboardQueries {
   }
   
   /**
-   * Obtain the (single) Department of State dashboard object.
+   * Obtain the (single) Department of State dashboard object. To safely _use_
+   * the returned dashboard, this method must be called within a transaction.
    *
    * @param the Department of State dashboard, if one exists, 
    * and null otherwise.

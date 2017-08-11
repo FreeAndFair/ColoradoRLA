@@ -28,8 +28,8 @@ import us.freeandfair.corla.asm.ASMTransitionFunction.AuditBoardDashboardTransit
  * @version 0.0.1
  */
 @Entity
-@DiscriminatorValue("AuditBoardDashboardASM")
-public class AuditBoardDashboardASM extends ASM {
+@DiscriminatorValue(value = "AuditBoardDashboardASM")
+public class AuditBoardDashboardASM extends AbstractStateMachine {
   /**
    * The serialVersionUID.
    */
