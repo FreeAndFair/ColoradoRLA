@@ -11,6 +11,7 @@
 
 package us.freeandfair.corla.json;
 
+import java.util.Collections;
 import java.util.Set;
 
 import us.freeandfair.corla.asm.ASMState;
@@ -23,18 +24,15 @@ import us.freeandfair.corla.asm.UIEvent;
  * @author Joseph R. Kiniry <kiniry@freeandfair.us>
  * @version 0.0.1
  */
-@SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
 public class ServerASMResponse {
   /**
    * The server's current state.
    */
-  @SuppressWarnings("unused")
   private final ASMState my_current_state;
   
   /**
    * The permitted next UI events.
    */
-  @SuppressWarnings("unused")
   private final Set<UIEvent> my_enabled_ui_events;
   
   /**
@@ -46,5 +44,19 @@ public class ServerASMResponse {
                            final Set<UIEvent> the_enabled_ui_events) {
     my_current_state = the_current_state;
     my_enabled_ui_events = the_enabled_ui_events;
+  }
+  
+  /** 
+   * @return the current state.
+   */
+  public ASMState currentState() {
+    return my_current_state;
+  }
+  
+  /**
+   * @return an unmodifiable view of the enabled UI events. 
+   */
+  public Set<UIEvent> enabledUIEvents() {
+    return Collections.unmodifiableSet(my_enabled_ui_events);
   }
 }
