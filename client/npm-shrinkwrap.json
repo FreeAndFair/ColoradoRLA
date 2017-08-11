@@ -72,6 +72,11 @@
       "from": "@types/react-router-dom@>=4.0.6 <5.0.0",
       "resolved": "https://registry.npmjs.org/@types/react-router-dom/-/react-router-dom-4.0.7.tgz"
     },
+    "@types/redux-mock-store": {
+      "version": "0.0.9",
+      "from": "@types/redux-mock-store@latest",
+      "resolved": "https://registry.npmjs.org/@types/redux-mock-store/-/redux-mock-store-0.0.9.tgz"
+    },
     "@types/sinon": {
       "version": "2.3.3",
       "from": "@types/sinon@>=2.3.3 <3.0.0",
@@ -2837,6 +2842,16 @@
       "version": "3.7.2",
       "from": "redux@>=3.6.0 <4.0.0",
       "resolved": "https://registry.npmjs.org/redux/-/redux-3.7.2.tgz"
+    },
+    "redux-mock-store": {
+      "version": "1.2.3",
+      "from": "redux-mock-store@latest",
+      "resolved": "https://registry.npmjs.org/redux-mock-store/-/redux-mock-store-1.2.3.tgz"
+    },
+    "redux-thunk": {
+      "version": "2.2.0",
+      "from": "redux-thunk@latest",
+      "resolved": "https://registry.npmjs.org/redux-thunk/-/redux-thunk-2.2.0.tgz"
     },
     "regenerator-runtime": {
       "version": "0.10.5",
