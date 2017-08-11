@@ -27,6 +27,11 @@
       "from": "@types/enzyme@>=2.8.1 <3.0.0",
       "resolved": "https://registry.npmjs.org/@types/enzyme/-/enzyme-2.8.5.tgz"
     },
+    "@types/fetch-mock": {
+      "version": "5.12.0",
+      "from": "@types/fetch-mock@latest",
+      "resolved": "https://registry.npmjs.org/@types/fetch-mock/-/fetch-mock-5.12.0.tgz"
+    },
     "@types/history": {
       "version": "4.6.0",
       "from": "@types/history@*",
@@ -1239,6 +1244,11 @@
       "from": "fbjs@>=0.8.0 <0.9.0",
       "resolved": "https://registry.npmjs.org/fbjs/-/fbjs-0.8.14.tgz"
     },
+    "fetch-mock": {
+      "version": "5.12.2",
+      "from": "fetch-mock@latest",
+      "resolved": "https://registry.npmjs.org/fetch-mock/-/fetch-mock-5.12.2.tgz"
+    },
     "filename-regex": {
       "version": "2.0.1",
       "from": "filename-regex@>=2.0.0 <3.0.0",
@@ -1343,6 +1353,11 @@
       "version": "2.0.0",
       "from": "glob-parent@>=2.0.0 <3.0.0",
       "resolved": "https://registry.npmjs.org/glob-parent/-/glob-parent-2.0.0.tgz"
+    },
+    "glob-to-regexp": {
+      "version": "0.3.0",
+      "from": "glob-to-regexp@>=0.3.0 <0.4.0",
+      "resolved": "https://registry.npmjs.org/glob-to-regexp/-/glob-to-regexp-0.3.0.tgz"
     },
     "global": {
       "version": "4.3.2",
