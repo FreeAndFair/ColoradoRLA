@@ -108,7 +108,7 @@ public class PersistentASMState extends AbstractEntity implements Serializable {
    * @param the_state The state.
    * @return the state machine.
    * @exception IllegalArgumentException if the state machine cannot be 
-   * constructed because the PersistentASMState contains invalid information.
+   * constructed because the persistent state contains invalid information.
    */
   //@ requires the_state != null;
   public static AbstractStateMachine asmFor(final PersistentASMState the_state) {
@@ -157,7 +157,7 @@ public class PersistentASMState extends AbstractEntity implements Serializable {
    * 
    * @param the_asm The ASM.
    * @exception IllegalArgumentException if the ASM is not the one described in this
-   * persistent state, or if this PersistentASMState contains invalid information.
+   * persistent state, or if this persistent state contains invalid information.
    */
   //@ requires the_asm != null
   public void applyTo(final AbstractStateMachine the_asm) {
@@ -172,6 +172,26 @@ public class PersistentASMState extends AbstractEntity implements Serializable {
       throw new IllegalArgumentException("invalid ASM class " + 
                                          the_asm.getClass().getName() + 
                                          " for state " + this);
+    }
+  }
+  
+  /**
+   * Updates this PersistentASMState from an existing state machine.
+   * 
+   * @param the_asm The ASM
+   * @exception IllegalArgumentException if the specified state machine is
+   * not the one described in this persistent state.
+   */
+  //@ requires the_asm != null
+  public void updateFrom(final AbstractStateMachine the_asm) {
+    final PersistentASMState new_state = stateFor(the_asm);
+    if (new_state.asmClass().equals(asmClass()) &&
+        new_state.asmIdentity().equals(asmIdentity())) {
+      my_state_class = new_state.stateClass();
+      my_state_value = new_state.stateValue();
+    } else {
+      throw new IllegalArgumentException("invalid ASM " + the_asm + 
+                                         " for updating state " + this);
     }
   }
   
