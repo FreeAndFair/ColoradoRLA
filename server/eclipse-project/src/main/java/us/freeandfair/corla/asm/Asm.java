@@ -26,7 +26,7 @@ import us.freeandfair.corla.util.Pair;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public abstract class Asm {
+public class Asm {
   /**
    * This ASM's set of states.
    */
