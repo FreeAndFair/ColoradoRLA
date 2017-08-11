@@ -15,7 +15,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import us.freeandfair.corla.asm.ASMState.RLAToolState;
-import us.freeandfair.corla.asm.ASMTransitionFunction.RLATransitionFunction;
 
 /**
  * The ASM for the whole RLA Tool.
@@ -30,66 +29,42 @@ public class RLAToolASM extends AbstractStateMachine {
   private static final long serialVersionUID = 1; 
 
   /**
-   * The ASM for the Department of State Dashboard.
+   * The states of this ASM.
    */
-  private final DoSDashboardASM my_dos_asm = new DoSDashboardASM();
+  private static final Set<ASMState> STATES = new HashSet<>();
+  
   /**
-   * The ASM for the County Dashboard.
+   * The final states of this ASM.
    */
-  private final CountyDashboardASM my_county_asm = new CountyDashboardASM();
+  private static final Set<ASMState> FINAL_STATES = new HashSet<>();
+  
   /**
-   * The ASM for the Audit Board Dashboard.
+   * The events of this ASM.
    */
-  private final AuditBoardDashboardASM my_audit_asm = new AuditBoardDashboardASM();
+  private static final Set<ASMEvent> EVENTS = new HashSet<>();
+  
+  /**
+   * The transition function of this ASM.
+   */
+  private static final Set<ASMTransition> TRANSITION_FUNCTION = new HashSet<>();
 
+  static {
+    final AbstractStateMachine[] asms = 
+        {new DoSDashboardASM(), new CountyDashboardASM(), new AuditBoardDashboardASM()};
+    
+    for (final AbstractStateMachine asm : asms) {
+      STATES.addAll(asm.my_states);
+      FINAL_STATES.addAll(asm.my_final_states);
+      EVENTS.addAll(asm.my_events);
+      TRANSITION_FUNCTION.addAll(asm.my_transition_function);
+    }
+  }
+  
   /**
    * Create the RLA Tool ASM.
    */
   public RLAToolASM() {
-    super();
-    // Collect all states, events, and transition function pairs of
-    // component ASMs.
-    my_states.addAll(buildStates());
-    my_final_states.addAll(buildFinalStates());
-    my_events.addAll(buildTransitions());
-    my_transition_function.addAll(buildTransitionFunction());
-    for (final RLATransitionFunction t : RLATransitionFunction.values()) {
-      my_transition_function.add(t.value());
-    }
-    my_initial_state = RLAToolState.RLA_TOOL_INITIAL_STATE;
-    my_current_state = my_initial_state;
+    super(STATES, EVENTS, TRANSITION_FUNCTION, 
+          RLAToolState.RLA_TOOL_INITIAL_STATE, FINAL_STATES);
   }
-  
-  private Set<ASMState> buildStates() {
-    final Set<ASMState> result = new HashSet<ASMState>();
-    result.addAll(my_dos_asm.my_states);
-    result.addAll(my_county_asm.my_states);
-    result.addAll(my_audit_asm.my_states);
-    return result;
-  }
-  
-  private Set<ASMState> buildFinalStates() {
-    final Set<ASMState> result = new HashSet<ASMState>();
-    result.addAll(my_dos_asm.my_final_states);
-    result.addAll(my_county_asm.my_final_states);
-    result.addAll(my_audit_asm.my_final_states);
-    return result;
-  }
-  
-  private Set<ASMEvent> buildTransitions() {
-    final Set<ASMEvent> result = new HashSet<ASMEvent>();
-    result.addAll(my_dos_asm.my_events);
-    result.addAll(my_county_asm.my_events);
-    result.addAll(my_audit_asm.my_events);
-    return result;
-  }
-  
-  private Set<ASMTransition> buildTransitionFunction() {
-    final Set<ASMTransition> result = new HashSet<>();
-    result.addAll(my_dos_asm.my_transition_function);
-    result.addAll(my_county_asm.my_transition_function);
-    result.addAll(my_audit_asm.my_transition_function);
-    return result;
-  }
-
 }

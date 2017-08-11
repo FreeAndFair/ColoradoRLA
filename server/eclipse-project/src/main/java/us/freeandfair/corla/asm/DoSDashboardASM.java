@@ -48,8 +48,8 @@ public class DoSDashboardASM extends AbstractStateMachine {
   public DoSDashboardASM() {
     super(new HashSet<ASMState>(Arrays.asList(DoSDashboardState.values())),
           new HashSet<ASMEvent>(Arrays.asList(DoSDashboardEvent.values())),
-          new HashSet<ASMTransitionFunction>(Arrays.
-              asList(DoSDashboardTransitionFunction.values())),
+          transitionsFor(Arrays.
+                         asList(DoSDashboardTransitionFunction.values())),
           DoSDashboardState.DOS_INITIAL_STATE,
           new HashSet<ASMState>(Arrays.asList(FINAL_STATES)));
   }

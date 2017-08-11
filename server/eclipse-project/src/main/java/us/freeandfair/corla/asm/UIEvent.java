@@ -18,7 +18,7 @@ package us.freeandfair.corla.asm;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-enum UIEvent implements Event {
+public enum UIEvent implements Event {
   LOGIN,
   FETCH_INITIAL_STATE_SEND,
   FETCH_INITIAL_STATE_RECEIVE,

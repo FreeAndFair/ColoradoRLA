@@ -414,10 +414,13 @@ public final class Main {
   }
 
   /**
-   * @todo dmz/kiniry We may want to rethink this API.
+   * @todo dmz/kiniry We may want to rethink this API. In particular, 
+   * modifications to the ASM need some sort of concurrency or transactional 
+   * control, and we're probably only persisting another object that represents 
+   * the ASM state.
    * @return the ASM of this state machine. 
    */
-  public RLAToolASM asm() {
+  public static RLAToolASM asm() {
     return ASM;
   }
   

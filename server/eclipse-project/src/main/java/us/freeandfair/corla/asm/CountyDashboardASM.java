@@ -50,8 +50,8 @@ public class CountyDashboardASM extends AbstractStateMachine {
   public CountyDashboardASM() {
     super(new HashSet<ASMState>(Arrays.asList(CountyDashboardState.values())),
           new HashSet<ASMEvent>(Arrays.asList(CountyDashboardEvent.values())),
-          new HashSet<ASMTransitionFunction>(Arrays.
-              asList(CountyDashboardTransitionFunction.values())),
+          transitionsFor(Arrays.
+                         asList(CountyDashboardTransitionFunction.values())),
           CountyDashboardState.COUNTY_INITIAL_STATE,
           new HashSet<ASMState>(Arrays.asList(FINAL_STATES)));
   } 

@@ -48,8 +48,8 @@ public class AuditBoardDashboardASM extends AbstractStateMachine {
   public AuditBoardDashboardASM() {
     super(new HashSet<ASMState>(Arrays.asList(AuditBoardDashboardState.values())),
           new HashSet<ASMEvent>(Arrays.asList(AuditBoardDashboardEvent.values())),
-          new HashSet<ASMTransitionFunction>(Arrays.
-              asList(AuditBoardDashboardTransitionFunction.values())),
+          transitionsFor(Arrays.
+                         asList(AuditBoardDashboardTransitionFunction.values())),
           AuditBoardDashboardState.AUDIT_INITIAL_STATE,
           new HashSet<ASMState>(Arrays.asList(FINAL_STATES)));
   }
