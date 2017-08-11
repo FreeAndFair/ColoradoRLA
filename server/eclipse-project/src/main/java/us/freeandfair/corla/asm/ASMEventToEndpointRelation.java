@@ -118,7 +118,7 @@ public class ASMEventToEndpointRelation {
     
   /**
    * Is a_pair a member of this relation?
-   * @param a_pair the UI event/AsmEvent pair to check.
+   * @param a_pair the UIEvent/ASMEvent pair to check.
    */
   public boolean member(final ASMEvent an_ae, final Endpoint an_e) {
     return my_relation.contains(new Pair<ASMEvent, Endpoint>(an_ae, an_e));

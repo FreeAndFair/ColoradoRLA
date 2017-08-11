@@ -105,14 +105,14 @@ public abstract class AbstractStateMachine implements Serializable {
   /**
    * @return are we in the initial state?
    */
-  public boolean initialState() {
+  public boolean isInInitialState() {
     return my_current_state.equals(my_initial_state);
   }
   
   /**
-   * @return are we in the a final state?
+   * @return are we in a final state?
    */
-  public boolean finalState() {
+  public boolean isInFinalState() {
     return my_final_states.contains(my_current_state);
   }
   

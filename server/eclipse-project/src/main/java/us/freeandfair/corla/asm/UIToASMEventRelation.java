@@ -94,7 +94,7 @@ public class UIToASMEventRelation {
   
   /**
    * Is a_pair a member of this relation?
-   * @param a_pair the UI event/AsmEvent pair to check.
+   * @param a_pair the UIEvent/ASMEvent pair to check.
    */
   public boolean member(final UIEvent a_ue, final ASMEvent an_ae) {
     return my_relation.contains(new Pair<UIEvent, ASMEvent>(a_ue, an_ae));

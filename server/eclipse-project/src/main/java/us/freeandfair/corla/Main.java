@@ -264,34 +264,6 @@ public final class Main {
     ASM = new RLAToolASM();
     // note that this resets the ASM every launch right now
     ASM.stepTransition(RLATransitionFunction.ONE.value()); 
-    
-// the following is some old database code from the initial persistence 
-// attempt, but it captures the general idea pretty well
-//    RLAToolASM asm = new RLAToolASM(ASMStateQueries.get(RLAToolASM.class, 
-//                                    ASMStateQueries.UNIQUE));
-/*
-    if (asm == null) {
-      asm = new RLAToolASM();
-      asm.stepTransition(RLATransitionFunction.ONE.value());
-      Main.LOGGER.info("new ASM created");
-    } else {
-      Main.LOGGER.info("ASM loaded from database");
-    }
-    Persistence.saveOrUpdate(asm);
-    try {
-      Persistence.commitTransaction();
-    } catch (final RollbackException e) {
-      // if we have to roll back here, that means somebody beat us to creating an
-      // ASM, so let's try reloading it again
-      Persistence.rollbackTransaction();
-//    RLAToolASM asm = new RLAToolASM(ASMStateQueries.get(RLAToolASM.class, 
-//                                    ASMStateQueries.UNIQUE));
-    }
-    
-    if (asm == null) {
-      Main.LOGGER.error("could not initialize abstract state machine");
-    }
-*/
   }
   
   /**

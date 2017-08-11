@@ -43,7 +43,7 @@ public class ASMTransition implements Serializable {
   private final ASMState my_end_state;
   
   /**
-   * Constructs an AsmTransition with the specified start state,
+   * Constructs an ASMTransition with the specified start state,
    * event, and end state.
    * 
    * @param the_start_state The start state.
@@ -80,7 +80,7 @@ public class ASMTransition implements Serializable {
   }
   
   /**
-   * @return a String representation of this AsmTransition
+   * @return a String representation of this ASMTransition
    */
   @Override
   public String toString() {

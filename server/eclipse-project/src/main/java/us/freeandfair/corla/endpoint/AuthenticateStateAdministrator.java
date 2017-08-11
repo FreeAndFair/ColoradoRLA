@@ -67,7 +67,7 @@ public class AuthenticateStateAdministrator implements Endpoint {
     
     // Take the transition triggered by this successful authentication.
     Main.asm().stepEvent(DoSDashboardEvent.AUTHENTICATE_STATE_ADMINISTRATOR_EVENT);
-    the_response.status(status);
+
     // Build the ASM server response.
     final ServerASMResponse asm_response =
         new ServerASMResponse(Main.asm().currentState(),

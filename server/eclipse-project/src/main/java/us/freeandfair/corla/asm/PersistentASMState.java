@@ -19,7 +19,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import us.freeandfair.corla.Main;
 import us.freeandfair.corla.persistence.AbstractEntity;
 
 /**
@@ -118,27 +117,61 @@ public class PersistentASMState extends AbstractEntity implements Serializable {
       final AbstractStateMachine result = 
           (AbstractStateMachine) Class.forName(the_state.asmClass()).newInstance();
       result.setIdentity(the_state.asmIdentity());
-      // next, construct the class for the ASM state
+      the_state.applyTo(result);
+      return result;
+    } catch (final ClassNotFoundException | IllegalAccessException | 
+                   InstantiationException e) {
+      throw new IllegalArgumentException(e);
+    }
+  }
+  
+  /**
+   * Constructs a state value for the specified PersistentASMState.
+   * 
+   * @param the_state The state, or null if no matching state could
+   * be constructed.
+   */
+  public static ASMState asmStateFor(final PersistentASMState the_state) {
+    ASMState result = null;
+    try {
+      // construct the class for the ASM state
       final Class<?> state_class = Class.forName(the_state.stateClass());
       if (state_class.isEnum() && ASMState.class.isAssignableFrom(state_class)) {
         // see if it has the right enum value
         for (final Object o : state_class.getEnumConstants()) {
           final Enum<?> enum_constant = (Enum<?>) o;
           if (enum_constant.name().equals(the_state.stateValue())) {
-            result.setCurrentState((ASMState) enum_constant);
+            result = (ASMState) enum_constant;
             break;
           }
         }
       }
-      if (result.currentState() == null) {
-        throw new InstantiationException("unable to find state value");
+    } catch (final ClassNotFoundException e) {
+      // result is already null
+    }
+    return result;
+  }
+  
+  /**
+   * Applies the state in this PersistentASMState to an existing state machine.
+   * 
+   * @param the_asm The ASM.
+   * @exception IllegalArgumentException if the ASM is not the one described in this
+   * persistent state, or if this PersistentASMState contains invalid information.
+   */
+  //@ requires the_asm != null
+  public void applyTo(final AbstractStateMachine the_asm) {
+    if (the_asm.getClass().getName().equals(asmClass())) {
+      final ASMState state = asmStateFor(this);
+      if (state == null) {
+        throw new IllegalArgumentException("no ASM state found for state " + this);
+      } else {
+        the_asm.setCurrentState(state);
       }
-      Main.LOGGER.info("constructed ASM for state " + the_state);
-      return result;
-    } catch (final ClassNotFoundException | IllegalAccessException | 
-                   InstantiationException e) {
-      Main.LOGGER.error("could not instantiate ASM for state " + the_state);
-      throw new IllegalArgumentException(e);
+    } else {
+      throw new IllegalArgumentException("invalid ASM class " + 
+                                         the_asm.getClass().getName() + 
+                                         " for state " + this);
     }
   }
   
