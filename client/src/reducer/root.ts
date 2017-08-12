@@ -1,8 +1,6 @@
 import * as _ from 'lodash';
 
 
-type Dashboard = 'sos' | 'county';
-
 interface AppState {
     loggedIn: boolean;
     dashboard?: Dashboard;
