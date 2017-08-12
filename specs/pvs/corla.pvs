@@ -2588,7 +2588,9 @@ BEGIN
 %%% \item What events are enabled?
   enabled_events: TYPE = [dashboard -> set[asm_event]]
 %%% \item Transition to the next state based upon this event.
-  transition: TYPE = [[dashboard, asm_event] -> [dashboard, asm_state]]
+  step_event: TYPE = [[dashboard, asm_event] -> [dashboard, asm_state]]
+%%% \item Transition to the next state based upon this transition.
+  step_transition: TYPE = [[dashboard, asm_transition] -> [dashboard, asm_state]]
 %%% \item Are we in a initial state?
   initial?: TYPE = [dashboard -> boolean]
 %%% \item Are we in a final state?
@@ -3193,12 +3195,6 @@ BEGIN
 %%% \todokiniry{Explain these relations and their use.}
   ui_to_asm_event_relation: pred[[ui_event, asm_event]]
   asm_event_to_endpoint_relation: pred[[asm_event, server_endpoint]]
-% %%% For convenience, sometimes it is useful to indicate to a state
-% %%% machine that it should transition based upon a given
-% %%% \texttt{ui\_event} (which, in turn, maps to a \texttt{asm\_event}
-% %%% via X).
-% % @trace us.freeandfair.corla.asm.stepEvent(UI
-%   transition: TYPE = [[dashboard, ui_event] -> [dashboard, asm_state]]
 END endpoints
 %+END endpoints
 
