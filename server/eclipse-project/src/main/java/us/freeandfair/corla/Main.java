@@ -20,12 +20,15 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Scanner;
 
 import javax.persistence.PersistenceException;
+import javax.persistence.RollbackException;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -38,8 +41,11 @@ import spark.Request;
 import spark.Response;
 import spark.Service;
 
-import us.freeandfair.corla.asm.ASMTransitionFunction.RLATransitionFunction;
-import us.freeandfair.corla.asm.RLAToolASM;
+import us.freeandfair.corla.asm.AbstractStateMachine;
+import us.freeandfair.corla.asm.AuditBoardDashboardASM;
+import us.freeandfair.corla.asm.CountyDashboardASM;
+import us.freeandfair.corla.asm.DoSDashboardASM;
+import us.freeandfair.corla.asm.PersistentASMState;
 import us.freeandfair.corla.endpoint.Endpoint;
 import us.freeandfair.corla.json.FreeAndFairNamingStrategy;
 import us.freeandfair.corla.model.Administrator;
@@ -47,6 +53,7 @@ import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CountyQueries;
+import us.freeandfair.corla.query.PersistentASMStateQueries;
 
 /**
  * The main executable for the ColoradoRLA server. 
@@ -122,17 +129,29 @@ public final class Main {
       new GsonBuilder().
       setFieldNamingStrategy(new FreeAndFairNamingStrategy()).
       setPrettyPrinting().create();
-  
-  /**
-   * The ASM for this state machine.
-   */
-  private static RLAToolASM ASM = new RLAToolASM();
-  
+    
   /**
    * The "no spark" constant.
    */
   private static final Service NO_SPARK = null;
  
+  /**
+   * The DoS dashboard ASM.
+   */
+  private static final DoSDashboardASM DOS_DASHBOARD_ASM = new DoSDashboardASM();
+  
+  /**
+   * A map from county IDs to county dashboard ASMs.
+   */
+  private static final Map<Integer, CountyDashboardASM> COUNTY_DASHBOARD_ASMS = 
+      new HashMap<Integer, CountyDashboardASM>();
+
+  /**
+   * A map from county IDs to audit board dashboard ASMs.
+   */
+  private static Map<Integer, AuditBoardDashboardASM> AUDIT_BOARD_DASHBOARD_ASMS =
+      new HashMap<Integer, AuditBoardDashboardASM>();
+  
   /**
    * The properties loaded from the properties file.
    */
@@ -254,16 +273,60 @@ public final class Main {
   }
   
   /**
-   * Initializes the ASM. If it cannot be read from the database, it is created from 
-   * scratch and committed to the database.
+   * Restores an ASM's state or persists it in the database.
    * 
-   * @exception IllegalStateException if we can't get the ASM. 
+   * @param the_asm The ASM.
+   * @param the_state The persistent state to restore, or null to persist
+   *  the state to the database.
+   * @exception PersistenceException if the state cannot be persisted.
    */
-  private void initializeASM() throws IllegalStateException {
+  private void restoreOrPersistState(final AbstractStateMachine the_asm,
+                                     final PersistentASMState the_state) 
+      throws PersistenceException {
+    if (the_state == null) {
+      // there is no such state in the database, so persist one
+      Main.LOGGER.info("no state found for " + the_asm + 
+                       ", persisting one");
+      final PersistentASMState new_state = PersistentASMState.stateFor(the_asm);
+      Persistence.saveOrUpdate(new_state);
+    } else {
+      Main.LOGGER.info("restoring " + the_asm + " state from db: " + the_state);
+      the_state.applyTo(the_asm);
+    }
+  }
+  
+  /**
+   * Initializes the ASMs. Each one for which no state exists in the database
+   * has its state persisted in the database.
+   * 
+   * @exception PersistenceException if we can't initialize the ASMs.
+   */
+  private void initializeASMs() throws PersistenceException {
     Persistence.beginTransaction();
-    ASM = new RLAToolASM();
-    // note that this resets the ASM every launch right now
-    ASM.stepTransition(RLATransitionFunction.ONE.value()); 
+    // first, try to get the state of the DoS dashboard
+    final PersistentASMState dos_state = 
+        PersistentASMStateQueries.get(DoSDashboardASM.class, null);
+    restoreOrPersistState(DOS_DASHBOARD_ASM, dos_state);
+    
+    // next, iterate over the county dashboards; we know those tables
+    // have the same keys, so we can do both in one loop
+    for (final Integer county_id : COUNTY_DASHBOARD_ASMS.keySet()) {
+      final PersistentASMState county_state =
+          PersistentASMStateQueries.get(CountyDashboardASM.class, String.valueOf(county_id));
+      restoreOrPersistState(COUNTY_DASHBOARD_ASMS.get(county_id), county_state);
+      
+      final PersistentASMState audit_state =
+          PersistentASMStateQueries.get(AuditBoardDashboardASM.class, 
+                                        String.valueOf(county_id));
+      restoreOrPersistState(AUDIT_BOARD_DASHBOARD_ASMS.get(county_id), audit_state);      
+    }
+    
+    try {
+      Persistence.commitTransaction();
+    } catch (final RollbackException e) {
+      Persistence.rollbackTransaction();
+      throw new PersistenceException(e);
+    }
   }
   
   /**
@@ -297,6 +360,11 @@ public final class Main {
             county = new_county;
           }
           Persistence.saveOrUpdate(county);
+          // create default ASM for this county
+          COUNTY_DASHBOARD_ASMS.put(county.identifier(), 
+                                    new CountyDashboardASM(county.identifier()));
+          AUDIT_BOARD_DASHBOARD_ASMS.put(county.identifier(), 
+                                         new AuditBoardDashboardASM(county.identifier()));
         } catch (final NumberFormatException e) {
           // we skip this property because it wasn't numeric
         }
@@ -317,7 +385,7 @@ public final class Main {
 
     if (Persistence.hasDB()) {
       initializeCounties();
-      initializeASM();
+      initializeASMs();
     } else {
       LOGGER.error("could not open database connection");
       return;
@@ -386,14 +454,30 @@ public final class Main {
   }
 
   /**
-   * @todo dmz/kiniry We may want to rethink this API. In particular, 
-   * modifications to the ASM need some sort of concurrency or transactional 
-   * control, and we're probably only persisting another object that represents 
-   * the ASM state.
-   * @return the ASM of this state machine. 
+   * @return the DoS dashboard ASM.
    */
-  public static RLAToolASM asm() {
-    return ASM;
+  public static DoSDashboardASM dosDashboardASM() {
+    return DOS_DASHBOARD_ASM;
+  }
+  
+  /**
+   * Gets the county dashboard ASM for the specified county identifier.
+   * 
+   * @param the_identifier The county identifier.
+   * @return the ASM, or null if one cannot be found for the specified identifier.
+   */
+  public static CountyDashboardASM countyDashboardASM(final Integer the_identifier) {
+    return COUNTY_DASHBOARD_ASMS.get(the_identifier);
+  }
+  
+  /**
+   * Gets the audit board dashboard ASM for the specified county identifier.
+   * 
+   * @param the_identifier The county identifier.
+   * @return the ASM, or null if one cannot be found for the specified identifier.
+   */
+  public static AuditBoardDashboardASM auditBoardDashboardASM(final Integer the_identifier) {
+    return AUDIT_BOARD_DASHBOARD_ASMS.get(the_identifier);
   }
   
   /**

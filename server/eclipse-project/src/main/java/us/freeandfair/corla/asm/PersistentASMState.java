@@ -99,7 +99,7 @@ public class PersistentASMState extends AbstractEntity implements Serializable {
       final Enum<?> state_enum = (Enum<?>) state;
       state_value = state_enum.name();
     }
-    return new PersistentASMState(asm_class, null, state_class, state_value);
+    return new PersistentASMState(asm_class, the_asm.identity(), state_class, state_value);
   }
   
   /**
@@ -161,7 +161,8 @@ public class PersistentASMState extends AbstractEntity implements Serializable {
    */
   //@ requires the_asm != null
   public void applyTo(final AbstractStateMachine the_asm) {
-    if (the_asm.getClass().getName().equals(asmClass())) {
+    if (the_asm.getClass().getName().equals(asmClass()) &&
+        nullableEquals(the_asm.identity(), asmIdentity())) {
       final ASMState state = asmStateFor(this);
       if (state == null) {
         throw new IllegalArgumentException("no ASM state found for state " + this);
