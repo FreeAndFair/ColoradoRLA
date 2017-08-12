@@ -11,8 +11,6 @@
 
 package us.freeandfair.corla.endpoint;
 
-import org.eclipse.jetty.http.HttpStatus;
-
 import spark.Request;
 import spark.Response;
 
@@ -28,7 +26,7 @@ import us.freeandfair.corla.model.Administrator.AdministratorType;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class AuthenticateStateAdministrator implements Endpoint {
+public class AuthenticateStateAdministrator extends AbstractEndpoint {
   /**
    * {@inheritDoc}
    */
@@ -57,14 +55,11 @@ public class AuthenticateStateAdministrator implements Endpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    int status = HttpStatus.OK_200;
-    String result = "";
-    
+    ok(the_response, "Authenticated");
     if (!Authentication.authenticateAs(the_request, AdministratorType.STATE)) {
-      status = HttpStatus.UNAUTHORIZED_401;
-      result = "Authentication failed";
+      unauthorized(the_response, "Authentication failed");
     }
-    
+
     // Take the transition triggered by this successful authentication.
     Main.dosDashboardASM().stepEvent(DoSDashboardEvent.AUTHENTICATE_STATE_ADMINISTRATOR_EVENT);
 
@@ -73,8 +68,7 @@ public class AuthenticateStateAdministrator implements Endpoint {
         new ServerASMResponse(Main.dosDashboardASM().currentState(),
                               Main.dosDashboardASM().enabledUIEvents());
     the_response.body(Main.GSON.toJson(asm_response));
-    
-    the_response.status(status);
-    return result;
+
+    return my_endpoint_result;
   }
 }

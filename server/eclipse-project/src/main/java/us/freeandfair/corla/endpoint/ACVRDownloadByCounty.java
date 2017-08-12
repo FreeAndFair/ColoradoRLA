@@ -23,8 +23,6 @@ import java.util.stream.Stream;
 import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
 
-import org.eclipse.jetty.http.HttpStatus;
-
 import com.google.gson.stream.JsonWriter;
 
 import spark.Request;
@@ -44,7 +42,7 @@ import us.freeandfair.corla.util.SparkHelper;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class ACVRDownloadByCounty implements Endpoint {
+public class ACVRDownloadByCounty extends AbstractEndpoint {
   /**
    * {@inheritDoc}
    */
@@ -68,60 +66,49 @@ public class ACVRDownloadByCounty implements Endpoint {
   // necessary to break out of the lambda expression in case of IOException
   @SuppressWarnings("PMD.ExceptionAsFlowControl")
   public String endpoint(final Request the_request, final Response the_response) {
-    String result = "";
-    int status = HttpStatus.OK_200;
-    
-    if (validateParameters(the_request)) {
-      final Set<Integer> county_set = new HashSet<Integer>();
-      for (final String s : the_request.queryParams()) {
-        county_set.add(Integer.valueOf(s));
-      }
-      try {
-        Persistence.beginTransaction();
-        final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
-        final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-        final JsonWriter jw = new JsonWriter(bw);
-        jw.beginArray();
-        for (final Integer county : county_set) {
-          final Stream<CastVoteRecord> matches = 
-              CastVoteRecordQueries.getMatching(county, RecordType.AUDITOR_ENTERED);
-          matches.forEach((the_cvr) -> {
-            try {
-              jw.jsonValue(Main.GSON.toJson(the_cvr));
-              Persistence.currentSession().evict(the_cvr);
-            } catch (final IOException e) {
-              throw new UncheckedIOException(e);
-            } 
-          });
-        }
-        jw.endArray();
-        jw.flush();
-        jw.close();
-        try {
-          Persistence.commitTransaction(); 
-        } catch (final RollbackException e) {
-          Persistence.rollbackTransaction();
-        } 
-      } catch (final UncheckedIOException | IOException | PersistenceException e) {
-        status = HttpStatus.INTERNAL_SERVER_ERROR_500;
-        result = "Unable to stream response";
-      }
-    } else {
-      status = HttpStatus.NOT_FOUND_404;
-      result = "Invalid county ID specified";
+    final Set<Integer> county_set = new HashSet<Integer>();
+    for (final String s : the_request.queryParams()) {
+      county_set.add(Integer.valueOf(s));
     }
-    the_response.status(status);
-    return result;
+    try {
+      Persistence.beginTransaction();
+      final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
+      final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+      final JsonWriter jw = new JsonWriter(bw);
+      jw.beginArray();
+      for (final Integer county : county_set) {
+        final Stream<CastVoteRecord> matches = 
+            CastVoteRecordQueries.getMatching(county, RecordType.AUDITOR_ENTERED);
+        matches.forEach((the_cvr) -> {
+          try {
+            jw.jsonValue(Main.GSON.toJson(the_cvr));
+            Persistence.currentSession().evict(the_cvr);
+          } catch (final IOException e) {
+            throw new UncheckedIOException(e);
+          } 
+        });
+      }
+      jw.endArray();
+      jw.flush();
+      jw.close();
+      try {
+        Persistence.commitTransaction(); 
+      } catch (final RollbackException e) {
+        Persistence.rollbackTransaction();
+      } 
+    } catch (final UncheckedIOException | IOException | PersistenceException e) {
+      serverError(the_response, "Unable to stream response");
+    }
+    return my_endpoint_result;
   }
   
   /**
-   * Validates the parameters of a request. For this endpoint, 
-   * the paramter names must all be integers.
+   * For this endpoint, the parameter names must all be integers.
    * 
    * @param the_request The request.
    * @return true if the parameters are valid, false otherwise.
    */
-  private boolean validateParameters(final Request the_request) {
+  protected boolean validateParameters(final Request the_request) {
     boolean result = true;
     
     for (final String s : the_request.queryParams()) {

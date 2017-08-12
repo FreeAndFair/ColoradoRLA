@@ -13,8 +13,6 @@ package us.freeandfair.corla.endpoint;
 
 import javax.persistence.PersistenceException;
 
-import org.eclipse.jetty.http.HttpStatus;
-
 import spark.Request;
 import spark.Response;
 
@@ -32,7 +30,7 @@ import us.freeandfair.corla.query.DepartmentOfStateDashboardQueries;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class UploadRandomSeed implements Endpoint {
+public class UploadRandomSeed extends AbstractEndpoint {
   /**
    * The "random seed" parameter.
    */
@@ -66,8 +64,7 @@ public class UploadRandomSeed implements Endpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    int status = HttpStatus.OK_200;
-    String result = "Random seed set";
+    ok(the_response, "Random seed set");
     String random_seed = null;
     
     if (Authentication.isAuthenticatedAs(the_request, AdministratorType.STATE)) {
@@ -86,26 +83,16 @@ public class UploadRandomSeed implements Endpoint {
           }
         } else if (dosd == null) {
           Main.LOGGER.error("could not get department of state dashboard");
-          status = HttpStatus.INTERNAL_SERVER_ERROR_500;
-          result = "Could not set random seed";
-        } else {
-          Main.LOGGER.info("attempt to set the random seed " +
-                           "in incorrect state " + dosd.auditStage());
-          status = HttpStatus.FORBIDDEN_403;
-          result = "Attempt to set the random seed in incorrect state";
+          serverError(the_response, "Could not set random seed");
         }
       } else {
         Main.LOGGER.info("attempt to set an invalid random seed");
-        status = HttpStatus.BAD_REQUEST_400;
-        result = "Invalid random seed specified";
+        invariantViolation(the_response, "Invalid random seed specified");
       }
     } else {
       Main.LOGGER.info("unauthorized attempt to set the random seed");
-      status = HttpStatus.UNAUTHORIZED_401;
-      result = "Unauthorized attempt to set the random seed"; 
+      unauthorized(the_response, "Unauthorized attempt to set the random seed"); 
     }
-    
-    the_response.status(status);
-    return result;
+    return my_endpoint_result;
   }
 }

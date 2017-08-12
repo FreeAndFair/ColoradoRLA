@@ -21,8 +21,6 @@ import java.util.Set;
 import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
 
-import org.eclipse.jetty.http.HttpStatus;
-
 import spark.Request;
 import spark.Response;
 
@@ -40,7 +38,7 @@ import us.freeandfair.corla.util.SparkHelper;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class ContestDownloadByCounty implements Endpoint {
+public class ContestDownloadByCounty extends AbstractEndpoint {
   /**
    * {@inheritDoc}
    */
@@ -62,9 +60,6 @@ public class ContestDownloadByCounty implements Endpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    String result = "";
-    int status = HttpStatus.OK_200;
-    
     if (validateParameters(the_request)) {
       final Set<Integer> county_set = new HashSet<Integer>();
       for (final String s : the_request.queryParams()) {
@@ -72,8 +67,7 @@ public class ContestDownloadByCounty implements Endpoint {
       }
       final Set<Contest> contest_set = getMatchingContests(county_set);
       if (contest_set == null) {
-        status = HttpStatus.INTERNAL_SERVER_ERROR_500;
-        result = "Error retrieving records from database";
+        serverError(the_response, "Error retrieving records from database");
       } else {
         try {
           final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
@@ -82,26 +76,23 @@ public class ContestDownloadByCounty implements Endpoint {
           Main.GSON.toJson(contest_set, bw);
           bw.flush();
         } catch (final IOException e) {
-          status = HttpStatus.INTERNAL_SERVER_ERROR_500;
-          result = "Unable to stream response";
+          serverError(the_response, "Unable to stream response");
         }
       }
     } else {
-      status = HttpStatus.NOT_FOUND_404;
-      result = "Invalid county ID specified";
+      dataNotFound(the_response, "Invalid county ID specified");
     }
-    the_response.status(status);
-    return result;
+    return my_endpoint_result;
   }
   
   /**
    * Validates the parameters of a request. For this endpoint, 
-   * the paramter names must all be integers.
+   * the parameter names must all be integers.
    * 
    * @param the_request The request.
    * @return true if the parameters are valid, false otherwise.
    */
-  private boolean validateParameters(final Request the_request) {
+  protected boolean validateParameters(final Request the_request) {
     boolean result = true;
     
     for (final String s : the_request.queryParams()) {

@@ -21,7 +21,7 @@ import spark.Response;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class Root implements Endpoint {
+public class Root extends AbstractEndpoint {
   /**
    * {@inheritDoc}
    */

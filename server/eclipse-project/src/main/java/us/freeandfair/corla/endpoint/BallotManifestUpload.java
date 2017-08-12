@@ -61,7 +61,7 @@ import us.freeandfair.corla.util.SparkHelper;
  * @version 0.0.1
  */
 @SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.ExcessiveImports"})
-public class BallotManifestUpload implements Endpoint {
+public class BallotManifestUpload extends AbstractEndpoint {
   /**
    * The upload buffer size, in bytes.
    */

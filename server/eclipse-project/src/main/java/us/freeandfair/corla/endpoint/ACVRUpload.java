@@ -27,7 +27,6 @@ import javax.persistence.criteria.Root;
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
 
-import org.eclipse.jetty.http.HttpStatus;
 import org.hibernate.Session;
 
 import com.google.gson.JsonSyntaxException;
@@ -49,7 +48,7 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
 // TODO: consider rewriting along the same lines as CVRExportUpload
-public class ACVRUpload implements Endpoint {
+public class ACVRUpload extends AbstractEndpoint {
   /**
    * {@inheritDoc}
    */
@@ -80,7 +79,6 @@ public class ACVRUpload implements Endpoint {
     // containing the actual file
     the_request.attribute("org.eclipse.jetty.multipartConfig", 
                           new MultipartConfigElement("/tmp"));
-    boolean ok = true;
     try (InputStream acvr_is = the_request.raw().getPart("audit_cvr").getInputStream()) {
       final InputStreamReader acvr_isr = new InputStreamReader(acvr_is, "UTF-8");
       final BufferedReader acvr_br = new BufferedReader(acvr_isr);
@@ -103,16 +101,9 @@ public class ACVRUpload implements Endpoint {
       }
     } catch (final JsonSyntaxException | IOException | ServletException | 
                    NullPointerException e) {
-      Main.LOGGER.info("Unable to parse ACVR: " + e);
-      ok = false;
+      badDataContents(the_response, "Unable to parse ACVR: " + e);
     }
-    
-    if (ok) {
-      return "OK";
-    } else {
-      the_response.status(HttpStatus.UNPROCESSABLE_ENTITY_422);
-      return "Not OK";
-    }
+    return my_endpoint_result;
   }
   
   /**

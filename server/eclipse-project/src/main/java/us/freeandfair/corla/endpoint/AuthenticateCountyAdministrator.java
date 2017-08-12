@@ -11,8 +11,6 @@
 
 package us.freeandfair.corla.endpoint;
 
-import org.eclipse.jetty.http.HttpStatus;
-
 import spark.Request;
 import spark.Response;
 
@@ -25,7 +23,7 @@ import us.freeandfair.corla.model.Administrator.AdministratorType;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class AuthenticateCountyAdministrator implements Endpoint {
+public class AuthenticateCountyAdministrator extends AbstractEndpoint {
   /**
    * {@inheritDoc}
    */
@@ -54,15 +52,10 @@ public class AuthenticateCountyAdministrator implements Endpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    int status = HttpStatus.OK_200;
-    String result = "Authenticated";
-    
+    ok(the_response, "Authenticated");
     if (!Authentication.authenticateAs(the_request, AdministratorType.COUNTY)) {
-      status = HttpStatus.UNAUTHORIZED_401;
-      result = "Authentication failed";
+      unauthorized(the_response, "Authentication failed");
     }
-    
-    the_response.status(status);
-    return result;
+    return my_endpoint_result;
   }
 }
