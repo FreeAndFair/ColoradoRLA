@@ -266,12 +266,18 @@ public class DominionCVRExportParser implements CVRExportParser {
         }
       }
       
-      return Persistence.get(new CastVoteRecord(RecordType.UPLOADED, 
-                                                the_timestamp, my_county.identifier(), 
-                                                tabulator_id, batch_id, record_id, 
-                                                imprinted_id, ballot_type, 
-                                                contest_info),
-                             CastVoteRecord.class);
+      // we don't need to look for an existing CVR with this data because,
+      // by definition, there cannot be one unless the same line appears
+      // twice in the same CVR export file.
+      
+      final CastVoteRecord new_cvr = 
+          new CastVoteRecord(RecordType.UPLOADED, 
+                             the_timestamp, my_county.identifier(), 
+                             tabulator_id, batch_id, record_id, 
+                             imprinted_id, ballot_type, 
+                             contest_info);
+      Persistence.saveOrUpdate(new_cvr);
+      return new_cvr;
     } catch (final NumberFormatException e) {
       return null;
     } catch (final ArrayIndexOutOfBoundsException e) {
