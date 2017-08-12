@@ -3,8 +3,6 @@ import * as React from 'react';
 import { Radio, RadioGroup } from '@blueprintjs/core';
 
 
-type Dashboard = 'sos' | 'county';
-
 export interface FormFields {
     dashboard: Dashboard;
     password: string;
