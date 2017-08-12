@@ -7,6 +7,8 @@ import {
     Switch,
 } from 'react-router-dom';
 
+import RootRedirectContainer from './RootRedirectContainer';
+
 import CountyContestDetailContainer from './county/ContestDetailContainer';
 import CountyContestOverviewContainer from './county/ContestOverviewContainer';
 
@@ -18,7 +20,6 @@ import HelpRootContainer from './help/HelpRootContainer';
 import ManualContainer from './help/ManualContainer';
 
 import LoginContainer from './login/LoginContainer';
-import TempUserLoginContainer from './login/TempUserLoginContainer';
 
 import AuditBallotListContainer from './sos/audit/AuditBallotListContainer';
 import AuditContainer from './sos/audit/AuditContainer';
@@ -69,6 +70,7 @@ const makeRoute = (store: any) => (def: RouteDef) => {
 };
 
 const routes: RouteDef[] = [
+    ['/', RootRedirectContainer],
     ['/county', CountyHomeContainer],
     ['/county/audit', CountyAuditContainer],
     ['/county/contest', CountyContestOverviewContainer],
@@ -84,7 +86,6 @@ const routes: RouteDef[] = [
     ['/sos/contest/:contestId', ContestDetailContainer],
     ['/sos/county', CountyOverviewContainer],
     ['/sos/county/:countyId', CountyDetailContainer],
-    ['/temp-login', TempUserLoginContainer],
 ];
 
 export class RootContainer extends React.Component<RootContainerProps, void> {
@@ -97,7 +98,6 @@ export class RootContainer extends React.Component<RootContainerProps, void> {
                     <Switch>
                         <Route exact path='/login' component={ LoginContainer } />
                         { routes.map(makeRoute(store)) }
-                        <Redirect from='/' to='/temp-login' />
                     </Switch>
                 </Router>
             </Provider>
