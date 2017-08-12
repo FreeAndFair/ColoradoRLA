@@ -270,7 +270,6 @@ public abstract class AbstractEndpoint implements Endpoint {
         result = county || state;
         break;
           
-      case NONE:
       default:
     }
     
