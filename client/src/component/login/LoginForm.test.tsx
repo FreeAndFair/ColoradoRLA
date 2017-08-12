@@ -7,7 +7,7 @@ import { Redirect } from 'react-router-dom';
 import LoginForm, { FormFields } from './LoginForm';
 
 
-const EMAIL = 'user@eample.com';
+const USERNAME = 'user@eample.com';
 const PASSWORD = 'hunter2';
 const SUBMIT = (form: FormFields) => { return; };
 
@@ -18,8 +18,8 @@ test('LoginForm', s => {
 
         const c = shallow(<LoginForm submit={ SUBMIT } />);
 
-        const emailField = c.find('input.email').first();
-        t.equal(emailField.prop('value'), '', 'the email field is empty');
+        const usernameField = c.find('input.username').first();
+        t.equal(usernameField.prop('value'), '', 'the username field is empty');
 
         const passwordField = c.find('input.password').first();
         t.equal(passwordField.prop('value'), '', 'the password field is empty');
@@ -28,14 +28,14 @@ test('LoginForm', s => {
         t.ok(submitButton.prop('disabled'), 'submit button is disabled');
     });
 
-    s.test('with email only', t => {
+    s.test('with username only', t => {
         t.plan(3);
 
         const c = shallow(<LoginForm submit={ SUBMIT } />);
-        c.setState({ form: { email: EMAIL, password: '' } });
+        c.setState({ form: { username: USERNAME, password: '' } });
 
-        const emailField = c.find('input.email').first();
-        t.equal(emailField.prop('value'), EMAIL, 'the email field is non-empty');
+        const usernameField = c.find('input.username').first();
+        t.equal(usernameField.prop('value'), USERNAME, 'the username field is non-empty');
 
         const passwordField = c.find('input.password').first();
         t.equal(passwordField.prop('value'), '', 'the password field is empty');
@@ -48,11 +48,11 @@ test('LoginForm', s => {
         t.plan(3);
 
         const c = shallow(<LoginForm submit={ SUBMIT } />);
-        c.setState({ form: { email: '', password: PASSWORD } });
+        c.setState({ form: { username: '', password: PASSWORD } });
 
-        const emailField = c.find('input.email').first();
-        t.equal(emailField.prop('value'), '',
-                'the email field is empty');
+        const usernameField = c.find('input.username').first();
+        t.equal(usernameField.prop('value'), '',
+                'the username field is empty');
 
         const passwordField = c.find('input.password').first();
         t.equal(passwordField.prop('value'), PASSWORD,
@@ -62,15 +62,15 @@ test('LoginForm', s => {
         t.ok(submitButton.prop('disabled'), 'submit button is disabled');
     });
 
-    s.test('with email and password', t => {
+    s.test('with username and password', t => {
         t.plan(3);
 
         const c = shallow(<LoginForm submit={ SUBMIT } />);
-        c.setState({ form: { email: EMAIL, password: PASSWORD } });
+        c.setState({ form: { username: USERNAME, password: PASSWORD } });
 
-        const emailField = c.find('input.email').first();
-        t.equal(emailField.prop('value'), EMAIL,
-                'the email field is non-empty');
+        const usernameField = c.find('input.username').first();
+        t.equal(usernameField.prop('value'), USERNAME,
+                'the username field is non-empty');
 
         const passwordField = c.find('input.password').first();
         t.equal(passwordField.prop('value'), PASSWORD,
@@ -83,7 +83,7 @@ test('LoginForm', s => {
     s.test('submit button triggers submit action', t => {
         t.plan(1);
 
-        const FORM = { email: EMAIL, password: PASSWORD };
+        const FORM = { username: USERNAME, password: PASSWORD };
 
         const submit = (form: FormFields) => {
             t.deepEqual(form, FORM, 'the form fields are submitted');
