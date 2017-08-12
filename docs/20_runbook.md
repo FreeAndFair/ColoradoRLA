@@ -56,7 +56,8 @@ Screenshot (SoS authentication) ---
 
 The Secretary of State will determine, for each individual
 County, which user will be able to log in to the County-facing
-part of the RLA Tool.
+part of the RLA Tool. ***THIS STEP NEEDS TO BE VERIFIED...IT
+IS NOT CONTAINED IN THE CDOS ASM.
 
 Screenshot (SoS County User Identification)
 
@@ -93,9 +94,7 @@ Screenshot ---
 ## For County Administrators
 
 For the 2017 Colorado implementation, the full functionality of the RLA Tool
-requires exports from the Dominion System ???. 
-***Colorado2017
-***which Dominion system?
+requires exports from the Dominion System ???. ***Colorado2017 ***which Dominion system?
 
 ### Logging In
 
