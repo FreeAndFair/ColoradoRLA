@@ -41,9 +41,9 @@ public final class CountyQueries {
   }
   
   /**
-   * Obtain the County object with a specific ID number, if one exists.
+   * Obtain the County object with a specific county identifier, if one exists.
    *
-   * @param the_id The ID number.
+   * @param the_id The identifier.
    * @return the matched county, if one exists, or null otherwise.
    */
   // we are checking to see if exactly one result is in a list, and

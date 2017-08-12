@@ -12,9 +12,14 @@
 
 package us.freeandfair.corla.model;
 
-import java.util.Collection;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.io.Serializable;
+import java.time.Instant;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+import us.freeandfair.corla.persistence.AbstractEntity;
 
 /**
  * The county dashboard.
@@ -22,47 +27,67 @@ import java.util.TreeSet;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-// TODO: either this needs to be an entity, or it needs to contain an entity
-// that encapsulates its state
-public class CountyDashboard {
+@Entity
+@Table(name = "county_dashboard")
+//this class has many fields that would normally be declared final, but
+//cannot be for compatibility with Hibernate and JPA.
+@SuppressWarnings("PMD.ImmutableField")
+public class CountyDashboard extends AbstractEntity implements Serializable {   
   /**
-   * The county of this dashboard.
+   * The serialVersionUID.
    */
-  private final County my_county;
+  private static final long serialVersionUID = 1; 
+
+  /**
+   * The county ID of this dashboard.
+   */
+  private Integer my_county_id;
   
   /**
    * The county status of this dashboard.
    */
-  private CountyStatus my_status;
+  @Column(nullable = false)
+  private CountyStatus my_status = CountyStatus.NO_DATA;
   
   /**
-   * The most recent set of uploaded CVRs.
-   */
-  private final SortedSet<CastVoteRecord> my_cvrs =
-      new TreeSet<CastVoteRecord>(new CastVoteRecord.IDComparator());
-
-  /**
-   * The audit board dashboard.
-   */
-  private final AuditBoardDashboard my_audit_board_dashboard;
-  
-  /**
-   * Constructs a new County dashboard for the specified county.
-   * The initial status is NO_DATA.
+   * The timestamp of the most recent set of uploaded CVRs.
    * 
-   * @param the_county The county.
+   * @design This is how we are currently linking the dashboard with the most
+   * recently uploaded set of CVRs. Each uploaded CVR file is assigned a
+   * timestamp, and it seems safe to assume that the same county won't
+   * upload two CVR files in the same nanosecond. This is therefore far more
+   * efficient that maintaining a list of all the uploaded CVRs in the database,
+   * since the query to obtain them when needed is straightforward.
    */
-  public CountyDashboard(final County the_county) {
-    my_county = the_county;
-    my_status = CountyStatus.NO_DATA;
-    my_audit_board_dashboard = new AuditBoardDashboard(my_county);
+  private Instant my_cvr_upload_timestamp;
+  
+  /**
+   * Constructs an empty county dashboard, solely for persistence.
+   */
+  public CountyDashboard() {
+    super();
   }
   
   /**
-   * @return the county for this dashboard.
+   * Constructs a new county dashboard with the specified parameters.
+   * 
+   * @param the_county_id The county ID.
+   * @param the_status The status.
+   * @param the_cvr_upload_timestamp The CVR upload timestamp.
    */
-  public County county() {
-    return my_county;
+  public CountyDashboard(final Integer the_county_id, final CountyStatus the_status,
+                         final Instant the_cvr_upload_timestamp) {
+    super();
+    my_county_id = the_county_id;
+    my_status = the_status;
+    my_cvr_upload_timestamp = the_cvr_upload_timestamp;
+  }
+  
+  /**
+   * @return the county ID for this dashboard.
+   */
+  public Integer countyID() {
+    return my_county_id;
   }
   
   /**
@@ -71,40 +96,39 @@ public class CountyDashboard {
   public CountyStatus status() {
     return my_status;
   }
-  
+
   /**
-   * @return the audit board dashboard for this county.
-   */
-  public AuditBoardDashboard auditBoardDashboard() {
-    return my_audit_board_dashboard;
-  }
-  
-  /**
-   * Sets new set of CVRs, replacing any current set of CVRs.
+   * Sets the dashboard status.
    * 
-   * @param the_cvrs The CVRs.
+   * @param the_status The new status.
    */
-  public void setCVRs(final Collection<CastVoteRecord> the_cvrs) {
-    my_cvrs.clear();
-    my_cvrs.addAll(the_cvrs);
-    my_status = CountyStatus.CVRS_UPLOADED_SUCCESSFULLY;
+  public void setStatus(final CountyStatus the_status) {
+    my_status = the_status;
   }
   
   /**
-   * Sets the audit board membership.
+   * @return the CVR upload timestamp. A return value of null means
+   * that no CVRs have been uploaded for this county.
+   */
+  public Instant cvrUploadTimestamp() {
+    return my_cvr_upload_timestamp;
+  }
+  
+  /**
+   * Sets a new CVR upload timestamp, replacing the previous one.
    * 
-   * @param the_board_members The members of the audit board.
+   * @param the_cvr_upload_timestamp The new upload timestamp.
    */
-  public void setAuditBoardMembership(final Collection<Elector> the_board_members) {
-    my_audit_board_dashboard.setMembers(the_board_members);  
-  }
+  public void setCVRUploadTimestamp(final Instant the_cvr_upload_timestamp) {
+    my_cvr_upload_timestamp = the_cvr_upload_timestamp;
+  }  
   
   /**
-   * Records a failed CVR upload event. This also ensures that the set of CVRs 
-   * is empty.
+   * The possible statuses for a county in an audit.
    */
-  public void uploadFailed() {
-    my_cvrs.clear();
-    my_status = CountyStatus.ERROR_IN_UPLOADED_DATA;
+  public enum CountyStatus {
+    NO_DATA,
+    CVRS_UPLOADED_SUCCESSFULLY,
+    ERROR_IN_UPLOADED_DATA;
   }
 }

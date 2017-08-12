@@ -15,18 +15,15 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.HashSet;
-import java.util.Set;
+import java.io.UncheckedIOException;
+import java.util.stream.Stream;
 
 import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 
 import org.eclipse.jetty.http.HttpStatus;
-import org.hibernate.Session;
+
+import com.google.gson.stream.JsonWriter;
 
 import spark.Request;
 import spark.Response;
@@ -35,6 +32,7 @@ import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.query.CastVoteRecordQueries;
 import us.freeandfair.corla.util.SparkHelper;
 
 /**
@@ -65,6 +63,8 @@ public class CVRDownload implements Endpoint {
    * {@inheritDoc}
    */
   @Override
+  // necessary to break out of the lambda expression in case of IOException
+  @SuppressWarnings("PMD.ExceptionAsFlowControl")
   public String endpoint(final Request the_request, final Response the_response) {
     String result = "";
     int status = HttpStatus.OK_200;
@@ -72,51 +72,33 @@ public class CVRDownload implements Endpoint {
     try {
       final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
       final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-      final Set<CastVoteRecord> matches = getMatching();
-      if (matches == null) {
-        result = "Unable to fetch records from database";
-        status = HttpStatus.INTERNAL_SERVER_ERROR_500;
-      } else {
-        Main.GSON.toJson(getMatching(), bw);
-        bw.flush();
-        result =  "";
-      }
-    } catch (final IOException e) {
+      final JsonWriter jw = new JsonWriter(bw);
+      Persistence.beginTransaction();
+      jw.beginArray();
+      final Stream<CastVoteRecord> matches = 
+          CastVoteRecordQueries.getMatching(RecordType.UPLOADED);
+      matches.forEach((the_cvr) -> {
+        try {
+          jw.jsonValue(Main.GSON.toJson(the_cvr));
+          Persistence.currentSession().evict(the_cvr);
+        } catch (final IOException e) {
+          throw new UncheckedIOException(e);
+        } 
+      });
+      jw.endArray();
+      jw.flush();
+      jw.close();
+      try {
+        Persistence.commitTransaction(); 
+      } catch (final RollbackException e) {
+        Persistence.rollbackTransaction();
+      } 
+    } catch (final UncheckedIOException | IOException | PersistenceException e) {
       status = HttpStatus.INTERNAL_SERVER_ERROR_500;
       result = "Unable to stream response";
     }
     
     the_response.status(status);
-    return result;
-  }
-  
-  /**
-   * @return the set of cast vote records that were uploaded by counties,
-   * or null if the query fails.
-   */
-  private Set<CastVoteRecord> getMatching() {
-    Set<CastVoteRecord> result = null;
-    
-    try {
-      Persistence.beginTransaction();
-      final Session s = Persistence.currentSession();
-      final CriteriaBuilder cb = s.getCriteriaBuilder();
-      final CriteriaQuery<CastVoteRecord> cq = 
-          cb.createQuery(CastVoteRecord.class);
-      final Root<CastVoteRecord> root = cq.from(CastVoteRecord.class);
-      cq.select(root).where(cb.equal(root.get("my_record_type"), 
-                                     RecordType.UPLOADED));
-      final TypedQuery<CastVoteRecord> query = s.createQuery(cq);
-      result = new HashSet<CastVoteRecord>(query.getResultList());
-      try {
-        Persistence.commitTransaction();
-      } catch (final RollbackException e) {
-        Persistence.rollbackTransaction();
-      }
-    } catch (final PersistenceException e) {
-      Main.LOGGER.error("Exception when reading CVRs from database: " + e);
-    }
-
     return result;
   }
 }
