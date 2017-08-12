@@ -12,11 +12,14 @@ interface LoginContainerProps {
 
 export class LoginContainer extends React.Component<LoginContainerProps & any, any> {
     public render() {
-        const { loggedIn } = this.props;
+        const { location, loggedIn } = this.props;
 
         if (loggedIn) {
-            const { from } = this.props.location.state;
-            return <Redirect to={ from } />;
+            const to = location.state
+                     ? location.state.from
+                     : '/';
+
+            return <Redirect to={ to } />;
         }
 
         return <LoginPage />;
