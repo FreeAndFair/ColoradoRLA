@@ -47,11 +47,6 @@ public abstract class AbstractEndpoint implements Endpoint {
   protected String my_endpoint_result;
   
   /**
-   * The most recently set status.
-   */
-  protected int my_status;
-  
-  /**
    * Halts the endpoint execution by ending the request and returning the
    * most recently set response code and endpoint result.
    */
