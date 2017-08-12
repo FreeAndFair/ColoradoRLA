@@ -8,10 +8,10 @@ const contests = require('./data/contests');
 const app = connect();
 
 const route = (m, path, handler) => {
-    const headers = {
+    const headers = contentType => ({
         'access-control-allow-origin': '*',
-        'content-type': 'application/json',
-    };
+        'content-type': contentType,
+    });
 
     app.use(path, (req, res, done) => {
         if (req.method.toLowerCase() !== m.toLowerCase()) {
@@ -21,10 +21,14 @@ const route = (m, path, handler) => {
         }
 
         const { data, status } = handler(req, res);
-        const body = JSON.stringify(data);
 
-        res.writeHead(status, headers);
-        res.end(body);
+        if (typeof data === 'string') {
+            res.writeHead(status, headers('text/plain'));
+            res.end(data);
+        } else {
+            res.writeHead(status, headers('application/json'));
+            res.end(JSON.stringify(data));
+        }
 
         done();
     });
