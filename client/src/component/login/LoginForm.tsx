@@ -6,15 +6,15 @@ import { Radio, RadioGroup } from '@blueprintjs/core';
 type Dashboard = 'sos' | 'county';
 
 export interface FormFields {
-    dashboard: Dashboard,
-    email: string;
+    dashboard: Dashboard;
     password: string;
+    username: string;
 }
 
 function isFormValid(form: FormFields): boolean {
-    const { email, password } = form;
+    const { username, password } = form;
 
-    return (email.length > 0) && (password.length > 0);
+    return (username.length > 0) && (password.length > 0);
 }
 
 interface LoginFormProps {
@@ -33,8 +33,8 @@ extends React.Component<LoginFormProps, LoginFormState> {
         this.state = {
             form: {
                 dashboard: 'sos',
-                email: '',
                 password: '',
+                username: '',
             },
         };
     }
@@ -47,10 +47,10 @@ extends React.Component<LoginFormProps, LoginFormState> {
             <div>
                 <label className='pt-label'>
                     Email
-                    <input className='pt-input email'
+                    <input className='pt-input username'
                            type='text'
                            onChange={ this.onEmailChange }
-                           value={ form.email } />
+                           value={ form.username } />
                 </label>
                 <label className='pt-label'>
                     Password
@@ -84,7 +84,7 @@ extends React.Component<LoginFormProps, LoginFormState> {
 
     private onEmailChange = (e: React.ChangeEvent<any>) => {
         const s = { ...this.state };
-        s.form.email = e.target.value;
+        s.form.username = e.target.value;
         this.setState(s);
     }
 
