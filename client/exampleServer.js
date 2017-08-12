@@ -32,6 +32,15 @@ const route = (m, path, handler) => {
 
 const ok = data => ({ status: 200, data });
 
+const badRequest = msg => ({ status: 400, data: msg });
+
+const unauthorized = msg => ({ status: 401, data: msg });
+
+const notFound = msg => ({ status: 404, data: msg });
+
+const serverError = msg => ({ status: 500, data: msg });
+
+
 route('get', '/ballot-style', () => ok(ballotStyles));
 
 route('get', '/cvr', () => ok(castVoteRecords));
