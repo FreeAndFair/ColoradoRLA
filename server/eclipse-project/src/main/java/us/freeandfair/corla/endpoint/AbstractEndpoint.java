@@ -181,8 +181,16 @@ public abstract class AbstractEndpoint implements Endpoint {
 
     // If the client is unauthorized, then indicate such and redirect.
 
-    // Check that the user is authorized for this endpoint
-    if (!checkAuthorization(the_request, requiredAuthorization())) {
+    // Determine what type of authentication is required for this endpoint
+    // null = unrestricted endpoint (such as "/")
+    // TODO: should this be determined by asking the endpoint, or by asking the ASM?
+    // TODO: should we have another enum type (STATE/COUNTY/NONE) for this? 
+    // TODO: should we enable state admins to masquerade as county admins?
+    final AdministratorType admin_type = AdministratorType.STATE; // for now.
+    
+    // Check that the user is appropriately authenticated
+    if (admin_type != null && 
+        !Authentication.isAuthenticatedAs(the_request, admin_type)) {
       unauthorized(the_response,
                    "client not authorized to perform this action");
       halt(the_response);
