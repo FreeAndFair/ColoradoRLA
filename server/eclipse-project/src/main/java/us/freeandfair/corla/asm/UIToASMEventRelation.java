@@ -5,7 +5,7 @@
  * @created Aug 8, 2017
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
- * @author Joe Kiniry <kiniry@freeandfair.us>
+ * @creator Joe Kiniry <kiniry@freeandfair.us>
  * @description A system to assist in conducting statewide
  * risk-limiting audits.
  */
@@ -25,7 +25,7 @@ import us.freeandfair.corla.util.Pair;
 /**
  * @description The mapping between UI events and ASM events.
  * @trace asm.ui_to_asm_event_relation
- * @author Joseph R. Kiniry <kiniry@freeandfair.us>
+ * @author Joe Kiniry <kiniry@freeandfair.us>
  * @version 0.0.1
  * @todo dmz/kiniry use an entity instead of Pair<> to enable persistence
  */

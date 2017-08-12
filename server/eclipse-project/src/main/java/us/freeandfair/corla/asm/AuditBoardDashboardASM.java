@@ -5,7 +5,7 @@
  * @created Aug 8, 2017
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
- * @author Joe Kiniry <kiniry@freeandfair.us>
+ * @creator Joe Kiniry <kiniry@freeandfair.us>
  * @description A system to assist in conducting statewide
  * risk-limiting audits.
  */
@@ -25,7 +25,7 @@ import us.freeandfair.corla.asm.ASMTransitionFunction.AuditBoardDashboardTransit
 /**
  * The ASM for the Audit Board Dashboard.
  * @trace asm.dos_dashboard_next_state
- * @author Joseph R. Kiniry <kiniry@freeandfair.us>
+ * @author Joe Kiniry <kiniry@freeandfair.us>
  * @version 0.0.1
  */
 @Entity
