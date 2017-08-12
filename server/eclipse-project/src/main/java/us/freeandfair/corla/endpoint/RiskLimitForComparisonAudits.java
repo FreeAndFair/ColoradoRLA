@@ -37,7 +37,7 @@ import us.freeandfair.corla.query.PersistentASMStateQueries;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class RiskLimitForComparisonAudits extends AbstractDoSEndpoint {
+public class RiskLimitForComparisonAudits extends AbstractDoSDashboardEndpoint {
   /**
    * The "risk limit" parameter.
    */
