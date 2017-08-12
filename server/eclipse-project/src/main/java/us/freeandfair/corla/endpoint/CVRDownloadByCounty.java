@@ -24,7 +24,6 @@ import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
 
 import com.google.gson.stream.JsonWriter;
-import org.hibernate.Session;
 
 import spark.Request;
 import spark.Response;
@@ -79,15 +78,15 @@ public class CVRDownloadByCounty extends AbstractEndpoint implements Endpoint {
       jw.beginArray();
       for (final Integer county : county_set) {
         final Stream<CastVoteRecord> matches = 
-          CastVoteRecordQueries.getMatching(county, RecordType.UPLOADED);
+            CastVoteRecordQueries.getMatching(county, RecordType.UPLOADED);
         matches.forEach((the_cvr) -> {
-            try {
-              jw.jsonValue(Main.GSON.toJson(the_cvr));
-              Persistence.currentSession().evict(the_cvr);
-            } catch (final IOException e) {
-              throw new UncheckedIOException(e);
-            } 
-          });
+          try {
+            jw.jsonValue(Main.GSON.toJson(the_cvr));
+            Persistence.currentSession().evict(the_cvr);
+          } catch (final IOException e) {
+            throw new UncheckedIOException(e);
+          } 
+        });
       }
       jw.endArray();
       jw.flush();
@@ -100,9 +99,8 @@ public class CVRDownloadByCounty extends AbstractEndpoint implements Endpoint {
     } catch (final UncheckedIOException | IOException | PersistenceException e) {
       serverError(the_response, "Unable to stream response");
     }
+    return my_endpoint_result;
   }
-  return my_endpoint_result;
-}
   
   /**
    * Validates the parameters of a request. For this endpoint, 

@@ -138,6 +138,7 @@ public abstract class AbstractEndpoint implements Endpoint {
    * request and read/modify the response. Our before-filter performs
    * authentication checking.
    */
+  @SuppressWarnings("PMD.ConfusingTernary")
   @Override
   public void before(final Request the_request, final Response the_response) {
     // Presume everything goes ok.
@@ -146,18 +147,15 @@ public abstract class AbstractEndpoint implements Endpoint {
     // Check to see if the server is operating properly.
     if (!Persistence.hasDB()) {
       serverError(the_response, "no database");
-      return;
-    }
-    if (Persistence.isTransactionRunning()) {
+    } else if (Persistence.isTransactionRunning()) {
       serverUnavailable(the_response, "a long transaction is running");
-      return;
     }
     // Check to see if the requested endpoint is permitted from the current
     // state of the server.
-    if (false) {
-      illegalTransition(the_response, "endpoint not permitted by ASM");
-      return;
-    }
+    // else if (false) {
+    //   illegalTransition(the_response, "endpoint not permitted by ASM");
+    //   return;
+    // }
 
     // This access is well-formed and permitted by the state machine, so log the
     // use of the endpoint.

@@ -22,7 +22,6 @@ import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
 
 import com.google.gson.stream.JsonWriter;
-import org.hibernate.Session;
 
 import spark.Request;
 import spark.Response;

@@ -24,7 +24,6 @@ import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
 
 import com.google.gson.stream.JsonWriter;
-import org.hibernate.Session;
 
 import spark.Request;
 import spark.Response;
@@ -79,15 +78,15 @@ public class ACVRDownloadByCounty extends AbstractEndpoint implements Endpoint {
       jw.beginArray();
       for (final Integer county : county_set) {
         final Stream<CastVoteRecord> matches = 
-          CastVoteRecordQueries.getMatching(county, RecordType.AUDITOR_ENTERED);
+            CastVoteRecordQueries.getMatching(county, RecordType.AUDITOR_ENTERED);
         matches.forEach((the_cvr) -> {
-            try {
-              jw.jsonValue(Main.GSON.toJson(the_cvr));
-              Persistence.currentSession().evict(the_cvr);
-            } catch (final IOException e) {
-              throw new UncheckedIOException(e);
-            } 
-          });
+          try {
+            jw.jsonValue(Main.GSON.toJson(the_cvr));
+            Persistence.currentSession().evict(the_cvr);
+          } catch (final IOException e) {
+            throw new UncheckedIOException(e);
+          } 
+        });
       }
       jw.endArray();
       jw.flush();
