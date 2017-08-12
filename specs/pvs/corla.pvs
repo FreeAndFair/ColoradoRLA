@@ -1486,7 +1486,7 @@ END user_interface
 %%% used in a scenario of the system.
 
 % @relation ok inherit upload_system_message
-% @relation hash_wrong inherit upload_system_message
+% @relation hash_mismatch inherit upload_system_message
 % @relation file_type_wrong inherit upload_system_message
 % @relation data_transmission_interrupted inherit upload_system_message
 % @relation too_late inherit upload_system_message
@@ -1494,7 +1494,7 @@ upload_system_message: DATATYPE
   WITH SUBTYPES upload_successful,
                 checking_hash,
                 hash_verified,
-                hash_wrong,
+                hash_mismatch,
                 file_type_wrong,
                 data_parsed,
                 data_transmission_interrupted,
@@ -1503,7 +1503,7 @@ BEGIN
   upload_successful?: make_upload_successful: upload_successful
   checking_hash?: make_checking_hash: checking_hash
   hash_verified?: make_hash_verified: hash_verified
-  hash_wrong?: make_hash_wrong: hash_wrong
+  hash_mismatch?: make_hash_mismatch: hash_mismatch
   file_type_wrong?: make_file_type_wrong: file_type_wrong
   data_parsed?: make_data_parsed: data_parsed
   data_transmission_interrupted?: make_data_transmission_interrupted:
@@ -2696,7 +2696,7 @@ BEGIN
       bm_dti_s,  % upload_ballot_manifest: data_transmission_interrupted
       bm_us_s,   % upload_ballot_manifest: upload_sucessful
       bm_ch_s,   % upload_ballot_manifest: checking_hash
-      bm_hw_s,   % upload_ballot_manifest: hash_wrong
+      bm_hm_s,   % upload_ballot_manifest: hash_mismatch
       bm_hv_s,   % upload_ballot_manifest: hash_verified
       bm_pd_s,   % upload_ballot_manifest: parsing_data
       bm_ftw_s,  % upload_ballot_manifest: file_type_wrong
@@ -2705,7 +2705,7 @@ BEGIN
       cvr_dti_s, % upload_cvrs: data_transmission_interrupted
       cvr_us_s,  % upload_cvrs: upload_sucessful
       cvr_ch_s,  % upload_cvrs: checking_hash
-      cvr_hw_s,  % upload_cvrs: hash_wrong
+      cvr_hm_s,  % upload_cvrs: hash_mismatch
       cvr_hv_s,  % upload_cvrs: hash_verified
       cvr_pd_s,  % upload_cvrs: parsing_data
       cvr_ftw_s, % upload_cvrs: file_type_wrong
