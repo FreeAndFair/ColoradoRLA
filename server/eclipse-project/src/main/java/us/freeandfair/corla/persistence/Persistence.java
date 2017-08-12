@@ -179,8 +179,10 @@ public final class Persistence {
                    system_properties.getProperty("hibernate.c3p0.max_statements", ""));
       settings.put(Environment.C3P0_TIMEOUT, 
                    system_properties.getProperty("hibernate.c3p0.timeout", ""));
-      settings.put(Environment.HBM2DDL_AUTO, "update");
-      settings.put(Environment.SHOW_SQL, "false");
+      settings.put(Environment.HBM2DDL_AUTO, 
+                   system_properties.getProperty("hibernate.hbm2ddl.auto", ""));
+      settings.put(Environment.SHOW_SQL, 
+                   system_properties.getProperty("hibernate.show_sql", ""));
       settings.put(Environment.PHYSICAL_NAMING_STRATEGY, 
                    "us.freeandfair.corla.persistence.FreeAndFairNamingStrategy");
       settings.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");

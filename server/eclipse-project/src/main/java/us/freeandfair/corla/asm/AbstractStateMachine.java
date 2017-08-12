@@ -136,6 +136,13 @@ public abstract class AbstractStateMachine implements Serializable {
   }
   
   /**
+   * @return the ASM's identity, or null if this ASM is a singleton.
+   */
+  public String identity() {
+    return my_identity;
+  }
+  
+  /**
    * Sets the ASM's identity. This method should only be used as part
    * of reconstructing an ASM at a particular state.
    * 
@@ -241,5 +248,13 @@ public abstract class AbstractStateMachine implements Serializable {
       result.add(atf.value());
     }
     return result;
+  }
+  
+  /**
+   * @return a String representation of this ASM.
+   */
+  public String toString() {
+    return getClass().getName() + ", identity=" + my_identity + 
+           ", current_state=" + my_current_state;
   }
 }

@@ -49,6 +49,7 @@ public class CountyDashboardASM extends AbstractStateMachine {
    * @param the_county_id The county identifier.
    * @trace asm.county_dashboard_asm
    */
+  //@ requires the_county_id != null
   public CountyDashboardASM(final Integer the_county_id) {
     super(new HashSet<ASMState>(Arrays.asList(CountyDashboardState.values())),
           new HashSet<ASMEvent>(Arrays.asList(CountyDashboardEvent.values())),
