@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Scanner;
 
@@ -310,15 +311,17 @@ public final class Main {
     
     // next, iterate over the county dashboards; we know those tables
     // have the same keys, so we can do both in one loop
-    for (final Integer county_id : COUNTY_DASHBOARD_ASMS.keySet()) {
+    for (final Entry<Integer, CountyDashboardASM> entry : 
+         COUNTY_DASHBOARD_ASMS.entrySet()) {
       final PersistentASMState county_state =
-          PersistentASMStateQueries.get(CountyDashboardASM.class, String.valueOf(county_id));
-      restoreOrPersistState(COUNTY_DASHBOARD_ASMS.get(county_id), county_state);
+          PersistentASMStateQueries.get(CountyDashboardASM.class, 
+                                        String.valueOf(entry.getKey()));
+      restoreOrPersistState(entry.getValue(), county_state);
       
       final PersistentASMState audit_state =
           PersistentASMStateQueries.get(AuditBoardDashboardASM.class, 
-                                        String.valueOf(county_id));
-      restoreOrPersistState(AUDIT_BOARD_DASHBOARD_ASMS.get(county_id), audit_state);      
+                                        String.valueOf(entry.getKey()));
+      restoreOrPersistState(AUDIT_BOARD_DASHBOARD_ASMS.get(entry.getKey()), audit_state);      
     }
     
     try {
