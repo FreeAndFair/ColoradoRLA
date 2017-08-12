@@ -53,5 +53,27 @@ route('get', '/contest', () => ok(contests));
 
 route('post', '/auth-state-admin', () => ok('Authenticated'));
 
+route('post', '/state-refresh', () => ok({
+    auditStage: 'auditOngoing',
+    contests: [
+        { id: '1001', audit: 'yes', reason: 'small margin' },
+        { id: '1002', audit: 'no' },
+        { id: '1005', audit: 'yes', reason: 'randomly chosen' },
+        { id: '1008', audit: 'handCount' },
+        { id: '1005', audit: 'yes', reason: 'important contest' },
+    ],
+    counties: [
+        { id: '12', status: 'noData' },
+        { id: '18', status: 'noData' },
+        { id: '20', status: 'cvrsUploaded' },
+        { id: '25', status: 'noData' },
+        { id: '27', status: 'errorInUploadedData' },
+        { id: '33', status: 'noData' },
+        { id: '39', status: 'cvrsUploaded' },
+    ],
+    riskLimit: 0.05,
+    seed: 'deadbeef',
+
+}));
 
 app.listen(4000);
