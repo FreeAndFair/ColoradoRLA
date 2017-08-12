@@ -1,7 +1,12 @@
 import * as React from 'react';
 
+import { Radio, RadioGroup } from '@blueprintjs/core';
+
+
+type Dashboard = 'sos' | 'county';
 
 export interface FormFields {
+    dashboard: Dashboard,
     email: string;
     password: string;
 }
@@ -27,6 +32,7 @@ extends React.Component<LoginFormProps, LoginFormState> {
 
         this.state = {
             form: {
+                dashboard: 'sos',
                 email: '',
                 password: '',
             },
@@ -53,6 +59,13 @@ extends React.Component<LoginFormProps, LoginFormState> {
                            onChange={ this.onPasswordChange }
                            value={ form.password } />
                 </label>
+                <RadioGroup
+                    label='Dashboard'
+                    onChange={ this.onDashboardChange }
+                    selectedValue={ this.state.form.dashboard }>
+                    <Radio label='Secretary of State' value='sos' />
+                    <Radio label='County' value='county' />
+                </RadioGroup>
                 <button
                     disabled={ disabled }
                     className='pt-primary submit'
@@ -61,6 +74,12 @@ extends React.Component<LoginFormProps, LoginFormState> {
                 </button>
             </div>
         );
+    }
+
+    private onDashboardChange = (e: React.ChangeEvent<any>) => {
+        const s = { ...this.state };
+        s.form.dashboard = e.target.value;
+        this.setState(s);
     }
 
     private onEmailChange = (e: React.ChangeEvent<any>) => {
