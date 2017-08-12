@@ -4,6 +4,7 @@
     "description": "Browser-based client to facilitate risk-limiting audits for the State of Colorado.",
     "main": "index.js",
     "scripts": {
+        "check": "npm run lint && npm run test",
         "dist": "./script/dist",
         "lint": "tslint 'src/**/*.{ts,tsx}'",
         "pack": "webpack",
