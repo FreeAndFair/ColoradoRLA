@@ -164,16 +164,14 @@ public final class Authentication {
    * @return the authenticated county identifier, or null if this session
    * is not authenticated as a county administrator.
    */
-  public static Integer authenticatedCountyID(final Request the_request) {
-    Integer result = null;
+  public static County authenticatedCounty(final Request the_request) {
+    County result = null;
     
     if (isAuthenticatedAs(the_request, AdministratorType.COUNTY)) {
-      final Administrator admin = (Administrator) the_request.attribute(ADMIN);
+      final Administrator admin = 
+          (Administrator) the_request.session().attribute(ADMIN);
       if (admin != null) {
-        final County c = CountyQueries.forAdministrator(admin);
-        if (c != null) {
-          result = c.identifier();
-        }
+        result = CountyQueries.forAdministrator(admin);
       }
     }
     

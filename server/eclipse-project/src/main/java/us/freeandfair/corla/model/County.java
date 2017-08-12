@@ -47,13 +47,13 @@ public class County extends AbstractEntity implements Serializable {
   /**
    * The county name.
    */
-  @Column(nullable = false, updatable = false)
+  @Column(nullable = false, updatable = false, unique = true)
   private String my_name;
 
   /**
    * The county ID.
    */
-  @Column(nullable = false, updatable = false)
+  @Column(nullable = false, updatable = false, unique = true)
   private Integer my_identifier;
  
   /**
@@ -62,7 +62,7 @@ public class County extends AbstractEntity implements Serializable {
   @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name = "county_contest",
                    joinColumns = @JoinColumn(name = "county_id", 
-                                             referencedColumnName = "my_id"))
+                                             referencedColumnName = "my_identifier"))
   @Column(name = "contest_id")
   private Set<Contest> my_contests;
   
@@ -72,7 +72,7 @@ public class County extends AbstractEntity implements Serializable {
   @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name = "county_administrator",
                    joinColumns = @JoinColumn(name = "county_id", 
-                                             referencedColumnName = "my_id"))
+                                             referencedColumnName = "my_identifier"))
   @Column(name = "administrator_id")
   private Set<Administrator> my_administrators;
 

@@ -254,6 +254,8 @@ public final class Main {
     for (final Endpoint e : endpoints) {
       my_spark.before(e.endpointName(), (the_request, the_response) -> 
           e.before(the_request, the_response));
+      my_spark.after(e.endpointName(), (the_request, the_response) -> 
+          e.after(the_request, the_response));
       switch (e.endpointType()) {
         case GET:
           my_spark.get(e.endpointName(), (the_request, the_response) -> 

@@ -69,9 +69,9 @@ public final class AuditBoardDashboardQueries {
         // create a new audit board dashboard for the specified county
         db = new AuditBoardDashboard(the_county_id);
         Persistence.saveOrUpdate(db);
-        Main.LOGGER.info("attempting to create new department of state dashboard");
+        Main.LOGGER.info("attempting to create new audit board dashboard");
       } else if (query_results.size() > 1) {
-        Main.LOGGER.error("multiple department of state dashboards found");
+        Main.LOGGER.error("multiple audit board dashboards found");
       } else {
         db = query_results.get(0);
       }
@@ -80,12 +80,14 @@ public final class AuditBoardDashboardQueries {
           Persistence.commitTransaction();
           result = db;
         } catch (final RollbackException e) {
-          Main.LOGGER.error("could not create department of state dashboard");
+          Main.LOGGER.error("could not create audit board dashboard");
           Persistence.rollbackTransaction();
         }
+      } else {
+        result = db;
       }
     } catch (final PersistenceException e) {
-      Main.LOGGER.error("could not query database for department of state dashboard");
+      Main.LOGGER.error("could not query database for audit board dashboard");
     }
     return result;
   }

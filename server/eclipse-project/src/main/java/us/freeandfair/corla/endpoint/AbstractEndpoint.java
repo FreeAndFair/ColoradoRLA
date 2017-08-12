@@ -187,7 +187,7 @@ public abstract class AbstractEndpoint implements Endpoint {
     // If the client is unauthorized, then indicate such and redirect.
 
     // Check that the user is authorized for this endpoint
-    if (checkAuthorization(the_request, requiredAuthorization())) {
+    if (!checkAuthorization(the_request, requiredAuthorization())) {
       unauthorized(the_response,
                    "client not authorized to perform this action");
       halt(the_response);
@@ -260,7 +260,7 @@ public abstract class AbstractEndpoint implements Endpoint {
     final boolean state = 
         Authentication.isAuthenticatedAs(the_request, AdministratorType.STATE);
     final boolean county =
-        Authentication.isAuthenticatedAs(the_request, AdministratorType.STATE);
+        Authentication.isAuthenticatedAs(the_request, AdministratorType.COUNTY);
 
     switch (the_type) {
       case STATE: 

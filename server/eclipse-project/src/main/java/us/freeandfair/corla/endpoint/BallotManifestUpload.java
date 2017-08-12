@@ -46,6 +46,7 @@ import us.freeandfair.corla.Main;
 import us.freeandfair.corla.csv.BallotManifestParser;
 import us.freeandfair.corla.csv.ColoradoBallotManifestParser;
 import us.freeandfair.corla.model.BallotManifestInfo;
+import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.model.UploadedFile.FileType;
@@ -105,12 +106,17 @@ public class BallotManifestUpload extends AbstractEndpoint {
     UploadedFile result = null;
     
     try (FileInputStream is = new FileInputStream(the_file)) {
+      // we're already in a transaction
       final Session session = Persistence.currentSession();
-      
       final Blob blob = session.getLobHelper().createBlob(is, the_file.length());
       result = new UploadedFile(the_timestamp, the_county, FileType.BALLOT_MANIFEST,
                                 the_hash, HashStatus.NOT_CHECKED, blob);
       Persistence.saveOrUpdate(result);
+      // TODO: currently we have to commit this transaction here, because
+      // streaming a file to the database requires the file and its stream
+      // to actually stay in scope before the transaction commit;
+      // this will be remedied when we refactor uploading
+      Persistence.commitTransaction();
     } catch (final PersistenceException | IOException e) {
       Main.LOGGER.error("could not persist file of size " + the_file.length());
     } 
@@ -263,9 +269,9 @@ public class BallotManifestUpload extends AbstractEndpoint {
     info.my_ok = true;
     
     // we know we have county authorization, so let's find out which county
-    final Integer county_id = Authentication.authenticatedCountyID(the_request);
+    final County county = Authentication.authenticatedCounty(the_request);
 
-    if (county_id == null) {
+    if (county == null) {
       unauthorized(the_response, "unauthorized administrator for ballot manifest upload");
     }
     
@@ -274,7 +280,7 @@ public class BallotManifestUpload extends AbstractEndpoint {
     // process the temp file, putting it in the database if persistence is enabled 
         
     if (info.my_ok) {
-      parseAndPersistFile(the_response, county_id, info);
+      parseAndPersistFile(the_response, county.identifier(), info);
     }
     
     if (info.my_file != null) {

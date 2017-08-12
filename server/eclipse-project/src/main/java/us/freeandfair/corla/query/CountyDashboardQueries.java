@@ -70,9 +70,9 @@ public final class CountyDashboardQueries {
         // create a new County dashboard for the specified county
         db = new CountyDashboard(the_county_id, CountyStatus.NO_DATA, null);
         Persistence.saveOrUpdate(db);
-        Main.LOGGER.info("attempting to create new department of state dashboard");
+        Main.LOGGER.info("attempting to create new county dashboard");
       } else if (query_results.size() > 1) {
-        Main.LOGGER.error("multiple department of state dashboards found");
+        Main.LOGGER.error("multiple county dashboards found");
       } else {
         db = query_results.get(0);
       }
@@ -81,12 +81,14 @@ public final class CountyDashboardQueries {
           Persistence.commitTransaction();
           result = db;
         } catch (final RollbackException e) {
-          Main.LOGGER.error("could not create department of state dashboard");
+          Main.LOGGER.error("could not create county dashboard");
           Persistence.rollbackTransaction();
         }
+      } else {
+        result = db;
       }
     } catch (final PersistenceException e) {
-      Main.LOGGER.error("could not query database for department of state dashboard");
+      Main.LOGGER.error("could not query database for county dashboard");
     }
     return result;
   }

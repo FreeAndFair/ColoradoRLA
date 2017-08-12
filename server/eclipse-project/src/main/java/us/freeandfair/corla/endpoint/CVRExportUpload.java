@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.OptionalLong;
 
 import javax.persistence.PersistenceException;
+import javax.persistence.RollbackException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -52,6 +53,7 @@ import us.freeandfair.corla.csv.CVRExportParser;
 import us.freeandfair.corla.csv.DominionCVRExportParser;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
+import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.model.UploadedFile.FileType;
@@ -113,12 +115,18 @@ public class CVRExportUpload extends AbstractEndpoint {
     UploadedFile result = null;
 
     try (FileInputStream is = new FileInputStream(the_file)) {
+      // we're already in a transaction
       final Session session = Persistence.currentSession();
       final Blob blob = session.getLobHelper().createBlob(is, the_file.length());
       result = new UploadedFile(the_timestamp, the_county_id,
                                 FileType.CAST_VOTE_RECORD_EXPORT, the_hash,
                                 HashStatus.NOT_CHECKED, blob);
       Persistence.saveOrUpdate(result);
+      // TODO: currently we have to commit this transaction here, because
+      // streaming a file to the database requires the file and its stream
+      // to actually stay in scope before the transaction commit;
+      // this will be remedied when we refactor uploading
+      Persistence.commitTransaction();
     } catch (final PersistenceException | IOException e) {
       badDataType(the_response, "could not persist file of size " + the_file.length());
     }
@@ -205,13 +213,13 @@ public class CVRExportUpload extends AbstractEndpoint {
    * Parses an uploaded CVR export and attempts to persist it to the database.
    * 
    * @param the_response The response (for error reporting).
-   * @param the_county_id The county identifier for this file.
+   * @param the_county The county for this file.
    * @param the_info The upload information to use and update.
    */
   // the CSV parser can throw arbitrary runtime exceptions, which we must catch
   @SuppressWarnings({"PMD.AvoidCatchingGenericException", "PMD.AvoidCatchingNPE"})
   private void parseAndPersistFile(final Response the_response,
-                                   final Integer the_county_id,
+                                   final County the_county,
                                    final UploadInformation the_info) {
     final String hash = the_info.my_form_fields.get("hash");
 
@@ -224,16 +232,19 @@ public class CVRExportUpload extends AbstractEndpoint {
       try (InputStream cvr_is = new FileInputStream(the_info.my_file)) {
         final InputStreamReader cvr_isr = new InputStreamReader(cvr_is, "UTF-8");
         final CVRExportParser parser =
-            new DominionCVRExportParser(cvr_isr, the_county_id, the_info.my_timestamp);
+            new DominionCVRExportParser(cvr_isr, the_county, the_info.my_timestamp);
         if (parser.parse()) {
           Main.LOGGER.info(parser.parsedIDs().size() + " CVRs parsed from " + 
-                           the_county_id + " county upload file");
+                           the_county + " county upload file");
           final OptionalLong count = count();
           if (count.isPresent()) {
             Main.LOGGER.info(count.getAsLong() + " uploaded CVRs in storage");
           }
-          updateCountyDashboard(the_response, the_county_id, the_info.my_timestamp);
-          attemptFilePersistence(the_response, the_info.my_file, the_county_id, hash,
+          updateCountyDashboard(the_response, the_county.identifier(), 
+                                the_info.my_timestamp);
+         
+          attemptFilePersistence(the_response, the_info.my_file, 
+                                 the_county.identifier(), hash,
                                  the_info.my_timestamp);
         } else {
           Main.LOGGER.info("could not parse malformed CVR export file");
@@ -258,11 +269,12 @@ public class CVRExportUpload extends AbstractEndpoint {
     info.my_ok = true;
 
     // we know we have county authorization, so let's find out which county
-    final Integer county_id = Authentication.authenticatedCountyID(the_request);
+    final County county = Authentication.authenticatedCounty(the_request);
 
-    if (county_id == null) {
-      unauthorized(the_response, "unauthorized administrator for ballot manifest upload");
-    }
+    if (county == null) {
+      unauthorized(the_response, "unauthorized administrator for CVR export upload");
+      return my_endpoint_result;
+    } 
 
     handleUpload(the_request, the_response, info);
 
@@ -270,7 +282,7 @@ public class CVRExportUpload extends AbstractEndpoint {
     // enabled
 
     if (info.my_ok) {
-      parseAndPersistFile(the_response, county_id, info);
+      parseAndPersistFile(the_response, county, info);
     }
 
     // delete the temp file, if it exists
