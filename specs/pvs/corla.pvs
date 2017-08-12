@@ -2559,9 +2559,9 @@ END data_model
 %%% \label{sec:Abstract_State_Machine}
 %%%
 %%% Each dashboard has its own abstract state machine (ASM). The RLA
-%%% Tool's ASM is the composition of the composed of the three
-%%% dashboard ASMs. We specify ASMs using the finite automata standard
-%%% tabular format.
+%%% Tool's ASM is, at least in theory, the composition of the composed
+%%% of the three dashboard ASMs. We specify ASM's transitions using
+%%% the finite automatas' standard tabular format.
 asm: THEORY
 BEGIN
   IMPORTING FAFSSL,
@@ -2573,10 +2573,13 @@ BEGIN
 %%% typically involves system state. Since our ASMs are deterministic,
 %%% transitions map to only a single target state, rather than a set
 %%% of states as one would see in a non-deterministic ASM.
+  event: TYPE
   asm_state: TYPE
-  asm_event: TYPE
-  asm_transition_function: TYPE =
-    [asm_state, asm_event, boolean -> asm_state]
+  asm_event: TYPE FROM event
+% @trace us.freeandfair.corla.asm.ASMTransition
+  asm_transition: TYPE =
+    [# start_state: asm_state, event: asm_event, end_state: asm_state #]
+  asm_transition_function: TYPE = set[asm_transition]
 %%% Consequently, the core features of the ASM implementation in the
 %%% business logic of the RLA Tool are:
 %%% \begin{itemize}
@@ -2585,7 +2588,9 @@ BEGIN
 %%% \item What events are enabled?
   enabled_events: TYPE = [dashboard -> set[asm_event]]
 %%% \item Transition to the next state based upon this event.
-  transition: TYPE = [[dashboard, asm_event] -> [dashboard, asm_state]]
+  step_event: TYPE = [[dashboard, asm_event] -> [dashboard, asm_state]]
+%%% \item Transition to the next state based upon this transition.
+  step_transition: TYPE = [[dashboard, asm_transition] -> [dashboard, asm_state]]
 %%% \item Are we in a initial state?
   initial?: TYPE = [dashboard -> boolean]
 %%% \item Are we in a final state?
@@ -2594,12 +2599,12 @@ BEGIN
 %%%
 %%% \todokiniry{Explain ASM definition.}
   asm: TYPE =
-    [# states: set[asm_state],
-       transitions: set[asm_event],
-       transition_function: asm_transition_function,
+    [# identity: string,
+       states: set[asm_state],
+       events: set[asm_event],
+       transitions: asm_transition_function,
        initial_state: asm_state,
        final_states: set[asm_state] #]
-%%%
 %%% We will first specify the ASM for the Department of State
 %%% dashboard. Its states describe the sequence of steps that state
 %%% administrators must take to start, observe, and complete an RLA.
@@ -2641,10 +2646,15 @@ BEGIN
       n_e       % no_event
     }
 
-  dos_state: VAR department_of_state_dashboard_state
-  dos_event: VAR department_of_state_dashboard_event
-  dos_asm_function: VAR asm_transition_function
+  dos_states: set[asm_state]
+  dos_events: set[asm_event]
+  dos_transitions: asm_transition_function
+  dos_initial_state: asm_state
+  dos_final_states: set[asm_state]
 
+  dos_state: VAR asm_state
+  dos_event: VAR asm_event
+  dos_asm_function: VAR asm_transition_function
 %   dos_dashboard_next_state(dos_state, dos_event, dos_asm_function):
 %     department_of_state_dashboard_state =
 % TABLE dos_state, dos_event
@@ -2663,10 +2673,16 @@ BEGIN
 %      | arp_s  |       |         |        |      |        |         |     ||
 % ENDTABLE
 
-%  dos_asm: VAR asm =
-%     [# states = department_of_state_dashboard_state,
-%        transitions = department_of_state_dashboard_event
-%        transition_function = dos_dashboard_next_state #]
+%%% As there is only a single Department of State, then our system has
+%%% only a single instance of this ASM.
+% @trace us.freeandfair.corla.Main.COUNTY_DASHBOARD_ASMS
+  dos_dashboard_asm: asm =
+     (# identity := "DOS",
+        states := dos_states,
+        events := dos_events,
+        transitions := dos_transitions,
+        initial_state := dos_initial_state,
+        final_states := dos_final_states #)
 
   county_dashboard_state: TYPE = % SUBTYPE asm_state
     { ci_s,      % county_initial_state
@@ -2707,6 +2723,12 @@ BEGIN
       n_e        % no_event                 
     }
 
+  county_dashboard_states: set[asm_state]
+  county_dashboard_events: set[asm_event]
+  county_dashboard_transitions: asm_transition_function
+  county_dashboard_initial_state: asm_state
+  county_dashboard_final_states: set[asm_state]
+
   c_state: VAR county_dashboard_state
   c_event: VAR county_dashboard_event
   c_asm_function: VAR asm_transition_function
@@ -2722,11 +2744,20 @@ BEGIN
 % ...etc...
 % ENDTABLE
 
-%  county_dashboard_asm: VAR asm =
-%     [# states = county_dashboard_state,
-%        transitions = county_dashboard_event
-%        transition_function = county_dashboard_next_state #]
-
+%%% Each state has several counties, and each county has an ASM. Thus
+%%% there is a relation between counties and county dashboard ASMs.
+  county_dashboard_asm: asm =
+     (# identity := "county ID",
+        states := county_dashboard_states,
+        events := county_dashboard_events,
+        transitions := county_dashboard_transitions,
+        initial_state := county_dashboard_initial_state,
+        final_states := county_dashboard_final_states #)
+% @trace us.freeandfair.corla.Main.COUNTY_DASHBOARD_ASMS
+  county_to_county_dashboard_asm_relation: TYPE =
+    pred[[county, asm]]
+%%% Likewise, there is a similar relation between counties and audit board
+%%% dashboard ASMs.
   audit_board_dashboard_state: TYPE = % SUBTYPE asm_state
     { ai_s,   % audit_initial_state
       aip_s,  % audit_in_progress_state
@@ -2745,6 +2776,12 @@ BEGIN
       n_e     % no_event
     }
 
+  audit_board_dashboard_states: set[asm_state]
+  audit_board_dashboard_events: set[asm_event]
+  audit_board_dashboard_transitions: asm_transition_function
+  audit_board_dashboard_initial_state: asm_state
+  audit_board_dashboard_final_states: set[asm_state]
+
   ab_state: VAR audit_board_dashboard_state
   ab_event: VAR audit_board_dashboard_event
   ab_asm_function: VAR asm_transition_function
@@ -2761,10 +2798,16 @@ BEGIN
 %      | sar_s  |      |        |        |       |        |     ||
 % ENDTABLE
 
-%  audit_board_dashboard_asm: VAR asm =
-%     [# states = audit_board_dashboard_state,
-%        transitions = audit_board_dashboard_event
-%        transition_function = audit_board_dashboard_next_state #]
+  audit_board_dashboard_asm: asm =
+     (# identity := "county ID",
+        states := audit_board_dashboard_states,
+        events := audit_board_dashboard_events,
+        transitions := audit_board_dashboard_transitions,
+        initial_state := audit_board_dashboard_initial_state,
+        final_states := audit_board_dashboard_final_states #)
+% @trace us.freeandfair.corla.Main.AUDIT_BOARD_DASHBOARD_ASMS
+  county_to_audit_board_dashboard_asm_relation: TYPE =
+    pred[[county, asm]]
 
 %  rla_tool_asm: VAR asm =
 %     [# states = union of dos, county, and audit board asm states,

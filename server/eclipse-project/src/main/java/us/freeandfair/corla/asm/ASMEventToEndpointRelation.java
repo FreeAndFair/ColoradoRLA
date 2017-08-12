@@ -5,7 +5,7 @@
  * @created Aug 8, 2017
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
- * @author Joe Kiniry <kiniry@freeandfair.us>
+ * @creator Joe Kiniry <kiniry@freeandfair.us>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
@@ -24,7 +24,7 @@ import us.freeandfair.corla.util.Pair;
 /**
  * @description The mapping between ASM events and server endpoints.
  * @trace asm.ui_to_asm_event_relation 
- * @author Joseph R. Kiniry <kiniry@freeandfair.us>
+ * @author Joe Kiniry <kiniry@freeandfair.us>
  * @version 0.0.1
  * @todo kiniry Introduce AbstractRelation parent class.
  * @todo dmz use an entity instead of Pair<> to enable persistence
@@ -32,7 +32,8 @@ import us.freeandfair.corla.util.Pair;
 @SuppressWarnings("PMD.TooManyStaticImports")
 public class ASMEventToEndpointRelation {
   /**
-   * A constant encoding that we have not yet implemented a particular endpoint.
+   * A constant encoding that we have not yet implemented a particular
+   * endpoint.
    */
   public static final String UNIMPLEMENTED = "UNIMPLEMENTED";
   
@@ -43,8 +44,8 @@ public class ASMEventToEndpointRelation {
       new HashSet<Pair<ASMEvent, String>>();
    
   /**
-   * Create an instance of this relation, which contains the full set of public 
-   * ASM events and Endpoints.
+   * Create an instance of this relation, which contains the full set
+   * of public ASM events and Endpoints.
    * @design kiniry This should probably be refactored as a singleton.
    */
   public ASMEventToEndpointRelation() {

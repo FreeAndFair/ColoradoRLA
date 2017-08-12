@@ -5,8 +5,9 @@
  * @created Aug 9, 2017
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
- * @author Joe Kiniry <kiniry@freeandfair.us>
- * @description A system to assist in conducting statewide risk-limiting audits.
+ * @creator Joe Kiniry <kiniry@freeandfair.us>
+ * @description A system to assist in conducting statewide
+ * risk-limiting audits.
  */
 
 package us.freeandfair.corla.asm;
@@ -19,7 +20,7 @@ import us.freeandfair.corla.asm.ASMState.RLAToolState;
 /**
  * The ASM for the whole RLA Tool.
  * @trace asm.rla_tool_asm
- * @author Joseph R. Kiniry <kiniry@freeandfair.us>
+ * @author Joe Kiniry <kiniry@freeandfair.us>
  * @version 0.0.1
  */
 public class RLAToolASM extends AbstractStateMachine {
@@ -46,7 +47,8 @@ public class RLAToolASM extends AbstractStateMachine {
   /**
    * The transition function of this ASM.
    */
-  private static final Set<ASMTransition> TRANSITION_FUNCTION = new HashSet<>();
+  private static final Set<ASMTransition> TRANSITION_FUNCTION =
+      new HashSet<>();
 
   static {
     final AbstractStateMachine[] asms = 

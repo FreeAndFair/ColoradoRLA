@@ -5,8 +5,9 @@
  * @created Aug 8, 2017
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
- * @author Joe Kiniry <kiniry@freeandfair.us>
- * @description A system to assist in conducting statewide risk-limiting audits.
+ * @creator Joe Kiniry <kiniry@freeandfair.us>
+ * @description A system to assist in conducting statewide
+ * risk-limiting audits.
  */
 
 package us.freeandfair.corla.asm;
@@ -23,7 +24,7 @@ import static us.freeandfair.corla.asm.ASMState.RLAToolState.RLA_TOOL_INITIAL_ST
 /**
  * The generic idea of an ASM transition function.
  * @trace asm.asm_transition_function
- * @author Joseph R. Kiniry <kiniry@freeandfair.us>
+ * @author Joe Kiniry <kiniry@freeandfair.us>
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 0.0.1
  */

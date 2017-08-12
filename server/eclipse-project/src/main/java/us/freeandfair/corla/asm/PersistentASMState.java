@@ -6,7 +6,8 @@
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
  * @author Daniel M. Zimmerman <dmz@galois.com>
- * @description A system to assist in conducting statewide risk-limiting audits.
+ * @description A system to assist in conducting statewide
+ * risk-limiting audits.
  */
 
 package us.freeandfair.corla.asm;
@@ -22,8 +23,8 @@ import javax.persistence.Table;
 import us.freeandfair.corla.persistence.AbstractEntity;
 
 /**
- * An abstract state machine state, and sufficient information to reconstruct the
- * state machine it belongs to.
+ * An abstract state machine state, and sufficient information to
+ * reconstruct the state machine it belongs to.
  * 
  * @author Daniel M. Zimmerman
  * @version 0.0.1
@@ -40,13 +41,15 @@ public class PersistentASMState extends AbstractEntity implements Serializable {
   private static final long serialVersionUID = 1L;
   
   /**
-   * The class of AbstractStateMachine to which this state belongs, as a String.
+   * The class of AbstractStateMachine to which this state belongs, as
+   * a String.
    */
   @Column(updatable = false, nullable = false)
   private String my_asm_class;
   
   /**
-   * The identifying information for the state machine, if any, as a String.
+   * The identifying information for the state machine, if any, as a
+   * String.
    */
   @Column(updatable = false)
   private String my_asm_identity;
@@ -107,8 +110,9 @@ public class PersistentASMState extends AbstractEntity implements Serializable {
    * 
    * @param the_state The state.
    * @return the state machine.
-   * @exception IllegalArgumentException if the state machine cannot be 
-   * constructed because the persistent state contains invalid information.
+   * @exception IllegalArgumentException if the state machine cannot
+   * be constructed because the persistent state contains invalid
+   * information.
    */
   //@ requires the_state != null;
   public static AbstractStateMachine asmFor(final PersistentASMState the_state) {
@@ -153,11 +157,13 @@ public class PersistentASMState extends AbstractEntity implements Serializable {
   }
   
   /**
-   * Applies the state in this PersistentASMState to an existing state machine.
+   * Applies the state in this PersistentASMState to an existing state
+   * machine.
    * 
    * @param the_asm The ASM.
-   * @exception IllegalArgumentException if the ASM is not the one described in this
-   * persistent state, or if this persistent state contains invalid information.
+   * @exception IllegalArgumentException if the ASM is not the one
+   * described in this persistent state, or if this persistent state
+   * contains invalid information.
    */
   //@ requires the_asm != null
   public void applyTo(final AbstractStateMachine the_asm) {
@@ -180,8 +186,8 @@ public class PersistentASMState extends AbstractEntity implements Serializable {
    * Updates this PersistentASMState from an existing state machine.
    * 
    * @param the_asm The ASM
-   * @exception IllegalArgumentException if the specified state machine is
-   * not the one described in this persistent state.
+   * @exception IllegalArgumentException if the specified state
+   * machine is not the one described in this persistent state.
    */
   //@ requires the_asm != null
   public void updateFrom(final AbstractStateMachine the_asm) {

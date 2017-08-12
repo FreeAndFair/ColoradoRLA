@@ -4,7 +4,7 @@
  * @created Aug 8, 2017
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
- * @author Joe Kiniry <kiniry@freeandfair.us>
+ * @creator Joe Kiniry <kiniry@freeandfair.us>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
@@ -13,7 +13,7 @@ package us.freeandfair.corla.asm;
 /**
  * The states of the Abstract State Machine (ASM) of the Colorado RLA Tool.
  * @trace asm.asm_state
- * @author Joseph R. Kiniry <kiniry@freeandfair.us>
+ * @author Joe Kiniry <kiniry@freeandfair.us>
  * @version 0.0.1
  */
 public interface ASMState {
