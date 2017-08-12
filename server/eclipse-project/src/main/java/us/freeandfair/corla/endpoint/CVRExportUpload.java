@@ -54,10 +54,12 @@ import us.freeandfair.corla.csv.DominionCVRExportParser;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.County;
+import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.model.UploadedFile.FileType;
 import us.freeandfair.corla.model.UploadedFile.HashStatus;
 import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.query.CountyDashboardQueries;
 import us.freeandfair.corla.query.CountyQueries;
 import us.freeandfair.corla.util.FileHelper;
 import us.freeandfair.corla.util.SparkHelper;
@@ -99,6 +101,7 @@ public class CVRExportUpload extends AbstractEndpoint {
   /**
    * Attempts to save the specified file in the database.
    * 
+   * @param the_response The response object (for error reporting).
    * @param the_file The file.
    * @param the_county The county that uploaded the file.
    * @param the_hash The claimed hash of the file.
@@ -132,6 +135,28 @@ public class CVRExportUpload extends AbstractEndpoint {
     return result;
   }
 
+  /**
+   * Updates the appropriate county dashboard to reflect a new CVR export upload.
+   * @param the_response The response object (for error reporting).
+   * @param the_county_id The county ID.
+   * @param the_timestamp The timestamp.
+   */
+  private void updateCountyDashboard(final Response the_response, 
+                                     final Integer the_county_id, 
+                                     final Instant the_timestamp) {
+    final CountyDashboard cdb = CountyDashboardQueries.get(the_county_id);
+    if (cdb == null) {
+      serverError(the_response, "could not locate county dashboard");
+    } else {
+      cdb.setCVRUploadTimestamp(the_timestamp);
+      try {
+        Persistence.saveOrUpdate(cdb);
+      } catch (final PersistenceException e) {
+        serverError(the_response, "could not update county dashboard");
+      }
+    }
+  }
+  
   /**
    * Handles the upload of the file, updating the provided UploadInformation.
    * 
@@ -188,6 +213,7 @@ public class CVRExportUpload extends AbstractEndpoint {
   /**
    * Parses an uploaded CVR export and attempts to persist it to the database.
    * 
+   * @param the_response The response (for error reporting).
    * @param the_info The upload information to use and update.
    */
   // the CSV parser can throw arbitrary runtime exceptions, which we must catch
@@ -220,6 +246,7 @@ public class CVRExportUpload extends AbstractEndpoint {
           if (count.isPresent()) {
             Main.LOGGER.info(count.getAsLong() + " uploaded CVRs in storage");
           }
+          updateCountyDashboard(the_response, county.identifier(), the_info.my_timestamp);
           attemptFilePersistence(the_response, the_info.my_file, county, hash,
                                  the_info.my_timestamp);
         } else {

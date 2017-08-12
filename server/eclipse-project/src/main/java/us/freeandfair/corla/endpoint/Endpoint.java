@@ -51,7 +51,29 @@ public interface Endpoint {
   
   /**
    * The before-filter for this endpoint.
-   * @param the_filter the filter to use for this precondition check.
+   * 
+   * @param the_request The request object.
+   * @param the_response The response object.
    */
   void before(Request the_request, Response the_response);
+  
+  /**
+   * The after-filter for this endpoint.
+   * 
+   * @param the_request The request object.
+   * @param the_response The response object.
+   */
+  void after(Request the_request, Response the_response);
+  
+  /**
+   * @return the required authorization type for this endpoint.
+   */
+  AuthorizationType requiredAuthorization();
+  
+  /**
+   * The authorization types.
+   */
+  enum AuthorizationType {
+    STATE, COUNTY, EITHER, NONE;
+  }
 }

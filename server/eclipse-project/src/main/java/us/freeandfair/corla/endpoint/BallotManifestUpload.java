@@ -47,10 +47,12 @@ import us.freeandfair.corla.Main;
 import us.freeandfair.corla.csv.BallotManifestParser;
 import us.freeandfair.corla.csv.ColoradoBallotManifestParser;
 import us.freeandfair.corla.model.BallotManifestInfo;
+import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.model.UploadedFile.FileType;
 import us.freeandfair.corla.model.UploadedFile.HashStatus;
 import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.query.CountyDashboardQueries;
 import us.freeandfair.corla.util.FileHelper;
 import us.freeandfair.corla.util.SparkHelper;
 
@@ -187,13 +189,38 @@ public class BallotManifestUpload extends AbstractEndpoint {
   }
 
   /**
+   * Updates the appropriate county dashboard to reflect a new 
+   * ballot manifest upload.
+   * @param the_response The response object (for error reporting).
+   * @param the_county_id The county ID.
+   * @param the_timestamp The timestamp.
+   */
+  private void updateCountyDashboard(final Response the_response, 
+                                     final Integer the_county_id, 
+                                     final Instant the_timestamp) {
+    final CountyDashboard cdb = CountyDashboardQueries.get(the_county_id);
+    if (cdb == null) {
+      serverError(the_response, "could not locate county dashboard");
+    } else {
+      cdb.setManifestUploadTimestamp(the_timestamp);
+      try {
+        Persistence.saveOrUpdate(cdb);
+      } catch (final PersistenceException e) {
+        serverError(the_response, "could not update county dashboard");
+      }
+    }
+  }
+  
+  /**
    * Parses an uploaded ballot manifest and attempts to persist it to the database.
    * 
+   * @param the_response The response (for error reporting).
    * @param the_info The upload information to use and update.
    */
   // the CSV parser can throw arbitrary runtime exceptions, which we must catch
   @SuppressWarnings({"PMD.AvoidCatchingGenericException", "PMD.AvoidCatchingNPE"})
-  private void parseAndPersistFile(final UploadInformation the_info) {
+  private void parseAndPersistFile(final Response the_response, 
+                                   final UploadInformation the_info) {
     final String hash = the_info.my_form_fields.get("hash");
     Integer county = null;
     
@@ -209,8 +236,7 @@ public class BallotManifestUpload extends AbstractEndpoint {
     }
         
     if (hash == null || the_info.my_file == null) {
-      the_info.my_response_string = "Bad Request";
-      the_info.my_response_status = HttpStatus.BAD_REQUEST_400;
+      invariantViolation(the_response, "Bad Request");
       the_info.my_ok = false;
       return;
     }
@@ -227,19 +253,18 @@ public class BallotManifestUpload extends AbstractEndpoint {
           Main.LOGGER.info(count.getAsLong() + 
                            " uploaded ballot manifest records in storage");
         }
+        updateCountyDashboard(the_response, county, the_info.my_timestamp);
         attemptFilePersistence(the_info.my_file, county, hash, 
                                the_info.my_timestamp);          
       } else {
         Main.LOGGER.info("could not parse malformed ballot manifest file");
-        the_info.my_response_status = HttpStatus.UNPROCESSABLE_ENTITY_422;
+        badDataContents(the_response, "Malformed Ballot Manifest File");
         the_info.my_ok = false;
-        the_info.my_response_string = "Malformed Ballot Manifest File";
       }
     } catch (final RuntimeException | IOException e) {
       Main.LOGGER.info("could not parse malformed ballot manifest file: " + e);
+      badDataContents(the_response, "Malformed Ballot Manifest File");
       the_info.my_ok = false;
-      the_info.my_response_status = HttpStatus.UNPROCESSABLE_ENTITY_422;
-      the_info.my_response_string = "Malformed Ballot Manifest File";
     } 
   }
   
@@ -259,7 +284,7 @@ public class BallotManifestUpload extends AbstractEndpoint {
     // process the temp file, putting it in the database if persistence is enabled 
     
     if (info.my_ok) {
-      parseAndPersistFile(info);
+      parseAndPersistFile(the_response, info);
     }
     
     if (info.my_file != null) {
@@ -274,6 +299,8 @@ public class BallotManifestUpload extends AbstractEndpoint {
       }
     }
 
+    // @todo kiniry Review this logic and its interrelationship to
+    // endpoint before filtering.
     the_response.status(info.my_response_status);
     return info.my_response_string;
   }
