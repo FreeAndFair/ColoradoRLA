@@ -45,23 +45,26 @@ Work.
 * **start-up period** - The period starting on the Effective Date and
 ending on the Operational Start Date.
 
-* **ballot manifest** - A document that describes how ballots are
-organized and stored, and relates a Cast Vote Record to the
-physical location in which the tabulated ballot is stored. The
-ballot manifest specifies the physical
-location of a ballot to allow staff to find the
-specific ballot represented by a given CVR. A ballot manifest will
-contain the following information: county ID, tabulator ID, batch ID,
-the number of ballots in each batch, and the
-storage location where the batch is secured following tabulation. A
-sample ballot manifest is provided at [`manifest-dq.csv`](samples/manifest-dq.csv)
+% @todo kiniry Does the ballot manifest list ballots or ballot cards?
 
-* **cast vote record (CVR)** - An electronic record
-indicating how the marks on a ballot were interpreted as votes.
-May be created by a scanner or DRE, or manually during an audit.
-Sample CVRs in Dominion's format are in
-`test/dominion-2017-CVR_Export_20170310104116.csv`.
-See also [VVSG-Interoperability CVR Subgroup](http://collaborate.nist.gov/voting/bin/view/Voting/BallotDefinition).
+* **ballot manifest** - A document that describes how ballot cards are
+organized and stored, and relates a Cast Vote Records to the physical
+location in which the tabulated ballot card is stored. The ballot
+manifest specifies the physical location of a ballot card to allow
+staff to find the specific ballot card represented by a given CVR. A
+ballot manifest will contain the following information: county ID,
+tabulator ID, batch ID, the number of ballot cards in each batch, and
+the storage location where the batch is secured following
+tabulation. A sample ballot manifest is provided
+at [`manifest-dq.csv`](samples/manifest-dq.csv)
+
+* **cast vote record (CVR)** - An electronic record indicating how the
+marks on a ballot card were interpreted as votes.  May be created by a
+scanner or DRE, or manually during an audit.  Sample CVRs in
+Dominion's format are in
+`test/dominion-2017-CVR_Export_20170310104116.csv`.  See
+also
+[VVSG-Interoperability CVR Subgroup](http://collaborate.nist.gov/voting/bin/view/Voting/BallotDefinition).
 
 * **contest** - Any decision to be made by voters in an election,
 such as a partisan or nonpartisan candidate race, or a
@@ -110,11 +113,11 @@ as a number, vector or string, used to initialize a pseudorandom number generato
 solicitation.
 
 * **risk-limiting audit (RLA)** - A procedure for manually checking a
-sample of ballots (or voter-verifiable records) that is guaranteed to have
-a large, pre-specified chance of correcting the reported outcome if the
-reported outcome is wrong. (An outcome is wrong if it disagrees with the
-outcome that a full hand count would show.) One paper describing
-risk-limiting audits is located at
+sample of ballot (cards) (or other voter-verifiable records) that is
+guaranteed to have a large, pre-specified chance of correcting the
+reported outcome if the reported outcome is wrong. (An outcome is
+wrong if it disagrees with the outcome that a full hand count would
+show.) One paper describing risk-limiting audits is located at
 https://www.stat.berkeley.edu/~stark/Preprints/gentle12.pdf.
 
 * **state administrator** - The designated person who possesses RLA administrative user
@@ -124,11 +127,11 @@ privileges to perform administrative tasks.
 into election results. @review NIST Election Modeling group 
 separates interpretation, tally and tabulation. 
 
-* **tabulated ballots** - Paper ballots that have been scanned on a
-ballot scanning device, and the voter’s markings on which have been
-interpreted by the voting system as valid votes,
-undervotes, or overvotes.  Tabulated ballots may be duplicates of
-original ballots. @review this means ballots counted by hand weren't 
+* **tabulated ballots** - Paper ballot cards that have been scanned on
+a ballot scanning device, and the voter’s markings on which have been
+interpreted by the voting system as valid votes, undervotes, or
+overvotes.  Tabulated ballots may be duplicates of original
+ballots. @review this means ballots counted by hand weren't
 "tabulated". Is that what we want to say?
 
 * **two-factor authentication** - Defined as two out of the three
@@ -262,56 +265,65 @@ that an "uncontested contest"?
 
 * **voting method** TBD
 
-* **electoral system** the method used to calculate the number of elected
-positions in government that individuals and parties are awarded after elections. 
+* **electoral system** the method used to calculate the number of
+elected positions in government that individuals and parties are
+awarded after elections.
 
-* **ballot** a list of contests and, for each contest in the list, a list of
-choices, in a form that allows a person to record choices and allows a person
-or a computer (or both) to read recorded choices @review kiniry previous note:
-TBD including ballot id
+* **ballot** a list of contests and, for each contest in the list, a
+list of choices, in a form that allows a person to record choices and
+allows a person or a computer (or both) to read recorded choices.
+Each ballot is composed of one or more ballot cards, and each ballot
+card has a unique ID.
 
-* **margin** Given a contest and two choices in that contest, the numerical
-difference between the choice that got more votes and the choice that got fewer
-votes.
+* **ballot card** a single physical page of a ballot.
+
+* **margin** Given a contest and two choices in that contest, the
+  numerical difference between the choice that got more votes and the
+  choice that got fewer votes.
 
 * **hash function** TBD, mentioning specifically SHA-256
 
 * **RLA software** The software component of an RLA Tool.
 
-* **ballot storage bin** A physical container for a set of paper ballots.
+* **ballot storage bin** A physical container for a set of paper
+  ballot cards.
 
-* **batch** a set of ballots which has a numeric id and a size (the
-  number of ballots contained in the batch).
+* **batch** A set of Ballot Cards which has a numeric id and a size
+  (the number of Ballot Cards contained in the batch).
+
+* **batch id** Each Batch has a unique Ballot Identifier.
 
 * **batch size** the size of a batch, and virtually all batches are
   identically sized.
 
 * **chain of custody** Given an item (e.g., Marked Ballots, Unmarked
-Ballots) in need of security over a certain time period, the chain of
-custody is the sequence of people, organizations or locations where the
-item remains secured over the given time period.
+Ballots, Ballot Cards) in need of security over a certain time period,
+the chain of custody is the sequence of people, organizations or
+locations where the item remains secured over the given time period.
 
 * **county** (in the US) a political and administrative division of a
   state, providing certain local governmental services, including 
   conducting elections.
 
-* **scanner** A machine that can take Paper Ballots as input and whose output is 
-a CVR for each Paper Ballot @review TBD each scanner has an ID number
+* **scanner** A machine that can take Paper Ballots as input and whose
+output is a CVR for each Paper Ballot.
 
-* **imprinted ballot** - A Paper Ballot on which a unique ballot identifier has
-been imprinted in order to facilitate a ballot-level audit. The unique
-ballot identifier might for instance include a unique batch identifier and
-the sequence of the ballot within the batch, or it might be a new identifier
-which is also included in the CVR. Imprinting should be done after the ballot is
-cast and with care taken to avoid causing anonymity problems.
+* **imprinted ballot** - A Paper Ballot Card on which a unique Ballot
+Card identifier has been imprinted in order to facilitate a Ballot
+Card-level audit. The unique Ballot Card identifier might for instance
+include a unique Batch Identifier and the sequence of the Ballot Card
+within the Batch, or it might be a new identifier which is also
+included in the CVR. Imprinting should be done after the ballot card
+is cast and with care taken to avoid causing anonymity problems.
 
-* **ballot order** A specific ordering of a set of Ballots.
+* **ballot order** A specific ordering of a set of Ballot Cards.
 
-* **Secretary of State (SOS)** In most states in the United States, an office of
-government defined in the state constitution.
+* **Secretary of State (SOS)** In most states in the United States, an
+office of government defined in the state constitution.
 
-* **Department of State (DOS)** An agency of government which, in most states of
-the United States of America, is charged with oversight of state elections.
+* **Department of State (DOS)** An agency of government which, in most
+states of the United States of America, is charged with oversight of
+state elections.
 
 * **audit report** TBD
 
@@ -367,8 +379,8 @@ return system or email, for which the voter has not returned a matching
 voter verifiable paper ballot. AKA digital ballot.
 
 * **phantom ballot** An entry in the Ballot Manifest for which
-there is no corresponding Paper Ballot. Phantom ballots can represent
-pancies between the manifest and the actual paper ballot batches.
+there is no corresponding Paper Ballot Card. Phantom ballots can represent
+pancies between the manifest and the actual paper ballot card batches.
 A manifest with a batch of purely phantom ballots can also be used
 to represent the maximum number of possibly late-tabluation ballots.
 
@@ -430,17 +442,19 @@ requirements for voting equipment.
 * **EAC** An independent, bipartisan commission of the United States Federal
 Government, established by the Help America Vote Act of 2002.
 
-* **Clear Ballot Group** An election technology company. https://www.clearballot.com/
+* **Clear Ballot Group** An election technology
+  company. https://www.clearballot.com/
 
-* **Clear Ballot ClearCount** Cblear Ballot Group's rowser-based central count tabulation,
-consolidation and reporting system.
+* **Clear Ballot ClearCount** Clear Ballot Group's browser-based
+central count tabulation, consolidation and reporting system.
 
-* **OpenCount** OpenCount is a system that can interpret scanned paper ballots and
-interpret them into cast vote records.  It can understand some of the existing
-proprietary file formats for other vendors’ equipment, and can semi-automatically
-figure out the shape and nature of a ballot with a little help from an elections
-official. OpenCount was originally designed and implemented at Berkeley under the
-guidance of Prof. David Wagner.
+* **OpenCount** OpenCount is a system that can interpret scanned paper
+ballots and interpret them into cast vote records.  It can understand
+some of the existing proprietary file formats for other vendors’
+equipment, and can semi-automatically figure out the shape and nature
+of a ballot with a little help from an elections official. OpenCount
+was originally designed and implemented at Berkeley under the guidance
+of Prof. David Wagner.
 
 * **Dominion** Dominion Voting Systems is an election technology company.
 http://www.dominionvoting.com/
@@ -497,7 +511,8 @@ determined.
 
 * **regional training** TBD
 
-* **list of ballots to audit** TBD
+* **list of ballot cards to audit** An ordered list of ballot cards
+  selected for audit by the Risk-Limiting Audit algorithm
 
 * **uploading interface** A part of the county dashboard.
 
@@ -505,22 +520,24 @@ determined.
 
 * **comma separated value** (aka CSV)
 
-* **county number** as part of the ballot manifest
+* **county number** each county has a unique number associated with
+  it, as defined by CDOS.
 
 * **county name** The name of one county.
 
-* **scanner ID number** TBD
+* **scanner ID number** each scanner has a unique number associated
+  with it. All references to scanners in artifacts such as Cast Vote
+  Records use scanner ID numbers.
 
 * **batch number** TBD
 
 * **storage bin** (aka transfer case, ballot box, secured container)
-  used for secure storage of ballots (@review kiniry - Need we
-  differentiate these different means by which to storge ballots?)
+  A physical means by which to securely store ballot cards.
   
 * **CVR file** TBD
 
 * **CVR number** concatenation of scanner number - batch number -
-  ballot position within the batch
+  ballot card position within the batch
   
 * **database table** TBD
 
@@ -532,12 +549,12 @@ determined.
 
 * **paper ballot** A Ballot made of paper.
 
-* **audit adjudication interface** A computer user interface enabling an
-Audit Board to record interpretations of the ballots selected for audit.
+* **audit adjudication interface** A computer user interface enabling
+an Audit Board to record interpretations of the ballot cards selected
+for audit.
 
 * **ballot style** A short name for the set of contests appearing on a
-Ballot @review kiniry we also need a map from ballot styles to the power
-set of contests.
+Ballot Card
 
 * **political party** Any group of registered electors who, by petition or
 assembly, nominate candidates for the official general election ballot
@@ -572,12 +589,13 @@ or more recipients via a network.
 
 * **manual ballot adjudication** TBD
 
-* **ambiguous mark** A Ballot Mark whose interpretation as a voter choice is uncertain.
+* **ambiguous mark** A Ballot Mark whose interpretation as a voter
+  choice is uncertain.
 
 * **SOS voter intent guide** TBD
 
-* **ballot mark** Any mark on a Paper Ballot that was not printed on the Paper Ballot
-by the Board of Election.
+* **ballot mark** Any mark on a Paper Ballot that was not printed on
+  the Paper Ballot by the Board of Election.
 
 * **voter marking** TBD
 
@@ -622,7 +640,8 @@ commit objects, called heads.
 * **git** A version control system (VCS) for tracking changes in computer
 files and coordinating work on those files among multiple people.
 
-* **Asana** A web and mobile application designed to help teams track their work.
+* **Asana** A web and mobile application designed to help teams track
+  their work.
 
 * **Slack** A cloud-based set of team collaboration tools and services.
 
@@ -630,8 +649,7 @@ files and coordinating work on those files among multiple people.
 to pause and audit but it seems valuable to state what it is and then explicitly
 allow or disallow it.
 
-* **Missing/Not Found Ballot** @review morganmillerux this is perhaps the same
-as 'phantom ballot'
+* **Missing/Not Found Ballot** A Phantom Ballot.
 
 * **Credentialing Authority** @review morganmillerux Do we need a concept of
 who's allowed to author credentials?
