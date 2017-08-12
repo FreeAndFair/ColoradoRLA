@@ -2559,9 +2559,9 @@ END data_model
 %%% \label{sec:Abstract_State_Machine}
 %%%
 %%% Each dashboard has its own abstract state machine (ASM). The RLA
-%%% Tool's ASM is the composition of the composed of the three
-%%% dashboard ASMs. We specify ASMs using the finite automata standard
-%%% tabular format.
+%%% Tool's ASM is, at least in theory, the composition of the composed
+%%% of the three dashboard ASMs. We specify ASM's transitions using
+%%% the finite automatas' standard tabular format.
 asm: THEORY
 BEGIN
   IMPORTING FAFSSL,
@@ -2573,10 +2573,13 @@ BEGIN
 %%% typically involves system state. Since our ASMs are deterministic,
 %%% transitions map to only a single target state, rather than a set
 %%% of states as one would see in a non-deterministic ASM.
+  event: TYPE
   asm_state: TYPE
-  asm_event: TYPE
-  asm_transition_function: TYPE =
-    [asm_state, asm_event, boolean -> asm_state]
+  asm_event: TYPE FROM event
+% @trace us.freeandfair.corla.asm.ASMTransition
+  asm_transition: TYPE =
+    [# start_state: asm_state, event: asm_event, end_state: asm_state #]
+  asm_transition_function: TYPE = set[asm_transition]
 %%% Consequently, the core features of the ASM implementation in the
 %%% business logic of the RLA Tool are:
 %%% \begin{itemize}
@@ -2595,8 +2598,8 @@ BEGIN
 %%% \todokiniry{Explain ASM definition.}
   asm: TYPE =
     [# states: set[asm_state],
-       transitions: set[asm_event],
-       transition_function: asm_transition_function,
+       events: set[asm_event],
+       transitions: asm_transition_function,
        initial_state: asm_state,
        final_states: set[asm_state] #]
 %%%
@@ -3152,6 +3155,12 @@ BEGIN
 %%% \todokiniry{Explain these relations and their use.}
   ui_to_asm_event_relation: pred[[ui_event, asm_event]]
   asm_event_to_endpoint_relation: pred[[asm_event, server_endpoint]]
+% %%% For convenience, sometimes it is useful to indicate to a state
+% %%% machine that it should transition based upon a given
+% %%% \texttt{ui\_event} (which, in turn, maps to a \texttt{asm\_event}
+% %%% via X).
+% % @trace us.freeandfair.corla.asm.stepEvent(UI
+%   transition: TYPE = [[dashboard, ui_event] -> [dashboard, asm_state]]
 END endpoints
 %+END endpoints
 
