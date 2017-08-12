@@ -123,28 +123,45 @@ public class ASMEventToEndpointRelation {
   public boolean member(final ASMEvent an_ae, final Endpoint an_e) {
     return my_relation.contains(new Pair<ASMEvent, Endpoint>(an_ae, an_e));
   }
-  
+
+  // @todo kiniry Do we need these arrows anymore, especially given
+  // that relations are not 1-1?
+
   /**
    * Follow the relation from left to right.
-   * @param a_ue the UI event to lookup.
-   * @return the ASM event corresponding to 'a_ue', or null if no such event exists.
+   * @param a_ae the ASM event to lookup.
+   * @return the endpoints corresponding to 'a_ae', or null if no such
+   * endpoints exists.
    */
-  public ASMEvent rightArrow(final ASMEvent a_ae) {
-    // @todo kiniry To be implemented.
-    assert false;
-    //@ assert false;
-    return null;
+  public Set<String> rightArrow(final ASMEvent a_ae) {
+    // iterate over all elements in the map and, for each one whose
+    // left element matches a_ae, include the right element in the
+    // resulting set.
+    final Set<String> result = new HashSet<String>();
+    for (final Pair<ASMEvent, String> p : my_relation) {
+      if (p.getFirst().equals(a_ae)) {
+        result.add(p.getSecond());
+      }
+    }
+    return result;
   }
   
   /**
    * Follow the relation from right to left.
-   * @param a_ae the ASM event to lookup.
-   * @return the UI event corresponding to 'an_ae', or null if no such event exists.
+   * @param an_endpoint the endpoint to lookup.
+   * @return the ASM events corresponding to 'an_endpoint', or null if
+   * no such events exists.
    */
-  public UIEvent leftArrow(final Endpoint an_e) {
-    // @todo kiniry To be implemented.
-    assert false;
-    //@ assert false;
-    return null;
+  public Set<ASMEvent> leftArrow(final String an_endpoint) {
+    // iterate over all elements in the map and, for each one whose
+    // right element matches an_ae, include the left element in the
+    // resulting set.
+    final Set<ASMEvent> result = new HashSet<ASMEvent>();
+    for (final Pair<ASMEvent, String> p : my_relation) {
+      if (p.getSecond().equals(an_endpoint)) {
+        result.add(p.getFirst());
+      }
+    }
+    return result;
   }
 }
