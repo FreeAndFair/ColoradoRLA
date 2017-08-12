@@ -99,22 +99,42 @@ public class UIToASMEventRelation {
   public boolean member(final UIEvent a_ue, final ASMEvent an_ae) {
     return my_relation.contains(new Pair<UIEvent, ASMEvent>(a_ue, an_ae));
   }
-  
+
   /**
    * Follow the relation from left to right.
    * @param a_ue the UI event to lookup.
-   * @return the ASM event corresponding to 'a_ue', or null if no such event exists.
+   * @return the ASM events corresponding to 'a_ue', or null if no such
+   * events exists.
    */
-  public ASMEvent rightArrow(final UIEvent a_ue) {
-    return null;
+  public Set<ASMEvent> rightArrow(final UIEvent a_ue) {
+    // iterate over all elements in the map and, for each one whose
+    // left element matches a_ue, include the right element in the
+    // resulting set.
+    final Set<ASMEvent> result = new HashSet<ASMEvent>();
+    for (final Pair<UIEvent, ASMEvent> p : my_relation) {
+      if (p.getFirst().equals(a_ue)) {
+        result.add(p.getSecond());
+      }
+    }
+    return result;
   }
   
   /**
    * Follow the relation from right to left.
    * @param a_ae the ASM event to lookup.
-   * @return the UI event corresponding to 'an_ae', or null if no such event exists.
+   * @return the UI event corresponding to 'an_ae', or null if no such
+   * event exists.
    */
-  public UIEvent leftArrow(final ASMEvent an_ae) {
-    return null;
+  public Set<UIEvent> leftArrow(final ASMEvent an_ae) {
+    // iterate over all elements in the map and, for each one whose
+    // right element matches an_ae, include the left element in the
+    // resulting set.
+    final Set<UIEvent> result = new HashSet<UIEvent>();
+    for (final Pair<UIEvent, ASMEvent> p : my_relation) {
+      if (p.getSecond().equals(an_ae)) {
+        result.add(p.getFirst());
+      }
+    }
+    return result;
   }
 }

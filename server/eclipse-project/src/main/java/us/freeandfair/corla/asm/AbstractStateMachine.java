@@ -161,7 +161,7 @@ public abstract class AbstractStateMachine implements Serializable {
     final Set<UIEvent> result = new HashSet<UIEvent>();
     // For each enabled ASM event, look up which UI events it corresponds to.
     for (final ASMEvent e : asm_events_enabled) {
-      result.add(my_ui_to_asm_relation.leftArrow(e));
+      result.addAll(my_ui_to_asm_relation.leftArrow(e));
     }
     return result;
   }
