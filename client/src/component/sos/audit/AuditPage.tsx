@@ -1,9 +1,10 @@
 import * as React from 'react';
 
+import { NumericInput, Radio, RadioGroup } from '@blueprintjs/core';
+
 import Nav from '../Nav';
 
-import { NumericInput, Radio, RadioGroup } from '@blueprintjs/core';
-import { DateInput } from '@blueprintjs/datetime';
+import ElectionDateForm from './ElectionDateForm';
 
 
 const nop = () => ({});
@@ -22,18 +23,6 @@ const Breadcrumb = () => (
         </li>
     </ul>
 );
-
-
-const ElectionDateForm = () => {
-    return (
-        <div>
-            <label>
-                Election date.
-                <DateInput />
-            </label>
-        </div>
-    );
-};
 
 const ElectionTypeForm = () => {
     return (
