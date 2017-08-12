@@ -141,7 +141,9 @@ public class CVRExportUpload extends AbstractEndpoint implements Endpoint {
   // I don't see any other way to implement the buffered reading
   // than a deeply nested if statement
   @SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts")
-  private void handleUpload(final Request the_request, final UploadInformation the_info) {
+  private void handleUpload(final Request the_request,
+                            final Response the_response,
+                            final UploadInformation the_info) {
     try {
       final HttpServletRequest raw = SparkHelper.getRaw(the_request);
       the_info.my_ok = ServletFileUpload.isMultipartContent(raw);
@@ -167,8 +169,7 @@ public class CVRExportUpload extends AbstractEndpoint implements Endpoint {
             if (total >= MAX_UPLOAD_SIZE) {
               Main.LOGGER.info("attempt to upload file greater than max size from " +
                                raw.getRemoteHost());
-              the_info.my_response_string = "Upload Failed";
-              the_info.my_response_status = HttpStatus.UNPROCESSABLE_ENTITY_422;
+              badDataContents(the_response, "Upload Failed");
               the_info.my_ok = false;
             } else {
               Main.LOGGER.info("successfully saved file of size " + total + " from " +
@@ -179,8 +180,7 @@ public class CVRExportUpload extends AbstractEndpoint implements Endpoint {
         }
       }
     } catch (final IOException | FileUploadException e) {
-      the_info.my_response_string = "Upload Failed";
-      the_info.my_response_status = HttpStatus.UNPROCESSABLE_ENTITY_422;
+      badDataContents(the_response, "Upload Failed");
       the_info.my_ok = false;
     }
   }
@@ -204,8 +204,7 @@ public class CVRExportUpload extends AbstractEndpoint implements Endpoint {
     }
 
     if (county == null || hash == null || the_info.my_file == null) {
-      the_info.my_response_string = "Bad Request";
-      the_info.my_response_status = HttpStatus.BAD_REQUEST_400;
+      invariantViolation(the_response, "Bad Request");
       the_info.my_ok = false;
     }
 
@@ -225,15 +224,13 @@ public class CVRExportUpload extends AbstractEndpoint implements Endpoint {
                                  the_info.my_timestamp);
         } else {
           Main.LOGGER.info("could not parse malformed CVR export file");
-          the_info.my_response_status = HttpStatus.UNPROCESSABLE_ENTITY_422;
+          badDataContents(the_response, "Malformed CVR Export File");
           the_info.my_ok = false;
-          the_info.my_response_string = "Malformed CVR Export File";
         }
       } catch (final RuntimeException | IOException e) {
         Main.LOGGER.info("could not parse malformed CVR export file: " + e);
+        badDataContents(the_response, "Malformed CVR Export File");
         the_info.my_ok = false;
-        the_info.my_response_status = HttpStatus.UNPROCESSABLE_ENTITY_422;
-        the_info.my_response_string = "Malformed CVR Export File";
       }
     }
   }
@@ -247,7 +244,7 @@ public class CVRExportUpload extends AbstractEndpoint implements Endpoint {
     info.my_timestamp = Instant.now();
     info.my_ok = true;
 
-    handleUpload(the_request, info);
+    handleUpload(the_request, the_response, info);
 
     // now process the temp file, putting it in the database if persistence is
     // enabled
