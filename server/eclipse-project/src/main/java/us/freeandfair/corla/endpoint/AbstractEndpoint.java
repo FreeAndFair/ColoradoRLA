@@ -22,6 +22,7 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.model.Administrator.AdministratorType;
 import us.freeandfair.corla.persistence.Persistence;
 
 /**
@@ -144,14 +145,16 @@ public abstract class AbstractEndpoint implements Endpoint {
     // Presume everything goes ok.
     ok(the_response);
 
-    // Check to see if the server is operating properly.
-    if (!Persistence.hasDB()) {
+    // Start a transaction, if the database is functioning; otherwise abort
+    if (Persistence.hasDB()) {
+      Persistence.beginTransaction(); 
+    } else {
       serverError(the_response, "no database");
-    } else if (Persistence.isTransactionRunning()) {
-      serverUnavailable(the_response, "a long transaction is running");
-    }
+    } 
+
     // Check to see if the requested endpoint is permitted from the current
-    // state of the server.
+    // state of the server, and find out what kind of admin is allowed to
+    // request it
     // else if (false) {
     //   illegalTransition(the_response, "endpoint not permitted by ASM");
     //   return;
@@ -159,13 +162,20 @@ public abstract class AbstractEndpoint implements Endpoint {
 
     // This access is well-formed and permitted by the state machine, so log the
     // use of the endpoint.
-    Main.LOGGER.info("checking authentication on " + the_request);
+    Main.LOGGER.info("checking for authorization on " + the_request);
 
     // If the client is unauthorized, then indicate such and redirect.
 
-    // If we have an authentication cookie, then check if the user is
-    // authenticated.
-    if (!Authentication.authenticate(the_request)) {
+    // Determine what type of authentication is required for this endpoint
+    // null = unrestricted endpoint (such as "/")
+    // TODO: should this be determined by asking the endpoint, or by asking the ASM?
+    // TODO: should we have another enum type (STATE/COUNTY/NONE) for this? 
+    // TODO: should we enable state admins to masquerade as county admins?
+    final AdministratorType admin_type = AdministratorType.STATE; // for now.
+    
+    // Check that the user is appropriately authenticated
+    if (admin_type != null && 
+        !Authentication.isAuthenticatedAs(the_request, admin_type)) {
       unauthorized(the_response,
                    "client not authenticated to perform this action");
     }
