@@ -2,6 +2,8 @@ import * as React from 'react';
 
 import Nav from '../Nav';
 
+import SeedForm from './SeedForm';
+
 
 const Breadcrumb = () => (
     <ul className='pt-breadcrumbs'>
@@ -34,9 +36,7 @@ const AuditSeedPage = ({ back, saveAndNext }: any) => {
 
                 <h4>Audit Random Seed</h4>
                 <div>Please enter the seed generated from the public meeting.</div>
-                <label>Seed
-                    <input className='pt-input' type='text' />
-                </label>
+                <SeedForm />
             </div>
             <div>
                 <button onClick={ back } className='pt-button'>
