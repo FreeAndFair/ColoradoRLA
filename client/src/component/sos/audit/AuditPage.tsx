@@ -22,7 +22,11 @@ const Breadcrumb = () => (
     </ul>
 );
 
-const AuditPage = ({ saveAndNext }: any) => {
+const AuditPage = ({ nextPage }: any) => {
+    const buttonClick = () => {
+        nextPage();
+    };
+
     return (
         <div>
             <Nav />
@@ -45,7 +49,7 @@ const AuditPage = ({ saveAndNext }: any) => {
                 Once the election has started, this information will not be able to be changed.
             </div>
 
-            <button onClick={ saveAndNext } className='pt-button pt-intent-primary'>
+            <button onClick={ buttonClick } className='pt-button pt-intent-primary'>
                 Save
             </button>
         </div>
