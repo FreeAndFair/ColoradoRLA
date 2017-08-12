@@ -2602,7 +2602,6 @@ BEGIN
        transitions: asm_transition_function,
        initial_state: asm_state,
        final_states: set[asm_state] #]
-%%%
 %%% We will first specify the ASM for the Department of State
 %%% dashboard. Its states describe the sequence of steps that state
 %%% administrators must take to start, observe, and complete an RLA.
@@ -2644,10 +2643,15 @@ BEGIN
       n_e       % no_event
     }
 
-  dos_state: VAR department_of_state_dashboard_state
-  dos_event: VAR department_of_state_dashboard_event
-  dos_asm_function: VAR asm_transition_function
+  dos_states: set[asm_state]
+  dos_events: set[asm_event]
+  dos_transitions: asm_transition_function
+  dos_initial_state: asm_state
+  dos_final_states: set[asm_state]
 
+  dos_state: VAR asm_state
+  dos_event: VAR asm_event
+  dos_asm_function: VAR asm_transition_function
 %   dos_dashboard_next_state(dos_state, dos_event, dos_asm_function):
 %     department_of_state_dashboard_state =
 % TABLE dos_state, dos_event
@@ -2666,10 +2670,15 @@ BEGIN
 %      | arp_s  |       |         |        |      |        |         |     ||
 % ENDTABLE
 
-%  dos_asm: VAR asm =
-%     [# states = department_of_state_dashboard_state,
-%        transitions = department_of_state_dashboard_event
-%        transition_function = dos_dashboard_next_state #]
+%%% As there is only a single Department of State, then our system has
+%%% only a single instance of this ASM.
+
+  dos_dashboard_asm: asm =
+     (# states := dos_states,
+        events := dos_events,
+        transitions := dos_transitions,
+        initial_state := dos_initial_state,
+        final_states := dos_final_states #)
 
   county_dashboard_state: TYPE = % SUBTYPE asm_state
     { ci_s,      % county_initial_state
@@ -2710,6 +2719,12 @@ BEGIN
       n_e        % no_event                 
     }
 
+  county_dashboard_states: set[asm_state]
+  county_dashboard_events: set[asm_event]
+  county_dashboard_transitions: asm_transition_function
+  county_dashboard_initial_state: asm_state
+  county_dashboard_final_states: set[asm_state]
+
   c_state: VAR county_dashboard_state
   c_event: VAR county_dashboard_event
   c_asm_function: VAR asm_transition_function
@@ -2725,11 +2740,18 @@ BEGIN
 % ...etc...
 % ENDTABLE
 
-%  county_dashboard_asm: VAR asm =
-%     [# states = county_dashboard_state,
-%        transitions = county_dashboard_event
-%        transition_function = county_dashboard_next_state #]
-
+%%% Each state has several counties, and each county has an ASM. Thus
+%%% there is a relation between counties and county dashboard ASMs.
+  county_dashboard_asm: asm =
+     (# states := county_dashboard_states,
+        events := county_dashboard_events,
+        transitions := county_dashboard_transitions,
+        initial_state := county_dashboard_initial_state,
+        final_states := county_dashboard_final_states #)
+  county_to_county_dashboard_asm_relation: TYPE =
+    pred[[county, asm]]
+%%% Likewise, there is a similar relation between counties and audit board
+%%% dashboard ASMs.
   audit_board_dashboard_state: TYPE = % SUBTYPE asm_state
     { ai_s,   % audit_initial_state
       aip_s,  % audit_in_progress_state
@@ -2748,6 +2770,12 @@ BEGIN
       n_e     % no_event
     }
 
+  audit_board_dashboard_states: set[asm_state]
+  audit_board_dashboard_events: set[asm_event]
+  audit_board_dashboard_transitions: asm_transition_function
+  audit_board_dashboard_initial_state: asm_state
+  audit_board_dashboard_final_states: set[asm_state]
+
   ab_state: VAR audit_board_dashboard_state
   ab_event: VAR audit_board_dashboard_event
   ab_asm_function: VAR asm_transition_function
@@ -2764,10 +2792,14 @@ BEGIN
 %      | sar_s  |      |        |        |       |        |     ||
 % ENDTABLE
 
-%  audit_board_dashboard_asm: VAR asm =
-%     [# states = audit_board_dashboard_state,
-%        transitions = audit_board_dashboard_event
-%        transition_function = audit_board_dashboard_next_state #]
+  audit_board_dashboard_asm: asm =
+     (# states := audit_board_dashboard_states,
+        events := audit_board_dashboard_events,
+        transitions := audit_board_dashboard_transitions,
+        initial_state := audit_board_dashboard_initial_state,
+        final_states := audit_board_dashboard_final_states #)
+  county_to_audit_board_dashboard_asm_relation: TYPE =
+    pred[[county, asm]]
 
 %  rla_tool_asm: VAR asm =
 %     [# states = union of dos, county, and audit board asm states,
