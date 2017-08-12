@@ -7,6 +7,7 @@ interface AppState {
     loggedIn: boolean;
     dashboard?: Dashboard;
     county?: any;
+    sos?: any;
 }
 
 const defaultState = {
@@ -18,11 +19,11 @@ export default function root(state: AppState = defaultState, action: any) {
     switch (action.type) {
 
     case 'AUTH_COUNTY_ADMIN_RECEIVE': {
-        return { ...state, loggedIn: true, dashboard: 'county' };
+        return { ...state, loggedIn: true, dashboard: 'county', county: {} };
     }
 
     case 'AUTH_STATE_ADMIN_RECEIVE': {
-        return { ...state, loggedIn: true, dashboard: 'sos' };
+        return { ...state, loggedIn: true, dashboard: 'sos', sos: {} };
     }
 
     case 'FETCH_INITIAL_STATE_SEND': {
