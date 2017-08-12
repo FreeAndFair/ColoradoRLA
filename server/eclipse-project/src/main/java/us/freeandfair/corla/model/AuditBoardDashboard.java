@@ -179,8 +179,4 @@ public class AuditBoardDashboard extends AbstractEntity implements Serializable 
 
     return result;
   }
-  
-  /**
-   * @return
-   */
 }
