@@ -1,8 +1,11 @@
 import * as _ from 'lodash';
 
 
+type Dashboard = 'sos' | 'county';
+
 interface AppState {
     loggedIn: boolean;
+    dashboard?: Dashboard;
     county?: any;
 }
 
@@ -14,8 +17,12 @@ const defaultState = {
 export default function root(state: AppState = defaultState, action: any) {
     switch (action.type) {
 
-    case 'LOGIN': {
-        return { ...state, loggedIn: true };
+    case 'AUTH_COUNTY_ADMIN_RECEIVE': {
+        return { ...state, loggedIn: true, dashboard: 'county' };
+    }
+
+    case 'AUTH_STATE_ADMIN_RECEIVE': {
+        return { ...state, loggedIn: true, dashboard: 'sos' };
     }
 
     case 'FETCH_INITIAL_STATE_SEND': {
