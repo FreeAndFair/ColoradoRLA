@@ -25,7 +25,11 @@ const Breadcrumb = () => (
     </ul>
 );
 
-const AuditSeedPage = ({ back, saveAndNext }: any) => {
+const AuditSeedPage = ({ back, nextPage }: any) => {
+    const onSaveAndNext = () => {
+        nextPage();
+    };
+
     return (
         <div>
             <Nav />
@@ -42,7 +46,7 @@ const AuditSeedPage = ({ back, saveAndNext }: any) => {
                 <button onClick={ back } className='pt-button'>
                     Back
                 </button>
-                <button onClick={ saveAndNext} className='pt-button pt-intent-primary'>
+                <button onClick={ onSaveAndNext } className='pt-button pt-intent-primary'>
                     Save & Next
                 </button>
             </div>
