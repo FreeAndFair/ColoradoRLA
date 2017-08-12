@@ -246,7 +246,7 @@ public abstract class AbstractStateMachine implements Serializable {
    * ASMTransitionFunctions.
    */
   public static Set<ASMTransition>
-    transitionsFor(final List<ASMTransitionFunction> the_list) {
+      transitionsFor(final List<ASMTransitionFunction> the_list) {
     final Set<ASMTransition> result = new HashSet<ASMTransition>();
     for (final ASMTransitionFunction atf : the_list) {
       result.add(atf.value());

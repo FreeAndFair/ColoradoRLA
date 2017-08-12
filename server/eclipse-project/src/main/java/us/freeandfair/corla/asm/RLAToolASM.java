@@ -48,7 +48,7 @@ public class RLAToolASM extends AbstractStateMachine {
    * The transition function of this ASM.
    */
   private static final Set<ASMTransition> TRANSITION_FUNCTION =
-    new HashSet<>();
+      new HashSet<>();
 
   static {
     final AbstractStateMachine[] asms = 
