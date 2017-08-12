@@ -19,11 +19,16 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.asm.ASMEvent;
+import us.freeandfair.corla.asm.DoSDashboardASM;
+import us.freeandfair.corla.asm.PersistentASMState;
+import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.ESTABLISH_RISK_LIMIT_FOR_COMPARISON_AUDITS_EVENT;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
 import us.freeandfair.corla.model.AuditStage;
 import us.freeandfair.corla.model.DepartmentOfStateDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.DepartmentOfStateDashboardQueries;
+import us.freeandfair.corla.query.PersistentASMStateQueries;
 
 /**
  * The endpoint for establishing the risk limit for comparison audits.
@@ -32,7 +37,7 @@ import us.freeandfair.corla.query.DepartmentOfStateDashboardQueries;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class RiskLimitForComparisonAudits extends AbstractEndpoint {
+public class RiskLimitForComparisonAudits extends AbstractDoSEndpoint {
   /**
    * The "risk limit" parameter.
    */
@@ -53,7 +58,12 @@ public class RiskLimitForComparisonAudits extends AbstractEndpoint {
   public String endpointName() {
     return "/risk-limit-comp-audits";
   }
-
+  
+  @Override
+  protected ASMEvent endpointEvent() {
+    return ESTABLISH_RISK_LIMIT_FOR_COMPARISON_AUDITS_EVENT;
+  }
+  
   /**
    * Attempts to set the risk limit for comparison audits. The risk limit
    * should be provided as a decimal number (i.e., 0.10 for 10%). 
@@ -65,38 +75,30 @@ public class RiskLimitForComparisonAudits extends AbstractEndpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
+    // the before() action automatically checks that the server is ready,
+    // starts a transaction, loads the ASM, checks to see if this endpoint is 
+    // permitted given the current state of the ASM, 
     ok(the_response, "Risk limit set");
     BigDecimal risk_limit = null;
-    
-    if (Authentication.isAuthenticatedAs(the_request, AdministratorType.STATE)) {
-      // see if a valid risk limit was passed in
-      risk_limit = parseRiskLimit(the_request.queryParams(RISK_LIMIT));
-
-      if (risk_limit == null) {
-        Main.LOGGER.info("attempt to set an invalid risk limit");
-        invariantViolation(the_response, "Invalid risk limit specified");
-      } else {
-        final DepartmentOfStateDashboard dosd = DepartmentOfStateDashboardQueries.get();
-        if (dosd != null && dosd.auditStage() == AuditStage.PRE_AUDIT) {
-          dosd.setRiskLimitForComparisonAudits(risk_limit);
-          try {
-            Persistence.saveOrUpdate(dosd);
-            Main.LOGGER.info("risk limit for comparison audits set to " + risk_limit);
-          } catch (final PersistenceException e) {
-            Main.LOGGER.error("unable to set risk limit for comparison audits: " + e);
-          }
-        } else if (dosd == null) {
-          serverError(the_response, "could not get department of state dashboard"); 
-        } else {
-          Main.LOGGER.info("attempt to set the risk limit for comparision audits " +
-                           "in incorrect state " + dosd.auditStage());
-          illegalTransition(the_response, "Attempt to set the risk limit in incorrect state");
-        }
-      } 
+    // see if a valid risk limit was passed in
+    risk_limit = parseRiskLimit(the_request.queryParams(RISK_LIMIT));
+    if (risk_limit == null) {
+      Main.LOGGER.info("attempt to set an invalid risk limit");
+      invariantViolation(the_response, "Invalid risk limit specified");
     } else {
-      Main.LOGGER.info("unauthorized attempt to set the risk limit for comparison audits");
-      unauthorized(the_response, "Unauthorized attempt to set the risk limit"); 
-    }
+      final DepartmentOfStateDashboard dosd = DepartmentOfStateDashboardQueries.get();
+      if (dosd != null) {
+        dosd.setRiskLimitForComparisonAudits(risk_limit);
+        try {
+          Persistence.saveOrUpdate(dosd);
+          Main.LOGGER.info("risk limit for comparison audits set to " + risk_limit);
+        } catch (final PersistenceException e) {
+          Main.LOGGER.error("unable to set risk limit for comparison audits: " + e);
+        }
+      } else {
+        serverError(the_response, "could not get department of state dashboard"); 
+      }
+    } 
     return my_endpoint_result;
   }
   
