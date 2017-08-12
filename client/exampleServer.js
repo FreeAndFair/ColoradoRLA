@@ -7,26 +7,36 @@ const contests = require('./data/contests');
 
 const app = connect();
 
-const get = (path, handler) => {
-    app.use(path, (req, res, done) => {
-        const headers = {
-            'access-control-allow-origin': '*',
-            'content-type': 'application/json',
-        };
-        res.writeHead(200, headers);
+const route = (m, path, handler) => {
+    const headers = {
+        'access-control-allow-origin': '*',
+        'content-type': 'application/json',
+    };
 
-        const body = JSON.stringify(handler(req, res));
+    app.use(path, (req, res, done) => {
+        if (req.method.toLowerCase() !== m.toLowerCase()) {
+            res.writeHead(405, headers);
+            res.end();
+            return done();
+        }
+
+        const { data, status } = handler(req, res);
+        const body = JSON.stringify(data);
+
+        res.writeHead(status, headers);
         res.end(body);
 
         done();
     });
 };
 
-get('/ballot-style', () => ballotStyles);
+const ok = data => ({ status: 200, data });
 
-get('/cvr', () => castVoteRecords);
+route('get', '/ballot-style', () => ok(ballotStyles));
 
-get('/contest', () => contests);
+route('get', '/cvr', () => ok(castVoteRecords));
+
+route('get', '/contest', () => ok(contests));
 
 
 app.listen(4000);
