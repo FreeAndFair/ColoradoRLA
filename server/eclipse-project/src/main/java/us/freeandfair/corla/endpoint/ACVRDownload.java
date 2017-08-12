@@ -21,9 +21,8 @@ import java.util.stream.Stream;
 import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
 
-import org.eclipse.jetty.http.HttpStatus;
-
 import com.google.gson.stream.JsonWriter;
+import org.hibernate.Session;
 
 import spark.Request;
 import spark.Response;
@@ -42,7 +41,7 @@ import us.freeandfair.corla.util.SparkHelper;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class ACVRDownload implements Endpoint {
+public class ACVRDownload extends AbstractEndpoint implements Endpoint {
   /**
    * {@inheritDoc}
    */
@@ -66,9 +65,6 @@ public class ACVRDownload implements Endpoint {
   // necessary to break out of the lambda expression in case of IOException
   @SuppressWarnings("PMD.ExceptionAsFlowControl")
   public String endpoint(final Request the_request, final Response the_response) {
-    String result = "";
-    int status = HttpStatus.OK_200;
-    
     try {
       final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
       final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
@@ -94,11 +90,8 @@ public class ACVRDownload implements Endpoint {
         Persistence.rollbackTransaction();
       } 
     } catch (final UncheckedIOException | IOException | PersistenceException e) {
-      status = HttpStatus.INTERNAL_SERVER_ERROR_500;
-      result = "Unable to stream response";
+      serverError(the_response, "Unable to stream response");
     }
-    
-    the_response.status(status);
-    return result;
+    return my_endpoint_result;
   }
 }

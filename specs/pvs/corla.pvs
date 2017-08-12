@@ -1983,9 +1983,12 @@ BEGIN
 % overvotes and undervotes. The tool must not allow the Audit Board to
 % skip contests.
 % @trace us.freeandfair.corla.model.AuditBoardDashboard.submitAuditCVR
+%%% We call the report of the markings on a ballot an Audit CVR, or
+%%% aCVR for short.
+  aCVR: TYPE = list[ballot_mark]
   report_markings:
     [audit_board_dashboard, ballot_manifest_info,
-     list[ballot_mark] -> audit_board_dashboard]
+     aCVR -> audit_board_dashboard]
 % @trace Per email from Jerome Lovato at CDOS on 19 July 2017: If the
 % Audit Board cannot find a ballot, the tool should have a “ballot not
 % found” box that the Audit Board will select. This will be marked as
@@ -2627,8 +2630,8 @@ BEGIN
 %%% administrators using the RLA Tool, cause state changes. These
 %%% events are named according to their corresponding functional
 %%% definitions in earlier theories. E.g., the
-%%% \texttt{authenticate\_state\_administrator\_event} relates to the
-%%% \texttt{authenticate\_state\_administrator} function and its
+%%% \texttt{authenticate\_\-state\_\-administrator\_event} relates to
+%%% the \texttt{authenticate\_state\_administrator} function and its
 %%% realization via an endpoint.
   department_of_state_dashboard_event: TYPE = % SUBTYPE asm_event
     { asa_e,    % 1. authenticate_state_administrator_event
@@ -2843,23 +2846,112 @@ BEGIN
     UPDATE_BALLOT_MARKS,
     UNDEFINED
   }
-%%% \todokiniry{Specifications for the transport types.}
+%%% We specify the content of data sent to/from the server either with
+%%% a specification of a URL parameter-based communication or using a
+%%% JSON object. We do not wish to precisely specify the JSON, as
+%%% encoding is non-unique due to the existenxce of semantically
+%%% equivalent encodings (as with any serialization technique) and
+%%% across libraries. Instead, we specify data-in-transit implicitly
+%%% via the function signatures in the theories above that focus on
+%%% the endpoint callback (the various \texttt{dashboard} theories)
+%%% and we name the semantially relevant fields using a list of
+%%% strings using the \texttt{json\_spec} type.
   json_spec: TYPE = list[string]
+%%% The \texttt{nothing} constant specifies that no content is
+%%% transmitted for a given communication with the server. This
+%%% commonly happens, e.g., when performing a \texttt{GET} on an
+%%% endpoint.
   nothing: json_spec = null
-%%% This is the standard response that the server gives to all public
-%%% inbound events to permit the UI (the view of the MVC architecture)
-%%% to know what state the server is in, which UI elements should be
-%%% enabled (and thus what transitions are legal).
+%%% The \texttt{server\_response} concept is the standard/normal
+%%% response that the server gives to all public inbound events to
+%%% permit the UI (the view of the MVC architecture) to know what
+%%% state the server is in, which UI elements should be enabled (and
+%%% thus what transitions are legal).  We call this kind of behavior
+%%% in the server ``normal behavior''. In all normal behavior cases
+%%% the server will answer with an HTTP response code of
+%%% \texttt{OK\_200}.
   server_response: json_spec =
     (: "server_state", "ui_events" :)
-% Note that this type is used as a response for both ballot manifest
-% and CVR uploads.
+%%% The \texttt{upload\_response} concept is used to encode the
+%%% variety of response status the server can give to an upload. Note
+%%% that the \texttt{upload\_response} type is used as a response for
+%%% both ballot manifest and CVR uploads. These responses can happen
+%%% synchronously (our plan for \emph{stage-1} deliverable) or
+%%% asynchronously (our plan for a later deliverable). Asynchronous
+%%% updates happen via a call to the \texttt{refresh...} endpoints.
   upload_response: json_spec =
-    % legal values for status are:
-    % "too_late", "data_transmission_interrupted", "upload_sucessful",
-    % "checking_hash", "hash_wrong", "hash_verified", "parsing_data",
-    % "file_type_wrong", "data_parsed"
-    (: "status" :)
+%%% Legal values for \texttt{status} are: \texttt{too\_late},
+%%% \texttt{data\_\-transmission\_\-interrupted},
+%%% \texttt{upload\_\-sucessful}, \texttt{checking\_hash},
+%%% \texttt{hash\_wrong}, \texttt{hash\_verified},
+%%% \texttt{parsing\_\-data}, \texttt{file\_\-type\_\-wrong}, and
+%%% \texttt{data\_parsed}.
+    (: "ballot_manifest-status", "cvr-status" :)
+%%% There are several possible cases where a client can make an
+%%% inappropriate call to the server. Our client will be guarnateed to
+%%% never make sure a call, but we cannot presume that only our client
+%%% will be communicating with the server, as the server will be
+%%% publicly accessible on the internet. We call these behaviors of
+%%% the server ``exceptional behavior''. All responses to exceptional
+%%% behavior come in the form of HTTP client error (\texttt{3xx}) or
+%%% server error (\texttt{4xx}) response codes.
+  http_response_code: TYPE = {
+    OK_200,
+    BAD_REQUEST_400,
+    UNAUTHORIZED_401,
+    FORBIDDEN_403,
+    NOT_FOUND_404,
+    UNSUPPORTED_MEDIA_TYPE_415,
+    UNPROCESSABLE_ENTITY_422,
+    INTERNAL_SERVER_ERROR_500
+  }
+%%% The cases that we must cover are:
+%%% \begin{enumerate}
+%%%
+%%% \item The server is simply not up and running properly. For
+%%% example, if the database is not in a legal state. In these cases
+%%% the server will answer with an HTTP response code of
+%%% \texttt{INTERNAL\_SERVER\_ERROR\_500}.
+%%%
+%%% \item In instances where the server is asked to query for a
+%%% particular piece of data from the database and that does does not
+%%% exist, the server will respond with a \texttt{NOT\_FOUND\_404}. This
+%%% can happen, e.g., when a client uses an improper encoding for a
+%%% piece of data, such as a county ID that does not exist.
+%%%
+%%% \item A piece of data uploaded by a client (at this point in time,
+%%% either a ballot manifest, a CVR file, or an Audit CVR) is
+%%% malformed and cannot be interpreted. This situation can happen,
+%%% for example, if the Election Management System used to export the
+%%% file has a bug, if the file is improperly edited by someone, or if
+%%% there is a bug in our parser. In this situation, the server will
+%%% respond with a \texttt{UNPROCESSABLE\_ENTITY\_422}
+%%% response.
+%%%
+%%% \item Alternatively, if the file is of the wrong type (i.e., a PDF
+%%% was uploaded when the server expected a CSV file), or if the
+%%% uploaded file is too large, then the server will respond with a
+%%% \texttt{UNSUPPORTED\_MEDIA\_TYPE\_415} message.
+%%%
+%%% \item If the client is unauthenticated, or if authentication
+%%% fails, then the server will respond with a
+%%% \texttt{UNAUTHORIZED\_401} response.
+%%%
+%%% \item If some element of a request is incorrect then the server
+%%% responds with a \texttt{BAD\_REQUEST\_400} messages. In particular,
+%%% if the digest uploaded with a ballot manifest or a CVR file is
+%%% incorrect, then the server will store the data and respond with
+%%% this message.
+%%%
+%%% \item Finally, if the endpoint called is improper given the state
+%%% that the server is in, then the server will respond with a
+%%% \texttt{FORBIDDEN\_403} message. This happens only when an
+%%% authenticated client tried to violate the state machine of the
+%%% server, and will either indicate a bug in our client code or
+%%% malicious or experimental behavior on the part of some
+%%% non-official party.
+%%%
+%%% \end{enumerate}
   http_inbound_spec: TYPE = list[string]
   empty_request: http_inbound_spec = null
 %%% \todokiniry{Transport specs for Department of State Dashboard.}
@@ -2905,13 +2997,7 @@ BEGIN
     (: "reason" :)
   refresh_audit_board_dashboard: json_spec =
     null % @todo kiniry
-%%% \todokiniry{Discuss HTTP, error codes, and endpoints.}
-  http_response_code: TYPE = {
-    OK_200,
-    BAD_REQUEST_400,
-    UNAUTHORIZED_401,
-    UNPROCESSABLE_ENTITY_422
-  }
+%%% \todokiniry{Discuss HTTP endpoint types and endpoints.}
   endpoint_type: TYPE = { GET, POST, PUT }
   server_endpoint: TYPE =
     [# endpoint_type: endpoint_type,

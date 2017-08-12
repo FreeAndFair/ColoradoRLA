@@ -13,8 +13,6 @@ package us.freeandfair.corla.endpoint;
 
 import javax.persistence.PersistenceException;
 
-import org.eclipse.jetty.http.HttpStatus;
-
 import com.google.gson.JsonSyntaxException;
 
 import spark.Request;
@@ -33,7 +31,7 @@ import us.freeandfair.corla.query.DepartmentOfStateDashboardQueries;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class SelectContestsForAudit implements Endpoint {
+public class SelectContestsForAudit extends AbstractEndpoint implements Endpoint {
   /**
    * {@inheritDoc}
    */
@@ -61,17 +59,14 @@ public class SelectContestsForAudit implements Endpoint {
   @Override
   public synchronized String endpoint(final Request the_request, 
                                       final Response the_response) {
-    int status = HttpStatus.OK_200;
-    String result = "Contests selected";
-
+    ok(the_response, "Contests selected");
     try {
       final ContestToAudit[] contests = 
           Main.GSON.fromJson(the_request.body(), ContestToAudit[].class);
       final DepartmentOfStateDashboard dosdb = DepartmentOfStateDashboardQueries.get();
       if (dosdb == null) {
         Main.LOGGER.error("could not get department of state dashboard");
-        result = "Could not select contests";
-        status = HttpStatus.INTERNAL_SERVER_ERROR_500;
+        serverError(the_response, "Could not select contests");
       } else {
         for (final ContestToAudit c : contests) {
           Main.LOGGER.info("updating contest audit status: " + c);
@@ -81,15 +76,11 @@ public class SelectContestsForAudit implements Endpoint {
       Persistence.saveOrUpdate(dosdb);
     } catch (final JsonSyntaxException e) {
       Main.LOGGER.error("malformed contest selection");
-      result = "Invalid contest selection data";
-      status = HttpStatus.UNPROCESSABLE_ENTITY_422;
+      badDataContents(the_response, "Invalid contest selection data");
     } catch (final PersistenceException e) {
       Main.LOGGER.error("could not save contest selection");
-      result = "Unable to save contest selection";
-      status = HttpStatus.INTERNAL_SERVER_ERROR_500;
+      serverError(the_response, "Unable to save contest selection");
     }
-    
-    the_response.status(status);
-    return result;
+    return my_endpoint_result;
   }
 }

@@ -15,8 +15,6 @@ import java.math.BigDecimal;
 
 import javax.persistence.PersistenceException;
 
-import org.eclipse.jetty.http.HttpStatus;
-
 import spark.Request;
 import spark.Response;
 
@@ -34,7 +32,7 @@ import us.freeandfair.corla.query.DepartmentOfStateDashboardQueries;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class RiskLimitForComparisonAudits implements Endpoint {
+public class RiskLimitForComparisonAudits extends AbstractEndpoint implements Endpoint {
   /**
    * The "risk limit" parameter.
    */
@@ -67,8 +65,7 @@ public class RiskLimitForComparisonAudits implements Endpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    int status = HttpStatus.OK_200;
-    String result = "Risk limit set";
+    ok(the_response, "Risk limit set");
     BigDecimal risk_limit = null;
     
     if (Authentication.isAuthenticatedAs(the_request, AdministratorType.STATE)) {
@@ -77,8 +74,7 @@ public class RiskLimitForComparisonAudits implements Endpoint {
 
       if (risk_limit == null) {
         Main.LOGGER.info("attempt to set an invalid risk limit");
-        status = HttpStatus.BAD_REQUEST_400;
-        result = "Invalid risk limit specified";
+        invariantViolation(the_response, "Invalid risk limit specified");
       } else {
         final DepartmentOfStateDashboard dosd = DepartmentOfStateDashboardQueries.get();
         if (dosd != null && dosd.auditStage() == AuditStage.PRE_AUDIT) {
@@ -90,24 +86,18 @@ public class RiskLimitForComparisonAudits implements Endpoint {
             Main.LOGGER.error("unable to set risk limit for comparison audits: " + e);
           }
         } else if (dosd == null) {
-          Main.LOGGER.error("could not get department of state dashboard");
-          status = HttpStatus.INTERNAL_SERVER_ERROR_500;
-          result = "Could not set risk limit";
+          serverError(the_response, "could not get department of state dashboard"); 
         } else {
           Main.LOGGER.info("attempt to set the risk limit for comparision audits " +
                            "in incorrect state " + dosd.auditStage());
-          status = HttpStatus.FORBIDDEN_403;
-          result = "Attempt to set the risk limit in incorrect state";
+          illegalTransition(the_response, "Attempt to set the risk limit in incorrect state");
         }
       } 
     } else {
       Main.LOGGER.info("unauthorized attempt to set the risk limit for comparison audits");
-      status = HttpStatus.UNAUTHORIZED_401;
-      result = "Unauthorized attempt to set the risk limit"; 
+      unauthorized(the_response, "Unauthorized attempt to set the risk limit"); 
     }
-    
-    the_response.status(status);
-    return result;
+    return my_endpoint_result;
   }
   
   /**
