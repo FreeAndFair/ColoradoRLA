@@ -11,6 +11,8 @@
 
 package us.freeandfair.corla.endpoint;
 
+import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.ESTABLISH_RISK_LIMIT_FOR_COMPARISON_AUDITS_EVENT;
+
 import java.math.BigDecimal;
 
 import javax.persistence.PersistenceException;
@@ -20,15 +22,9 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
-import us.freeandfair.corla.asm.DoSDashboardASM;
-import us.freeandfair.corla.asm.PersistentASMState;
-import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.ESTABLISH_RISK_LIMIT_FOR_COMPARISON_AUDITS_EVENT;
-import us.freeandfair.corla.model.Administrator.AdministratorType;
-import us.freeandfair.corla.model.AuditStage;
 import us.freeandfair.corla.model.DepartmentOfStateDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.DepartmentOfStateDashboardQueries;
-import us.freeandfair.corla.query.PersistentASMStateQueries;
 
 /**
  * The endpoint for establishing the risk limit for comparison audits.
@@ -59,6 +55,9 @@ public class RiskLimitForComparisonAudits extends AbstractDoSDashboardEndpoint {
     return "/risk-limit-comp-audits";
   }
   
+  /**
+   * {@inheritDoc}
+   */
   @Override
   protected ASMEvent endpointEvent() {
     return ESTABLISH_RISK_LIMIT_FOR_COMPARISON_AUDITS_EVENT;
@@ -76,8 +75,8 @@ public class RiskLimitForComparisonAudits extends AbstractDoSDashboardEndpoint {
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
     // the before() action automatically checks that the server is ready,
-    // starts a transaction, loads the ASM, checks to see if this endpoint is 
-    // permitted given the current state of the ASM, 
+    // starts a transaction, loads the ASM, and checks to see if this endpoint is 
+    // permitted given the current state of the ASM.
     ok(the_response, "Risk limit set");
     BigDecimal risk_limit = null;
     // see if a valid risk limit was passed in
@@ -86,8 +85,11 @@ public class RiskLimitForComparisonAudits extends AbstractDoSDashboardEndpoint {
       Main.LOGGER.info("attempt to set an invalid risk limit");
       invariantViolation(the_response, "Invalid risk limit specified");
     } else {
-      final DepartmentOfStateDashboard dosd = DepartmentOfStateDashboardQueries.get();
-      if (dosd != null) {
+      final DepartmentOfStateDashboard dosd = 
+          DepartmentOfStateDashboardQueries.get();
+      if (dosd == null) {
+        serverError(the_response, "could not get department of state dashboard"); 
+      } else {
         dosd.setRiskLimitForComparisonAudits(risk_limit);
         try {
           Persistence.saveOrUpdate(dosd);
@@ -95,11 +97,12 @@ public class RiskLimitForComparisonAudits extends AbstractDoSDashboardEndpoint {
         } catch (final PersistenceException e) {
           Main.LOGGER.error("unable to set risk limit for comparison audits: " + e);
         }
-      } else {
-        serverError(the_response, "could not get department of state dashboard"); 
       }
     } 
     return my_endpoint_result;
+    // the after() action automatically takes the appropriate transition on the
+    // state machine, saves it to the database, and finishes the endpoint 
+    // transaction.
   }
   
   /**
