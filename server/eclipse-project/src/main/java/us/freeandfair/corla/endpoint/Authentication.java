@@ -158,10 +158,10 @@ public final class Authentication {
   }
   
   /**
-   * Gets the authenticated county identifier for a request.
+   * Gets the authenticated county for a request.
    * 
    * @param the_request The request.
-   * @return the authenticated county identifier, or null if this session
+   * @return the authenticated county, or null if this session
    * is not authenticated as a county administrator.
    */
   public static County authenticatedCounty(final Request the_request) {

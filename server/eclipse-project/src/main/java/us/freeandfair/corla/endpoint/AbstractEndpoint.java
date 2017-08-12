@@ -245,7 +245,7 @@ public abstract class AbstractEndpoint implements Endpoint {
    * 
    * @param the_request The request.
    * @param the_type The authorization type.
-   * @return true if the session is appropriately authorized, false otherwise.
+   * @return true if the request is appropriately authorized, false otherwise.
    */
   //@ require the_session != null
   //@ require the_type != null
