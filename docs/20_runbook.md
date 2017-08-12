@@ -87,6 +87,11 @@ round of the RLA and provides that number to the County dashboard.
 
 Screenshot (SoS dash?) ---
 
+### Audit Ongoing Page
+
+This screen provides an overview of the audit in progress, both
+counties, and contests.
+
 ### Declaring a Full Hand Count
 
 Screenshot ---
