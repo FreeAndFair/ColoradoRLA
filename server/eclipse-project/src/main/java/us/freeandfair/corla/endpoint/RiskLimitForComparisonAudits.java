@@ -32,7 +32,7 @@ import us.freeandfair.corla.query.DepartmentOfStateDashboardQueries;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class RiskLimitForComparisonAudits extends AbstractEndpoint implements Endpoint {
+public class RiskLimitForComparisonAudits extends AbstractEndpoint {
   /**
    * The "risk limit" parameter.
    */

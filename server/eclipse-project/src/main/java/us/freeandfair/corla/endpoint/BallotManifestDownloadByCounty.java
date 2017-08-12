@@ -45,7 +45,7 @@ import us.freeandfair.corla.util.SparkHelper;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class BallotManifestDownloadByCounty extends AbstractEndpoint implements Endpoint {
+public class BallotManifestDownloadByCounty extends AbstractEndpoint {
   /**
    * {@inheritDoc}
    */

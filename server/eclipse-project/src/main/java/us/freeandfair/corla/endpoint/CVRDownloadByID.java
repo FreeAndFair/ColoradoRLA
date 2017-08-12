@@ -25,7 +25,7 @@ import us.freeandfair.corla.persistence.Persistence;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class CVRDownloadByID extends AbstractEndpoint implements Endpoint {
+public class CVRDownloadByID extends AbstractEndpoint {
   /**
    * {@inheritDoc}
    */

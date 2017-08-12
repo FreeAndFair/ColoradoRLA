@@ -23,7 +23,7 @@ import us.freeandfair.corla.model.Administrator.AdministratorType;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class AuthenticateCountyAdministrator extends AbstractEndpoint implements Endpoint {
+public class AuthenticateCountyAdministrator extends AbstractEndpoint {
   /**
    * {@inheritDoc}
    */

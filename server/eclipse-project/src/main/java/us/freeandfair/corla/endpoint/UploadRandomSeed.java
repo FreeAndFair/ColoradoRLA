@@ -30,7 +30,7 @@ import us.freeandfair.corla.query.DepartmentOfStateDashboardQueries;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class UploadRandomSeed extends AbstractEndpoint implements Endpoint {
+public class UploadRandomSeed extends AbstractEndpoint {
   /**
    * The "random seed" parameter.
    */

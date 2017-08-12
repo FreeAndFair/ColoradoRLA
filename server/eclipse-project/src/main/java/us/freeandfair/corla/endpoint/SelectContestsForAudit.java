@@ -31,7 +31,7 @@ import us.freeandfair.corla.query.DepartmentOfStateDashboardQueries;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class SelectContestsForAudit extends AbstractEndpoint implements Endpoint {
+public class SelectContestsForAudit extends AbstractEndpoint {
   /**
    * {@inheritDoc}
    */

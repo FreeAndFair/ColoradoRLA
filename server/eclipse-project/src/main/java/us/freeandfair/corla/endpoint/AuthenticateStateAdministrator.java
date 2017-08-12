@@ -26,7 +26,7 @@ import us.freeandfair.corla.model.Administrator.AdministratorType;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class AuthenticateStateAdministrator extends AbstractEndpoint implements Endpoint {
+public class AuthenticateStateAdministrator extends AbstractEndpoint {
   /**
    * {@inheritDoc}
    */
