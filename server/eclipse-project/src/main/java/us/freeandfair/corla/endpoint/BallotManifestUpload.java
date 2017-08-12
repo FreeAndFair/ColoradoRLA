@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.OptionalLong;
 
 import javax.persistence.PersistenceException;
-import javax.persistence.RollbackException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -47,10 +46,13 @@ import us.freeandfair.corla.Main;
 import us.freeandfair.corla.csv.BallotManifestParser;
 import us.freeandfair.corla.csv.ColoradoBallotManifestParser;
 import us.freeandfair.corla.model.BallotManifestInfo;
+import us.freeandfair.corla.model.County;
+import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.model.UploadedFile.FileType;
 import us.freeandfair.corla.model.UploadedFile.HashStatus;
 import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.query.CountyDashboardQueries;
 import us.freeandfair.corla.util.FileHelper;
 import us.freeandfair.corla.util.SparkHelper;
 
@@ -104,20 +106,17 @@ public class BallotManifestUpload extends AbstractEndpoint {
     UploadedFile result = null;
     
     try (FileInputStream is = new FileInputStream(the_file)) {
-      final boolean transaction = Persistence.beginTransaction();
+      // we're already in a transaction
       final Session session = Persistence.currentSession();
-      
       final Blob blob = session.getLobHelper().createBlob(is, the_file.length());
       result = new UploadedFile(the_timestamp, the_county, FileType.BALLOT_MANIFEST,
                                 the_hash, HashStatus.NOT_CHECKED, blob);
       Persistence.saveOrUpdate(result);
-      if (transaction) {
-        try {
-          Persistence.commitTransaction();
-        } catch (final RollbackException e) {
-          Persistence.rollbackTransaction();
-        }
-      }
+      // TODO: currently we have to commit this transaction here, because
+      // streaming a file to the database requires the file and its stream
+      // to actually stay in scope before the transaction commit;
+      // this will be remedied when we refactor uploading
+      Persistence.commitTransaction();
     } catch (final PersistenceException | IOException e) {
       Main.LOGGER.error("could not persist file of size " + the_file.length());
     } 
@@ -187,30 +186,44 @@ public class BallotManifestUpload extends AbstractEndpoint {
   }
 
   /**
+   * Updates the appropriate county dashboard to reflect a new 
+   * ballot manifest upload.
+   * @param the_response The response object (for error reporting).
+   * @param the_county_id The county ID.
+   * @param the_timestamp The timestamp.
+   */
+  private void updateCountyDashboard(final Response the_response, 
+                                     final Integer the_county_id, 
+                                     final Instant the_timestamp) {
+    final CountyDashboard cdb = CountyDashboardQueries.get(the_county_id);
+    if (cdb == null) {
+      serverError(the_response, "could not locate county dashboard");
+    } else {
+      cdb.setManifestUploadTimestamp(the_timestamp);
+      try {
+        Persistence.saveOrUpdate(cdb);
+      } catch (final PersistenceException e) {
+        serverError(the_response, "could not update county dashboard");
+      }
+    }
+  }
+  
+  /**
    * Parses an uploaded ballot manifest and attempts to persist it to the database.
    * 
+   * @param the_response The response (for error reporting).
+   * @param the_county_id The county identifier for this file.
    * @param the_info The upload information to use and update.
    */
   // the CSV parser can throw arbitrary runtime exceptions, which we must catch
   @SuppressWarnings({"PMD.AvoidCatchingGenericException", "PMD.AvoidCatchingNPE"})
-  private void parseAndPersistFile(final UploadInformation the_info) {
+  private void parseAndPersistFile(final Response the_response, 
+                                   final Integer the_county_id,
+                                   final UploadInformation the_info) {
     final String hash = the_info.my_form_fields.get("hash");
-    Integer county = null;
-    
-    try {
-      final String county_string = the_info.my_form_fields.get("county");
-      if (county_string == null || county_string.isEmpty()) {
-        county = -1; // we accept the upload anyway for the moment
-      } else {
-        county = Integer.parseInt(county_string);
-      }
-    } catch (final NumberFormatException e) {
-      // do nothing, this is a bad request
-    }
         
     if (hash == null || the_info.my_file == null) {
-      the_info.my_response_string = "Bad Request";
-      the_info.my_response_status = HttpStatus.BAD_REQUEST_400;
+      invariantViolation(the_response, "Bad Request");
       the_info.my_ok = false;
       return;
     }
@@ -218,7 +231,9 @@ public class BallotManifestUpload extends AbstractEndpoint {
     try (InputStream bmi_is = new FileInputStream(the_info.my_file)) {
       final InputStreamReader bmi_isr = new InputStreamReader(bmi_is, "UTF-8");
       final BallotManifestParser parser = 
-          new ColoradoBallotManifestParser(bmi_isr, the_info.my_timestamp);
+          new ColoradoBallotManifestParser(bmi_isr, 
+                                           the_info.my_timestamp,
+                                           the_county_id);
       if (parser.parse()) {
         Main.LOGGER.info(parser.parsedIDs().size() + 
             " ballot manifest records parsed from upload file");
@@ -227,19 +242,18 @@ public class BallotManifestUpload extends AbstractEndpoint {
           Main.LOGGER.info(count.getAsLong() + 
                            " uploaded ballot manifest records in storage");
         }
-        attemptFilePersistence(the_info.my_file, county, hash, 
+        updateCountyDashboard(the_response, the_county_id, the_info.my_timestamp);
+        attemptFilePersistence(the_info.my_file, the_county_id, hash, 
                                the_info.my_timestamp);          
       } else {
         Main.LOGGER.info("could not parse malformed ballot manifest file");
-        the_info.my_response_status = HttpStatus.UNPROCESSABLE_ENTITY_422;
+        badDataContents(the_response, "Malformed Ballot Manifest File");
         the_info.my_ok = false;
-        the_info.my_response_string = "Malformed Ballot Manifest File";
       }
     } catch (final RuntimeException | IOException e) {
       Main.LOGGER.info("could not parse malformed ballot manifest file: " + e);
+      badDataContents(the_response, "Malformed Ballot Manifest File");
       the_info.my_ok = false;
-      the_info.my_response_status = HttpStatus.UNPROCESSABLE_ENTITY_422;
-      the_info.my_response_string = "Malformed Ballot Manifest File";
     } 
   }
   
@@ -254,12 +268,19 @@ public class BallotManifestUpload extends AbstractEndpoint {
     info.my_timestamp = Instant.now();
     info.my_ok = true;
     
+    // we know we have county authorization, so let's find out which county
+    final County county = Authentication.authenticatedCounty(the_request);
+
+    if (county == null) {
+      unauthorized(the_response, "unauthorized administrator for ballot manifest upload");
+    }
+    
     handleUpload(the_request, info);
     
     // process the temp file, putting it in the database if persistence is enabled 
-    
+        
     if (info.my_ok) {
-      parseAndPersistFile(info);
+      parseAndPersistFile(the_response, county.identifier(), info);
     }
     
     if (info.my_file != null) {
@@ -274,8 +295,19 @@ public class BallotManifestUpload extends AbstractEndpoint {
       }
     }
 
+    // @todo kiniry Review this logic and its interrelationship to
+    // endpoint before filtering.
     the_response.status(info.my_response_status);
     return info.my_response_string;
+  }
+  
+  /**
+   * This endpoint requires county authorization.
+   * 
+   * @return COUNTY
+   */
+  public AuthorizationType requiredAuthorization() {
+    return AuthorizationType.COUNTY;
   }
   
   /**
@@ -287,7 +319,6 @@ public class BallotManifestUpload extends AbstractEndpoint {
     OptionalLong result = OptionalLong.empty();
     
     try {
-      Persistence.beginTransaction();
       final Session s = Persistence.currentSession();
       final CriteriaBuilder cb = s.getCriteriaBuilder();
       final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
@@ -295,7 +326,6 @@ public class BallotManifestUpload extends AbstractEndpoint {
       cq.select(cb.count(root));
       final TypedQuery<Long> query = s.createQuery(cq);
       result = OptionalLong.of(query.getSingleResult());
-      Persistence.commitTransaction();
     } catch (final PersistenceException e) {
       // ignore
     }

@@ -70,6 +70,8 @@ public final class DepartmentOfStateDashboardQueries {
           Main.LOGGER.error("could not create department of state dashboard");
           Persistence.rollbackTransaction();
         }
+      } else {
+        result = db;
       }
     } catch (final PersistenceException e) {
       Main.LOGGER.error("could not query database for department of state dashboard");

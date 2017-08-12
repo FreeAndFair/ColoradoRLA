@@ -16,12 +16,17 @@
 
 package us.freeandfair.corla.endpoint;
 
+import javax.persistence.PersistenceException;
+import javax.persistence.RollbackException;
+
 import org.eclipse.jetty.http.HttpStatus;
 
 import spark.Request;
 import spark.Response;
+import spark.Spark;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.model.Administrator.AdministratorType;
 import us.freeandfair.corla.persistence.Persistence;
 
 /**
@@ -31,6 +36,7 @@ import us.freeandfair.corla.persistence.Persistence;
  * 
  * @trace endpoint
  * @author Joseph R. Kiniry <kiniry@freeandfair.us>
+ * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
@@ -39,7 +45,15 @@ public abstract class AbstractEndpoint implements Endpoint {
    * The endpoint result for the ongoing transaction.
    */
   protected String my_endpoint_result;
-
+  
+  /**
+   * Halts the endpoint execution by ending the request and returning the
+   * most recently set response code and endpoint result.
+   */
+  protected final void halt(final Response the_response) {
+    Spark.halt(the_response.status(), my_endpoint_result);
+  }
+  
   /**
    * Indicate that an internal server error has taken place.
    */
@@ -83,6 +97,7 @@ public abstract class AbstractEndpoint implements Endpoint {
   public void unauthorized(final Response the_response, final String the_log_message) {
     the_response.status(HttpStatus.UNAUTHORIZED_401);
     Main.LOGGER.error("unauthorized access 401: " + the_log_message);
+    // TODO: should we halt() the endpoint execution here and simply send the response
     my_endpoint_result = the_log_message;
   }
 
@@ -144,14 +159,17 @@ public abstract class AbstractEndpoint implements Endpoint {
     // Presume everything goes ok.
     ok(the_response);
 
-    // Check to see if the server is operating properly.
-    if (!Persistence.hasDB()) {
+    // Start a transaction, if the database is functioning; otherwise abort
+    if (Persistence.hasDB()) {
+      Persistence.beginTransaction(); 
+    } else {
       serverError(the_response, "no database");
-    } else if (Persistence.isTransactionRunning()) {
-      serverUnavailable(the_response, "a long transaction is running");
-    }
+      halt(the_response);
+    } 
+
     // Check to see if the requested endpoint is permitted from the current
-    // state of the server.
+    // state of the server, and find out what kind of admin is allowed to
+    // request it
     // else if (false) {
     //   illegalTransition(the_response, "endpoint not permitted by ASM");
     //   return;
@@ -159,21 +177,55 @@ public abstract class AbstractEndpoint implements Endpoint {
 
     // This access is well-formed and permitted by the state machine, so log the
     // use of the endpoint.
-    Main.LOGGER.info("checking authentication on " + the_request);
+    Main.LOGGER.info("checking for authorization on " + the_request);
 
     // If the client is unauthorized, then indicate such and redirect.
 
-    // If we have an authentication cookie, then check if the user is
-    // authenticated.
-    if (!Authentication.authenticate(the_request)) {
+    // Check that the user is authorized for this endpoint
+    if (!checkAuthorization(the_request, requiredAuthorization())) {
       unauthorized(the_response,
-                   "client not authenticated to perform this action");
+                   "client not authorized to perform this action");
+      halt(the_response);
     }
     
     // Validate the parameters of the request.
     if (!validateParameters(the_request)) {
       dataNotFound(the_response, "parameter validation failed");
+      halt(the_response);
     }
+  } 
+  
+  /**
+   * The after filter for this endpoint. By default, it attempts to commit 
+   * any open transaction (this makes writing endpoint code more straightforward,
+   * as the vast majority of endpoints will never have to deal with transactions
+   * themselves).
+   */
+  public void after(final Request the_request, final Response the_response) {
+    if (Persistence.isTransactionRunning()) {
+      try {
+        Persistence.commitTransaction();
+      } catch (final RollbackException e) {
+        // this is an internal server error because we don't know what didn't
+        // get committed
+        serverError(the_response, 
+                    "could not commit changes to persistent storage");
+        halt(the_response);
+        try {
+          Persistence.rollbackTransaction();
+        } catch (final PersistenceException ex) {
+          Main.LOGGER.error("could not roll back failed transaction: " + ex.getMessage());
+        }
+      }
+    }
+  }
+  
+  /**
+   * @return the type of authorization required to use this endpoint.
+   * The default is NONE.
+   */
+  public AuthorizationType requiredAuthorization() {
+    return AuthorizationType.NONE;
   }
   
   /**
@@ -185,5 +237,42 @@ public abstract class AbstractEndpoint implements Endpoint {
    */
   protected boolean validateParameters(final Request the_request) {
     return true;
+  }
+  
+  /**
+   * Checks to see that the specified request satisfies the specified
+   * authorization type.
+   * 
+   * @param the_request The request.
+   * @param the_type The authorization type.
+   * @return true if the request is appropriately authorized, false otherwise.
+   */
+  //@ require the_session != null
+  //@ require the_type != null
+  public static boolean checkAuthorization(final Request the_request, 
+                                           final AuthorizationType the_type) {
+    boolean result = true;
+    final boolean state = 
+        Authentication.isAuthenticatedAs(the_request, AdministratorType.STATE);
+    final boolean county =
+        Authentication.isAuthenticatedAs(the_request, AdministratorType.COUNTY);
+
+    switch (the_type) {
+      case STATE: 
+        result = state;
+        break;
+      
+      case COUNTY:
+        result = county;
+        break;
+          
+      case EITHER:
+        result = county || state;
+        break;
+          
+      default:
+    }
+    
+    return result;
   }
 }

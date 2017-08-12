@@ -251,8 +251,6 @@ public final class Persistence {
    * Begins a long-lived transaction in this thread that will span several 
    * operations. If such a transaction is running, other persistence
    * operations (such as saveEntity, removeEntity, etc.) will occur within it. 
-   * If a long-lived transaction is already running, it is returned by this
-   * method.
    * 
    * @return true if a new transaction is started, false if a transaction was
    * already running.
@@ -286,7 +284,7 @@ public final class Persistence {
   }
   
   /**
-   * Commits a long-lived transaction.
+   * Commits the active long-lived transaction.
    * 
    * @exception IllegalStateException if no such transaction is running.
    * @exception PersistenceException if there is a problem with persistent storage.
@@ -313,7 +311,7 @@ public final class Persistence {
   }
   
   /**
-   * Rolls back a long lived transaction.
+   * Rolls back the active long lived transaction.
    * 
    * @exception IllegalStateException if no such transaction is running.
    * @exception PersistenceException if there is a problem with persistent storage.

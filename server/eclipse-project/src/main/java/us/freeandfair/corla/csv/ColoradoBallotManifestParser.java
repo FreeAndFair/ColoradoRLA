@@ -26,9 +26,7 @@ import org.apache.commons.csv.CSVRecord;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.BallotManifestInfo;
-import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.CountyQueries;
 
 /**
  * @description <description>
@@ -36,11 +34,13 @@ import us.freeandfair.corla.query.CountyQueries;
  * @bon OPTIONAL_BON_TYPENAME
  */
 public class ColoradoBallotManifestParser implements BallotManifestParser {
-  /**
-   * The column containing the county ID.
-   */
-  private static final int COUNTY_ID_COLUMN = 0;
-  
+//  TODO: if we want to validate county IDs against the county strings in
+//        the file, we'll need this later
+//  /**
+//   * The column containing the county ID.
+//   */
+//  private static final int COUNTY_ID_COLUMN = 0;
+ 
   /**
    * The column containing the scanner ID.
    */
@@ -87,27 +87,42 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
   private final Instant my_timestamp;
   
   /**
+   * The county ID to apply to the parsed manifest lines.
+   */
+  private final Integer my_county_id;
+  
+  /**
    * Construct a new Colorado ballot manifest parser using the specified Reader.
    * 
    * @param the_reader The reader from which to read the CSV to parse.
+   * @param the_timestamp The timestamp to apply to the parsed records.
+   * @param the_county_id The county ID for the parsed records.
    * @exception IOException if an error occurs while constructing the parser.
    */
-  public ColoradoBallotManifestParser(final Reader the_reader, final Instant the_timestamp) 
+  public ColoradoBallotManifestParser(final Reader the_reader, 
+                                      final Instant the_timestamp,
+                                      final Integer the_county_id) 
       throws IOException {
     my_parser = new CSVParser(the_reader, CSVFormat.DEFAULT);
     my_timestamp = the_timestamp;
+    my_county_id = the_county_id;
   }
   
   /**
    * Construct a new Colorado ballot manifest parser using the specified String.
    * 
    * @param the_string The CSV string to parse.
+   * @param the_timestamp The timestamp to apply to the parsed records.
+   * @param the_county_id The county ID for the parsed records.
    * @exception IOException if an error occurs while constructing the parser.
    */
-  public ColoradoBallotManifestParser(final String the_string, final Instant the_timestamp)
+  public ColoradoBallotManifestParser(final String the_string, 
+                                      final Instant the_timestamp,
+                                      final Integer the_county_id)
       throws IOException {
     my_parser = CSVParser.parse(the_string, CSVFormat.DEFAULT);
     my_timestamp = the_timestamp;
+    my_county_id = the_county_id;
   }
   
   /**
@@ -122,19 +137,17 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
     BallotManifestInfo result = null;
     
     try {
-      // obtain the county from the ID or name in the line
-      final County c = CountyQueries.fromString(the_line.get(COUNTY_ID_COLUMN));
-      if (c != null) {
-        result = 
-            Persistence.get(new BallotManifestInfo(the_timestamp, 
-                                                   c.identifier(),
-                                                   the_line.get(SCANNER_ID_COLUMN),
-                                                   the_line.get(BATCH_NUMBER_COLUMN),
-                                                   Integer.parseInt(the_line.
-                                                                    get(NUM_BALLOTS_COLUMN)),
-                                                   the_line.get(BATCH_LOCATION_COLUMN)),
-                            BallotManifestInfo.class);
-      }
+      // TODO: should we check for mismatched county IDs between the
+      // one we were passed at construction and the county name string 
+      // in the file?
+      result = new BallotManifestInfo(the_timestamp, 
+                                      my_county_id,
+                                      the_line.get(SCANNER_ID_COLUMN),
+                                      the_line.get(BATCH_NUMBER_COLUMN),
+                                      Integer.parseInt(the_line.
+                                                       get(NUM_BALLOTS_COLUMN)),
+                                      the_line.get(BATCH_LOCATION_COLUMN));
+      Persistence.saveOrUpdate(result);
     } catch (final NumberFormatException | ArrayIndexOutOfBoundsException e) {
       // return the null result
     }
