@@ -25,7 +25,7 @@ System Documentation
 ====================
 
 Documentation about this project and the Colorado RLA system includes:
-* a [tutorial](docs/20_tutorial.md),
+* a [run book](docs/20_runbook.md) showing how to run the system,
 * a [description of our development process and methodology](docs/35_methodology.md),
 * a [developer document](docs/25_developer.md) that contains our
   developer instructions, including the project history, technologies
