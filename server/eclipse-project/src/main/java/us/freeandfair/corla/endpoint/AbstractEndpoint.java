@@ -163,14 +163,11 @@ public abstract class AbstractEndpoint implements Endpoint {
 
     // If the client is unauthorized, then indicate such and redirect.
 
-    // If there is no authentication cookie in the request at all, then simply
-    // redirect to the top-level authentication endpoint.
-    // @todo kiniry Add once we have cookies turned on.
-
     // If we have an authentication cookie, then check if the user is
     // authenticated.
     if (!Authentication.authenticate(the_request)) {
-      unauthorized(the_response, "client not authenticated to perform this action");
+      unauthorized(the_response,
+                   "client not authenticated to perform this action");
     }
     
     // Validate the parameters of the request.
