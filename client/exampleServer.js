@@ -51,5 +51,7 @@ route('get', '/cvr', () => ok(castVoteRecords));
 
 route('get', '/contest', () => ok(contests));
 
+route('post', '/auth-state-admin', () => ok('Authenticated'));
+
 
 app.listen(4000);
