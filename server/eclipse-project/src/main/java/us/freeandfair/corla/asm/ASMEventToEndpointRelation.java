@@ -32,7 +32,8 @@ import us.freeandfair.corla.util.Pair;
 @SuppressWarnings("PMD.TooManyStaticImports")
 public class ASMEventToEndpointRelation {
   /**
-   * A constant encoding that we have not yet implemented a particular endpoint.
+   * A constant encoding that we have not yet implemented a particular
+   * endpoint.
    */
   public static final String UNIMPLEMENTED = "UNIMPLEMENTED";
   
@@ -43,8 +44,8 @@ public class ASMEventToEndpointRelation {
       new HashSet<Pair<ASMEvent, String>>();
    
   /**
-   * Create an instance of this relation, which contains the full set of public 
-   * ASM events and Endpoints.
+   * Create an instance of this relation, which contains the full set
+   * of public ASM events and Endpoints.
    * @design kiniry This should probably be refactored as a singleton.
    */
   public ASMEventToEndpointRelation() {

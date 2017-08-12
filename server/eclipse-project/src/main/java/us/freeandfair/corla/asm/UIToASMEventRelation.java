@@ -6,7 +6,8 @@
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
  * @author Joe Kiniry <kiniry@freeandfair.us>
- * @description A system to assist in conducting statewide risk-limiting audits.
+ * @description A system to assist in conducting statewide
+ * risk-limiting audits.
  */
 
 package us.freeandfair.corla.asm;
@@ -36,8 +37,8 @@ public class UIToASMEventRelation {
       new HashSet<Pair<UIEvent, ASMEvent>>();
   
   /**
-   * Create an instance of this relation, which contains the full set of public 
-   * inbound UI and ASM events.
+   * Create an instance of this relation, which contains the full set
+   * of public inbound UI and ASM events.
    * @design kiniry This should probably be refactored as a singleton.
    */
   public UIToASMEventRelation() {

@@ -6,7 +6,8 @@
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
  * @author Joe Kiniry <kiniry@freeandfair.us>
- * @description A system to assist in conducting statewide risk-limiting audits.
+ * @description A system to assist in conducting statewide
+ * risk-limiting audits.
  */
 
 package us.freeandfair.corla.asm;

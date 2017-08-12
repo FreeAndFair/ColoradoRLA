@@ -6,7 +6,8 @@
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
  * @author Joe Kiniry <kiniry@freeandfair.us>
- * @description A system to assist in conducting statewide risk-limiting audits.
+ * @description A system to assist in conducting statewide
+ * risk-limiting audits.
  */
 
 package us.freeandfair.corla.asm;
@@ -63,14 +64,14 @@ public abstract class AbstractStateMachine implements Serializable {
       new UIToASMEventRelation();
   
   /**
-   * The current state of this ASM. Initialized to the initial state provided
-   * in the constructor.
+   * The current state of this ASM. Initialized to the initial state
+   * provided in the constructor.
    */
   protected ASMState my_current_state;
   
   /**
-   * The identity of this ASM. The structure of this string is child class
-   * implementation dependent.
+   * The identity of this ASM. The structure of this string is child
+   * class implementation dependent.
    */
   protected String my_identity;
   
@@ -80,9 +81,10 @@ public abstract class AbstractStateMachine implements Serializable {
    * 
    * @param the_states the states of the new ASM.
    * @param the_events the events of the new ASM.
-   * @param the_transition_function the transition function of the new ASM. This
-   * function, represented as a set of ASMTransitionFunction elements, need only
-   * specify legal transitions; all unspecified transitions are considered illegal.
+   * @param the_transition_function the transition function of the new
+   * ASM. This function, represented as a set of ASMTransitionFunction
+   * elements, need only specify legal transitions; all unspecified
+   * transitions are considered illegal.
    * @param the_initial_state The initial state of the new ASM.
    * @param the_final_states The final states of the new ASM.
    * @param the_identity The identity of the new ASM.
@@ -125,9 +127,9 @@ public abstract class AbstractStateMachine implements Serializable {
   }
   
   /**
-   * Sets the current state. This method ignores any constraints imposed
-   * by the current state, and should only be used as part of reconstructing
-   * an ASM at a particular state.
+   * Sets the current state. This method ignores any constraints
+   * imposed by the current state, and should only be used as part of
+   * reconstructing an ASM at a particular state.
    * 
    * @param the_state The new state.
    */
@@ -153,8 +155,8 @@ public abstract class AbstractStateMachine implements Serializable {
   }
   
   /**
-   * @return the UI events enabled in this ASM.  I.e., which UI events correspond
-   * to those states reachable from the current state?
+   * @return the UI events enabled in this ASM.  I.e., which UI events
+   * correspond to those states reachable from the current state?
    */
   public Set<UIEvent> enabledUIEvents() {
     final Set<ASMEvent> asm_events_enabled = enabledASMEvents();
@@ -167,8 +169,9 @@ public abstract class AbstractStateMachine implements Serializable {
   }
   
   /**
-   * @return the transitions of this ASM that are enabled. I.e., which states are
-   * reachable from the current state, given any possible event?
+   * @return the transitions of this ASM that are enabled. I.e., which
+   * states are reachable from the current state, given any possible
+   * event?
    * @trace asm.enabled_events
    */
   public Set<ASMEvent> enabledASMEvents() {
@@ -182,12 +185,12 @@ public abstract class AbstractStateMachine implements Serializable {
   }
   
   /**
-   * Transition to the next state of this ASM given the provided transition and
-   * its current state.
+   * Transition to the next state of this ASM given the provided
+   * transition and its current state.
    * @param the_transition the transition that is triggered.
    * @return the new current state of the ASM after the transition.
-   * @throws IllegalStateException if this ASM cannot take a step given the provided
-   * transition.
+   * @throws IllegalStateException if this ASM cannot take a step
+   * given the provided transition.
    */
   public ASMState stepTransition(final ASMTransition the_transition)
       throws IllegalStateException {
@@ -206,11 +209,11 @@ public abstract class AbstractStateMachine implements Serializable {
   }
   
   /**
-   * Transition to the next state of this ASM given the provided event and its
-   * current state.
+   * Transition to the next state of this ASM given the provided event
+   * and its current state.
    * @return the next state given the specified event and input.
-   * @throws IllegalStateException is this ASM cannot transition given the provided
-   * event.
+   * @throws IllegalStateException is this ASM cannot transition given
+   * the provided event.
    */
   public ASMState stepEvent(final ASMEvent the_event)
       throws IllegalStateException {
@@ -222,7 +225,6 @@ public abstract class AbstractStateMachine implements Serializable {
         break;
       }
     }
-
     if (result == null) {
       Main.LOGGER.error("ASM event " + the_event + 
                         " failed from state " + my_current_state); 
@@ -236,13 +238,15 @@ public abstract class AbstractStateMachine implements Serializable {
   }
   
   /**
-   * Converts a list of ASMTransitionFunctions to a set of ASMTransitions.
+   * Converts a list of ASMTransitionFunctions to a set of
+   * ASMTransitions.
    * 
    * @param the set of ASMTransitionFunctions.
    * @return the set of ASMTransitions for the specified list of 
    * ASMTransitionFunctions.
    */
-  public static Set<ASMTransition> transitionsFor(final List<ASMTransitionFunction> the_list) {
+  public static Set<ASMTransition>
+    transitionsFor(final List<ASMTransitionFunction> the_list) {
     final Set<ASMTransition> result = new HashSet<ASMTransition>();
     for (final ASMTransitionFunction atf : the_list) {
       result.add(atf.value());
