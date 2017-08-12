@@ -2597,7 +2597,8 @@ BEGIN
 %%%
 %%% \todokiniry{Explain ASM definition.}
   asm: TYPE =
-    [# states: set[asm_state],
+    [# identity: string,
+       states: set[asm_state],
        events: set[asm_event],
        transitions: asm_transition_function,
        initial_state: asm_state,
@@ -2672,9 +2673,10 @@ BEGIN
 
 %%% As there is only a single Department of State, then our system has
 %%% only a single instance of this ASM.
-
+% @trace us.freeandfair.corla.Main.COUNTY_DASHBOARD_ASMS
   dos_dashboard_asm: asm =
-     (# states := dos_states,
+     (# identity := "DOS",
+        states := dos_states,
         events := dos_events,
         transitions := dos_transitions,
         initial_state := dos_initial_state,
@@ -2743,11 +2745,13 @@ BEGIN
 %%% Each state has several counties, and each county has an ASM. Thus
 %%% there is a relation between counties and county dashboard ASMs.
   county_dashboard_asm: asm =
-     (# states := county_dashboard_states,
+     (# identity := "county ID",
+        states := county_dashboard_states,
         events := county_dashboard_events,
         transitions := county_dashboard_transitions,
         initial_state := county_dashboard_initial_state,
         final_states := county_dashboard_final_states #)
+% @trace us.freeandfair.corla.Main.COUNTY_DASHBOARD_ASMS
   county_to_county_dashboard_asm_relation: TYPE =
     pred[[county, asm]]
 %%% Likewise, there is a similar relation between counties and audit board
@@ -2793,11 +2797,13 @@ BEGIN
 % ENDTABLE
 
   audit_board_dashboard_asm: asm =
-     (# states := audit_board_dashboard_states,
+     (# identity := "county ID",
+        states := audit_board_dashboard_states,
         events := audit_board_dashboard_events,
         transitions := audit_board_dashboard_transitions,
         initial_state := audit_board_dashboard_initial_state,
         final_states := audit_board_dashboard_final_states #)
+% @trace us.freeandfair.corla.Main.AUDIT_BOARD_DASHBOARD_ASMS
   county_to_audit_board_dashboard_asm_relation: TYPE =
     pred[[county, asm]]
 
