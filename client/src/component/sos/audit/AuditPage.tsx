@@ -1,13 +1,12 @@
 import * as React from 'react';
 
-import { NumericInput, Radio, RadioGroup } from '@blueprintjs/core';
+import { NumericInput } from '@blueprintjs/core';
 
 import Nav from '../Nav';
 
 import ElectionDateForm from './ElectionDateForm';
+import ElectionTypeForm from './ElectionTypeForm';
 
-
-const nop = () => ({});
 
 const Breadcrumb = () => (
     <ul className='pt-breadcrumbs'>
@@ -23,17 +22,6 @@ const Breadcrumb = () => (
         </li>
     </ul>
 );
-
-const ElectionTypeForm = () => {
-    return (
-        <div>
-            <RadioGroup onChange={ nop } label='Election Type'>
-                <Radio label='Coordinated Election' value='coordinated' />
-                <Radio label='Primary Election' value='primary' />
-            </RadioGroup>
-        </div>
-    );
-};
 
 const RiskLimitForm = () => {
     return (
