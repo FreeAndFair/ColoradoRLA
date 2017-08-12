@@ -2849,12 +2849,12 @@ BEGIN
 %%% We specify the content of data sent to/from the server either with
 %%% a specification of a URL parameter-based communication or using a
 %%% JSON object. We do not wish to precisely specify the JSON, as
-%%% encoding is non-unique due to the existenxce of semantically
+%%% encoding is non-unique due to the existence of semantically
 %%% equivalent encodings (as with any serialization technique) and
 %%% across libraries. Instead, we specify data-in-transit implicitly
 %%% via the function signatures in the theories above that focus on
 %%% the endpoint callback (the various \texttt{dashboard} theories)
-%%% and we name the semantially relevant fields using a list of
+%%% and we name the semantically relevant fields using a list of
 %%% strings using the \texttt{json\_spec} type.
   json_spec: TYPE = list[string]
 %%% The \texttt{nothing} constant specifies that no content is
@@ -2888,13 +2888,13 @@ BEGIN
 %%% \texttt{data\_parsed}.
     (: "ballot_manifest-status", "cvr-status" :)
 %%% There are several possible cases where a client can make an
-%%% inappropriate call to the server. Our client will be guarnateed to
-%%% never make sure a call, but we cannot presume that only our client
+%%% inappropriate call to the server. Our client will be guaranteed to
+%%% never make such a call, but we cannot presume that only our client
 %%% will be communicating with the server, as the server will be
 %%% publicly accessible on the internet. We call these behaviors of
 %%% the server ``exceptional behavior''. All responses to exceptional
-%%% behavior come in the form of HTTP client error (\texttt{3xx}) or
-%%% server error (\texttt{4xx}) response codes.
+%%% behavior come in the form of HTTP client error (\texttt{4xx}) or
+%%% server error (\texttt{5xx}) response codes.
   http_response_code: TYPE = {
     OK_200,
     BAD_REQUEST_400,
@@ -2925,12 +2925,12 @@ BEGIN
 %%% for example, if the Election Management System used to export the
 %%% file has a bug, if the file is improperly edited by someone, or if
 %%% there is a bug in our parser. In this situation, the server will
-%%% respond with a \texttt{UNPROCESSABLE\_ENTITY\_422}
-%%% response.
+%%% respond with ab \texttt{UNPROCESSABLE\_ENTITY\_422} response.
 %%%
-%%% \item Alternatively, if the file is of the wrong type (i.e., a PDF
-%%% was uploaded when the server expected a CSV file), or if the
-%%% uploaded file is too large, then the server will respond with a
+%%% \item \emph{(This item is a potential future feature.)}
+%%% Alternatively, if the file is of the wrong type (i.e., a PDF was
+%%% uploaded when the server expected a CSV file), or if the uploaded
+%%% file is too large, then the server will respond with a
 %%% \texttt{UNSUPPORTED\_MEDIA\_TYPE\_415} message.
 %%%
 %%% \item If the client is unauthenticated, or if authentication
@@ -2938,14 +2938,15 @@ BEGIN
 %%% \texttt{UNAUTHORIZED\_401} response.
 %%%
 %%% \item If some element of a request is incorrect then the server
-%%% responds with a \texttt{BAD\_REQUEST\_400} messages. In particular,
+%%% responds with a \texttt{BAD\_REQUEST\_400} message. In particular,
 %%% if the digest uploaded with a ballot manifest or a CVR file is
 %%% incorrect, then the server will store the data and respond with
 %%% this message.
 %%%
 %%% \item Finally, if the endpoint called is improper given the state
-%%% that the server is in, then the server will respond with a
-%%% \texttt{FORBIDDEN\_403} message. This happens only when an
+%%% that the server is in---i.e., if calling the given endpoint
+%%% implies an illegal state transition---then the server will respond
+%%% with a \texttt{FORBIDDEN\_403} message. This happens only when an
 %%% authenticated client tried to violate the state machine of the
 %%% server, and will either indicate a bug in our client code or
 %%% malicious or experimental behavior on the part of some
