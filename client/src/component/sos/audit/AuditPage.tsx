@@ -1,11 +1,10 @@
 import * as React from 'react';
 
-import { NumericInput } from '@blueprintjs/core';
-
 import Nav from '../Nav';
 
 import ElectionDateForm from './ElectionDateForm';
 import ElectionTypeForm from './ElectionTypeForm';
+import RiskLimitForm from './RiskLimitForm';
 
 
 const Breadcrumb = () => (
@@ -22,25 +21,6 @@ const Breadcrumb = () => (
         </li>
     </ul>
 );
-
-const RiskLimitForm = () => {
-    return (
-        <div>
-            <div>
-                <label>
-                    Ballot Polling Audits
-                    <NumericInput />
-                </label>
-            </div>
-            <div>
-                <label>
-                    Comparison Audits
-                    <NumericInput />
-                </label>
-            </div>
-        </div>
-    );
-};
 
 const AuditPage = ({ saveAndNext }: any) => {
     return (
@@ -64,6 +44,7 @@ const AuditPage = ({ saveAndNext }: any) => {
             <div>
                 Once the election has started, this information will not be able to be changed.
             </div>
+
             <button onClick={ saveAndNext } className='pt-button pt-intent-primary'>
                 Save
             </button>
