@@ -1,0 +1,1 @@
+type Dashboard = 'sos' | 'county';
