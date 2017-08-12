@@ -18,8 +18,10 @@ import spark.Request;
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.Administrator;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
+import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.AdministratorQueries;
+import us.freeandfair.corla.query.CountyQueries;
 
 /**
  * Authentication tasks used by many endpoints.
@@ -148,6 +150,29 @@ public final class Authentication {
           the_request.session().removeAttribute(ADMIN);
           Main.LOGGER.info("User " + admin.username() + " was not of expected " +
                            "type " + the_type);
+        }
+      }
+    }
+    
+    return result;
+  }
+  
+  /**
+   * Gets the authenticated county identifier for a request.
+   * 
+   * @param the_request The request.
+   * @return the authenticated county identifier, or null if this session
+   * is not authenticated as a county administrator.
+   */
+  public static Integer authenticatedCountyID(final Request the_request) {
+    Integer result = null;
+    
+    if (isAuthenticatedAs(the_request, AdministratorType.COUNTY)) {
+      final Administrator admin = (Administrator) the_request.attribute(ADMIN);
+      if (admin != null) {
+        final County c = CountyQueries.forAdministrator(admin);
+        if (c != null) {
+          result = c.identifier();
         }
       }
     }

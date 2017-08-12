@@ -146,10 +146,23 @@ public class AuditBoardDashboard extends AbstractEntity implements Serializable 
     if (duplicate_check.size() < the_cvrs_to_audit.size()) {
       throw new IllegalArgumentException("duplicate elements in audit cvr list");
     }
+    if (the_cvrs_to_audit.contains(null)) {
+      throw new IllegalArgumentException("null elements in audit cvr list");
+    }
     my_cvrs_to_audit = new ArrayList<Long>(the_cvrs_to_audit);
     my_submitted_audit_cvrs.clear();
+    for (int i = 0; i < my_cvrs_to_audit.size(); i++) {
+      my_submitted_audit_cvrs.add(null);
+    }
   }
-  
+
+  /**
+   * @return the list of CVR IDs to audit.
+   */
+  public List<Long> cvrsToAudit() {
+    return Collections.unmodifiableList(my_cvrs_to_audit);
+  }
+
   /**
    * Submit an audit CVR for a CVR under audit.
    * 
@@ -178,5 +191,15 @@ public class AuditBoardDashboard extends AbstractEntity implements Serializable 
     } 
 
     return result;
+  }
+  
+  /**
+   * @return the list of audit CVRs submitted. The result will contain
+   * a null value for each element in the cvrsToAudit() list where there
+   * has been no audit CVR submitted. Thus, most computations on this list
+   * will use the sublist preceding the first null value.
+   */
+  public List<Long> submittedAuditCVRs() {
+    return Collections.unmodifiableList(my_submitted_audit_cvrs);
   }
 }

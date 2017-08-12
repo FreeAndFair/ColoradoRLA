@@ -34,6 +34,7 @@ import us.freeandfair.corla.model.Choice;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.query.CountyQueries;
 
 /**
  * @description <description>
@@ -99,7 +100,7 @@ public class DominionCVRExportParser implements CVRExportParser {
   /**
    * The county whose CVRs we are parsing.
    */
-  private final County my_county;
+  private final Integer my_county_id;
   
   /**
    * The timestamp to apply to the parsed CVRs.
@@ -111,14 +112,14 @@ public class DominionCVRExportParser implements CVRExportParser {
    * for CVRs provided by the specified county.
    * 
    * @param the_reader The reader from which to read the CSV to parse.
-   * @param the_county The county whose CVRs are to be parsed.
+   * @param the_county_id The county whose CVRs are to be parsed.
    * @exception IOException if an error occurs while constructing the parser.
    */
-  public DominionCVRExportParser(final Reader the_reader, final County the_county,
+  public DominionCVRExportParser(final Reader the_reader, final Integer the_county_id,
                                  final Instant the_timestamp) 
       throws IOException {
     my_parser = new CSVParser(the_reader, CSVFormat.DEFAULT);
-    my_county = the_county;
+    my_county_id = the_county_id;
     my_timestamp = the_timestamp;
   }
   
@@ -127,14 +128,14 @@ public class DominionCVRExportParser implements CVRExportParser {
    * CSV string, for CVRs provided by the specified county.
    * 
    * @param the_string The CSV string to parse.
-   * @param the_county The county whose CVRs are to be parsed.
+   * @param the_county_id The county whose CVRs are to be parsed.
    * @exception IOException if an error occurs while constructing the parser.
    */
-  public DominionCVRExportParser(final String the_string, final County the_county,
+  public DominionCVRExportParser(final String the_string, final Integer the_county_id,
                                  final Instant the_timestamp)
       throws IOException {
     my_parser = CSVParser.parse(the_string, CSVFormat.DEFAULT);
-    my_county = the_county;
+    my_county_id = the_county_id;
     my_timestamp = the_timestamp;
   }
   
@@ -272,7 +273,7 @@ public class DominionCVRExportParser implements CVRExportParser {
       
       final CastVoteRecord new_cvr = 
           new CastVoteRecord(RecordType.UPLOADED, 
-                             the_timestamp, my_county.identifier(), 
+                             the_timestamp, my_county_id, 
                              tabulator_id, batch_id, record_id, 
                              imprinted_id, ballot_type, 
                              contest_info);
@@ -358,8 +359,16 @@ public class DominionCVRExportParser implements CVRExportParser {
     
     if (my_parse_success) {
       // add the contests to the county we're working with  
-      my_county.contests().addAll(my_contests);
-      Persistence.saveOrUpdate(my_county);
+      final County county = CountyQueries.byID(my_county_id);
+      if (county == null) {
+        // oops, we somehow parsed CVRs for a nonexistent county
+        // (this should really never happen if this class is called
+        // by the appropriate endpoint)
+        my_parse_success = false;
+      } else {
+        county.contests().addAll(my_contests);
+        Persistence.saveOrUpdate(county);
+      }
     } else {
       abort();
     }

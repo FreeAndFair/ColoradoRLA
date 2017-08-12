@@ -53,13 +53,26 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
    * The timestamp of the most recent set of uploaded CVRs.
    * 
    * @design This is how we are currently linking the dashboard with the most
-   * recently uploaded set of CVRs. Each uploaded CVR file is assigned a
+   * recently uploaded set of CVRs. Each uploaded file is assigned a
    * timestamp, and it seems safe to assume that the same county won't
    * upload two CVR files in the same nanosecond. This is therefore far more
    * efficient that maintaining a list of all the uploaded CVRs in the database,
    * since the query to obtain them when needed is straightforward.
    */
   private Instant my_cvr_upload_timestamp;
+  
+  /**
+   * The timestamp of the most recent uploaded ballot manifest. 
+   * 
+   * @design This is how we are currently linking the dashboard with the most
+   * recently uploaded ballot manifest file. Each uploaded file is assigned a
+   * timestamp, and it seems safe to assume that the same county won't
+   * upload two ballot manifest files in the same nanosecond. This is therefore 
+   * far more efficient than maintaining a list of all the uploaded ballot
+   * manifests in the database, since the query to obtain them when needed is 
+   * straightforward.
+   */
+  private Instant my_manifest_upload_timestamp;
   
   /**
    * Constructs an empty county dashboard, solely for persistence.
@@ -117,10 +130,27 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
   /**
    * Sets a new CVR upload timestamp, replacing the previous one.
    * 
-   * @param the_cvr_upload_timestamp The new upload timestamp.
+   * @param the_timestamp The new upload timestamp.
    */
-  public void setCVRUploadTimestamp(final Instant the_cvr_upload_timestamp) {
-    my_cvr_upload_timestamp = the_cvr_upload_timestamp;
+  public void setCVRUploadTimestamp(final Instant the_timestamp) {
+    my_cvr_upload_timestamp = the_timestamp;
+  }  
+  
+  /**
+   * @return the ballot manifest upload timestamp. A return value of null means
+   * that no ballot manifest has been uploaded for this county.
+   */
+  public Instant manifestUploadTimestamp() {
+    return my_manifest_upload_timestamp;
+  }
+  
+  /**
+   * Sets a new CVR upload timestamp, replacing the previous one.
+   * 
+   * @param the_timestamp The new upload timestamp.
+   */
+  public void setManifestUploadTimestamp(final Instant the_timestamp) {
+    my_manifest_upload_timestamp = the_timestamp;
   }  
   
   /**

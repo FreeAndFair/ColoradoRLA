@@ -115,7 +115,6 @@ public class ACVRUpload extends AbstractEndpoint {
     OptionalLong result = OptionalLong.empty();
     
     try {
-      Persistence.beginTransaction();
       final Session s = Persistence.currentSession();
       final CriteriaBuilder cb = s.getCriteriaBuilder();
       final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
@@ -124,7 +123,6 @@ public class ACVRUpload extends AbstractEndpoint {
                                                RecordType.AUDITOR_ENTERED));
       final TypedQuery<Long> query = s.createQuery(cq);
       result = OptionalLong.of(query.getSingleResult());
-      Persistence.commitTransaction();
     } catch (final PersistenceException e) {
       // ignore
     }
