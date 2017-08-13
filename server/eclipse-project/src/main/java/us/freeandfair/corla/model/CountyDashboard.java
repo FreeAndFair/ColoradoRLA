@@ -240,7 +240,7 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
    * 
    * @param the_members The members.
    */
-  public void setAuditBoardMembers(final Collection<Elector> the_members) {
+  public synchronized void setAuditBoardMembers(final Collection<Elector> the_members) {
     my_members.clear();
     my_members.addAll(the_members);
   }
@@ -253,7 +253,7 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
    * in the order they should be examined. It must contain no duplicates.
    * @exception IllegalArgumentException if the list contains duplicates.
    */
-  public void setCVRsToAudit(final List<Long> the_cvrs_to_audit) 
+  public synchronized void setCVRsToAudit(final List<Long> the_cvrs_to_audit) 
       throws IllegalArgumentException {
     final Set<Long> duplicate_check = new HashSet<Long>(the_cvrs_to_audit);
     if (duplicate_check.size() < the_cvrs_to_audit.size()) {
@@ -287,8 +287,8 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
    */
   //@ require the_cvr_under_audit != null;
   //@ require the_acvr != null;
-  public boolean submitAuditCVR(final CastVoteRecord the_cvr_under_audit, 
-                                final CastVoteRecord the_audit_cvr) {
+  public synchronized boolean submitAuditCVR(final CastVoteRecord the_cvr_under_audit, 
+                                             final CastVoteRecord the_audit_cvr) {
     // performs a sanity check to make sure the CVR under audit and the ACVR
     // are the same card
     boolean result = false;
@@ -331,6 +331,20 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
    */
   public List<AuditInvestigationReportInfo> investigationReports() {
     return Collections.unmodifiableList(my_investigation_reports);
+  }
+  
+  /**
+   * @return the current CVR under audit. This is the first entry in the list 
+   * of CVRs to audit that has no corresponding ACVR. Returns null if there is 
+   * no next CVR to audit.
+   */
+  public synchronized Long cvrUnderAudit() {
+    for (int i = 0; i < my_submitted_audit_cvrs.size(); i++) {
+      if (my_submitted_audit_cvrs.get(i) == null) {
+        return my_cvrs_to_audit.get(i);
+      }
+    }
+    return null;
   }
   
   /**

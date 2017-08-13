@@ -249,9 +249,8 @@ public class CountyDashboardRefreshResponse {
     final Integer number_of_disagreements = -1;
 
     // list of CVRs to audit = list from dashboard
-
-    // the current ballot under audit doesn't exist yet
-    final Long cvr_under_audit = Long.valueOf(0);
+    
+    // CVR under audit = from dashboard
     
     return new CountyDashboardRefreshResponse(the_dashboard.status(),
                                               general_information,
@@ -266,6 +265,6 @@ public class CountyDashboardRefreshResponse {
                                               number_of_discrepencies,
                                               number_of_disagreements,
                                               the_dashboard.cvrsToAudit(),
-                                              cvr_under_audit);
+                                              the_dashboard.cvrUnderAudit());
   }
 }
