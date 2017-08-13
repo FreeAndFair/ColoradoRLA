@@ -30,9 +30,10 @@ import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.AuditBoardDashboardQueries;
 
 /**
- * @description <description>
- * @explanation <explanation>
- * @bon OPTIONAL_BON_TYPENAME
+ * The endpoint for reporting ballots that could not be found by auditors.
+ * 
+ * @author Daniel M. Zimmerman
+ * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
 public class BallotNotFound extends AbstractAuditBoardDashboardEndpoint {
