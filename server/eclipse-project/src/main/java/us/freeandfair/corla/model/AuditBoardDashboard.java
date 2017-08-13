@@ -14,7 +14,6 @@ package us.freeandfair.corla.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -27,8 +26,6 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
@@ -88,17 +85,6 @@ public class AuditBoardDashboard extends AbstractEntity implements Serializable 
   private List<Long> my_submitted_audit_cvrs = new ArrayList<>();
   
   /**
-   * The members of the audit board.
-   */
-  @ManyToMany(fetch = FetchType.EAGER)
-  @JoinTable(name = "audit_board_member",
-             joinColumns = @JoinColumn(name = "audit_board_dashboard_id", 
-                                       referencedColumnName = "my_id"))
-  @OrderColumn(name = INDEX)
-  @Column(name = "elector_id")
-  private Set<Elector> my_members = new HashSet<>();
-  
-  /**
    * The audit investigation reports.
    */
   @OneToMany(cascade = CascadeType.ALL, mappedBy = "my_dashboard", 
@@ -130,24 +116,6 @@ public class AuditBoardDashboard extends AbstractEntity implements Serializable 
    */
   public Integer countyID() {
     return my_county_id;
-  }
-  
-  /**
-   * @return the set of audit board members.
-   */
-  public Set<Elector> members() {
-    return Collections.unmodifiableSet(my_members);
-  }
-  
-  /**
-   * Sets the membership of the audit board; this must be the full set
-   * of electors on the board, and replaces any other set.
-   * 
-   * @param the_members The members.
-   */
-  public void setMembers(final Collection<Elector> the_members) {
-    my_members.clear();
-    my_members.addAll(the_members);
   }
   
   /**

@@ -62,8 +62,9 @@ public class County extends AbstractEntity implements Serializable {
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(name = "county_contest",
             joinColumns = @JoinColumn(name = "county_id", 
-                                      referencedColumnName = "my_identifier"))
-  @Column(name = "contest_id")
+                                      referencedColumnName = "my_identifier"),
+            inverseJoinColumns = @JoinColumn(name = "contest_id", 
+                                             referencedColumnName = "my_id"))
   private Set<Contest> my_contests;
   
   /**
@@ -72,8 +73,9 @@ public class County extends AbstractEntity implements Serializable {
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(name = "county_administrator",
              joinColumns = @JoinColumn(name = "county_id", 
-                                       referencedColumnName = "my_identifier"))
-  @Column(name = "administrator_id")
+                                       referencedColumnName = "my_identifier"),
+             inverseJoinColumns = @JoinColumn(name = "administrator_id", 
+                                              referencedColumnName = "my_id"))
   private Set<Administrator> my_administrators;
 
   /**
