@@ -10,7 +10,10 @@ class ContestOverviewContainer extends React.Component<any, any> {
     }
 }
 
-const mapStateToProps = ({ contests }: any) => ({ contests });
+const mapStateToProps = ({ sos }: any) => ({
+    contests: sos.contests,
+    sos,
+});
 
 const mapDispatchToProps = (dispatch: any) => ({});
 
