@@ -13,7 +13,7 @@ class AuditSeedContainer extends React.Component<any, any> {
 
         const props = {
             back: () => history.push('/sos/audit'),
-            nextPage: () => history.push('/sos/audit/ballots'),
+            nextPage: () => history.push('/sos/audit/select-contests'),
             uploadRandomSeed,
         };
 
