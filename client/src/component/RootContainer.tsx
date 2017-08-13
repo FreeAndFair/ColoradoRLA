@@ -24,10 +24,13 @@ import LoginContainer from './login/LoginContainer';
 import AuditBallotListContainer from './sos/audit/AuditBallotListContainer';
 import AuditContainer from './sos/audit/AuditContainer';
 import AuditSeedContainer from './sos/audit/AuditSeedContainer';
+import SelectContestsPageContainer from './sos/audit/SelectContestsPageContainer';
+
 import ContestDetailContainer from './sos/contest/ContestDetailContainer';
 import ContestOverviewContainer from './sos/contest/ContestOverviewContainer';
 import CountyDetailContainer from './sos/county/CountyDetailContainer';
 import CountyOverviewContainer from './sos/county/CountyOverviewContainer';
+
 import SoSHomeContainer from './sos/SoSHomeContainer';
 
 
@@ -80,8 +83,9 @@ const routes: RouteDef[] = [
     ['/help/manual', ManualContainer],
     ['/sos', SoSHomeContainer],
     ['/sos/audit', AuditContainer],
-    ['/sos/audit/ballots', AuditBallotListContainer],
     ['/sos/audit/seed', AuditSeedContainer],
+    ['/sos/audit/select-contests', SelectContestsPageContainer],
+    ['/sos/audit/ballots', AuditBallotListContainer],
     ['/sos/contest', ContestOverviewContainer],
     ['/sos/contest/:contestId', ContestDetailContainer],
     ['/sos/county', CountyOverviewContainer],
