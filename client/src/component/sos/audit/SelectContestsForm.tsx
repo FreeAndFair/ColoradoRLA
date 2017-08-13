@@ -8,6 +8,7 @@ import { Select } from '@blueprintjs/labs';
 
 interface FormState {
     contests: any;
+    forms: any;
 }
 
 const auditReasons = [
@@ -83,6 +84,8 @@ class SelectContestsForm extends React.Component<any, any> {
 
     public render() {
         const { contests } = this.props;
+
+        this.props.forms.selectContestsForm = this.state;
 
         const contestRows = _.map(contests, (c: any) => {
             const props = {
