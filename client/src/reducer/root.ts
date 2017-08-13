@@ -53,6 +53,10 @@ export default function root(state: AppState = defaultState, action: any) {
         return nextState;
     }
 
+    case 'SET_RISK_LIMIT_RECEIVE': {
+        return state;
+    }
+
     case 'UPDATE_BOARD_MEMBER': {
         const { index, name, party } = action.data;
         const nextState = { ...state };
