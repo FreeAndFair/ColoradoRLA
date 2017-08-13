@@ -32,6 +32,7 @@ import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.Elector;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CountyDashboardQueries;
+import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
  * Establish the audit board for a county.
@@ -76,6 +77,8 @@ public class EstablishAuditBoard extends AbstractCountyDashboardEndpoint {
    * Establish the audit board for a county.
    */
   @Override
+  // false positive about inner class declaration
+  @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
   public String endpoint(final Request the_request,
                          final Response the_response) {
     try {
