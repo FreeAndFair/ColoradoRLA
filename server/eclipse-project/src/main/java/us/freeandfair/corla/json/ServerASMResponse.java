@@ -11,11 +11,11 @@
 
 package us.freeandfair.corla.json;
 
-import java.util.Collections;
 import java.util.Set;
 
 import us.freeandfair.corla.asm.ASMState;
 import us.freeandfair.corla.asm.UIEvent;
+import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
  * The standard response provided by the server to indicate the state of the
@@ -24,6 +24,8 @@ import us.freeandfair.corla.asm.UIEvent;
  * @author Joseph R. Kiniry <kiniry@freeandfair.us>
  * @version 0.0.1
  */
+@SuppressWarnings({"unused", "PMD.UnusedPrivateField", "PMD.SingularField"})
+@SuppressFBWarnings(value = {"URF_UNREAD_FIELD"}, justification = "Field is read by Gson.")
 public class ServerASMResponse {
   /**
    * The server's current state.
@@ -44,19 +46,5 @@ public class ServerASMResponse {
                            final Set<UIEvent> the_enabled_ui_events) {
     my_current_state = the_current_state;
     my_enabled_ui_events = the_enabled_ui_events;
-  }
-  
-  /** 
-   * @return the current state.
-   */
-  public ASMState currentState() {
-    return my_current_state;
-  }
-  
-  /**
-   * @return an unmodifiable view of the enabled UI events. 
-   */
-  public Set<UIEvent> enabledUIEvents() {
-    return Collections.unmodifiableSet(my_enabled_ui_events);
   }
 }
