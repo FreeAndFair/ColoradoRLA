@@ -18,10 +18,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.PersistenceException;
+
 import us.freeandfair.corla.model.AuditStage;
 import us.freeandfair.corla.model.ContestToAudit;
-import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.ContestToAudit.AuditReason;
+import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.CountyDashboard.CountyStatus;
 import us.freeandfair.corla.model.DepartmentOfStateDashboard;
@@ -96,6 +98,8 @@ public class DoSDashboardRefreshResponse {
    * 
    * @param the_dashboard The dashboard.
    * @return the response.
+   * @exception NullPointerException if necessary information to construct the
+   * response does not exist.
    */
   public static DoSDashboardRefreshResponse 
       createResponse(final DepartmentOfStateDashboard the_dashboard) {
@@ -154,7 +158,11 @@ public class DoSDashboardRefreshResponse {
     
     for (final County c : counties) {
       final CountyDashboard db = CountyDashboardQueries.get(c.identifier());
-      status_map.put(db.countyID(), db.status());
+      if (db == null) {
+        throw new PersistenceException("unable to read county dashboard state.");
+      } else {
+        status_map.put(db.countyID(), db.status());
+      }
     }
     
     return status_map;

@@ -17,18 +17,19 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.json.DoSDashboardRefreshResponse;
-import us.freeandfair.corla.query.DepartmentOfStateDashboardQueries;
+import us.freeandfair.corla.json.CountyDashboardRefreshResponse;
+import us.freeandfair.corla.model.County;
+import us.freeandfair.corla.query.CountyDashboardQueries;
 
 /**
- * The endpoint for refreshing the Department of State dashboard status.
+ * The endpoint for refreshing the county dashboard status.
  * 
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 0.0.1
  */
 // endpoints don't need constructors
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class DoSDashboardRefresh extends AbstractEndpoint {
+public class CountyDashboardRefresh extends AbstractEndpoint {
   /**
    * {@inheritDoc}
    */
@@ -42,7 +43,7 @@ public class DoSDashboardRefresh extends AbstractEndpoint {
    */
   @Override
   public String endpointName() {
-    return "/dos-dashboard";
+    return "/county-dashboard";
   }
 
   /**
@@ -54,9 +55,10 @@ public class DoSDashboardRefresh extends AbstractEndpoint {
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
     try {
-      final String refresh = 
-          Main.GSON.toJson(DoSDashboardRefreshResponse.createResponse
-                           (DepartmentOfStateDashboardQueries.get()));
+      final County county = Authentication.authenticatedCounty(the_request);
+      final String refresh =  
+          Main.GSON.toJson(CountyDashboardRefreshResponse.createResponse
+                           (CountyDashboardQueries.get(county.identifier())));
       ok(the_response, refresh);
     } catch (final PersistenceException e) {
       serverError(the_response, "could not obtain dashboard state");
@@ -65,10 +67,10 @@ public class DoSDashboardRefresh extends AbstractEndpoint {
   }
 
   /**
-   * This endpoint requires STATE authorization.
+   * This endpoint requires COUNTY authorization.
    */
   @Override
   public AuthorizationType requiredAuthorization() {
-    return AuthorizationType.STATE;
+    return AuthorizationType.COUNTY;
   }
 }

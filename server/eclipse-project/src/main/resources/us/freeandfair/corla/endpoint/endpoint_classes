@@ -9,6 +9,7 @@ us.freeandfair.corla.endpoint.BallotManifestUpload
 us.freeandfair.corla.endpoint.ContestDownload
 us.freeandfair.corla.endpoint.ContestDownloadByCounty
 us.freeandfair.corla.endpoint.ContestDownloadByID
+us.freeandfair.corla.endpoint.CountyDashboardRefresh
 us.freeandfair.corla.endpoint.CVRDownload
 us.freeandfair.corla.endpoint.CVRDownloadByCounty
 us.freeandfair.corla.endpoint.CVRDownloadByID
