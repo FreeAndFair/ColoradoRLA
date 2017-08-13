@@ -1,20 +1,30 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators, Dispatch } from 'redux';
 
 import AuditPage from './AuditPage';
+
+import setRiskLimit from '../../../action/setRiskLimit';
 
 
 class AuditContainer extends React.Component<any, any> {
     public render() {
-        const nextPage = () => this.props.history.push('/sos/audit/seed');
+        const { history, setRiskLimit } = this.props;
 
-        return <AuditPage nextPage={ nextPage } />;
+        const props = {
+            nextPage: () => history.push('/sos/audit/seed'),
+            setRiskLimit,
+        };
+
+        return <AuditPage { ...props } />;
     }
 }
 
 const mapStateToProps = () => ({});
 
-const mapDispatchToProps = (dispatch: any) => ({});
+const mapDispatchToProps = (dispatch: any) => bindActionCreators({
+    setRiskLimit,
+}, dispatch);
 
 export default connect(
     mapStateToProps,
