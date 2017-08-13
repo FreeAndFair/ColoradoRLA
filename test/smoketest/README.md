@@ -2,17 +2,24 @@
 
 This smoketest has been tested against master commit d91c667.
 See results in smoketest.*.out, generated like this:
-# Find most recent master commit in git log.
-$ time ./smoketest.bash 2>&1 | tee smoketest.<commit>.out
 
+* Find most recent master commit in git log.
+* Run `time ./smoketest.bash 2>&1 | tee smoketest.<commit>.out`
+
+## Installing Test Dependencies
 For now, you'll need to install
 [zerotest](https://github.com/jjyr/zerotest)
 to run these tests, and/or generate new ones in the same way.
 
 This is mainly tested with python3, but has been seen to work
-on python2 also.
+on python2 also.  You will need this library for some of the tests:
 
 `pip install zerotest`
+
+or `pip3 install zerotest` (or similar) if you have
+multiple Python installations.
+
+## Running a smoketest
 
 The current tests are based on the cvrs at
 `test/e-1/arapahoe-regent-3-clear-CVR_Export.csv`
@@ -24,9 +31,21 @@ To run the smoketest, cd to this directory, and run
 
 That will run most of the current tests.
 
+Some tests fail only because of ASM checking. To disable them, in
+`server/eclipse-project/src/main/java/us/freeandfair/corla/endpoint/AbstractEndpoint.java`,
+find the indicated line and change "false" to "true", leaving a warning comment.
+
+```
+  public static final boolean DISABLE_ASM = true;   // FIXME: should be false, Don't let "true" in to master!
+```
+
+You can do this via
+
+`sed -i '/boolean DISABLE_ASM/s|false;|true;   // FIXME: should be false, Do not let "true" in to master...|' ../../server/eclipse-project/src/main/java/us/freeandfair/corla/endpoint/AbstractEndpoint.java`
+
 To run tests by hand, see below.
 
-## Resetting the database
+### Resetting the database
 
 Stop the server and look to see if there are any sessions
 using the `corla` database:
@@ -48,13 +67,13 @@ java -jar target/colorado_rla-0.0.1-shaded.jar &
 cd -
 ```
 
-(Or whatever the latest version is - see smoketest.bash for a kludgy way to extract it).
+(Or whatever the latest version is - see `smoketest.bash` for a handy way to extract it).
 
 Load the credentials for testing:
 
 `psql -d corla -a -f ../corla-test-credentials.psql`
 
-## Uploading CVRs and manifests
+### Uploading CVRs and manifests
 
 Run `./main.py` to upload the cvr and manifest files.
 
@@ -113,7 +132,7 @@ EndOfInput
 
 Stop the `zerotest server` process, e.g. with Cntl-C.
 
-Interrim test of captured queries:
+Interim test of captured queries:
 
 `zerotest replay --ignore-all-headers server_test.json`
 

@@ -9,6 +9,7 @@ function cleanup {
   echo tail credentials.stdout
   echo tail server_test.stdout
   echo "If you're done with the server: pkill -f java.-jar.target/colorado_rla"
+  echo "If this script doesn't exit now, kill it from the keyboard. FIXME."
 }
 trap cleanup EXIT
 

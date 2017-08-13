@@ -52,3 +52,4 @@ tail /srv/s/electionaudits/ColoradoRLA/server/eclipse-project/target/server.stdo
 tail credentials.stdout
 tail server_test.stdout
 If you're done with the server: pkill -f java.-jar.target/colorado_rla
+If this script doesn't exit now, kill it from the keyboard. FIXME.
