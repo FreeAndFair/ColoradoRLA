@@ -3,6 +3,7 @@ const connect = require('connect');
 const ballotStyles = require('./data/ballotStyles');
 const castVoteRecords = require('./data/castVoteRecords');
 const contests = require('./data/contests');
+const counties = require('./data/counties');
 
 
 const app = connect();
@@ -53,27 +54,15 @@ route('get', '/contest', () => ok(contests));
 
 route('post', '/auth-state-admin', () => ok('Authenticated'));
 
-route('post', '/state-refresh', () => ok({
+route('get', '/dos-dashboard', () => ok({
     auditStage: 'auditOngoing',
-    contests: [
-        { id: '1001', audit: 'yes', reason: 'small margin' },
-        { id: '1002', audit: 'no' },
-        { id: '1005', audit: 'yes', reason: 'randomly chosen' },
-        { id: '1008', audit: 'handCount' },
-        { id: '1005', audit: 'yes', reason: 'important contest' },
-    ],
-    counties: [
-        { id: '12', status: 'noData' },
-        { id: '18', status: 'noData' },
-        { id: '20', status: 'cvrsUploaded' },
-        { id: '25', status: 'noData' },
-        { id: '27', status: 'errorInUploadedData' },
-        { id: '33', status: 'noData' },
-        { id: '39', status: 'cvrsUploaded' },
-    ],
+    contests,
+    counties: counties.map(c => Object.assign({}, c, { status: 'cvrsUploaded' })),
+    manifestUploadsComplete: true,
+    cvrUploadsComplete: true,
     riskLimit: 0.05,
-    seed: 'deadbeef',
-
+    seed: 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef',
+    ballots: castVoteRecords,
 }));
 
 route('post', '/risk-limit-comp-audits', (r) => ok(''));
