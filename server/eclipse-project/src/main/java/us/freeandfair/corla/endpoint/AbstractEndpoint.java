@@ -96,8 +96,9 @@ public abstract class AbstractEndpoint implements Endpoint {
    */
   protected void loadAndCheckASM(final Request the_request,
                                  final Response the_response) {
-    // get the state of the dashboard
+    // get the state of the ASM
     if (asmClass() == null) {
+      // there is no ASM for this endpoint
       return;
     }
     final String asm_id = asmIdentity(the_request);
@@ -133,6 +134,10 @@ public abstract class AbstractEndpoint implements Endpoint {
    * Save the ASM back to the database.
    */
   protected void transitionAndSaveASM()  {
+    if (my_asm == null) {
+      // there is no ASM for this endpoint
+      return;
+    }
     my_asm.stepEvent(endpointEvent());
     my_persistent_asm_state.updateFrom(my_asm);
     Persistence.saveOrUpdate(my_persistent_asm_state);
