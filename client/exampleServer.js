@@ -76,6 +76,8 @@ route('post', '/state-refresh', () => ok({
 
 }));
 
+route('post', '/risk-limit-comp-audits', (r) => ok(''));
+
 route('post', '/upload-random-seed', (r) => ok(''));
 
 
