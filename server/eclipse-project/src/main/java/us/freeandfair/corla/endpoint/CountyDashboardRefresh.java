@@ -11,12 +11,15 @@
 
 package us.freeandfair.corla.endpoint;
 
+import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.COUNTY_REFRESH_EVENT;
+
 import javax.persistence.PersistenceException;
 
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.json.CountyDashboardRefreshResponse;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.query.CountyDashboardQueries;
@@ -29,7 +32,7 @@ import us.freeandfair.corla.query.CountyDashboardQueries;
  */
 // endpoints don't need constructors
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class CountyDashboardRefresh extends AbstractEndpoint {
+public class CountyDashboardRefresh extends AbstractCountyDashboardEndpoint {
   /**
    * {@inheritDoc}
    */
@@ -46,6 +49,14 @@ public class CountyDashboardRefresh extends AbstractEndpoint {
     return "/county-dashboard";
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected ASMEvent endpointEvent() {
+    return COUNTY_REFRESH_EVENT;
+  }
+  
   /**
    * Provides information about the DoS dashboard.
    * 

@@ -11,8 +11,13 @@
 
 package us.freeandfair.corla.endpoint;
 
+import static us.freeandfair.corla.asm.ASMEvent.RLAToolEvent.RLA_TOOL_SKIP_EVENT;
+
 import spark.Request;
 import spark.Response;
+
+import us.freeandfair.corla.asm.ASMEvent;
+import us.freeandfair.corla.asm.AbstractStateMachine;
 
 /**
  * The root endpoint.
@@ -44,5 +49,29 @@ public class Root extends AbstractEndpoint {
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
     return "ColoradoRLA Server, Version 0.0.1 - Please Use a Valid Endpoint!";
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected Class<? extends AbstractStateMachine> asmClass() {
+    return null;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected String asmIdentity(final Request the_request) {
+    return null;
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected ASMEvent endpointEvent() {
+    return RLA_TOOL_SKIP_EVENT;
   }
 }

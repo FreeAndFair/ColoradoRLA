@@ -11,6 +11,8 @@
 
 package us.freeandfair.corla.endpoint;
 
+import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.REPORT_MARKINGS_EVENT;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,6 +37,7 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.persistence.Persistence;
@@ -48,7 +51,7 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
 // TODO: consider rewriting along the same lines as CVRExportUpload
-public class ACVRUpload extends AbstractEndpoint {
+public class ACVRUpload extends AbstractAuditBoardDashboardEndpoint {
   /**
    * {@inheritDoc}
    */
@@ -65,6 +68,14 @@ public class ACVRUpload extends AbstractEndpoint {
     return "/upload-audit-cvr";
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected ASMEvent endpointEvent() {
+    return REPORT_MARKINGS_EVENT;
+  }
+  
   /**
    * {@inheritDoc}
    */
