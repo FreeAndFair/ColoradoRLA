@@ -233,7 +233,7 @@ public class CountyDashboardRefreshResponse {
     
     return new CountyDashboardRefreshResponse(the_dashboard.status(),
                                               general_information,
-                                              abd.members(),
+                                              the_dashboard.auditBoardMembers(),
                                               manifest_digest,
                                               cvr_digest,
                                               contests,

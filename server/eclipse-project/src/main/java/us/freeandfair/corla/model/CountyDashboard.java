@@ -14,9 +14,17 @@ package us.freeandfair.corla.model;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import us.freeandfair.corla.persistence.AbstractEntity;
@@ -34,6 +42,11 @@ import us.freeandfair.corla.persistence.AbstractEntity;
 @SuppressWarnings("PMD.ImmutableField")
 public class CountyDashboard extends AbstractEntity implements Serializable {   
   /**
+   * The minimum number of members on an audit board.
+   */
+  public static final int MIN_AUDIT_BOARD_MEMBERS = 2;
+  
+ /**
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1; 
@@ -73,6 +86,17 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
    * straightforward.
    */
   private Instant my_manifest_upload_timestamp;
+  
+  /**
+   * The members of the audit board.
+   */
+  @ManyToMany(fetch = FetchType.EAGER)
+  @JoinTable(name = "audit_board_member",
+             joinColumns = @JoinColumn(name = "county_dashboard_id", 
+                                       referencedColumnName = "my_id"),
+             inverseJoinColumns = @JoinColumn(name = "elector_id", 
+                                              referencedColumnName = "my_id"))
+  private Set<Elector> my_members = new HashSet<>();
   
   /**
    * Constructs an empty county dashboard, solely for persistence.
@@ -152,6 +176,24 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
   public void setManifestUploadTimestamp(final Instant the_timestamp) {
     my_manifest_upload_timestamp = the_timestamp;
   }  
+  
+  /**
+   * @return the set of audit board members.
+   */
+  public Set<Elector> auditBoardMembers() {
+    return Collections.unmodifiableSet(my_members);
+  }
+  
+  /**
+   * Sets the membership of the audit board; this must be the full set
+   * of electors on the board, and replaces any other set.
+   * 
+   * @param the_members The members.
+   */
+  public void setAuditBoardMembers(final Collection<Elector> the_members) {
+    my_members.clear();
+    my_members.addAll(the_members);
+  }
   
   /**
    * The possible statuses for a county in an audit.
