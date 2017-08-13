@@ -20,13 +20,18 @@ const auditReasons = [
     { id: 'concern_regarding_accuracy', text: 'Concern regarding accuracy' },
     { id: 'opportunistic_benefits', text: 'Opportunistic benefits' },
     { id: 'county_clerk_ability', text: 'County clerk ability' },
-    { id: 'no_audit', text: 'No audit' },
 ];
 
 const AuditReasonSelect = Select.ofType<any>();
 
 const ContestRow = (props: any) => {
-    const { auditStatus, contest, onAuditChange, onReasonChange } = props;
+    const {
+        auditStatus,
+        contest,
+        onAuditChange,
+        onHandCountChange,
+        onReasonChange,
+    } = props;
 
     const renderItem = ({ handleClick, item, isActive }: any) => {
         return (
@@ -54,18 +59,30 @@ const ContestRow = (props: any) => {
         </AuditReasonSelect>
     );
 
+    const { handCount } = auditStatus;
+    const toAudit = !handCount && auditStatus.audit;
+
     return (
         <tr>
             <td>{ contest.id }</td>
             <td>{ contest.name }</td>
             <td>
-                <Checkbox checked={ auditStatus.audit } onChange={ onAuditChange } />
+                <Checkbox
+                    disabled={ toAudit }
+                    checked={ handCount }
+                    onChange={ onHandCountChange } />
+            </td>
+            <td>
+                <Checkbox
+                    disabled={ handCount }
+                    checked={ toAudit }
+                    onChange={ onAuditChange } />
             </td>
             <td>
                 { auditStatus.audit ? auditReasonSelect : '' }
             </td>
         </tr>
-        );
+    );
 };
 
 class SelectContestsForm extends React.Component<any, any> {
@@ -77,6 +94,7 @@ class SelectContestsForm extends React.Component<any, any> {
         _.forEach(props.contests, (c, _) => {
             this.state[c.id] = {
                 audit: false,
+                handCount: false,
                 reason: { ...auditReasons[0] },
             };
         });
@@ -93,6 +111,7 @@ class SelectContestsForm extends React.Component<any, any> {
                 contest: c,
                 key: c.id,
                 onAuditChange: this.onAuditChange(c),
+                onHandCountChange: this.onHandCountChange(c),
                 onReasonChange: this.onReasonChange(c),
             };
 
@@ -105,6 +124,7 @@ class SelectContestsForm extends React.Component<any, any> {
                     <tr>
                         <th>Contest ID</th>
                         <th>Contest Name</th>
+                        <th>Full hand count</th>
                         <th>Audit?</th>
                         <th>Reason</th>
                     </tr>
@@ -121,6 +141,15 @@ class SelectContestsForm extends React.Component<any, any> {
 
         const { audit } = s[contest.id];
         s[contest.id].audit = !audit;
+
+        this.setState(s);
+    }
+
+    private onHandCountChange = (contest: any) => () => {
+        const s = { ...this.state };
+
+        const { handCount } = s[contest.id];
+        s[contest.id].handCount = !handCount;
 
         this.setState(s);
     }
