@@ -58,7 +58,7 @@ public class CountyDashboardRefresh extends AbstractCountyDashboardEndpoint {
   }
   
   /**
-   * Provides information about the DoS dashboard.
+   * Provides information about the County and Audit Board dashboards.
    * 
    * @param the_request The request.
    * @param the_response The response.

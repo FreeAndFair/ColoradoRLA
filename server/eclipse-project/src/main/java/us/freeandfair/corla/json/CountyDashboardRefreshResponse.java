@@ -5,8 +5,9 @@
  * @created Aug 12, 2017
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
- * @author Daniel M. Zimmerman <dmz@freeandfair.us>
- * @description A system to assist in conducting statewide risk-limiting audits.
+ * @created Daniel M. Zimmerman <dmz@freeandfair.us>
+ * @description A system to assist in conducting statewide
+ * risk-limiting audits.
  */
 
 package us.freeandfair.corla.json;
@@ -14,6 +15,7 @@ package us.freeandfair.corla.json;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,9 +39,11 @@ import us.freeandfair.corla.query.UploadedFileQueries;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
- * The response generated on a refresh of the DoS dashboard.
+ * The response generated on a refresh of the County and Audit Board
+ * dashboards.
  * 
  * @author Daniel M. Zimmerman
+ * @author Joe Kiniry <kiniry@freeandfair.us>
  * @version 0.0.1
  */
 @SuppressWarnings({"unused", "PMD.UnusedPrivateField", "PMD.SingularField",
@@ -110,9 +114,19 @@ public class CountyDashboardRefreshResponse {
    * @todo connect this to something
    */
   private final Integer my_number_of_disagreements;
+
+  /**
+   * The list of CVRs to audit (by ID).
+   */
+  private final List<Long> my_cvrs_to_audit;
+
+  /**
+   * The current CVR under audit.
+   */
+  private final Long my_cvr_under_audit_id;
   
   /**
-   * Constructs a new DosDashboardRefreshResponse.
+   * Constructs a new CountyDashboardRefreshResponse.
    * 
    * @param the_status The status.
    * @param the_general_information The general information.
@@ -126,6 +140,8 @@ public class CountyDashboardRefreshResponse {
    * @param the_number_of_ballots_audited The number of ballots audited.
    * @param the_number_of_discrepencies The number of discrepencies.
    * @param the_number_of_disagreements The number of disagreements.
+   * @param the_cvrs_to_audit The list of CVRs to audit.
+   * @param the_cvr_under_audit The index of the CVR under audit.
    */
   @SuppressWarnings("PMD.ExcessiveParameterList")
   protected CountyDashboardRefreshResponse(final CountyStatus the_status,
@@ -139,7 +155,9 @@ public class CountyDashboardRefreshResponse {
                                            final Integer the_estimated_ballots_to_audit,
                                            final Integer the_number_of_ballots_audited,
                                            final Integer the_number_of_discrepencies, 
-                                           final Integer the_number_of_disagreements) {
+                                           final Integer the_number_of_disagreements,
+                                           final List<Long> the_cvrs_to_audit,
+                                           final Long the_cvr_under_audit) {
     my_status = the_status;
     my_general_information = the_general_information;
     my_audit_board_members = the_audit_board_members;
@@ -152,10 +170,12 @@ public class CountyDashboardRefreshResponse {
     my_number_of_ballots_audited = the_number_of_ballots_audited;
     my_number_of_discrepencies = the_number_of_discrepencies;
     my_number_of_disagreements = the_number_of_disagreements;
+    my_cvrs_to_audit = the_cvrs_to_audit;
+    my_cvr_under_audit_id = the_cvr_under_audit;
   }
   
   /**
-   * Gets the DoSDashboardRefreshResponse for the specified DoS dashboard.
+   * Gets the CountyDashboardRefreshResponse for the specified County dashboard.
    * 
    * @param the_dashboard The dashboard.
    * @return the response.
@@ -192,6 +212,8 @@ public class CountyDashboardRefreshResponse {
     final UploadedFile cvr_file = 
         UploadedFileQueries.matching(county_id, the_dashboard.cvrUploadTimestamp(), 
                                      FileType.CAST_VOTE_RECORD_EXPORT);
+    // @todo kiniry This should have been/will be saved in the DB at the time
+    // in which the CVR file was uploaded.
     String cvr_digest = null;
     if (cvr_file != null) {
       cvr_digest = cvr_file.hash();
@@ -230,6 +252,12 @@ public class CountyDashboardRefreshResponse {
     
     // number of disagreements doesn't exist yet
     final Integer number_of_disagreements = -1;
+
+    // list of ballots to audit doesn't exist yet
+    final Set<Long> ballots_to_audit = new HashSet<Long>();
+
+    // the current ballot under audit doesn't exist yet
+    final Long ballot_under_audit = new Long(0);
     
     return new CountyDashboardRefreshResponse(the_dashboard.status(),
                                               general_information,
@@ -242,6 +270,8 @@ public class CountyDashboardRefreshResponse {
                                               abd.cvrsToAudit().size(),
                                               number_of_ballots_audited,
                                               number_of_discrepencies,
-                                              number_of_disagreements);
+                                              number_of_disagreements,
+                                              ballots_to_audit,
+                                              ballot_under_audit);
   }
 }
