@@ -26,6 +26,15 @@ export default function root(state: AppState = defaultState, action: any) {
         return { ...state, loggedIn: true, dashboard: 'sos', sos: {} };
     }
 
+    case 'COUNTY_DASHBOARD_REFRESH_OK': {
+        const nextState = { ...state };
+
+        const { data } = action;
+        nextState.county = { ...state.county, ...data };
+
+        return nextState;
+    }
+
     case 'DOS_DASHBOARD_REFRESH_OK': {
         const nextState = { ...state };
 
