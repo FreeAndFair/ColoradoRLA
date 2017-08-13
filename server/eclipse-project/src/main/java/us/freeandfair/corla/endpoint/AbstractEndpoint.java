@@ -35,6 +35,7 @@ import us.freeandfair.corla.asm.PersistentASMState;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.PersistentASMStateQueries;
+import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
  * Basic behaviors that span all endpoints. In particular, standard exceptional
@@ -46,6 +47,11 @@ import us.freeandfair.corla.query.PersistentASMStateQueries;
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 0.0.1
  */
+@SuppressFBWarnings({"UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", 
+// Justification: False positive because we are weaving in behavior
+// in before() to initialize my_persistent_asm_state.
+    "SF_SWITCH_NO_DEFAULT"})
+// Justification: False positive; there is a default case.
 @SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.TooManyMethods"})
 public abstract class AbstractEndpoint implements Endpoint {
   /**

@@ -39,7 +39,11 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
  * @version 0.0.1
  */
 @SuppressWarnings({"unused", "PMD.UnusedPrivateField", "PMD.SingularField"})
-@SuppressFBWarnings(value = {"URF_UNREAD_FIELD"}, justification = "Field is read by Gson.")
+@SuppressFBWarnings({"URF_UNREAD_FIELD",
+// Justification: Field is read by Gson.
+    "SF_SWITCH_NO_DEFAULT"})
+// Justification: False positive; there is a default case.
+
 public class DoSDashboardRefreshResponse {
   /**
    * The audit stage.
