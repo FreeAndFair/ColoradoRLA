@@ -33,7 +33,8 @@ const URL = /\/upload-random-seed$/;
 test('uploadRandomSeed', s => {
     test('sends the right data', t => {
         const f = setup();
-        f.fetch(URL, { body: 'OK', status: 200 });
+        const body = { result: 'OK' };
+        f.fetch(URL, { body, status: 200 });
 
         t.plan(3);
 
@@ -52,7 +53,8 @@ test('uploadRandomSeed', s => {
 
     test('when upload ok', t => {
         const f = setup();
-        f.fetch(URL, { body: 'Random seed set', status: 200 });
+        const body = { result: 'Random seed set' };
+        f.fetch(URL, { body, status: 200 });
 
         t.plan(1);
 
@@ -62,7 +64,7 @@ test('uploadRandomSeed', s => {
         fetch.flush().then(() => {
             t.deepEqual(f.store.getActions(), [
                 { type: 'UPLOAD_RANDOM_SEED_SEND' },
-                { type: 'UPLOAD_RANDOM_SEED_OK' },
+                { type: 'UPLOAD_RANDOM_SEED_OK', data: body },
             ]);
 
             teardown(f);
@@ -72,7 +74,7 @@ test('uploadRandomSeed', s => {
     test('when server error', t => {
         const f = setup();
         f.fetch(URL, {
-            body: 'Could not set random seed',
+            body: { result: 'Could not set random seed' },
             status: 500,
         });
 
@@ -94,7 +96,7 @@ test('uploadRandomSeed', s => {
     test('when bad request', t => {
         const f = setup();
         f.fetch(URL, {
-            body: 'Invalid random seed specified',
+            body: { result: 'Invalid random seed specified' },
             status: 400,
         });
 
