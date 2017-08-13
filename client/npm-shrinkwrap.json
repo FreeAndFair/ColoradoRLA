@@ -12,6 +12,11 @@
       "from": "@blueprintjs/datetime@>=1.19.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/@blueprintjs/datetime/-/datetime-1.19.0.tgz"
     },
+    "@blueprintjs/labs": {
+      "version": "0.5.0",
+      "from": "@blueprintjs/labs@latest",
+      "resolved": "https://registry.npmjs.org/@blueprintjs/labs/-/labs-0.5.0.tgz"
+    },
     "@types/cheerio": {
       "version": "0.22.2",
       "from": "@types/cheerio@*",
