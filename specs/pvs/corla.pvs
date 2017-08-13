@@ -3032,7 +3032,9 @@ BEGIN
   audit_report: json_spec =
     (: "reason" :)
   refresh_audit_board_dashboard: json_spec =
-    null % @todo kiniry
+    (: "general_information", "contests_under_audit",
+       "county_status", "ballots_under_audit_with_locations",
+       "current_ballot_under_audit" :)
 %%% \todokiniry{Discuss HTTP endpoint types and endpoints.}
   endpoint_type: TYPE = { GET, POST, PUT }
   server_endpoint: TYPE =
