@@ -19,6 +19,8 @@ import javax.persistence.PersistenceException;
 import spark.Request;
 import spark.Response;
 
+import us.freeandfair.corla.asm.ASMEvent;
+import us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent;
 import us.freeandfair.corla.model.AuditBoardDashboard;
 import us.freeandfair.corla.model.CVRContestInfo;
 import us.freeandfair.corla.model.CastVoteRecord;
@@ -33,8 +35,7 @@ import us.freeandfair.corla.query.AuditBoardDashboardQueries;
  * @bon OPTIONAL_BON_TYPENAME
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class BallotNotFound extends AbstractEndpoint {
-
+public class BallotNotFound extends AbstractAuditBoardDashboardEndpoint {
   /**
    * {@inheritDoc}
    */
@@ -51,6 +52,14 @@ public class BallotNotFound extends AbstractEndpoint {
     return "/ballot-not-found";
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public ASMEvent endpointEvent() {
+    return AuditBoardDashboardEvent.REPORT_BALLOT_NOT_FOUND_EVENT;
+  }
+  
   /**
    * Marks the specified ballot as "not found" by the audit board.
    * The ballot to so mark is indicated by the ID of its corresponding
