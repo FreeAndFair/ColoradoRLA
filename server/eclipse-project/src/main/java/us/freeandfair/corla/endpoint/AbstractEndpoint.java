@@ -124,6 +124,7 @@ public abstract class AbstractEndpoint implements Endpoint {
   public void ok(final Response the_response, 
                  final String the_body) {
     the_response.status(HttpStatus.OK_200);
+    the_response.body(the_body);
     Main.LOGGER.error("successful operation 200 on endpoint " + endpointName());
     my_endpoint_result = the_body;
   }
@@ -138,6 +139,7 @@ public abstract class AbstractEndpoint implements Endpoint {
   public void invariantViolation(final Response the_response, 
                                  final String the_body) {
     the_response.status(HttpStatus.BAD_REQUEST_400);
+    the_response.body(the_body);
     Main.LOGGER.error("invariant violation 400 on endpoint " + endpointName());
     my_endpoint_result = the_body;
   }
@@ -150,6 +152,7 @@ public abstract class AbstractEndpoint implements Endpoint {
   public void unauthorized(final Response the_response, 
                            final String the_body) {
     the_response.status(HttpStatus.UNAUTHORIZED_401);
+    the_response.body(the_body);
     Main.LOGGER.error("unauthorized access 401 on endpoint " + endpointName());
     // TODO: should we halt() the endpoint execution here and simply send 
     // the response
@@ -165,6 +168,7 @@ public abstract class AbstractEndpoint implements Endpoint {
   public void illegalTransition(final Response the_response, 
                                 final String the_body) {
     the_response.status(HttpStatus.FORBIDDEN_403);
+    the_response.body(the_body);
     Main.LOGGER.error("illegal transition attempt 403 on endpoint " + 
         endpointName());
     my_endpoint_result = the_body;
@@ -178,6 +182,7 @@ public abstract class AbstractEndpoint implements Endpoint {
   public void dataNotFound(final Response the_response, 
                            final String the_body) {
     the_response.status(HttpStatus.NOT_FOUND_404);
+    the_response.body(the_body);
     Main.LOGGER.error("server error 404 on endpoint " + endpointName());
     my_endpoint_result = the_body;
   }
@@ -190,6 +195,7 @@ public abstract class AbstractEndpoint implements Endpoint {
   public void badDataType(final Response the_response, 
                           final String the_body) {
     the_response.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE_415);
+    the_response.body(the_body);
     Main.LOGGER.error("bad data type from client 415 on endpoint " + 
         endpointName());
     my_endpoint_result = the_body;
@@ -203,6 +209,7 @@ public abstract class AbstractEndpoint implements Endpoint {
   public void badDataContents(final Response the_response, 
                               final String the_body) {
     the_response.status(HttpStatus.UNPROCESSABLE_ENTITY_422);
+    the_response.body(the_body);
     Main.LOGGER.error("bad data from client 422 on endpoint " + endpointName());
     my_endpoint_result = the_body;
   }
@@ -215,6 +222,7 @@ public abstract class AbstractEndpoint implements Endpoint {
   public void serverError(final Response the_response, 
                           final String the_body) {
     the_response.status(HttpStatus.INTERNAL_SERVER_ERROR_500);
+    the_response.body(the_body);
     Main.LOGGER.error("server error 500 on endpoint " + endpointName());
     my_endpoint_result = the_body;
   }
@@ -228,6 +236,7 @@ public abstract class AbstractEndpoint implements Endpoint {
   public void serverUnavailable(final Response the_response, 
                                 final String the_body) {
     the_response.status(HttpStatus.SERVICE_UNAVAILABLE_503);
+    the_response.body(the_body);
     Main.LOGGER.error("server temporarily unavailable 503 on endpoint " + 
         endpointName());
     my_endpoint_result = the_body;
