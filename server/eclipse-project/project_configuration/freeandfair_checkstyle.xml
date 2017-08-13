@@ -11,6 +11,7 @@
 <module name="Checker">
   <property name="severity" value="warning"/>
   <module name="TreeWalker">
+    <module name="SuppressWarningsHolder"/>
     <module name="ConstantName">
       <message key="name.invalidPattern" value="Constant ''{0}'' must be named IN_ALL_UPPER_CASE_WITH_UNDERSCORES."/>
     </module>
@@ -228,4 +229,5 @@
     <property name="max" value="1000"/>
   </module>
   <module name="FileTabCharacter"/>
+  <module name="SuppressWarningsFilter" />
 </module>
