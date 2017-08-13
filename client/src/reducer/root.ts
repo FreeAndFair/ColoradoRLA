@@ -24,6 +24,15 @@ export default function root(state: AppState = defaultState, action: any) {
         return { ...state, loggedIn: true, dashboard: 'sos', sos: {} };
     }
 
+    case 'DOS_DASHBOARD_REFRESH_RECEIVE': {
+        const nextState = { ...state };
+
+        const { data } = action;
+        nextState.sos = { ...state.sos, ...data };
+
+        return nextState;
+    }
+
     case 'FETCH_INITIAL_STATE_SEND': {
         // TODO: add flag to indicate pending fetch.
         return state;
