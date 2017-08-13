@@ -12,50 +12,12 @@
 
 package us.freeandfair.corla.endpoint;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.sql.Blob;
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.OptionalLong;
-
-import javax.persistence.PersistenceException;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItemIterator;
-import org.apache.commons.fileupload.FileItemStream;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.fileupload.util.Streams;
-import org.eclipse.jetty.http.HttpStatus;
-import org.hibernate.Session;
+import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.ESTABLISH_AUDIT_BOARD_EVENT;
 
 import spark.Request;
 import spark.Response;
 
-import us.freeandfair.corla.Main;
-import us.freeandfair.corla.csv.BallotManifestParser;
-import us.freeandfair.corla.csv.ColoradoBallotManifestParser;
-import us.freeandfair.corla.model.BallotManifestInfo;
-import us.freeandfair.corla.model.County;
-import us.freeandfair.corla.model.CountyDashboard;
-import us.freeandfair.corla.model.UploadedFile;
-import us.freeandfair.corla.model.UploadedFile.FileType;
-import us.freeandfair.corla.model.UploadedFile.HashStatus;
-import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.CountyDashboardQueries;
-import us.freeandfair.corla.util.FileHelper;
-import us.freeandfair.corla.util.SparkHelper;
+import us.freeandfair.corla.asm.ASMEvent;
 
 /**
  * Establish the audit board for a county.

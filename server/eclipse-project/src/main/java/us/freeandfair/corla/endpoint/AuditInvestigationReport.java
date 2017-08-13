@@ -12,34 +12,12 @@
 
 package us.freeandfair.corla.endpoint;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.time.Instant;
-import java.util.OptionalLong;
-import java.util.stream.Collectors;
-
-import javax.persistence.PersistenceException;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.ServletException;
-
-import org.hibernate.Session;
-
-import com.google.gson.JsonSyntaxException;
+import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.SUBMIT_AUDIT_INVESTIGATION_REPORT_EVENT;
 
 import spark.Request;
 import spark.Response;
 
-import us.freeandfair.corla.Main;
-import us.freeandfair.corla.model.CastVoteRecord;
-import us.freeandfair.corla.model.CastVoteRecord.RecordType;
-import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.util.SuppressFBWarnings;
+import us.freeandfair.corla.asm.ASMEvent;
 
 /**
  * Submit an audit investigation report.

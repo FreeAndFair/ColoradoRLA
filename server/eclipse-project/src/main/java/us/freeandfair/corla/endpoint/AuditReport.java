@@ -12,18 +12,12 @@
 
 package us.freeandfair.corla.endpoint;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.SUBMIT_AUDIT_REPORT_EVENT;
 
 import spark.Request;
 import spark.Response;
 
-import us.freeandfair.corla.Main;
-import us.freeandfair.corla.model.BallotManifestInfo;
-import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.util.SparkHelper;
+import us.freeandfair.corla.asm.ASMEvent;
 
 /**
  * Publish the intermediate audit report by the audit board.

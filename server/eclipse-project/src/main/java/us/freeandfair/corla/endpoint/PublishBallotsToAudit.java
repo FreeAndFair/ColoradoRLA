@@ -11,19 +11,12 @@
  */
 
 package us.freeandfair.corla.endpoint;
-
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.PUBLISH_BALLOTS_TO_AUDIT_EVENT;
 
 import spark.Request;
 import spark.Response;
 
-import us.freeandfair.corla.Main;
-import us.freeandfair.corla.model.BallotManifestInfo;
-import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.util.SparkHelper;
+import us.freeandfair.corla.asm.ASMEvent;
 
 /**
  * Download all ballots to audit for the entire state.

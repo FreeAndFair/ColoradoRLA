@@ -12,18 +12,12 @@
 
 package us.freeandfair.corla.endpoint;
 
-import javax.persistence.PersistenceException;
-
-import com.google.gson.JsonSyntaxException;
+import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.INDICATE_FULL_HAND_COUNT_CONTEST_EVENT;
 
 import spark.Request;
 import spark.Response;
 
-import us.freeandfair.corla.Main;
-import us.freeandfair.corla.model.ContestToAudit;
-import us.freeandfair.corla.model.DepartmentOfStateDashboard;
-import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.DepartmentOfStateDashboardQueries;
+import us.freeandfair.corla.asm.ASMEvent;
 
 /**
  * The endpoint for indicating that a contest must be hand-counted.
@@ -77,7 +71,8 @@ public class IndicateHandCount extends AbstractDoSDashboardEndpoint {
     // try {
     //   final ContestToAudit[] contests = 
     //       Main.GSON.fromJson(the_request.body(), ContestToAudit[].class);
-    //   final DepartmentOfStateDashboard dosdb = DepartmentOfStateDashboardQueries.get();
+    //   final DepartmentOfStateDashboard dosdb = 
+    //       DepartmentOfStateDashboardQueries.get();
     //   if (dosdb == null) {
     //     Main.LOGGER.error("could not get department of state dashboard");
     //     serverError(the_response, "Could not select contests");
@@ -96,6 +91,6 @@ public class IndicateHandCount extends AbstractDoSDashboardEndpoint {
     //   serverError(the_response, "Unable to save contest selection");
     // }
     // return my_endpoint_result;
-    return "Selected the passed contests for hand audit."
+    return "Selected the passed contests for hand audit.";
   }
 }

@@ -12,18 +12,12 @@
 
 package us.freeandfair.corla.endpoint;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.PUBLISH_AUDIT_DATA_EVENT;
 
 import spark.Request;
 import spark.Response;
 
-import us.freeandfair.corla.Main;
-import us.freeandfair.corla.model.BallotManifestInfo;
-import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.util.SparkHelper;
+import us.freeandfair.corla.asm.ASMEvent;
 
 /**
  * Download all of the data relevant to public auditing of a RLA.
@@ -61,7 +55,7 @@ public class PublishDataToAudit extends AbstractDoSDashboardEndpoint {
    */
   @Override
   protected ASMEvent endpointEvent() {
-    return PUBLISH_AUDIT_DATA_EVENT
+    return PUBLISH_AUDIT_DATA_EVENT;
   }
   
   /**

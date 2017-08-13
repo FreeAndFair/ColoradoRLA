@@ -12,18 +12,12 @@
 
 package us.freeandfair.corla.endpoint;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.SUBMIT_INTERMEDIATE_AUDIT_REPORT_EVENT;
 
 import spark.Request;
 import spark.Response;
 
-import us.freeandfair.corla.Main;
-import us.freeandfair.corla.model.BallotManifestInfo;
-import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.util.SparkHelper;
+import us.freeandfair.corla.asm.ASMEvent;
 
 /**
  * Publish the intermediate audit report by the audit board.
@@ -70,8 +64,8 @@ public class IntermediateAuditReport extends AbstractAuditBoardDashboardEndpoint
   @Override
   public String endpoint(final Request the_request,
                          final Response the_response) {
-    return "Save an intermediate audit report so that the audit board members " +;
-    "can take a break, go to lunch, go home for the night, etc.";
+    return "Save an intermediate audit report so that the audit board members " +
+        "can take a break, go to lunch, go home for the night, etc.";
     // deauthenticate user
   }
 }
