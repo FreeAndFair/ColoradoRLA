@@ -119,16 +119,9 @@ public abstract class AbstractEndpoint implements Endpoint {
   /**
    * Indicate and log that the operation completed successfully.
    */
-<<<<<<< HEAD
-  public void unauthorized(final Response the_response, final String the_log_message) {
-    the_response.status(HttpStatus.UNAUTHORIZED_401);
-    Main.LOGGER.error("unauthorized access 401: " + the_log_message);
-    // TODO: should we halt() the endpoint execution here and simply send the response
-=======
   public void ok(final Response the_response, final String the_log_message) {
     the_response.status(HttpStatus.OK_200);
     Main.LOGGER.error("successful operation 200: " + the_log_message);
->>>>>>> Implemented automatic ASM load, transition, and save for endpoints.
     my_endpoint_result = the_log_message;
   }
 
@@ -262,12 +255,9 @@ public abstract class AbstractEndpoint implements Endpoint {
    * themselves).
    */
   public void after(final Request the_request, final Response the_response) {
-<<<<<<< HEAD
-=======
     // first, take the transition for this endpoint in the ASM and save it to the DB
     transitionAndSaveASM();
     // then finish the transaction
->>>>>>> Implemented automatic ASM load, transition, and save for endpoints.
     if (Persistence.isTransactionRunning()) {
       try {
         Persistence.commitTransaction();
@@ -336,10 +326,8 @@ public abstract class AbstractEndpoint implements Endpoint {
         result = county || state;
         break;
           
-<<<<<<< HEAD
-=======
       case NONE:
->>>>>>> Implemented automatic ASM load, transition, and save for endpoints.
+
       default:
     }
     
