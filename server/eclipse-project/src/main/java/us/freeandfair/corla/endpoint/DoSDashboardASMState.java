@@ -51,8 +51,9 @@ public class DoSDashboardASMState extends AbstractDoSDashboardEndpoint {
     // there's really nothing to do here other than get the ASM state, which we
     // conveniently have locally already
     
-    ok(the_response, Main.GSON.toJson(new ServerASMResponse(my_asm.currentState(), 
-                                                            my_asm.enabledUIEvents())));
+    okJSON(the_response, 
+           Main.GSON.toJson(new ServerASMResponse(my_asm.currentState(), 
+                                                  my_asm.enabledUIEvents())));
     return my_endpoint_result;
   }
 

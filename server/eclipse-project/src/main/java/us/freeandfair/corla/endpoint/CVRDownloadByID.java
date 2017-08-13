@@ -65,7 +65,7 @@ public class CVRDownloadByID extends AbstractCountyDashboardEndpoint {
       if (c == null) {
         dataNotFound(the_response, "CVR not found");
       } else {
-        ok(the_response, Main.GSON.toJson(c));
+        okJSON(the_response, Main.GSON.toJson(c));
       }
     } catch (final NumberFormatException e) {
       invariantViolation(the_response, "Bad CVR ID");

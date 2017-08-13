@@ -65,10 +65,9 @@ public class DoSDashboardRefresh extends AbstractDoSDashboardEndpoint {
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
     try {
-      final String refresh = 
-          Main.GSON.toJson(DoSDashboardRefreshResponse.createResponse
-                           (DepartmentOfStateDashboardQueries.get()));
-      ok(the_response, refresh);
+      okJSON(the_response, 
+             Main.GSON.toJson(DoSDashboardRefreshResponse.createResponse
+                              (DepartmentOfStateDashboardQueries.get())));
     } catch (final PersistenceException e) {
       serverError(the_response, "could not obtain dashboard state");
     }
