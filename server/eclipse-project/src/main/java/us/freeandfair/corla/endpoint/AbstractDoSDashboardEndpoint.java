@@ -37,10 +37,8 @@ public abstract class AbstractDoSDashboardEndpoint extends AbstractEndpoint {
   }
   
   /**
-   * Returns null, because the DoS dashboard is a singleton.
-   * 
-   * @param the_request The request, ignored.
-   * @return null.
+   * @param the_request the ignored request.
+   * @return null because the DoS dashboard is a singleton.
    */
   @Override
   // this method is definitely not empty, but PMD thinks it is
