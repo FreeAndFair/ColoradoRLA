@@ -1092,7 +1092,7 @@ BEGIN
 %%% quoted below.
 
 % @trace RDPR-6-Jul-2017 Section 25.2.2(H)
-e
+
 %%% As stated in RDPR-6-Jul-2017 Section 25.2.2(K):
 %%% \begin{quotation}
 %%% The Secretary of State will convene a public meeting on the tenth
@@ -1122,7 +1122,7 @@ e
 %%% As such, the seed of our pseudorandom algorithm must be a natural
 %%% number that is at least twenty digits long.
   seed: TYPE = {n: nat | 9999999999999999999 < n}
-s%%% The random number generator itself must be seeded with the seed
+%%% The random number generator itself must be seeded with the seed
 %%% provided by the Department of State, and then after being seeded
 %%% it must deterministically produce new pseudorandom numbers in a
 %%% specified range.
