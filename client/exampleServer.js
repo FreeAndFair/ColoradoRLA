@@ -23,11 +23,11 @@ const route = (m, path, handler) => {
 
         const { data, status } = handler(req, res);
 
+        res.writeHead(status, headers('application/json'));
+
         if (typeof data === 'string') {
-            res.writeHead(status, headers('text/plain'));
-            res.end(data);
+            res.end(JSON.stringify({ result: data }));
         } else {
-            res.writeHead(status, headers('application/json'));
             res.end(JSON.stringify(data));
         }
 
