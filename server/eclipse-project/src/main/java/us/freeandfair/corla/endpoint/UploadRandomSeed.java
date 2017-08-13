@@ -18,7 +18,6 @@ import javax.persistence.PersistenceException;
 import spark.Request;
 import spark.Response;
 
-import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.model.DepartmentOfStateDashboard;
 import us.freeandfair.corla.persistence.Persistence;

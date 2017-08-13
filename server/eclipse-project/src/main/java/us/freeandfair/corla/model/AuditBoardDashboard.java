@@ -27,6 +27,8 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
@@ -88,10 +90,10 @@ public class AuditBoardDashboard extends AbstractEntity implements Serializable 
   /**
    * The members of the audit board.
    */
-  @ElementCollection(fetch = FetchType.EAGER)
-  @CollectionTable(name = "audit_board_member",
-                   joinColumns = @JoinColumn(name = "audit_board_dashboard_id", 
-                                             referencedColumnName = "my_id"))
+  @ManyToMany(fetch = FetchType.EAGER)
+  @JoinTable(name = "audit_board_member",
+             joinColumns = @JoinColumn(name = "audit_board_dashboard_id", 
+                                       referencedColumnName = "my_id"))
   @OrderColumn(name = INDEX)
   @Column(name = "elector_id")
   private Set<Elector> my_members = new HashSet<>();
