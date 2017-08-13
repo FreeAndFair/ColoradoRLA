@@ -62,7 +62,7 @@ test('setRiskLimit', s => {
         fetch.flush().then(() => {
             t.deepEqual(f.store.getActions(), [
                 { type: 'SET_RISK_LIMIT_SEND' },
-                { type: 'SET_RISK_LIMIT_RECEIVE' },
+                { type: 'SET_RISK_LIMIT_OK' },
             ]);
 
             teardown(f);

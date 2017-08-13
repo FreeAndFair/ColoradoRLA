@@ -13,7 +13,7 @@ const uploadRandomSeed = (seed: string) => {
         fetch(url, { method: 'post', body })
             .then(r => {
                 if (r.ok) {
-                    dispatch({ type: 'UPLOAD_RANDOM_SEED_RECEIVE' });
+                    dispatch({ type: 'UPLOAD_RANDOM_SEED_OK' });
                 } else {
                     dispatch({ type: 'UPLOAD_RANDOM_SEED_FAIL' });
                 }
