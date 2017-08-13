@@ -37,6 +37,15 @@ const formatFormData = (formData: any) => {
                 contest: id,
                 reason: r.reason.id,
             });
+            return;
+        }
+        if (r.handCount) {
+            data.push({
+                audit: 'hand_count',
+                contest: id,
+                reason: 'no_audit',
+            });
+            return;
         }
     });
 
