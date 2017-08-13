@@ -155,8 +155,6 @@ public abstract class AbstractEndpoint implements Endpoint {
     }
     my_persistent_asm_state.updateFrom(my_asm);
     Persistence.saveOrUpdate(my_persistent_asm_state);
-    System.err.println(my_persistent_asm_state);
-    System.err.println(my_asm.currentState());
     return true;
   }
   
