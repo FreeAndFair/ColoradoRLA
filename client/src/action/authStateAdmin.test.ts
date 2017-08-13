@@ -35,7 +35,7 @@ const URL = /\/auth-state-admin$/;
 test('authStateAdmin', s => {
     test('sends the right data', t => {
         const f = setup();
-        f.fetch(URL, { body: 'Authenticated', status: 200 });
+        f.fetch(URL, { body: {}, status: 200 });
 
         t.plan(3);
 
@@ -54,7 +54,7 @@ test('authStateAdmin', s => {
 
     test('when authenticated', t => {
         const f = setup();
-        f.fetch(URL, { body: 'Authenticated', status: 200 });
+        f.fetch(URL, { body: {}, status: 200 });
 
         t.plan(1);
 
@@ -64,7 +64,7 @@ test('authStateAdmin', s => {
         fetch.flush().then(() => {
             t.deepEqual(f.store.getActions(), [
                 { type: 'AUTH_STATE_ADMIN_SEND' },
-                { type: 'AUTH_STATE_ADMIN_OK' },
+                { type: 'AUTH_STATE_ADMIN_OK', data: {} },
             ]);
 
             teardown(f);
@@ -74,7 +74,7 @@ test('authStateAdmin', s => {
     test('when auth fails', t => {
         const f = setup();
         f.fetch(URL, {
-            body: 'Authentication failed',
+            body: { error: 'Authentication failed' },
             status: 401,
         });
 
