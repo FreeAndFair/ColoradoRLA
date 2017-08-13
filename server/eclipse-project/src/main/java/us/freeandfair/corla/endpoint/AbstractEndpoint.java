@@ -16,6 +16,9 @@
 
 package us.freeandfair.corla.endpoint;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
 
@@ -28,7 +31,6 @@ import spark.Spark;
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.AbstractStateMachine;
-import us.freeandfair.corla.asm.DoSDashboardASM;
 import us.freeandfair.corla.asm.PersistentASMState;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
 import us.freeandfair.corla.persistence.Persistence;
@@ -44,7 +46,7 @@ import us.freeandfair.corla.query.PersistentASMStateQueries;
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 0.0.1
  */
-@SuppressWarnings("PMD.AtLeastOneConstructor")
+@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.TooManyMethods"})
 public abstract class AbstractEndpoint implements Endpoint {
   /**
    * The endpoint result for the ongoing transaction.
@@ -52,10 +54,15 @@ public abstract class AbstractEndpoint implements Endpoint {
   protected String my_endpoint_result;
   
   /**
-   * The ASM for this endpoint, load in the `before` of the endpoint
-   * and saved in the `after`.
+   * The ASM for this endpoint.
    */
   protected AbstractStateMachine my_asm;
+  
+  /**
+   * The persistent state for this endpoint's ASM, loaded in the `before`
+   * of the endpoint and saved in the `after`.
+   */
+  protected PersistentASMState my_persistent_asm_state;
   
   /**
    * Halts the endpoint execution by ending the request and returning the
@@ -71,19 +78,48 @@ public abstract class AbstractEndpoint implements Endpoint {
   protected abstract Class<? extends AbstractStateMachine> asmClass(); 
   
   /**
+   * Gets the identity of the ASM used by this endpoint for this
+   * request (as necessary).
+   * 
+   * @param the_request The request.
+   * @return The identity of the ASM used by this endpoint for this
+   * request. 
+   */
+  protected abstract String asmIdentity(Request the_request);
+  
+  /**
    * Load the appropriate ASM from the database and make sure that
    * the transition we wish to take is legal.
+   * 
+   * @param the_request The request.
+   * @param the_response The response.
    */
-  protected void loadAndCheckASM(final Response the_response) {
-    // get the state of the DoS dashboard
-    try {
-      my_asm = (AbstractStateMachine) (asmClass().getConstructor().newInstance());
-    } catch (final Exception e) {
-      // something went horribly wrong
+  protected void loadAndCheckASM(final Request the_request,
+                                 final Response the_response) {
+    // get the state of the dashboard
+    if (asmClass() == null) {
+      return;
     }
-    final PersistentASMState state = 
+    final String asm_id = asmIdentity(the_request);
+    try {
+      if (asm_id == null) {
+        // this is a singleton ASM, so it has a no-argument constructor
+        my_asm = asmClass().getConstructor().newInstance();
+      } else {
+        // this ASM has an identity, so we need a 1-argument constructor 
+        // that takes a String
+        final Constructor<? extends AbstractStateMachine> constructor = 
+            asmClass().getConstructor(String.class);
+        my_asm = constructor.newInstance(asm_id);
+      }
+    } catch (final IllegalAccessException | InstantiationException | 
+                   InvocationTargetException | NoSuchMethodException e) {
+      Main.LOGGER.error("Unable to construct ASM of class " + asmClass() +
+                        " with identity " + asm_id);
+    }
+    my_persistent_asm_state = 
         PersistentASMStateQueries.get(asmClass(), null);
-    state.applyTo(my_asm);
+    my_persistent_asm_state.applyTo(my_asm);
     // check that we are in the right ASM state
     if (!my_asm.enabledASMEvents().contains(endpointEvent())) {
       illegalTransition(the_response,
@@ -98,8 +134,8 @@ public abstract class AbstractEndpoint implements Endpoint {
    */
   protected void transitionAndSaveASM()  {
     my_asm.stepEvent(endpointEvent());
-    final PersistentASMState new_state = PersistentASMState.stateFor(my_asm);
-    Persistence.saveOrUpdate(new_state);
+    my_persistent_asm_state.updateFrom(my_asm);
+    Persistence.saveOrUpdate(my_persistent_asm_state);
   }
   
   /**
@@ -111,6 +147,7 @@ public abstract class AbstractEndpoint implements Endpoint {
 
   /**
    * Indicate that the operation completed successfully.
+   * @param the_response the HTTP response.
    */
   public void ok(final Response the_response) {
     the_response.status(HttpStatus.OK_200);    
@@ -118,97 +155,128 @@ public abstract class AbstractEndpoint implements Endpoint {
   
   /**
    * Indicate and log that the operation completed successfully.
+   * @param the_response the HTTP response.
+   * @param the_body the body of the HTTP response.
    */
-  public void ok(final Response the_response, final String the_log_message) {
+  public void ok(final Response the_response, 
+                 final String the_body) {
     the_response.status(HttpStatus.OK_200);
-    Main.LOGGER.error("successful operation 200: " + the_log_message);
-    my_endpoint_result = the_log_message;
+    the_response.body(the_body);
+    Main.LOGGER.error("successful operation 200 on endpoint " + endpointName());
+    my_endpoint_result = the_body;
   }
 
   /**
    * Indicate the client has violated an invariant or precondition relating data
    * to the endpoint in question. E.g., a digest is incorrect with regards to
    * the file that it summarizes.
+   * @param the_response the HTTP response.
+   * @param the_body the body of the HTTP response.
    */
   public void invariantViolation(final Response the_response, 
-                                 final String the_log_message) {
+                                 final String the_body) {
     the_response.status(HttpStatus.BAD_REQUEST_400);
-    Main.LOGGER.error("invariant violation 400: " + the_log_message);
-    my_endpoint_result = the_log_message;
+    the_response.body(the_body);
+    Main.LOGGER.error("invariant violation 400 on endpoint " + endpointName());
+    my_endpoint_result = the_body;
   }
   
   /**
    * Indicate that the client is not authorized to perform the requested action.
+   * @param the_response the HTTP response.
+   * @param the_body the body of the HTTP response.
    */
   public void unauthorized(final Response the_response, 
-                           final String the_log_message) {
+                           final String the_body) {
     the_response.status(HttpStatus.UNAUTHORIZED_401);
-    Main.LOGGER.error("unauthorized access 401: " + the_log_message);
+    the_response.body(the_body);
+    Main.LOGGER.error("unauthorized access 401 on endpoint " + endpointName());
     // TODO: should we halt() the endpoint execution here and simply send 
     // the response
-    my_endpoint_result = the_log_message;
+    my_endpoint_result = the_body;
   }
 
   /**
    * Indicate the client cannot perform the requested action because it violates
    * the server's state machine.
+   * @param the_response the HTTP response.
+   * @param the_body the body of the HTTP response.
    */
   public void illegalTransition(final Response the_response, 
-                                final String the_log_message) {
+                                final String the_body) {
     the_response.status(HttpStatus.FORBIDDEN_403);
-    Main.LOGGER.error("illegal transition attempt 403: " + the_log_message);
-    my_endpoint_result = the_log_message;
+    the_response.body(the_body);
+    Main.LOGGER.error("illegal transition attempt 403 on endpoint " + 
+        endpointName());
+    my_endpoint_result = the_body;
   }
 
   /**
    * Indicate that some data was not found.
+   * @param the_response the HTTP response.
+   * @param the_body the body of the HTTP response.
    */
   public void dataNotFound(final Response the_response, 
-                           final String the_log_message) {
+                           final String the_body) {
     the_response.status(HttpStatus.NOT_FOUND_404);
-    Main.LOGGER.error("server error 404: " + the_log_message);
-    my_endpoint_result = the_log_message;
+    the_response.body(the_body);
+    Main.LOGGER.error("server error 404 on endpoint " + endpointName());
+    my_endpoint_result = the_body;
   }
 
   /**
    * Indicate that the type/shape of data the client provided is ill-formed.
+   * @param the_response the HTTP response.
+   * @param the_body the body of the HTTP response.
    */
   public void badDataType(final Response the_response, 
-                          final String the_log_message) {
+                          final String the_body) {
     the_response.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE_415);
-    Main.LOGGER.error("bad data type from client 415: " + the_log_message);
-    my_endpoint_result = the_log_message;
+    the_response.body(the_body);
+    Main.LOGGER.error("bad data type from client 415 on endpoint " + 
+        endpointName());
+    my_endpoint_result = the_body;
   }
 
   /**
    * Indicate that data that the client provided is ill-formed.
+   * @param the_response the HTTP response.
+   * @param the_body the body of the HTTP response.
    */
   public void badDataContents(final Response the_response, 
-                              final String the_log_message) {
+                              final String the_body) {
     the_response.status(HttpStatus.UNPROCESSABLE_ENTITY_422);
-    Main.LOGGER.error("bad data from client 422: " + the_log_message);
-    my_endpoint_result = the_log_message;
+    the_response.body(the_body);
+    Main.LOGGER.error("bad data from client 422 on endpoint " + endpointName());
+    my_endpoint_result = the_body;
   }
 
   /**
    * Indicate that an internal server error has taken place.
+   * @param the_response the HTTP response.
+   * @param the_body the body of the HTTP response.
    */
   public void serverError(final Response the_response, 
-                          final String the_log_message) {
+                          final String the_body) {
     the_response.status(HttpStatus.INTERNAL_SERVER_ERROR_500);
-    Main.LOGGER.error("server error 500: " + the_log_message);
-    my_endpoint_result = the_log_message;
+    the_response.body(the_body);
+    Main.LOGGER.error("server error 500 on endpoint " + endpointName());
+    my_endpoint_result = the_body;
   }
 
   /**
    * Indicate that the server is temporarily unavailable. This is typically due
    * to a long-lived transaction running or server maintenance.
+   * @param the_response the HTTP response.
+   * @param the_body the body of the HTTP response.
    */
   public void serverUnavailable(final Response the_response, 
-                                final String the_log_message) {
+                                final String the_body) {
     the_response.status(HttpStatus.SERVICE_UNAVAILABLE_503);
-    Main.LOGGER.error("server temporarily unavailable 503: " + the_log_message);
-    my_endpoint_result = the_log_message;
+    the_response.body(the_body);
+    Main.LOGGER.error("server temporarily unavailable 503 on endpoint " + 
+        endpointName());
+    my_endpoint_result = the_body;
   }
 
   /**
@@ -223,8 +291,9 @@ public abstract class AbstractEndpoint implements Endpoint {
     ok(the_response);
 
     // If this is the root endpoint, just return.
-    if (endpointName().equals("/"))
+    if ("/".equals(endpointName())) {
       return;
+    }
 
     // Start a transaction, if the database is functioning; otherwise abort
     if (Persistence.hasDB()) {
@@ -246,6 +315,9 @@ public abstract class AbstractEndpoint implements Endpoint {
       dataNotFound(the_response, "parameter validation failed");
       halt(the_response);
     }
+    
+    // Load and check the ASM
+    loadAndCheckASM(the_request, the_response);
   } 
   
   /**

@@ -11,9 +11,13 @@
 
 package us.freeandfair.corla.endpoint;
 
+import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.COUNTY_SKIP_EVENT;
+
 import spark.Request;
 import spark.Response;
 
+import us.freeandfair.corla.asm.ASMEvent;
+import us.freeandfair.corla.asm.CountyDashboardASM;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
 
 /**
@@ -25,6 +29,22 @@ import us.freeandfair.corla.model.Administrator.AdministratorType;
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
 public class AuthenticateCountyAdministrator extends AbstractEndpoint {
+  /**
+   * @return no authorization is required for this endpoints.
+   */
+  @Override
+  public AuthorizationType requiredAuthorization() {
+    return AuthorizationType.NONE;
+  }
+  
+  /**
+   * @return this endpoint uses the Department of State ASM.
+   */
+  @Override
+  protected Class<CountyDashboardASM> asmClass() {
+    return CountyDashboardASM.class;
+  }
+
   /**
    * {@inheritDoc}
    */
@@ -39,6 +59,26 @@ public class AuthenticateCountyAdministrator extends AbstractEndpoint {
   @Override
   public String endpointName() {
     return "/auth-county-admin";
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected ASMEvent endpointEvent() {
+    return COUNTY_SKIP_EVENT;
+  }
+  
+  /**
+   * Gets the ASM identity for the specified request.
+   * 
+   * @param the_request The request.
+   * @return the county ID of the authenticated county.
+   */
+  @Override
+  protected String asmIdentity(final Request the_request) {
+    return String.valueOf(Authentication.
+                          authenticatedCounty(the_request).identifier());
   }
 
   /**

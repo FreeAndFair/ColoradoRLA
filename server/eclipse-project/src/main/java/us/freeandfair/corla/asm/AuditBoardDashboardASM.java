@@ -49,13 +49,13 @@ public class AuditBoardDashboardASM extends AbstractStateMachine {
    * @trace asm.county_dashboard_asm
    */
   //@ requires the_county_id != null;
-  public AuditBoardDashboardASM(final Integer the_county_id) {
+  public AuditBoardDashboardASM(final String the_county_id) {
     super(new HashSet<ASMState>(Arrays.asList(AuditBoardDashboardState.values())),
           new HashSet<ASMEvent>(Arrays.asList(AuditBoardDashboardEvent.values())),
           transitionsFor(Arrays.
                          asList(AuditBoardDashboardTransitionFunction.values())),
           AuditBoardDashboardState.AUDIT_INITIAL_STATE,
           new HashSet<ASMState>(Arrays.asList(FINAL_STATES)),
-          String.valueOf(the_county_id));
+          the_county_id);
   }
 }

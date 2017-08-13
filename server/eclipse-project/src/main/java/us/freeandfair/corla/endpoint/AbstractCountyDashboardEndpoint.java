@@ -11,6 +11,8 @@
 
 package us.freeandfair.corla.endpoint;
 
+import spark.Request;
+
 import us.freeandfair.corla.asm.CountyDashboardASM;
 
 /**
@@ -32,5 +34,17 @@ public abstract class AbstractCountyDashboardEndpoint extends AbstractEndpoint {
   @Override
   protected Class<CountyDashboardASM> asmClass() {
     return CountyDashboardASM.class;
+  }
+  
+  /**
+   * Gets the ASM identity for the specified request.
+   * 
+   * @param the_request The request.
+   * @return the county ID of the authenticated county.
+   */
+  @Override
+  protected String asmIdentity(final Request the_request) {
+    return String.valueOf(Authentication.
+                          authenticatedCounty(the_request).identifier());
   }
 }

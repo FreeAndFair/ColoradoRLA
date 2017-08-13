@@ -12,6 +12,10 @@
 
 package us.freeandfair.corla.asm;
 
+import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.*;
+import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.*;
+import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.*;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
@@ -26,6 +30,8 @@ import us.freeandfair.corla.Main;
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 0.0.1
  */
+// we'll need to investigate the complexity of this class later
+@SuppressWarnings("PMD.CyclomaticComplexity")
 public abstract class AbstractStateMachine implements Serializable {
   /**
    * The serialVersionUID.
@@ -176,6 +182,13 @@ public abstract class AbstractStateMachine implements Serializable {
    */
   public Set<ASMEvent> enabledASMEvents() {
     final Set<ASMEvent> result = new HashSet<ASMEvent>();
+    // skips and refreshes are always permitted
+    result.add(DOS_SKIP_EVENT);
+    result.add(DOS_REFRESH_EVENT);
+    result.add(COUNTY_SKIP_EVENT);
+    result.add(COUNTY_REFRESH_EVENT);
+    result.add(AUDIT_SKIP_EVENT);
+    result.add(AUDIT_REFRESH_EVENT);
     for (final ASMTransition t : my_transition_function) {
       if (t.startState().equals(my_current_state)) {
         result.add(t.event());
@@ -215,8 +228,19 @@ public abstract class AbstractStateMachine implements Serializable {
    * @throws IllegalStateException is this ASM cannot transition given
    * the provided event.
    */
+  @SuppressWarnings("PMD.CyclomaticComplexity")
   public ASMState stepEvent(final ASMEvent the_event)
       throws IllegalStateException {
+    // refresh and skip events are always permitted
+    if (the_event == DOS_REFRESH_EVENT ||
+        the_event == DOS_SKIP_EVENT ||
+        the_event == COUNTY_REFRESH_EVENT || 
+        the_event == COUNTY_SKIP_EVENT ||
+        the_event == AUDIT_REFRESH_EVENT || 
+        the_event == AUDIT_SKIP_EVENT) {
+      return currentState();
+    }
+                
     ASMState result = null;
     for (final ASMTransition t : my_transition_function) {
       if (t.startState().equals(my_current_state) &&
