@@ -93,7 +93,7 @@ public class EstablishAuditBoard extends AbstractCountyDashboardEndpoint {
           final CountyDashboard cdb = CountyDashboardQueries.get(county.identifier());
           if (cdb == null) {
             Main.LOGGER.error("could not get county dashboard");
-            serverError(the_response, "could not set random seed");
+            serverError(the_response, "could not set audit board");
           } else {
             cdb.setAuditBoardMembers(audit_board);
           }
