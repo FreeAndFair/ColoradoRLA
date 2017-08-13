@@ -149,7 +149,7 @@ public abstract class AbstractEndpoint implements Endpoint {
     }
     try {
       my_asm.stepEvent(endpointEvent());
-    } catch (final IllegalArgumentException e) {
+    } catch (final IllegalStateException e) {
       illegalTransition(the_response, e.getMessage());
       return false;
     }
