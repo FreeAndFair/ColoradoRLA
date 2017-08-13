@@ -30,6 +30,8 @@ import us.freeandfair.corla.Main;
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 0.0.1
  */
+// we'll need to investigate the complexity of this class later
+@SuppressWarnings("PMD.CyclomaticComplexity")
 public abstract class AbstractStateMachine implements Serializable {
   /**
    * The serialVersionUID.
@@ -226,6 +228,7 @@ public abstract class AbstractStateMachine implements Serializable {
    * @throws IllegalStateException is this ASM cannot transition given
    * the provided event.
    */
+  @SuppressWarnings("PMD.CyclomaticComplexity")
   public ASMState stepEvent(final ASMEvent the_event)
       throws IllegalStateException {
     // refresh and skip events are always permitted

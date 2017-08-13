@@ -18,7 +18,6 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
-import us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent;
 import us.freeandfair.corla.json.ServerASMResponse;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
 
@@ -72,7 +71,7 @@ public class AuthenticateStateAdministrator extends AbstractDoSDashboardEndpoint
     }
 
     // Take the transition triggered by this successful authentication.
-    Main.dosDashboardASM().stepEvent(DoSDashboardEvent.AUTHENTICATE_STATE_ADMINISTRATOR_EVENT);
+    Main.dosDashboardASM().stepEvent(AUTHENTICATE_STATE_ADMINISTRATOR_EVENT);
 
     // Build the ASM server response.
     final ServerASMResponse asm_response =

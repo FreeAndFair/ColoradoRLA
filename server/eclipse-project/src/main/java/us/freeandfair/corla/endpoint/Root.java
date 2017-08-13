@@ -63,6 +63,14 @@ public class Root extends AbstractEndpoint {
    * {@inheritDoc}
    */
   @Override
+  protected String asmIdentity(final Request the_request) {
+    return null;
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   protected ASMEvent endpointEvent() {
     return RLA_TOOL_SKIP_EVENT;
   }

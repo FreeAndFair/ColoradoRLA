@@ -369,9 +369,11 @@ public final class Main {
           Persistence.saveOrUpdate(county);
           // create default ASM for this county
           COUNTY_DASHBOARD_ASMS.put(county.identifier(), 
-                                    new CountyDashboardASM(county.identifier()));
+                                    new CountyDashboardASM(String.
+                                                           valueOf(county.identifier())));
           AUDIT_BOARD_DASHBOARD_ASMS.put(county.identifier(), 
-                                         new AuditBoardDashboardASM(county.identifier()));
+                                         new AuditBoardDashboardASM(String.
+                                                           valueOf(county.identifier())));
         } catch (final NumberFormatException e) {
           // we skip this property because it wasn't numeric
         }

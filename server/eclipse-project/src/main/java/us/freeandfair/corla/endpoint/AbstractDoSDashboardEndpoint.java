@@ -11,6 +11,8 @@
 
 package us.freeandfair.corla.endpoint;
 
+import spark.Request;
+
 import us.freeandfair.corla.asm.DoSDashboardASM;
 
 /**
@@ -32,5 +34,18 @@ public abstract class AbstractDoSDashboardEndpoint extends AbstractEndpoint {
   @Override
   protected Class<DoSDashboardASM> asmClass() {
     return DoSDashboardASM.class;
+  }
+  
+  /**
+   * Returns null, because the DoS dashboard is a singleton.
+   * 
+   * @param the_request The request, ignored.
+   * @return null.
+   */
+  @Override
+  // this method is definitely not empty, but PMD thinks it is
+  @SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract")
+  protected String asmIdentity(final Request the_request) {
+    return null;
   }
 }

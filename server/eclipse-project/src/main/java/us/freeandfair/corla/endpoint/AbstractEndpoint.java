@@ -16,6 +16,9 @@
 
 package us.freeandfair.corla.endpoint;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
 
@@ -43,7 +46,7 @@ import us.freeandfair.corla.query.PersistentASMStateQueries;
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 0.0.1
  */
-@SuppressWarnings("PMD.AtLeastOneConstructor")
+@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.TooManyMethods"})
 public abstract class AbstractEndpoint implements Endpoint {
   /**
    * The endpoint result for the ongoing transaction.
@@ -51,10 +54,15 @@ public abstract class AbstractEndpoint implements Endpoint {
   protected String my_endpoint_result;
   
   /**
-   * The ASM for this endpoint, load in the `before` of the endpoint
-   * and saved in the `after`.
+   * The ASM for this endpoint.
    */
   protected AbstractStateMachine my_asm;
+  
+  /**
+   * The persistent state for this endpoint's ASM, loaded in the `before`
+   * of the endpoint and saved in the `after`.
+   */
+  protected PersistentASMState my_persistent_asm_state;
   
   /**
    * Halts the endpoint execution by ending the request and returning the
@@ -70,19 +78,48 @@ public abstract class AbstractEndpoint implements Endpoint {
   protected abstract Class<? extends AbstractStateMachine> asmClass(); 
   
   /**
+   * Gets the identity of the ASM used by this endpoint for this
+   * request (as necessary).
+   * 
+   * @param the_request The request.
+   * @return The identity of the ASM used by this endpoint for this
+   * request. 
+   */
+  protected abstract String asmIdentity(Request the_request);
+  
+  /**
    * Load the appropriate ASM from the database and make sure that
    * the transition we wish to take is legal.
+   * 
+   * @param the_request The request.
+   * @param the_response The response.
    */
-  protected void loadAndCheckASM(final Response the_response) {
-    // get the state of the DoS dashboard
-    try {
-      my_asm = (AbstractStateMachine) (asmClass().getConstructor().newInstance());
-    } catch (final Exception e) {
-      // something went horribly wrong
+  protected void loadAndCheckASM(final Request the_request,
+                                 final Response the_response) {
+    // get the state of the dashboard
+    if (asmClass() == null) {
+      return;
     }
-    final PersistentASMState state = 
+    final String asm_id = asmIdentity(the_request);
+    try {
+      if (asm_id == null) {
+        // this is a singleton ASM, so it has a no-argument constructor
+        my_asm = asmClass().getConstructor().newInstance();
+      } else {
+        // this ASM has an identity, so we need a 1-argument constructor 
+        // that takes a String
+        final Constructor<? extends AbstractStateMachine> constructor = 
+            asmClass().getConstructor(String.class);
+        my_asm = constructor.newInstance(asm_id);
+      }
+    } catch (final IllegalAccessException | InstantiationException | 
+                   InvocationTargetException | NoSuchMethodException e) {
+      Main.LOGGER.error("Unable to construct ASM of class " + asmClass() +
+                        " with identity " + asm_id);
+    }
+    my_persistent_asm_state = 
         PersistentASMStateQueries.get(asmClass(), null);
-    state.applyTo(my_asm);
+    my_persistent_asm_state.applyTo(my_asm);
     // check that we are in the right ASM state
     if (!my_asm.enabledASMEvents().contains(endpointEvent())) {
       illegalTransition(the_response,
@@ -97,8 +134,8 @@ public abstract class AbstractEndpoint implements Endpoint {
    */
   protected void transitionAndSaveASM()  {
     my_asm.stepEvent(endpointEvent());
-    final PersistentASMState new_state = PersistentASMState.stateFor(my_asm);
-    Persistence.saveOrUpdate(new_state);
+    my_persistent_asm_state.updateFrom(my_asm);
+    Persistence.saveOrUpdate(my_persistent_asm_state);
   }
   
   /**
@@ -278,6 +315,9 @@ public abstract class AbstractEndpoint implements Endpoint {
       dataNotFound(the_response, "parameter validation failed");
       halt(the_response);
     }
+    
+    // Load and check the ASM
+    loadAndCheckASM(the_request, the_response);
   } 
   
   /**
