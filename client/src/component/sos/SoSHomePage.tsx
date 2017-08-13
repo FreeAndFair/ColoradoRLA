@@ -84,7 +84,9 @@ const CountyUpdates = ({ counties }: any) => {
 
 
 const SoSHomePage = (props: any) => {
-    const { contests, counties, seed } = props;
+    const { contests, counties, dosDashboardRefresh, seed } = props;
+
+    setTimeout(dosDashboardRefresh, 1000);
 
     return (
         <div className='sos-home'>
