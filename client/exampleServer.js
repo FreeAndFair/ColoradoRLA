@@ -76,4 +76,7 @@ route('post', '/state-refresh', () => ok({
 
 }));
 
+route('post', '/upload-random-seed', (r) => ok(''));
+
+
 app.listen(4000);
