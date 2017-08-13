@@ -1,0 +1,4569 @@
+{"request": {"headers": {"Accept": "*/*", "User-Agent": "curl/7.35.0"}, "host": "localhost:8887", "params": "3", "path": "/ballot-manifest/county", "scheme": "http", "data": "", "method": "GET"}, "response": {"status": 200, "headers": {"Date": "Fri, 11 Aug 2017 04:33:14 GMT", "Transfer-Encoding": "chunked", "Server": "Jetty(9.4.4.v20170414)"},
+"body": "[
+  {
+    "timestamp": {
+      "seconds": 1502422728,
+      "nanos": 787000000
+    },
+    "county_id": 3,
+    "scanner_id": "5",
+    "batch_id": "1600",
+    "batch_size": 20,
+    "storage_location": "Bin 17",
+    "id": 68
+  },
+  {
+    "timestamp": {
+      "seconds": 1502422728,
+      "nanos": 787000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "batch_size": 50,
+    "storage_location": "Bin 17",
+    "id": 69
+  },
+  {
+    "timestamp": {
+      "seconds": 1502422728,
+      "nanos": 787000000
+    },
+    "county_id": 3,
+    "scanner_id": "10",
+    "batch_id": "2",
+    "batch_size": 25,
+    "storage_location": "Bin 22",
+    "id": 65
+  },
+  {
+    "timestamp": {
+      "seconds": 1502422728,
+      "nanos": 787000000
+    },
+    "county_id": 3,
+    "scanner_id": "3",
+    "batch_id": "800",
+    "batch_size": 20,
+    "storage_location": "Bin 1",
+    "id": 66
+  },
+  {
+    "timestamp": {
+      "seconds": 1502422728,
+      "nanos": 787000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "batch_size": 50,
+    "storage_location": "Bin 1",
+    "id": 67
+  }
+]"}}
+{"request": {"headers": {"Accept": "*/*", "User-Agent": "curl/7.35.0"}, "host": "localhost:8887", "params": "", "path": "/ballot-manifest", "scheme": "http", "data": "", "method": "GET"}, "response": {"status": 200, "headers": {"Date": "Fri, 11 Aug 2017 04:33:14 GMT", "Transfer-Encoding": "chunked", "Server": "Jetty(9.4.4.v20170414)"}, "body": "[
+  {
+    "timestamp": {
+      "seconds": 1502422728,
+      "nanos": 787000000
+    },
+    "county_id": 3,
+    "scanner_id": "10",
+    "batch_id": "2",
+    "batch_size": 25,
+    "storage_location": "Bin 22",
+    "id": 65
+  },
+  {
+    "timestamp": {
+      "seconds": 1502422728,
+      "nanos": 787000000
+    },
+    "county_id": 3,
+    "scanner_id": "3",
+    "batch_id": "800",
+    "batch_size": 20,
+    "storage_location": "Bin 1",
+    "id": 66
+  },
+  {
+    "timestamp": {
+      "seconds": 1502422728,
+      "nanos": 787000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "batch_size": 50,
+    "storage_location": "Bin 1",
+    "id": 67
+  },
+  {
+    "timestamp": {
+      "seconds": 1502422728,
+      "nanos": 787000000
+    },
+    "county_id": 3,
+    "scanner_id": "5",
+    "batch_id": "1600",
+    "batch_size": 20,
+    "storage_location": "Bin 17",
+    "id": 68
+  },
+  {
+    "timestamp": {
+      "seconds": 1502422728,
+      "nanos": 787000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "batch_size": 50,
+    "storage_location": "Bin 17",
+    "id": 69
+  }
+]"}}
+{"request": {"headers": {"Accept": "*/*", "User-Agent": "curl/7.35.0"}, "host": "localhost:8887", "params": "", "path": "/contest", "scheme": "http", "data": "", "method": "GET"}, "response": {"status": 200, "headers": {"Date": "Fri, 11 Aug 2017 04:33:14 GMT", "Transfer-Encoding": "chunked", "Server": "Jetty(9.4.4.v20170414)"}, "body": "[
+  {
+    "name": "Regent of the University of Colorado - At Large",
+    "description": "",
+    "choice_names": [
+      "Clear Winner",
+      "Distant Loser"
+    ],
+    "choice_descriptions": {
+      "Distant Loser": "REP",
+      "Clear Winner": "DEM"
+    },
+    "votes_allowed": 1,
+    "id": 71
+  },
+  {
+    "name": "COUNTY COMMISSIONER DISTRICT 3",
+    "description": "",
+    "choice_names": [
+      "Jeff Baker",
+      "Janet Lee Cook"
+    ],
+    "choice_descriptions": {
+      "Janet Lee Cook": "DEM",
+      "Jeff Baker": "REP"
+    },
+    "votes_allowed": 1,
+    "id": 72
+  },
+  {
+    "name": "Proposition 107 (Statutory)",
+    "description": "",
+    "choice_names": [
+      "YES",
+      "NO"
+    ],
+    "choice_descriptions": {
+      "NO": "",
+      "YES": ""
+    },
+    "votes_allowed": 1,
+    "id": 73
+  }
+]"}}
+{"request": {"headers": {"Accept": "*/*", "User-Agent": "curl/7.35.0"}, "host": "localhost:8887", "params": "3", "path": "/contest/county", "scheme": "http", "data": "", "method": "GET"}, "response": {"status": 200, "headers": {"Date": "Fri, 11 Aug 2017 04:33:14 GMT", "Transfer-Encoding": "chunked", "Server": "Jetty(9.4.4.v20170414)"}, "body": "[
+  {
+    "name": "Proposition 107 (Statutory)",
+    "description": "",
+    "choice_names": [
+      "YES",
+      "NO"
+    ],
+    "choice_descriptions": {
+      "NO": "",
+      "YES": ""
+    },
+    "votes_allowed": 1,
+    "id": 73
+  },
+  {
+    "name": "Regent of the University of Colorado - At Large",
+    "description": "",
+    "choice_names": [
+      "Clear Winner",
+      "Distant Loser"
+    ],
+    "choice_descriptions": {
+      "Distant Loser": "REP",
+      "Clear Winner": "DEM"
+    },
+    "votes_allowed": 1,
+    "id": 71
+  },
+  {
+    "name": "COUNTY COMMISSIONER DISTRICT 3",
+    "description": "",
+    "choice_names": [
+      "Jeff Baker",
+      "Janet Lee Cook"
+    ],
+    "choice_descriptions": {
+      "Janet Lee Cook": "DEM",
+      "Jeff Baker": "REP"
+    },
+    "votes_allowed": 1,
+    "id": 72
+  }
+]"}}
+{"request": {"headers": {"Accept": "*/*", "User-Agent": "curl/7.35.0"}, "host": "localhost:8887", "params": "", "path": "/contest/id/71", "scheme": "http", "data": "", "method": "GET"}, "response": {"status": 200, "headers": {"Date": "Fri, 11 Aug 2017 04:33:14 GMT", "Transfer-Encoding": "chunked", "Content-Type": "text/html;charset=utf-8", "Server": "Jetty(9.4.4.v20170414)"}, "body": "{
+  "name": "Regent of the University of Colorado - At Large",
+  "description": "",
+  "choice_names": [
+    "Clear Winner",
+    "Distant Loser"
+  ],
+  "choice_descriptions": {
+    "Distant Loser": "REP",
+    "Clear Winner": "DEM"
+  },
+  "votes_allowed": 1,
+  "id": 71
+}"}}
+{"request": {"headers": {"Accept": "*/*", "User-Agent": "curl/7.35.0"}, "host": "localhost:8887", "params": "3", "path": "/cvr/county", "scheme": "http", "data": "", "method": "GET"}, "response": {"status": 200, "headers": {"Date": "Fri, 11 Aug 2017 04:33:14 GMT", "Transfer-Encoding": "chunked", "Server": "Jetty(9.4.4.v20170414)"}, "body": "[
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "12",
+    "imprinted_id": "4-1200-12",
+    "ballot_type": "31",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 205
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "46",
+    "imprinted_id": "9-3200-46",
+    "ballot_type": "25",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 410
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "10",
+    "imprinted_id": "4-1200-10",
+    "ballot_type": "30",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "YES"
+        ]
+      }
+    ],
+    "id": 202
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "37",
+    "imprinted_id": "4-1200-37",
+    "ballot_type": "45",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      }
+    ],
+    "id": 269
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "36",
+    "imprinted_id": "9-3200-36",
+    "ballot_type": "17",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 393
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "10",
+    "batch_id": "2",
+    "record_id": "14",
+    "imprinted_id": "10-2-14",
+    "ballot_type": "25",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 503
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "19",
+    "imprinted_id": "4-1200-19",
+    "ballot_type": "35",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Distant Loser"
+        ]
+      }
+    ],
+    "id": 223
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "34",
+    "imprinted_id": "9-3200-34",
+    "ballot_type": "11",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 390
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "10",
+    "batch_id": "2",
+    "record_id": "6",
+    "imprinted_id": "10-2-6",
+    "ballot_type": "7",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Janet Lee Cook"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 472
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "31",
+    "imprinted_id": "4-1200-31",
+    "ballot_type": "42",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      }
+    ],
+    "id": 254
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "47",
+    "imprinted_id": "9-3200-47",
+    "ballot_type": "24",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": []
+      }
+    ],
+    "id": 413
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "35",
+    "imprinted_id": "9-3200-35",
+    "ballot_type": "17",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Distant Loser"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Jeff Baker"
+        ]
+      }
+    ],
+    "id": 435
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "39",
+    "imprinted_id": "9-3200-39",
+    "ballot_type": "23",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Jeff Baker"
+        ]
+      }
+    ],
+    "id": 399
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "40",
+    "imprinted_id": "9-3200-40",
+    "ballot_type": "23",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 441
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "5",
+    "batch_id": "1600",
+    "record_id": "16",
+    "imprinted_id": "5-1600-16",
+    "ballot_type": "51",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 172
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "33",
+    "imprinted_id": "9-3200-33",
+    "ballot_type": "11",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Janet Lee Cook"
+        ]
+      }
+    ],
+    "id": 387
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "9",
+    "imprinted_id": "4-1200-9",
+    "ballot_type": "30",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Distant Loser"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Jeff Baker"
+        ]
+      }
+    ],
+    "id": 199
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "4",
+    "imprinted_id": "9-3200-4",
+    "ballot_type": "2",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 421
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "5",
+    "batch_id": "1600",
+    "record_id": "4",
+    "imprinted_id": "5-1600-4",
+    "ballot_type": "51",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 130
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "20",
+    "imprinted_id": "4-1200-20",
+    "ballot_type": "35",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "YES"
+        ]
+      }
+    ],
+    "id": 225
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "27",
+    "imprinted_id": "9-3200-27",
+    "ballot_type": "21",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "YES"
+        ]
+      }
+    ],
+    "id": 376
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "48",
+    "imprinted_id": "4-1200-48",
+    "ballot_type": "50",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "YES"
+        ]
+      }
+    ],
+    "id": 293
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "5",
+    "batch_id": "1600",
+    "record_id": "19",
+    "imprinted_id": "5-1600-19",
+    "ballot_type": "51",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Distant Loser"
+        ]
+      }
+    ],
+    "id": 155
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "31",
+    "imprinted_id": "9-3200-31",
+    "ballot_type": "9",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": []
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Janet Lee Cook"
+        ]
+      }
+    ],
+    "id": 384
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "5",
+    "batch_id": "1600",
+    "record_id": "6",
+    "imprinted_id": "5-1600-6",
+    "ballot_type": "51",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "YES"
+        ]
+      }
+    ],
+    "id": 135
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "25",
+    "imprinted_id": "4-1200-25",
+    "ballot_type": "38",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Distant Loser"
+        ]
+      }
+    ],
+    "id": 239
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "3",
+    "batch_id": "800",
+    "record_id": "19",
+    "imprinted_id": "3-800-19",
+    "ballot_type": "60",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": []
+      },
+      {
+        "contest": 72,
+        "choices": []
+      }
+    ],
+    "id": 119
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "43",
+    "imprinted_id": "4-1200-43",
+    "ballot_type": "48",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      }
+    ],
+    "id": 281
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "4",
+    "imprinted_id": "4-1200-4",
+    "ballot_type": "27",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 184
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "10",
+    "batch_id": "2",
+    "record_id": "22",
+    "imprinted_id": "10-2-22",
+    "ballot_type": "15",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": []
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 531
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "3",
+    "batch_id": "800",
+    "record_id": "6",
+    "imprinted_id": "3-800-6",
+    "ballot_type": "53",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": []
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 84
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "11",
+    "imprinted_id": "4-1200-11",
+    "ballot_type": "31",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Distant Loser"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Jeff Baker"
+        ]
+      }
+    ],
+    "id": 301
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "10",
+    "batch_id": "2",
+    "record_id": "23",
+    "imprinted_id": "10-2-23",
+    "ballot_type": "14",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": []
+      },
+      {
+        "contest": 72,
+        "choices": []
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 534
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "15",
+    "imprinted_id": "9-3200-15",
+    "ballot_type": "13",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 345
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "13",
+    "imprinted_id": "4-1200-13",
+    "ballot_type": "32",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Distant Loser"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Jeff Baker"
+        ]
+      }
+    ],
+    "id": 208
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "3",
+    "batch_id": "800",
+    "record_id": "9",
+    "imprinted_id": "3-800-9",
+    "ballot_type": "55",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": []
+      }
+    ],
+    "id": 90
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "10",
+    "imprinted_id": "9-3200-10",
+    "ballot_type": "6",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 330
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "29",
+    "imprinted_id": "9-3200-29",
+    "ballot_type": "18",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      }
+    ],
+    "id": 379
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "32",
+    "imprinted_id": "9-3200-32",
+    "ballot_type": "9",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 432
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "3",
+    "imprinted_id": "9-3200-3",
+    "ballot_type": "2",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Janet Lee Cook"
+        ]
+      }
+    ],
+    "id": 315
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "10",
+    "batch_id": "2",
+    "record_id": "10",
+    "imprinted_id": "10-2-10",
+    "ballot_type": "19",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 488
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "10",
+    "batch_id": "2",
+    "record_id": "25",
+    "imprinted_id": "10-2-25",
+    "ballot_type": "10",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Janet Lee Cook"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 541
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "5",
+    "batch_id": "1600",
+    "record_id": "14",
+    "imprinted_id": "5-1600-14",
+    "ballot_type": "45",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 147
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "45",
+    "imprinted_id": "9-3200-45",
+    "ballot_type": "25",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      }
+    ],
+    "id": 408
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "3",
+    "batch_id": "800",
+    "record_id": "3",
+    "imprinted_id": "3-800-3",
+    "ballot_type": "52",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": []
+      }
+    ],
+    "id": 79
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "29",
+    "imprinted_id": "4-1200-29",
+    "ballot_type": "41",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      }
+    ],
+    "id": 249
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "3",
+    "batch_id": "800",
+    "record_id": "11",
+    "imprinted_id": "3-800-11",
+    "ballot_type": "56",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": []
+      }
+    ],
+    "id": 112
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "45",
+    "imprinted_id": "4-1200-45",
+    "ballot_type": "49",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      }
+    ],
+    "id": 286
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "48",
+    "imprinted_id": "9-3200-48",
+    "ballot_type": "24",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 449
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "43",
+    "imprinted_id": "9-3200-43",
+    "ballot_type": "20",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Janet Lee Cook"
+        ]
+      }
+    ],
+    "id": 405
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "7",
+    "imprinted_id": "4-1200-7",
+    "ballot_type": "29",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Distant Loser"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Jeff Baker"
+        ]
+      }
+    ],
+    "id": 193
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "5",
+    "batch_id": "1600",
+    "record_id": "17",
+    "imprinted_id": "5-1600-17",
+    "ballot_type": "51",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      }
+    ],
+    "id": 150
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "50",
+    "imprinted_id": "9-3200-50",
+    "ballot_type": "1",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "YES"
+        ]
+      }
+    ],
+    "id": 418
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "26",
+    "imprinted_id": "9-3200-26",
+    "ballot_type": "22",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Janet Lee Cook"
+        ]
+      }
+    ],
+    "id": 373
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "30",
+    "imprinted_id": "4-1200-30",
+    "ballot_type": "41",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "YES"
+        ]
+      }
+    ],
+    "id": 251
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "17",
+    "imprinted_id": "4-1200-17",
+    "ballot_type": "34",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Distant Loser"
+        ]
+      }
+    ],
+    "id": 304
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "10",
+    "batch_id": "2",
+    "record_id": "13",
+    "imprinted_id": "10-2-13",
+    "ballot_type": "17",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Distant Loser"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Jeff Baker"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 499
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "16",
+    "imprinted_id": "9-3200-16",
+    "ballot_type": "13",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": []
+      }
+    ],
+    "id": 348
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "27",
+    "imprinted_id": "4-1200-27",
+    "ballot_type": "40",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": []
+      }
+    ],
+    "id": 244
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "10",
+    "batch_id": "2",
+    "record_id": "15",
+    "imprinted_id": "10-2-15",
+    "ballot_type": "24",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": []
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 506
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "2",
+    "imprinted_id": "4-1200-2",
+    "ballot_type": "26",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 178
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "34",
+    "imprinted_id": "4-1200-34",
+    "ballot_type": "43",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "YES"
+        ]
+      }
+    ],
+    "id": 261
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "5",
+    "batch_id": "1600",
+    "record_id": "2",
+    "imprinted_id": "5-1600-2",
+    "ballot_type": "51",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 127
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "5",
+    "batch_id": "1600",
+    "record_id": "18",
+    "imprinted_id": "5-1600-18",
+    "ballot_type": "51",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 152
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "10",
+    "batch_id": "2",
+    "record_id": "12",
+    "imprinted_id": "10-2-12",
+    "ballot_type": "12",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Janet Lee Cook"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 495
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "50",
+    "imprinted_id": "4-1200-50",
+    "ballot_type": "39",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "YES"
+        ]
+      }
+    ],
+    "id": 298
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "5",
+    "batch_id": "1600",
+    "record_id": "5",
+    "imprinted_id": "5-1600-5",
+    "ballot_type": "51",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Distant Loser"
+        ]
+      }
+    ],
+    "id": 133
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "14",
+    "imprinted_id": "4-1200-14",
+    "ballot_type": "32",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 211
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "5",
+    "batch_id": "1600",
+    "record_id": "13",
+    "imprinted_id": "5-1600-13",
+    "ballot_type": "45",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Distant Loser"
+        ]
+      }
+    ],
+    "id": 168
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "11",
+    "imprinted_id": "9-3200-11",
+    "ballot_type": "7",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Janet Lee Cook"
+        ]
+      }
+    ],
+    "id": 333
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "35",
+    "imprinted_id": "4-1200-35",
+    "ballot_type": "44",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      }
+    ],
+    "id": 264
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "49",
+    "imprinted_id": "4-1200-49",
+    "ballot_type": "39",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      }
+    ],
+    "id": 296
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "3",
+    "batch_id": "800",
+    "record_id": "18",
+    "imprinted_id": "3-800-18",
+    "ballot_type": "59",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 102
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "39",
+    "imprinted_id": "4-1200-39",
+    "ballot_type": "46",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      }
+    ],
+    "id": 274
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "20",
+    "imprinted_id": "9-3200-20",
+    "ballot_type": "15",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": []
+      }
+    ],
+    "id": 356
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "28",
+    "imprinted_id": "4-1200-28",
+    "ballot_type": "40",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "YES"
+        ]
+      }
+    ],
+    "id": 246
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "10",
+    "batch_id": "2",
+    "record_id": "24",
+    "imprinted_id": "10-2-24",
+    "ballot_type": "13",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": []
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 538
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "3",
+    "batch_id": "800",
+    "record_id": "5",
+    "imprinted_id": "3-800-5",
+    "ballot_type": "53",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": []
+      }
+    ],
+    "id": 105
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "47",
+    "imprinted_id": "4-1200-47",
+    "ballot_type": "50",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      }
+    ],
+    "id": 291
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "24",
+    "imprinted_id": "4-1200-24",
+    "ballot_type": "37",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 236
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "37",
+    "imprinted_id": "9-3200-37",
+    "ballot_type": "12",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Janet Lee Cook"
+        ]
+      }
+    ],
+    "id": 438
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "38",
+    "imprinted_id": "4-1200-38",
+    "ballot_type": "45",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "YES"
+        ]
+      }
+    ],
+    "id": 271
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "5",
+    "batch_id": "1600",
+    "record_id": "11",
+    "imprinted_id": "5-1600-11",
+    "ballot_type": "45",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": []
+      }
+    ],
+    "id": 166
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "38",
+    "imprinted_id": "9-3200-38",
+    "ballot_type": "12",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 396
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "10",
+    "batch_id": "2",
+    "record_id": "8",
+    "imprinted_id": "10-2-8",
+    "ballot_type": "11",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Janet Lee Cook"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 480
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "10",
+    "batch_id": "2",
+    "record_id": "21",
+    "imprinted_id": "10-2-21",
+    "ballot_type": "16",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": []
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 527
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "8",
+    "imprinted_id": "4-1200-8",
+    "ballot_type": "29",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 196
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "10",
+    "batch_id": "2",
+    "record_id": "7",
+    "imprinted_id": "10-2-7",
+    "ballot_type": "9",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": []
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Janet Lee Cook"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 476
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "10",
+    "batch_id": "2",
+    "record_id": "5",
+    "imprinted_id": "10-2-5",
+    "ballot_type": "6",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Janet Lee Cook"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 468
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "10",
+    "batch_id": "2",
+    "record_id": "19",
+    "imprinted_id": "10-2-19",
+    "ballot_type": "22",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Janet Lee Cook"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "YES"
+        ]
+      }
+    ],
+    "id": 519
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "3",
+    "batch_id": "800",
+    "record_id": "14",
+    "imprinted_id": "3-800-14",
+    "ballot_type": "54",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 95
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "36",
+    "imprinted_id": "4-1200-36",
+    "ballot_type": "44",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "YES"
+        ]
+      }
+    ],
+    "id": 266
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "46",
+    "imprinted_id": "4-1200-46",
+    "ballot_type": "49",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "YES"
+        ]
+      }
+    ],
+    "id": 288
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "10",
+    "batch_id": "2",
+    "record_id": "17",
+    "imprinted_id": "10-2-17",
+    "ballot_type": "18",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "YES"
+        ]
+      }
+    ],
+    "id": 513
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "2",
+    "imprinted_id": "9-3200-2",
+    "ballot_type": "3",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 312
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "21",
+    "imprinted_id": "4-1200-21",
+    "ballot_type": "36",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      }
+    ],
+    "id": 228
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "40",
+    "imprinted_id": "4-1200-40",
+    "ballot_type": "46",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 306
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "5",
+    "batch_id": "1600",
+    "record_id": "3",
+    "imprinted_id": "5-1600-3",
+    "ballot_type": "51",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": []
+      }
+    ],
+    "id": 160
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "22",
+    "imprinted_id": "9-3200-22",
+    "ballot_type": "16",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": []
+      }
+    ],
+    "id": 361
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "49",
+    "imprinted_id": "9-3200-49",
+    "ballot_type": "1",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Janet Lee Cook"
+        ]
+      }
+    ],
+    "id": 415
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "6",
+    "imprinted_id": "9-3200-6",
+    "ballot_type": "8",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "YES"
+        ]
+      }
+    ],
+    "id": 321
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "6",
+    "imprinted_id": "4-1200-6",
+    "ballot_type": "28",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 190
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "5",
+    "batch_id": "1600",
+    "record_id": "9",
+    "imprinted_id": "5-1600-9",
+    "ballot_type": "45",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": []
+      }
+    ],
+    "id": 164
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "3",
+    "batch_id": "800",
+    "record_id": "12",
+    "imprinted_id": "3-800-12",
+    "ballot_type": "56",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 92
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "44",
+    "imprinted_id": "4-1200-44",
+    "ballot_type": "48",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "YES"
+        ]
+      }
+    ],
+    "id": 283
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "3",
+    "batch_id": "800",
+    "record_id": "17",
+    "imprinted_id": "3-800-17",
+    "ballot_type": "59",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": []
+      }
+    ],
+    "id": 100
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "5",
+    "batch_id": "1600",
+    "record_id": "8",
+    "imprinted_id": "5-1600-8",
+    "ballot_type": "45",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "YES"
+        ]
+      }
+    ],
+    "id": 138
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "7",
+    "imprinted_id": "9-3200-7",
+    "ballot_type": "4",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Janet Lee Cook"
+        ]
+      }
+    ],
+    "id": 324
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "3",
+    "batch_id": "800",
+    "record_id": "16",
+    "imprinted_id": "3-800-16",
+    "ballot_type": "58",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 116
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "9",
+    "imprinted_id": "9-3200-9",
+    "ballot_type": "6",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Janet Lee Cook"
+        ]
+      }
+    ],
+    "id": 327
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "18",
+    "imprinted_id": "9-3200-18",
+    "ballot_type": "14",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": []
+      },
+      {
+        "contest": 72,
+        "choices": []
+      }
+    ],
+    "id": 350
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "5",
+    "imprinted_id": "9-3200-5",
+    "ballot_type": "8",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Janet Lee Cook"
+        ]
+      }
+    ],
+    "id": 318
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "15",
+    "imprinted_id": "4-1200-15",
+    "ballot_type": "33",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Distant Loser"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Jeff Baker"
+        ]
+      }
+    ],
+    "id": 214
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "19",
+    "imprinted_id": "9-3200-19",
+    "ballot_type": "15",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 353
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "42",
+    "imprinted_id": "4-1200-42",
+    "ballot_type": "47",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 278
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "30",
+    "imprinted_id": "9-3200-30",
+    "ballot_type": "18",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "YES"
+        ]
+      }
+    ],
+    "id": 381
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "32",
+    "imprinted_id": "4-1200-32",
+    "ballot_type": "42",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "YES"
+        ]
+      }
+    ],
+    "id": 256
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "10",
+    "batch_id": "2",
+    "record_id": "11",
+    "imprinted_id": "10-2-11",
+    "ballot_type": "23",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Jeff Baker"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 491
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "3",
+    "batch_id": "800",
+    "record_id": "8",
+    "imprinted_id": "3-800-8",
+    "ballot_type": "54",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "YES"
+        ]
+      }
+    ],
+    "id": 87
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "5",
+    "batch_id": "1600",
+    "record_id": "15",
+    "imprinted_id": "5-1600-15",
+    "ballot_type": "51",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": []
+      }
+    ],
+    "id": 170
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "10",
+    "batch_id": "2",
+    "record_id": "1",
+    "imprinted_id": "10-2-1",
+    "ballot_type": "3",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Janet Lee Cook"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 452
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "3",
+    "imprinted_id": "4-1200-3",
+    "ballot_type": "27",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Jeff Baker"
+        ]
+      }
+    ],
+    "id": 181
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "3",
+    "batch_id": "800",
+    "record_id": "4",
+    "imprinted_id": "3-800-4",
+    "ballot_type": "53",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 81
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "16",
+    "imprinted_id": "4-1200-16",
+    "ballot_type": "33",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 217
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "33",
+    "imprinted_id": "4-1200-33",
+    "ballot_type": "43",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      }
+    ],
+    "id": 259
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "24",
+    "imprinted_id": "9-3200-24",
+    "ballot_type": "5",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": []
+      },
+      {
+        "contest": 72,
+        "choices": []
+      }
+    ],
+    "id": 367
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "5",
+    "imprinted_id": "4-1200-5",
+    "ballot_type": "28",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Distant Loser"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Janet Lee Cook"
+        ]
+      }
+    ],
+    "id": 187
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "10",
+    "batch_id": "2",
+    "record_id": "2",
+    "imprinted_id": "10-2-2",
+    "ballot_type": "2",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Janet Lee Cook"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 456
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "10",
+    "batch_id": "2",
+    "record_id": "18",
+    "imprinted_id": "10-2-18",
+    "ballot_type": "21",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "YES"
+        ]
+      }
+    ],
+    "id": 516
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "5",
+    "batch_id": "1600",
+    "record_id": "7",
+    "imprinted_id": "5-1600-7",
+    "ballot_type": "45",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": []
+      }
+    ],
+    "id": 162
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "5",
+    "batch_id": "1600",
+    "record_id": "20",
+    "imprinted_id": "5-1600-20",
+    "ballot_type": "51",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "YES"
+        ]
+      }
+    ],
+    "id": 157
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "8",
+    "imprinted_id": "9-3200-8",
+    "ballot_type": "4",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 424
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "28",
+    "imprinted_id": "9-3200-28",
+    "ballot_type": "21",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      }
+    ],
+    "id": 430
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "5",
+    "batch_id": "1600",
+    "record_id": "12",
+    "imprinted_id": "5-1600-12",
+    "ballot_type": "45",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 144
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "23",
+    "imprinted_id": "9-3200-23",
+    "ballot_type": "5",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 364
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "5",
+    "batch_id": "1600",
+    "record_id": "10",
+    "imprinted_id": "5-1600-10",
+    "ballot_type": "45",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "YES"
+        ]
+      }
+    ],
+    "id": 141
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "41",
+    "imprinted_id": "9-3200-41",
+    "ballot_type": "19",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      }
+    ],
+    "id": 444
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "1",
+    "imprinted_id": "4-1200-1",
+    "ballot_type": "26",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Jeff Baker"
+        ]
+      }
+    ],
+    "id": 175
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "22",
+    "imprinted_id": "4-1200-22",
+    "ballot_type": "36",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "YES"
+        ]
+      }
+    ],
+    "id": 230
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "12",
+    "imprinted_id": "9-3200-12",
+    "ballot_type": "7",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 336
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "5",
+    "batch_id": "1600",
+    "record_id": "1",
+    "imprinted_id": "5-1600-1",
+    "ballot_type": "51",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": []
+      }
+    ],
+    "id": 125
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "3",
+    "batch_id": "800",
+    "record_id": "13",
+    "imprinted_id": "3-800-13",
+    "ballot_type": "57",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": []
+      }
+    ],
+    "id": 114
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "42",
+    "imprinted_id": "9-3200-42",
+    "ballot_type": "19",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 402
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "1",
+    "imprinted_id": "9-3200-1",
+    "ballot_type": "3",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Janet Lee Cook"
+        ]
+      }
+    ],
+    "id": 309
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "3",
+    "batch_id": "800",
+    "record_id": "2",
+    "imprinted_id": "3-800-2",
+    "ballot_type": "51",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 76
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "3",
+    "batch_id": "800",
+    "record_id": "7",
+    "imprinted_id": "3-800-7",
+    "ballot_type": "54",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      }
+    ],
+    "id": 107
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "10",
+    "batch_id": "2",
+    "record_id": "4",
+    "imprinted_id": "10-2-4",
+    "ballot_type": "4",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Janet Lee Cook"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 464
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "3",
+    "batch_id": "800",
+    "record_id": "20",
+    "imprinted_id": "3-800-20",
+    "ballot_type": "60",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 122
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "13",
+    "imprinted_id": "9-3200-13",
+    "ballot_type": "10",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "NO"
+        ]
+      }
+    ],
+    "id": 339
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "10",
+    "batch_id": "2",
+    "record_id": "3",
+    "imprinted_id": "10-2-3",
+    "ballot_type": "8",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Janet Lee Cook"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "YES"
+        ]
+      }
+    ],
+    "id": 460
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "18",
+    "imprinted_id": "4-1200-18",
+    "ballot_type": "34",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "YES"
+        ]
+      }
+    ],
+    "id": 220
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "3",
+    "batch_id": "800",
+    "record_id": "10",
+    "imprinted_id": "3-800-10",
+    "ballot_type": "55",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 109
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "25",
+    "imprinted_id": "9-3200-25",
+    "ballot_type": "22",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "YES"
+        ]
+      }
+    ],
+    "id": 370
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "44",
+    "imprinted_id": "9-3200-44",
+    "ballot_type": "20",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 446
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "10",
+    "batch_id": "2",
+    "record_id": "16",
+    "imprinted_id": "10-2-16",
+    "ballot_type": "1",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Janet Lee Cook"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "YES"
+        ]
+      }
+    ],
+    "id": 509
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "14",
+    "imprinted_id": "9-3200-14",
+    "ballot_type": "10",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Janet Lee Cook"
+        ]
+      }
+    ],
+    "id": 342
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "10",
+    "batch_id": "2",
+    "record_id": "20",
+    "imprinted_id": "10-2-20",
+    "ballot_type": "5",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": []
+      },
+      {
+        "contest": 72,
+        "choices": []
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 523
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "3",
+    "batch_id": "800",
+    "record_id": "15",
+    "imprinted_id": "3-800-15",
+    "ballot_type": "58",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": []
+      }
+    ],
+    "id": 98
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "3",
+    "batch_id": "800",
+    "record_id": "1",
+    "imprinted_id": "3-800-1",
+    "ballot_type": "51",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      }
+    ],
+    "id": 74
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "26",
+    "imprinted_id": "4-1200-26",
+    "ballot_type": "38",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": [
+          "YES"
+        ]
+      }
+    ],
+    "id": 241
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "10",
+    "batch_id": "2",
+    "record_id": "9",
+    "imprinted_id": "10-2-9",
+    "ballot_type": "20",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Janet Lee Cook"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 484
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "23",
+    "imprinted_id": "4-1200-23",
+    "ballot_type": "37",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 72,
+        "choices": [
+          "Jeff Baker"
+        ]
+      }
+    ],
+    "id": 233
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "4",
+    "batch_id": "1200",
+    "record_id": "41",
+    "imprinted_id": "4-1200-41",
+    "ballot_type": "47",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      }
+    ],
+    "id": 276
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "21",
+    "imprinted_id": "9-3200-21",
+    "ballot_type": "16",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 358
+  },
+  {
+    "record_type": "UPLOADED",
+    "timestamp": {
+      "seconds": 1502422729,
+      "nanos": 324000000
+    },
+    "county_id": 3,
+    "scanner_id": "9",
+    "batch_id": "3200",
+    "record_id": "17",
+    "imprinted_id": "9-3200-17",
+    "ballot_type": "14",
+    "contest_info": [
+      {
+        "contest": 71,
+        "choices": [
+          "Clear Winner"
+        ]
+      },
+      {
+        "contest": 73,
+        "choices": []
+      }
+    ],
+    "id": 427
+  }
+]"}}
+{"request": {"headers": {"Accept": "*/*", "User-Agent": "curl/7.35.0"}, "host": "localhost:8887", "params": "3", "path": "/acvr/county", "scheme": "http", "data": "", "method": "GET"}, "response": {"status": 200, "headers": {"Date": "Fri, 11 Aug 2017 04:33:14 GMT", "Transfer-Encoding": "chunked", "Server": "Jetty(9.4.4.v20170414)"}, "body": "[]"}}
+{"request": {"headers": {"Accept": "*/*", "User-Agent": "curl/7.35.0"}, "host": "localhost:8887", "params": "", "path": "/acvr", "scheme": "http", "data": "", "method": "GET"}, "response": {"status": 200, "headers": {"Date": "Fri, 11 Aug 2017 04:33:14 GMT", "Transfer-Encoding": "chunked", "Server": "Jetty(9.4.4.v20170414)"}, "body": "[]"}}

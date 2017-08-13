@@ -1,0 +1,80 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "definitions": {},
+    "id": "http://freeandfair.us/corla/cvr.json",
+    "items": {
+        "id": "/items",
+        "properties": {
+            "ballot_type": {
+                "id": "/items/properties/ballot_type",
+                "type": "string"
+            },
+            "batch_id": {
+                "id": "/items/properties/batch_id",
+                "type": "string"
+            },
+            "contest_info": {
+                "id": "/items/properties/contest_info",
+                "items": {
+                    "id": "/items/properties/contest_info/items",
+                    "properties": {
+                        "choices": {
+                            "id": "/items/properties/contest_info/items/properties/choices",
+                            "items": {
+                                "id": "/items/properties/contest_info/items/properties/choices/items",
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        "contest": {
+                            "id": "/items/properties/contest_info/items/properties/contest",
+                            "type": "integer"
+                        }
+                    },
+                    "type": "object"
+                },
+                "type": "array"
+            },
+            "county_id": {
+                "id": "/items/properties/county_id",
+                "type": "integer"
+            },
+            "id": {
+                "id": "/items/properties/id",
+                "type": "integer"
+            },
+            "imprinted_id": {
+                "id": "/items/properties/imprinted_id",
+                "type": "string"
+            },
+            "record_id": {
+                "id": "/items/properties/record_id",
+                "type": "string"
+            },
+            "record_type": {
+                "id": "/items/properties/record_type",
+                "type": "string"
+            },
+            "scanner_id": {
+                "id": "/items/properties/scanner_id",
+                "type": "string"
+            },
+            "timestamp": {
+                "id": "/items/properties/timestamp",
+                "properties": {
+                    "nanos": {
+                        "id": "/items/properties/timestamp/properties/nanos",
+                        "type": "integer"
+                    },
+                    "seconds": {
+                        "id": "/items/properties/timestamp/properties/seconds",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "type": "object"
+    },
+    "type": "array"
+}
