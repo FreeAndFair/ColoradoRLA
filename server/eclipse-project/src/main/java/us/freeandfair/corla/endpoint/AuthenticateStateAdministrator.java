@@ -12,11 +12,15 @@
 
 package us.freeandfair.corla.endpoint;
 
+import com.google.gson.JsonSyntaxException;
+
 import spark.Request;
 import spark.Response;
 
+import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.DoSDashboardASM;
+import us.freeandfair.corla.json.SubmittedUsernamePassword;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
 
 /**
@@ -94,6 +98,18 @@ public class AuthenticateStateAdministrator extends AbstractEndpoint {
     if (Authentication.authenticateAs(the_request, AdministratorType.STATE)) {
       ok(the_response, "Authenticated");
     } else {
+      try {
+        final SubmittedUsernamePassword auth_info = 
+            Main.GSON.fromJson(the_request.body(), SubmittedUsernamePassword.class);
+        if (Authentication.authenticateAs(the_request, auth_info, 
+                                          AdministratorType.STATE)) {
+          ok(the_response, "Authenticated");
+        } else {
+          unauthorized(the_response, "Authentication failed");
+        }
+      } catch (final JsonSyntaxException e) {
+        unauthorized(the_response, "Authentication failed");
+      }
       unauthorized(the_response, "Authentication failed");
     }
     return my_endpoint_result;
