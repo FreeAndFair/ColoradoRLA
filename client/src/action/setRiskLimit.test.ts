@@ -33,7 +33,8 @@ const URL = /\/risk-limit-comp-audits$/;
 test('setRiskLimit', s => {
     test('sends the right data', t => {
         const f = setup();
-        f.fetch(URL, { body: 'Risk limit set', status: 200 });
+        const body = { result: 'Risk limit set' };
+        f.fetch(URL, { body, status: 200 });
 
         t.plan(3);
 
@@ -52,7 +53,8 @@ test('setRiskLimit', s => {
 
     test('when the risk limit is set', t => {
         const f = setup();
-        f.fetch(URL, { body: 'Risk limit set', status: 200 });
+        const body = { result: 'Risk limit set' };
+        f.fetch(URL, { body, status: 200 });
 
         t.plan(1);
 
@@ -62,7 +64,7 @@ test('setRiskLimit', s => {
         fetch.flush().then(() => {
             t.deepEqual(f.store.getActions(), [
                 { type: 'SET_RISK_LIMIT_SEND' },
-                { type: 'SET_RISK_LIMIT_OK' },
+                { type: 'SET_RISK_LIMIT_OK', data: body },
             ]);
 
             teardown(f);
@@ -72,7 +74,7 @@ test('setRiskLimit', s => {
     test('when the risk limit is invalid', t => {
         const f = setup();
         f.fetch(URL, {
-            body: 'Invalid risk limit specified',
+            body: { result: 'Invalid risk limit specified' },
             status: 400,
         });
 
@@ -94,7 +96,7 @@ test('setRiskLimit', s => {
     test('when there is a server error', t => {
         const f = setup();
         f.fetch(URL, {
-            body: 'Could not set a risk limit',
+            body: { result: 'Could not set a risk limit' },
             status: 500,
         });
 
