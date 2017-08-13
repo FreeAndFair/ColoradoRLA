@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const connect = require('connect');
 
 const ballotStyles = require('./data/ballotStyles');
