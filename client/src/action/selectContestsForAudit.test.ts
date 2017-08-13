@@ -33,7 +33,7 @@ const URL = /\/select-contests$/;
 test('selectContestsForAudit', s => {
     test('sends the right data', t => {
         const f = setup();
-        f.fetch(URL, { body: 'Contests selected', status: 200 });
+        f.fetch(URL, { body: { result: 'Contests selected' }, status: 200 });
 
         t.plan(3);
 
@@ -52,7 +52,8 @@ test('selectContestsForAudit', s => {
 
     test('when the contests are selected', t => {
         const f = setup();
-        f.fetch(URL, { body: 'Contests selected', status: 200 });
+        const body = { result: 'Contests selected' };
+        f.fetch(URL, { body, status: 200 });
 
         t.plan(1);
 
@@ -62,7 +63,7 @@ test('selectContestsForAudit', s => {
         fetch.flush().then(() => {
             t.deepEqual(f.store.getActions(), [
                 { type: 'SELECT_CONTESTS_FOR_AUDIT_SEND' },
-                { type: 'SELECT_CONTESTS_FOR_AUDIT_OK' },
+                { type: 'SELECT_CONTESTS_FOR_AUDIT_OK', data: body },
             ]);
 
             teardown(f);
@@ -72,7 +73,7 @@ test('selectContestsForAudit', s => {
     test('when the contests are malformed', t => {
         const f = setup();
         f.fetch(URL, {
-            body: 'Invalid contest selection data',
+            body: { result: 'Invalid contest selection data' },
             status: 422,
         });
 
@@ -94,7 +95,7 @@ test('selectContestsForAudit', s => {
     test('when there is a server error', t => {
         const f = setup();
         f.fetch(URL, {
-            body: 'Could not select contests',
+            body: { result: 'Could not select contests' },
             status: 500,
         });
 
