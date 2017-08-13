@@ -229,6 +229,10 @@ public abstract class AbstractEndpoint implements Endpoint {
     // Presume everything goes ok.
     ok(the_response);
 
+    // If this is the root endpoint, just return.
+    if (endpointName().equals("/"))
+      return;
+
     // Start a transaction, if the database is functioning; otherwise abort
     if (Persistence.hasDB()) {
       Persistence.beginTransaction(); 
