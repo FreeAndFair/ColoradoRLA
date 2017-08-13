@@ -33,9 +33,6 @@ import us.freeandfair.corla.persistence.Persistence;
  */
 // the default constructor suffices for type adapters
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-/**
- * JSON adapter for the internal map from contests to choices.
- */
 public final class CVRContestInfoJsonAdapter 
     extends TypeAdapter<CVRContestInfo> {
   /**

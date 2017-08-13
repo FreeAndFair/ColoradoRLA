@@ -255,6 +255,7 @@ public abstract class AbstractStateMachine implements Serializable {
       throw new IllegalStateException("Illegal transition on ASM: (" + 
                                       my_current_state + ", " + the_event + ")");
     } else {
+      my_current_state = result;
       Main.LOGGER.info("ASM event " + the_event + " caused transition to " + 
                        my_current_state); 
       return result;

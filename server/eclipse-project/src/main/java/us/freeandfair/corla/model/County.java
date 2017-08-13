@@ -17,12 +17,12 @@ import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 import java.io.Serializable;
 import java.util.Set;
 
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import us.freeandfair.corla.persistence.AbstractEntity;
@@ -59,20 +59,20 @@ public class County extends AbstractEntity implements Serializable {
   /**
    * The contests in this county.
    */
-  @ElementCollection(fetch = FetchType.EAGER)
-  @CollectionTable(name = "county_contest",
-                   joinColumns = @JoinColumn(name = "county_id", 
-                                             referencedColumnName = "my_identifier"))
+  @ManyToMany(fetch = FetchType.EAGER)
+  @JoinTable(name = "county_contest",
+            joinColumns = @JoinColumn(name = "county_id", 
+                                      referencedColumnName = "my_identifier"))
   @Column(name = "contest_id")
   private Set<Contest> my_contests;
   
   /**
    * The administrators for this county.
    */
-  @ElementCollection(fetch = FetchType.EAGER)
-  @CollectionTable(name = "county_administrator",
-                   joinColumns = @JoinColumn(name = "county_id", 
-                                             referencedColumnName = "my_identifier"))
+  @ManyToMany(fetch = FetchType.EAGER)
+  @JoinTable(name = "county_administrator",
+             joinColumns = @JoinColumn(name = "county_id", 
+                                       referencedColumnName = "my_identifier"))
   @Column(name = "administrator_id")
   private Set<Administrator> my_administrators;
 

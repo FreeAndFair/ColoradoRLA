@@ -1,6 +1,7 @@
 us.freeandfair.corla.endpoint.ACVRDownload
 us.freeandfair.corla.endpoint.ACVRDownloadByCounty
 us.freeandfair.corla.endpoint.ACVRUpload
+us.freeandfair.corla.endpoint.AuditBoardDashboardASMState
 us.freeandfair.corla.endpoint.AuditInvestigationReport
 us.freeandfair.corla.endpoint.AuditReport
 us.freeandfair.corla.endpoint.AuthenticateCountyAdministrator
@@ -8,14 +9,17 @@ us.freeandfair.corla.endpoint.AuthenticateStateAdministrator
 us.freeandfair.corla.endpoint.BallotManifestDownload
 us.freeandfair.corla.endpoint.BallotManifestDownloadByCounty
 us.freeandfair.corla.endpoint.BallotManifestUpload
+us.freeandfair.corla.endpoint.BallotNotFound
 us.freeandfair.corla.endpoint.ContestDownload
 us.freeandfair.corla.endpoint.ContestDownloadByCounty
 us.freeandfair.corla.endpoint.ContestDownloadByID
+us.freeandfair.corla.endpoint.CountyDashboardASMState
 us.freeandfair.corla.endpoint.CountyDashboardRefresh
 us.freeandfair.corla.endpoint.CVRDownload
 us.freeandfair.corla.endpoint.CVRDownloadByCounty
 us.freeandfair.corla.endpoint.CVRDownloadByID
 us.freeandfair.corla.endpoint.CVRExportUpload
+us.freeandfair.corla.endpoint.DoSDashboardASMState
 us.freeandfair.corla.endpoint.DoSDashboardRefresh
 us.freeandfair.corla.endpoint.EstablishAuditBoard
 us.freeandfair.corla.endpoint.IndicateHandCount

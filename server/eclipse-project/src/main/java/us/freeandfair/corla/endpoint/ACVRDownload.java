@@ -82,7 +82,8 @@ public class ACVRDownload extends AbstractAuditBoardDashboardEndpoint {
       Persistence.beginTransaction();
       jw.beginArray();
       final Stream<CastVoteRecord> matches = 
-          CastVoteRecordQueries.getMatching(RecordType.AUDITOR_ENTERED);
+          Stream.concat(CastVoteRecordQueries.getMatching(RecordType.AUDITOR_ENTERED),
+                        CastVoteRecordQueries.getMatching(RecordType.PHANTOM_BALLOT));
       matches.forEach((the_cvr) -> {
         try {
           jw.jsonValue(Main.GSON.toJson(the_cvr));
@@ -102,6 +103,7 @@ public class ACVRDownload extends AbstractAuditBoardDashboardEndpoint {
     } catch (final UncheckedIOException | IOException | PersistenceException e) {
       serverError(the_response, "Unable to stream response");
     }
+    ok(the_response);
     return my_endpoint_result;
   }
 }

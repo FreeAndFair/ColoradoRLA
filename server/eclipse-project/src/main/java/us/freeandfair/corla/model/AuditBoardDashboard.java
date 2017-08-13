@@ -20,16 +20,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
-import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.persistence.AbstractEntity;
 import us.freeandfair.corla.persistence.Persistence;
 
@@ -51,6 +54,11 @@ public class AuditBoardDashboard extends AbstractEntity implements Serializable 
   private static final long serialVersionUID = 1; 
 
   /**
+   * The "index" string.
+   */
+  private static final String INDEX = "index";
+  
+  /**
    * The county identifier of this dashboard.
    */
   @Column(nullable = false, updatable = false)
@@ -63,7 +71,7 @@ public class AuditBoardDashboard extends AbstractEntity implements Serializable 
   @CollectionTable(name = "audit_board_dashboard_cvr_to_audit",
                    joinColumns = @JoinColumn(name = "audit_board_dashboard_id", 
                                              referencedColumnName = "my_id"))
-  @OrderColumn(name = "index")
+  @OrderColumn(name = INDEX)
   @Column(name = "cvr_id")
   private List<Long> my_cvrs_to_audit = new ArrayList<>();
   
@@ -75,20 +83,30 @@ public class AuditBoardDashboard extends AbstractEntity implements Serializable 
   @CollectionTable(name = "audit_board_dashboard_submitted_audit_cvr",
                    joinColumns = @JoinColumn(name = "audit_board_dashboard_id", 
                                              referencedColumnName = "my_id"))
-  @OrderColumn(name = "index")
+  @OrderColumn(name = INDEX)
   @Column(name = "cvr_id")
   private List<Long> my_submitted_audit_cvrs = new ArrayList<>();
   
   /**
    * The members of the audit board.
    */
-  @ElementCollection(fetch = FetchType.EAGER)
-  @CollectionTable(name = "audit_board_member",
-                   joinColumns = @JoinColumn(name = "audit_board_dashboard_id", 
-                                             referencedColumnName = "my_id"))
-  @OrderColumn(name = "index")
+  @ManyToMany(fetch = FetchType.EAGER)
+  @JoinTable(name = "audit_board_member",
+             joinColumns = @JoinColumn(name = "audit_board_dashboard_id", 
+                                       referencedColumnName = "my_id"))
+  @OrderColumn(name = INDEX)
   @Column(name = "elector_id")
-  private final Set<Elector> my_members = new HashSet<Elector>();
+  private Set<Elector> my_members = new HashSet<>();
+  
+  /**
+   * The audit investigation reports.
+   */
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "my_dashboard", 
+             fetch = FetchType.EAGER, orphanRemoval = true)
+  @OrderColumn(name = INDEX)
+  private List<AuditInvestigationReportInfo> my_investigation_reports = 
+      new ArrayList<>();
+
   
   /**
    * Constructs an empty audit board dashboard, solely for persistence.
@@ -184,7 +202,7 @@ public class AuditBoardDashboard extends AbstractEntity implements Serializable 
         the_cvr_under_audit.equals(Persistence.getByID(the_cvr_under_audit.id(), 
                                                        CastVoteRecord.class)) &&
         the_cvr_under_audit.isAuditPairWith(the_audit_cvr) &&
-        the_cvr_under_audit.recordType() != RecordType.AUDITOR_ENTERED) {
+        the_cvr_under_audit.recordType().isAuditorGenerated()) {
       // the CVRs match!
       my_submitted_audit_cvrs.set(index, the_audit_cvr.id());
       result = true;
@@ -201,5 +219,22 @@ public class AuditBoardDashboard extends AbstractEntity implements Serializable 
    */
   public List<Long> submittedAuditCVRs() {
     return Collections.unmodifiableList(my_submitted_audit_cvrs);
+  }
+  
+  /**
+   * Submits an audit investigation report.
+   * 
+   * @param the_report The audit investigation report.
+   */
+  public void submitInvestigationReport(final AuditInvestigationReportInfo the_report) {
+    the_report.setDashboard(this);
+    my_investigation_reports.add(the_report);
+  }
+  
+  /**
+   * @return the list of submitted audit investigation reports.
+   */
+  public List<AuditInvestigationReportInfo> investigationReports() {
+    return Collections.unmodifiableList(my_investigation_reports);
   }
 }

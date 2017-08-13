@@ -62,8 +62,6 @@ public class SelectContestsForAudit extends AbstractDoSDashboardEndpoint {
   /**
    * Attempts to select contests for audit. 
    * 
-   * Session query parameters: <tt>random-seed</tt>
-   * 
    * @param the_request The request.
    * @param the_response The response.
    */
@@ -85,6 +83,7 @@ public class SelectContestsForAudit extends AbstractDoSDashboardEndpoint {
         }
       }
       Persistence.saveOrUpdate(dosdb);
+      ok(the_response);
     } catch (final JsonSyntaxException e) {
       Main.LOGGER.error("malformed contest selection");
       badDataContents(the_response, "Invalid contest selection data");

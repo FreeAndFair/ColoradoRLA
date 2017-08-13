@@ -73,6 +73,7 @@ public class BallotManifestDownload extends AbstractCountyDashboardEndpoint {
     } catch (final IOException e) {
       serverError(the_response, "Unable to stream response");
     }
+    ok(the_response);
     return my_endpoint_result;
   }
 }

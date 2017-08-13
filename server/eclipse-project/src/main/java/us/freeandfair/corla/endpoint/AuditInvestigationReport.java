@@ -14,10 +14,19 @@ package us.freeandfair.corla.endpoint;
 
 import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.SUBMIT_AUDIT_INVESTIGATION_REPORT_EVENT;
 
+import javax.persistence.PersistenceException;
+
+import com.google.gson.JsonSyntaxException;
+
 import spark.Request;
 import spark.Response;
 
+import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
+import us.freeandfair.corla.model.AuditBoardDashboard;
+import us.freeandfair.corla.model.AuditInvestigationReportInfo;
+import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.query.AuditBoardDashboardQueries;
 
 /**
  * Submit an audit investigation report.
@@ -65,6 +74,27 @@ public class AuditInvestigationReport extends AbstractAuditBoardDashboardEndpoin
   @Override
   public String endpoint(final Request the_request,
                          final Response the_response) {
-    return "Uploaded investigation report saved.";
+    try {
+      final AuditInvestigationReportInfo report =
+          Main.GSON.fromJson(the_request.body(), AuditInvestigationReportInfo.class);
+      final AuditBoardDashboard abdb = 
+          AuditBoardDashboardQueries.get(Authentication.
+                                         authenticatedCounty(the_request).identifier());
+      if (abdb == null) {
+        Main.LOGGER.error("could not get audit board dashboard");
+        serverError(the_response, "Could not save audit investigation report");
+      } else {
+        abdb.submitInvestigationReport(report);
+      }
+      Persistence.saveOrUpdate(abdb);
+    } catch (final JsonSyntaxException e) {
+      Main.LOGGER.error("malformed audit investigation report");
+      badDataContents(the_response, "Invalid audit investigation report");
+    } catch (final PersistenceException e) {
+      Main.LOGGER.error("could not save audit investigation report");
+      serverError(the_response, "Unable to save audit investigation report");
+    }
+    ok(the_response, "Report submitted");
+    return my_endpoint_result;
   }
 }

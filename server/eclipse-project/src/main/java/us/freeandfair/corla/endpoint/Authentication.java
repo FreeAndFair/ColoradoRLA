@@ -16,6 +16,7 @@ import javax.persistence.PersistenceException;
 import spark.Request;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.json.SubmittedUsernamePassword;
 import us.freeandfair.corla.model.Administrator;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
 import us.freeandfair.corla.model.County;
@@ -95,20 +96,33 @@ public final class Authentication {
   // to do real authentication; right now, it authenticates anybody whose username
   // actually exists in the database
   public static boolean authenticate(final Request the_request) {
-    boolean result = false;
     final String username_param = the_request.queryParams(USERNAME);
     final String password_param = the_request.queryParams(PASSWORD);
-    final String second_factor_param = the_request.queryParams(SECOND_FACTOR);
-    
-    if (username_param != null && password_param != null && second_factor_param != null) {
+    return authenticate(the_request,
+                        new SubmittedUsernamePassword(username_param, 
+                                                      password_param));
+  }
+  
+  /**
+   * Attempts to authenticate using a submitted username/password object.
+   * 
+   * @param the_auth_info The username/password object.
+   * @return true if authentication is successful, false otherwise.
+   */
+  public static boolean authenticate(final Request the_request, 
+                                     final SubmittedUsernamePassword the_auth_info) {
+    boolean result = false;
+    if (the_auth_info.username() != null && the_auth_info.password() != null) {
       try {
-        final Administrator admin = AdministratorQueries.byUsername(username_param);
+        final Administrator admin = 
+            AdministratorQueries.byUsername(the_auth_info.username());
         if (admin != null) {
           admin.updateLastLoginTime();
           Persistence.saveOrUpdate(admin);
           result = true;
           the_request.session().attribute(ADMIN, admin);
-          Main.LOGGER.info("Authentication succeeded for user " + username_param + 
+          Main.LOGGER.info("Authentication succeeded for user " + 
+                           the_auth_info.username() + 
                            " of type " + admin.type());
         }
       } catch (final PersistenceException e) {
@@ -121,7 +135,7 @@ public final class Authentication {
     if (!result) {
       // a failed authentication attempt removes any existing session authentication 
       the_request.session().removeAttribute(ADMIN);
-      Main.LOGGER.info("Authentication failed for user " + username_param);
+      Main.LOGGER.info("Authentication failed for user " + the_auth_info.username());
     }
     
     return result;
@@ -132,13 +146,35 @@ public final class Authentication {
    * in the specified request.
    * 
    * @param the_request The request.
+   * @param the_auth_info The username/password object.
    * @param the_type The type of administrator to attempt to authenticate as.
    * @return true if authentication is successful (including that the type of
    * the administrator matches the specified type), false otherwise.
    */
   public static boolean authenticateAs(final Request the_request, 
                                        final AdministratorType the_type) {
-    boolean result = authenticate(the_request);
+    final String username_param = the_request.queryParams(USERNAME);
+    final String password_param = the_request.queryParams(PASSWORD);
+    return authenticateAs(the_request,
+                          new SubmittedUsernamePassword(username_param, 
+                                                        password_param),
+                          the_type);
+  }
+  
+  /**
+   * Attempts to authenticate a particular type of administrator using the data
+   * in the specified request.
+   * 
+   * @param the_request The request.
+   * @param the_auth_info The username/password object.
+   * @param the_type The type of administrator to attempt to authenticate as.
+   * @return true if authentication is successful (including that the type of
+   * the administrator matches the specified type), false otherwise.
+   */
+  public static boolean authenticateAs(final Request the_request, 
+                                       final SubmittedUsernamePassword the_info,
+                                       final AdministratorType the_type) {
+    boolean result = authenticate(the_request, the_info);
     
     if (result) {
       final Object admin_attribute = the_request.session().attribute(ADMIN);

@@ -72,7 +72,8 @@ public class ContestDownload extends AbstractCountyDashboardEndpoint {
       
       Main.GSON.toJson(Persistence.getAll(Contest.class), bw);
       bw.flush();
-      return "";
+      ok(the_response);
+      return my_endpoint_result;
     } catch (final IOException e) {
       the_response.status(HttpStatus.INTERNAL_SERVER_ERROR_500);
       return "Unable to stream response";

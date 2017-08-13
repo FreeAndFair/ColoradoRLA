@@ -15,11 +15,14 @@ import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.PUBLIC_SEED_EV
 
 import javax.persistence.PersistenceException;
 
+import com.google.gson.JsonSyntaxException;
+
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
+import us.freeandfair.corla.json.SubmittedRandomSeed;
 import us.freeandfair.corla.model.DepartmentOfStateDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.DepartmentOfStateDashboardQueries;
@@ -78,26 +81,24 @@ public class UploadRandomSeed extends AbstractDoSDashboardEndpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    ok(the_response, "Random seed set");
-    String random_seed = null;
-    // see if a valid random seed was passed in
-    random_seed = the_request.queryParams(RANDOM_SEED);
-    if (DepartmentOfStateDashboard.isValidSeed(random_seed)) {
-      final DepartmentOfStateDashboard dosd = 
-          DepartmentOfStateDashboardQueries.get();
-      if (dosd == null) {
-        serverError(the_response, 
-            "Could not get department of state dashboard to set random seed");
-      } else {
-        dosd.setRandomSeed(random_seed);
-        try {
+    try {
+      final SubmittedRandomSeed seed = 
+          Main.GSON.fromJson(the_request.body(), SubmittedRandomSeed.class);
+      if (DepartmentOfStateDashboard.isValidSeed(seed.seed())) {
+        final DepartmentOfStateDashboard dosd = DepartmentOfStateDashboardQueries.get();
+        if (dosd == null) {
+          Main.LOGGER.error("could not get department of state dashboard");
+          serverError(the_response, "could not set random seed");
+        } else {
+          dosd.setRandomSeed(seed.seed());
           Persistence.saveOrUpdate(dosd);
-          Main.LOGGER.info("random seed set to " + random_seed);
-        } catch (final PersistenceException e) {
-          Main.LOGGER.error("unable to set random seed: " + e);
+          ok(the_response, "random seed set to " + seed.seed());
         }
       }
-    } else {
+    } catch (final PersistenceException e) {
+      serverError(the_response, "unable to set random seed: " + e);
+
+    } catch (final JsonSyntaxException e) {
       invariantViolation(the_response, "Invalid random seed specified");
     }
     return my_endpoint_result;

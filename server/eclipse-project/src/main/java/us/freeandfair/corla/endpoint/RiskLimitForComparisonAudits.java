@@ -17,11 +17,14 @@ import java.math.BigDecimal;
 
 import javax.persistence.PersistenceException;
 
+import com.google.gson.JsonSyntaxException;
+
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
+import us.freeandfair.corla.json.SubmittedRiskLimit;
 import us.freeandfair.corla.model.DepartmentOfStateDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.DepartmentOfStateDashboardQueries;
@@ -74,35 +77,30 @@ public class RiskLimitForComparisonAudits extends AbstractDoSDashboardEndpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    // the before() action automatically checks that the server is ready,
-    // starts a transaction, loads the ASM, and checks to see if this endpoint is 
-    // permitted given the current state of the ASM.
-    ok(the_response, "Risk limit set");
-    BigDecimal risk_limit = null;
-    // see if a valid risk limit was passed in
-    risk_limit = parseRiskLimit(the_request.queryParams(RISK_LIMIT));
-    if (risk_limit == null) {
-      Main.LOGGER.info("attempt to set an invalid risk limit");
-      invariantViolation(the_response, "Invalid risk limit specified");
-    } else {
-      final DepartmentOfStateDashboard dosd = 
-          DepartmentOfStateDashboardQueries.get();
-      if (dosd == null) {
-        serverError(the_response, "could not get department of state dashboard"); 
+    try {
+      final SubmittedRiskLimit risk_limit = 
+          Main.GSON.fromJson(the_request.body(), SubmittedRiskLimit.class);
+      final BigDecimal parsed_limit = parseRiskLimit(risk_limit.riskLimit());
+      if (parsed_limit == null) {
+        invariantViolation(the_response, "invalid risk limit specified");
       } else {
-        dosd.setRiskLimitForComparisonAudits(risk_limit);
-        try {
+        final DepartmentOfStateDashboard dosd = DepartmentOfStateDashboardQueries.get();
+        if (dosd == null) {
+          Main.LOGGER.error("could not get department of state dashboard");
+          serverError(the_response, "could not set risk limit");
+        } else {
+          dosd.setRiskLimitForComparisonAudits(parsed_limit);
           Persistence.saveOrUpdate(dosd);
-          Main.LOGGER.info("risk limit for comparison audits set to " + risk_limit);
-        } catch (final PersistenceException e) {
-          Main.LOGGER.error("unable to set risk limit for comparison audits: " + e);
+          ok(the_response, "risk limit set to " + parsed_limit);
         }
       }
-    } 
+    } catch (final PersistenceException e) {
+      serverError(the_response, "unable to set risk limit: " + e);
+
+    } catch (final JsonSyntaxException e) {
+      invariantViolation(the_response, "Invalid risk limit specified");
+    }
     return my_endpoint_result;
-    // the after() action automatically takes the appropriate transition on the
-    // state machine, saves it to the database, and finishes the endpoint 
-    // transaction.
   }
   
   /**

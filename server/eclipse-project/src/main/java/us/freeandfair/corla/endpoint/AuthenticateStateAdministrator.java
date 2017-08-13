@@ -12,15 +12,15 @@
 
 package us.freeandfair.corla.endpoint;
 
-import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.AUTHENTICATE_STATE_ADMINISTRATOR_EVENT;
+import com.google.gson.JsonSyntaxException;
 
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
-import us.freeandfair.corla.asm.AbstractStateMachine;
-import us.freeandfair.corla.json.ServerASMResponse;
+import us.freeandfair.corla.asm.DoSDashboardASM;
+import us.freeandfair.corla.json.SubmittedUsernamePassword;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
 
 /**
@@ -41,10 +41,10 @@ public class AuthenticateStateAdministrator extends AbstractEndpoint {
   }
   
   /**
-   * @return this endpoint uses the Department of State ASM.
+   * @return this endpoint does not use an ASM.
    */
   @Override
-  protected Class<AbstractStateMachine> asmClass() {
+  protected Class<DoSDashboardASM> asmClass() {
     return null;
   }
 
@@ -69,7 +69,7 @@ public class AuthenticateStateAdministrator extends AbstractEndpoint {
    */
   @Override
   protected ASMEvent endpointEvent() {
-    return AUTHENTICATE_STATE_ADMINISTRATOR_EVENT;
+    return null;
   }
   
   /**
@@ -95,20 +95,23 @@ public class AuthenticateStateAdministrator extends AbstractEndpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    ok(the_response, "Authenticated");
-    if (!Authentication.authenticateAs(the_request, AdministratorType.STATE)) {
+    if (Authentication.authenticateAs(the_request, AdministratorType.STATE)) {
+      ok(the_response, "Authenticated");
+    } else {
+      try {
+        final SubmittedUsernamePassword auth_info = 
+            Main.GSON.fromJson(the_request.body(), SubmittedUsernamePassword.class);
+        if (Authentication.authenticateAs(the_request, auth_info, 
+                                          AdministratorType.STATE)) {
+          ok(the_response, "Authenticated");
+        } else {
+          unauthorized(the_response, "Authentication failed");
+        }
+      } catch (final JsonSyntaxException e) {
+        unauthorized(the_response, "Authentication failed");
+      }
       unauthorized(the_response, "Authentication failed");
     }
-
-    // Take the transition triggered by this successful authentication.
-    Main.dosDashboardASM().stepEvent(AUTHENTICATE_STATE_ADMINISTRATOR_EVENT);
-
-    // Build the ASM server response.
-    final ServerASMResponse asm_response =
-        new ServerASMResponse(Main.dosDashboardASM().currentState(),
-                              Main.dosDashboardASM().enabledUIEvents());
-    the_response.body(Main.GSON.toJson(asm_response));
-
     return my_endpoint_result;
   }
 }

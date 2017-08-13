@@ -11,13 +11,15 @@
 
 package us.freeandfair.corla.endpoint;
 
-import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.COUNTY_SKIP_EVENT;
+import com.google.gson.JsonSyntaxException;
 
 import spark.Request;
 import spark.Response;
 
+import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.AbstractStateMachine;
+import us.freeandfair.corla.json.SubmittedUsernamePassword;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
 
 /**
@@ -66,7 +68,7 @@ public class AuthenticateCountyAdministrator extends AbstractEndpoint {
    */
   @Override
   protected ASMEvent endpointEvent() {
-    return COUNTY_SKIP_EVENT;
+    return null;
   }
   
   /**
@@ -92,8 +94,21 @@ public class AuthenticateCountyAdministrator extends AbstractEndpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    ok(the_response, "Authenticated");
-    if (!Authentication.authenticateAs(the_request, AdministratorType.COUNTY)) {
+    if (Authentication.authenticateAs(the_request, AdministratorType.COUNTY)) {
+      ok(the_response, "Authenticated");
+    } else {
+      try {
+        final SubmittedUsernamePassword auth_info = 
+            Main.GSON.fromJson(the_request.body(), SubmittedUsernamePassword.class);
+        if (Authentication.authenticateAs(the_request, auth_info, 
+                                          AdministratorType.COUNTY)) {
+          ok(the_response, "Authenticated");
+        } else {
+          unauthorized(the_response, "Authentication failed");
+        }
+      } catch (final JsonSyntaxException e) {
+        unauthorized(the_response, "Authentication failed");
+      }
       unauthorized(the_response, "Authentication failed");
     }
     return my_endpoint_result;
