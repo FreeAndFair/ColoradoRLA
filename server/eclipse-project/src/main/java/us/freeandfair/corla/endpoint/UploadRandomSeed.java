@@ -81,7 +81,6 @@ public class UploadRandomSeed extends AbstractDoSDashboardEndpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    // see if a valid random seed was passed in
     try {
       final SubmittedRandomSeed seed = 
           Main.GSON.fromJson(the_request.body(), SubmittedRandomSeed.class);
