@@ -48,12 +48,12 @@ public final class AuditBoardDashboardQueries {
    * @param the requested county dashboard, if one exists, 
    * and null otherwise.
    */
+  //@ requires the_county_id != null;
   // we are checking to see if exactly one result is in a list, and
   // PMD doesn't like it
   @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
   public static AuditBoardDashboard get(final Integer the_county_id) {
     AuditBoardDashboard result = null;
-    
     try {
       final boolean transaction = Persistence.beginTransaction();
       final Session s = Persistence.currentSession();

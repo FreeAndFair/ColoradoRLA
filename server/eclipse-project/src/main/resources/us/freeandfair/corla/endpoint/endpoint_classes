@@ -6,6 +6,7 @@ us.freeandfair.corla.endpoint.AuthenticateStateAdministrator
 us.freeandfair.corla.endpoint.BallotManifestDownload
 us.freeandfair.corla.endpoint.BallotManifestDownloadByCounty
 us.freeandfair.corla.endpoint.BallotManifestUpload
+us.freeandfair.corla.endpoint.BallotNotFound
 us.freeandfair.corla.endpoint.ContestDownload
 us.freeandfair.corla.endpoint.ContestDownloadByCounty
 us.freeandfair.corla.endpoint.ContestDownloadByID
