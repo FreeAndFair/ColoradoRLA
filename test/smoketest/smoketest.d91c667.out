@@ -17,11 +17,11 @@
 + mvn package
 ++ sed '2 s/xmlns=".*"//g'
 ++ xmllint --xpath '/project/version/text()' -
-+ version=0.7.0-alpha
-+ jar=target/colorado_rla-0.7.0-alpha-shaded.jar
-+ echo Built target/colorado_rla-0.7.0-alpha-shaded.jar
-Built target/colorado_rla-0.7.0-alpha-shaded.jar
-+ java -jar target/colorado_rla-0.7.0-alpha-shaded.jar
++ version=0.0.1
++ jar=target/colorado_rla-0.0.1-shaded.jar
++ echo Built target/colorado_rla-0.0.1-shaded.jar
+Built target/colorado_rla-0.0.1-shaded.jar
++ java -jar target/colorado_rla-0.0.1-shaded.jar
 + grep -q 'INFO Server:444 - Started'
 + tail -f -n0 target/server.stdout
 + cd /srv/s/electionaudits/ColoradoRLA/test/smoketest
