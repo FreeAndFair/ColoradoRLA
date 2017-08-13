@@ -49,6 +49,21 @@ public class IndicateHandCount extends AbstractDoSDashboardEndpoint {
   }
 
   /**
+   * @return STATE authorization is necessary for this endpoint.
+   */
+  public AuthorizationType requiredAuthorization() {
+    return AuthorizationType.STATE;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected ASMEvent endpointEvent() {
+    return INDICATE_FULL_HAND_COUNT_CONTEST_EVENT;
+  }
+  
+  /**
    * Attempts to select contests for audit. 
    * 
    * Session query parameters: <tt>random-seed</tt>

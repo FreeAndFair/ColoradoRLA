@@ -50,6 +50,21 @@ public class PublishBallotsToAudit extends AbstractDoSDashboardEndpoint {
   }
 
   /**
+   * @return STATE authorization is necessary for this endpoint.
+   */
+  public AuthorizationType requiredAuthorization() {
+    return AuthorizationType.STATE;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected ASMEvent endpointEvent() {
+    return PUBLISH_BALLOTS_TO_AUDIT_EVENT;
+  }
+
+  /**
    * {@inheritDoc}
    */
   @Override

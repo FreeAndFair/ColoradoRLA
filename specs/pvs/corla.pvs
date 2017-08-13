@@ -1681,7 +1681,7 @@ BEGIN
   audit_reason: TYPE =
     { state_wide_contest, county_wide_contest, close_contest,
       geographical_scope, concern_regarding_accuracy,
-      opportunitic_benefits, county_clerk_ability, no_audit }
+      opportunistic_benefits, county_clerk_ability, no_audit }
 % @trace us.freeandfair.corla.model.DepartmentOfStateDashboard.selectContestsToAudit
   select_contests_for_comparison_audit:
     [department_of_state_dashboard, set[[contest, audit_reason]] ->
@@ -3249,11 +3249,11 @@ BEGIN
        county_event := n_e,
        audit_event := rm_e
      #)
-  ballot_not_found: server_endpoint = % NOT STARTED
+  ballot_not_found: server_endpoint = % UNDERWAY
     (# endpoint_type := POST,
        callback := undefined_callback,
-       uri := "/ballot-not-found", % placeholder
-       implementation_class := "BallotNotFound", % placeholder
+       uri := "/ballot-not-found",
+       implementation_class := "BallotNotFound",
        in_stream := ballot_not_found_params,
        out_stream := add((UNAUTHORIZED_401, nothing),
                          singleton((OK_200, nothing))),
@@ -3261,11 +3261,11 @@ BEGIN
        county_event := n_e,
        audit_event := rbnf_e
      #)
-  audit_investigation_report: server_endpoint = % NOT STARTED
+  audit_investigation_report: server_endpoint = % UNDERWAY
     (# endpoint_type := POST,
        callback := undefined_callback,
-       uri := "/audit-investigation-report", % placeholder
-       implementation_class := "AuditInvestigationReport", % placeholder
+       uri := "/audit-investigation-report",
+       implementation_class := "AuditInvestigationReport",
        in_stream := audit_investigation_report,
        out_stream := add((UNAUTHORIZED_401, nothing),
                          singleton((OK_200, nothing))),
@@ -3273,11 +3273,11 @@ BEGIN
        county_event := n_e,
        audit_event := sair_e
      #)
-  intermediate_audit_report: server_endpoint = % NOT STARTED
+  intermediate_audit_report: server_endpoint = % UNDERWAY
     (# endpoint_type := POST,
        callback := undefined_callback,
-       uri := "/intermediate-audit-report", % placeholder
-       implementation_class := "IntermediateAuditReport", % placeholder
+       uri := "/intermediate-audit-report",
+       implementation_class := "IntermediateAuditReport",
        in_stream := audit_report,
        out_stream := add((UNAUTHORIZED_401, nothing),
                          singleton((OK_200, nothing))),
@@ -3285,11 +3285,11 @@ BEGIN
        county_event := n_e,
        audit_event := siar_e
      #)
-  audit_report: server_endpoint = % NOT STARTED
+  audit_report: server_endpoint = % UNDERWAY
     (# endpoint_type := POST,
        callback := undefined_callback,
-       uri := "/audit-report", % placeholder
-       implementation_class := "AuditReport", % placeholder
+       uri := "/audit-report",
+       implementation_class := "AuditReport",
        in_stream := audit_report,
        out_stream := add((UNAUTHORIZED_401, nothing),
                          singleton((OK_200, nothing))),

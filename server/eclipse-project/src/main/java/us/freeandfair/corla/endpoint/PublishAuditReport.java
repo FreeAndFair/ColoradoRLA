@@ -32,7 +32,7 @@ import us.freeandfair.corla.util.SparkHelper;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class PublishDataToAudit extends AbstractDoSDashboardEndpoint {
+public class PublishAuditReport extends AbstractDoSDashboardEndpoint {
   /**
    * {@inheritDoc}
    */
@@ -46,7 +46,7 @@ public class PublishDataToAudit extends AbstractDoSDashboardEndpoint {
    */
   @Override
   public String endpointName() {
-    return "/publish-data-to-audit";
+    return "/publish-audit-report";
   }
 
   /**
@@ -61,7 +61,7 @@ public class PublishDataToAudit extends AbstractDoSDashboardEndpoint {
    */
   @Override
   protected ASMEvent endpointEvent() {
-    return PUBLISH_AUDIT_DATA_EVENT
+    return PUBLISH_AUDIT_REPORT_EVENT;
   }
   
   /**
@@ -70,7 +70,6 @@ public class PublishDataToAudit extends AbstractDoSDashboardEndpoint {
   @Override
   public String endpoint(final Request the_request,
                          final Response the_response) {
-    return "When defined, the full set of data relevant to permitting the\n" +
-      "public to audit an RLA will be downloaded here.";
+    return "Publish the audit report for the entire state-wide RLA.";
   }
 }

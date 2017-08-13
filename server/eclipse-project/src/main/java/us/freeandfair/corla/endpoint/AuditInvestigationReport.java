@@ -11,59 +11,44 @@
 
 package us.freeandfair.corla.endpoint;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.sql.Blob;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.OptionalLong;
+import java.util.stream.Collectors;
 
 import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.MultipartConfigElement;
+import javax.servlet.ServletException;
 
-import org.apache.commons.fileupload.FileItemIterator;
-import org.apache.commons.fileupload.FileItemStream;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.fileupload.util.Streams;
-import org.eclipse.jetty.http.HttpStatus;
 import org.hibernate.Session;
+
+import com.google.gson.JsonSyntaxException;
 
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.csv.BallotManifestParser;
-import us.freeandfair.corla.csv.ColoradoBallotManifestParser;
-import us.freeandfair.corla.model.BallotManifestInfo;
-import us.freeandfair.corla.model.County;
-import us.freeandfair.corla.model.CountyDashboard;
-import us.freeandfair.corla.model.UploadedFile;
-import us.freeandfair.corla.model.UploadedFile.FileType;
-import us.freeandfair.corla.model.UploadedFile.HashStatus;
+import us.freeandfair.corla.model.CastVoteRecord;
+import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.CountyDashboardQueries;
-import us.freeandfair.corla.util.FileHelper;
-import us.freeandfair.corla.util.SparkHelper;
+import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
- * The "ballot manifest upload" endpoint.
+ * The "audit CVR upload" endpoint.
  * 
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.ExcessiveImports"})
-public class EstablishAuditBoard extends AbstractCountyDashboardEndpoint {
+@SuppressWarnings("PMD.AtLeastOneConstructor")
+// TODO: consider rewriting along the same lines as CVRExportUpload
+public class AuditInvestigationReport extends AbstractAuditBoardDashboardEndpoint {
   /**
    * {@inheritDoc}
    */
@@ -77,7 +62,7 @@ public class EstablishAuditBoard extends AbstractCountyDashboardEndpoint {
    */
   @Override
   public String endpointName() {
-    return "/audit-board";
+    return "/audit-investigation-report";
   }
 
   /**
@@ -92,15 +77,15 @@ public class EstablishAuditBoard extends AbstractCountyDashboardEndpoint {
    */
   @Override
   protected ASMEvent endpointEvent() {
-    return ESTABLISH_AUDIT_BOARD_EVENT;
+    return SUBMIT_AUDIT_INVESTIGATION_REPORT_EVENT;
   }
-  
+
   /**
    * {@inheritDoc}
    */
   @Override
   public String endpoint(final Request the_request,
                          final Response the_response) {
-    return "The audit board specified has been saved.";
+    return "Uploaded investigation report saved.";
   }
 }

@@ -26,19 +26,19 @@ import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.util.SparkHelper;
 
 /**
- * Download all of the data relevant to public auditing of a RLA.
+ * Publish the intermediate audit report by the audit board.
  * 
  * @author Joe Kiniry <kiniry@freeandfair.us>
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class PublishDataToAudit extends AbstractDoSDashboardEndpoint {
+public class IntermediateAuditReport extends AbstractAuditBoardDashboardEndpoint {
   /**
    * {@inheritDoc}
    */
   @Override
   public EndpointType endpointType() {
-    return EndpointType.GET;
+    return EndpointType.POST;
   }
   
   /**
@@ -46,14 +46,14 @@ public class PublishDataToAudit extends AbstractDoSDashboardEndpoint {
    */
   @Override
   public String endpointName() {
-    return "/publish-data-to-audit";
+    return "/intermediate-audit-report";
   }
 
   /**
-   * @return STATE authorization is necessary for this endpoint.
+   * @return COUNTY authorization is necessary for this endpoint.
    */
   public AuthorizationType requiredAuthorization() {
-    return AuthorizationType.STATE;
+    return AuthorizationType.COUNTY;
   }
 
   /**
@@ -61,7 +61,7 @@ public class PublishDataToAudit extends AbstractDoSDashboardEndpoint {
    */
   @Override
   protected ASMEvent endpointEvent() {
-    return PUBLISH_AUDIT_DATA_EVENT
+    return SUBMIT_INTERMEDIATE_AUDIT_REPORT_EVENT;
   }
   
   /**
@@ -70,7 +70,8 @@ public class PublishDataToAudit extends AbstractDoSDashboardEndpoint {
   @Override
   public String endpoint(final Request the_request,
                          final Response the_response) {
-    return "When defined, the full set of data relevant to permitting the\n" +
-      "public to audit an RLA will be downloaded here.";
+    return "Save an intermediate audit report so that the audit board members " +;
+    "can take a break, go to lunch, go home for the night, etc.";
+    // deauthenticate user
   }
 }
