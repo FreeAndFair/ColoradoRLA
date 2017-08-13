@@ -90,8 +90,18 @@ const Info = ({ info, contests }: any) => (
 );
 
 const CountyHomePage = (props: any) => {
-    const { ballotStyles, contests, county, startAudit } = props;
-    const { ballots, info, name, status } = county;
+    const {
+        ballotStyles,
+        contests,
+        county,
+        countyDashboardRefresh,
+        startAudit,
+    } = props;
+    const { ballots, name, startTimestamp, status } = county;
+
+    const info = { auditDate: startTimestamp };
+
+    setTimeout(countyDashboardRefresh, 1000);
 
     return (
         <div className='county-root'>
