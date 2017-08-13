@@ -4,6 +4,7 @@ const ballotStyles = require('./data/ballotStyles');
 const castVoteRecords = require('./data/castVoteRecords');
 const contests = require('./data/contests');
 const counties = require('./data/counties');
+const dosDashboard = require('./data/dosDashboard');
 
 
 const app = connect();
@@ -54,16 +55,7 @@ route('get', '/contest', () => ok(contests));
 
 route('post', '/auth-state-admin', () => ok('Authenticated'));
 
-route('get', '/dos-dashboard', () => ok({
-    auditStage: 'auditOngoing',
-    contests,
-    counties: counties.map(c => Object.assign({}, c, { status: 'cvrsUploaded' })),
-    manifestUploadsComplete: true,
-    cvrUploadsComplete: true,
-    riskLimit: 0.05,
-    seed: 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef',
-    ballots: castVoteRecords,
-}));
+route('get', '/dos-dashboard', () => ok(dosDashboard));
 
 route('post', '/risk-limit-comp-audits', (r) => ok(''));
 
