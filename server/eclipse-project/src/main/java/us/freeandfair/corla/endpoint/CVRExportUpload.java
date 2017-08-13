@@ -1,16 +1,10 @@
 /*
- * / * Free & Fair Colorado RLA System
- * 
+ * Free & Fair Colorado RLA System
  * @title ColoradoRLA
- * 
  * @created Jul 27, 2017
- * 
  * @copyright 2017 Free & Fair
- * 
  * @license GNU General Public License 3.0
- * 
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
- * 
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 

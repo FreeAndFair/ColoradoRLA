@@ -1058,11 +1058,15 @@ END canvass_boards
 
 %%% \subsection{Cryptography}
 
-% We will add additional cryptographic primitives here as required.
-% @review kiniry dmz Is it correct to say that the cryptography is used
-% (via hashing) to verify that the ballot manifests and cvrs stored in the 
-% database are actually the ones uploaded by the Counties?
-
+%%% Cryptography is used, via hashing, to verify that the verified
+%%% ballot manifests and CVRs uploaded by counties and stored in the
+%%% file system and database have integrity and repudiation. I.e.,
+%%% checking a cryptographic hash of a file guarantees: (a) to the
+%%% Secretary of State and state administrators that the uploaded
+%%% files are the ones that county administrators thinks they are
+%%% (thus, there was no error in data transmission), and (b) to the
+%%% public that the uploaded files have not been altered in any
+%%% fashion.
 cryptography: THEORY
 BEGIN
   digest: TYPE = bvec[256]
