@@ -11,12 +11,15 @@
 
 package us.freeandfair.corla.endpoint;
 
+import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.DOS_REFRESH_EVENT;
+
 import javax.persistence.PersistenceException;
 
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.json.DoSDashboardRefreshResponse;
 import us.freeandfair.corla.query.DepartmentOfStateDashboardQueries;
 
@@ -28,7 +31,7 @@ import us.freeandfair.corla.query.DepartmentOfStateDashboardQueries;
  */
 // endpoints don't need constructors
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class DoSDashboardRefresh extends AbstractEndpoint {
+public class DoSDashboardRefresh extends AbstractDoSDashboardEndpoint {
   /**
    * {@inheritDoc}
    */
@@ -45,6 +48,14 @@ public class DoSDashboardRefresh extends AbstractEndpoint {
     return "/dos-dashboard";
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected ASMEvent endpointEvent() {
+    return DOS_REFRESH_EVENT;
+  }
+  
   /**
    * Provides information about the DoS dashboard.
    * 

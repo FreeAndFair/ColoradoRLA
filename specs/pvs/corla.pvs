@@ -3039,7 +3039,7 @@ BEGIN
   rla_tool_endpoints: VAR server_endpoints
   undefined_callback: [dashboard -> dashboard]
 %%% Each RLA Tool system endpoint is specified below.
-  root_endpoint: server_endpoint =
+  root_endpoint: server_endpoint = % DONE
     (# endpoint_type := GET,
        callback := undefined_callback,
        uri := "/",
@@ -3051,7 +3051,7 @@ BEGIN
        audit_event := n_e
      #)
 %%% \subsection{Department of State Dashboard Endpoints}
-  auth_state_admin: server_endpoint =
+  auth_state_admin: server_endpoint = % DONE
     (# endpoint_type := POST,
        callback := undefined_callback,
        uri := "/auth-state-admin",
@@ -3063,7 +3063,7 @@ BEGIN
        county_event := n_e,
        audit_event := n_e
      #)
-  risk_limit: server_endpoint =
+  risk_limit: server_endpoint = % DONE
     (# endpoint_type := POST,
        callback := undefined_callback,
        uri := "/risk-limit-comp-audits",
@@ -3076,7 +3076,7 @@ BEGIN
        county_event := n_e,
        audit_event := n_e
      #)
-  select_contests: server_endpoint =
+  select_contests: server_endpoint = % DONE
     (# endpoint_type := POST,
        callback := undefined_callback,
        uri := "/select-contests",
@@ -3089,7 +3089,7 @@ BEGIN
        county_event := n_e,
        audit_event := n_e
      #)
-  publish_data_to_audit: server_endpoint =
+  publish_data_to_audit: server_endpoint = % NOT STARTED
     (# endpoint_type := POST,
        callback := undefined_callback,
        uri := "/publish-data-to-audit",
@@ -3102,11 +3102,11 @@ BEGIN
        county_event := n_e,
        audit_event := n_e
      #)
-  publish_seed: server_endpoint =
+  publish_seed: server_endpoint = % DONE
     (# endpoint_type := POST,
        callback := undefined_callback,
-       uri := "/random-seed", % placeholder
-       implementation_class := "UploadSeed", % placeholder
+       uri := "/random-seed",
+       implementation_class := "UploadRandomSeed",
        in_stream := random_seed_params,
        out_stream := add((BAD_REQUEST_400, nothing),
                      add((UNAUTHORIZED_401, nothing),
@@ -3115,11 +3115,11 @@ BEGIN
        county_event := n_e,
        audit_event := n_e
      #)
-  publish_ballots: server_endpoint =
+  publish_ballots: server_endpoint = % NOT STARTED
     (# endpoint_type := GET,
        callback := undefined_callback,
        uri := "/ballots-to-audit", % placeholder
-       implementation_class := "UploadSeed", % placeholder
+       implementation_class := "PublishBallotsToAudit", % placeholder
        in_stream := ballots_to_audit_params,
        out_stream := add((BAD_REQUEST_400, nothing),
                      add((UNAUTHORIZED_401, nothing),
@@ -3128,7 +3128,7 @@ BEGIN
        county_event := n_e,
        audit_event := n_e
      #)
-  full_hand_count: server_endpoint =
+  full_hand_count: server_endpoint = % NOT STARTED
     (# endpoint_type := POST,
        callback := undefined_callback,
        uri := "/hand-count", % placeholder
@@ -3141,11 +3141,11 @@ BEGIN
        county_event := n_e,
        audit_event := n_e
      #)
-  publish_report: server_endpoint =
+  publish_report: server_endpoint = % NOT STARTED
     (# endpoint_type := GET,
        callback := undefined_callback,
        uri := "/publish-report", % placeholder
-       implementation_class := "PublishAuditReport",
+       implementation_class := "PublishAuditReport", % placeholder
        in_stream := empty_request,
        out_stream := add((BAD_REQUEST_400, nothing),
                      add((UNAUTHORIZED_401, nothing),
@@ -3154,11 +3154,11 @@ BEGIN
        county_event := n_e,
        audit_event := n_e
      #)
-  refresh_department_of_state_dashboard: server_endpoint =
+  refresh_department_of_state_dashboard: server_endpoint = % DONE
     (# endpoint_type := GET,
        callback := undefined_callback,
-       uri := "/dos-dashboard", % placeholder
-       implementation_class := "DepartmentOfStateDashboard",
+       uri := "/dos-dashboard",
+       implementation_class := "DoSDashboardRefresh",
        in_stream := empty_request,
        out_stream := add((UNAUTHORIZED_401, nothing),
                          singleton((OK_200, nothing))),
@@ -3167,7 +3167,7 @@ BEGIN
        audit_event := n_e
      #)
 %%% \subsection{County Dashboard Endpoints}
-  auth_county_admin: server_endpoint =
+  auth_county_admin: server_endpoint = % DONE
     (# endpoint_type := POST,
        callback := undefined_callback,
        uri := "/auth-county-admin",
@@ -3179,11 +3179,11 @@ BEGIN
        county_event := aca_e,
        audit_event := n_e
      #)
-  establish_audit_board: server_endpoint =
+  establish_audit_board: server_endpoint = % NOT STARTED
     (# endpoint_type := POST,
        callback := undefined_callback,
-       uri := "/audit-board",
-       implementation_class := "EstablishAuditBoard",
+       uri := "/audit-board", % placeholder
+       implementation_class := "EstablishAuditBoard", % placeholder
        in_stream := audit_board,
        out_stream := add((UNAUTHORIZED_401, nothing),
                          singleton((OK_200, nothing))),
@@ -3191,7 +3191,7 @@ BEGIN
        county_event := eab_e,
        audit_event := n_e
      #)
-  ballot_manifest_upload: server_endpoint =
+  ballot_manifest_upload: server_endpoint = % DONE
     (# endpoint_type := POST,
        callback := undefined_callback,
        uri := "/upload-ballot-manifest",
@@ -3204,7 +3204,7 @@ BEGIN
        county_event := cuvbm_e,
        audit_event := n_e
      #)
-  cvr_export_upload: server_endpoint =
+  cvr_export_upload: server_endpoint = % DONE
     (# endpoint_type := POST,
        callback := undefined_callback,
        uri := "/upload-cvr-export",
@@ -3217,11 +3217,11 @@ BEGIN
        county_event := uvc_e,
        audit_event := n_e
      #)
-  refresh_county_dashboard: server_endpoint =
+  refresh_county_dashboard: server_endpoint = % DONE
     (# endpoint_type := GET,
        callback := undefined_callback,
-       uri := "/county-dashboard", % placeholder
-       implementation_class := "CountyDashboard",
+       uri := "/county-dashboard",
+       implementation_class := "CountyDashboardRefresh",
        in_stream := empty_request,
        out_stream := add((UNAUTHORIZED_401, nothing),
                          singleton((OK_200, refresh_county_dashboard))),
@@ -3230,7 +3230,7 @@ BEGIN
        audit_event := n_e
      #)
 %%% \subsection{Audit Board Dashboard Endpoints}
-  acvr_upload: server_endpoint = % aka report markings event
+  acvr_upload: server_endpoint = % DONE
     (# endpoint_type := POST,
        callback := undefined_callback,
        uri := "/upload-audit-cvr",
@@ -3243,11 +3243,11 @@ BEGIN
        county_event := n_e,
        audit_event := rm_e
      #)
-  ballot_not_found: server_endpoint =
+  ballot_not_found: server_endpoint = % NOT STARTED
     (# endpoint_type := POST,
        callback := undefined_callback,
-       uri := "/ballot-not-found",
-       implementation_class := "BallotNotFound",
+       uri := "/ballot-not-found", % placeholder
+       implementation_class := "BallotNotFound", % placeholder
        in_stream := ballot_not_found_params,
        out_stream := add((UNAUTHORIZED_401, nothing),
                          singleton((OK_200, nothing))),
@@ -3255,11 +3255,11 @@ BEGIN
        county_event := n_e,
        audit_event := rbnf_e
      #)
-  audit_investigation_report: server_endpoint =
+  audit_investigation_report: server_endpoint = % NOT STARTED
     (# endpoint_type := POST,
        callback := undefined_callback,
-       uri := "/audit-investigation-report",
-       implementation_class := "AuditInvestigationReport",
+       uri := "/audit-investigation-report", % placeholder
+       implementation_class := "AuditInvestigationReport", % placeholder
        in_stream := audit_investigation_report,
        out_stream := add((UNAUTHORIZED_401, nothing),
                          singleton((OK_200, nothing))),
@@ -3267,11 +3267,11 @@ BEGIN
        county_event := n_e,
        audit_event := sair_e
      #)
-  intermediate_audit_report: server_endpoint =
+  intermediate_audit_report: server_endpoint = % NOT STARTED
     (# endpoint_type := POST,
        callback := undefined_callback,
-       uri := "/intermediate-audit-report",
-       implementation_class := "IntermediateAuditReport",
+       uri := "/intermediate-audit-report", % placeholder
+       implementation_class := "IntermediateAuditReport", % placeholder
        in_stream := audit_report,
        out_stream := add((UNAUTHORIZED_401, nothing),
                          singleton((OK_200, nothing))),
@@ -3279,11 +3279,11 @@ BEGIN
        county_event := n_e,
        audit_event := siar_e
      #)
-  audit_report: server_endpoint =
+  audit_report: server_endpoint = % NOT STARTED
     (# endpoint_type := POST,
        callback := undefined_callback,
-       uri := "/audit-report",
-       implementation_class := "AuditReport",
+       uri := "/audit-report", % placeholder
+       implementation_class := "AuditReport", % placeholder
        in_stream := audit_report,
        out_stream := add((UNAUTHORIZED_401, nothing),
                          singleton((OK_200, nothing))),
@@ -3291,11 +3291,11 @@ BEGIN
        county_event := n_e,
        audit_event := sar_e
      #)
-  refresh_audit_board_dashboard: server_endpoint =
+  refresh_audit_board_dashboard: server_endpoint = % NOT STARTED
     (# endpoint_type := GET,
        callback := undefined_callback,
        uri := "/audit-board-dashboard", % placeholder
-       implementation_class := "AuditBoardDashboard",
+       implementation_class := "AuditBoardDashboard", % placeholder
        in_stream := empty_request,
        out_stream := add((UNAUTHORIZED_401, nothing),
                          singleton((OK_200, refresh_audit_board_dashboard))),
