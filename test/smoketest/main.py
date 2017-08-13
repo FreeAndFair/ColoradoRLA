@@ -10,35 +10,65 @@ import requests
 from server_test import *
 
 
-def upload_cvrs(baseurl, filename, sha256):
+def state_login(baseurl, s):
+    "Login as state admin in given requests session"
+
+    path = "/auth-state-admin"
+    r = s.post(baseurl + path,
+               data={'username': 'stateadmin1', 'password': '', 'second_factor': ''})
+    print(r, path)
+
+
+def county_login(baseurl, s, county_id):
+    "Login as county admin in given requests session"
+
+    path = "/auth-county-admin"
+    r = s.post(baseurl + path,
+               data={'username': 'countyadmin%d' % county_id, 'password': '', 'second_factor': ''})
+    print(r, path)
+
+
+def upload_cvrs(baseurl, s, filename, sha256):
     "Upload cvrs"
 
     with open(filename, 'rb') as f:
+        path = "/upload-cvr-export"
         payload = {'county': '3', 'hash': sha256}
-        r = requests.post(baseurl + "/upload-cvr-export",
+        r = s.post(baseurl + path,
                           files={'cvr_file': f}, data=payload)
-    print(r)
+    print(r, path)
 
 
-def upload_manifest(baseurl, filename, sha256):
+def upload_manifest(baseurl, s, filename, sha256):
     "Upload manifest"
 
     with open(filename, 'rb') as f:
+        path = "/upload-ballot-manifest"
         payload = {'county': 'Arapahoe', 'hash': sha256}
-        r = requests.post(baseurl + "/upload-ballot-manifest",
+        r = s.post(baseurl + path,
                           files={'bmi_file': f}, data=payload)
-    print(r)
+    print(r, path)
 
 
-def upload_files(baseurl):
+def upload_acvr(baseurl, s, filename):
+    "Upload audit CVR (acvr)"
+
+    with open(filename, 'rb') as f:
+        path = "/upload-audit-cvr"
+        r = s.post(baseurl + path,
+                          files={'audit_cvr': f})
+    print(r, path)
+
+
+def upload_files(baseurl, s):
     """Directly upload files, which zerotest doesn't support.
     See "File upload via POST request not working: Issue #12"
      https://github.com/jjyr/zerotest/issues/12
     """
 
-    upload_manifest(baseurl, "../e-1/arapahoe-manifest.csv",
+    upload_manifest(baseurl, s, "../e-1/arapahoe-manifest.csv",
                "42d409d3394243046cf92e3ce569b7078cba0815d626602d15d0da3e5e844a94")
-    upload_cvrs(baseurl, "../e-1/arapahoe-regent-3-clear-CVR_Export.csv",
+    upload_cvrs(baseurl, s, "../e-1/arapahoe-regent-3-clear-CVR_Export.csv",
                "413befb5bc3e577e637bd789a92da425d0309310c51cfe796e57c01a1987f4bf")
 
 
@@ -61,9 +91,18 @@ if __name__ == "__main__":
     # on port 8887.
 
     if len(sys.argv) > 1  and  sys.argv[1] == "--update":
-        upload_files("http://localhost:8887")
+        base = "http://localhost:8887"
     else:
-        upload_files("http://localhost:8888")
+        base = "http://localhost:8888"
 
+    s = requests.Session()
+
+    state_login(base, s)
+
+    county_login(base, s, 3)
+
+    upload_files(base, s)
+
+    upload_acvr(base, s, "acvr.json")
 
     # server_sequence()

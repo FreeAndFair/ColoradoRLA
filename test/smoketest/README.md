@@ -1,6 +1,6 @@
 # Smoketest of RLA server
 
-This smoketest has been tested against master commit 54a95d4.
+This smoketest has been tested against master commit 1cb4439.
 
 For now, you'll need to install
 [zerotest](https://github.com/jjyr/zerotest)
@@ -15,7 +15,13 @@ The current tests are based on the cvrs at
 `test/e-1/arapahoe-regent-3-clear-CVR_Export.csv`
 and the manifest at `test/e-1/arapahoe-manifest.csv`.
 
-To run the smoketest, first cd to this directory.
+To run the smoketest, cd to this directory, and run
+
+`./smoketest.bash`
+
+That will run most of the current tests.
+
+To run tests by hand, see below.
 
 ## Resetting the database
 
@@ -24,13 +30,22 @@ using the `corla` database:
 
 `psql -c 'SELECT * FROM pg_stat_activity'`
 
-Kill them.
+Kill them.  E.g. `pkill -f java.-jar.target/colorado_rla`
 
 Reset the `corla` database to be empty:
 
 `dropdb corla; createdb -O corla corla`
 
-and start up a fresh server.
+and start up a fresh server:
+
+```
+cd server/eclipse-project
+mvn package
+java -jar target/colorado_rla-0.0.1-shaded.jar &
+cd -
+```
+
+(Or whatever the latest version is - see smoketest.bash for a kludgy way to extract it).
 
 Load the credentials for testing:
 
@@ -48,10 +63,13 @@ cvr and manifest.
 
 ## Testing Audit Board procedures
 
-Run ./util.py to 
+First, prep for the audit [currently just setting up the CVRs].
 
-Uploading a round of aCVRs
+Run ./util.py to make a random selection and create some aCVRs to audit it with.
+You can then upload them one by one from the corla-server-test.html file.
 
+TODO: use "refresh" to pull the actual seed and parameters, and
+calculate audit parameters for a given contest.
 
 ## Updating tests
 Prior to doing an update, perhaps first look at output of curl -I for each query below.
@@ -76,15 +94,17 @@ zerotest server -p 8888 http://localhost:8887 -f server_test.json
 Query the endpoints via this command:
 ```
 bash -xv <<"EndOfInput" > curls.out 2>&1
- curl http://localhost:8888/ballot-manifest/county?3
- curl http://localhost:8888/ballot-manifest
+ # opts="-I"
 
- curl http://localhost:8888/contest
- curl http://localhost:8888/contest/county?3
- curl http://localhost:8888/contest/id/71
- curl http://localhost:8888/cvr/county?3
- curl http://localhost:8888/acvr/county?3
- curl http://localhost:8888/acvr
+ curl $opts http://localhost:8888/ballot-manifest/county?3
+ curl $opts http://localhost:8888/ballot-manifest
+
+ curl $opts http://localhost:8888/contest
+ curl $opts http://localhost:8888/contest/county?3
+ curl $opts http://localhost:8888/contest/id/71
+ curl $opts http://localhost:8888/cvr/county?3
+ curl $opts http://localhost:8888/acvr/county?3
+ curl $opts http://localhost:8888/acvr
 EndOfInput
 ```
 

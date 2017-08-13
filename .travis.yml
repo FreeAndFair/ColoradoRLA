@@ -15,6 +15,7 @@ install:
 before_script:
   - export CLIENT_DIR="${TRAVIS_BUILD_DIR}/client";
   - export SERVER_DIR="${TRAVIS_BUILD_DIR}/server/eclipse-project";
+  - export TEST_DIR="${TRAVIS_BUILD_DIR}/test";
 
 script:
   # WARNING: If changes only occur in files outside of the checked
