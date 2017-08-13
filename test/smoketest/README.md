@@ -1,6 +1,9 @@
 # Smoketest of RLA server
 
-This smoketest has been tested against master commit 1cb4439.
+This smoketest has been tested against master commit d91c667.
+See results in smoketest.*.out, generated like this:
+# Find most recent master commit in git log.
+$ time ./smoketest.bash 2>&1 | tee smoketest.<commit>.out
 
 For now, you'll need to install
 [zerotest](https://github.com/jjyr/zerotest)

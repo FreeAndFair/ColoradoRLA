@@ -1,5 +1,16 @@
 #!/usr/bin/env bash
 set -eux -o pipefail
+function cleanup {
+  set +x
+  echo
+  echo "To see the ends of the logs (some of which might not have been created):"
+  echo tail "${SERVER_DIR}"/target/mvn.stdout
+  echo tail "${SERVER_DIR}"/target/server.stdout
+  echo tail credentials.stdout
+  echo tail server_test.stdout
+  echo "If you're done with the server: pkill -f java.-jar.target/colorado_rla"
+}
+trap cleanup EXIT
 
 # Put these somewhere else before running via travis
 export TRAVIS_BUILD_DIR=`git rev-parse --show-toplevel`
@@ -36,10 +47,6 @@ psql -d corla -a -f ../corla-test-credentials.psql > credentials.stdout
 
 psql -d corla -a -f tabulate.sql | diff tabulate.out -
 
-pytest server_test.py > server_test.stdout
+pytest server_test.py > server_test.stdout || true
 
 egrep '====|____' server_test.out
-
-echo To see the logs, tail "${SERVER_DIR}"/target/server.stdout
-
-echo "If you're done with the server: pkill -f java.-jar.target/colorado_rla"
