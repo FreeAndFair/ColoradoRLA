@@ -75,7 +75,7 @@ test('uploadBallotManifest', s => {
         fetch.flush().then(() => {
             t.deepEqual(f.store.getActions(), [
                 { type: 'UPLOAD_BALLOT_MANIFEST_SEND' },
-                { type: 'UPLOAD_BALLOT_MANIFEST_RECEIVE' },
+                { type: 'UPLOAD_BALLOT_MANIFEST_OK' },
             ]);
 
             teardown(f);

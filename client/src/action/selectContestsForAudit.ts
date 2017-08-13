@@ -12,7 +12,7 @@ const selectContestsForAudit = (data: any[]) => {
         fetch(url, { method: 'post', body: data })
             .then(r => {
                 if (r.ok) {
-                    dispatch({ type: 'SELECT_CONTESTS_FOR_AUDIT_RECEIVE' });
+                    dispatch({ type: 'SELECT_CONTESTS_FOR_AUDIT_OK' });
                 } else {
                     dispatch({ type: 'SELECT_CONTESTS_FOR_AUDIT_FAIL' });
                 }

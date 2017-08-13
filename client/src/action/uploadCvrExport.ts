@@ -17,7 +17,7 @@ const uploadCvrExport = (countyId: string, file: Blob, hash: string) => {
         fetch(url, { method: 'post', body: formData })
             .then(r => {
                 if (r.ok) {
-                    dispatch({ type: 'UPLOAD_CVR_EXPORT_RECEIVE' });
+                    dispatch({ type: 'UPLOAD_CVR_EXPORT_OK' });
                 } else {
                     dispatch({ type: 'UPLOAD_CVR_EXPORT_FAIL' });
                 }

@@ -62,7 +62,7 @@ test('uploadRandomSeed', s => {
         fetch.flush().then(() => {
             t.deepEqual(f.store.getActions(), [
                 { type: 'UPLOAD_RANDOM_SEED_SEND' },
-                { type: 'UPLOAD_RANDOM_SEED_RECEIVE' },
+                { type: 'UPLOAD_RANDOM_SEED_OK' },
             ]);
 
             teardown(f);
