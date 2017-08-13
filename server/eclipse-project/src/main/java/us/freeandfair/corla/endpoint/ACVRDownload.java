@@ -71,7 +71,8 @@ public class ACVRDownload extends AbstractEndpoint {
       Persistence.beginTransaction();
       jw.beginArray();
       final Stream<CastVoteRecord> matches = 
-          CastVoteRecordQueries.getMatching(RecordType.AUDITOR_ENTERED);
+          Stream.concat(CastVoteRecordQueries.getMatching(RecordType.AUDITOR_ENTERED),
+                        CastVoteRecordQueries.getMatching(RecordType.PHANTOM_BALLOT));
       matches.forEach((the_cvr) -> {
         try {
           jw.jsonValue(Main.GSON.toJson(the_cvr));
