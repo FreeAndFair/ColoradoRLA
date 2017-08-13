@@ -23,7 +23,6 @@ public interface ASMEvent extends Event {
    * @trace asm.department_of_state_dashboard_event
    */
   enum DoSDashboardEvent implements ASMEvent {
-    AUTHENTICATE_STATE_ADMINISTRATOR_EVENT, // public inbound event
     ESTABLISH_RISK_LIMIT_FOR_COMPARISON_AUDITS_EVENT, // public inbound event
     SELECT_CONTESTS_FOR_COMPARISON_AUDIT_EVENT, // public inbound event
     PUBLISH_AUDIT_DATA_EVENT, // public inbound event @review CDOS
@@ -43,7 +42,6 @@ public interface ASMEvent extends Event {
    * @trace asm.county_dashboard_event
    */
   enum CountyDashboardEvent implements ASMEvent {
-    AUTHENTICATE_COUNTY_ADMINISTRATOR_EVENT, // public inbound event
     ESTABLISH_AUDIT_BOARD_EVENT, // public inbound event
     UPLOAD_BALLOT_MANIFEST_EVENT, // public inbound event
     UPLOAD_CVRS_EVENT, // public inbound event

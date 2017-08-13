@@ -193,7 +193,7 @@ public class PersistentASMState extends AbstractEntity implements Serializable {
   public void updateFrom(final AbstractStateMachine the_asm) {
     final PersistentASMState new_state = stateFor(the_asm);
     if (new_state.asmClass().equals(asmClass()) &&
-        new_state.asmIdentity().equals(asmIdentity())) {
+        nullableEquals(new_state.asmIdentity(), asmIdentity())) {
       my_state_class = new_state.stateClass();
       my_state_value = new_state.stateValue();
     } else {

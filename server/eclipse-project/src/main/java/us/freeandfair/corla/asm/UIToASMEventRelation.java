@@ -49,8 +49,6 @@ public class UIToASMEventRelation {
   
   private void addDoSDashboardPairs() {
     // All Department of State Dashboard pairs.
-    my_relation.add(new Pair<UIEvent, ASMEvent>(LOGIN, 
-        AUTHENTICATE_STATE_ADMINISTRATOR_EVENT));
     my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         ESTABLISH_RISK_LIMIT_FOR_COMPARISON_AUDITS_EVENT));
     my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
@@ -67,8 +65,6 @@ public class UIToASMEventRelation {
   
   private void addCountyDashboardPairs() {
     // All County Dashboard pairs.
-    my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
-        AUTHENTICATE_COUNTY_ADMINISTRATOR_EVENT));
     my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         ESTABLISH_AUDIT_BOARD_EVENT));
     my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
