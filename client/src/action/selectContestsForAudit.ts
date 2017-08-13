@@ -2,26 +2,18 @@ import { Dispatch } from 'redux';
 
 import { apiHost } from '../config';
 
+import createSubmitAction from './createSubmitAction';
 
-const selectContestsForAudit = (data: any[]) => {
-    return (dispatch: Dispatch<any>) => {
-        dispatch({ type: 'SELECT_CONTESTS_FOR_AUDIT_SEND' });
 
-        const url = `http://${apiHost}/select-contests`;
+const url = `http://${apiHost}/select-contests`;
 
-        fetch(url, { method: 'post', body: data })
-            .then(r => {
-                if (r.ok) {
-                    dispatch({ type: 'SELECT_CONTESTS_FOR_AUDIT_OK' });
-                } else {
-                    dispatch({ type: 'SELECT_CONTESTS_FOR_AUDIT_FAIL' });
-                }
-            })
-            .catch(() => {
-                dispatch({ type: 'SELECT_CONTESTS_FOR_AUDIT_NETWORK_FAIL' });
-            });
-    };
-};
+const selectContestsForAudit = createSubmitAction({
+    failType: 'SELECT_CONTESTS_FOR_AUDIT_FAIL',
+    networkFailType: 'SELECT_CONTESTS_FOR_AUDIT_NETWORK_FAIL',
+    okType: 'SELECT_CONTESTS_FOR_AUDIT_OK',
+    sendType: 'SELECT_CONTESTS_FOR_AUDIT_SEND',
+    url,
+});
 
 
 export default selectContestsForAudit;
