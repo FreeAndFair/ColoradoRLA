@@ -151,7 +151,8 @@ public class AuditInvestigationReportInfo extends AbstractEntity implements Seri
   public boolean equals(final Object the_other) {
     boolean result = true;
     if (the_other instanceof AuditInvestigationReportInfo) {
-      final AuditInvestigationReportInfo other_report = (AuditInvestigationReportInfo) the_other;
+      final AuditInvestigationReportInfo other_report = 
+          (AuditInvestigationReportInfo) the_other;
       result &= nullableEquals(other_report.timestamp(), timestamp());
       result &= nullableEquals(other_report.name(), name());
       result &= nullableEquals(other_report.report(), report());

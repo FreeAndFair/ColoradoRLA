@@ -284,6 +284,7 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
 
     if (county == null) {
       unauthorized(the_response, "unauthorized administrator for ballot manifest upload");
+      return my_endpoint_result;
     }
     
     handleUpload(the_request, info);

@@ -92,9 +92,9 @@ public class UploadRandomSeed extends AbstractDoSDashboardEndpoint {
         dosd.setRandomSeed(random_seed);
         try {
           Persistence.saveOrUpdate(dosd);
-          Main.LOGGER.info("random seed set to " + random_seed);
+          ok(the_response, "random seed set to " + random_seed);
         } catch (final PersistenceException e) {
-          Main.LOGGER.error("unable to set random seed: " + e);
+          serverError(the_response, "unable to set random seed: " + e);
         }
       }
     } else {

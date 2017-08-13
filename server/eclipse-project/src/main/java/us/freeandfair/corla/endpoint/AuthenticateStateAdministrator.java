@@ -91,8 +91,9 @@ public class AuthenticateStateAdministrator extends AbstractEndpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    ok(the_response, "Authenticated");
-    if (!Authentication.authenticateAs(the_request, AdministratorType.STATE)) {
+    if (Authentication.authenticateAs(the_request, AdministratorType.STATE)) {
+      ok(the_response, "Authenticated");
+    } else {
       unauthorized(the_response, "Authentication failed");
     }
     return my_endpoint_result;

@@ -107,6 +107,7 @@ public class CVRDownloadByCounty extends AbstractCountyDashboardEndpoint {
       } catch (final RollbackException e) {
         Persistence.rollbackTransaction();
       } 
+      ok(the_response);
     } catch (final UncheckedIOException | IOException | PersistenceException e) {
       serverError(the_response, "Unable to stream response");
     }

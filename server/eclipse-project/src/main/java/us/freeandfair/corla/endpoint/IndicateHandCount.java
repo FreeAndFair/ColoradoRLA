@@ -92,6 +92,7 @@ public class IndicateHandCount extends AbstractDoSDashboardEndpoint {
         }
       }
       Persistence.saveOrUpdate(dosdb);
+      ok(the_response);
     } catch (final JsonSyntaxException e) {
       Main.LOGGER.error("malformed contest selection");
       badDataContents(the_response, "Invalid contest selection data");

@@ -86,6 +86,7 @@ public class ContestDownloadByCounty extends AbstractCountyDashboardEndpoint {
 
           Main.GSON.toJson(contest_set, bw);
           bw.flush();
+          ok(the_response);
         } catch (final IOException e) {
           serverError(the_response, "Unable to stream response");
         }

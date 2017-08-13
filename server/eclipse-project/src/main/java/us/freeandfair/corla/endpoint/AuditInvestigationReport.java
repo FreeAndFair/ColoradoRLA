@@ -74,7 +74,6 @@ public class AuditInvestigationReport extends AbstractAuditBoardDashboardEndpoin
   @Override
   public String endpoint(final Request the_request,
                          final Response the_response) {
-    ok(the_response, "Report submitted");
     try {
       final AuditInvestigationReportInfo report =
           Main.GSON.fromJson(the_request.body(), AuditInvestigationReportInfo.class);
@@ -95,6 +94,7 @@ public class AuditInvestigationReport extends AbstractAuditBoardDashboardEndpoin
       Main.LOGGER.error("could not save audit investigation report");
       serverError(the_response, "Unable to save audit investigation report");
     }
+    ok(the_response, "Report submitted");
     return my_endpoint_result;
   }
 }

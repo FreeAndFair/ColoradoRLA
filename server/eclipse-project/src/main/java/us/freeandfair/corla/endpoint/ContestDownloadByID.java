@@ -58,19 +58,17 @@ public class ContestDownloadByID extends AbstractCountyDashboardEndpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    String result = "";
     try {
       final Contest c = 
           Persistence.getByID(Long.parseLong(the_request.params(":id")),
                               Contest.class);
-      if (c != null) {
-        result = Main.GSON.toJson(c);
+      if (c == null) {
+        dataNotFound(the_response, "Contest not found");
+      } else {
+        ok(the_response, Main.GSON.toJson(c));
       }
     } catch (final NumberFormatException e) {
       invariantViolation(the_response, "Bad contest ID");
-    }
-    if (result == null) {
-      dataNotFound(the_response, "Contest not found");
     }
     return my_endpoint_result;
   }

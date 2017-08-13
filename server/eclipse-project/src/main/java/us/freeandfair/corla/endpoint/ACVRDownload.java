@@ -103,6 +103,7 @@ public class ACVRDownload extends AbstractAuditBoardDashboardEndpoint {
     } catch (final UncheckedIOException | IOException | PersistenceException e) {
       serverError(the_response, "Unable to stream response");
     }
+    ok(the_response);
     return my_endpoint_result;
   }
 }

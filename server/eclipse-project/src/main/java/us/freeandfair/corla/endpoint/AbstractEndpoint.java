@@ -55,6 +55,11 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
 @SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.TooManyMethods"})
 public abstract class AbstractEndpoint implements Endpoint {
   /**
+   * A flag that disables ASM checks, when true.
+   */
+  public static final boolean DISABLE_ASM = true;
+  
+  /**
    * The endpoint result for the ongoing transaction.
    */
   protected String my_endpoint_result;
@@ -100,10 +105,11 @@ public abstract class AbstractEndpoint implements Endpoint {
    * @param the_request The request.
    * @param the_response The response.
    */
+  @SuppressWarnings("unused")
   protected void loadAndCheckASM(final Request the_request,
                                  final Response the_response) {
     // get the state of the ASM
-    if (asmClass() == null) {
+    if (DISABLE_ASM || asmClass() == null) {
       // there is no ASM for this endpoint
       return;
     }
@@ -142,8 +148,9 @@ public abstract class AbstractEndpoint implements Endpoint {
    * @param the_response The response.
    * @return true if the ASM transitioned successfully
    */
+  @SuppressWarnings("unused")
   protected boolean transitionAndSaveASM(final Response the_response)  {
-    if (my_asm == null) {
+    if (DISABLE_ASM || my_asm == null) {
       // there is no ASM for this endpoint
       return true;
     }

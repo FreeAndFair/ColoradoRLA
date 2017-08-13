@@ -93,7 +93,7 @@ public class BallotNotFound extends AbstractAuditBoardDashboardEndpoint {
       if (index >= 0) {
         final CastVoteRecord cvr = Persistence.getByID(cvr_id, CastVoteRecord.class);
         if (cvr == null) {
-          this.badDataContents(the_response, "could not find CVR");
+          badDataContents(the_response, "could not find CVR");
         } else {
           final CastVoteRecord acvr =
               new CastVoteRecord(RecordType.PHANTOM_BALLOT,
@@ -103,7 +103,7 @@ public class BallotNotFound extends AbstractAuditBoardDashboardEndpoint {
                                  new ArrayList<CVRContestInfo>());
           Persistence.saveOrUpdate(acvr);
           if (abd.submitAuditCVR(cvr, acvr)) {
-            this.ok(the_response);
+            ok(the_response, "audit CVR submitted");
           }
         }
       }
