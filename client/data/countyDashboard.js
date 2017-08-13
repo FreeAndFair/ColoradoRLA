@@ -1,3 +1,4 @@
+const ballotStyles = require('./ballotStyles');
 const contests = require('./contests');
 const castVoteRecords = require('./castVoteRecords');
 
@@ -15,9 +16,9 @@ const auditBoard = [
     }
 ];
 
-
 module.exports = {
     auditBoard,
+    ballotStyles,
     ballotManifestDigest: '0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a',
     cvrExportDigest: 'fafafafafafafafafafafafafafafafafafafafafafafafafafafafafafafafa',
     contests,
