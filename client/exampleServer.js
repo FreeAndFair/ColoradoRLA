@@ -4,6 +4,7 @@ const ballotStyles = require('./data/ballotStyles');
 const castVoteRecords = require('./data/castVoteRecords');
 const contests = require('./data/contests');
 const counties = require('./data/counties');
+const countyDashboard = require('./data/countyDashboard');
 const dosDashboard = require('./data/dosDashboard');
 
 
@@ -62,6 +63,8 @@ route('post', '/risk-limit-comp-audits', (r) => ok(''));
 route('post', '/select-contests', (r) => ok(''));
 
 route('post', '/upload-random-seed', (r) => ok(''));
+
+route('get', '/county-dashboard', () => ok(countyDashboard));
 
 
 app.listen(4000);
