@@ -125,7 +125,7 @@ public abstract class AbstractEndpoint implements Endpoint {
                         " with identity " + asm_id);
     }
     my_persistent_asm_state = 
-        PersistentASMStateQueries.get(asmClass(), null);
+        PersistentASMStateQueries.get(asmClass(), asm_id);
     my_persistent_asm_state.applyTo(my_asm);
     // check that we are in the right ASM state
     if (!my_asm.enabledASMEvents().contains(endpointEvent())) {
