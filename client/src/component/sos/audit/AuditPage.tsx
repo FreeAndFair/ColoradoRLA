@@ -22,8 +22,11 @@ const Breadcrumb = () => (
     </ul>
 );
 
-const AuditPage = ({ nextPage }: any) => {
+const AuditPage = ({ nextPage, setRiskLimit }: any) => {
+    const forms: any = {};
+
     const buttonClick = () => {
+        setRiskLimit(forms.riskLimit.comparisonLimit);
         nextPage();
     };
 
@@ -44,7 +47,7 @@ const AuditPage = ({ nextPage }: any) => {
                 class, change the percentage shown. To change the risk limit for a particular
                 contest use the link below to add an exception from the default.
             </div>
-            <RiskLimitForm />
+            <RiskLimitForm forms={ forms } />
             <div>
                 Once the election has started, this information will not be able to be changed.
             </div>
