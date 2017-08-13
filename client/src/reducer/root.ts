@@ -1,5 +1,7 @@
 import * as _ from 'lodash';
 
+import formatDoSData from './formatDoSData';
+
 
 interface AppState {
     loggedIn: boolean;
@@ -28,7 +30,7 @@ export default function root(state: AppState = defaultState, action: any) {
         const nextState = { ...state };
 
         const { data } = action;
-        nextState.sos = { ...state.sos, ...data };
+        nextState.sos = { ...state.sos, ...formatDoSData(data) };
 
         return nextState;
     }
