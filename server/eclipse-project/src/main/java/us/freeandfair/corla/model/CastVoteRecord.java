@@ -279,8 +279,8 @@ public class CastVoteRecord extends AbstractEntity implements Serializable {
       result &= nullableEquals(the_other.recordID(), recordID());
       result &= nullableEquals(the_other.imprintedID(), imprintedID());
       result &= nullableEquals(the_other.ballotType(), ballotType());
-      result &= recordType() == RecordType.AUDITOR_ENTERED ^ 
-                the_other.recordType() == RecordType.AUDITOR_ENTERED;
+      result &= recordType().isAuditorGenerated() ^ 
+                the_other.recordType().isAuditorGenerated();
     }
     
     return result;

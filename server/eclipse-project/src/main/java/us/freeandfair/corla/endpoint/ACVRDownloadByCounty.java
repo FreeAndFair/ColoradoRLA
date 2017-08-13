@@ -89,7 +89,10 @@ public class ACVRDownloadByCounty extends AbstractCountyDashboardEndpoint {
       jw.beginArray();
       for (final Integer county : county_set) {
         final Stream<CastVoteRecord> matches = 
-            CastVoteRecordQueries.getMatching(county, RecordType.AUDITOR_ENTERED);
+            Stream.concat(CastVoteRecordQueries.getMatching(county, 
+                                                            RecordType.AUDITOR_ENTERED),
+                          CastVoteRecordQueries.getMatching(county, 
+                                                            RecordType.PHANTOM_BALLOT));
         matches.forEach((the_cvr) -> {
           try {
             jw.jsonValue(Main.GSON.toJson(the_cvr));
