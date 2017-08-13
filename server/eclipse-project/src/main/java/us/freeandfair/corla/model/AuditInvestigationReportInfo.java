@@ -50,7 +50,7 @@ public class AuditInvestigationReportInfo extends AbstractEntity implements Seri
    */
   @ManyToOne(optional = false)
   @JoinColumn
-  private AuditBoardDashboard my_dashboard;
+  private CountyDashboard my_dashboard;
   
   /**
    * The timestamp of this report.
@@ -86,8 +86,8 @@ public class AuditInvestigationReportInfo extends AbstractEntity implements Seri
    * @param the_report The report.
    */
   public AuditInvestigationReportInfo(final Instant the_timestamp,
-                                  final String the_name,
-                                  final String the_report) {
+                                      final String the_name,
+                                      final String the_report) {
     super();
     my_timestamp = the_timestamp;
     my_name = the_name;
@@ -100,14 +100,14 @@ public class AuditInvestigationReportInfo extends AbstractEntity implements Seri
    * 
    * @param the_dashboard The dashboard.
    */
-  protected void setDashboard(final AuditBoardDashboard the_dashboard) {
+  protected void setDashboard(final CountyDashboard the_dashboard) {
     my_dashboard = the_dashboard;
   }
   
   /**
    * @return the dashboard.
    */
-  public AuditBoardDashboard dashboard() {
+  public CountyDashboard dashboard() {
     return my_dashboard;
   }
   

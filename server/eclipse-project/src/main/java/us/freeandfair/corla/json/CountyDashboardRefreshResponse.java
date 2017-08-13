@@ -21,7 +21,6 @@ import java.util.Set;
 
 import javax.persistence.PersistenceException;
 
-import us.freeandfair.corla.model.AuditBoardDashboard;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.ContestToAudit;
 import us.freeandfair.corla.model.ContestToAudit.AuditType;
@@ -32,7 +31,6 @@ import us.freeandfair.corla.model.DepartmentOfStateDashboard;
 import us.freeandfair.corla.model.Elector;
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.model.UploadedFile.FileType;
-import us.freeandfair.corla.query.AuditBoardDashboardQueries;
 import us.freeandfair.corla.query.CountyQueries;
 import us.freeandfair.corla.query.DepartmentOfStateDashboardQueries;
 import us.freeandfair.corla.query.UploadedFileQueries;
@@ -189,10 +187,9 @@ public class CountyDashboardRefreshResponse {
       createResponse(final CountyDashboard the_dashboard) {
     final Integer county_id = the_dashboard.countyID();
     final County county = CountyQueries.byID(county_id);
-    final AuditBoardDashboard abd = AuditBoardDashboardQueries.get(county_id);
     final DepartmentOfStateDashboard dosd = DepartmentOfStateDashboardQueries.get();
 
-    if (county == null || abd == null || dosd == null) {
+    if (county == null || dosd == null) {
       throw new PersistenceException("unable to read county dashboard state");
     }
     // status = directly from county dashboard
@@ -212,8 +209,6 @@ public class CountyDashboardRefreshResponse {
     final UploadedFile cvr_file = 
         UploadedFileQueries.matching(county_id, the_dashboard.cvrUploadTimestamp(), 
                                      FileType.CAST_VOTE_RECORD_EXPORT);
-    // @todo kiniry This should have been/will be saved in the DB at the time
-    // in which the CVR file was uploaded.
     String cvr_digest = null;
     if (cvr_file != null) {
       cvr_digest = cvr_file.hash();
@@ -237,11 +232,11 @@ public class CountyDashboardRefreshResponse {
     // audit time doesn't exist yet
     final Instant audit_time = Instant.EPOCH;
    
-    // estimated ballots to audit = audit dashboard list size
+    // estimated ballots to audit = list size from dashboard
     
     // number of ballots audited
     int number_of_ballots_audited = 0;
-    for (final Long bid : abd.submittedAuditCVRs()) {
+    for (final Long bid : the_dashboard.submittedAuditCVRs()) {
       if (bid != null) {
         number_of_ballots_audited = number_of_ballots_audited + 1;
       }
@@ -253,11 +248,10 @@ public class CountyDashboardRefreshResponse {
     // number of disagreements doesn't exist yet
     final Integer number_of_disagreements = -1;
 
-    // list of ballots to audit doesn't exist yet
-    final Set<Long> ballots_to_audit = new HashSet<Long>();
+    // list of CVRs to audit = list from dashboard
 
     // the current ballot under audit doesn't exist yet
-    final Long ballot_under_audit = new Long(0);
+    final Long cvr_under_audit = Long.valueOf(0);
     
     return new CountyDashboardRefreshResponse(the_dashboard.status(),
                                               general_information,
@@ -267,11 +261,11 @@ public class CountyDashboardRefreshResponse {
                                               contests,
                                               contests_under_audit,
                                               audit_time,
-                                              abd.cvrsToAudit().size(),
+                                              the_dashboard.cvrsToAudit().size(),
                                               number_of_ballots_audited,
                                               number_of_discrepencies,
                                               number_of_disagreements,
-                                              ballots_to_audit,
-                                              ballot_under_audit);
+                                              the_dashboard.cvrsToAudit(),
+                                              cvr_under_audit);
   }
 }

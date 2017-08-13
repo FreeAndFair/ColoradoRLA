@@ -120,7 +120,8 @@ public class ComparisonAudit {
     // use -1 * 2 for -2.
     return (int) (Math.max(the_o1 + the_o2 + the_u1 + the_u1, Math.ceil(
         -1 * 2 * GENTLE_GAMMA *
-              (Math.log(my_risk.doubleValue()) + the_o1 * Math.log(1 - 1 / (2 * GENTLE_GAMMA)) +
+              (Math.log(my_risk.doubleValue()) + 
+               the_o1 * Math.log(1 - 1 / (2 * GENTLE_GAMMA)) +
                the_o2 * Math.log(1 - 1 / GENTLE_GAMMA) +
                the_u1 * Math.log(1 + 1 / (2 * GENTLE_GAMMA)) +
                the_u2 * Math.log(1 + 1 / GENTLE_GAMMA)) /

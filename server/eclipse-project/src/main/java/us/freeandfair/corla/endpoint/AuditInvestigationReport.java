@@ -23,10 +23,10 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
-import us.freeandfair.corla.model.AuditBoardDashboard;
 import us.freeandfair.corla.model.AuditInvestigationReportInfo;
+import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.AuditBoardDashboardQueries;
+import us.freeandfair.corla.query.CountyDashboardQueries;
 
 /**
  * Submit an audit investigation report.
@@ -77,16 +77,16 @@ public class AuditInvestigationReport extends AbstractAuditBoardDashboardEndpoin
     try {
       final AuditInvestigationReportInfo report =
           Main.GSON.fromJson(the_request.body(), AuditInvestigationReportInfo.class);
-      final AuditBoardDashboard abdb = 
-          AuditBoardDashboardQueries.get(Authentication.
-                                         authenticatedCounty(the_request).identifier());
-      if (abdb == null) {
+      final CountyDashboard cdb = 
+          CountyDashboardQueries.get(Authentication.
+                                     authenticatedCounty(the_request).identifier());
+      if (cdb == null) {
         Main.LOGGER.error("could not get audit board dashboard");
         serverError(the_response, "Could not save audit investigation report");
       } else {
-        abdb.submitInvestigationReport(report);
+        cdb.submitInvestigationReport(report);
       }
-      Persistence.saveOrUpdate(abdb);
+      Persistence.saveOrUpdate(cdb);
     } catch (final JsonSyntaxException e) {
       Main.LOGGER.error("malformed audit investigation report");
       badDataContents(the_response, "Invalid audit investigation report");
