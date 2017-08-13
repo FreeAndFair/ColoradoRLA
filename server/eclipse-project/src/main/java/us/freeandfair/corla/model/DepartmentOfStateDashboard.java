@@ -141,11 +141,8 @@ public class DepartmentOfStateDashboard extends AbstractEntity implements Serial
    * 
    * @param the_risk_limit The risk limit.
    */
-  //@ requires auditStage() == AuditStage.AUTHENTICATED;
-  //@ ensures auditStage() == AuditStage.RISK_LIMITS_SET;
   public void setRiskLimitForComparisonAudits(final BigDecimal the_risk_limit) {
     my_risk_limit_for_comparison_audits = the_risk_limit;
-    // my_audit_stage = AuditStage.RISK_LIMITS_SET;
   }
   
   /**

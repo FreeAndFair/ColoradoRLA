@@ -20,6 +20,7 @@ import us.freeandfair.corla.model.Administrator.AdministratorType;
  * The endpoint for authenticating a county administrator.
  * 
  * @author Daniel M Zimmerman
+ * @author Joe Kiniry <kiniry@freeandfair.us>
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")

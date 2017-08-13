@@ -5,11 +5,13 @@
  * @created Aug 9, 2017
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
- * @author Daniel M. Zimmerman <dmz@galois.com>
+ * @creator Daniel M. Zimmerman <dmz@galois.com>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
 package us.freeandfair.corla.endpoint;
+
+import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.SELECT_CONTESTS_FOR_COMPARISON_AUDIT_EVENT;
 
 import javax.persistence.PersistenceException;
 
@@ -19,6 +21,7 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.model.ContestToAudit;
 import us.freeandfair.corla.model.DepartmentOfStateDashboard;
 import us.freeandfair.corla.persistence.Persistence;
@@ -31,7 +34,7 @@ import us.freeandfair.corla.query.DepartmentOfStateDashboardQueries;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class SelectContestsForAudit extends AbstractEndpoint {
+public class SelectContestsForAudit extends AbstractDoSDashboardEndpoint {
   /**
    * {@inheritDoc}
    */
@@ -48,6 +51,14 @@ public class SelectContestsForAudit extends AbstractEndpoint {
     return "/select-contests";
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected ASMEvent endpointEvent() {
+    return SELECT_CONTESTS_FOR_COMPARISON_AUDIT_EVENT;
+  }
+  
   /**
    * Attempts to select contests for audit. 
    * 
