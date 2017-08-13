@@ -67,6 +67,8 @@ route('get', '/dos-dashboard', () => ok({
 
 route('post', '/risk-limit-comp-audits', (r) => ok(''));
 
+route('post', '/select-contests', (r) => ok(''));
+
 route('post', '/upload-random-seed', (r) => ok(''));
 
 
