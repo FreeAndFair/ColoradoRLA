@@ -1,6 +1,7 @@
 us.freeandfair.corla.asm.PersistentASMState
 us.freeandfair.corla.model.Administrator
 us.freeandfair.corla.model.AuditBoardDashboard
+us.freeandfair.corla.model.AuditInvestigationReport
 us.freeandfair.corla.model.BallotManifestInfo
 us.freeandfair.corla.model.CastVoteRecord
 us.freeandfair.corla.model.Choice

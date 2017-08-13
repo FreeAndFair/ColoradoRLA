@@ -62,8 +62,6 @@ public class SelectContestsForAudit extends AbstractDoSDashboardEndpoint {
   /**
    * Attempts to select contests for audit. 
    * 
-   * Session query parameters: <tt>random-seed</tt>
-   * 
    * @param the_request The request.
    * @param the_response The response.
    */
