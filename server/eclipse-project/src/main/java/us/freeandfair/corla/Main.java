@@ -20,11 +20,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Scanner;
 
@@ -135,23 +132,6 @@ public final class Main {
    * The "no spark" constant.
    */
   private static final Service NO_SPARK = null;
- 
-  /**
-   * The DoS dashboard ASM.
-   */
-  private static final DoSDashboardASM DOS_DASHBOARD_ASM = new DoSDashboardASM();
-  
-  /**
-   * A map from county IDs to county dashboard ASMs.
-   */
-  private static final Map<Integer, CountyDashboardASM> COUNTY_DASHBOARD_ASMS = 
-      new HashMap<Integer, CountyDashboardASM>();
-
-  /**
-   * A map from county IDs to audit board dashboard ASMs.
-   */
-  private static Map<Integer, AuditBoardDashboardASM> AUDIT_BOARD_DASHBOARD_ASMS =
-      new HashMap<Integer, AuditBoardDashboardASM>();
   
   /**
    * The properties loaded from the properties file.
@@ -295,8 +275,7 @@ public final class Main {
       final PersistentASMState new_state = PersistentASMState.stateFor(the_asm);
       Persistence.saveOrUpdate(new_state);
     } else {
-      Main.LOGGER.info("restoring " + the_asm + " state from db: " + the_state);
-      the_state.applyTo(the_asm);
+      Main.LOGGER.info(the_asm + " state found in db: " + the_state);
     }
   }
   
@@ -304,28 +283,28 @@ public final class Main {
    * Initializes the ASMs. Each one for which no state exists in the database
    * has its state persisted in the database.
    * 
+   * @param the_counties The counties to initialize ASMs for.
    * @exception PersistenceException if we can't initialize the ASMs.
    */
-  private void initializeASMs() throws PersistenceException {
+  private void initializeASMs(final List<County> the_counties) 
+      throws PersistenceException {
     Persistence.beginTransaction();
-    // first, try to get the state of the DoS dashboard
+    // first, check the DoS dashboard
     final PersistentASMState dos_state = 
         PersistentASMStateQueries.get(DoSDashboardASM.class, null);
-    restoreOrPersistState(DOS_DASHBOARD_ASM, dos_state);
+    restoreOrPersistState(new DoSDashboardASM(), dos_state);
     
-    // next, iterate over the county dashboards; we know those tables
-    // have the same keys, so we can do both in one loop
-    for (final Entry<Integer, CountyDashboardASM> entry : 
-         COUNTY_DASHBOARD_ASMS.entrySet()) {
+    // next, iterate over the counties and check the county and 
+    // audit board dashboards
+    for (final County c : the_counties) {
+      final String asm_id = String.valueOf(c.identifier());
       final PersistentASMState county_state =
-          PersistentASMStateQueries.get(CountyDashboardASM.class, 
-                                        String.valueOf(entry.getKey()));
-      restoreOrPersistState(entry.getValue(), county_state);
+          PersistentASMStateQueries.get(CountyDashboardASM.class, asm_id);
+      restoreOrPersistState(new CountyDashboardASM(asm_id), county_state);
       
       final PersistentASMState audit_state =
-          PersistentASMStateQueries.get(AuditBoardDashboardASM.class, 
-                                        String.valueOf(entry.getKey()));
-      restoreOrPersistState(AUDIT_BOARD_DASHBOARD_ASMS.get(entry.getKey()), audit_state);      
+          PersistentASMStateQueries.get(AuditBoardDashboardASM.class, asm_id);
+      restoreOrPersistState(new AuditBoardDashboardASM(asm_id), audit_state);      
     }
     
     try {
@@ -339,8 +318,10 @@ public final class Main {
   /**
    * Initializes the counties in the database using information from the 
    * county properties.
+   * 
+   * @return the counties.
    */
-  private void initializeCounties() {
+  private List<County> initializeCounties() {
     final Properties properties = new Properties();
     try {
       properties.load(ClassLoader.
@@ -348,6 +329,7 @@ public final class Main {
     } catch (final IOException e) {
       throw new IllegalStateException("Error loading county IDs, aborting.", e);
     }
+    final List<County> result = new ArrayList<County>();
     try {
       for (final String s : properties.stringPropertyNames()) {
         // if the property name is an integer, we assume it's a county ID
@@ -367,13 +349,7 @@ public final class Main {
             county = new_county;
           }
           Persistence.saveOrUpdate(county);
-          // create default ASM for this county
-          COUNTY_DASHBOARD_ASMS.put(county.identifier(), 
-                                    new CountyDashboardASM(String.
-                                                           valueOf(county.identifier())));
-          AUDIT_BOARD_DASHBOARD_ASMS.put(county.identifier(), 
-                                         new AuditBoardDashboardASM(String.
-                                                           valueOf(county.identifier())));
+          result.add(county);
         } catch (final NumberFormatException e) {
           // we skip this property because it wasn't numeric
         }
@@ -381,6 +357,7 @@ public final class Main {
     } catch (final PersistenceException e) {
       throw new IllegalStateException("Error loading county IDs, aborting.", e);
     }
+    return result;
   }
   
   /**
@@ -393,8 +370,7 @@ public final class Main {
     Persistence.setProperties(my_properties);
 
     if (Persistence.hasDB()) {
-      initializeCounties();
-      initializeASMs();
+      initializeASMs(initializeCounties());
     } else {
       LOGGER.error("could not open database connection");
       return;
@@ -460,33 +436,6 @@ public final class Main {
       ("Error loading default properties file, aborting.", e);
     }
     return properties;
-  }
-
-  /**
-   * @return the DoS dashboard ASM.
-   */
-  public static DoSDashboardASM dosDashboardASM() {
-    return DOS_DASHBOARD_ASM;
-  }
-  
-  /**
-   * Gets the county dashboard ASM for the specified county identifier.
-   * 
-   * @param the_identifier The county identifier.
-   * @return the ASM, or null if one cannot be found for the specified identifier.
-   */
-  public static CountyDashboardASM countyDashboardASM(final Integer the_identifier) {
-    return COUNTY_DASHBOARD_ASMS.get(the_identifier);
-  }
-  
-  /**
-   * Gets the audit board dashboard ASM for the specified county identifier.
-   * 
-   * @param the_identifier The county identifier.
-   * @return the ASM, or null if one cannot be found for the specified identifier.
-   */
-  public static AuditBoardDashboardASM auditBoardDashboardASM(final Integer the_identifier) {
-    return AUDIT_BOARD_DASHBOARD_ASMS.get(the_identifier);
   }
   
   /**

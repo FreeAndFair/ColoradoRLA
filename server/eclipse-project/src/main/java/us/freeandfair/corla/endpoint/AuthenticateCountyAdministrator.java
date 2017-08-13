@@ -11,8 +11,6 @@
 
 package us.freeandfair.corla.endpoint;
 
-import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.COUNTY_SKIP_EVENT;
-
 import spark.Request;
 import spark.Response;
 
@@ -66,7 +64,7 @@ public class AuthenticateCountyAdministrator extends AbstractEndpoint {
    */
   @Override
   protected ASMEvent endpointEvent() {
-    return COUNTY_SKIP_EVENT;
+    return null;
   }
   
   /**

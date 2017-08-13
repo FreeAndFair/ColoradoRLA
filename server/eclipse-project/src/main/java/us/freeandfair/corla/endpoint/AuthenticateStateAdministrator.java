@@ -12,15 +12,11 @@
 
 package us.freeandfair.corla.endpoint;
 
-import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.AUTHENTICATE_STATE_ADMINISTRATOR_EVENT;
-
 import spark.Request;
 import spark.Response;
 
-import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
-import us.freeandfair.corla.asm.AbstractStateMachine;
-import us.freeandfair.corla.json.ServerASMResponse;
+import us.freeandfair.corla.asm.DoSDashboardASM;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
 
 /**
@@ -41,10 +37,10 @@ public class AuthenticateStateAdministrator extends AbstractEndpoint {
   }
   
   /**
-   * @return this endpoint uses the Department of State ASM.
+   * @return this endpoint does not use an ASM.
    */
   @Override
-  protected Class<AbstractStateMachine> asmClass() {
+  protected Class<DoSDashboardASM> asmClass() {
     return null;
   }
 
@@ -69,7 +65,7 @@ public class AuthenticateStateAdministrator extends AbstractEndpoint {
    */
   @Override
   protected ASMEvent endpointEvent() {
-    return AUTHENTICATE_STATE_ADMINISTRATOR_EVENT;
+    return null;
   }
   
   /**
@@ -99,16 +95,6 @@ public class AuthenticateStateAdministrator extends AbstractEndpoint {
     if (!Authentication.authenticateAs(the_request, AdministratorType.STATE)) {
       unauthorized(the_response, "Authentication failed");
     }
-
-    // Take the transition triggered by this successful authentication.
-    Main.dosDashboardASM().stepEvent(AUTHENTICATE_STATE_ADMINISTRATOR_EVENT);
-
-    // Build the ASM server response.
-    final ServerASMResponse asm_response =
-        new ServerASMResponse(Main.dosDashboardASM().currentState(),
-                              Main.dosDashboardASM().enabledUIEvents());
-    the_response.body(Main.GSON.toJson(asm_response));
-
     return my_endpoint_result;
   }
 }
