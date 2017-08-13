@@ -1,0 +1,55 @@
++ trap cleanup EXIT
+++ git rev-parse --show-toplevel
++ export TRAVIS_BUILD_DIR=/srv/s/electionaudits/ColoradoRLA
++ TRAVIS_BUILD_DIR=/srv/s/electionaudits/ColoradoRLA
++ export CLIENT_DIR=/srv/s/electionaudits/ColoradoRLA/client
++ CLIENT_DIR=/srv/s/electionaudits/ColoradoRLA/client
++ export SERVER_DIR=/srv/s/electionaudits/ColoradoRLA/server/eclipse-project
++ SERVER_DIR=/srv/s/electionaudits/ColoradoRLA/server/eclipse-project
++ export TEST_DIR=/srv/s/electionaudits/ColoradoRLA/test
++ TEST_DIR=/srv/s/electionaudits/ColoradoRLA/test
++ /srv/s/electionaudits/ColoradoRLA/ci/changes-in-dir server
+`server/eclipse-project/.settings/edu.umd.cs.findbugs.plugin.eclipse.prefs' in dir `server' changed
++ cd /srv/s/electionaudits/ColoradoRLA/server/eclipse-project
++ pkill -f java.-jar.target/colorado_rla
++ dropdb corla
++ createdb -O corla corla
++ mvn package
+++ sed '2 s/xmlns=".*"//g'
+++ xmllint --xpath '/project/version/text()' -
++ version=0.0.1
++ jar=target/colorado_rla-0.0.1-shaded.jar
++ echo Built target/colorado_rla-0.0.1-shaded.jar
+Built target/colorado_rla-0.0.1-shaded.jar
++ java -jar target/colorado_rla-0.0.1-shaded.jar
++ grep -q 'INFO Server:444 - Started'
++ tail -f -n0 target/server.stdout
++ cd /srv/s/electionaudits/ColoradoRLA/test/smoketest
++ psql -d corla -a -f ../corla-test-credentials.psql
++ ./main.py
+<Response [200]> /auth-state-admin
+<Response [200]> /auth-county-admin
+<Response [403]> /upload-ballot-manifest
+<Response [403]> /upload-cvr-export
+<Response [403]> /upload-audit-cvr
++ psql -d corla -a -f tabulate.sql
++ diff tabulate.out -
++ pytest server_test.py
++ true
++ egrep '====|____' server_test.out
+============================= test session starts ==============================
+=================================== FAILURES ===================================
+_______________________ test_get_ballot_manifest_county ________________________
+___________________________ test_get_ballot_manifest ___________________________
+_____________________________ test_get_cvr_county ______________________________
+====================== 3 failed, 5 passed in 0.55 seconds ======================
++ cleanup
++ set +x
+
+To see the ends of the logs (some of which might not have been created):
+tail /srv/s/electionaudits/ColoradoRLA/server/eclipse-project/target/mvn.stdout
+tail /srv/s/electionaudits/ColoradoRLA/server/eclipse-project/target/server.stdout
+tail credentials.stdout
+tail server_test.stdout
+If you're done with the server: pkill -f java.-jar.target/colorado_rla
+If this script doesn't exit now, kill it from the keyboard. FIXME.

@@ -1,0 +1,28 @@
+            {
+                "record_id": "2", 
+                "scanner_id": "3", 
+                "timestamp": {
+                    "seconds": 1502429781, 
+                    "nanos": 352000000
+                }, 
+                "imprinted_id": "3-800-2", 
+                "record_type": "AUDITOR_ENTERED", 
+                "ballot_type": "51", 
+                "contest_info": [
+                    {
+                        "choices": [
+                            "Clear Winner"
+                        ], 
+                        "contest": 71
+                    }, 
+                    {
+                        "choices": [
+                            "NO"
+                        ], 
+                        "contest": 73
+                    }
+                ], 
+                "county_id": 3, 
+                "batch_id": "800", 
+                "id": 76
+            }

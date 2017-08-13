@@ -1,0 +1,25 @@
+SELECT ccd.contest_id AS contest, 
+        ccd.choice AS candidate, 
+        count(ccic.cvr_contest_info_id) as votes
+    FROM contest_choice_description AS ccd 
+        LEFT JOIN ((contest AS c 
+            LEFT JOIN cvr_contest_info AS cci
+                ON c.id = cci.contest_id)
+        LEFT JOIN 
+            cvr_contest_info_choice as ccic 
+            ON ccic.cvr_contest_info_id = cci.id)
+            ON ccd.contest_id = c.id 
+        AND ccd.choice = ccic.choice
+    GROUP BY contest, candidate
+    ORDER BY contest, candidate
+;
+ contest |   candidate    | votes 
+---------+----------------+-------
+     201 | Clear Winner   |   123
+     201 | Distant Loser  |    14
+     202 | Janet Lee Cook |    27
+     202 | Jeff Baker     |    12
+     203 | NO             |    31
+     203 | YES            |    30
+(6 rows)
+

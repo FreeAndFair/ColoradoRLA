@@ -7,6 +7,9 @@
 	<version>0.0.1</version>
 	<name>ColoradoRLA</name>
 	<description>A risk-limiting audit system for the State of Colorado</description>
+	<properties>
+	  <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 	<build>
 		<directory>target</directory>
 		<outputDirectory>target/classes</outputDirectory>
