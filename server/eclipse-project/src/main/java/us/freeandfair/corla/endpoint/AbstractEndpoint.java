@@ -138,15 +138,24 @@ public abstract class AbstractEndpoint implements Endpoint {
   
   /**
    * Save the ASM back to the database.
+   * 
+   * @param the_response The response.
+   * @return true if the ASM transitioned successfully
    */
-  protected void transitionAndSaveASM()  {
+  protected boolean transitionAndSaveASM(final Response the_response)  {
     if (my_asm == null) {
       // there is no ASM for this endpoint
-      return;
+      return true;
     }
-    my_asm.stepEvent(endpointEvent());
+    try {
+      my_asm.stepEvent(endpointEvent());
+    } catch (final IllegalArgumentException e) {
+      illegalTransition(the_response, e.getMessage());
+      return false;
+    }
     my_persistent_asm_state.updateFrom(my_asm);
     Persistence.saveOrUpdate(my_persistent_asm_state);
+    return true;
   }
   
   /**
@@ -338,11 +347,10 @@ public abstract class AbstractEndpoint implements Endpoint {
    * themselves).
    */
   public void after(final Request the_request, final Response the_response) {
-    // first, take the transition for this endpoint in the ASM and save it to the DB
-    transitionAndSaveASM();
-    // then finish the transaction
-    if (Persistence.isTransactionRunning()) {
+    // try to take the transition for this endpoint in the ASM and save it to the DB
+    if (transitionAndSaveASM(the_response) && Persistence.isTransactionRunning()) {
       try {
+        // since the transition finished, let's commit
         Persistence.commitTransaction();
       } catch (final RollbackException e) {
         // this is an internal server error because we don't know what didn't
