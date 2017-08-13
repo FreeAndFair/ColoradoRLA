@@ -65,7 +65,7 @@ public class PublishAuditReport extends AbstractDoSDashboardEndpoint {
   }
   
   /**
-   * {@inheritDoc}
+   * Download all of the data relevant to public auditing of a RLA.
    */
   @Override
   public String endpoint(final Request the_request,

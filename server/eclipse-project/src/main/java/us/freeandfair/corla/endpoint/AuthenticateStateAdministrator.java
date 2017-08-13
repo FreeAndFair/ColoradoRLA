@@ -5,8 +5,9 @@
  * @created Aug 9, 2017
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
- * @author Daniel M. Zimmerman <dmz@galois.com>
- * @description A system to assist in conducting statewide risk-limiting audits.
+ * @creator Daniel M. Zimmerman <dmz@galois.com>
+ * @description A system to assist in conducting statewide
+ * risk-limiting audits.
  */
 
 package us.freeandfair.corla.endpoint;
@@ -23,6 +24,7 @@ import us.freeandfair.corla.model.Administrator.AdministratorType;
  * The endpoint for authenticating a state administrator.
  * 
  * @author Daniel M Zimmerman
+ * @author Joe Kiniry <kiniry@freeandfair.us>
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")

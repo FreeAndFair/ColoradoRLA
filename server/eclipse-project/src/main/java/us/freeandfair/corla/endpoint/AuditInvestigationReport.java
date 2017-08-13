@@ -2,11 +2,12 @@
  * Free & Fair Colorado RLA System
  * 
  * @title ColoradoRLA
- * @created Jul 27, 2017
+ * @created Aug 12, 2017
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
- * @author Daniel M. Zimmerman <dmz@freeandfair.us>
- * @description A system to assist in conducting statewide risk-limiting audits.
+ * @creator Joe Kiniry <kiniry@freeandfair.us>
+ * @description A system to assist in conducting statewide
+ * risk-limiting audits.
  */
 
 package us.freeandfair.corla.endpoint;
@@ -41,9 +42,9 @@ import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
- * The "audit CVR upload" endpoint.
+ * Submit an audit investigation report.
  * 
- * @author Daniel M. Zimmerman
+ * @author Joe Kiniry <kiniry@freeandfair.us>
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
@@ -81,7 +82,7 @@ public class AuditInvestigationReport extends AbstractAuditBoardDashboardEndpoin
   }
 
   /**
-   * {@inheritDoc}
+   * Submit an audit investigation report.
    */
   @Override
   public String endpoint(final Request the_request,

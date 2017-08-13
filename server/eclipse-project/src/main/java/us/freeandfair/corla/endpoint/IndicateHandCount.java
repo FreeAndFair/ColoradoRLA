@@ -2,11 +2,12 @@
  * Free & Fair Colorado RLA System
  * 
  * @title ColoradoRLA
- * @created Aug 9, 2017
+ * @created Aug 12, 2017
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
- * @author Daniel M. Zimmerman <dmz@galois.com>
- * @description A system to assist in conducting statewide risk-limiting audits.
+ * @creator Joe Kiniry <kiniry@freeandfair.us>
+ * @description A system to assist in conducting statewide
+ * risk-limiting audits.
  */
 
 package us.freeandfair.corla.endpoint;
@@ -25,9 +26,9 @@ import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.DepartmentOfStateDashboardQueries;
 
 /**
- * The endpoint for selecting the contests to audit.
+ * The endpoint for indicating that a contest must be hand-counted.
  * 
- * @author Daniel M Zimmerman
+ * @author Joe Kiniry <kiniry@freeandfair.us>
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
@@ -64,9 +65,7 @@ public class IndicateHandCount extends AbstractDoSDashboardEndpoint {
   }
   
   /**
-   * Attempts to select contests for audit. 
-   * 
-   * Session query parameters: <tt>random-seed</tt>
+   * Indicate that a contest must be hand-counted.
    * 
    * @param the_request The request.
    * @param the_response The response.

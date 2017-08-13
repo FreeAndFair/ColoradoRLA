@@ -65,7 +65,7 @@ public class IntermediateAuditReport extends AbstractAuditBoardDashboardEndpoint
   }
   
   /**
-   * {@inheritDoc}
+   * Publish the intermediate audit report by the audit board.
    */
   @Override
   public String endpoint(final Request the_request,
