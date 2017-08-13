@@ -62,7 +62,7 @@ test('selectContestsForAudit', s => {
         fetch.flush().then(() => {
             t.deepEqual(f.store.getActions(), [
                 { type: 'SELECT_CONTESTS_FOR_AUDIT_SEND' },
-                { type: 'SELECT_CONTESTS_FOR_AUDIT_RECEIVE' },
+                { type: 'SELECT_CONTESTS_FOR_AUDIT_OK' },
             ]);
 
             teardown(f);

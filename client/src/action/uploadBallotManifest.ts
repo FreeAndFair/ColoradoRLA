@@ -17,7 +17,7 @@ const uploadBallotManifest = (countyId: string, file: Blob, hash: string) => {
         fetch(url, { method: 'post', body: formData })
             .then(r => {
                 if (r.ok) {
-                    dispatch({ type: 'UPLOAD_BALLOT_MANIFEST_RECEIVE' });
+                    dispatch({ type: 'UPLOAD_BALLOT_MANIFEST_OK' });
                 } else {
                     dispatch({ type: 'UPLOAD_BALLOT_MANIFEST_FAIL' });
                 }

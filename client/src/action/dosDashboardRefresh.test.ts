@@ -80,7 +80,7 @@ test('dosDashboardRefresh', s => {
         fetch.flush().then(() => {
             t.deepEqual(f.store.getActions(), [
                 { type: 'DOS_DASHBOARD_REFRESH_SEND' },
-                { type: 'DOS_DASHBOARD_REFRESH_RECEIVE', data: f.data },
+                { type: 'DOS_DASHBOARD_REFRESH_OK', data: f.data },
             ]);
 
             teardown(f);

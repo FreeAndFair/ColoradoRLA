@@ -13,7 +13,7 @@ const authStateAdmin = (username: string, password: string) => {
         fetch(url, { method: 'post', body })
             .then(r => {
                 if (r.ok) {
-                    dispatch({ type: 'AUTH_STATE_ADMIN_RECEIVE' });
+                    dispatch({ type: 'AUTH_STATE_ADMIN_OK' });
                 } else {
                     dispatch({ type: 'AUTH_STATE_ADMIN_FAIL' });
                 }
