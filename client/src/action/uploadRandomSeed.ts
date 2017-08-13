@@ -2,27 +2,18 @@ import { Dispatch } from 'redux';
 
 import { apiHost } from '../config';
 
-
-const uploadRandomSeed = (seed: string) => {
-    return (dispatch: Dispatch<any>) => {
-        dispatch({ type: 'UPLOAD_RANDOM_SEED_SEND' });
-
-        const url = `http://${apiHost}/upload-random-seed`;
-        const body = { seed };
-
-        fetch(url, { method: 'post', body })
-            .then(r => {
-                if (r.ok) {
-                    dispatch({ type: 'UPLOAD_RANDOM_SEED_OK' });
-                } else {
-                    dispatch({ type: 'UPLOAD_RANDOM_SEED_FAIL' });
-                }
-            })
-            .catch(() => {
-                dispatch({ type: 'UPLOAD_RANDOM_SEED_NETWORK_FAIL' });
-            });
-    };
-};
+import createSubmitAction from './createSubmitAction';
 
 
-export default uploadRandomSeed;
+const url = `http://${apiHost}/upload-random-seed`;
+
+const uploadRandomSeed = createSubmitAction({
+    failType: 'UPLOAD_RANDOM_SEED_FAIL',
+    networkFailType: 'UPLOAD_RANDOM_SEED_NETWORK_FAIL',
+    okType: 'UPLOAD_RANDOM_SEED_OK',
+    sendType: 'UPLOAD_RANDOM_SEED_SEND',
+    url,
+});
+
+
+export default (seed: string) => uploadRandomSeed({ seed });
