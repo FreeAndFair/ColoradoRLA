@@ -3185,11 +3185,11 @@ BEGIN
        county_event := aca_e,
        audit_event := n_e
      #)
-  establish_audit_board: server_endpoint = % NOT STARTED
+  establish_audit_board: server_endpoint = % UNDERWAY
     (# endpoint_type := POST,
        callback := undefined_callback,
-       uri := "/audit-board", % placeholder
-       implementation_class := "EstablishAuditBoard", % placeholder
+       uri := "/audit-board",
+       implementation_class := "EstablishAuditBoard",
        in_stream := audit_board,
        out_stream := add((UNAUTHORIZED_401, nothing),
                          singleton((OK_200, nothing))),
