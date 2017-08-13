@@ -2,29 +2,18 @@ import { Dispatch } from 'redux';
 
 import { apiHost } from '../config';
 
+import createFetchAction from './createFetchAction';
 
-const dosDashboardRefresh = () => {
-    return (dispatch: Dispatch<any>) => {
-        dispatch({ type: 'DOS_DASHBOARD_REFRESH_SEND' });
 
-        const url = `http://${apiHost}/dos-dashboard`;
+const url = `http://${apiHost}/dos-dashboard`;
 
-        fetch(url)
-            .then(r => {
-                if (!r.ok) {
-                    dispatch({ type: 'DOS_DASHBOARD_REFRESH_FAIL' });
-                    return;
-                }
-
-                r.json().then((data: any) => {
-                    dispatch({ type: 'DOS_DASHBOARD_REFRESH_RECEIVE', data });
-                });
-            })
-            .catch(() => {
-                dispatch({ type: 'DOS_DASHBOARD_REFRESH_NETWORK_FAIL' });
-            });
-    };
-};
+const dosDashboardRefresh = createFetchAction({
+    failType: 'DOS_DASHBOARD_REFRESH_FAIL',
+    networkFailType: 'DOS_DASHBOARD_REFRESH_NETWORK_FAIL',
+    okType: 'DOS_DASHBOARD_REFRESH_RECEIVE',
+    sendType: 'DOS_DASHBOARD_REFRESH_SEND',
+    url,
+});
 
 
 export default dosDashboardRefresh;
