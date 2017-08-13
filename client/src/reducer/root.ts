@@ -45,6 +45,10 @@ export default function root(state: AppState = defaultState, action: any) {
         return action.data;
     }
 
+    case 'SELECT_CONTESTS_FOR_AUDIT_RECEIVE': {
+        return state;
+    }
+
     case 'SELECT_NEXT_BALLOT': {
         const nextState = { ...state };
 
