@@ -66,5 +66,7 @@ route('post', '/upload-random-seed', (r) => ok(''));
 
 route('get', '/county-dashboard', () => ok(countyDashboard));
 
+route('post', '/auth-county-admin', () => ok('Authenticated'));
+
 
 app.listen(4000);
