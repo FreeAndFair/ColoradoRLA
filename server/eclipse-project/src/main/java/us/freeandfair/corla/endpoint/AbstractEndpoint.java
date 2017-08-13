@@ -28,7 +28,6 @@ import spark.Spark;
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.AbstractStateMachine;
-import us.freeandfair.corla.asm.DoSDashboardASM;
 import us.freeandfair.corla.asm.PersistentASMState;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
 import us.freeandfair.corla.persistence.Persistence;
@@ -111,6 +110,7 @@ public abstract class AbstractEndpoint implements Endpoint {
 
   /**
    * Indicate that the operation completed successfully.
+   * @param the_response the HTTP response.
    */
   public void ok(final Response the_response) {
     the_response.status(HttpStatus.OK_200);    
@@ -118,97 +118,119 @@ public abstract class AbstractEndpoint implements Endpoint {
   
   /**
    * Indicate and log that the operation completed successfully.
+   * @param the_response the HTTP response.
+   * @param the_body the body of the HTTP response.
    */
-  public void ok(final Response the_response, final String the_log_message) {
+  public void ok(final Response the_response, 
+                 final String the_body) {
     the_response.status(HttpStatus.OK_200);
-    Main.LOGGER.error("successful operation 200: " + the_log_message);
-    my_endpoint_result = the_log_message;
+    Main.LOGGER.error("successful operation 200 on endpoint " + endpointName());
+    my_endpoint_result = the_body;
   }
 
   /**
    * Indicate the client has violated an invariant or precondition relating data
    * to the endpoint in question. E.g., a digest is incorrect with regards to
    * the file that it summarizes.
+   * @param the_response the HTTP response.
+   * @param the_body the body of the HTTP response.
    */
   public void invariantViolation(final Response the_response, 
-                                 final String the_log_message) {
+                                 final String the_body) {
     the_response.status(HttpStatus.BAD_REQUEST_400);
-    Main.LOGGER.error("invariant violation 400: " + the_log_message);
-    my_endpoint_result = the_log_message;
+    Main.LOGGER.error("invariant violation 400 on endpoint " + endpointName());
+    my_endpoint_result = the_body;
   }
   
   /**
    * Indicate that the client is not authorized to perform the requested action.
+   * @param the_response the HTTP response.
+   * @param the_body the body of the HTTP response.
    */
   public void unauthorized(final Response the_response, 
-                           final String the_log_message) {
+                           final String the_body) {
     the_response.status(HttpStatus.UNAUTHORIZED_401);
-    Main.LOGGER.error("unauthorized access 401: " + the_log_message);
+    Main.LOGGER.error("unauthorized access 401 on endpoint " + endpointName());
     // TODO: should we halt() the endpoint execution here and simply send 
     // the response
-    my_endpoint_result = the_log_message;
+    my_endpoint_result = the_body;
   }
 
   /**
    * Indicate the client cannot perform the requested action because it violates
    * the server's state machine.
+   * @param the_response the HTTP response.
+   * @param the_body the body of the HTTP response.
    */
   public void illegalTransition(final Response the_response, 
-                                final String the_log_message) {
+                                final String the_body) {
     the_response.status(HttpStatus.FORBIDDEN_403);
-    Main.LOGGER.error("illegal transition attempt 403: " + the_log_message);
-    my_endpoint_result = the_log_message;
+    Main.LOGGER.error("illegal transition attempt 403 on endpoint " + 
+        endpointName());
+    my_endpoint_result = the_body;
   }
 
   /**
    * Indicate that some data was not found.
+   * @param the_response the HTTP response.
+   * @param the_body the body of the HTTP response.
    */
   public void dataNotFound(final Response the_response, 
-                           final String the_log_message) {
+                           final String the_body) {
     the_response.status(HttpStatus.NOT_FOUND_404);
-    Main.LOGGER.error("server error 404: " + the_log_message);
-    my_endpoint_result = the_log_message;
+    Main.LOGGER.error("server error 404 on endpoint " + endpointName());
+    my_endpoint_result = the_body;
   }
 
   /**
    * Indicate that the type/shape of data the client provided is ill-formed.
+   * @param the_response the HTTP response.
+   * @param the_body the body of the HTTP response.
    */
   public void badDataType(final Response the_response, 
-                          final String the_log_message) {
+                          final String the_body) {
     the_response.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE_415);
-    Main.LOGGER.error("bad data type from client 415: " + the_log_message);
-    my_endpoint_result = the_log_message;
+    Main.LOGGER.error("bad data type from client 415 on endpoint " + 
+        endpointName());
+    my_endpoint_result = the_body;
   }
 
   /**
    * Indicate that data that the client provided is ill-formed.
+   * @param the_response the HTTP response.
+   * @param the_body the body of the HTTP response.
    */
   public void badDataContents(final Response the_response, 
-                              final String the_log_message) {
+                              final String the_body) {
     the_response.status(HttpStatus.UNPROCESSABLE_ENTITY_422);
-    Main.LOGGER.error("bad data from client 422: " + the_log_message);
-    my_endpoint_result = the_log_message;
+    Main.LOGGER.error("bad data from client 422 on endpoint " + endpointName());
+    my_endpoint_result = the_body;
   }
 
   /**
    * Indicate that an internal server error has taken place.
+   * @param the_response the HTTP response.
+   * @param the_body the body of the HTTP response.
    */
   public void serverError(final Response the_response, 
-                          final String the_log_message) {
+                          final String the_body) {
     the_response.status(HttpStatus.INTERNAL_SERVER_ERROR_500);
-    Main.LOGGER.error("server error 500: " + the_log_message);
-    my_endpoint_result = the_log_message;
+    Main.LOGGER.error("server error 500 on endpoint " + endpointName());
+    my_endpoint_result = the_body;
   }
 
   /**
    * Indicate that the server is temporarily unavailable. This is typically due
    * to a long-lived transaction running or server maintenance.
+   * @param the_response the HTTP response.
+   * @param the_body the body of the HTTP response.
    */
   public void serverUnavailable(final Response the_response, 
-                                final String the_log_message) {
+                                final String the_body) {
     the_response.status(HttpStatus.SERVICE_UNAVAILABLE_503);
-    Main.LOGGER.error("server temporarily unavailable 503: " + the_log_message);
-    my_endpoint_result = the_log_message;
+    Main.LOGGER.error("server temporarily unavailable 503 on endpoint " + 
+        endpointName());
+    my_endpoint_result = the_body;
   }
 
   /**
@@ -223,8 +245,9 @@ public abstract class AbstractEndpoint implements Endpoint {
     ok(the_response);
 
     // If this is the root endpoint, just return.
-    if (endpointName().equals("/"))
+    if ("/".equals(endpointName())) {
       return;
+    }
 
     // Start a transaction, if the database is functioning; otherwise abort
     if (Persistence.hasDB()) {
