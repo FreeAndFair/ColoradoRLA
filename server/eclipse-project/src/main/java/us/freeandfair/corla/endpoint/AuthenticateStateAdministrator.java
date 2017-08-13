@@ -19,7 +19,7 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
-import us.freeandfair.corla.asm.DoSDashboardASM;
+import us.freeandfair.corla.asm.AbstractStateMachine;
 import us.freeandfair.corla.json.ServerASMResponse;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
 
@@ -44,8 +44,8 @@ public class AuthenticateStateAdministrator extends AbstractEndpoint {
    * @return this endpoint uses the Department of State ASM.
    */
   @Override
-  protected Class<DoSDashboardASM> asmClass() {
-    return DoSDashboardASM.class;
+  protected Class<AbstractStateMachine> asmClass() {
+    return null;
   }
 
   /**

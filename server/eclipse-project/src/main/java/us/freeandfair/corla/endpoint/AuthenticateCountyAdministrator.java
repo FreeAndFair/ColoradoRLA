@@ -17,7 +17,7 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.asm.ASMEvent;
-import us.freeandfair.corla.asm.CountyDashboardASM;
+import us.freeandfair.corla.asm.AbstractStateMachine;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
 
 /**
@@ -41,8 +41,8 @@ public class AuthenticateCountyAdministrator extends AbstractEndpoint {
    * @return this endpoint uses the Department of State ASM.
    */
   @Override
-  protected Class<CountyDashboardASM> asmClass() {
-    return CountyDashboardASM.class;
+  protected Class<AbstractStateMachine> asmClass() {
+    return null;
   }
 
   /**
@@ -77,8 +77,7 @@ public class AuthenticateCountyAdministrator extends AbstractEndpoint {
    */
   @Override
   protected String asmIdentity(final Request the_request) {
-    return String.valueOf(Authentication.
-                          authenticatedCounty(the_request).identifier());
+    return null;
   }
 
   /**
