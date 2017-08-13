@@ -16,17 +16,17 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
-import us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent;
+import us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent;
 import us.freeandfair.corla.json.ServerASMResponse;
 
 /**
- * An endpoint to provide the state of the DoS dashboard ASM to the client.
+ * An endpoint to provide the state of a county dashboard ASM to the client.
  * 
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class DoSDashboardASMState extends AbstractDoSDashboardEndpoint {
+public class CountyDashboardASMState extends AbstractCountyDashboardEndpoint {
   /**
    * {@inheritDoc}
    */
@@ -40,7 +40,7 @@ public class DoSDashboardASMState extends AbstractDoSDashboardEndpoint {
    */
   @Override
   public String endpointName() {
-    return "/dos-asm-state";
+    return "/county-asm-state";
   }
 
   /**
@@ -62,7 +62,7 @@ public class DoSDashboardASMState extends AbstractDoSDashboardEndpoint {
   /*@ pure @*/
   @Override
   protected ASMEvent endpointEvent() {
-    return DoSDashboardEvent.DOS_REFRESH_EVENT;
+    return CountyDashboardEvent.COUNTY_REFRESH_EVENT;
   }
 
 }
