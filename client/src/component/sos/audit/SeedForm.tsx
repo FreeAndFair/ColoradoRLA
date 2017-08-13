@@ -9,6 +9,8 @@ class SeedForm extends React.Component<any, any> {
     public render() {
         const { seed } = this.state;
 
+        this.props.forms.seedForm = this.state;
+
         return (
             <label>
                 Seed

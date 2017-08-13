@@ -25,8 +25,13 @@ const Breadcrumb = () => (
     </ul>
 );
 
-const AuditSeedPage = ({ back, nextPage }: any) => {
+
+const AuditSeedPage = ({ back, nextPage, uploadRandomSeed }: any) => {
+    const forms: any = {};
+
     const onSaveAndNext = () => {
+        const { seed } = forms.seedForm;
+        uploadRandomSeed(seed);
         nextPage();
     };
 
@@ -40,7 +45,7 @@ const AuditSeedPage = ({ back, nextPage }: any) => {
 
                 <h4>Audit Random Seed</h4>
                 <div>Please enter the seed generated from the public meeting.</div>
-                <SeedForm />
+                <SeedForm forms={ forms } />
             </div>
             <div>
                 <button onClick={ back } className='pt-button'>
