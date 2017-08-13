@@ -1,7 +1,10 @@
 const ballotStyles = require('./ballotStyles');
 const contests = require('./contests');
+const counties = require('./counties');
 const castVoteRecords = require('./castVoteRecords');
 
+
+const county = counties[6];
 
 const auditBoard = [
     {
@@ -26,6 +29,7 @@ module.exports = {
         contest: c,
         reason: 'close_contest',
     })),
+    county,
     startTimestamp: (new Date()).toString(),
     ballotCount: castVoteRecords.length,  // 165
     ballotsToAudit: 55,
