@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import * as _ from 'lodash';
+
 import Nav from '../Nav';
 
 import SelectContestsForm from './SelectContestsForm';
@@ -25,9 +27,29 @@ const Breadcrumb = () => (
     </ul>
 );
 
+const formatFormData = (formData: any) => {
+    const data: any = [];
 
-const SelectContestsPage = ({ back, contests, nextPage }: any) => {
+    _.forEach(formData, (r, id) => {
+        if (r.audit) {
+            data.push({
+                audit: 'comparison',
+                contest: id,
+                reason: r.reason.id,
+            });
+        }
+    });
+
+    return data;
+};
+
+const SelectContestsPage = (props: any) => {
+    const { back, contests, nextPage, selectContestsForAudit } = props;
+
+    const forms: any = {};
+
     const onSaveAndNext = () => {
+        selectContestsForAudit(formatFormData(forms.selectContestsForm));
         nextPage();
     };
 
@@ -35,7 +57,7 @@ const SelectContestsPage = ({ back, contests, nextPage }: any) => {
         <div>
             <Nav />
             <Breadcrumb />
-            <SelectContestsForm contests={ contests } />
+            <SelectContestsForm forms={ forms } contests={ contests } />
             <div>
                 <button onClick={ back } className='pt-button'>
                     Back
