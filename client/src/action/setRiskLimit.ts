@@ -2,27 +2,18 @@ import { Dispatch } from 'redux';
 
 import { apiHost } from '../config';
 
-
-const setRiskLimit = (riskLimit: number) => {
-    return (dispatch: Dispatch<any>) => {
-        dispatch({ type: 'SET_RISK_LIMIT_SEND' });
-
-        const url = `http://${apiHost}/risk-limit-comp-audits`;
-        const body = { riskLimit };
-
-        fetch(url, { method: 'post', body })
-            .then(r => {
-                if (r.ok) {
-                    dispatch({ type: 'SET_RISK_LIMIT_OK' });
-                } else {
-                    dispatch({ type: 'SET_RISK_LIMIT_FAIL' });
-                }
-            })
-            .catch(() => {
-                dispatch({ type: 'SET_RISK_LIMIT_NETWORK_FAIL' });
-            });
-    };
-};
+import createSubmitAction from './createSubmitAction';
 
 
-export default setRiskLimit;
+const url = `http://${apiHost}/risk-limit-comp-audits`;
+
+const setRiskLimit = createSubmitAction({
+    failType: 'SET_RISK_LIMIT_FAIL',
+    networkFailType: 'SET_RISK_LIMIT_NETWORK_FAIL',
+    okType: 'SET_RISK_LIMIT_OK',
+    sendType: 'SET_RISK_LIMIT_SEND',
+    url,
+});
+
+
+export default (riskLimit: number) => setRiskLimit({ riskLimit });
