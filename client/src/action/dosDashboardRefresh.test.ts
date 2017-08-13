@@ -5,7 +5,7 @@ import * as fetch from 'fetch-mock';
 import configureStore from 'redux-mock-store';
 import thunkMiddleware from 'redux-thunk';
 
-import stateDashboardRefresh from './stateDashboardRefresh';
+import dosDashboardRefresh from './dosDashboardRefresh';
 
 
 const setup = () => {
@@ -47,17 +47,17 @@ const teardown = (f: any) => {
 };
 
 
-const URL = /\/state-refresh$/;
+const URL = /\/dos-dashboard$/;
 
 
-test('stateDashboardRefresh', s => {
+test('dosDashboardRefresh', s => {
     test('fetches the data', t => {
         const f = setup();
         f.fetch(URL, { body: f.data, status: 200 });
 
         t.plan(2);
 
-        const a = stateDashboardRefresh();
+        const a = dosDashboardRefresh();
         a(sinon.stub());
 
         t.equal(fetch.calls().matched.length, 1, 'fetched to the URL');
@@ -74,13 +74,13 @@ test('stateDashboardRefresh', s => {
 
         t.plan(1);
 
-        const a = stateDashboardRefresh();
+        const a = dosDashboardRefresh();
         f.store.dispatch(a);
 
         fetch.flush().then(() => {
             t.deepEqual(f.store.getActions(), [
-                { type: 'STATE_DASHBOARD_REFRESH_SEND' },
-                { type: 'STATE_DASHBOARD_REFRESH_RECEIVE', data: f.data },
+                { type: 'DOS_DASHBOARD_REFRESH_SEND' },
+                { type: 'DOS_DASHBOARD_REFRESH_RECEIVE', data: f.data },
             ]);
 
             teardown(f);
@@ -96,13 +96,13 @@ test('stateDashboardRefresh', s => {
 
         t.plan(1);
 
-        const a = stateDashboardRefresh();
+        const a = dosDashboardRefresh();
         f.store.dispatch(a);
 
         fetch.flush().then(() => {
             t.deepEqual(f.store.getActions(), [
-                { type: 'STATE_DASHBOARD_REFRESH_SEND' },
-                { type: 'STATE_DASHBOARD_REFRESH_FAIL' },
+                { type: 'DOS_DASHBOARD_REFRESH_SEND' },
+                { type: 'DOS_DASHBOARD_REFRESH_FAIL' },
             ]);
 
             teardown(f);
@@ -115,13 +115,13 @@ test('stateDashboardRefresh', s => {
 
         t.plan(1);
 
-        const a = stateDashboardRefresh();
+        const a = dosDashboardRefresh();
         f.store.dispatch(a);
 
         fetch.flush().then(() => {
             t.deepEqual(f.store.getActions(), [
-                { type: 'STATE_DASHBOARD_REFRESH_SEND' },
-                { type: 'STATE_DASHBOARD_REFRESH_NETWORK_FAIL' },
+                { type: 'DOS_DASHBOARD_REFRESH_SEND' },
+                { type: 'DOS_DASHBOARD_REFRESH_NETWORK_FAIL' },
             ]);
 
             teardown(f);
