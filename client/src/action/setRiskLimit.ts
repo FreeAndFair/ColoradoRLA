@@ -13,7 +13,7 @@ const setRiskLimit = (riskLimit: number) => {
         fetch(url, { method: 'post', body })
             .then(r => {
                 if (r.ok) {
-                    dispatch({ type: 'SET_RISK_LIMIT_RECEIVE' });
+                    dispatch({ type: 'SET_RISK_LIMIT_OK' });
                 } else {
                     dispatch({ type: 'SET_RISK_LIMIT_FAIL' });
                 }

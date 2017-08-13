@@ -75,7 +75,7 @@ test('uploadCvrExport', s => {
         fetch.flush().then(() => {
             t.deepEqual(f.store.getActions(), [
                 { type: 'UPLOAD_CVR_EXPORT_SEND' },
-                { type: 'UPLOAD_CVR_EXPORT_RECEIVE' },
+                { type: 'UPLOAD_CVR_EXPORT_OK' },
             ]);
 
             teardown(f);
