@@ -11,10 +11,13 @@
 
 package us.freeandfair.corla.endpoint;
 
+import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.AUTHENTICATE_STATE_ADMINISTRATOR_EVENT;
+
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent;
 import us.freeandfair.corla.json.ServerASMResponse;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
@@ -26,7 +29,7 @@ import us.freeandfair.corla.model.Administrator.AdministratorType;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class AuthenticateStateAdministrator extends AbstractEndpoint {
+public class AuthenticateStateAdministrator extends AbstractDoSDashboardEndpoint {
   /**
    * {@inheritDoc}
    */
@@ -43,6 +46,14 @@ public class AuthenticateStateAdministrator extends AbstractEndpoint {
     return "/auth-state-admin";
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected ASMEvent endpointEvent() {
+    return AUTHENTICATE_STATE_ADMINISTRATOR_EVENT;
+  }
+  
   /**
    * Attempts to authenticate a state administrator; if the authentication is
    * successful, authentication data is added to the session.

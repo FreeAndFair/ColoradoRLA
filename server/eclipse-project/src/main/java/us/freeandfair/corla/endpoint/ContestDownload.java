@@ -11,6 +11,8 @@
 
 package us.freeandfair.corla.endpoint;
 
+import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.COUNTY_SKIP_EVENT;
+
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -22,6 +24,7 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.util.SparkHelper;
@@ -33,7 +36,7 @@ import us.freeandfair.corla.util.SparkHelper;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class ContestDownload extends AbstractEndpoint {
+public class ContestDownload extends AbstractCountyDashboardEndpoint {
   /**
    * {@inheritDoc}
    */
@@ -50,6 +53,14 @@ public class ContestDownload extends AbstractEndpoint {
     return "/contest";
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected ASMEvent endpointEvent() {
+    return COUNTY_SKIP_EVENT;
+  }
+  
   /**
    * {@inheritDoc}
    */

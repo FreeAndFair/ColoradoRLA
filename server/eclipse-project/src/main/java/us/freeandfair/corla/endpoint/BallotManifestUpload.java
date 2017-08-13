@@ -11,6 +11,8 @@
 
 package us.freeandfair.corla.endpoint;
 
+import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.UPLOAD_BALLOT_MANIFEST_EVENT;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -43,6 +45,7 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.csv.BallotManifestParser;
 import us.freeandfair.corla.csv.ColoradoBallotManifestParser;
 import us.freeandfair.corla.model.BallotManifestInfo;
@@ -63,7 +66,7 @@ import us.freeandfair.corla.util.SparkHelper;
  * @version 0.0.1
  */
 @SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.ExcessiveImports"})
-public class BallotManifestUpload extends AbstractEndpoint {
+public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
   /**
    * The upload buffer size, in bytes.
    */
@@ -90,6 +93,14 @@ public class BallotManifestUpload extends AbstractEndpoint {
     return "/upload-ballot-manifest";
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected ASMEvent endpointEvent() {
+    return UPLOAD_BALLOT_MANIFEST_EVENT;
+  }
+  
   /**
    * Attempts to save the specified file in the database.
    * 

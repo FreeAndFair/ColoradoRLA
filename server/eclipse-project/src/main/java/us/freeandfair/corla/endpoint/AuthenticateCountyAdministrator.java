@@ -11,9 +11,12 @@
 
 package us.freeandfair.corla.endpoint;
 
+import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.COUNTY_SKIP_EVENT;
+
 import spark.Request;
 import spark.Response;
 
+import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
 
 /**
@@ -23,7 +26,7 @@ import us.freeandfair.corla.model.Administrator.AdministratorType;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class AuthenticateCountyAdministrator extends AbstractEndpoint {
+public class AuthenticateCountyAdministrator extends AbstractCountyDashboardEndpoint {
   /**
    * {@inheritDoc}
    */
@@ -40,6 +43,14 @@ public class AuthenticateCountyAdministrator extends AbstractEndpoint {
     return "/auth-county-admin";
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected ASMEvent endpointEvent() {
+    return COUNTY_SKIP_EVENT;
+  }
+  
   /**
    * Attempts to authenticate a county administrator; if the authentication is
    * successful, authentication data is added to the session.

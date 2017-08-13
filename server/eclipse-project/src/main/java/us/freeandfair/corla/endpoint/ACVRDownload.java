@@ -11,6 +11,8 @@
 
 package us.freeandfair.corla.endpoint;
 
+import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.AUDIT_SKIP_EVENT;
+
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -27,6 +29,7 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.persistence.Persistence;
@@ -40,7 +43,7 @@ import us.freeandfair.corla.util.SparkHelper;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class ACVRDownload extends AbstractEndpoint {
+public class ACVRDownload extends AbstractAuditBoardDashboardEndpoint {
   /**
    * {@inheritDoc}
    */
@@ -55,6 +58,14 @@ public class ACVRDownload extends AbstractEndpoint {
   @Override
   public String endpointName() {
     return "/acvr";
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected ASMEvent endpointEvent() {
+    return AUDIT_SKIP_EVENT;
   }
 
   /**
