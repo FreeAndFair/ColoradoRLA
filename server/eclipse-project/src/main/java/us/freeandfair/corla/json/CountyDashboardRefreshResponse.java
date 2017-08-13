@@ -114,14 +114,14 @@ public class CountyDashboardRefreshResponse {
   private final Integer my_number_of_disagreements;
 
   /**
-   * The list of CVRs to audit (by ID).
+   * The list of ballots to audit (by CVR ID).
    */
-  private final List<Long> my_cvrs_to_audit;
+  private final List<Long> my_ballots_to_audit;
 
   /**
-   * The current CVR under audit.
+   * The current ballot under audit.
    */
-  private final Long my_cvr_under_audit_id;
+  private final Long my_ballot_under_audit_id;
   
   /**
    * Constructs a new CountyDashboardRefreshResponse.
@@ -138,8 +138,8 @@ public class CountyDashboardRefreshResponse {
    * @param the_number_of_ballots_audited The number of ballots audited.
    * @param the_number_of_discrepencies The number of discrepencies.
    * @param the_number_of_disagreements The number of disagreements.
-   * @param the_cvrs_to_audit The list of CVRs to audit.
-   * @param the_cvr_under_audit The index of the CVR under audit.
+   * @param the_ballots_to_audit The list of CVRs to audit.
+   * @param the_ballot_under_audit The index of the CVR under audit.
    */
   @SuppressWarnings("PMD.ExcessiveParameterList")
   protected CountyDashboardRefreshResponse(final CountyStatus the_status,
@@ -154,8 +154,8 @@ public class CountyDashboardRefreshResponse {
                                            final Integer the_number_of_ballots_audited,
                                            final Integer the_number_of_discrepencies, 
                                            final Integer the_number_of_disagreements,
-                                           final List<Long> the_cvrs_to_audit,
-                                           final Long the_cvr_under_audit) {
+                                           final List<Long> the_ballots_to_audit,
+                                           final Long the_ballot_under_audit) {
     my_status = the_status;
     my_general_information = the_general_information;
     my_audit_board_members = the_audit_board_members;
@@ -168,8 +168,8 @@ public class CountyDashboardRefreshResponse {
     my_number_of_ballots_audited = the_number_of_ballots_audited;
     my_number_of_discrepencies = the_number_of_discrepencies;
     my_number_of_disagreements = the_number_of_disagreements;
-    my_cvrs_to_audit = the_cvrs_to_audit;
-    my_cvr_under_audit_id = the_cvr_under_audit;
+    my_ballots_to_audit = the_ballots_to_audit;
+    my_ballot_under_audit_id = the_ballot_under_audit;
   }
   
   /**
@@ -229,8 +229,7 @@ public class CountyDashboardRefreshResponse {
       }
     }
     
-    // audit time doesn't exist yet
-    final Instant audit_time = Instant.EPOCH;
+    // audit timestamp = timestamp from dashboard
    
     // estimated ballots to audit = list size from dashboard
     
@@ -248,9 +247,9 @@ public class CountyDashboardRefreshResponse {
     // number of disagreements doesn't exist yet
     final Integer number_of_disagreements = -1;
 
-    // list of CVRs to audit = list from dashboard
+    // list of ballots to audit = list from dashboard
     
-    // CVR under audit = from dashboard
+    // ballot under audit = from dashboard
     
     return new CountyDashboardRefreshResponse(the_dashboard.status(),
                                               general_information,
@@ -259,7 +258,7 @@ public class CountyDashboardRefreshResponse {
                                               cvr_digest,
                                               contests,
                                               contests_under_audit,
-                                              audit_time,
+                                              the_dashboard.auditTimestamp(),
                                               the_dashboard.cvrsToAudit().size(),
                                               number_of_ballots_audited,
                                               number_of_discrepencies,

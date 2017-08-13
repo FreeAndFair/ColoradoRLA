@@ -106,6 +106,11 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
   private Instant my_manifest_upload_timestamp;
   
   /**
+   * The timestamp for the start of the audit.
+   */
+  private Instant my_audit_timestamp; 
+  
+  /**
    * The members of the audit board.
    */
   @ManyToMany(fetch = FetchType.EAGER)
@@ -227,6 +232,23 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
     my_manifest_upload_timestamp = the_timestamp;
   }  
   
+  /**
+   * @return the audit timestamp. A return value of null means
+   * that no audit has been started.
+   */
+  public Instant auditTimestamp() {
+    return my_audit_timestamp;
+  }
+  
+  /**
+   * Sets a new audit timestamp, replacing the previous one.
+   * 
+   * @param the_timestamp The new audit timestamp.
+   */
+  public void setAuditTimestamp(final Instant the_timestamp) {
+    my_audit_timestamp = the_timestamp;
+  }  
+
   /**
    * @return the set of audit board members.
    */
