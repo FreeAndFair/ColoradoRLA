@@ -18,15 +18,15 @@ const defaultState = {
 export default function root(state: AppState = defaultState, action: any) {
     switch (action.type) {
 
-    case 'AUTH_COUNTY_ADMIN_RECEIVE': {
+    case 'AUTH_COUNTY_ADMIN_OK': {
         return { ...state, loggedIn: true, dashboard: 'county', county: {} };
     }
 
-    case 'AUTH_STATE_ADMIN_RECEIVE': {
+    case 'AUTH_STATE_ADMIN_OK': {
         return { ...state, loggedIn: true, dashboard: 'sos', sos: {} };
     }
 
-    case 'DOS_DASHBOARD_REFRESH_RECEIVE': {
+    case 'DOS_DASHBOARD_REFRESH_OK': {
         const nextState = { ...state };
 
         const { data } = action;
@@ -40,12 +40,12 @@ export default function root(state: AppState = defaultState, action: any) {
         return state;
     }
 
-    case 'FETCH_INITIAL_STATE_RECEIVE': {
+    case 'FETCH_INITIAL_STATE_OK': {
         // TODO: should be a deep merge.
         return action.data;
     }
 
-    case 'SELECT_CONTESTS_FOR_AUDIT_RECEIVE': {
+    case 'SELECT_CONTESTS_FOR_AUDIT_OK': {
         return state;
     }
 
@@ -68,7 +68,7 @@ export default function root(state: AppState = defaultState, action: any) {
         return nextState;
     }
 
-    case 'SET_RISK_LIMIT_RECEIVE': {
+    case 'SET_RISK_LIMIT_OK': {
         return state;
     }
 

@@ -64,7 +64,7 @@ test('authStateAdmin', s => {
         fetch.flush().then(() => {
             t.deepEqual(f.store.getActions(), [
                 { type: 'AUTH_STATE_ADMIN_SEND' },
-                { type: 'AUTH_STATE_ADMIN_RECEIVE' },
+                { type: 'AUTH_STATE_ADMIN_OK' },
             ]);
 
             teardown(f);
