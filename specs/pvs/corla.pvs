@@ -1599,7 +1599,8 @@ BEGIN
             FAFSSL,
             instructions_forms_reports,
             randomness,
-            rlas
+            rlas,
+            ballot_interpretation
 %%% CDOS staff, after authenticating to the state-wide dashboard, can
 %%% see the status of the entire election. Various static information
 %%% about the election is displayed along with dynamic information,
@@ -1747,8 +1748,8 @@ BEGIN
   publish_seed:
     [department_of_state_dashboard, seed -> department_of_state_dashboard]
   publish_ballots_to_audit:
-    [department_of_state_dashboard ->
-      [department_of_state_dashboard, list[[contest, list[ballot]]]]]
+    [department_of_state_dashboard, set[cast_vote_record] ->
+      [department_of_state_dashboard, list[[county, list[ballot]]]]]
 %%% The Secretary of State can indicate that a contest must be a full
 %%% hand count contest.
 % @review CDOS We need to know what the process is that they want for
@@ -1765,6 +1766,8 @@ BEGIN
               risk_limit,
               set[[audited_contest, audit_reason]],
               set[county_status],
+              boolean, % cvr_uploads_complete?
+              boolean, % manifest_uploads_complete?
               seed,
               % @todo kiniry Shouldn't this just be list[ballot]?
               % @todo kiniry There isn't any reason why the DOS should have this.
@@ -1875,12 +1878,17 @@ BEGIN
   county_upload_verified_ballot_manifest:
     [county_dashboard, ballot_manifest_file, digest ->
      [county_dashboard, email, upload_system_message]]
+%%% All ballot manifests are stored in a relation between counties and
+%%% ballot manifest files.  See \texttt{ballot\_manifest\_table}
+%%% below.
 
 %%% \item its verified and hashed CVR export to the RLA Tool; and
 % @trace us.freeandfair.corla.model.CountyDashboard.setCVRs
   upload_verified_cvrs:
     [county_dashboard, cvr_file, digest ->
      [county_dashboard, email, upload_system_message]]
+%%% All CVRs are stored in a relation between counties and CVR files.
+%%% See \texttt{cvr\_table} below.
 
 %%% \item its RLA tabulation results export to the Secretary of State's
 %%% election night reporting system.
@@ -2045,6 +2053,13 @@ BEGIN
 % the audit.
   submit_audit_report:
     [audit_board_dashboard, audit_report -> audit_board_dashboard]
+%%% This function updates a set of relations between counties and
+%%% audit reports.
+  audit_reports: set[[county, audit_report]]
+%%% We need to know when all audit reports have been submitted to
+%%% transition the Department of State Dashboard to its DOS Audit
+%%% Complete state.
+  audit_complete?: [audit_report -> boolean]
 % @trace Per email from Jerome Lovato at CDOS on 19 July 2017: The
 % Audit Board and county admin will sign off on each round until the
 % audit completed.
@@ -2520,6 +2535,15 @@ BEGIN
 %%% a given county in a table.
   cvr_table: TYPE =
     sequence[[county, cvr]]
+%%% We need a query to determine when the Department of State
+%%% Dashboard can show the full set of contests in the state and
+%%% permit the Secretary of State to choose which contests are under
+%%% audit. This query is answered by examining every county's status
+%%% (provided by the \texttt{refresh} endpoint of the DOS dashboard)
+%%% to see that they are all have value
+%%% \texttt{cvrs\_uploaded\_successfully}.
+  cvr_uploads_complete?: [cvr_table -> boolean]
+  ballot_manifest_uploads_complete?: [ballot_manifest_table -> boolean]
 %%% But we also need to store all CVRs for each contest, aggregating
 %%% all CVRs across the upload from all counties in which the contest
 %%% was on the ballot.
