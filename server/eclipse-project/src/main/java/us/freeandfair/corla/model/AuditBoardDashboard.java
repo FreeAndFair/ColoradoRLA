@@ -29,7 +29,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
-import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.persistence.AbstractEntity;
 import us.freeandfair.corla.persistence.Persistence;
 
@@ -184,7 +183,7 @@ public class AuditBoardDashboard extends AbstractEntity implements Serializable 
         the_cvr_under_audit.equals(Persistence.getByID(the_cvr_under_audit.id(), 
                                                        CastVoteRecord.class)) &&
         the_cvr_under_audit.isAuditPairWith(the_audit_cvr) &&
-        the_cvr_under_audit.recordType() != RecordType.AUDITOR_ENTERED) {
+        the_cvr_under_audit.recordType().isAuditorGenerated()) {
       // the CVRs match!
       my_submitted_audit_cvrs.set(index, the_audit_cvr.id());
       result = true;
