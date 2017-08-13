@@ -32,6 +32,7 @@ import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.AbstractStateMachine;
 import us.freeandfair.corla.asm.PersistentASMState;
+import us.freeandfair.corla.json.Result;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.PersistentASMStateQueries;
@@ -178,6 +179,7 @@ public abstract class AbstractEndpoint implements Endpoint {
    */
   public void ok(final Response the_response) {
     the_response.status(HttpStatus.OK_200);    
+    my_endpoint_result = "";
   }
   
   /**
@@ -187,12 +189,22 @@ public abstract class AbstractEndpoint implements Endpoint {
    */
   public void ok(final Response the_response, 
                  final String the_body) {
-    the_response.status(HttpStatus.OK_200);
-    the_response.body(the_body);
-    Main.LOGGER.error("successful operation 200 on endpoint " + endpointName());
-    my_endpoint_result = the_body;
+    okJSON(the_response, Main.GSON.toJson(new Result(the_body)));
   }
 
+  /**
+   * Indicate and log that the operation completed succesfully, and
+   * send the specified JSON-formatted string.
+   * 
+   * @param the_response The HTTP response.
+   * @param the_json The JSON string to send as the body of the response.
+   */
+  public void okJSON(final Response the_response, final String the_json) {
+    the_response.status(HttpStatus.OK_200);
+    the_response.body(the_json);
+    Main.LOGGER.error("successful operation 200 on endpoint " + endpointName());
+    my_endpoint_result = the_json;
+  }
   /**
    * Indicate the client has violated an invariant or precondition relating data
    * to the endpoint in question. E.g., a digest is incorrect with regards to
@@ -203,9 +215,9 @@ public abstract class AbstractEndpoint implements Endpoint {
   public void invariantViolation(final Response the_response, 
                                  final String the_body) {
     the_response.status(HttpStatus.BAD_REQUEST_400);
-    the_response.body(the_body);
+    my_endpoint_result = Main.GSON.toJson(new Result(the_body));
+    the_response.body(my_endpoint_result);
     Main.LOGGER.error("invariant violation 400 on endpoint " + endpointName());
-    my_endpoint_result = the_body;
   }
   
   /**
@@ -216,11 +228,11 @@ public abstract class AbstractEndpoint implements Endpoint {
   public void unauthorized(final Response the_response, 
                            final String the_body) {
     the_response.status(HttpStatus.UNAUTHORIZED_401);
-    the_response.body(the_body);
+    my_endpoint_result = Main.GSON.toJson(new Result(the_body));
+    the_response.body(my_endpoint_result);
     Main.LOGGER.error("unauthorized access 401 on endpoint " + endpointName());
     // TODO: should we halt() the endpoint execution here and simply send 
     // the response
-    my_endpoint_result = the_body;
   }
 
   /**
@@ -232,10 +244,10 @@ public abstract class AbstractEndpoint implements Endpoint {
   public void illegalTransition(final Response the_response, 
                                 final String the_body) {
     the_response.status(HttpStatus.FORBIDDEN_403);
-    the_response.body(the_body);
+    my_endpoint_result = Main.GSON.toJson(new Result(the_body));
+    the_response.body(my_endpoint_result);
     Main.LOGGER.error("illegal transition attempt 403 on endpoint " + 
         endpointName());
-    my_endpoint_result = the_body;
   }
 
   /**
@@ -246,9 +258,9 @@ public abstract class AbstractEndpoint implements Endpoint {
   public void dataNotFound(final Response the_response, 
                            final String the_body) {
     the_response.status(HttpStatus.NOT_FOUND_404);
-    the_response.body(the_body);
+    my_endpoint_result = Main.GSON.toJson(new Result(the_body));
+    the_response.body(my_endpoint_result);
     Main.LOGGER.error("server error 404 on endpoint " + endpointName());
-    my_endpoint_result = the_body;
   }
 
   /**
@@ -259,10 +271,10 @@ public abstract class AbstractEndpoint implements Endpoint {
   public void badDataType(final Response the_response, 
                           final String the_body) {
     the_response.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE_415);
-    the_response.body(the_body);
+    my_endpoint_result = Main.GSON.toJson(new Result(the_body));
+    the_response.body(my_endpoint_result);
     Main.LOGGER.error("bad data type from client 415 on endpoint " + 
         endpointName());
-    my_endpoint_result = the_body;
   }
 
   /**
@@ -273,9 +285,9 @@ public abstract class AbstractEndpoint implements Endpoint {
   public void badDataContents(final Response the_response, 
                               final String the_body) {
     the_response.status(HttpStatus.UNPROCESSABLE_ENTITY_422);
-    the_response.body(the_body);
+    my_endpoint_result = Main.GSON.toJson(new Result(the_body));
+    the_response.body(my_endpoint_result);
     Main.LOGGER.error("bad data from client 422 on endpoint " + endpointName());
-    my_endpoint_result = the_body;
   }
 
   /**
@@ -286,9 +298,9 @@ public abstract class AbstractEndpoint implements Endpoint {
   public void serverError(final Response the_response, 
                           final String the_body) {
     the_response.status(HttpStatus.INTERNAL_SERVER_ERROR_500);
-    the_response.body(the_body);
+    my_endpoint_result = Main.GSON.toJson(new Result(the_body));
+    the_response.body(my_endpoint_result);
     Main.LOGGER.error("server error 500 on endpoint " + endpointName());
-    my_endpoint_result = the_body;
   }
 
   /**
@@ -300,10 +312,10 @@ public abstract class AbstractEndpoint implements Endpoint {
   public void serverUnavailable(final Response the_response, 
                                 final String the_body) {
     the_response.status(HttpStatus.SERVICE_UNAVAILABLE_503);
-    the_response.body(the_body);
+    my_endpoint_result = Main.GSON.toJson(new Result(the_body));
+    the_response.body(my_endpoint_result);
     Main.LOGGER.error("server temporarily unavailable 503 on endpoint " + 
         endpointName());
-    my_endpoint_result = the_body;
   }
 
   /**

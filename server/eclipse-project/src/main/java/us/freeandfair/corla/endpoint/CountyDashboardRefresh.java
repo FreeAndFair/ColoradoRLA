@@ -67,10 +67,10 @@ public class CountyDashboardRefresh extends AbstractCountyDashboardEndpoint {
   public String endpoint(final Request the_request, final Response the_response) {
     try {
       final County county = Authentication.authenticatedCounty(the_request);
-      final String refresh =  
-          Main.GSON.toJson(CountyDashboardRefreshResponse.createResponse
-                           (CountyDashboardQueries.get(county.identifier())));
-      ok(the_response, refresh);
+          
+      okJSON(the_response, 
+             Main.GSON.toJson(CountyDashboardRefreshResponse.createResponse
+                              (CountyDashboardQueries.get(county.identifier()))));
     } catch (final PersistenceException e) {
       serverError(the_response, "could not obtain dashboard state");
     }

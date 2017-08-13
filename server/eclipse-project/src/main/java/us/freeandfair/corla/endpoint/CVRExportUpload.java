@@ -37,7 +37,6 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
-import org.eclipse.jetty.http.HttpStatus;
 import org.hibernate.Session;
 
 import spark.Request;
@@ -250,6 +249,7 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
           attemptFilePersistence(the_response, the_info.my_file, 
                                  the_county.identifier(), hash,
                                  the_info.my_timestamp);
+          ok(the_response, "uploaded CVR export file");
         } else {
           Main.LOGGER.info("could not parse malformed CVR export file");
           badDataContents(the_response, "Malformed CVR Export File");
@@ -300,10 +300,7 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
         // ignored - should never happen
       }
     }
-    // @todo kiniry Review this logic and its interrelationship to
-    // endpoint before filtering.
-    the_response.status(info.my_response_status);
-    return info.my_response_string;
+    return my_endpoint_result;
   }
 
   /**
@@ -362,15 +359,5 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
      * A map of form field names and values.
      */
     protected Map<String, String> my_form_fields = new HashMap<String, String>();
-
-    /**
-     * An HTTP response status.
-     */
-    protected int my_response_status = HttpStatus.OK_200;
-
-    /**
-     * A response string.
-     */
-    protected String my_response_string = "OK";
   }
 }

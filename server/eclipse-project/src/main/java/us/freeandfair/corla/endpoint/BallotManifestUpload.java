@@ -38,7 +38,6 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
-import org.eclipse.jetty.http.HttpStatus;
 import org.hibernate.Session;
 
 import spark.Request;
@@ -139,12 +138,14 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
    * Handles the upload of the file, updating the provided UploadInformation.
    * 
    * @param the_request The request to use.
+   * @param the_response The response to use.
    * @param the_info The upload information to update.
    */
   // I don't see any other way to implement the buffered reading 
   // than a deeply nested if statement
   @SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts")
   private void handleUpload(final Request the_request,
+                            final Response the_response,
                             final UploadInformation the_info) {
     try {
       final HttpServletRequest raw = SparkHelper.getRaw(the_request);
@@ -173,13 +174,11 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
             if (total >= MAX_UPLOAD_SIZE) {
               Main.LOGGER.info("attempt to upload file greater than max size from " + 
                                raw.getRemoteHost());
-              the_info.my_response_string = "Upload Failed";
-              the_info.my_response_status = HttpStatus.UNPROCESSABLE_ENTITY_422;
+              badDataContents(the_response, "maximum file size exceeded");
               the_info.my_ok = false;
             } else if (total == 0) {
               Main.LOGGER.info("attempt to upload empty file from " + raw.getRemoteHost());
-              the_info.my_response_string = "Empty File";
-              the_info.my_response_status = HttpStatus.BAD_REQUEST_400;
+              badDataContents(the_response, "empty file");
               the_info.my_ok = false;
             } else {
               Main.LOGGER.info("successfully saved file of size " + total + " from " + 
@@ -190,8 +189,7 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
         }
       }
     } catch (final IOException | FileUploadException e) {
-      the_info.my_response_string = "Upload Failed";
-      the_info.my_response_status = HttpStatus.UNPROCESSABLE_ENTITY_422;
+      badDataContents(the_response, "upload failed");
       the_info.my_ok = false;
     }
   }
@@ -255,7 +253,8 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
         }
         updateCountyDashboard(the_response, the_county_id, the_info.my_timestamp);
         attemptFilePersistence(the_info.my_file, the_county_id, hash, 
-                               the_info.my_timestamp);          
+                               the_info.my_timestamp);   
+        ok(the_response, "uploaded ballot manifest file");
       } else {
         Main.LOGGER.info("could not parse malformed ballot manifest file");
         badDataContents(the_response, "Malformed Ballot Manifest File");
@@ -287,7 +286,7 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
       return my_endpoint_result;
     }
     
-    handleUpload(the_request, info);
+    handleUpload(the_request, the_response, info);
     
     // process the temp file, putting it in the database if persistence is enabled 
         
@@ -307,10 +306,7 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
       }
     }
 
-    // @todo kiniry Review this logic and its interrelationship to
-    // endpoint before filtering.
-    the_response.status(info.my_response_status);
-    return info.my_response_string;
+    return my_endpoint_result;
   }
   
   /**
@@ -368,15 +364,5 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
      * A map of form field names and values.
      */
     protected Map<String, String> my_form_fields = new HashMap<String, String>();
-    
-    /**
-     * An HTTP response status.
-     */
-    protected int my_response_status = HttpStatus.OK_200;
-    
-    /**
-     * A response string.
-     */
-    protected String my_response_string = "OK";
   }
 }

@@ -104,12 +104,14 @@ public class EstablishAuditBoard extends AbstractCountyDashboardEndpoint {
           ok(the_response, "audit board for county " + county +  
                            " set to " + audit_board);
         }
+      } else {
+        invariantViolation(the_response, "Invalid audit board membership");
       }
     } catch (final PersistenceException e) {
       serverError(the_response, "unable to set audit board: " + e);
 
     } catch (final JsonSyntaxException e) {
-      invariantViolation(the_response, "Invalid audit board specified");
+      badDataContents(the_response, "Invalid audit board data");
     }
     return my_endpoint_result;
   }
