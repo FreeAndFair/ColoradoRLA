@@ -3,13 +3,17 @@ import * as React from 'react';
 import { NumericInput } from '@blueprintjs/core';
 
 
+interface FormProps {
+    forms: any;
+}
+
 interface FormState {
     ballotPollingLimit: number;
     comparisonLimit: number;
 }
 
 
-class RiskLimitForm extends React.Component<any, FormState> {
+class RiskLimitForm extends React.Component<FormProps & any, FormState> {
     public state: FormState = {
         ballotPollingLimit: 0.05,
         comparisonLimit: 0.05,
@@ -17,6 +21,8 @@ class RiskLimitForm extends React.Component<any, FormState> {
 
     public render() {
         const { ballotPollingLimit, comparisonLimit } = this.state;
+
+        this.props.forms.riskLimit = this.state;
 
         return (
             <div>
