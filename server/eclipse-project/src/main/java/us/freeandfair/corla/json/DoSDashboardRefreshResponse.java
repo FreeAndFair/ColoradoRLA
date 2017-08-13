@@ -30,6 +30,7 @@ import us.freeandfair.corla.model.DepartmentOfStateDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CountyDashboardQueries;
 import us.freeandfair.corla.util.Pair;
+import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
  * The response generated on a refresh of the DoS dashboard.
@@ -38,6 +39,7 @@ import us.freeandfair.corla.util.Pair;
  * @version 0.0.1
  */
 @SuppressWarnings({"unused", "PMD.UnusedPrivateField", "PMD.SingularField"})
+@SuppressFBWarnings(value = {"URF_UNREAD_FIELD"}, justification = "Field is read by Gson.")
 public class DoSDashboardRefreshResponse {
   /**
    * The audit stage.

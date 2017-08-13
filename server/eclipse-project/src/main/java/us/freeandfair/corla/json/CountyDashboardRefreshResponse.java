@@ -14,7 +14,6 @@ package us.freeandfair.corla.json;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -23,7 +22,6 @@ import javax.persistence.PersistenceException;
 import us.freeandfair.corla.model.AuditBoardDashboard;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.ContestToAudit;
-import us.freeandfair.corla.model.ContestToAudit.AuditReason;
 import us.freeandfair.corla.model.ContestToAudit.AuditType;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
@@ -32,13 +30,11 @@ import us.freeandfair.corla.model.DepartmentOfStateDashboard;
 import us.freeandfair.corla.model.Elector;
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.model.UploadedFile.FileType;
-import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.AuditBoardDashboardQueries;
-import us.freeandfair.corla.query.CountyDashboardQueries;
 import us.freeandfair.corla.query.CountyQueries;
 import us.freeandfair.corla.query.DepartmentOfStateDashboardQueries;
 import us.freeandfair.corla.query.UploadedFileQueries;
-import us.freeandfair.corla.util.Pair;
+import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
  * The response generated on a refresh of the DoS dashboard.
@@ -48,6 +44,7 @@ import us.freeandfair.corla.util.Pair;
  */
 @SuppressWarnings({"unused", "PMD.UnusedPrivateField", "PMD.SingularField",
                    "PMD.CyclomaticComplexity"})
+@SuppressFBWarnings(value = {"URF_UNREAD_FIELD"}, justification = "Field is read by Gson.")
 public class CountyDashboardRefreshResponse {
   /**
    * The county status.
@@ -246,54 +243,5 @@ public class CountyDashboardRefreshResponse {
                                               number_of_ballots_audited,
                                               number_of_discrepencies,
                                               number_of_disagreements);
-  }
-  
-  /**
-   * Converts the dashboard's contests to audit into collections suitable for the
-   * response. 
-   * 
-   * @param the_set The set of contests to audit.
-   * @return the audit/hand count info from a set of contests to audit as a pair
-   * of collections.
-   */
-  private static Pair<Map<Long, AuditReason>, Set<Long>> 
-      contestInfo(final Set<ContestToAudit> the_set) {
-    final Map<Long, AuditReason> audited_contests = 
-        new HashMap<Long, AuditReason>();
-    final Set<Long> hand_count_contests = new HashSet<Long>();
-    
-    for (final ContestToAudit cta : the_set) {
-      switch (cta.audit()) {
-        case COMPARISON:
-          audited_contests.put(cta.contest().id(), cta.reason());
-          break;
-          
-        case HAND_COUNT:
-          hand_count_contests.add(cta.contest().id());
-          break;
-          
-        default:
-      }
-    }
-    return new Pair<Map<Long, AuditReason>, Set<Long>>
-    (audited_contests, hand_count_contests);
-  }
-  
-  /**
-   * Gets the county statuses for all counties in the database.
-   * 
-   * @return a map from county identifiers to statuses.
-   */
-  private static Map<Integer, CountyStatus> countyStatusMap() {
-    final Map<Integer, CountyStatus> status_map = 
-        new HashMap<Integer, CountyStatus>();
-    final List<County> counties = Persistence.getAll(County.class);
-    
-    for (final County c : counties) {
-      final CountyDashboard db = CountyDashboardQueries.get(c.identifier());
-      status_map.put(db.countyID(), db.status());
-    }
-    
-    return status_map;
   }
 }
