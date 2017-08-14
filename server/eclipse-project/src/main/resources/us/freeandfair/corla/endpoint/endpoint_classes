@@ -25,6 +25,7 @@ us.freeandfair.corla.endpoint.EstablishAuditBoard
 us.freeandfair.corla.endpoint.IndicateHandCount
 us.freeandfair.corla.endpoint.IntermediateAuditReport
 us.freeandfair.corla.endpoint.PublishAuditReport
+us.freeandfair.corla.endpoint.PublishBallotsToAudit
 us.freeandfair.corla.endpoint.RiskLimitForComparisonAudits
 us.freeandfair.corla.endpoint.Root
 us.freeandfair.corla.endpoint.SelectContestsForAudit

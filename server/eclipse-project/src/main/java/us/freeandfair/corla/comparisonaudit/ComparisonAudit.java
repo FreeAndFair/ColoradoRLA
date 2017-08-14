@@ -11,10 +11,14 @@
 package us.freeandfair.corla.comparisonaudit;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import us.freeandfair.corla.util.Pair;
 
@@ -276,6 +280,38 @@ public final class ComparisonAudit {
   }
 
   /**
+   * Gets the set of winners for the contest with the specified ID.
+   * 
+   * @param the_contest_id The ID.
+   * @return The set of winners.
+   */
+  public Set<String> winnersForContest(final String the_contest_id) {
+    final Set<String> result = new HashSet<String>();
+    final Pair<Integer, Map<String, Integer>> contest = my_contests.get(the_contest_id);
+    final int winners = contest.getFirst();
+    final Map<String, Integer> vote_totals = contest.getSecond();
+
+    if (vote_totals.size() <= winners) {
+      result.addAll(vote_totals.keySet());
+    } else {
+      for (int i = 0; i < winners; i++) {
+        if (vote_totals.isEmpty()) {
+          String top_vote_getter = vote_totals.keySet().iterator().next();
+          for (final Entry<String, Integer> e : vote_totals.entrySet()) {
+            if (e.getValue() > vote_totals.get(top_vote_getter)) {
+              top_vote_getter = e.getKey();
+            }
+          }
+          result.add(top_vote_getter);
+          vote_totals.remove(top_vote_getter);
+        }
+      }
+    }
+    
+    return result;
+  }
+  
+  /**
    * Update the minimum margin for all contests we are tracking.
    */
   private void updateMinMargin() {
@@ -338,7 +374,8 @@ public final class ComparisonAudit {
     // TODO: What do we do in a tie?
     assert margin != 0;
 
-    return BigDecimal.valueOf(margin).divide(BigDecimal.valueOf(my_total_ballots));
+    return BigDecimal.valueOf(margin).divide(BigDecimal.valueOf(my_total_ballots), 
+                                             MathContext.DECIMAL128);
   }
 
   /**

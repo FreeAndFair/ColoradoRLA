@@ -20,6 +20,7 @@ import javax.persistence.PersistenceException;
 import spark.Request;
 import spark.Response;
 
+import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
@@ -78,9 +79,13 @@ public class PublishBallotsToAudit extends AbstractDoSDashboardEndpoint {
       final List<CountyDashboard> cdbs = Persistence.getAll(CountyDashboard.class);
       
       for (final CountyDashboard cdb : cdbs) {
-        final RLAAlgorithm rlaa = new RLAAlgorithm(cdb);
-        if (cdb.cvrUploadTimestamp() != null) {
-          cdb.setCVRsToAudit(rlaa.computeBallotOrder(dosdb.randomSeed()));
+        try {
+          final RLAAlgorithm rlaa = new RLAAlgorithm(cdb);
+          if (cdb.cvrUploadTimestamp() != null) {
+            cdb.setCVRsToAudit(rlaa.computeBallotOrder(dosdb.randomSeed()));
+          }
+        } catch (final IllegalArgumentException e) {
+          Main.LOGGER.info("could not set ballot list for county " + cdb.countyID());
         }
       }
       

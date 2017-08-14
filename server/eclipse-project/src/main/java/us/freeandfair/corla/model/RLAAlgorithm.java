@@ -48,6 +48,9 @@ public class RLAAlgorithm {
    * 
    * This constructor assumes that we know the number of CVRs in the
    * election, the risk limit, and the tabulation result.
+   * 
+   * @exception IllegalArgumentException if the specified county dashboard
+   * has no votes to count.
    */
   public RLAAlgorithm(final CountyDashboard the_dashboard) {
     // count CVRs for contest under audit
@@ -55,7 +58,9 @@ public class RLAAlgorithm {
         CastVoteRecordQueries.countMatching(the_dashboard.cvrUploadTimestamp(), 
                                             the_dashboard.countyID(),
                                             RecordType.UPLOADED);
-    
+    if (cvr_count == 0) {
+      throw new IllegalArgumentException("no votes in county " + the_dashboard.countyID());
+    }
     // what is the risk limit for this contest?
     final BigDecimal risk_limit = 
         DoSDashboardQueries.get().getRiskLimitForComparisonAudits();
@@ -107,7 +112,7 @@ public class RLAAlgorithm {
                                           RecordType.UPLOADED);
 
     cvrs.forEach((the_cvr) -> {
-      for (final CVRContestInfo contest_info : the_cvr.contestInfo()) {          
+      for (final CVRContestInfo contest_info : the_cvr.contestInfo()) {
         final Pair<Integer, Map<String, Integer>> record = 
             result.get(contest_info.contest().name());
         if (record == null) {
@@ -144,7 +149,8 @@ public class RLAAlgorithm {
     final Long max_long = 
         CastVoteRecordQueries.countMatching(my_dashboard.cvrUploadTimestamp(), 
                                             my_dashboard.countyID(),
-                                            RecordType.UPLOADED);
+                                            RecordType.UPLOADED) - 1;
+
     final int maximum = max_long.intValue();
 
     final PseudoRandomNumberGenerator prng = 
@@ -173,6 +179,17 @@ public class RLAAlgorithm {
   }
 
   /**
+   * Computes the discrepancies between CVRs to audit and submitted audit CVRs.
+   */
+  private Discrepancies calculateDiscrepancies() {
+    final Discrepancies result = new Discrepancies();
+    
+    
+    
+    return result;
+  }
+  
+  /**
    * Compute the total estimated number of ballots to audit given
    * that the audit has commenced and auditors have submitted audit
    * CVRs. 
@@ -180,6 +197,8 @@ public class RLAAlgorithm {
   public int estimatedBallotsToAudit() {
     // determine the prefix of ballots in the audit ballot order that
     // have CVRs returned
+    
+    final Discrepancies discrepancies = calculateDiscrepancies();
     
     // for each of the following computations, we must conservatively 
     // assume that all future un-audited ballots in the sample are
@@ -195,5 +214,30 @@ public class RLAAlgorithm {
     final double s2 = 0.0;
         
     return my_comparison_audit.nminfromrates(r1, r2, s1, s2, true, true);
+  }
+  
+  /**
+   * Overstatements and understatements.
+   */
+  private static class Discrepancies {
+    /**
+     * one vote overstatements
+     */
+    protected int my_one_vote_over;
+
+    /**
+     * two vote overstatements
+     */
+    protected int my_two_votes_over;
+
+    /**
+     * one vote understatements
+     */
+    protected int my_one_vote_under;
+
+    /**
+     * two vote understatements
+     */
+    protected int my_two_votes_under;
   }
 }
