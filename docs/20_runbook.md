@@ -12,7 +12,7 @@ State for use in elections from November 2017 forward, supports a
 Risk-Limiting Audit as required by Colorado statute and 
 as described in the Colorado Secretary of State's Rule 25 for
 elections. RLA-related terms and processes are defined and prescribed in Rule 25.
-***http://www.sos.state.co.us/pubs/rule_making/CurrentRules/8CCR1505-1/ElectionRules.pdf
+See http://www.sos.state.co.us/pubs/rule_making/CurrentRules/8CCR1505-1/ElectionRules.pdf.
 
 The RLA Tool enables the Secretary of State and each individual 
 County to carry out a Risk-Limiting Audit. The Secretary of State can
@@ -52,15 +52,6 @@ or suggestions for interpretation of the marks on any particular ballot.
 
 Screenshot (SoS authentication) ---
 
-### Identifying County Users
-
-The Secretary of State will determine, for each individual
-County, which user will be able to log in to the County-facing
-part of the RLA Tool. ***THIS STEP NEEDS TO BE VERIFIED...IT
-IS NOT CONTAINED IN THE CDOS ASM.
-
-Screenshot (SoS County User Identification)
-
 ### Entering the Risk Limit
 
 The Sectretary of State will enter the Risk Limit for comparison audits.
@@ -77,13 +68,6 @@ Screenshot (SoS dash?) ---
 
 The Secretary of State will select the contests that will
 drive the sample size and stop/go decisions for each round.
-
-Screenshot (SoS dash?) ---
-
-### Reading the Number of Ballots to Audit
-
-The RLA Tool calculates the number of ballots to audit in each
-round of the RLA and provides that number to the County dashboard.
 
 Screenshot (SoS dash?) ---
 
