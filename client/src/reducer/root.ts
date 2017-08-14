@@ -1,10 +1,9 @@
 import * as _ from 'lodash';
 
-import formatDoSData from './formatDoSData';
-
 import countyAuthOk from './countyAuthOk';
 import countyDashboardRefreshOk from './countyDashboardRefreshOk';
 import dosAuthOk from './dosAuthOk';
+import dosDashboardRefreshOk from './dosDashboardRefreshOk';
 
 
 interface AppState {
@@ -35,12 +34,7 @@ export default function root(state: AppState = defaultState, action: any) {
     }
 
     case 'DOS_DASHBOARD_REFRESH_OK': {
-        const nextState = { ...state };
-
-        const { data } = action;
-        nextState.sos = { ...state.sos, ...formatDoSData(data) };
-
-        return nextState;
+        return dosDashboardRefreshOk(state, action);
     }
 
     case 'FETCH_INITIAL_STATE_SEND': {
