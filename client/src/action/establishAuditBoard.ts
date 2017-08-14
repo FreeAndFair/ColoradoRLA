@@ -4,6 +4,8 @@ import { apiHost } from '../config';
 
 import createSubmitAction from './createSubmitAction';
 
+import { format } from '../adapter/establishBoard';
+
 
 const url = `http://${apiHost}/audit-board`;
 
@@ -16,4 +18,4 @@ const establishAuditBoard = createSubmitAction({
 });
 
 
-export default establishAuditBoard;
+export default (board: any) => establishAuditBoard(format(board));
