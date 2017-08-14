@@ -71,13 +71,6 @@ drive the sample size and stop/go decisions for each round.
 
 Screenshot (SoS dash?) ---
 
-### Reading the Number of Ballots to Audit
-
-The RLA Tool calculates the number of ballots to audit in each
-round of the RLA and provides that number to the Secretary of State Dashboard.
-
-Screenshot (SoS dash?) ---
-
 ### Audit Ongoing Page
 
 This screen provides an overview of the audit in progress, both
