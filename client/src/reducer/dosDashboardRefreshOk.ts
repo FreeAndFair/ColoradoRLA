@@ -1,11 +1,13 @@
-import formatDoSData from './formatDoSData';
+import { parse } from '../adapter/dosDashboardRefresh';
 
 
 export default (state: any, action: any) => {
     const nextState = { ...state };
 
-    const { data } = action;
-    nextState.sos = { ...state.sos, ...formatDoSData(data) };
+    nextState.sos = {
+        ...state.sos,
+        ...parse(action.data),
+    };
 
     return nextState;
 };
