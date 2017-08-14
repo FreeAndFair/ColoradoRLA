@@ -28,17 +28,17 @@ public final class ComparisonAudit {
    * Gamma, as presented in the literature:
    * https://www.stat.berkeley.edu/~stark/Preprints/gentle12.pdf
    */
-  private static final double GENTLE_GAMMA = 1.03905;
+  public static final double GENTLE_GAMMA = 1.03905;
 
   /**
    * Gamma, as recommended by Neal McBurnett for use in Colorado.
    */
-  private static final double COLORADO_GAMMA = 1.1;
+  public static final double COLORADO_GAMMA = 1.1;
 
   /**
    * The gamma used by this implementation.
    */
-  private static final double GAMMA = COLORADO_GAMMA;
+  public static final double GAMMA = COLORADO_GAMMA;
   
   /**
    * A map from a contest_ID into a Contest where a Contest is an integer
