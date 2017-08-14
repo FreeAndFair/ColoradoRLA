@@ -19,8 +19,15 @@ const auditBoard = [
     }
 ];
 
+    // Simulate an autoincrementing database ID using the array index.
+const ballots = castVoteRecords.map((cvr, id) => {
+    return Object.assign({}, cvr, { id });
+});
+
 module.exports = {
     auditBoard,
+    ballots,
+    currentBallotId: ballots[0].id,
     ballotStyles,
     ballotManifestDigest: '0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a',
     cvrExportDigest: 'fafafafafafafafafafafafafafafafafafafafafafafafafafafafafafafafa',
