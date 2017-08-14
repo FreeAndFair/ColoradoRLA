@@ -59,7 +59,7 @@ public final class AdministratorQueries {
       final CriteriaBuilder cb = s.getCriteriaBuilder();
       final CriteriaQuery<Administrator> cq = cb.createQuery(Administrator.class);
       final Root<Administrator> root = cq.from(Administrator.class);
-      cq.select(root).where(cb.or(cb.equal(root.get("my_username"), the_username)));
+      cq.select(root).where(cb.equal(root.get("my_username"), the_username));
       final TypedQuery<Administrator> query = s.createQuery(cq);
       final List<Administrator> query_results = query.getResultList();
       // if there's exactly one result, return that

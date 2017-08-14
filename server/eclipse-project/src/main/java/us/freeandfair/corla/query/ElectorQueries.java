@@ -68,7 +68,7 @@ public final class ElectorQueries {
       final Root<Elector> root = cq.from(Elector.class);
       final List<Predicate> disjuncts = new ArrayList<Predicate>();
       disjuncts.add(cb.equal(root.get("my_first_name"), the_first_name));
-      disjuncts.add(cb.equal(root.get("my_first_name"), the_first_name));
+      disjuncts.add(cb.equal(root.get("my_last_name"), the_last_name));
       disjuncts.add(cb.equal(root.get("my_political_party"), the_political_party));
       cq.select(root).where(cb.and(disjuncts.toArray(new Predicate[disjuncts.size()])));
       final TypedQuery<Elector> query = s.createQuery(cq);
