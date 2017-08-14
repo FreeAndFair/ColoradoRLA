@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import formatDoSData from './formatDoSData';
 
 import countyAuthOk from './countyAuthOk';
+import countyDashboardRefreshOk from './countyDashboardRefreshOk';
 import dosAuthOk from './dosAuthOk';
 
 
@@ -30,12 +31,7 @@ export default function root(state: AppState = defaultState, action: any) {
     }
 
     case 'COUNTY_DASHBOARD_REFRESH_OK': {
-        const nextState = { ...state };
-
-        const { data } = action;
-        nextState.county = { ...state.county, ...data };
-
-        return nextState;
+        return countyDashboardRefreshOk(state, action);
     }
 
     case 'DOS_DASHBOARD_REFRESH_OK': {
