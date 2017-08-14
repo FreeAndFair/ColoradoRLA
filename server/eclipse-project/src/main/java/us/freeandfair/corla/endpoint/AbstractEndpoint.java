@@ -58,7 +58,7 @@ public abstract class AbstractEndpoint implements Endpoint {
   /**
    * A flag that disables ASM checks, when true.
    */
-  public static final boolean DISABLE_ASM = true;
+  public static final boolean DISABLE_ASM = false;
   
   /**
    * The endpoint result for the ongoing transaction.

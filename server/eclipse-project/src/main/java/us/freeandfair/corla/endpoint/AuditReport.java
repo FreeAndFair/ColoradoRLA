@@ -64,6 +64,7 @@ public class AuditReport extends AbstractAuditBoardDashboardEndpoint {
   @Override
   public String endpoint(final Request the_request,
                          final Response the_response) {
-    return "Save a final audit report.";
+    ok(the_response, "Save a final audit report.");
+    return my_endpoint_result;
   }
 }

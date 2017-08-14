@@ -64,7 +64,8 @@ public class PublishDataToAudit extends AbstractDoSDashboardEndpoint {
   @Override
   public String endpoint(final Request the_request,
                          final Response the_response) {
-    return "When defined, the full set of data relevant to permitting the\n" +
-      "public to audit an RLA will be downloaded here.";
+    ok(the_response, "When defined, the full set of data relevant to permitting the" +
+                     "public to audit an RLA will be downloaded here.");
+    return my_endpoint_result;
   }
 }
