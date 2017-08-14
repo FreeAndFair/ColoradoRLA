@@ -5,6 +5,7 @@ import countyDashboardRefreshOk from './countyDashboardRefreshOk';
 import dosAuthOk from './dosAuthOk';
 import dosContestFetchOk from './dosContestFetchOk';
 import dosDashboardRefreshOk from './dosDashboardRefreshOk';
+import establishAuditBoardOk from './establishAuditBoardOk';
 import selectContestsForAuditOk from './selectContestsForAuditOk';
 import setRiskLimitOk from './setRiskLimitOk';
 import uploadRandomSeedOk from './uploadRandomSeedOk';
@@ -43,6 +44,10 @@ export default function root(state: AppState = defaultState, action: any) {
 
     case 'DOS_DASHBOARD_REFRESH_OK': {
         return dosDashboardRefreshOk(state, action);
+    }
+
+    case 'ESTABLISH_AUDIT_BOARD_OK': {
+        return establishAuditBoardOk(state, action);
     }
 
     case 'SELECT_CONTESTS_FOR_AUDIT_OK': {
