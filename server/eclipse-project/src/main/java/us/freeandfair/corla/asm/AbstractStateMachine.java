@@ -109,6 +109,7 @@ public abstract class AbstractStateMachine implements Serializable {
     my_current_state = the_initial_state;
     my_final_states = the_final_states;
     my_identity = the_identity;
+    handleSkipTransitions();
   }
   
   /**
@@ -142,6 +143,7 @@ public abstract class AbstractStateMachine implements Serializable {
    */
   protected void setCurrentState(final ASMState the_state) {
     my_current_state = the_state;
+    handleSkipTransitions();
   }
   
   /**
@@ -199,8 +201,8 @@ public abstract class AbstractStateMachine implements Serializable {
   }
   
   /**
-   * If the current state explicitly is one with a skip event
-   * enabled, execute the skip event and go to the next state.
+   * Execute skip events, repeatedly, until they don't change our state
+   * anymore.
    */
   private void handleSkipTransitions() {
     boolean skip_enabled = true;
@@ -236,11 +238,12 @@ public abstract class AbstractStateMachine implements Serializable {
    */
   public ASMState stepTransition(final ASMTransition the_transition)
       throws IllegalStateException {
+    // if there are any explicitly enabled skip transitions, do those first
+    handleSkipTransitions();
     // If we are in the right state then transition to the new state.
     if (my_current_state.equals(the_transition.startState())) {
       my_current_state = the_transition.endState();
       Main.LOGGER.info("ASM transition succeeded: " + the_transition); 
-      handleSkipTransitions();
     } else {
       Main.LOGGER.error("ASM transition " + the_transition + 
                         " failed from state " + my_current_state); 
@@ -260,7 +263,9 @@ public abstract class AbstractStateMachine implements Serializable {
    */
   @SuppressWarnings("PMD.CyclomaticComplexity")
   public ASMState stepEvent(final ASMEvent the_event)
-      throws IllegalStateException {
+      throws IllegalStateException {                
+    // if there are any explicitly enabled skip transitions, do those first
+    handleSkipTransitions();
     // refresh and skip events are always permitted
     if (the_event == DOS_REFRESH_EVENT ||
         the_event == DOS_SKIP_EVENT ||
@@ -268,9 +273,8 @@ public abstract class AbstractStateMachine implements Serializable {
         the_event == COUNTY_SKIP_EVENT ||
         the_event == AUDIT_REFRESH_EVENT || 
         the_event == AUDIT_SKIP_EVENT) {
-      return currentState();
+      return my_current_state;
     }
-                
     ASMState result = null;
     for (final ASMTransition t : my_transition_function) {
       if (t.startState().equals(my_current_state) &&
@@ -288,7 +292,6 @@ public abstract class AbstractStateMachine implements Serializable {
       my_current_state = result;
       Main.LOGGER.info("ASM event " + the_event + " caused transition to " + 
                        my_current_state); 
-      handleSkipTransitions();
       return result;
     }
   }
