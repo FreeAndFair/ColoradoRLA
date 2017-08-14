@@ -102,10 +102,10 @@ public class CountyDashboardRefreshResponse {
   private final Integer my_number_of_ballots_audited;
   
   /**
-   * The number of discrepencies found.
+   * The number of discrepancies found.
    * @todo connect this to something
    */
-  private final Integer my_number_of_discrepencies;
+  private final Integer my_number_of_discrepancies;
   
   /**
    * The number of disagreements found.
@@ -166,7 +166,7 @@ public class CountyDashboardRefreshResponse {
     my_audit_time = the_audit_time;
     my_estimated_ballots_to_audit = the_estimated_ballots_to_audit;
     my_number_of_ballots_audited = the_number_of_ballots_audited;
-    my_number_of_discrepencies = the_number_of_discrepencies;
+    my_number_of_discrepancies = the_number_of_discrepencies;
     my_number_of_disagreements = the_number_of_disagreements;
     my_ballots_to_audit = the_ballots_to_audit;
     my_ballot_under_audit_id = the_ballot_under_audit;
@@ -241,8 +241,8 @@ public class CountyDashboardRefreshResponse {
       }
     }
     
-    // number of discrepencies doesn't exist yet
-    final Integer number_of_discrepencies = -1;
+    // number of discrepancies doesn't exist yet
+    final Integer number_of_discrepancies = -1;
     
     // number of disagreements doesn't exist yet
     final Integer number_of_disagreements = -1;
@@ -261,7 +261,7 @@ public class CountyDashboardRefreshResponse {
                                               the_dashboard.auditTimestamp(),
                                               the_dashboard.cvrsToAudit().size(),
                                               number_of_ballots_audited,
-                                              number_of_discrepencies,
+                                              number_of_discrepancies,
                                               number_of_disagreements,
                                               the_dashboard.cvrsToAudit(),
                                               the_dashboard.cvrUnderAudit());
