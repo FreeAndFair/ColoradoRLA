@@ -137,4 +137,9 @@ public class Elector extends AbstractEntity implements Serializable {
   public int hashCode() {
     return toString().hashCode();
   }
+
+  @Override
+  protected Elector exampleInstance() {
+    return new Elector("John", "Doe", "Free and Fair Party");
+  }
 }

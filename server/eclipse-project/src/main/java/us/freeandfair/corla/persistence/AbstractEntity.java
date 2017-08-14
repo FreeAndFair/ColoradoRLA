@@ -44,6 +44,11 @@ public abstract class AbstractEntity implements PersistentEntity {
   }
   
   /**
+   * An example instance of this entity.
+   */
+  protected abstract AbstractEntity exampleInstance();
+  
+  /**
    * {@inheritDoc}
    */
   @Override
