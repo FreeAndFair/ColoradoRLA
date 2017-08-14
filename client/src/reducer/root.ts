@@ -8,6 +8,7 @@ import dosDashboardRefreshOk from './dosDashboardRefreshOk';
 import establishAuditBoardOk from './establishAuditBoardOk';
 import selectContestsForAuditOk from './selectContestsForAuditOk';
 import setRiskLimitOk from './setRiskLimitOk';
+import uploadBallotManifestOk from './uploadBallotManifestOk';
 import uploadRandomSeedOk from './uploadRandomSeedOk';
 
 
@@ -85,6 +86,10 @@ export default function root(state: AppState = defaultState, action: any) {
         nextState.county.auditBoard[index] = { name, party };
 
         return nextState;
+    }
+
+    case 'UPLOAD_BALLOT_MANIFEST_OK': {
+        return uploadBallotManifestOk(state, action);
     }
 
     case 'UPDATE_BALLOT_MARKS': {
