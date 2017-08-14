@@ -303,7 +303,7 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
   /**
    * @return the list of CVR IDs to audit.
    */
-  public List<Long> cvrsToAudit() {
+  public synchronized List<Long> cvrsToAudit() {
     return Collections.unmodifiableList(my_cvrs_to_audit);
   }
 
