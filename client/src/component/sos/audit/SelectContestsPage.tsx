@@ -27,38 +27,13 @@ const Breadcrumb = () => (
     </ul>
 );
 
-const formatFormData = (formData: any) => {
-    const data: any = [];
-
-    _.forEach(formData, (r, id) => {
-        if (r.audit) {
-            data.push({
-                audit: 'comparison',
-                contest: id,
-                reason: r.reason.id,
-            });
-            return;
-        }
-        if (r.handCount) {
-            data.push({
-                audit: 'hand_count',
-                contest: id,
-                reason: 'no_audit',
-            });
-            return;
-        }
-    });
-
-    return data;
-};
-
 const SelectContestsPage = (props: any) => {
     const { back, contests, nextPage, selectContestsForAudit } = props;
 
     const forms: any = {};
 
     const onSaveAndNext = () => {
-        selectContestsForAudit(formatFormData(forms.selectContestsForm));
+        selectContestsForAudit(forms.selectContestsForm);
         nextPage();
     };
 
