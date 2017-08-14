@@ -9,6 +9,7 @@ import establishAuditBoardOk from './establishAuditBoardOk';
 import selectContestsForAuditOk from './selectContestsForAuditOk';
 import setRiskLimitOk from './setRiskLimitOk';
 import uploadBallotManifestOk from './uploadBallotManifestOk';
+import uploadCvrExportOk from './uploadCvrExportOk';
 import uploadRandomSeedOk from './uploadRandomSeedOk';
 
 
@@ -90,6 +91,10 @@ export default function root(state: AppState = defaultState, action: any) {
 
     case 'UPLOAD_BALLOT_MANIFEST_OK': {
         return uploadBallotManifestOk(state, action);
+    }
+
+    case 'UPLOAD_CVR_EXPORT_OK': {
+        return uploadCvrExportOk(state, action);
     }
 
     case 'UPDATE_BALLOT_MARKS': {
