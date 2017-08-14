@@ -108,9 +108,7 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
    * @param the_response The response object (for error reporting).
    * @param the_info The upload info about the file and hash.
    * @param the_county_id The county that uploaded the file.
-   * @param the_hash The claimed hash of the file.
-   * @param the_timestamp The timestamp to apply to the file.
-   * @return the resulting entity if successful, null otherwise w
+   * @return the resulting entity if successful, null otherwise
    */
   private UploadedFile attemptFilePersistence(final Response the_response, 
                                               final UploadInformation the_info,
@@ -231,17 +229,14 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
    * @param the_info The upload information to use and update.
    */
   // the CSV parser can throw arbitrary runtime exceptions, which we must catch
-  @SuppressWarnings({"PMD.AvoidCatchingGenericException", "PMD.AvoidCatchingNPE"})
+  @SuppressWarnings("PMD.AvoidCatchingGenericException")
   private void parseAndPersistFile(final Response the_response,
                                    final County the_county,
                                    final UploadInformation the_info) {
-    boolean hash_match = false;
-    
     if (the_info.my_uploaded_hash == null || the_info.my_file == null) {
       invariantViolation(the_response, "Bad Request");
       the_info.my_ok = false;
     } else if (the_info.my_uploaded_hash.equals(the_info.my_computed_hash)) {
-      hash_match = true;
       Main.LOGGER.info("hash matched for uploaded file");
     } else {
       // NOTE: the only reason this works right now and results in us storing
@@ -259,9 +254,9 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
         final InputStreamReader cvr_isr = new InputStreamReader(cvr_is, "UTF-8");
         final CVRExportParser parser =
             new DominionCVRExportParser(cvr_isr, the_county, the_info.my_timestamp);
-        if (hash_match && parser.parse()) {
+        if (parser.parse()) {
           Main.LOGGER.info(parser.parsedIDs().size() + " CVRs parsed from " + 
-                           the_county + " county upload file");
+              the_county + " county upload file");
           final OptionalLong count = count();
           if (count.isPresent()) {
             Main.LOGGER.info(count.getAsLong() + " uploaded CVRs in storage");
