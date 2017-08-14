@@ -2,6 +2,9 @@ import * as _ from 'lodash';
 
 import formatDoSData from './formatDoSData';
 
+import countyAuthOk from './countyAuthOk';
+import dosAuthOk from './dosAuthOk';
+
 
 interface AppState {
     loggedIn: boolean;
@@ -19,11 +22,11 @@ export default function root(state: AppState = defaultState, action: any) {
     switch (action.type) {
 
     case 'AUTH_COUNTY_ADMIN_OK': {
-        return { ...state, loggedIn: true, dashboard: 'county', county: {} };
+        return countyAuthOk(state);
     }
 
     case 'AUTH_STATE_ADMIN_OK': {
-        return { ...state, loggedIn: true, dashboard: 'sos', sos: {} };
+        return dosAuthOk(state);
     }
 
     case 'COUNTY_DASHBOARD_REFRESH_OK': {
