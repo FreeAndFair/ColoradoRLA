@@ -1,0 +1,50 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "definitions": {},
+    "id": "http://freeandfair.us/corla/contest.json",
+    "items": {
+        "id": "/items",
+        "properties": {
+            "choice_descriptions": {
+                "id": "/items/properties/choice_descriptions",
+                "properties": {
+                    "Clear Winner": {
+                        "id": "/items/properties/choice_descriptions/properties/Clear Winner",
+                        "type": "string"
+                    },
+                    "Distant Loser": {
+                        "id": "/items/properties/choice_descriptions/properties/Distant Loser",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "choice_names": {
+                "id": "/items/properties/choice_names",
+                "items": {
+                    "id": "/items/properties/choice_names/items",
+                    "type": "string"
+                },
+                "type": "array"
+            },
+            "description": {
+                "id": "/items/properties/description",
+                "type": "string"
+            },
+            "id": {
+                "id": "/items/properties/id",
+                "type": "integer"
+            },
+            "name": {
+                "id": "/items/properties/name",
+                "type": "string"
+            },
+            "votes_allowed": {
+                "id": "/items/properties/votes_allowed",
+                "type": "integer"
+            }
+        },
+        "type": "object"
+    },
+    "type": "array"
+}

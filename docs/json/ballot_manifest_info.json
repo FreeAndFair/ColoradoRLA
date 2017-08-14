@@ -1,0 +1,50 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "definitions": {},
+    "id": "http://freeandfair.us/corla/ballot_manifest_info.json",
+    "items": {
+        "id": "/items",
+        "properties": {
+            "batch_id": {
+                "id": "/items/properties/batch_id",
+                "type": "string"
+            },
+            "batch_size": {
+                "id": "/items/properties/batch_size",
+                "type": "integer"
+            },
+            "county_id": {
+                "id": "/items/properties/county_id",
+                "type": "integer"
+            },
+            "id": {
+                "id": "/items/properties/id",
+                "type": "integer"
+            },
+            "scanner_id": {
+                "id": "/items/properties/scanner_id",
+                "type": "string"
+            },
+            "storage_location": {
+                "id": "/items/properties/storage_location",
+                "type": "string"
+            },
+            "timestamp": {
+                "id": "/items/properties/timestamp",
+                "properties": {
+                    "nanos": {
+                        "id": "/items/properties/timestamp/properties/nanos",
+                        "type": "integer"
+                    },
+                    "seconds": {
+                        "id": "/items/properties/timestamp/properties/seconds",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "type": "object"
+    },
+    "type": "array"
+}
