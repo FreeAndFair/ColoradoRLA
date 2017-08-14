@@ -5,6 +5,7 @@ import countyDashboardRefreshOk from './countyDashboardRefreshOk';
 import dosAuthOk from './dosAuthOk';
 import dosDashboardRefreshOk from './dosDashboardRefreshOk';
 import selectContestsForAuditOk from './selectContestsForAuditOk';
+import setRiskLimitOk from './setRiskLimitOk';
 
 
 interface AppState {
@@ -62,7 +63,7 @@ export default function root(state: AppState = defaultState, action: any) {
     }
 
     case 'SET_RISK_LIMIT_OK': {
-        return state;
+        return setRiskLimitOk(state, action);
     }
 
     case 'UPDATE_BOARD_MEMBER': {
