@@ -1,0 +1,188 @@
+AuditInvestigationReportInfo, used in endpoint /audit-investigation-report
+Schema:
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "definitions": {},
+    "id": "http://freeandfair.us/corla/audit-investigation-report",
+    "properties": {
+        "name": {
+            "id": "/properties/name",
+            "type": "string"
+        },
+        "report": {
+            "id": "/properties/report",
+            "type": "string"
+        },
+        "timestamp": {
+            "id": "/properties/timestamp",
+            "type": "string"
+        }
+    },
+    "type": "object"
+}
+Example value:
+{
+  "timestamp": "{\n  \"seconds\": 1502684144,\n  \"nanos\": 901000000\n}",
+  "name": "the report\u0027s name",
+  "report": "The content of the report itself, which is liable to be a paragraph of text."
+}
+
+Result, used in endpoint many endpoints with HTTP error codes
+Schema:
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "definitions": {},
+    "id": "http://freeandfair.us/corla/result",
+    "properties": {
+        "result": {
+            "id": "/properties/result",
+            "type": "string"
+        }
+    },
+    "type": "object"
+}
+Example value:
+{
+  "result": "A result string."
+}
+
+SubmittedRandomSeed, used in endpoint /random-seed
+Schema:
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "definitions": {},
+    "id": "http://freeandfair.us/corla/random-seed",
+    "properties": {
+        "seed": {
+            "id": "/properties/seed",
+            "type": "string"
+        }
+    },
+    "type": "object"
+}
+Example value:
+{
+  "seed": "01234567890123456789"
+}
+
+SubmittedRiskLimit, used in endpoint /risk-limit-comp-audits
+Schema:
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "definitions": {},
+    "id": "http://freeandfair.us/corla/risk-limit-comp-audits",
+    "properties": {
+        "risk_limit": {
+            "id": "/properties/risk_limit",
+            "type": "string"
+        }
+    },
+    "type": "object"
+}
+Example value:
+{
+  "risk_limit": "5"
+}
+
+SubmittedAuditCVR, used in endpoint /upload-audit-cvr
+Schema:
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "definitions": {},
+    "id": "http://freeandfair.us/corla/upload-audit-cvr",
+    "properties": {
+        "ballot_type": {
+            "id": "/properties/ballot_type",
+            "type": "string"
+        },
+        "batch_id": {
+            "id": "/properties/batch_id",
+            "type": "string"
+        },
+        "contest_info": {
+            "id": "/properties/contest_info",
+            "items": {
+                "id": "/properties/contest_info/items",
+                "properties": {
+                    "choices": {
+                        "id": "/properties/contest_info/items/properties/choices",
+                        "items": {
+                            "id": "/properties/contest_info/items/properties/choices/items",
+                            "type": "string"
+                        },
+                        "type": "array"
+                    },
+                    "comment": {
+                        "id": "/properties/contest_info/items/properties/comment",
+                        "type": "string"
+                    },
+                    "consensus": {
+                        "id": "/properties/contest_info/items/properties/consensus",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "type": "array"
+        },
+        "county_id": {
+            "id": "/properties/county_id",
+            "type": "integer"
+        },
+        "imprinted_id": {
+            "id": "/properties/imprinted_id",
+            "type": "string"
+        },
+        "record_id": {
+            "id": "/properties/record_id",
+            "type": "string"
+        },
+        "record_type": {
+            "id": "/properties/record_type",
+            "type": "string"
+        },
+        "scanner_id": {
+            "id": "/properties/scanner_id",
+            "type": "string"
+        },
+        "timestamp": {
+            "id": "/properties/timestamp",
+            "properties": {
+                "nanos": {
+                    "id": "/properties/timestamp/properties/nanos",
+                    "type": "integer"
+                },
+                "seconds": {
+                    "id": "/properties/timestamp/properties/seconds",
+                    "type": "integer"
+                }
+            },
+            "type": "object"
+        }
+    },
+    "type": "object"
+}
+Example value:
+{
+  "record_type": "AUDITOR_ENTERED",
+  "timestamp": {
+    "seconds": 1502684144,
+    "nanos": 904000000
+  },
+  "county_id": 42,
+  "scanner_id": "1981",
+  "batch_id": "1138",
+  "record_id": "1984",
+  "imprinted_id": "007",
+  "ballot_type": "BallotType X",
+  "contest_info": [
+    {
+      "comment": "Should Coke be banned?",
+      "consensus": "YES",
+      "choices": [
+        "yes"
+      ]
+    }
+  ]
+}
+
