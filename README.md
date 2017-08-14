@@ -26,7 +26,7 @@ System Documentation
 
 Documentation about this project and the Colorado RLA system includes:
 * a [User Manual (pdf)](docs/User%20Manual%20F%26F%20RLA%20Tool.pdf) with an overview of the system,
-* a [run book](docs/20_runbook.md) for users,
+* a [run book](docs/Run%20Book%20F%26F%20RLA%20Tool.pdf) for system users,
 * a [description of our development process and methodology](docs/35_methodology.md),
 * a [developer document](docs/25_developer.md) that contains our
   developer instructions, including the project history, technologies
