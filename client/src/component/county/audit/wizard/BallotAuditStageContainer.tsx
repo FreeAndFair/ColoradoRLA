@@ -13,9 +13,8 @@ class BallotAuditStageContainer extends React.Component<any, any> {
     }
 }
 
-const mapStateToProps = (state: any) => {
-    const { ballotStyles, county } = state;
-    const { ballots, currentBallotId } = county;
+const mapStateToProps = ({ county }: any) => {
+    const { ballots, ballotStyles, currentBallotId } = county;
 
     const currentBallot = findById(ballots, currentBallotId);
 
