@@ -14,10 +14,19 @@ package us.freeandfair.corla.endpoint;
 
 import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.SUBMIT_INTERMEDIATE_AUDIT_REPORT_EVENT;
 
+import javax.persistence.PersistenceException;
+
+import com.google.gson.JsonSyntaxException;
+
 import spark.Request;
 import spark.Response;
 
+import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
+import us.freeandfair.corla.model.CountyDashboard;
+import us.freeandfair.corla.model.IntermediateAuditReportInfo;
+import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.query.CountyDashboardQueries;
 
 /**
  * Publish the intermediate audit report by the audit board.
@@ -64,8 +73,28 @@ public class IntermediateAuditReport extends AbstractAuditBoardDashboardEndpoint
   @Override
   public String endpoint(final Request the_request,
                          final Response the_response) {
-    return "Save an intermediate audit report so that the audit board members " +
-        "can take a break, go to lunch, go home for the night, etc.";
-    // deauthenticate user
+    try {
+      final IntermediateAuditReportInfo report =
+          Main.GSON.fromJson(the_request.body(), IntermediateAuditReportInfo.class);
+      final CountyDashboard cdb = 
+          CountyDashboardQueries.get(Authentication.
+                                     authenticatedCounty(the_request).identifier());
+      if (cdb == null) {
+        Main.LOGGER.error("could not get audit board dashboard");
+        serverError(the_response, "Could not save intermediate audit report");
+      } else {
+        cdb.submitIntermediateReport(report);
+      }
+      Persistence.saveOrUpdate(cdb);
+    } catch (final JsonSyntaxException e) {
+      Main.LOGGER.error("malformed intermediate audit report");
+      badDataContents(the_response, "Invalid intermediate audit report");
+    } catch (final PersistenceException e) {
+      Main.LOGGER.error("could not save intermediate audit report");
+      serverError(the_response, "Unable to save intermediate audit report");
+    }
+    ok(the_response, "Report submitted");
+    // de-authenticate user?
+    return my_endpoint_result;    
   }
 }

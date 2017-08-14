@@ -154,6 +154,15 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
       new ArrayList<>();
   
   /**
+   * The audit interim reports.
+   */
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "my_dashboard", 
+             fetch = FetchType.EAGER, orphanRemoval = true)
+  @OrderColumn(name = INDEX)
+  private List<IntermediateAuditReportInfo> my_intermediate_reports = 
+      new ArrayList<>();
+  
+  /**
    * Constructs an empty county dashboard, solely for persistence.
    */
   public CountyDashboard() {
@@ -343,7 +352,8 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
    * 
    * @param the_report The audit investigation report.
    */
-  public void submitInvestigationReport(final AuditInvestigationReportInfo the_report) {
+  public synchronized void 
+      submitInvestigationReport(final AuditInvestigationReportInfo the_report) {
     the_report.setDashboard(this);
     my_investigation_reports.add(the_report);
   }
@@ -353,6 +363,24 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
    */
   public List<AuditInvestigationReportInfo> investigationReports() {
     return Collections.unmodifiableList(my_investigation_reports);
+  }
+  
+  /**
+   * Submits an audit investigation report.
+   * 
+   * @param the_report The audit investigation report.
+   */
+  public synchronized void 
+      submitIntermediateReport(final IntermediateAuditReportInfo the_report) {
+    the_report.setDashboard(this);
+    my_intermediate_reports.add(the_report);
+  }
+  
+  /**
+   * @return the list of submitted audit interim reports.
+   */
+  public List<IntermediateAuditReportInfo> intermediateReports() {
+    return Collections.unmodifiableList(my_intermediate_reports);
   }
   
   /**
