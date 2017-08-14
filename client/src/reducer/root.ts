@@ -41,12 +41,12 @@ export default function root(state: AppState = defaultState, action: any) {
         return countyDashboardRefreshOk(state, action);
     }
 
-    case 'DOS_CONTEST_FETCH_OK': {
-        return dosContestFetchOk(state, action);
-    }
-
     case 'DOS_DASHBOARD_REFRESH_OK': {
         return dosDashboardRefreshOk(state, action);
+    }
+
+    case 'DOS_FETCH_CONTESTS_OK': {
+        return dosContestFetchOk(state, action);
     }
 
     case 'ESTABLISH_AUDIT_BOARD_OK': {
