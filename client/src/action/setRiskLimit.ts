@@ -4,6 +4,8 @@ import { apiHost } from '../config';
 
 import createSubmitAction from './createSubmitAction';
 
+import adapter from '../adapter/setRiskLimit';
+
 
 const url = `http://${apiHost}/risk-limit-comp-audits`;
 
@@ -16,4 +18,4 @@ const setRiskLimit = createSubmitAction({
 });
 
 
-export default (riskLimit: number) => setRiskLimit({ riskLimit });
+export default (riskLimit: number) => adapter(riskLimit);
