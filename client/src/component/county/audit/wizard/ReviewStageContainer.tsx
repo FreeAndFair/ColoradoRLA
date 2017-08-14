@@ -4,6 +4,8 @@ import { bindActionCreators } from 'redux';
 
 import ReviewStage from './ReviewStage';
 
+import uploadAuditCVRs from '../../../../action/uploadAuditCVRs';
+
 import findById from '../../../../findById';
 
 
@@ -13,8 +15,8 @@ class ReviewStageContainer extends React.Component<any, any> {
     }
 }
 
-const mapStateToProps = (state: any) => {
-    const { ballotStyles, county } = state;
+const mapStateToProps = ({ county }: any) => {
+    const { ballots, ballotStyles, currentBallotId } = county;
 
     const currentBallot = findById(county.ballots, county.currentBallotId);
 
@@ -28,6 +30,7 @@ const mapStateToProps = (state: any) => {
 
 const mapDispatchToProps = (dispatch: any) => bindActionCreators({
     selectNextBallot: () => ({ type: 'SELECT_NEXT_BALLOT' }),
+    uploadAuditCVRs,
 }, dispatch);
 
 
