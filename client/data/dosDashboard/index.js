@@ -1,6 +1,6 @@
-const castVoteRecords = require('./castVoteRecords');
-const contests = require('./contests');
-const counties = require('./counties');
+const castVoteRecords = require('../castVoteRecords');
+const contests = require('../contests');
+const counties = require('../counties');
 
 
 module.exports = {

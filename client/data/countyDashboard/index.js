@@ -1,7 +1,7 @@
-const ballotStyles = require('./ballotStyles');
-const contests = require('./contests');
-const counties = require('./counties');
-const castVoteRecords = require('./castVoteRecords');
+const ballotStyles = require('../ballotStyles');
+const contests = require('../contests');
+const counties = require('../counties');
+const castVoteRecords = require('../castVoteRecords');
 
 
 const county = counties[6];
