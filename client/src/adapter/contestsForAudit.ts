@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 
-export default (formData: any) => {
+export const format = (formData: any) => {
     const data: any = [];
 
     _.forEach(formData, (r, id) => {
