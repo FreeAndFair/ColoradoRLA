@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 
 import ReviewStage from './ReviewStage';
 
-import uploadAuditCVRs from '../../../../action/uploadAuditCVRs';
+import uploadAcvr from '../../../../action/uploadAcvr';
 
 import findById from '../../../../findById';
 
@@ -30,7 +30,7 @@ const mapStateToProps = ({ county }: any) => {
 
 const mapDispatchToProps = (dispatch: any) => bindActionCreators({
     selectNextBallot: () => ({ type: 'SELECT_NEXT_BALLOT' }),
-    uploadAuditCVRs,
+    uploadAcvr,
 }, dispatch);
 
 
