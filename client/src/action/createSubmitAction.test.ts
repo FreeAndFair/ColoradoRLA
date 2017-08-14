@@ -63,23 +63,25 @@ test('createSubmitAction', s => {
 
     test('when the response is ok', t => {
         const f = setup();
-        f.fetch(URL, { body: f.data, status: 200 });
+        const body = { the: 'body' };
+        f.fetch(URL, { body, status: 200 });
 
         t.plan(1);
 
+        const sent = { the: 'sent data' };
         const a = createSubmitAction({
             failType: f.failType,
             networkFailType: f.networkFailType,
             okType: f.okType,
             sendType: f.sendType,
             url: URL,
-        })(f.body);
+        })(sent);
         f.store.dispatch(a);
 
         fetch.flush().then(() => {
             t.deepEqual(f.store.getActions(), [
                 { type: f.sendType },
-                { type: f.okType, data: f.data },
+                { type: f.okType, data: body, sent },
             ]);
 
             teardown(f);

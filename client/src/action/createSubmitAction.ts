@@ -21,7 +21,7 @@ const createSubmitAction = ({
                 }
 
                 r.json().then((data: any) => {
-                    dispatch({ type: okType, data });
+                    dispatch({ type: okType, data, sent: body });
                 });
             })
             .catch(() => {
