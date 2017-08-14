@@ -123,6 +123,7 @@ const ReviewStage = (props: any) => {
         nextStage,
         prevStage,
         selectNextBallot,
+        uploadAuditCVRs,
     } = props;
 
     const ballotMarks = _.mapValues(rawMarks, (rawMark: any, contestId: any) => {
@@ -132,8 +133,10 @@ const ReviewStage = (props: any) => {
 
         return { comments, contest, marks, noConsensus };
     });
+    const onClick = () => {
+        const acvrs = {};
 
-    const onClick  = () => {
+        uploadAuditCVRs(acvrs);
         selectNextBallot();
         nextStage();
     };
