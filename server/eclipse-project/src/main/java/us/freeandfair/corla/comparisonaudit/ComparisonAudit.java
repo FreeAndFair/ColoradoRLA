@@ -1,16 +1,10 @@
 /*
  * Free & Fair Colorado RLA System
- * 
  * @title ColoradoRLA
- * 
  * @created Jul 27, 2017
- * 
  * @copyright 2017 Free & Fair
- * 
  * @license GNU General Public License 3.0
- * 
- * @author Joey Dodds <jdodds@galois.com>
- * 
+ * @creator Joey Dodds <jdodds@galois.com>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
@@ -25,19 +19,21 @@ import java.util.Map;
 import us.freeandfair.corla.util.Pair;
 
 /**
- * @description A class for running comparison audits on tabulated data
- * @explanation <explanation>
+ * The algorithms used to run comparison audits on tabulated data.
+ * @author Joey Dodds <jdodds@freeandfair.us>
  */
 public class ComparisonAudit {
-
   /**
    * Gamma, as presented in the literature:
    * https://www.stat.berkeley.edu/~stark/Preprints/gentle12.pdf
    */
   private static final double GENTLE_GAMMA = 1.03905;
 
+  /**
+   * Gamma, as recommended by Neal McBurnett for use in Colorado.
+   */
   private static final double COLORADO_GAMMA = 1.1;
-  
+
   /**
    * A map from a contest_ID into a Contest where a Contest is an integer
    * denoting the number of winners and a map from Candidate names into a number
@@ -118,14 +114,14 @@ public class ComparisonAudit {
                    final double the_u2) {
     // Checkstyle isn't fine-grained enough to exclude just this method, so we
     // use -1 * 2 for -2.
-    return (int) (Math.max(the_o1 + the_o2 + the_u1 + the_u1, Math.ceil(
-        -1 * 2 * GENTLE_GAMMA *
-              (Math.log(my_risk.doubleValue()) + 
-               the_o1 * Math.log(1 - 1 / (2 * GENTLE_GAMMA)) +
-               the_o2 * Math.log(1 - 1 / GENTLE_GAMMA) +
-               the_u1 * Math.log(1 + 1 / (2 * GENTLE_GAMMA)) +
-               the_u2 * Math.log(1 + 1 / GENTLE_GAMMA)) /
-              my_min_margin.doubleValue())));
+    return (int) (Math.max(the_o1 + the_o2 + the_u1 + the_u1,
+                           Math.ceil(-1 * 2 * GENTLE_GAMMA *
+                                     (Math.log(my_risk.doubleValue()) +
+                                      the_o1 * Math.log(1 - 1 / (2 * GENTLE_GAMMA)) +
+                                      the_o2 * Math.log(1 - 1 / GENTLE_GAMMA) +
+                                      the_u1 * Math.log(1 + 1 / (2 * GENTLE_GAMMA)) +
+                                      the_u2 * Math.log(1 + 1 / GENTLE_GAMMA)) /
+                                     my_min_margin.doubleValue())));
   }
 
   /**
@@ -133,14 +129,14 @@ public class ComparisonAudit {
    * This calculates the sample size, but using expected rates rather than
    * actual sampled rates.
    * 
-   * Neal M. suggests that this function should always be called with
-   * the following values:
+   * Neal M. suggests that this function should always be called with the
+   * following values:
    * <ul>
    * <li>the_r1 == 0.01</li>
    * <li>the_r2 == 0.01</li>
    * <li>the_s1 == 0.01</li>
    * <li>the_s2 == 0.01</li>
-   * <li>the_round_up1 == true</li> 
+   * <li>the_round_up1 == true</li>
    * <li>the_round_up2 == true</li>
    * </ul>
    * for Colorado.
@@ -154,11 +150,8 @@ public class ComparisonAudit {
    * @param the_roud_up2 always round up the number of two-vote
    *          over/understatements
    */
-  private int nminfromrates(final double the_r1, 
-                            final double the_r2, 
-                            final double the_s1,
-                            final double the_s2, 
-                            final boolean the_round_up1,
+  private int nminfromrates(final double the_r1, final double the_r2, final double the_s1,
+                            final double the_s2, final boolean the_round_up1,
                             final boolean the_round_up2) {
     // Checkstyle isn't fine-grained enough to exclude just this method, so we
     // use -1 * 2 for -2.
