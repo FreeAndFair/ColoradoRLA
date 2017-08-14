@@ -4,6 +4,7 @@ import countyAuthOk from './countyAuthOk';
 import countyDashboardRefreshOk from './countyDashboardRefreshOk';
 import dosAuthOk from './dosAuthOk';
 import dosDashboardRefreshOk from './dosDashboardRefreshOk';
+import selectContestsForAuditOk from './selectContestsForAuditOk';
 
 
 interface AppState {
@@ -38,7 +39,7 @@ export default function root(state: AppState = defaultState, action: any) {
     }
 
     case 'SELECT_CONTESTS_FOR_AUDIT_OK': {
-        return state;
+        return selectContestsForAuditOk(state, action);
     }
 
     case 'SELECT_NEXT_BALLOT': {
