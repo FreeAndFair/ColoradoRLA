@@ -12,11 +12,11 @@ For now, you'll need to install
 to run these tests, and/or generate new ones in the same way.
 
 This is mainly tested with python3, but has been seen to work
-on python2 also.  You will need this library for some of the tests:
+on python2 also.  You will need these libraries for some of the tests:
 
-`pip install zerotest`
+`pip install zerotest requests`
 
-or `pip3 install zerotest` (or similar) if you have
+or `pip3 install zerotest requests` (or similar) if you have
 multiple Python installations.
 
 ## Running a smoketest

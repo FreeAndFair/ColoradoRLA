@@ -2,6 +2,27 @@
 """Smoketest the RLA server
 TODO: get server_sequence working and displaying errors
 nicely, rather than having the user run pytest server_test.py
+
+Simple audit sequence:
+
+State or County
+  URI                      PVS
+S /auth-state-admin        auth_state_admin
+S /risk-limit-comp-audits  risk_limit
+C /auth-county-admin       auth_state_admin
+C /audit-board             establish_audit_board
+C /upload-ballot-manifest   ballot-manifest-upload
+C /upload-cvr-export	   cvr_export_upload
+S /select-contests	   select_contests
+S /publish-data-to-audit   publish_data_to_audit
+S /random-seed		   publish_seed
+S /ballots-to-audit	   publish_ballots
+C /audit-board-dashboard   refresh_audit_board_dashboard (get next cvr to audit)
+C /upload-audit-cvr	   acvr_upload
+C LOOP refreshing and uploading until no more to audit
+C /intermediate-audit-report intermediate_audit_report
+C /audit-report	  	   audit_report
+S /publish-report	   publish_report
 """
 
 from __future__ import print_function
@@ -26,6 +47,14 @@ def county_login(baseurl, s, county_id):
     r = s.post(baseurl + path,
                data={'username': 'countyadmin%d' % county_id, 'password': '', 'second_factor': ''})
     print(r, path)
+
+
+def test_endpoint_post(baseurl, s, path, data):
+    "Do a generic test of an endpoint that posts the given data to the given path"
+
+    r = s.post(baseurl + path, data)
+    print(r, path, r.text)
+    return r
 
 
 def upload_cvrs(baseurl, s, filename, sha256):
@@ -95,14 +124,36 @@ if __name__ == "__main__":
     else:
         base = "http://localhost:8888"
 
-    s = requests.Session()
+    state_s = requests.Session()
+    state_login(base, state_s)
 
-    state_login(base, s)
+    county_s1 = requests.Session()
+    county_login(base, county_s1, 3)
 
-    county_login(base, s, 3)
+    r = test_endpoint_post(base, state_s, "/risk-limit-comp-audits", {'risk_limit': '{"risk_limit": "0.1"}'})
 
-    upload_files(base, s)
+    r = test_endpoint_post(base, county_s1, "/auth-county-admin", {})
+    # r = test_endpoint_post(base, county_s1, "/audit-board", {})
 
-    upload_acvr(base, s, "acvr.json")
+    upload_files(base, county_s1)
+    # Replace that with this later
+    # r = test_endpoint_post(base, county_s1, "/upload-ballot-manifest", {})
+    # r = test_endpoint_post(base, county_s1, "/upload-cvr-export", {})
+
+    r = test_endpoint_post(base, state_s, "/select-contests", {})
+    # r = test_endpoint_post(base, state_s, "/publish-data-to-audit", {})
+    r = test_endpoint_post(base, state_s, "/random-seed", {'random_seed': "01234567890123456789"})
+    # r = test_endpoint_post(base, state_s, "/ballots-to-audit", {})
+
+    r = test_endpoint_post(base, county_s1, "/audit-board-dashboard", {})
+    upload_acvr(base, county_s1, "acvr.json")
+    # r = test_endpoint_post(base, county_s1, "/upload-audit-cvr", {})
+
+    # LOOP
+
+    r = test_endpoint_post(base, county_s1, "/intermediate-audit-report", {})
+    r = test_endpoint_post(base, county_s1, "/audit-report", {})
+
+    r = test_endpoint_post(base, state_s, "/publish-report", {})
 
     # server_sequence()
