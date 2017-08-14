@@ -42,24 +42,32 @@ public final class HashChecker {
   
   /**
    * @trace cryptography.sha256
-   * @param a_filename the file to read.
-   * @return the SHA-256 hash of `a_filename`, encoded as a hexadecimal string.
+   * @param a_filename The name of the file to read.
+   * @return the SHA-256 hash of `a_filename`, encoded as a hexadecimal string,
+   * or null if the file cannot be hashed.
    */
-  @SuppressWarnings("checkstyle:emptystatement")
   public static String hashFile(final String a_filename) {
+    return hashFile(new File(a_filename));
+  }
+  
+  /**
+   * @trace cryptography.sha256
+   * @param a_file the file to read.
+   * @return the SHA-256 hash of `a_file`, encoded as a hexadecimal string,
+   * or null if the file cannot be hashed.
+   */
+  public static String hashFile(final File a_file) {
     String result = null;
     try {
       final byte[] buffer = new byte[BUFFER_SIZE];
       final MessageDigest md = MessageDigest.getInstance("SHA-256");
-      final File file = new File(a_filename);
-      final InputStream is = new FileInputStream(file);
+      final InputStream is = new FileInputStream(a_file);
       final DigestInputStream dis = new DigestInputStream(is, md);
       try {
-        while (dis.read(buffer) != -1) {
-          // skip intentionally to push all bytes through the 
-          // DigestInputStream to compute the hash
-          ;
-        }
+        int bytes;
+        do {
+          bytes = dis.read(buffer);
+        } while (bytes != -1);
         final BigInteger bi = new BigInteger(1, md.digest());
         result = String.format("%0" + (md.digest().length << 1) + "X", bi);
       } finally {
@@ -69,10 +77,10 @@ public final class HashChecker {
       Main.LOGGER.error("No Java security framework installed.");
       Main.LOGGER.info("Unable to compute SHA-256 hashes.");
     } catch (final FileNotFoundException e) {
-      Main.LOGGER.warn("File to hash '" + a_filename + 
+      Main.LOGGER.warn("File to hash '" + a_file + 
                        "' disappeared before it could be hashed.");
     } catch (final IOException e) {
-      Main.LOGGER.warn("Unable to close file '" + a_filename +
+      Main.LOGGER.warn("Unable to close file '" + a_file +
                        "' after hashing it.");
     }
     

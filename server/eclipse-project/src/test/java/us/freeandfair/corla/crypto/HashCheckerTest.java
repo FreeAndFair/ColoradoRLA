@@ -44,6 +44,8 @@ public class HashCheckerTest {
     fos.write(test_string.getBytes());
     fos.close();
     assertEquals("F9A25DA7060735572E32FCF72C33EE73476E589F7F02256DAFFB4C618D8F9EA2", 
+                 HashChecker.hashFile(test_file));
+    assertEquals("F9A25DA7060735572E32FCF72C33EE73476E589F7F02256DAFFB4C618D8F9EA2", 
                  HashChecker.hashFile(test_file.toString()));
     } catch (final IOException e) {
       fail();

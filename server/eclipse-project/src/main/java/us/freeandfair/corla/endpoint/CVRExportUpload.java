@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.sql.Blob;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.OptionalLong;
 
@@ -44,6 +45,7 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
+import us.freeandfair.corla.crypto.HashChecker;
 import us.freeandfair.corla.csv.CVRExportParser;
 import us.freeandfair.corla.csv.DominionCVRExportParser;
 import us.freeandfair.corla.model.CastVoteRecord;
@@ -104,26 +106,34 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
    * Attempts to save the specified file in the database.
    * 
    * @param the_response The response object (for error reporting).
-   * @param the_file The file.
+   * @param the_info The upload info about the file and hash.
    * @param the_county_id The county that uploaded the file.
    * @param the_hash The claimed hash of the file.
    * @param the_timestamp The timestamp to apply to the file.
    * @return the resulting entity if successful, null otherwise w
    */
   private UploadedFile attemptFilePersistence(final Response the_response, 
-                                              final File the_file,
-                                              final Integer the_county_id,
-                                              final String the_hash,
-                                              final Instant the_timestamp) {
+                                              final UploadInformation the_info,
+                                              final Integer the_county_id) {
     UploadedFile result = null;
-
-    try (FileInputStream is = new FileInputStream(the_file)) {
+    
+    try (FileInputStream is = new FileInputStream(the_info.my_file)) {
       // we're already in a transaction
       final Session session = Persistence.currentSession();
-      final Blob blob = session.getLobHelper().createBlob(is, the_file.length());
-      result = new UploadedFile(the_timestamp, the_county_id,
-                                FileType.CAST_VOTE_RECORD_EXPORT, the_hash,
-                                HashStatus.NOT_CHECKED, blob);
+      final Blob blob = 
+          session.getLobHelper().createBlob(is, the_info.my_file.length());
+      final HashStatus hash_status;
+      if (the_info.my_computed_hash == null) {
+        hash_status = HashStatus.NOT_CHECKED;
+      } else if (the_info.my_computed_hash.equals(the_info.my_uploaded_hash)) {
+        hash_status = HashStatus.VERIFIED;
+      } else {
+        hash_status = HashStatus.MISMATCH;
+      }
+      result = new UploadedFile(the_info.my_timestamp, the_county_id,
+                                FileType.CAST_VOTE_RECORD_EXPORT, 
+                                the_info.my_uploaded_hash,
+                                hash_status, blob);
       Persistence.saveOrUpdate(result);
       // TODO: currently we have to commit this transaction here, because
       // streaming a file to the database requires the file and its stream
@@ -131,7 +141,8 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
       // this will be remedied when we refactor uploading
       Persistence.commitTransaction();
     } catch (final PersistenceException | IOException e) {
-      badDataType(the_response, "could not persist file of size " + the_file.length());
+      badDataType(the_response, "could not persist file of size " + 
+                                the_info.my_file.length());
     }
 
     return result;
@@ -211,7 +222,7 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
       the_info.my_ok = false;
     }
   }
-
+  
   /**
    * Parses an uploaded CVR export and attempts to persist it to the database.
    * 
@@ -224,11 +235,23 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
   private void parseAndPersistFile(final Response the_response,
                                    final County the_county,
                                    final UploadInformation the_info) {
-    final String hash = the_info.my_form_fields.get("hash");
-
-    if (hash == null || the_info.my_file == null) {
+    boolean hash_match = false;
+    
+    if (the_info.my_uploaded_hash == null || the_info.my_file == null) {
       invariantViolation(the_response, "Bad Request");
       the_info.my_ok = false;
+    } else if (the_info.my_uploaded_hash.equals(the_info.my_computed_hash)) {
+      hash_match = true;
+      Main.LOGGER.info("hash matched for uploaded file");
+    } else {
+      // NOTE: the only reason this works right now and results in us storing
+      // the file anyway is that we're committing our transaction in 
+      // attemptFilePersistence(); otherwise, this failure response would
+      // abort the transaction and leave the server state unchanged.
+      badDataContents(the_response, "hash mismatch");
+      the_info.my_ok = false;
+      attemptFilePersistence(the_response, the_info, the_county.identifier());
+      Main.LOGGER.info("hash did not match for uploaded file");
     }
 
     if (the_info.my_ok) {
@@ -236,7 +259,7 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
         final InputStreamReader cvr_isr = new InputStreamReader(cvr_is, "UTF-8");
         final CVRExportParser parser =
             new DominionCVRExportParser(cvr_isr, the_county, the_info.my_timestamp);
-        if (parser.parse()) {
+        if (hash_match && parser.parse()) {
           Main.LOGGER.info(parser.parsedIDs().size() + " CVRs parsed from " + 
                            the_county + " county upload file");
           final OptionalLong count = count();
@@ -245,11 +268,8 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
           }
           updateCountyDashboard(the_response, the_county.identifier(), 
                                 the_info.my_timestamp);
-         
-          attemptFilePersistence(the_response, the_info.my_file, 
-                                 the_county.identifier(), hash,
-                                 the_info.my_timestamp);
-          ok(the_response, "uploaded CVR export file");
+          attemptFilePersistence(the_response, the_info, the_county.identifier());
+          ok(the_response, "file successfully uploaded and hash matched");
         } else {
           Main.LOGGER.info("could not parse malformed CVR export file");
           badDataContents(the_response, "Malformed CVR Export File");
@@ -286,6 +306,8 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
     // enabled
 
     if (info.my_ok) {
+      info.my_computed_hash = HashChecker.hashFile(info.my_file);
+      info.my_uploaded_hash = info.my_form_fields.get("hash").toUpperCase(Locale.US);
       parseAndPersistFile(the_response, county, info);
     }
 
@@ -359,5 +381,15 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
      * A map of form field names and values.
      */
     protected Map<String, String> my_form_fields = new HashMap<String, String>();
+
+    /**
+     * The uploaded hash.
+     */
+    protected String my_uploaded_hash;
+    
+    /**
+     * The computed hash.
+     */
+    protected String my_computed_hash;
   }
 }
