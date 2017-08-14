@@ -17,6 +17,7 @@ import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.*;
 import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -181,7 +182,7 @@ public abstract class AbstractStateMachine implements Serializable {
    * @trace asm.enabled_events
    */
   public Set<ASMEvent> enabledASMEvents() {
-    final Set<ASMEvent> result = new HashSet<ASMEvent>();
+    final Set<ASMEvent> result = new HashSet<>();
     // skips and refreshes are always permitted
     result.add(DOS_SKIP_EVENT);
     result.add(DOS_REFRESH_EVENT);
@@ -198,6 +199,34 @@ public abstract class AbstractStateMachine implements Serializable {
   }
   
   /**
+   * If the current state explicitly is one with a skip event
+   * enabled, execute the skip event and go to the next state.
+   */
+  private void handleSkipTransitions() {
+    boolean skip_enabled = true;
+    while (!my_final_states.contains(my_current_state) &&
+           skip_enabled) {
+      final List<ASMTransition> transitions = new ArrayList<ASMTransition>();
+      for (final ASMTransition t : my_transition_function) {
+        if (t.startState().equals(my_current_state) &&
+            (t.event() == DOS_SKIP_EVENT ||
+             t.event() == COUNTY_SKIP_EVENT ||
+             t.event() == AUDIT_SKIP_EVENT)) {
+          transitions.add(t);
+        }
+        if (transitions.isEmpty()) {
+          skip_enabled = false;
+        } else {
+          // pick the first enabled one
+          final ASMTransition skip = transitions.get(0);
+          Main.LOGGER.info("executing skip transition: " + skip);
+          my_current_state = transitions.get(0).endState();
+        }
+      }
+    }
+  }
+  
+  /**
    * Transition to the next state of this ASM given the provided
    * transition and its current state.
    * @param the_transition the transition that is triggered.
@@ -211,6 +240,7 @@ public abstract class AbstractStateMachine implements Serializable {
     if (my_current_state.equals(the_transition.startState())) {
       my_current_state = the_transition.endState();
       Main.LOGGER.info("ASM transition succeeded: " + the_transition); 
+      handleSkipTransitions();
     } else {
       Main.LOGGER.error("ASM transition " + the_transition + 
                         " failed from state " + my_current_state); 
@@ -258,6 +288,7 @@ public abstract class AbstractStateMachine implements Serializable {
       my_current_state = result;
       Main.LOGGER.info("ASM event " + the_event + " caused transition to " + 
                        my_current_state); 
+      handleSkipTransitions();
       return result;
     }
   }
