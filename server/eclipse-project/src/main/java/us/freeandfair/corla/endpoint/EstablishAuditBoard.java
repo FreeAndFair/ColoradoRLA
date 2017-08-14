@@ -15,6 +15,7 @@ package us.freeandfair.corla.endpoint;
 import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.ESTABLISH_AUDIT_BOARD_EVENT;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.PersistenceException;
@@ -32,6 +33,7 @@ import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.Elector;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CountyDashboardQueries;
+import us.freeandfair.corla.query.ElectorQueries;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
@@ -83,8 +85,17 @@ public class EstablishAuditBoard extends AbstractCountyDashboardEndpoint {
                          final Response the_response) {
     try {
       final Type list_type = new TypeToken<List<Elector>>() { }.getType();
-      final List<Elector> audit_board = 
+      final List<Elector> parsed_audit_board = 
           Main.GSON.fromJson(the_request.body(), list_type);
+      final List<Elector> audit_board = new ArrayList<Elector>();
+      for (final Elector e : parsed_audit_board) {
+        Elector p = ElectorQueries.matching(e.firstName(), e.lastName(), e.politicalParty());
+        if (p == null) {
+          p = e;
+        }
+        Persistence.saveOrUpdate(p);
+        audit_board.add(p);
+      }
       if (audit_board.size() >= CountyDashboard.MIN_AUDIT_BOARD_MEMBERS) { 
         // TODO: check this constraint elsewhere perhaps
         // try to add this audit board to the county dashboard
