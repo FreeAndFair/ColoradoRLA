@@ -13,10 +13,19 @@
 package us.freeandfair.corla.endpoint;
 import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.PUBLISH_BALLOTS_TO_AUDIT_EVENT;
 
+import java.util.List;
+
+import javax.persistence.PersistenceException;
+
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.asm.ASMEvent;
+import us.freeandfair.corla.model.CountyDashboard;
+import us.freeandfair.corla.model.DepartmentOfStateDashboard;
+import us.freeandfair.corla.model.RLAAlgorithm;
+import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.query.DepartmentOfStateDashboardQueries;
 
 /**
  * Download all ballots to audit for the entire state.
@@ -63,6 +72,23 @@ public class PublishBallotsToAudit extends AbstractDoSDashboardEndpoint {
   @Override
   public String endpoint(final Request the_request,
                          final Response the_response) {
-    return "The list of all ballots to audit for the entire state.";
+    // update every county dashboard with a list of ballots to audit
+    try {
+      final DepartmentOfStateDashboard dosdb = DepartmentOfStateDashboardQueries.get();
+      final List<CountyDashboard> cdbs = Persistence.getAll(CountyDashboard.class);
+      
+      for (final CountyDashboard cdb : cdbs) {
+        final RLAAlgorithm rlaa = new RLAAlgorithm(cdb);
+        if (cdb.cvrUploadTimestamp() != null) {
+          cdb.setCVRsToAudit(rlaa.computeBallotOrder(dosdb.randomSeed()));
+        }
+      }
+      
+      ok(the_response, "ballot lists published");
+    } catch (final PersistenceException e) {
+      serverError(the_response, "could not publish list of ballots to audit");
+    }
+    
+    return my_endpoint_result;
   }
 }

@@ -136,7 +136,7 @@ public class RLAAlgorithm {
    * @param the_seed the seed provided by the Department of State.
    * @param the_cvr_count the total number of CVRs in a given county.
    */
-  public Long[] computeBallotOrder(final String the_seed) {
+  public List<Long> computeBallotOrder(final String the_seed) {
     final boolean with_replacement = true;
     // assuming that CVRs are indexed from 0
     final int minimum = 0;
@@ -160,7 +160,7 @@ public class RLAAlgorithm {
     for (final int index : list_of_cvrs_to_audit) {
       result.add(list_of_cvr_ids.get(index));
     }
-    return result.toArray(new Long[result.size()]);
+    return result;
   }
   
   /**
