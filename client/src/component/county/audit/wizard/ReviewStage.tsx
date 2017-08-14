@@ -125,7 +125,8 @@ const ReviewStage = (props: any) => {
         selectNextBallot,
     } = props;
 
-    const ballotMarks = _.mapValues(rawMarks, ({choices, comments, noConsensus }: any, contestId: any) => {
+    const ballotMarks = _.mapValues(rawMarks, (rawMark: any, contestId: any) => {
+        const { choices, comments, noConsensus } = rawMark;
         const contest = findById(county.contests, contestId);
         const marks = _.map(choices, (id: any) => findById(contest.choices, id));
 
