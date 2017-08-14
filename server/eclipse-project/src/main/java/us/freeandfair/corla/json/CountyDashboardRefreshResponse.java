@@ -233,19 +233,9 @@ public class CountyDashboardRefreshResponse {
    
     // estimated ballots to audit = list size from dashboard
     
-    // number of ballots audited
-    int number_of_ballots_audited = 0;
-    for (final Long bid : the_dashboard.submittedAuditCVRs()) {
-      if (bid != null) {
-        number_of_ballots_audited = number_of_ballots_audited + 1;
-      }
-    }
+    // number of ballots audited - from dashboard
     
-    // number of discrepancies doesn't exist yet
-    final Integer number_of_discrepancies = -1;
-    
-    // number of disagreements doesn't exist yet
-    final Integer number_of_disagreements = -1;
+    // number of discrepancies/disagreements - from dashboard
 
     // list of ballots to audit = list from dashboard
     
@@ -260,9 +250,9 @@ public class CountyDashboardRefreshResponse {
                                               contests_under_audit,
                                               the_dashboard.auditTimestamp(),
                                               the_dashboard.cvrsToAudit().size(),
-                                              number_of_ballots_audited,
-                                              number_of_discrepancies,
-                                              number_of_disagreements,
+                                              the_dashboard.numberOfBallotsAudited(),
+                                              the_dashboard.numberOfDiscrepancies(),
+                                              the_dashboard.numberOfDisagreements(),
                                               the_dashboard.cvrsToAudit(),
                                               the_dashboard.cvrUnderAudit());
   }

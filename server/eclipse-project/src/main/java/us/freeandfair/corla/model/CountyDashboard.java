@@ -26,6 +26,8 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -78,6 +80,7 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
    * The county status of this dashboard.
    */
   @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
   private CountyStatus my_status = CountyStatus.NO_DATA;
   
   /**
@@ -161,6 +164,24 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
   @OrderColumn(name = INDEX)
   private List<IntermediateAuditReportInfo> my_intermediate_reports = 
       new ArrayList<>();
+  
+  /**
+   * The number of ballots audited.
+   */
+  @Column(name = "ballots_audited", nullable = false)
+  private Integer my_number_of_ballots_audited = 0;
+  
+  /**
+   * The number of discrepancies found in the audit so far.
+   */
+  @Column(name = "discrepancies", nullable = false)
+  private Integer my_number_of_discrepancies = 0;
+  
+  /**
+   * The number of disagreements found in the audit so far.
+   */
+  @Column(name = "disagreements", nullable = false)
+  private Integer my_number_of_disagreements = 0;
   
   /**
    * Constructs an empty county dashboard, solely for persistence.
@@ -330,6 +351,12 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
         the_cvr_under_audit.isAuditPairWith(the_audit_cvr) &&
         the_cvr_under_audit.recordType().isAuditorGenerated()) {
       // the CVRs match!
+      if (my_submitted_audit_cvrs.get(index) == null) {
+        // we bump the number of ballots audited as long as this is not a
+        // replacement for an already-audited result
+        // TODO: do we allow such replacements at all? 
+        my_number_of_ballots_audited = my_number_of_ballots_audited + 1;
+      }
       my_submitted_audit_cvrs.set(index, the_audit_cvr.id());
       result = true;
     } 
@@ -395,6 +422,27 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
       }
     }
     return null;
+  }
+  
+  /**
+   * @return the number of ballots audited.
+   */
+  public Integer numberOfBallotsAudited() {
+    return my_number_of_ballots_audited;
+  }
+  
+  /**
+   * @return the number of discrepancies found in the audit so far.
+   */
+  public Integer numberOfDiscrepancies() {
+    return my_number_of_discrepancies;
+  }
+  
+  /**
+   * @return the number of disagreements found in the audit so far.
+   */
+  public Integer numberOfDisagreements() {
+    return my_number_of_disagreements;
   }
   
   /**
