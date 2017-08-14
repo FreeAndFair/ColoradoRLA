@@ -6,6 +6,7 @@ import dosAuthOk from './dosAuthOk';
 import dosDashboardRefreshOk from './dosDashboardRefreshOk';
 import selectContestsForAuditOk from './selectContestsForAuditOk';
 import setRiskLimitOk from './setRiskLimitOk';
+import uploadRandomSeedOk from './uploadRandomSeedOk';
 
 
 interface AppState {
@@ -109,6 +110,10 @@ export default function root(state: AppState = defaultState, action: any) {
         nextState.county.ballots = ballots;
 
         return nextState;
+    }
+
+    case 'UPLOAD_RANDOM_SEED_OK': {
+        return uploadRandomSeedOk(state, action);
     }
 
     default:
