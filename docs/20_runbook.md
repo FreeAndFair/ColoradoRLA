@@ -52,15 +52,6 @@ or suggestions for interpretation of the marks on any particular ballot.
 
 Screenshot (SoS authentication) ---
 
-### Identifying County Users
-
-The Secretary of State will determine, for each individual
-County, which user will be able to log in to the County-facing
-part of the RLA Tool. ***THIS STEP NEEDS TO BE VERIFIED...IT
-IS NOT CONTAINED IN THE CDOS ASM.
-
-Screenshot (SoS County User Identification)
-
 ### Entering the Risk Limit
 
 The Sectretary of State will enter the Risk Limit for comparison audits.
@@ -83,7 +74,7 @@ Screenshot (SoS dash?) ---
 ### Reading the Number of Ballots to Audit
 
 The RLA Tool calculates the number of ballots to audit in each
-round of the RLA and provides that number to the County dashboard.
+round of the RLA and provides that number to the Secretary of State Dashboard.
 
 Screenshot (SoS dash?) ---
 
