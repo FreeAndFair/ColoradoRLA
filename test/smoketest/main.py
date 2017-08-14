@@ -1,28 +1,8 @@
 #!/usr/bin/env python
 """Smoketest the RLA server
-TODO: get server_sequence working and displaying errors
-nicely, rather than having the user run pytest server_test.py
+Run thru a simple server_sequence.
 
-Simple audit sequence:
-
-State or County
-  URI                      PVS
-S /auth-state-admin        auth_state_admin
-S /risk-limit-comp-audits  risk_limit
-C /auth-county-admin       auth_state_admin
-C /audit-board             establish_audit_board
-C /upload-ballot-manifest   ballot-manifest-upload
-C /upload-cvr-export	   cvr_export_upload
-S /select-contests	   select_contests
-S /publish-data-to-audit   publish_data_to_audit
-S /random-seed		   publish_seed
-S /ballots-to-audit	   publish_ballots
-C /audit-board-dashboard   refresh_audit_board_dashboard (get next cvr to audit)
-C /upload-audit-cvr	   acvr_upload
-C LOOP refreshing and uploading until no more to audit
-C /intermediate-audit-report intermediate_audit_report
-C /audit-report	  	   audit_report
-S /publish-report	   publish_report
+TODO: display errors nicely.
 """
 
 from __future__ import print_function
@@ -47,6 +27,30 @@ def county_login(baseurl, s, county_id):
     r = s.post(baseurl + path,
                data={'username': 'countyadmin%d' % county_id, 'password': '', 'second_factor': ''})
     print(r, path)
+
+
+def test_endpoint_json(baseurl, s, path, data):
+    "Do a generic test of an endpoint that posts the given data to the given path"
+
+    r = s.post(baseurl + path, json=data)
+    print(r, path, r.text)
+    return r
+
+
+def test_endpoint_get(baseurl, s, path):
+    "Do a generic test of an endpoint that gets the given path"
+
+    r = s.get(baseurl + path)
+    print(r, path, r.text)
+    return r
+
+
+def test_endpoint_bytes(baseurl, s, path, data):
+    "Do a generic test of an endpoint that posts the given data to the given path"
+
+    r = s.post(baseurl + path, data)
+    print(r, path, r.text)
+    return r
 
 
 def test_endpoint_post(baseurl, s, path, data):
@@ -130,30 +134,42 @@ if __name__ == "__main__":
     county_s1 = requests.Session()
     county_login(base, county_s1, 3)
 
-    r = test_endpoint_post(base, state_s, "/risk-limit-comp-audits", {'risk_limit': '{"risk_limit": "0.1"}'})
+    r = test_endpoint_json(base, state_s, "/risk-limit-comp-audits", {"risk_limit": 0.1})
 
-    r = test_endpoint_post(base, county_s1, "/auth-county-admin", {})
+    # Alternatives that work, FWIW
+    # r = test_endpoint_post(base, state_s, "/risk-limit-comp-audits", '{"risk_limit": "0.1"}')
+    # r = test_endpoint_bytes(base, state_s, "/risk-limit-comp-audits", '{"risk_limit": "0.1"}')
+
     # r = test_endpoint_post(base, county_s1, "/audit-board", {})
 
-    upload_files(base, county_s1)
+    # upload_files(base, county_s1)
+
     # Replace that with this later
     # r = test_endpoint_post(base, county_s1, "/upload-ballot-manifest", {})
     # r = test_endpoint_post(base, county_s1, "/upload-cvr-export", {})
 
-    r = test_endpoint_post(base, state_s, "/select-contests", {})
+    r = test_endpoint_json(base, state_s, "/select-contests", [{"contest": 202, "reason": "COUNTY_WIDE_CONTEST", "audit": "COMPARISON"}])
+
     # r = test_endpoint_post(base, state_s, "/publish-data-to-audit", {})
-    r = test_endpoint_post(base, state_s, "/random-seed", {'random_seed': "01234567890123456789"})
+
+    r = test_endpoint_json(base, state_s, "/random-seed", {'random_seed': "01234567890123456789"})
     # r = test_endpoint_post(base, state_s, "/ballots-to-audit", {})
 
-    r = test_endpoint_post(base, county_s1, "/audit-board-dashboard", {})
+    
+    r = test_endpoint_get(base, county_s1, "/county-dashboard")
+    # r = test_endpoint_get(base, county_s1, "/audit-board-asm-state")
+    # r = test_endpoint_json(base, county_s1, "/audit-board-dashboard", {})
     upload_acvr(base, county_s1, "acvr.json")
-    # r = test_endpoint_post(base, county_s1, "/upload-audit-cvr", {})
+
+    r = test_endpoint_get(base, county_s1, "/county-dashboard")
+
+    # r = test_endpoint_json(base, county_s1, "/upload-audit-cvr", {})
 
     # LOOP
 
-    r = test_endpoint_post(base, county_s1, "/intermediate-audit-report", {})
-    r = test_endpoint_post(base, county_s1, "/audit-report", {})
+    r = test_endpoint_json(base, county_s1, "/intermediate-audit-report", {})
+    r = test_endpoint_json(base, county_s1, "/audit-report", {})
 
-    r = test_endpoint_post(base, state_s, "/publish-report", {})
+    r = test_endpoint_json(base, state_s, "/publish-report", {})
 
     # server_sequence()
