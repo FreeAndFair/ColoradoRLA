@@ -21,7 +21,8 @@ export TEST_DIR="${TRAVIS_BUILD_DIR}/test"
 
 
 # Exit early if there were no server changes.
-"${TRAVIS_BUILD_DIR}/ci/changes-in-dir" server || exit 0
+# Don't run this until we're in travis. It may exit early....
+# "${TRAVIS_BUILD_DIR}/ci/changes-in-dir" server || exit 0
 
 cd "${SERVER_DIR}"
 
