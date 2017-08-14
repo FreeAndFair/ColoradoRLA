@@ -186,7 +186,7 @@ Example value:
   ]
 }
 
-SubmittedUsernamePassword, used in endpoint /auth-state-admin
+SubmittedUsernamePassword, used in endpoint /auth-state-admin and /auth-county-admin
 Schema:
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
