@@ -4,7 +4,7 @@ import { apiHost } from '../config';
 
 import createSubmitAction from './createSubmitAction';
 
-import adapter from '../adapter/contestsForAudit';
+import { format } from '../adapter/contestsForAudit';
 
 
 const url = `http://${apiHost}/select-contests`;
@@ -19,4 +19,4 @@ const selectContestsForAudit = createSubmitAction({
 
 
 export default (data: any) =>
-    selectContestsForAudit(adapter(data));
+    selectContestsForAudit(format(data));
