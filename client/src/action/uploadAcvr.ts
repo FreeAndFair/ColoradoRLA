@@ -4,6 +4,8 @@ import { apiHost } from '../config';
 
 import createSubmitAction from './createSubmitAction';
 
+import { format } from '../adapter/uploadAcvr';
+
 
 const url = `http://${apiHost}/upload-audit-cvr`;
 
@@ -16,4 +18,4 @@ const uploadAcvr = createSubmitAction({
 });
 
 
-export default uploadAcvr;
+export default (acvr: any) => uploadAcvr(format(acvr));
