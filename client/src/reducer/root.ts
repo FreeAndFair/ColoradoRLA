@@ -37,16 +37,6 @@ export default function root(state: AppState = defaultState, action: any) {
         return dosDashboardRefreshOk(state, action);
     }
 
-    case 'FETCH_INITIAL_STATE_SEND': {
-        // TODO: add flag to indicate pending fetch.
-        return state;
-    }
-
-    case 'FETCH_INITIAL_STATE_OK': {
-        // TODO: should be a deep merge.
-        return action.data;
-    }
-
     case 'SELECT_CONTESTS_FOR_AUDIT_OK': {
         return state;
     }
