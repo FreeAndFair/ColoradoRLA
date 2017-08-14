@@ -202,7 +202,7 @@ public abstract class AbstractEndpoint implements Endpoint {
   public void okJSON(final Response the_response, final String the_json) {
     the_response.status(HttpStatus.OK_200);
     the_response.body(the_json);
-    Main.LOGGER.error("successful operation 200 on endpoint " + endpointName());
+    Main.LOGGER.info("successful operation 200 on endpoint " + endpointName());
     my_endpoint_result = the_json;
   }
   /**

@@ -307,7 +307,8 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
 
     if (info.my_ok) {
       info.my_computed_hash = HashChecker.hashFile(info.my_file);
-      info.my_uploaded_hash = info.my_form_fields.get("hash").toUpperCase(Locale.US);
+      info.my_uploaded_hash = 
+          info.my_form_fields.get("hash").toUpperCase(Locale.US).trim();
       parseAndPersistFile(the_response, county, info);
     }
 
