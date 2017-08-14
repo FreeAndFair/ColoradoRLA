@@ -38,36 +38,24 @@ const route = (m, path, handler) => {
     });
 };
 
-const ok = data => ({ status: 200, data });
+const res = status => data => (req, res) => ({ status, data });
 
-const badRequest = msg => ({ status: 400, data: msg });
+const ok = res(200);
+const badRequest = res(400);
+const unauthorized = res(401);
+const notFound = res(404);
+const serverError = res(500);
 
-const unauthorized = msg => ({ status: 401, data: msg });
-
-const notFound = msg => ({ status: 404, data: msg });
-
-const serverError = msg => ({ status: 500, data: msg });
-
-
-route('get', '/ballot-style', () => ok(ballotStyles));
-
-route('get', '/cvr', () => ok(castVoteRecords));
-
-route('get', '/contest', () => ok(contests));
-
-route('post', '/auth-state-admin', () => ok('Authenticated'));
-
-route('get', '/dos-dashboard', () => ok(dosDashboard));
-
-route('post', '/risk-limit-comp-audits', (r) => ok(''));
-
-route('post', '/select-contests', (r) => ok(''));
-
-route('post', '/upload-random-seed', (r) => ok(''));
-
-route('get', '/county-dashboard', () => ok(countyDashboard));
-
-route('post', '/auth-county-admin', () => ok('Authenticated'));
+route('get', '/ballot-style', ok(ballotStyles));
+route('get', '/cvr', ok(castVoteRecords));
+route('get', '/contest', ok(contests));
+route('post', '/auth-state-admin', ok('Authenticated'));
+route('get', '/dos-dashboard', ok(dosDashboard));
+route('post', '/risk-limit-comp-audits', ok(''));
+route('post', '/select-contests', ok(''));
+route('post', '/upload-random-seed', ok(''));
+route('get', '/county-dashboard', ok(countyDashboard));
+route('post', '/auth-county-admin', ok('Authenticated'));
 
 
 app.listen(4000);
