@@ -12,6 +12,7 @@
 package us.freeandfair.corla.model;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,11 @@ public class RLAAlgorithm {
   private final ComparisonAudit my_comparison_audit;
   
   /**
+   * My county dashboard.
+   */
+  private final CountyDashboard my_dashboard;
+  
+  /**
    * Instantiate the RLA algorithm for the RLA Tool.
    * 
    * This constructor assumes that we know the number of CVRs in the
@@ -45,7 +51,7 @@ public class RLAAlgorithm {
    */
   public RLAAlgorithm(final CountyDashboard the_dashboard) {
     // count CVRs for contest under audit
-    final long cvr_count = 
+    final Long cvr_count = 
         CastVoteRecordQueries.countMatching(the_dashboard.cvrUploadTimestamp(), 
                                             the_dashboard.countyID(),
                                             RecordType.UPLOADED);
@@ -62,7 +68,8 @@ public class RLAAlgorithm {
     final Map<String, Pair<Integer, Map<String, Integer>>> contest_map = 
         getContestMap(the_dashboard);
     my_comparison_audit = 
-        new ComparisonAudit((int) cvr_count, risk_limit, contest_map);
+        new ComparisonAudit(cvr_count.intValue(), risk_limit, contest_map);
+    my_dashboard = the_dashboard;
   }
 
   /**
@@ -129,19 +136,31 @@ public class RLAAlgorithm {
    * @param the_seed the seed provided by the Department of State.
    * @param the_cvr_count the total number of CVRs in a given county.
    */
-  public int[] computeBallotOrder(final String the_seed,
-                                  final int the_cvr_count) {
+  public Long[] computeBallotOrder(final String the_seed) {
     final boolean with_replacement = true;
     // assuming that CVRs are indexed from 0
     final int minimum = 0;
     // the number of CVRs for the_contest_to_audit
-    final int maximum = the_cvr_count; 
+    final Long max_long = 
+        CastVoteRecordQueries.countMatching(my_dashboard.cvrUploadTimestamp(), 
+                                            my_dashboard.countyID(),
+                                            RecordType.UPLOADED);
+    final int maximum = max_long.intValue();
+
     final PseudoRandomNumberGenerator prng = 
         new PseudoRandomNumberGenerator(the_seed, with_replacement,
                                         minimum, maximum);
     final List<Integer> list_of_cvrs_to_audit = 
         prng.getRandomNumbers(minimum, maximum);
-    return list_of_cvrs_to_audit.stream().mapToInt(i -> i).toArray();
+    final List<Long> list_of_cvr_ids = 
+        CastVoteRecordQueries.idsForMatching(my_dashboard.cvrUploadTimestamp(), 
+                                             my_dashboard.countyID(),
+                                             RecordType.UPLOADED);
+    final List<Long> result = new ArrayList<>();
+    for (final int index : list_of_cvrs_to_audit) {
+      result.add(list_of_cvr_ids.get(index));
+    }
+    return result.toArray(new Long[result.size()]);
   }
   
   /**
