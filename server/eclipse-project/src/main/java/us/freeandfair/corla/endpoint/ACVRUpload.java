@@ -32,11 +32,11 @@ import spark.Response;
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.json.SubmittedAuditCVR;
-import us.freeandfair.corla.model.AuditBoardDashboard;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
+import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.AuditBoardDashboardQueries;
+import us.freeandfair.corla.query.CountyDashboardQueries;
 
 /**
  * The "audit CVR upload" endpoint.
@@ -91,10 +91,10 @@ public class ACVRUpload extends AbstractAuditBoardDashboardEndpoint {
       if (count.isPresent()) {
         Main.LOGGER.info(count.getAsLong() + " ACVRs in storage");
       }
-      final AuditBoardDashboard abdb = 
-          AuditBoardDashboardQueries.get(Authentication.
-                                         authenticatedCounty(the_request).identifier());
-      if (abdb == null) {
+      final CountyDashboard cdb = 
+          CountyDashboardQueries.get(Authentication.
+                                     authenticatedCounty(the_request).identifier());
+      if (cdb == null) {
         Main.LOGGER.error("could not get audit board dashboard");
         serverError(the_response, "Could not save ACVR to dashboard");
       } else {
@@ -103,10 +103,10 @@ public class ACVRUpload extends AbstractAuditBoardDashboardEndpoint {
         if (cvr == null) {
           this.badDataContents(the_response, "could not find original CVR");
         } else {
-          abdb.submitAuditCVR(cvr, real_acvr);
+          cdb.submitAuditCVR(cvr, real_acvr);
         }
       }
-      Persistence.saveOrUpdate(abdb);
+      Persistence.saveOrUpdate(cdb);
     } catch (final JsonSyntaxException e) {
       Main.LOGGER.error("malformed audit CVR upload");
       badDataContents(the_response, "Invalid audit CVR upload");

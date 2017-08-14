@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.time.Instant;
 
 import org.testng.annotations.Test;
+import static org.testng.Assert.*;
 
 /**
  * A test case for the PseudoRandomNumberGenerator.
@@ -42,8 +43,12 @@ public class HashCheckerTest {
     final FileOutputStream fos = new FileOutputStream(test_file);
     fos.write(test_string.getBytes());
     fos.close();
-    System.out.println(HashChecker.hashFile(test_file.toString()));
+    assertEquals("F9A25DA7060735572E32FCF72C33EE73476E589F7F02256DAFFB4C618D8F9EA2", 
+                 HashChecker.hashFile(test_file));
+    assertEquals("F9A25DA7060735572E32FCF72C33EE73476E589F7F02256DAFFB4C618D8F9EA2", 
+                 HashChecker.hashFile(test_file.toString()));
     } catch (final IOException e) {
+      fail();
     }
   }
 }

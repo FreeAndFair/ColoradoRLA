@@ -18,8 +18,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
-import org.eclipse.jetty.http.HttpStatus;
-
 import spark.Request;
 import spark.Response;
 
@@ -73,10 +71,9 @@ public class ContestDownload extends AbstractCountyDashboardEndpoint {
       Main.GSON.toJson(Persistence.getAll(Contest.class), bw);
       bw.flush();
       ok(the_response);
-      return my_endpoint_result;
     } catch (final IOException e) {
-      the_response.status(HttpStatus.INTERNAL_SERVER_ERROR_500);
-      return "Unable to stream response";
+      serverError(the_response, "Unable to stream response");
     }
+    return my_endpoint_result;
   }
 }

@@ -94,12 +94,14 @@ public class UploadRandomSeed extends AbstractDoSDashboardEndpoint {
           Persistence.saveOrUpdate(dosd);
           ok(the_response, "random seed set to " + seed.seed());
         }
+      } else {
+        invariantViolation(the_response, "Invalid random seed specified: " + seed.seed());
       }
     } catch (final PersistenceException e) {
       serverError(the_response, "unable to set random seed: " + e);
 
     } catch (final JsonSyntaxException e) {
-      invariantViolation(the_response, "Invalid random seed specified");
+      badDataContents(the_response, "Invalid random seed request");
     }
     return my_endpoint_result;
   }

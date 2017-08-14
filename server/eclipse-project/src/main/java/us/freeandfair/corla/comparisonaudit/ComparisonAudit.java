@@ -1,16 +1,10 @@
 /*
  * Free & Fair Colorado RLA System
- * 
  * @title ColoradoRLA
- * 
  * @created Jul 27, 2017
- * 
  * @copyright 2017 Free & Fair
- * 
  * @license GNU General Public License 3.0
- * 
- * @author Joey Dodds <jdodds@galois.com>
- * 
+ * @creator Joey Dodds <jdodds@galois.com>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
@@ -25,17 +19,27 @@ import java.util.Map;
 import us.freeandfair.corla.util.Pair;
 
 /**
- * @description A class for running comparison audits on tabulated data
- * @explanation <explanation>
+ * The algorithms used to run comparison audits on tabulated data.
+ * @author Joey Dodds <jdodds@freeandfair.us>
+ * @author Joe Kiniry <kiniry@freeandfair.us>
  */
-public class ComparisonAudit {
-
+public final class ComparisonAudit {
   /**
    * Gamma, as presented in the literature:
    * https://www.stat.berkeley.edu/~stark/Preprints/gentle12.pdf
    */
-  private static final double GAMMA = 1.03905;
+  public static final double GENTLE_GAMMA = 1.03905;
 
+  /**
+   * Gamma, as recommended by Neal McBurnett for use in Colorado.
+   */
+  public static final double COLORADO_GAMMA = 1.1;
+
+  /**
+   * The gamma used by this implementation.
+   */
+  public static final double GAMMA = COLORADO_GAMMA;
+  
   /**
    * A map from a contest_ID into a Contest where a Contest is an integer
    * denoting the number of winners and a map from Candidate names into a number
@@ -67,7 +71,10 @@ public class ComparisonAudit {
   private final int my_total_ballots;
 
   /**
-   * <description> <explanation>
+   * Create an empty comparison audit for a single election with the specified
+   * number of ballots and the given risk limit.  Contests will need to be added
+   * to this audit before being able to compute estimated numbers of ballots to
+   * audit or recomputing risk limits. 
    * 
    * @param the_total_ballots The total number of ballots cast for this audit
    * @param the_risk The risk limit for the audit. If the audit concludes
@@ -94,8 +101,10 @@ public class ComparisonAudit {
    *          contests are a pair of the number of winners selected by the
    *          contest and a map from candidate identifiers to vote counts
    */
-  public ComparisonAudit(final int the_total_ballots, final BigDecimal the_risk,
-                         final Map<String, Pair<Integer, Map<String, Integer>>> the_contests) {
+  public ComparisonAudit(final int the_total_ballots, 
+                         final BigDecimal the_risk,
+                         final Map<String, 
+                                   Pair<Integer, Map<String, Integer>>> the_contests) {
     my_total_ballots = the_total_ballots;
     my_contests = the_contests;
     my_risk = the_risk;
@@ -103,7 +112,6 @@ public class ComparisonAudit {
   }
 
   /**
-   * 
    * The stopping sample size as defined in the literature:
    * https://www.stat.berkeley.edu/~stark/Preprints/gentle12.pdf
    * 
@@ -112,23 +120,37 @@ public class ComparisonAudit {
    * @param the_u1 the number of one-vote understatements
    * @param the_u2 the number of two-vote understatements
    */
-  private int nmin(final double the_o1, final double the_o2, final double the_u1,
+  @SuppressWarnings("checkstyle:magicnumber")
+  private int nmin(final double the_o1, 
+                   final double the_o2, 
+                   final double the_u1,
                    final double the_u2) {
-    // Checkstyle isn't fine-grained enough to exclude just this method, so we
-    // use -1 * 2 for -2.
-    return (int) (Math.max(the_o1 + the_o2 + the_u1 + the_u1, Math.ceil(
-        -1 * 2 * GAMMA *
-              (Math.log(my_risk.doubleValue()) + the_o1 * Math.log(1 - 1 / (2 * GAMMA)) +
-               the_o2 * Math.log(1 - 1 / GAMMA) +
-               the_u1 * Math.log(1 + 1 / (2 * GAMMA)) +
-               the_u2 * Math.log(1 + 1 / GAMMA)) /
-              my_min_margin.doubleValue())));
+    return (int) (Math.max(the_o1 + the_o2 + the_u1 + the_u1,
+                           Math.ceil(-2 * GAMMA *
+                                     (Math.log(my_risk.doubleValue()) +
+                                      the_o1 * Math.log(1 - 1 / (2 * GAMMA)) +
+                                      the_o2 * Math.log(1 - 1 / GAMMA) +
+                                      the_u1 * Math.log(1 + 1 / (2 * GAMMA)) +
+                                      the_u2 * Math.log(1 + 1 / GAMMA)) /
+                                     my_min_margin.doubleValue())));
   }
 
+  
   /**
+   * This calculates a sample size, but using expected rates rather than
+   * actual sampled rates.
    * 
-   * This calculates the sample size, but using expected rates rather than
-   * actual sampled rates
+   * Neal McBurnett suggests that this function should always be called with the
+   * following values:
+   * <ul>
+   * <li>the_r1 == 0.01</li>
+   * <li>the_r2 == 0.01</li>
+   * <li>the_s1 == 0.01</li>
+   * <li>the_s2 == 0.01</li>
+   * <li>the_round_up1 == true</li>
+   * <li>the_round_up2 == true</li>
+   * </ul>
+   * for Colorado.
    * 
    * @param the_r1 the rate of one-vote overstatements
    * @param the_r2 the rate of two-vote overstatements
@@ -139,17 +161,19 @@ public class ComparisonAudit {
    * @param the_roud_up2 always round up the number of two-vote
    *          over/understatements
    */
-  private int nminfromrates(final double the_r1, final double the_r2, final double the_s1,
-                           final double the_s2, final boolean the_round_up1,
+  @SuppressWarnings("checkstyle:magicnumber")
+  public int nminfromrates(final double the_r1, 
+                           final double the_r2, 
+                           final double the_s1,
+                           final double the_s2, 
+                           final boolean the_round_up1,
                            final boolean the_round_up2) {
-    // Checkstyle isn't fine-grained enough to exclude just this method, so we
-    // use -1 * 2 for -2.
-    double n0 = -1 * 2 * GAMMA * Math.log(my_risk.doubleValue()) /
+    double n0 = -2 * GAMMA * Math.log(my_risk.doubleValue()) /
                 (my_min_margin.doubleValue() + 2 * GAMMA *
-                                               (the_r1 * Math.log(1 - 1 / (2 * GAMMA)) +
-                                                the_r2 * Math.log(1 - 1 / GAMMA) +
-                                                the_s1 * Math.log(1 + 1 / (2 * GAMMA)) +
-                                                the_s2 * Math.log(1 + 1 / GAMMA)));
+                    (the_r1 * Math.log(1 - 1 / (2 * GAMMA)) +
+                     the_r2 * Math.log(1 - 1 / GAMMA) +
+                     the_s1 * Math.log(1 + 1 / (2 * GAMMA)) +
+                     the_s2 * Math.log(1 + 1 / GAMMA)));
     double o1;
     double o2;
     double u1;
@@ -179,6 +203,7 @@ public class ComparisonAudit {
   }
 
   /**
+   * Is a particular contest one that we analyzing?
    * 
    * @param the_contest_id The identifier for the contest
    * @return True iff the contest has been added to this audit
@@ -188,6 +213,7 @@ public class ComparisonAudit {
   }
 
   /**
+   * Does a given candidate exist in the specified contest?
    * 
    * @param the_contest_id The identifier for the contest the candidate belongs
    *          to
@@ -201,8 +227,8 @@ public class ComparisonAudit {
   }
 
   /**
-   * 
-   * <description> <explanation>
+   * Update the number of votes a candidate has received and recompute
+   * the minimum margin for the appropriate contest.
    * 
    * @param the_contest_id The identifier for the contest the candidate belongs
    *          to
@@ -212,9 +238,11 @@ public class ComparisonAudit {
    * @return True for success, False if the candidate existed or the contest did
    *         not
    */
-  public boolean addCandidateVotes(final String the_contest_id, final String the_candidate_id,
+  public boolean addCandidateVotes(final String the_contest_id, 
+                                   final String the_candidate_id,
                                    final int the_candidate_votes) {
     // We only return true if the contest exists and the candidate does not yet
+    // exist in the specified contest
     if (!contestExists(the_contest_id) ||
         candidateExistsInContest(the_contest_id, the_candidate_id)) {
       return false;
@@ -225,6 +253,7 @@ public class ComparisonAudit {
   }
 
   /**
+   * Add a new contest to the set of contests we are concurrently analyzing.
    * 
    * @param the_contest_id The identifier for the contest the candidate belongs
    *          to
@@ -233,21 +262,21 @@ public class ComparisonAudit {
    *          received
    * @return true if the contest did not already exist
    */
-  public boolean addContest(final String the_contest_id, final int the_number_of_winners,
+  public boolean addContest(final String the_contest_id, 
+                            final int the_number_of_winners,
                             final Map<String, Integer> the_votes) {
     if (contestExists(the_contest_id)) {
       return false;
     }
 
     my_contests.put(the_contest_id,
-                    new Pair<Integer, Map<String, Integer>>(the_number_of_winners, the_votes));
+                    new Pair<Integer, Map<String, Integer>>(the_number_of_winners, 
+                        the_votes));
     return true;
   }
 
   /**
-   * Update the minimum margin for the entire contest
-   * 
-   * @param
+   * Update the minimum margin for all contests we are tracking.
    */
   private void updateMinMargin() {
     for (final String contest_id : my_contests.keySet()) {
@@ -256,15 +285,15 @@ public class ComparisonAudit {
   }
 
   /**
-   * 
-   * <description> <explanation>
+   * Recompute the minimum margin of the specified contest.
    * 
    * @param the_contest_id the contest ID that was changed, and as such needs
    *          its margin updated
    * @return true iff the contest exists
    */
   private boolean updateMinMarginForContest(final String the_contest_id) {
-    final Pair<Integer, Map<String, Integer>> contest = my_contests.get(the_contest_id);
+    final Pair<Integer, Map<String, Integer>> contest = 
+        my_contests.get(the_contest_id);
     if (contest == null) {
       return false;
     }
@@ -283,6 +312,7 @@ public class ComparisonAudit {
   }
 
   /**
+   * Compute the margin for the given contest.
    * 
    * @param the_number_of_winners the number of winners allowed for the contest
    * @param the_votes the votes of the contest
@@ -312,7 +342,8 @@ public class ComparisonAudit {
   }
 
   /**
-   * 
+   * Is this audit complete, given the provided information?
+   *
    * @param the_audited The total number of ballots that have been audited for
    *          this audit
    * @param the_one_over the total number of ballots with one-vote overstatement
@@ -323,14 +354,10 @@ public class ComparisonAudit {
    *          understatement
    * @return True if the audit is completed
    */
-  // @ behavior
-  // @ requires P;
-  // @ ensures Q;
-  /*
-   * @ pure @
-   */
-  public boolean auditComplete(final int the_audited, final int the_one_over,
-                               final int the_two_over, final int the_one_under,
+  public boolean auditComplete(final int the_audited, 
+                               final int the_one_over,
+                               final int the_two_over, 
+                               final int the_one_under,
                                final int the_two_under) {
     final double nmin = nmin(the_one_over, the_two_over, the_one_under, the_two_under);
     return the_audited >= nmin;

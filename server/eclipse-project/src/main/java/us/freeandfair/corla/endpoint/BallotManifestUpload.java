@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.sql.Blob;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.OptionalLong;
 
@@ -45,6 +46,7 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
+import us.freeandfair.corla.crypto.HashChecker;
 import us.freeandfair.corla.csv.BallotManifestParser;
 import us.freeandfair.corla.csv.ColoradoBallotManifestParser;
 import us.freeandfair.corla.model.BallotManifestInfo;
@@ -103,24 +105,33 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
   /**
    * Attempts to save the specified file in the database.
    * 
-   * @param the_file The file.
-   * @param the_county The county that uploaded the file.
-   * @param the_hash The claimed hash of the file.
-   * @param the_timestamp The timestamp to apply to the file.
+   * @param the_response The response object (for error reporting).
+   * @param the_info The upload info about the file and hash.
+   * @param the_county_id The county that uploaded the file.
    * @return the resulting entity if successful, null otherwise
- w */
-  private UploadedFile attemptFilePersistence(final File the_file, 
-                                              final Integer the_county,
-                                              final String the_hash,
-                                              final Instant the_timestamp) {
+   */
+  private UploadedFile attemptFilePersistence(final Response the_response, 
+                                              final UploadInformation the_info,
+                                              final Integer the_county_id) {
     UploadedFile result = null;
     
-    try (FileInputStream is = new FileInputStream(the_file)) {
+    try (FileInputStream is = new FileInputStream(the_info.my_file)) {
       // we're already in a transaction
       final Session session = Persistence.currentSession();
-      final Blob blob = session.getLobHelper().createBlob(is, the_file.length());
-      result = new UploadedFile(the_timestamp, the_county, FileType.BALLOT_MANIFEST,
-                                the_hash, HashStatus.NOT_CHECKED, blob);
+      final Blob blob = 
+          session.getLobHelper().createBlob(is, the_info.my_file.length());
+      final HashStatus hash_status;
+      if (the_info.my_computed_hash == null) {
+        hash_status = HashStatus.NOT_CHECKED;
+      } else if (the_info.my_computed_hash.equals(the_info.my_uploaded_hash)) {
+        hash_status = HashStatus.VERIFIED;
+      } else {
+        hash_status = HashStatus.MISMATCH;
+      }
+      result = new UploadedFile(the_info.my_timestamp, the_county_id,
+                                FileType.BALLOT_MANIFEST, 
+                                the_info.my_uploaded_hash,
+                                hash_status, blob);
       Persistence.saveOrUpdate(result);
       // TODO: currently we have to commit this transaction here, because
       // streaming a file to the database requires the file and its stream
@@ -128,9 +139,10 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
       // this will be remedied when we refactor uploading
       Persistence.commitTransaction();
     } catch (final PersistenceException | IOException e) {
-      Main.LOGGER.error("could not persist file of size " + the_file.length());
-    } 
-    
+      badDataType(the_response, "could not persist file of size " + 
+                                the_info.my_file.length());
+    }
+
     return result;
   }
   
@@ -225,46 +237,55 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
    * @param the_info The upload information to use and update.
    */
   // the CSV parser can throw arbitrary runtime exceptions, which we must catch
-  @SuppressWarnings({"PMD.AvoidCatchingGenericException", "PMD.AvoidCatchingNPE"})
+  @SuppressWarnings({"PMD.AvoidCatchingGenericException"})
   private void parseAndPersistFile(final Response the_response, 
                                    final Integer the_county_id,
-                                   final UploadInformation the_info) {
-    final String hash = the_info.my_form_fields.get("hash");
-        
-    if (hash == null || the_info.my_file == null) {
+                                   final UploadInformation the_info) {  
+    if (the_info.my_uploaded_hash == null || the_info.my_file == null) {
       invariantViolation(the_response, "Bad Request");
       the_info.my_ok = false;
-      return;
+    } else if (the_info.my_uploaded_hash.equals(the_info.my_computed_hash)) {
+      Main.LOGGER.info("hash matched for uploaded file");
+    } else {
+      // NOTE: the only reason this works right now and results in us storing
+      // the file anyway is that we're committing our transaction in 
+      // attemptFilePersistence(); otherwise, this failure response would
+      // abort the transaction and leave the server state unchanged.
+      badDataContents(the_response, "hash mismatch");
+      the_info.my_ok = false;
+      attemptFilePersistence(the_response, the_info, the_county_id);
+      Main.LOGGER.info("hash did not match for uploaded file");
     }
     
-    try (InputStream bmi_is = new FileInputStream(the_info.my_file)) {
-      final InputStreamReader bmi_isr = new InputStreamReader(bmi_is, "UTF-8");
-      final BallotManifestParser parser = 
-          new ColoradoBallotManifestParser(bmi_isr, 
-                                           the_info.my_timestamp,
-                                           the_county_id);
-      if (parser.parse()) {
-        Main.LOGGER.info(parser.parsedIDs().size() + 
-            " ballot manifest records parsed from upload file");
-        final OptionalLong count = count();
-        if (count.isPresent()) {
-          Main.LOGGER.info(count.getAsLong() + 
-                           " uploaded ballot manifest records in storage");
+    if (the_info.my_ok) {
+      try (InputStream bmi_is = new FileInputStream(the_info.my_file)) {
+        final InputStreamReader bmi_isr = new InputStreamReader(bmi_is, "UTF-8");
+        final BallotManifestParser parser = 
+            new ColoradoBallotManifestParser(bmi_isr, 
+                                             the_info.my_timestamp,
+                                             the_county_id);
+        if (parser.parse()) {
+          Main.LOGGER.info(parser.parsedIDs().size() + 
+              " ballot manifest records parsed from upload file");
+          final OptionalLong count = count();
+          if (count.isPresent()) {
+            Main.LOGGER.info(count.getAsLong() + 
+                " uploaded ballot manifest records in storage");
+          }
+          updateCountyDashboard(the_response, the_county_id, the_info.my_timestamp);
+          attemptFilePersistence(the_response, the_info, the_county_id);   
+          ok(the_response, "uploaded ballot manifest file");
+        } else {
+          Main.LOGGER.info("could not parse malformed ballot manifest file");
+          badDataContents(the_response, "Malformed Ballot Manifest File");
+          the_info.my_ok = false;
         }
-        updateCountyDashboard(the_response, the_county_id, the_info.my_timestamp);
-        attemptFilePersistence(the_info.my_file, the_county_id, hash, 
-                               the_info.my_timestamp);   
-        ok(the_response, "uploaded ballot manifest file");
-      } else {
-        Main.LOGGER.info("could not parse malformed ballot manifest file");
+      } catch (final RuntimeException | IOException e) {
+        Main.LOGGER.info("could not parse malformed ballot manifest file: " + e);
         badDataContents(the_response, "Malformed Ballot Manifest File");
         the_info.my_ok = false;
-      }
-    } catch (final RuntimeException | IOException e) {
-      Main.LOGGER.info("could not parse malformed ballot manifest file: " + e);
-      badDataContents(the_response, "Malformed Ballot Manifest File");
-      the_info.my_ok = false;
-    } 
+      } 
+    }
   }
   
   /**
@@ -291,6 +312,9 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
     // process the temp file, putting it in the database if persistence is enabled 
         
     if (info.my_ok) {
+      info.my_computed_hash = HashChecker.hashFile(info.my_file);
+      info.my_uploaded_hash = 
+          info.my_form_fields.get("hash").toUpperCase(Locale.US).trim();
       parseAndPersistFile(the_response, county.identifier(), info);
     }
     
@@ -349,20 +373,30 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
      * The uploaded file.
      */
     protected File my_file;
-    
+
     /**
      * The timestamp of the upload.
      */
     protected Instant my_timestamp;
-    
+
     /**
      * A flag indicating whether the upload is "ok".
      */
     protected boolean my_ok = true;
-    
+
     /**
      * A map of form field names and values.
      */
     protected Map<String, String> my_form_fields = new HashMap<String, String>();
+
+    /**
+     * The uploaded hash.
+     */
+    protected String my_uploaded_hash;
+    
+    /**
+     * The computed hash.
+     */
+    protected String my_computed_hash;
   }
 }

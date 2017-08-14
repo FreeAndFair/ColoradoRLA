@@ -84,6 +84,7 @@ public final class CastVoteRecordQueries {
    * @exception IllegalStateException if this method is called outside a 
    * transaction.
    */
+  @SuppressWarnings("PMD.AvoidDuplicateLiterals")
   public static Stream<CastVoteRecord> getMatching(final RecordType the_type) {
     if (!Persistence.isTransactionRunning()) {
       throw new IllegalStateException("no running transaction");
@@ -124,6 +125,7 @@ public final class CastVoteRecordQueries {
    * @exception IllegalStateException if this method is called outside a 
    * transaction.
    */
+  @SuppressWarnings("PMD.AvoidDuplicateLiterals")
   public static Stream<CastVoteRecord> getMatching(final Integer the_county,
                                                    final RecordType the_type) {
     if (!Persistence.isTransactionRunning()) {
@@ -170,6 +172,7 @@ public final class CastVoteRecordQueries {
    * @exception IllegalStateException if this method is called outside a 
    * transaction.
    */
+  @SuppressWarnings("PMD.AvoidDuplicateLiterals")
   public static Stream<CastVoteRecord> getMatching(final Instant the_timestamp,
                                                    final Integer the_county_id,
                                                    final RecordType the_type) {
@@ -263,4 +266,101 @@ public final class CastVoteRecordQueries {
     
     return result;
   }
+  
+  /**
+   * Counts the CastVoteRecord objects with the specified timestamp,
+   * county, and type. 
+   *
+   * @param the_timestamp The timestamp.
+   * @param the_county_id The county.
+   * @param the_type The type.
+   * @return the count, or -1 if the query could not be completed 
+   * successfully.
+   */
+  public static Long countMatching(final Instant the_timestamp,
+                                   final Integer the_county_id,
+                                   final RecordType the_type) {
+    Long result = Long.valueOf(-1);
+    
+    try {
+      final boolean transaction = Persistence.beginTransaction();
+      final Session s = Persistence.currentSession();
+      final CriteriaBuilder cb = s.getCriteriaBuilder();
+      final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+      final Root<CastVoteRecord> root = cq.from(CastVoteRecord.class);
+      final List<Predicate> conjuncts = new ArrayList<Predicate>();
+      conjuncts.add(cb.equal(root.get(TIMESTAMP), the_timestamp));
+      conjuncts.add(cb.equal(root.get(COUNTY_ID), the_county_id));
+      conjuncts.add(cb.equal(root.get(RECORD_TYPE), the_type));
+      cq.select(cb.count(root));
+      cq.where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
+      final Query<Long> query = s.createQuery(cq);
+      result = query.getSingleResult();
+      if (transaction) {
+        try {
+          Persistence.commitTransaction();
+        } catch (final RollbackException e) {
+          Persistence.rollbackTransaction();
+        }
+      }
+    } catch (final PersistenceException e) {
+      Main.LOGGER.error(COULD_NOT_QUERY_DATABASE);
+    }
+    if (result == null) {
+      Main.LOGGER.info("found no CVRs for timestamp " + the_timestamp + 
+                       ", county " + the_county_id + ", type " + 
+                       the_type);
+    } else {
+      Main.LOGGER.info("query succeeded, returning CVR count");
+    }
+    return result;
+  }
+  
+  /**
+   * Obtain the list of CastVoteRecord database IDs with the specified timestamp,
+   * county, and type, ordered by their imprinted ID. 
+   *
+   * @param the_timestamp The timestamp.
+   * @param the_county_id The county.
+   * @param the_type The type.
+   * @return the list of IDs.
+   * @exception IllegalStateException if this method is called outside a 
+   * transaction.
+   */
+  public static List<Long> idsForMatching(final Instant the_timestamp,
+                                          final Integer the_county_id,
+                                          final RecordType the_type) {
+    if (!Persistence.isTransactionRunning()) {
+      throw new IllegalStateException("no running transaction");
+    }
+    
+    List<Long> result = null;
+   
+    try {
+      final Session s = Persistence.currentSession();
+      final CriteriaBuilder cb = s.getCriteriaBuilder();
+      final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+      final Root<CastVoteRecord> root = cq.from(CastVoteRecord.class);
+      final List<Predicate> conjuncts = new ArrayList<Predicate>();
+      conjuncts.add(cb.equal(root.get(TIMESTAMP), the_timestamp));
+      conjuncts.add(cb.equal(root.get(COUNTY_ID), the_county_id));
+      conjuncts.add(cb.equal(root.get(RECORD_TYPE), the_type));
+      cq.select(root.get("my_id"));
+      cq.where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
+      cq.orderBy(cb.asc(root.get(IMPRINTED_ID)));
+      final Query<Long> query = s.createQuery(cq);
+      result = query.getResultList();
+    } catch (final PersistenceException e) {
+      Main.LOGGER.error(COULD_NOT_QUERY_DATABASE);
+    }
+    if (result == null) {
+      Main.LOGGER.info("found no CVRs for timestamp " + the_timestamp + 
+                       ", county " + the_county_id + ", type " + 
+                       the_type);
+    } else {
+      Main.LOGGER.info("query succeeded, returning CVR IDs");
+    }
+    return result;
+  }
+
 }

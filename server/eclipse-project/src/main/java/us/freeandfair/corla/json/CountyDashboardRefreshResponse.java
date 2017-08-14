@@ -5,8 +5,9 @@
  * @created Aug 12, 2017
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
- * @author Daniel M. Zimmerman <dmz@freeandfair.us>
- * @description A system to assist in conducting statewide risk-limiting audits.
+ * @created Daniel M. Zimmerman <dmz@freeandfair.us>
+ * @description A system to assist in conducting statewide
+ * risk-limiting audits.
  */
 
 package us.freeandfair.corla.json;
@@ -14,12 +15,12 @@ package us.freeandfair.corla.json;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.PersistenceException;
 
-import us.freeandfair.corla.model.AuditBoardDashboard;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.ContestToAudit;
 import us.freeandfair.corla.model.ContestToAudit.AuditType;
@@ -30,16 +31,17 @@ import us.freeandfair.corla.model.DepartmentOfStateDashboard;
 import us.freeandfair.corla.model.Elector;
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.model.UploadedFile.FileType;
-import us.freeandfair.corla.query.AuditBoardDashboardQueries;
 import us.freeandfair.corla.query.CountyQueries;
 import us.freeandfair.corla.query.DepartmentOfStateDashboardQueries;
 import us.freeandfair.corla.query.UploadedFileQueries;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
- * The response generated on a refresh of the DoS dashboard.
+ * The response generated on a refresh of the County and Audit Board
+ * dashboards.
  * 
  * @author Daniel M. Zimmerman
+ * @author Joe Kiniry <kiniry@freeandfair.us>
  * @version 0.0.1
  */
 @SuppressWarnings({"unused", "PMD.UnusedPrivateField", "PMD.SingularField",
@@ -110,9 +112,19 @@ public class CountyDashboardRefreshResponse {
    * @todo connect this to something
    */
   private final Integer my_number_of_disagreements;
+
+  /**
+   * The list of ballots to audit (by CVR ID).
+   */
+  private final List<Long> my_ballots_to_audit;
+
+  /**
+   * The current ballot under audit.
+   */
+  private final Long my_ballot_under_audit_id;
   
   /**
-   * Constructs a new DosDashboardRefreshResponse.
+   * Constructs a new CountyDashboardRefreshResponse.
    * 
    * @param the_status The status.
    * @param the_general_information The general information.
@@ -126,6 +138,8 @@ public class CountyDashboardRefreshResponse {
    * @param the_number_of_ballots_audited The number of ballots audited.
    * @param the_number_of_discrepencies The number of discrepencies.
    * @param the_number_of_disagreements The number of disagreements.
+   * @param the_ballots_to_audit The list of CVRs to audit.
+   * @param the_ballot_under_audit The index of the CVR under audit.
    */
   @SuppressWarnings("PMD.ExcessiveParameterList")
   protected CountyDashboardRefreshResponse(final CountyStatus the_status,
@@ -139,7 +153,9 @@ public class CountyDashboardRefreshResponse {
                                            final Integer the_estimated_ballots_to_audit,
                                            final Integer the_number_of_ballots_audited,
                                            final Integer the_number_of_discrepencies, 
-                                           final Integer the_number_of_disagreements) {
+                                           final Integer the_number_of_disagreements,
+                                           final List<Long> the_ballots_to_audit,
+                                           final Long the_ballot_under_audit) {
     my_status = the_status;
     my_general_information = the_general_information;
     my_audit_board_members = the_audit_board_members;
@@ -152,10 +168,12 @@ public class CountyDashboardRefreshResponse {
     my_number_of_ballots_audited = the_number_of_ballots_audited;
     my_number_of_discrepencies = the_number_of_discrepencies;
     my_number_of_disagreements = the_number_of_disagreements;
+    my_ballots_to_audit = the_ballots_to_audit;
+    my_ballot_under_audit_id = the_ballot_under_audit;
   }
   
   /**
-   * Gets the DoSDashboardRefreshResponse for the specified DoS dashboard.
+   * Gets the CountyDashboardRefreshResponse for the specified County dashboard.
    * 
    * @param the_dashboard The dashboard.
    * @return the response.
@@ -169,10 +187,9 @@ public class CountyDashboardRefreshResponse {
       createResponse(final CountyDashboard the_dashboard) {
     final Integer county_id = the_dashboard.countyID();
     final County county = CountyQueries.byID(county_id);
-    final AuditBoardDashboard abd = AuditBoardDashboardQueries.get(county_id);
     final DepartmentOfStateDashboard dosd = DepartmentOfStateDashboardQueries.get();
 
-    if (county == null || abd == null || dosd == null) {
+    if (county == null || dosd == null) {
       throw new PersistenceException("unable to read county dashboard state");
     }
     // status = directly from county dashboard
@@ -212,14 +229,13 @@ public class CountyDashboardRefreshResponse {
       }
     }
     
-    // audit time doesn't exist yet
-    final Instant audit_time = Instant.EPOCH;
+    // audit timestamp = timestamp from dashboard
    
-    // estimated ballots to audit = audit dashboard list size
+    // estimated ballots to audit = list size from dashboard
     
     // number of ballots audited
     int number_of_ballots_audited = 0;
-    for (final Long bid : abd.submittedAuditCVRs()) {
+    for (final Long bid : the_dashboard.submittedAuditCVRs()) {
       if (bid != null) {
         number_of_ballots_audited = number_of_ballots_audited + 1;
       }
@@ -230,6 +246,10 @@ public class CountyDashboardRefreshResponse {
     
     // number of disagreements doesn't exist yet
     final Integer number_of_disagreements = -1;
+
+    // list of ballots to audit = list from dashboard
+    
+    // ballot under audit = from dashboard
     
     return new CountyDashboardRefreshResponse(the_dashboard.status(),
                                               general_information,
@@ -238,10 +258,12 @@ public class CountyDashboardRefreshResponse {
                                               cvr_digest,
                                               contests,
                                               contests_under_audit,
-                                              audit_time,
-                                              abd.cvrsToAudit().size(),
+                                              the_dashboard.auditTimestamp(),
+                                              the_dashboard.cvrsToAudit().size(),
                                               number_of_ballots_audited,
                                               number_of_discrepencies,
-                                              number_of_disagreements);
+                                              number_of_disagreements,
+                                              the_dashboard.cvrsToAudit(),
+                                              the_dashboard.cvrUnderAudit());
   }
 }

@@ -21,13 +21,13 @@ import spark.Response;
 
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent;
-import us.freeandfair.corla.model.AuditBoardDashboard;
 import us.freeandfair.corla.model.CVRContestInfo;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.County;
+import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.AuditBoardDashboardQueries;
+import us.freeandfair.corla.query.CountyDashboardQueries;
 
 /**
  * The endpoint for reporting ballots that could not be found by auditors.
@@ -79,9 +79,9 @@ public class BallotNotFound extends AbstractAuditBoardDashboardEndpoint {
       return my_endpoint_result;
     }
     
-    final AuditBoardDashboard abd = 
-        AuditBoardDashboardQueries.get(county.identifier());
-    if (abd == null) {
+    final CountyDashboard cdb = 
+        CountyDashboardQueries.get(county.identifier());
+    if (cdb == null) {
       serverError(the_response, "could not load audit board information");
       return my_endpoint_result;
     }
@@ -89,7 +89,7 @@ public class BallotNotFound extends AbstractAuditBoardDashboardEndpoint {
     // attempt to read the CVR ID from the request
     try {
       final Long cvr_id = Long.valueOf(the_request.body());
-      final int index = abd.cvrsToAudit().indexOf(cvr_id);
+      final int index = cdb.cvrsToAudit().indexOf(cvr_id);
       if (index >= 0) {
         final CastVoteRecord cvr = Persistence.getByID(cvr_id, CastVoteRecord.class);
         if (cvr == null) {
@@ -102,7 +102,7 @@ public class BallotNotFound extends AbstractAuditBoardDashboardEndpoint {
                                  cvr.imprintedID(), cvr.ballotType(),
                                  new ArrayList<CVRContestInfo>());
           Persistence.saveOrUpdate(acvr);
-          if (abd.submitAuditCVR(cvr, acvr)) {
+          if (cdb.submitAuditCVR(cvr, acvr)) {
             ok(the_response, "audit CVR submitted");
           }
         }

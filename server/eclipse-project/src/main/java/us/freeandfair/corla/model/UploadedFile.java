@@ -16,6 +16,8 @@ import java.time.Instant;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
@@ -50,6 +52,7 @@ public class UploadedFile extends AbstractEntity {
    * The type of the file.
    */
   @Column(updatable = false, nullable = false)
+  @Enumerated(EnumType.STRING)
   private FileType my_type;
   
   /**
@@ -62,6 +65,7 @@ public class UploadedFile extends AbstractEntity {
    * The status of hash verification.
    */
   @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
   private HashStatus my_hash_status;
   
   /**

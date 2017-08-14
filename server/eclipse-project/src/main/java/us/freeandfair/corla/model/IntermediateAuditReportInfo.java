@@ -24,7 +24,7 @@ import javax.persistence.Table;
 
 import com.google.gson.annotations.JsonAdapter;
 
-import us.freeandfair.corla.json.AuditInvestigationReportInfoJsonAdapter;
+import us.freeandfair.corla.json.IntermediateAuditReportJsonAdapter;
 import us.freeandfair.corla.persistence.AbstractEntity;
 
 /**
@@ -34,12 +34,12 @@ import us.freeandfair.corla.persistence.AbstractEntity;
  * @version 0.0.1
  */
 @Entity
-@Table(name = "audit_investigation_report")
+@Table(name = "intermediate_audit_report")
 //this class has many fields that would normally be declared final, but
 //cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
-@JsonAdapter(AuditInvestigationReportInfoJsonAdapter.class)
-public class AuditInvestigationReportInfo extends AbstractEntity implements Serializable {
+@JsonAdapter(IntermediateAuditReportJsonAdapter.class)
+public class IntermediateAuditReportInfo extends AbstractEntity implements Serializable {
   /**
    * The serialVersionUID.
    */
@@ -57,13 +57,7 @@ public class AuditInvestigationReportInfo extends AbstractEntity implements Seri
    */
   @Column(updatable = false)
   private Instant my_timestamp;
-  
-  /** 
-   * The name for this report.
-   */
-  @Column(updatable = false)
-  private String my_name;
-  
+ 
   /**
    * The report for this report.
    */
@@ -73,7 +67,7 @@ public class AuditInvestigationReportInfo extends AbstractEntity implements Seri
   /**
    * Constructs an empty AuditInvestigationReport, solely for persistence.
    */
-  public AuditInvestigationReportInfo() {
+  public IntermediateAuditReportInfo() {
     super();
   }
   
@@ -85,12 +79,10 @@ public class AuditInvestigationReportInfo extends AbstractEntity implements Seri
    * @param the_name The name.
    * @param the_report The report.
    */
-  public AuditInvestigationReportInfo(final Instant the_timestamp,
-                                      final String the_name,
-                                      final String the_report) {
+  public IntermediateAuditReportInfo(final Instant the_timestamp,
+                                final String the_report) {
     super();
     my_timestamp = the_timestamp;
-    my_name = the_name;
     my_report = the_report;
   }
   
@@ -119,13 +111,6 @@ public class AuditInvestigationReportInfo extends AbstractEntity implements Seri
   }
   
   /**
-   * @return the name.
-   */
-  public String name() { 
-    return my_name;
-  }
-  
-  /**
    * @return the report.
    */
   public String report() {
@@ -137,8 +122,8 @@ public class AuditInvestigationReportInfo extends AbstractEntity implements Seri
    */
   @Override
   public String toString() {
-    return "AuditInvestigationReport [timestamp=" + my_timestamp + 
-            ", name=" + my_name + ", report=" + my_report + "]";
+    return "AuditInterimReport [timestamp=" + my_timestamp + 
+           ", report=" + my_report + "]";
   }
   
   /**
@@ -150,11 +135,10 @@ public class AuditInvestigationReportInfo extends AbstractEntity implements Seri
   @Override
   public boolean equals(final Object the_other) {
     boolean result = true;
-    if (the_other instanceof AuditInvestigationReportInfo) {
-      final AuditInvestigationReportInfo other_report = 
-          (AuditInvestigationReportInfo) the_other;
+    if (the_other instanceof IntermediateAuditReportInfo) {
+      final IntermediateAuditReportInfo other_report = 
+          (IntermediateAuditReportInfo) the_other;
       result &= nullableEquals(other_report.timestamp(), timestamp());
-      result &= nullableEquals(other_report.name(), name());
       result &= nullableEquals(other_report.report(), report());
     } else {
       result = false;
