@@ -186,3 +186,26 @@ Example value:
   ]
 }
 
+SubmittedUsernamePassword, used in endpoint /auth-state-admin
+Schema:
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "definitions": {},
+    "id": "http://freeandfair.us/corla/auth-state-admin",
+    "properties": {
+        "password": {
+            "id": "/properties/password",
+            "type": "string"
+        },
+        "username": {
+            "id": "/properties/username",
+            "type": "string"
+        }
+    },
+    "type": "object"
+}
+Example value:
+{
+  "username": "a username",
+  "password": "a password"
+}
