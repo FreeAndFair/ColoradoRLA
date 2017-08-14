@@ -23,9 +23,9 @@ import spark.Response;
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.model.ContestToAudit;
-import us.freeandfair.corla.model.DepartmentOfStateDashboard;
+import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.DepartmentOfStateDashboardQueries;
+import us.freeandfair.corla.query.DoSDashboardQueries;
 
 /**
  * The endpoint for selecting the contests to audit.
@@ -72,7 +72,7 @@ public class SelectContestsForAudit extends AbstractDoSDashboardEndpoint {
     try {
       final ContestToAudit[] contests = 
           Main.GSON.fromJson(the_request.body(), ContestToAudit[].class);
-      final DepartmentOfStateDashboard dosdb = DepartmentOfStateDashboardQueries.get();
+      final DoSDashboard dosdb = DoSDashboardQueries.get();
       if (dosdb == null) {
         Main.LOGGER.error("could not get department of state dashboard");
         serverError(the_response, "Could not select contests");

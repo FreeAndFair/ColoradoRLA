@@ -27,12 +27,12 @@ import us.freeandfair.corla.model.ContestToAudit.AuditType;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.CountyDashboard.CountyStatus;
-import us.freeandfair.corla.model.DepartmentOfStateDashboard;
+import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.model.Elector;
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.model.UploadedFile.FileType;
 import us.freeandfair.corla.query.CountyQueries;
-import us.freeandfair.corla.query.DepartmentOfStateDashboardQueries;
+import us.freeandfair.corla.query.DoSDashboardQueries;
 import us.freeandfair.corla.query.UploadedFileQueries;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
@@ -187,7 +187,7 @@ public class CountyDashboardRefreshResponse {
       createResponse(final CountyDashboard the_dashboard) {
     final Integer county_id = the_dashboard.countyID();
     final County county = CountyQueries.byID(county_id);
-    final DepartmentOfStateDashboard dosd = DepartmentOfStateDashboardQueries.get();
+    final DoSDashboard dosd = DoSDashboardQueries.get();
 
     if (county == null || dosd == null) {
       throw new PersistenceException("unable to read county dashboard state");

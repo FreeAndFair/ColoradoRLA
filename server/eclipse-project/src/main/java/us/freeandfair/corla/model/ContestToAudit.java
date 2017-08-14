@@ -51,7 +51,7 @@ public class ContestToAudit extends AbstractEntity implements Serializable {
    */
   @ManyToOne
   @JoinColumn
-  private DepartmentOfStateDashboard my_dashboard;
+  private DoSDashboard my_dashboard;
 
   /**
    * The contest to audit.
@@ -101,14 +101,14 @@ public class ContestToAudit extends AbstractEntity implements Serializable {
    * 
    * @param the_dashboard The dashboard.
    */
-  protected void setDashboard(final DepartmentOfStateDashboard the_dashboard) {
+  protected void setDashboard(final DoSDashboard the_dashboard) {
     my_dashboard = the_dashboard;
   }
 
   /**
    * @return the Department of State dashboard that owns this record.
    */
-  public DepartmentOfStateDashboard dashboard() {
+  public DoSDashboard dashboard() {
     return my_dashboard;
   }
   

@@ -17,7 +17,7 @@ import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.model.DepartmentOfStateDashboard;
+import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 
 /**
@@ -26,11 +26,11 @@ import us.freeandfair.corla.persistence.Persistence;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-public final class DepartmentOfStateDashboardQueries {
+public final class DoSDashboardQueries {
   /**
    * Private constructor to prevent instantiation.
    */
-  private DepartmentOfStateDashboardQueries() {
+  private DoSDashboardQueries() {
     // do nothing
   }
   
@@ -44,17 +44,17 @@ public final class DepartmentOfStateDashboardQueries {
   // we are checking to see if exactly one result is in a list, and
   // PMD doesn't like it
   @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
-  public static DepartmentOfStateDashboard get() {
-    DepartmentOfStateDashboard result = null;
+  public static DoSDashboard get() {
+    DoSDashboard result = null;
     
     try {
       final boolean transaction = Persistence.beginTransaction();
-      final List<DepartmentOfStateDashboard> db_list = 
-          Persistence.getAll(DepartmentOfStateDashboard.class);
-      DepartmentOfStateDashboard db = null;
+      final List<DoSDashboard> db_list = 
+          Persistence.getAll(DoSDashboard.class);
+      DoSDashboard db = null;
       if (db_list.isEmpty()) {
         // create a Department of State Dashboard
-        db = new DepartmentOfStateDashboard();
+        db = new DoSDashboard();
         Persistence.saveOrUpdate(db);
         Main.LOGGER.info("attempting to create new department of state dashboard");
       } else if (db_list.size() > 1) {

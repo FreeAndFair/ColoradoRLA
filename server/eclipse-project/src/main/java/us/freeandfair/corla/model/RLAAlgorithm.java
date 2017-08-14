@@ -26,7 +26,7 @@ import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.ContestToAudit.AuditType;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CastVoteRecordQueries;
-import us.freeandfair.corla.query.DepartmentOfStateDashboardQueries;
+import us.freeandfair.corla.query.DoSDashboardQueries;
 import us.freeandfair.corla.util.Pair;
 
 /**
@@ -58,7 +58,7 @@ public class RLAAlgorithm {
     
     // what is the risk limit for this contest?
     final BigDecimal risk_limit = 
-        DepartmentOfStateDashboardQueries.get().getRiskLimitForComparisonAudits();
+        DoSDashboardQueries.get().getRiskLimitForComparisonAudits();
     
     // a map describing all contests in an election that are under audit.
     // as documented in ComparisonAudit:
@@ -84,7 +84,7 @@ public class RLAAlgorithm {
         new HashMap<String, Pair<Integer, Map<String, Integer>>>();
     // <contest-name, Pair<number-of-winners, Map<candidate, total>>>
     // first, get all the contests    
-    final DepartmentOfStateDashboard dosdb = DepartmentOfStateDashboardQueries.get();
+    final DoSDashboard dosdb = DoSDashboardQueries.get();
     
     // brute force
     for (final ContestToAudit contest : dosdb.contestsToAudit()) {

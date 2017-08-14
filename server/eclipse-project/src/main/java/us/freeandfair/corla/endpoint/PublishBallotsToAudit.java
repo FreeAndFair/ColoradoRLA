@@ -22,10 +22,10 @@ import spark.Response;
 
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.model.CountyDashboard;
-import us.freeandfair.corla.model.DepartmentOfStateDashboard;
+import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.model.RLAAlgorithm;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.DepartmentOfStateDashboardQueries;
+import us.freeandfair.corla.query.DoSDashboardQueries;
 
 /**
  * Download all ballots to audit for the entire state.
@@ -74,7 +74,7 @@ public class PublishBallotsToAudit extends AbstractDoSDashboardEndpoint {
                          final Response the_response) {
     // update every county dashboard with a list of ballots to audit
     try {
-      final DepartmentOfStateDashboard dosdb = DepartmentOfStateDashboardQueries.get();
+      final DoSDashboard dosdb = DoSDashboardQueries.get();
       final List<CountyDashboard> cdbs = Persistence.getAll(CountyDashboard.class);
       
       for (final CountyDashboard cdb : cdbs) {

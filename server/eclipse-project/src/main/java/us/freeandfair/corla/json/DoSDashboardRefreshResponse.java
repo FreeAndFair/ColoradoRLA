@@ -26,7 +26,7 @@ import us.freeandfair.corla.model.ContestToAudit.AuditReason;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.CountyDashboard.CountyStatus;
-import us.freeandfair.corla.model.DepartmentOfStateDashboard;
+import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CountyDashboardQueries;
 import us.freeandfair.corla.util.Pair;
@@ -108,7 +108,7 @@ public class DoSDashboardRefreshResponse {
    * response does not exist.
    */
   public static DoSDashboardRefreshResponse 
-      createResponse(final DepartmentOfStateDashboard the_dashboard) {
+      createResponse(final DoSDashboard the_dashboard) {
     // construct the audit/hand count info from the contests to audit in the dashboard
     final Pair<Map<Long, AuditReason>, Set<Long>> info =
         contestInfo(the_dashboard.contestsToAudit());
