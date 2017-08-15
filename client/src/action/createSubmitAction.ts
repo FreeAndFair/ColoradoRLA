@@ -13,7 +13,13 @@ const createSubmitAction = ({
     return (dispatch: Dispatch<any>) => {
         dispatch({ type: sendType });
 
-        fetch(url, { method: 'post', body })
+        const init: any = {
+            body: JSON.stringify(body),
+            credentials: 'include',
+            method: 'post',
+        };
+
+        fetch(url, init)
             .then(r => {
                 if (!r.ok) {
                     dispatch({ type: failType });
