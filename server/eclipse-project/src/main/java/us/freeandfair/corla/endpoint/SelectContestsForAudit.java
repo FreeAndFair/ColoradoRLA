@@ -68,7 +68,6 @@ public class SelectContestsForAudit extends AbstractDoSDashboardEndpoint {
   @Override
   public synchronized String endpoint(final Request the_request, 
                                       final Response the_response) {
-    ok(the_response, "Contests selected");
     try {
       final ContestToAudit[] contests = 
           Main.GSON.fromJson(the_request.body(), ContestToAudit[].class);
@@ -83,7 +82,7 @@ public class SelectContestsForAudit extends AbstractDoSDashboardEndpoint {
         }
       }
       Persistence.saveOrUpdate(dosdb);
-      ok(the_response);
+      ok(the_response, "Contests selected");
     } catch (final JsonSyntaxException e) {
       Main.LOGGER.error("malformed contest selection");
       badDataContents(the_response, "Invalid contest selection data");
