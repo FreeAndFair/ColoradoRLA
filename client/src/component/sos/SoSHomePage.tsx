@@ -48,8 +48,8 @@ const ContestUpdates = ({ contests, seed }: any) => {
     );
 };
 
-const CountyUpdates = ({ counties }: any) => {
-    const countyStatuses = _.map(counties, (c: any) => (
+const CountyUpdates = ({ countyStatuses }: any) => {
+    const countyStatusRows = _.map(countyStatuses, (c: any) => (
         <tr key={ c.id }>
             <td>{ c.id }</td>
             <td>{ c.name }</td>
@@ -74,7 +74,7 @@ const CountyUpdates = ({ counties }: any) => {
                         </tr>
                     </thead>
                     <tbody>
-                        { ...countyStatuses }
+                        { ...countyStatusRows }
                     </tbody>
                 </table>
             </div>
@@ -84,7 +84,7 @@ const CountyUpdates = ({ counties }: any) => {
 
 
 const SoSHomePage = (props: any) => {
-    const { contests, counties, seed } = props;
+    const { contests, counties, countyStatuses, seed } = props;
 
     return (
         <div className='sos-home'>
@@ -93,7 +93,7 @@ const SoSHomePage = (props: any) => {
                 <em>No notifications.</em>
             </div>
             <div className='sos-info pt-card'>
-                <CountyUpdates counties={ counties} />
+                <CountyUpdates countyStatuses={ countyStatuses} />
                 <ContestUpdates contests={ contests } seed={ seed } />
             </div>
             <div>
