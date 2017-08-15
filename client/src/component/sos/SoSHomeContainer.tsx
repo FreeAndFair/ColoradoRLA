@@ -2,6 +2,10 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 
+import * as _ from 'lodash';
+
+import counties from '../../data/counties';
+
 import SoSHomePage from './SoSHomePage';
 
 import dosDashboardRefresh from '../../action/dosDashboardRefresh';
@@ -22,9 +26,14 @@ class SoSHomeContainer extends React.Component<any, any> {
 const mapStateToProps = (state: any) => {
     const { sos } = state;
 
+    const countyStatuses = _.map(counties, (c: any) => {
+        return c;
+    });
+
     return {
         contests: sos.contests,
         counties: sos.counties,
+        countyStatuses,
         seed: sos.seed,
         sos,
     };
