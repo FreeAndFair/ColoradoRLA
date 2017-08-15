@@ -62,13 +62,13 @@ by the RLA Tool:
 
 ### Logging In
 
-![State Login Screenshot](./screenshots/StateLogin.jpg)
+![State Login Screenshot](./screenshots/StateLogin.png)
 
 ### 25.2.2 (A), Entering the Risk Limit
 
 The Sectretary of State will enter the Risk Limit for comparison audits.
 
-![State Risk Limit Entry Screenshot](./screenshots/RiskLimitEntry.jpg)
+![State Risk Limit Entry Screenshot](./screenshots/RiskLimitEntry.png)
 
 ### 25.2.2 (B) - (E)
 
@@ -84,7 +84,7 @@ itself does not provide a utility for verification or hashing.
 Once the ballot manifest files have been hashed, the County user can 
 upload them into the RLA Tool.
 
-![Audit Upload Screenshot](./screenshots/AuditUpload.jpg)
+![Audit Upload Screenshot](./screenshots/AuditUpload.png)
 
 The upload of RLA Tabulation Results Export to the State's Election Night Reporting System required by 25.2.2 (F)(3) 
 must be completed outside of the RLA Tool.
@@ -93,7 +93,7 @@ must be completed outside of the RLA Tool.
 
 The Secretary of State will enter the random seed.
 
-![State Random Seed Entry Screenshot](./screenshots/RandomSeedEntry.jpg)
+![State Random Seed Entry Screenshot](./screenshots/RandomSeedEntry.png)
 
 The RLA Tool uses the random seed in the required pseudo-random number generator. The
 RLA Tool also exports the random seed in a standard format,
@@ -109,7 +109,7 @@ Note that while Rule 25 calls these "contests to be audited",
 the RLA Tool effectively audits all contests, while using the 
 contests selected by the Secretary of State to calculate the risk levels.
 
-![State Contest Selection Screenshot](./screenshots/ContestSelection.jpg)
+![State Contest Selection Screenshot](./screenshots/ContestSelection.png)
 
 ### 25.2.2 (J) Number of Ballot Cards to Audit
 The number of ballot cards to audit changes during the course of the audit depending
@@ -119,7 +119,7 @@ decreases a margin of victory in one of the selected contests) so far.
 The current number of ballot cards to audit can be found.
 <!-- to SoS? to County? to both? -->
 
-![Number to Audit View](./screenshots/NumberToAudit.jpg)
+![Number to Audit View](./screenshots/NumberToAudit.png)
 
 ### 25.2.2 (K) Random Selection of Ballot Cards for Audit
 
@@ -130,7 +130,7 @@ the RLA Tool determines the selection of ballot cards for audit.
 The selection of ballots can be viewed. 
 <!-- to SoS? to County? to both? -->
 
-![Ballots to Audit View](./screenshots/BallotsToAudit.jpg)
+![Ballots to Audit View](./screenshots/BallotsToAudit.png)
 
 ### 25.2.3 (A) Ballot Retrieval, Chain of Custody and Examination
 
@@ -138,16 +138,21 @@ Ballot retrieval from storage container and verification of
 seals relative to the chain-of-custody logs must be done 
 outside the RLA Tool. 
 
-#### 25.2.3 (A)(1) Comparison Audits
+#### 25.2.3 (A)(1) Comparison Auditsg
+
+The RLA Tool provides a sign-in page for Audit Board members starting 
+an audit or resuming after a break.
+
+![Audit Board Signin Screenshot](./screenshots/ABsignin.png)
 
 The RLA Tool allows Audit Boards to report the markings on each individual ballot.
 
-![Report Marks Screenshot](./screenshots/ReportMarks.jpg)
+![Report Marks Screenshot](./screenshots/ReportMarks.png)
 
 After entering the interpretation of the markings from any one ballot, the 
 Audit Board can review what was entered.
 
-![Review Marks Screenshot](./screenshots/ReviewMarks.jpg)
+![Review Marks Screenshot](./screenshots/ReviewMarks.png)
 
 ### 25.2.3 (A)(2) Ballot Polling Audits
 The conduct and reporting of the Audit Board for a Ballot Polling Audit 
@@ -156,7 +161,7 @@ must be completed outside the RLA Tool.
 ### 25.2.3 (B) Non-Unanimous Audit Board
 An Audit Board can use the RLA Tool to report lack of consensus on any particular contest on any particular ballot.
 
-![No Consensus Screenshot](./screenshots/NoConsensus.jpg)
+![No Consensus Screenshot](./screenshots/NoConsensus.png)
 
 ### 25.2.3 (C) Comparisons, Termination, Additional Ballots
 The RLA Tool performs the comparison of the Audit Board's interpretations with the corresponding 
@@ -165,11 +170,11 @@ are exported for the Secretary of State to post on the Audit  (outside the RLA T
 The RLA Tool will allow the Secretary of State to see if the required Risk Limit has 
 been met for the selected contests.
 
-![Risk Limit Met Query Screen](./screenshots/LimitMetQuery.jpg)
+![Risk Limit Met Query Screen](./screenshots/LimitMetQuery.png)
 
 The RLA Tool also allows the Secretary of State to designate a contest for hand counting.
 
-![Full Hand Count Screen](./screenshots/FullHandCount.jpg)
+![Full Hand Count Screen](./screenshots/FullHandCount.png)
 
 The RLA Tool automatically randomly selects additional ballots for audit as necessary.
 
