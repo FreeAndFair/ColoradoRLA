@@ -11,13 +11,10 @@
 
 package us.freeandfair.corla.endpoint;
 
-import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.COUNTY_SKIP_EVENT;
-
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.persistence.Persistence;
 
@@ -28,7 +25,7 @@ import us.freeandfair.corla.persistence.Persistence;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class ContestDownloadByID extends AbstractCountyDashboardEndpoint {
+public class ContestDownloadByID extends AbstractEndpoint {
   /**
    * {@inheritDoc}
    */
@@ -44,13 +41,13 @@ public class ContestDownloadByID extends AbstractCountyDashboardEndpoint {
   public String endpointName() {
     return "/contest/id/:id";
   }
-
+  
   /**
-   * {@inheritDoc}
+   * This endpoint requires any kind of authentication.
    */
   @Override
-  protected ASMEvent endpointEvent() {
-    return COUNTY_SKIP_EVENT;
+  public AuthorizationType requiredAuthorization() {
+    return AuthorizationType.EITHER;
   }
   
   /**

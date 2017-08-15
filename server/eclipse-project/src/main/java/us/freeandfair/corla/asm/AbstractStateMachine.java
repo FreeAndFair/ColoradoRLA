@@ -221,7 +221,7 @@ public abstract class AbstractStateMachine implements Serializable {
         } else {
           // pick the first enabled one
           final ASMTransition skip = transitions.get(0);
-          Main.LOGGER.info("executing skip transition: " + skip);
+          Main.LOGGER.debug("executing skip transition: " + skip);
           my_current_state = transitions.get(0).endState();
         }
       }
