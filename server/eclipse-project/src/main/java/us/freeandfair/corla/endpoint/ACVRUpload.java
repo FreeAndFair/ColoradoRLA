@@ -103,16 +103,21 @@ public class ACVRUpload extends AbstractAuditBoardDashboardEndpoint {
         final CastVoteRecord cvr = Persistence.getByID(submission.cvrID(), 
                                                        CastVoteRecord.class);
         if (cvr == null) {
+          Main.LOGGER.error("could not find original CVR");
           this.badDataContents(the_response, "could not find original CVR");
         } else {
-          cdb.submitAuditCVR(cvr, real_acvr);
+          if (cdb.submitAuditCVR(cvr, real_acvr)) {
+            Persistence.saveOrUpdate(cdb);
+            ok(the_response, "ACVR submitted");
+          } else {
+            Main.LOGGER.error("invalid audit CVR uploaded");
+            badDataContents(the_response, "invalid audit CVR uploaded");
+          }
         }
       }
-      Persistence.saveOrUpdate(cdb);
-      ok(the_response, "ACVR submitted");
     } catch (final JsonSyntaxException e) {
       Main.LOGGER.error("malformed audit CVR upload");
-      badDataContents(the_response, "Invalid audit CVR upload");
+      badDataContents(the_response, "malformed audit CVR upload");
     } catch (final PersistenceException e) {
       Main.LOGGER.error("could not save audit CVR");
       serverError(the_response, "Unable to save audit CVR");
