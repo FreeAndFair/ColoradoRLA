@@ -24,7 +24,7 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => {
         authStateAdmin,
     }, dispatch);
 
-    const submit = ({dashboard, username, password}: any) => {
+    const submit = ({ dashboard, username, password }: any) => {
         switch (dashboard) {
             case 'sos': return b.authStateAdmin(username, password);
             case 'county': return b.authCountyAdmin(username, password);
