@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { bindActionCreators, Dispatch } from 'redux';
 
 import LoginForm, { FormFields } from './LoginForm';
 
@@ -18,7 +18,7 @@ export class LoginFormContainer extends React.Component<any, any> {
 
 const mapStateToProps = () => ({});
 
-const mapDispatchToProps = (dispatch: any) => {
+const mapDispatchToProps = (dispatch: Dispatch<any>) => {
     const b = bindActionCreators({
         authCountyAdmin,
         authStateAdmin,
