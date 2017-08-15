@@ -1,1 +1,4 @@
-export const apiHost = 'localhost:4000';
+const hostname = 'localhost';
+const port = 8888;
+
+export const apiHost = `${hostname}:${port}`;
