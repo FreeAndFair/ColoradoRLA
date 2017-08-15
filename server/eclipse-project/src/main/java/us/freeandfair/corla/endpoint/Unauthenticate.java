@@ -11,22 +11,16 @@
 
 package us.freeandfair.corla.endpoint;
 
-import com.google.gson.JsonSyntaxException;
-
 import spark.Request;
 import spark.Response;
 
-import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.AbstractStateMachine;
-import us.freeandfair.corla.json.SubmittedUsernamePassword;
-import us.freeandfair.corla.model.Administrator.AdministratorType;
 
 /**
- * The endpoint for authenticating a county administrator.
- * 
- * @author Daniel M Zimmerman
- * @author Joe Kiniry <kiniry@freeandfair.us>
+ * The endpoint for unauthenticating an administrator.
+ *  
+ * @author Daniel M Zimmerman <dmz@freeandfair.us>
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
