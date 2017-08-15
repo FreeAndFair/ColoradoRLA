@@ -14,8 +14,10 @@ package us.freeandfair.corla.model;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import us.freeandfair.corla.comparisonaudit.ComparisonAudit;
@@ -31,7 +33,13 @@ import us.freeandfair.corla.util.Pair;
 
 /**
  * The top-level class providing the API to drive RLAs for Colorado.
+ * 
+ * @author Joe Kiniry <kiniry@freeandfair.us>
+ * @author Daniel M. Zimmerman <dmz@freeandfair.us>
+ * @version 0.0.1
  */
+@SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.ModifiedCyclomaticComplexity",
+    "PMD.StdCyclomaticComplexity", "PMD.GodClass"})
 public class RLAAlgorithm {
   /**
    * The RLA comparison audit risk computation algorithm.
@@ -179,41 +187,195 @@ public class RLAAlgorithm {
   }
 
   /**
-   * Computes the discrepancies between CVRs to audit and submitted audit CVRs.
+   * Calculates a discrepancy based on the results from a CVR and an ACVR.
+   * 
+   * @param the_winners The winners of the contest.
+   * @param the_losers The losers of the contest.
+   * @param the_cvr_choices The CVR choices.
+   * @param the_acvr_choices The ACVR choices.
+   * @return the discrepancy as a number in the range [-2 .. 2], where a negative
+   * number indicates an understatement and a positive number an overstatement.
    */
-  private Discrepancies calculateDiscrepancies() {
-    final Discrepancies result = new Discrepancies();
-    
-    
+  @SuppressWarnings({"PMD.ConfusingTernary", "checkstyle:magicnumber"})
+  private int calculateDiscrepancy(final Set<String> the_winners,
+                                   final Set<String> the_losers,
+                                   final Set<String> the_cvr_choices,
+                                   final Set<String> the_acvr_choices) {
+    int result = 0;
+    if (!the_cvr_choices.equals(the_acvr_choices)) {
+      // this is a very quick calculation, and will likely not work correctly 
+      // for elections with multiple winners, but will err on the side of being
+      // pessimistic
+
+      // find the candidates who gained and lost votes in the ACVR
+
+      final Set<String> gained_votes = new HashSet<>(the_acvr_choices);
+      gained_votes.removeAll(the_cvr_choices);
+      final Set<String> winner_gains = new HashSet<>(gained_votes);
+      winner_gains.retainAll(the_winners);
+      final Set<String> loser_gains = new HashSet<>(gained_votes);
+      loser_gains.removeAll(the_winners);
+      
+      final Set<String> lost_votes = new HashSet<>(the_cvr_choices);
+      lost_votes.removeAll(the_acvr_choices);
+      final Set<String> winner_losses = new HashSet<>(lost_votes);
+      winner_losses.retainAll(the_winners);
+      final Set<String> loser_losses = new HashSet<>(lost_votes);
+      loser_losses.removeAll(the_winners);
+      
+      // now, we have several cases:
+      
+      if (!winner_gains.isEmpty() && loser_losses.isEmpty()) {
+        // if only winners gained votes and no losers lost votes, 
+        // it's a 1-vote understatement       
+        result = -1;
+      } else if (!winner_gains.isEmpty() && !loser_losses.isEmpty()) {        
+        // if only winners gained votes and any losers lost votes, 
+        // it's a 2-vote understatement       
+        result = -2;
+      } else if (!winner_losses.isEmpty() && loser_gains.isEmpty()) {
+        // if any winners lost votes and no losers gained votes, 
+        // it's a 1-vote overstatement
+        result = 1;
+      } else if (!winner_losses.isEmpty() && !loser_gains.isEmpty()) {
+        // if any winners lost votes and any losers gained votes,
+        // it's a 2-vote overstatement
+        result = 2;
+      } else if (loser_gains.isEmpty()) {
+        // no votes changed for winners, and no losers gained votes,
+        // so losers must have lost votes; if _all_ the losers lost
+        // votes, it'd be a 1-vote understatement
+
+        if (loser_gains.equals(the_losers)) {
+          result = -1;
+        }
+      } else {
+        // no votes changed for winners, and losers gained votes, 
+        // so it's a 1-vote overstatement
+        result = 1;
+      }
+    }
     
     return result;
   }
   
   /**
-   * Compute the total estimated number of ballots to audit given
-   * that the audit has commenced and auditors have submitted audit
-   * CVRs. 
+   * Computes the discrepancy between a CVR to audit and a submitted audit CVR.
+   * 
+   * @param the_cvr The CVR to audit.
+   * @param the_acvr The audit CVR.
+   * @return the discrepancy as a number in the range [-2 .. 2], where a negative
+   * number indicates an understatement and a positive number an overstatement.
+   */
+  @SuppressWarnings("PMD.NPathComplexity")
+  public int discrepancy(final CastVoteRecord the_cvr, final CastVoteRecord the_acvr) {
+    if (the_cvr == null || the_acvr == null) {
+      throw new IllegalStateException("nonexistent cvr or acvr in audit list");
+    }
+    final Set<ContestToAudit> contests = DoSDashboardQueries.get().contestsToAudit();
+    int worst_discrepancy = Integer.MIN_VALUE;
+    for (final ContestToAudit cta : contests) {
+      final CVRContestInfo cvr_ci = the_cvr.contestInfoForContest(cta.contest());
+      final CVRContestInfo acvr_ci = the_acvr.contestInfoForContest(cta.contest());
+      final Set<String> winners = 
+          my_comparison_audit.winnersForContest(cta.contest().name());
+      final Set<String> losers = new HashSet<>();
+      for (final Choice c : cta.contest().choices()) {
+        if (!winners.contains(c.name())) {
+          losers.add(c.name());
+        }
+      }
+      final Set<String> cvr_choices = new HashSet<>();
+      final Set<String> acvr_choices = new HashSet<>();
+      if (cvr_ci != null) {
+        cvr_choices.addAll(cvr_ci.choices());
+      }
+      if (acvr_ci != null) {
+        acvr_choices.addAll(acvr_ci.choices());
+        if (acvr_choices.size() > cta.contest().votesAllowed()) {
+          // this is an overvote, so we don't count the votes
+          acvr_choices.clear();
+        }
+      }
+      final int discrepancy = 
+          calculateDiscrepancy(winners, losers, cvr_choices, acvr_choices);
+      if (discrepancy != 0) {
+        worst_discrepancy = Math.max(discrepancy, worst_discrepancy);
+      }
+    }
+    int result = 0;
+    if (worst_discrepancy > Integer.MIN_VALUE) {
+      result = worst_discrepancy;
+    }
+    return result;
+  }
+  
+  /**
+   * Computes the discrepancies between CVRs to audit and submitted audit CVRs.
+   */
+  @SuppressWarnings("checkstyle:magicnumber")
+  private Discrepancies calculateDiscrepancies() {
+    final Discrepancies result = new Discrepancies();
+    // for every CVR under audit in the prefix for which aCVRs exist, 
+    // for every contest under audit, calculate the discrepancy and record it
+    
+    final List<Long> cvrs_to_audit = my_dashboard.cvrsToAudit();
+    final List<Long> audit_cvrs = my_dashboard.submittedAuditCVRs();
+    
+    int count = 0;
+    while (count < audit_cvrs.size() && count < cvrs_to_audit.size()) {
+      if (audit_cvrs.get(count) == null) {
+        break;
+      } else {
+        final CastVoteRecord cvr = 
+            Persistence.getByID(cvrs_to_audit.get(count), CastVoteRecord.class);
+        final CastVoteRecord acvr = 
+            Persistence.getByID(audit_cvrs.get(count), CastVoteRecord.class);
+        final int discrepancy = discrepancy(cvr, acvr);
+        switch (discrepancy) {
+          case -2: 
+            result.my_two_votes_under = result.my_two_votes_under + 1;
+            break;
+          
+          case -1:
+            result.my_one_vote_under = result.my_one_vote_under + 1;
+            break;
+          
+          case 1:
+            result.my_one_vote_over = result.my_one_vote_over + 1;
+            break;
+            
+          case 2:
+            result.my_two_votes_over = result.my_two_votes_over + 1;
+            break;
+            
+          default:
+        }
+      }
+      count = count + 1;
+    }
+    
+    // for every remaining CVR under audit, conservatively assume a two-vote 
+    // overstatement
+    
+    while (count < audit_cvrs.size()) {
+      result.my_two_votes_over = result.my_two_votes_over + 1;
+      count = count + 1;
+    }
+    
+    return result;
+  }
+  
+  /**
+   * Estimates the number of ballots left to audit after the audit has started.
    */
   public int estimatedBallotsToAudit() {
-    // determine the prefix of ballots in the audit ballot order that
-    // have CVRs returned
-    
-    final Discrepancies discrepancies = calculateDiscrepancies();
-    
-    // for each of the following computations, we must conservatively 
-    // assume that all future un-audited ballots in the sample are
-    // two-vote overstatements. @todo kiniry Check with Neal on this.
-    
-    // compute the observed rate rate of one-vote overstatements
-    final double r1 = 0.0; 
-    // compute the observed rate rate of two-vote overstatements
-    final double r2 = 0.0; 
-    // compute the observed rate rate of one-vote understatements
-    final double s1 = 0.0; 
-    // compute the observed rate rate of one-vote understatements
-    final double s2 = 0.0;
-        
-    return my_comparison_audit.nminfromrates(r1, r2, s1, s2, true, true);
+    final Discrepancies discrepancies = calculateDiscrepancies();    
+    return Math.max(my_comparison_audit.nmin(discrepancies.my_one_vote_over, 
+                                             discrepancies.my_two_votes_over,
+                                             discrepancies.my_one_vote_under,
+                                             discrepancies.my_two_votes_under) - 
+                    my_dashboard.numberOfBallotsAudited(), 0);
   }
   
   /**

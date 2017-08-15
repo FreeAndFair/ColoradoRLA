@@ -125,10 +125,10 @@ public final class ComparisonAudit {
    * @param the_u2 the number of two-vote understatements
    */
   @SuppressWarnings("checkstyle:magicnumber")
-  private int nmin(final double the_o1, 
-                   final double the_o2, 
-                   final double the_u1,
-                   final double the_u2) {
+  public int nmin(final double the_o1, 
+                  final double the_o2, 
+                  final double the_u1,
+                  final double the_u2) {
     return (int) (Math.max(the_o1 + the_o2 + the_u1 + the_u1,
                            Math.ceil(-2 * GAMMA *
                                      (Math.log(my_risk.doubleValue()) +

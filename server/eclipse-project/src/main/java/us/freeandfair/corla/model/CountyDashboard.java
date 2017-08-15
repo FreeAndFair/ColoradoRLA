@@ -36,6 +36,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
+import us.freeandfair.corla.model.CVRContestInfo.ConsensusValue;
 import us.freeandfair.corla.persistence.AbstractEntity;
 import us.freeandfair.corla.persistence.Persistence;
 
@@ -174,20 +175,20 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
   /**
    * The number of ballots audited.
    */
-  @Column(name = "ballots_audited", nullable = false)
-  private Integer my_number_of_ballots_audited = 0;
+  @Column(nullable = false)
+  private Integer my_ballots_audited = 0;
   
   /**
    * The number of discrepancies found in the audit so far.
    */
-  @Column(name = "discrepancies", nullable = false)
-  private Integer my_number_of_discrepancies = 0;
+  @Column(nullable = false)
+  private Integer my_discrepancies = 0;
   
   /**
    * The number of disagreements found in the audit so far.
    */
-  @Column(name = "disagreements", nullable = false)
-  private Integer my_number_of_disagreements = 0;
+  @Column(nullable = false)
+  private Integer my_disagreements = 0;
   
   /**
    * Constructs an empty county dashboard, solely for persistence.
@@ -341,6 +342,7 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
    */
   //@ require the_cvr_under_audit != null;
   //@ require the_acvr != null;
+  @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.AvoidDeeplyNestedIfStmts"})
   public synchronized boolean submitAuditCVR(final CastVoteRecord the_cvr_under_audit, 
                                              final CastVoteRecord the_audit_cvr) {
     // performs a sanity check to make sure the CVR under audit and the ACVR
@@ -369,7 +371,20 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
         }
       }
       if (increment) {
-        my_number_of_ballots_audited = my_number_of_ballots_audited + 1;
+        my_ballots_audited = my_ballots_audited + 1;
+        boolean disagree = false;
+        boolean discrepancy = false;
+        for (final CVRContestInfo ci : the_audit_cvr.contestInfo()) {
+          disagree |= ci.consensus() == ConsensusValue.NO;
+          discrepancy |= my_rla_algorithm.discrepancy(the_cvr_under_audit, 
+                                                      the_audit_cvr) != 0;
+        }
+        if (disagree) {
+          my_disagreements = my_disagreements + 1;
+        }
+        if (discrepancy) {
+          my_discrepancies = my_discrepancies + 1;
+        }
       }
     } 
 
@@ -440,21 +455,21 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
    * @return the number of ballots audited.
    */
   public synchronized Integer numberOfBallotsAudited() {
-    return my_number_of_ballots_audited;
+    return my_ballots_audited;
   }
   
   /**
    * @return the number of discrepancies found in the audit so far.
    */
   public synchronized Integer numberOfDiscrepancies() {
-    return my_number_of_discrepancies;
+    return my_discrepancies;
   }
   
   /**
    * @return the number of disagreements found in the audit so far.
    */
   public synchronized Integer numberOfDisagreements() {
-    return my_number_of_disagreements;
+    return my_disagreements;
   }
   
   /**
