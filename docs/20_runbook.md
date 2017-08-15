@@ -1,18 +1,24 @@
 \pagebreak
 
+# Colorado Risk Limiting Audit 
 # Run Book 
 
 ## Introduction
 
+This Run Book is written for election administrators who will be 
+implementing a Risk Limiting Audit (RLA) using the RLA Tool. 
+The Run Book will assist these election administrators 
+in using to tool to carry out the actions required
+for a RLA.
+
 ### What the RLA Tool Does
 
-The Risk-Limiting Audit (RLA) tool, developed by Free & Fair 
+The Risk-Limiting Audit tool, developed by Free & Fair 
 for the Colorado Department of
 State for use in elections from November 2017 forward, supports a 
 Risk-Limiting Audit as required by Colorado statute and 
-as described in the Colorado Secretary of State's Rule 25 for
-elections. RLA-related terms and processes are defined and prescribed in Rule 25.
-See http://www.sos.state.co.us/pubs/rule_making/CurrentRules/8CCR1505-1/ElectionRules.pdf.
+as described in the [Colorado Secretary of State's Rule 25](http://www.sos.state.co.us/pubs/rule_making/CurrentRules/8CCR1505-1/ElectionRules.pdf) for
+elections. 
 
 The RLA Tool enables the Secretary of State and each individual 
 County to carry out a Risk-Limiting Audit. The Secretary of State can
