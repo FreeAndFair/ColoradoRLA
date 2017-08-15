@@ -231,11 +231,12 @@ public final class Main {
                    IllegalAccessException | ClassCastException e) {
       Main.LOGGER.error("invalid endpoint class specified: " + e);
     }
-
-    my_spark.afterAfter(new CORSFilter(my_properties));
+    
     for (final Endpoint e : endpoints) {
-      my_spark.before(e.endpointName(), (the_request, the_response) -> 
+      final CORSFilter cors_and_before = 
+          new CORSFilter(my_properties, (the_request, the_response) ->
           e.before(the_request, the_response));
+      my_spark.before(e.endpointName(), cors_and_before);
       my_spark.after(e.endpointName(), (the_request, the_response) -> 
           e.after(the_request, the_response));
       switch (e.endpointType()) {

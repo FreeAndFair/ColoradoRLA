@@ -74,12 +74,19 @@ public class CORSFilter implements Filter {
   private final Map<String, String> my_cors_headers;
   
   /**
+   * The filter to run after this one, if any.
+   */
+  private final Filter my_filter;
+  
+  /**
    * Constructs a new CORSFilter with the specified properties.
    * 
    * @param the_properties The properties.
+   * @param the_filter The filter to run after this one, if any.
    */
-  public CORSFilter(final Properties the_properties) {
+  public CORSFilter(final Properties the_properties, final Filter the_filter) {
     my_cors_headers = corsHeaders(the_properties);
+    my_filter = the_filter;
   }
   
   /**
@@ -108,9 +115,12 @@ public class CORSFilter implements Filter {
    * @param the_request The request.
    * @param the_response The response.
    */
-  public void handle(final Request the_request, final Response the_response) {
+  @SuppressWarnings("PMD.SignatureDeclareThrowsException")
+  public void handle(final Request the_request, final Response the_response) 
+      throws Exception {
     my_cors_headers.forEach((the_key, the_value) -> { 
       the_response.header(the_key, the_value); 
     });
+    my_filter.handle(the_request, the_response);
   }
 }
