@@ -363,8 +363,10 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
     if (first_index >= 0 && 
         the_cvr_under_audit.equals(Persistence.getByID(the_cvr_under_audit.id(), 
                                                        CastVoteRecord.class)) &&
+        the_audit_cvr.equals(Persistence.getByID(the_audit_cvr.id(),
+                                                 CastVoteRecord.class)) &&
         the_cvr_under_audit.isAuditPairWith(the_audit_cvr) &&
-        the_cvr_under_audit.recordType().isAuditorGenerated()) {
+        the_audit_cvr.recordType().isAuditorGenerated()) {
       // the CVRs match!
       result = true;
       boolean increment = false;
