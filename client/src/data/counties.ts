@@ -1,4 +1,9 @@
-export default {
+interface Counties {
+    [key: number]: any;
+}
+
+
+const counties: Counties = {
     1: { id: 1, name: 'Adams' },
     2: { id: 2, name: 'Alamosa' },
     3: { id: 3, name: 'Arapahoe' },
@@ -64,3 +69,6 @@ export default {
     63: { id: 63, name: 'Yuma' },
     64: { id: 64, name: 'Broomfield' },
 };
+
+
+export default counties;
