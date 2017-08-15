@@ -20,7 +20,11 @@ const Breadcrumb = () => (
     </ul>
 );
 
-const CountyTableRow = ({ county }: any) => {
+const CountyTableRow = ({ county, status }: any) => {
+    const started = status !== 'NO_DATA' ? '✔' : '';
+    const submitted = '';
+    const discrepancies = '';
+
     return (
         <tr>
             <td>{ county.id }</td>
@@ -29,17 +33,19 @@ const CountyTableRow = ({ county }: any) => {
                     { county.name }
                 </a>
             </td>
-            <td>{ county.started }</td>
-            <td>{ county.submitted }</td>
-            <td>{ county.discrepancies }</td>
+            <td>{ started }</td>
+            <td>{ submitted }</td>
+            <td>{ discrepancies }</td>
         </tr>
     );
 };
 
-const CountyTable = ({ counties }: any) => {
-    const countyRows = _.map(counties, (c: any) => (
-        <CountyTableRow key={ c.id } county={c} />
-    ));
+const CountyTable = ({ counties, countyStatus }: any) => {
+    const countyRows = _.map(counties, (c: any) => {
+        const status = countyStatus[c.id];
+
+        return <CountyTableRow key={ c.id } county={ c } status={ status } />;
+    });
 
     return (
         <table className='pt-table pt-bordered pt-condensed'>
@@ -60,13 +66,13 @@ const CountyTable = ({ counties }: any) => {
 };
 
 const CountyOverviewPage = (props: any) => {
-    const { counties } = props;
+    const { counties, countyStatus } = props;
 
     return (
         <div>
             <Nav />
             <Breadcrumb />
-            <CountyTable counties={ counties } />
+            <CountyTable counties={ counties } countyStatus={ countyStatus }/>
         </div>
     );
 };
