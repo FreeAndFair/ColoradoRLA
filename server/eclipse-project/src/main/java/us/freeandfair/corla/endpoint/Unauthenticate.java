@@ -11,28 +11,22 @@
 
 package us.freeandfair.corla.endpoint;
 
-import com.google.gson.JsonSyntaxException;
-
 import spark.Request;
 import spark.Response;
 
-import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.AbstractStateMachine;
-import us.freeandfair.corla.json.SubmittedUsernamePassword;
-import us.freeandfair.corla.model.Administrator.AdministratorType;
 
 /**
- * The endpoint for authenticating a county administrator.
- * 
- * @author Daniel M Zimmerman
- * @author Joe Kiniry <kiniry@freeandfair.us>
+ * The endpoint for unauthenticating an administrator.
+ *  
+ * @author Daniel M Zimmerman <dmz@freeandfair.us>
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class AuthenticateCountyAdministrator extends AbstractEndpoint {
+public class Unauthenticate extends AbstractEndpoint {
   /**
-   * @return no authorization is required for this endpoint.
+   * @return no authorization is required for this endpoints.
    */
   @Override
   public AuthorizationType requiredAuthorization() {
@@ -60,7 +54,7 @@ public class AuthenticateCountyAdministrator extends AbstractEndpoint {
    */
   @Override
   public String endpointName() {
-    return "/auth-county-admin";
+    return "/unauthenticate";
   }
 
   /**
@@ -94,24 +88,8 @@ public class AuthenticateCountyAdministrator extends AbstractEndpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    if (Authentication.authenticateAs(the_request, AdministratorType.COUNTY)) {
-      ok(the_response, "Authenticated");
-    } else {
-      try {
-        final SubmittedUsernamePassword auth_info = 
-            Main.GSON.fromJson(the_request.body(), SubmittedUsernamePassword.class);
-        if (auth_info != null &&
-            Authentication.authenticateAs(the_request, auth_info, 
-                                          AdministratorType.COUNTY)) {
-          ok(the_response, "Authenticated");
-        } else {
-          unauthorized(the_response, "Authentication failed");
-        }
-      } catch (final JsonSyntaxException e) {
-        unauthorized(the_response, "Authentication failed");
-      }
-      unauthorized(the_response, "Authentication failed");
-    }
+    Authentication.unauthenticate(the_request);
+    ok(the_response, "Unauthenticated");
     return my_endpoint_result;
   }
 }

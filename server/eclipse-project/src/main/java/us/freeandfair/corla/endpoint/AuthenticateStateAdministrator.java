@@ -33,7 +33,7 @@ import us.freeandfair.corla.model.Administrator.AdministratorType;
 @SuppressWarnings("PMD.AtLeastOneConstructor")
 public class AuthenticateStateAdministrator extends AbstractEndpoint {
   /**
-   * @return no authorization is required for this endpoints.
+   * @return no authorization is required for this endpoint.
    */
   @Override
   public AuthorizationType requiredAuthorization() {

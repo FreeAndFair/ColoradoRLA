@@ -23,9 +23,9 @@ import spark.Response;
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.model.ContestToAudit;
-import us.freeandfair.corla.model.DepartmentOfStateDashboard;
+import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.DepartmentOfStateDashboardQueries;
+import us.freeandfair.corla.query.DoSDashboardQueries;
 
 /**
  * The endpoint for selecting the contests to audit.
@@ -68,11 +68,10 @@ public class SelectContestsForAudit extends AbstractDoSDashboardEndpoint {
   @Override
   public synchronized String endpoint(final Request the_request, 
                                       final Response the_response) {
-    ok(the_response, "Contests selected");
     try {
       final ContestToAudit[] contests = 
           Main.GSON.fromJson(the_request.body(), ContestToAudit[].class);
-      final DepartmentOfStateDashboard dosdb = DepartmentOfStateDashboardQueries.get();
+      final DoSDashboard dosdb = DoSDashboardQueries.get();
       if (dosdb == null) {
         Main.LOGGER.error("could not get department of state dashboard");
         serverError(the_response, "Could not select contests");
@@ -83,7 +82,7 @@ public class SelectContestsForAudit extends AbstractDoSDashboardEndpoint {
         }
       }
       Persistence.saveOrUpdate(dosdb);
-      ok(the_response);
+      ok(the_response, "Contests selected");
     } catch (final JsonSyntaxException e) {
       Main.LOGGER.error("malformed contest selection");
       badDataContents(the_response, "Invalid contest selection data");

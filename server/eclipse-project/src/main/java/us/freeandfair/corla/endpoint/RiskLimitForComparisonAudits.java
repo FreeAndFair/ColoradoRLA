@@ -25,9 +25,9 @@ import spark.Response;
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.json.SubmittedRiskLimit;
-import us.freeandfair.corla.model.DepartmentOfStateDashboard;
+import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.DepartmentOfStateDashboardQueries;
+import us.freeandfair.corla.query.DoSDashboardQueries;
 
 /**
  * The endpoint for establishing the risk limit for comparison audits.
@@ -84,7 +84,7 @@ public class RiskLimitForComparisonAudits extends AbstractDoSDashboardEndpoint {
       if (parsed_limit == null) {
         invariantViolation(the_response, "invalid risk limit specified");
       } else {
-        final DepartmentOfStateDashboard dosd = DepartmentOfStateDashboardQueries.get();
+        final DoSDashboard dosd = DoSDashboardQueries.get();
         if (dosd == null) {
           Main.LOGGER.error("could not get department of state dashboard");
           serverError(the_response, "could not set risk limit");

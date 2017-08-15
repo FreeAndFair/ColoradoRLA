@@ -43,7 +43,7 @@ import us.freeandfair.corla.persistence.AbstractEntity;
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
-public class DepartmentOfStateDashboard extends AbstractEntity implements Serializable {  
+public class DoSDashboard extends AbstractEntity implements Serializable {  
   /**
    * The minimum number of random seed characters.
    */
@@ -84,7 +84,7 @@ public class DepartmentOfStateDashboard extends AbstractEntity implements Serial
   // if we delete this constructor, we get warned that each class should
   // define at least one constructor; we can't win in this situation.
   @SuppressWarnings("PMD.UnnecessaryConstructor")
-  public DepartmentOfStateDashboard() {
+  public DoSDashboard() {
     super();
   }
   

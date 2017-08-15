@@ -9,7 +9,7 @@ us.freeandfair.corla.model.ContestToAudit
 us.freeandfair.corla.model.County
 us.freeandfair.corla.model.CountyDashboard
 us.freeandfair.corla.model.CVRContestInfo
-us.freeandfair.corla.model.DepartmentOfStateDashboard
+us.freeandfair.corla.model.DoSDashboard
 us.freeandfair.corla.model.Elector
 us.freeandfair.corla.model.IntermediateAuditReportInfo
 us.freeandfair.corla.model.UploadedFile

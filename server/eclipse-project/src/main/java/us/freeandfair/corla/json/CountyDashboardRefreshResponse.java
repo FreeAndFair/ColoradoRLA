@@ -27,12 +27,12 @@ import us.freeandfair.corla.model.ContestToAudit.AuditType;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.CountyDashboard.CountyStatus;
-import us.freeandfair.corla.model.DepartmentOfStateDashboard;
+import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.model.Elector;
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.model.UploadedFile.FileType;
 import us.freeandfair.corla.query.CountyQueries;
-import us.freeandfair.corla.query.DepartmentOfStateDashboardQueries;
+import us.freeandfair.corla.query.DoSDashboardQueries;
 import us.freeandfair.corla.query.UploadedFileQueries;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
@@ -102,10 +102,10 @@ public class CountyDashboardRefreshResponse {
   private final Integer my_number_of_ballots_audited;
   
   /**
-   * The number of discrepencies found.
+   * The number of discrepancies found.
    * @todo connect this to something
    */
-  private final Integer my_number_of_discrepencies;
+  private final Integer my_number_of_discrepancies;
   
   /**
    * The number of disagreements found.
@@ -166,7 +166,7 @@ public class CountyDashboardRefreshResponse {
     my_audit_time = the_audit_time;
     my_estimated_ballots_to_audit = the_estimated_ballots_to_audit;
     my_number_of_ballots_audited = the_number_of_ballots_audited;
-    my_number_of_discrepencies = the_number_of_discrepencies;
+    my_number_of_discrepancies = the_number_of_discrepencies;
     my_number_of_disagreements = the_number_of_disagreements;
     my_ballots_to_audit = the_ballots_to_audit;
     my_ballot_under_audit_id = the_ballot_under_audit;
@@ -187,7 +187,7 @@ public class CountyDashboardRefreshResponse {
       createResponse(final CountyDashboard the_dashboard) {
     final Integer county_id = the_dashboard.countyID();
     final County county = CountyQueries.byID(county_id);
-    final DepartmentOfStateDashboard dosd = DepartmentOfStateDashboardQueries.get();
+    final DoSDashboard dosd = DoSDashboardQueries.get();
 
     if (county == null || dosd == null) {
       throw new PersistenceException("unable to read county dashboard state");
@@ -233,19 +233,9 @@ public class CountyDashboardRefreshResponse {
    
     // estimated ballots to audit = list size from dashboard
     
-    // number of ballots audited
-    int number_of_ballots_audited = 0;
-    for (final Long bid : the_dashboard.submittedAuditCVRs()) {
-      if (bid != null) {
-        number_of_ballots_audited = number_of_ballots_audited + 1;
-      }
-    }
+    // number of ballots audited - from dashboard
     
-    // number of discrepencies doesn't exist yet
-    final Integer number_of_discrepencies = -1;
-    
-    // number of disagreements doesn't exist yet
-    final Integer number_of_disagreements = -1;
+    // number of discrepancies/disagreements - from dashboard
 
     // list of ballots to audit = list from dashboard
     
@@ -259,10 +249,10 @@ public class CountyDashboardRefreshResponse {
                                               contests,
                                               contests_under_audit,
                                               the_dashboard.auditTimestamp(),
-                                              the_dashboard.cvrsToAudit().size(),
-                                              number_of_ballots_audited,
-                                              number_of_discrepencies,
-                                              number_of_disagreements,
+                                              the_dashboard.estimatedBallotsToAudit(),
+                                              the_dashboard.ballotsAudited(),
+                                              the_dashboard.discrepancies(),
+                                              the_dashboard.disagreements(),
                                               the_dashboard.cvrsToAudit(),
                                               the_dashboard.cvrUnderAudit());
   }

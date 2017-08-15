@@ -25,24 +25,6 @@
     </form>
 </div>
 <hr>
-<h2>Establish Risk Limit For Comparison Audits Test</h2>
-<div style="display:block">
-    <b>Note: Must be authenticated as an administrator to carry out this action.</b>
-    <form action="http://localhost:8888/risk-limit-comp-audits" method="post">
-        Risk Limit: <input type="text" name="risk_limit" />
-        <input type="submit" id="buttonUpload" value="Set Risk Limit"/>
-    </form>
-</div>
-<hr>
-<h2>Upload Random Seed Test</h2>
-<div style="display:block">
-    <b>Note: Must be authenticated as an administrator to carry out this action.</b>
-    <form action="http://localhost:8888/random-seed" method="post">
-        Random Seed: <input type="text" name="random_seed" />
-        <input type="submit" id="buttonUpload" value="Set Random Seed"/>
-    </form>
-</div>
-<hr>
 <h2>CVR Export Upload Test</h2>
 <div style="display:block">
     <form action="http://localhost:8888/upload-cvr-export" method="post" enctype="multipart/form-data">
@@ -77,6 +59,16 @@ Manually go to <tt>http://localhost:8888/cvr/county?A&B&C&...</tt>, replacing <t
 Manually go to <tt>http://localhost:8888/acvr/county?A&B&C&...</tt>, replacing <tt>A, B, C</tt> with county identifier numbers.
 </div>
 <hr>
+<h2>Generate Ballots to Audit Lists</h2>
+<div style="display:block">
+    <form action="http://localhost:8888/ballots-to-audit/publish" method="post">
+        <input type="submit" id="buttonUpload" value="Generate Ballots to Audit Lists"/>
+    </form>
+</div>
+<b>Note: Must be authenticated as a state administrator to carry out this action. Also,
+there must already be a risk limit and contests to audit set, and CVRs uploaded, some
+of which cannot be done from this static page at present.</b>
+<hr>
 <h2>Ballot Manifest Upload Test</h2>
 <div style="display:block">
     <form action="http://localhost:8888/upload-ballot-manifest" method="post" enctype="multipart/form-data">
@@ -107,9 +99,17 @@ Manually go to <tt>http://localhost:8888/contest/county?A&B&C&...</tt>, replacin
 </div>
 <hr>
 <h2><a href="http://localhost:8888/dos-dashboard">DoS Dashboard Refresh Test</a></h2>
-(must be authenticated as state admin)
+<b>Note: Must be authenticated as a state administrator to carry out this action.</b>
 <hr>
 <h2><a href="http://localhost:8888/county-dashboard">County Dashboard Refresh Test</a></h2>
-(must be authenticated as county admin)
+<b>Note: Must be authenticated as a county administrator to carry out this action.</b>
+<hr>
+<h2>Reset Database</h2>
+<div style="display:block">
+    <form action="http://localhost:8888/reset-database" method="post">
+        <input type="submit" id="buttonUpload" value="Reset Database"/>
+    </form>
+</div>
+<b>Note: Must be authenticated as a state administrator to carry out this action.</b>
 </body>
 </html>

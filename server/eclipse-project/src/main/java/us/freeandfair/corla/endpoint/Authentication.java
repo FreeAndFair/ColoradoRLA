@@ -79,8 +79,8 @@ public final class Authentication {
       // this should never happen since we control what's in the session object,
       // but if it does, we'll clear out that attribute and thereby force another
       // authentication
-      the_request.session().removeAttribute(ADMIN);
       Main.LOGGER.error("Invalid admin type detected in session.");
+      unauthenticate(the_request);
     }
     
     return result;
@@ -112,11 +112,13 @@ public final class Authentication {
   public static boolean authenticate(final Request the_request, 
                                      final SubmittedUsernamePassword the_auth_info) {
     boolean result = false;
-    if (the_auth_info.username() != null && the_auth_info.password() != null) {
+    if (the_auth_info.username() != null && 
+        the_auth_info.username().trim().length() > 0 &&
+        the_auth_info.password() != null) {
       try {
         final Administrator admin = 
             AdministratorQueries.byUsername(the_auth_info.username());
-        if (admin != null) {
+        if (admin != null) { // TODO: password check!
           admin.updateLastLoginTime();
           Persistence.saveOrUpdate(admin);
           result = true;
@@ -124,17 +126,20 @@ public final class Authentication {
           Main.LOGGER.info("Authentication succeeded for user " + 
                            the_auth_info.username() + 
                            " of type " + admin.type());
-        }
+        } 
       } catch (final PersistenceException e) {
         // there's nothing we can really do here other than saying that the
         // authentication failed; it's also possible we failed to update the last
         // login time, but that's not critical
+        unauthenticate(the_request);
       }
+    } else {
+      Main.LOGGER.info("invalid username or password specified");
     }
     
     if (!result) {
       // a failed authentication attempt removes any existing session authentication 
-      the_request.session().removeAttribute(ADMIN);
+      unauthenticate(the_request);
       Main.LOGGER.info("Authentication failed for user " + the_auth_info.username());
     }
     
@@ -183,9 +188,9 @@ public final class Authentication {
         if (admin.type() != the_type) {
           // remove the session authentication
           result = false;
-          the_request.session().removeAttribute(ADMIN);
           Main.LOGGER.info("User " + admin.username() + " was not of expected " +
                            "type " + the_type);
+          unauthenticate(the_request);
         }
       }
     }
@@ -212,5 +217,15 @@ public final class Authentication {
     }
     
     return result;
+  }
+  
+  /**
+   * Unauthenticates the session associated with a request.
+   * 
+   * @param the_request The request.
+   */
+  public static void unauthenticate(final Request the_request) {
+    the_request.session().removeAttribute(ADMIN);
+    Main.LOGGER.info("session is now unauthenticated");
   }
 }

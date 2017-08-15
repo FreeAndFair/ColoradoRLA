@@ -26,6 +26,8 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -34,6 +36,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
+import us.freeandfair.corla.model.CVRContestInfo.ConsensusValue;
 import us.freeandfair.corla.persistence.AbstractEntity;
 import us.freeandfair.corla.persistence.Persistence;
 
@@ -48,11 +51,16 @@ import us.freeandfair.corla.persistence.Persistence;
 //this class has many fields that would normally be declared final, but
 //cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
-public class CountyDashboard extends AbstractEntity implements Serializable {   
+public class CountyDashboard extends AbstractEntity implements Serializable {
   /**
    * The minimum number of members on an audit board.
    */
   public static final int MIN_AUDIT_BOARD_MEMBERS = 2;
+  
+  /**
+   * The empty RLA algorithm constant.
+   */
+  private static final RLAAlgorithm NO_RLA_ALGORITHM = null;
   
   /**
    * The "index" string.
@@ -78,7 +86,14 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
    * The county status of this dashboard.
    */
   @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
   private CountyStatus my_status = CountyStatus.NO_DATA;
+  
+  /**
+   * The RLAAlgorithm of this dashboard. Computed on the fly when
+   * necessary.
+   */
+  private transient RLAAlgorithm my_rla_algorithm;
   
   /**
    * The timestamp of the most recent set of uploaded CVRs.
@@ -161,6 +176,24 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
   @OrderColumn(name = INDEX)
   private List<IntermediateAuditReportInfo> my_intermediate_reports = 
       new ArrayList<>();
+  
+  /**
+   * The number of ballots audited.
+   */
+  @Column(nullable = false)
+  private Integer my_ballots_audited = 0;
+  
+  /**
+   * The number of discrepancies found in the audit so far.
+   */
+  @Column(nullable = false)
+  private Integer my_discrepancies = 0;
+  
+  /**
+   * The number of disagreements found in the audit so far.
+   */
+  @Column(nullable = false)
+  private Integer my_disagreements = 0;
   
   /**
    * Constructs an empty county dashboard, solely for persistence.
@@ -281,20 +314,19 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
    * audit CVRs.
    * 
    * @param the_cvrs_to_audit A list of the IDs of the CVRs to audit,
-   * in the order they should be examined. It must contain no duplicates.
-   * @exception IllegalArgumentException if the list contains duplicates.
+   * in the order they should be examined. It may contain duplicates, which
+   * are dealt with appropriately when submitting audit CVRs.
    */
   public synchronized void setCVRsToAudit(final List<Long> the_cvrs_to_audit) 
       throws IllegalArgumentException {
-    final Set<Long> duplicate_check = new HashSet<Long>(the_cvrs_to_audit);
-    if (duplicate_check.size() < the_cvrs_to_audit.size()) {
-      throw new IllegalArgumentException("duplicate elements in audit cvr list");
-    }
     if (the_cvrs_to_audit.contains(null)) {
       throw new IllegalArgumentException("null elements in audit cvr list");
     }
     my_cvrs_to_audit = new ArrayList<Long>(the_cvrs_to_audit);
     my_submitted_audit_cvrs.clear();
+    my_discrepancies = 0;
+    my_disagreements = 0;
+    my_rla_algorithm = NO_RLA_ALGORITHM;
     for (int i = 0; i < my_cvrs_to_audit.size(); i++) {
       my_submitted_audit_cvrs.add(null);
     }
@@ -318,20 +350,50 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
    */
   //@ require the_cvr_under_audit != null;
   //@ require the_acvr != null;
+  @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.AvoidDeeplyNestedIfStmts"})
   public synchronized boolean submitAuditCVR(final CastVoteRecord the_cvr_under_audit, 
                                              final CastVoteRecord the_audit_cvr) {
     // performs a sanity check to make sure the CVR under audit and the ACVR
     // are the same card
     boolean result = false;
-    final int index = my_cvrs_to_audit.indexOf(the_cvr_under_audit.id());
-    if (index >= 0 && 
+    
+    // a CVR can appear in the list more than once
+    final int first_index = my_cvrs_to_audit.indexOf(the_cvr_under_audit.id());
+    final int last_index = my_cvrs_to_audit.lastIndexOf(the_cvr_under_audit.id());
+    if (first_index >= 0 && 
         the_cvr_under_audit.equals(Persistence.getByID(the_cvr_under_audit.id(), 
                                                        CastVoteRecord.class)) &&
         the_cvr_under_audit.isAuditPairWith(the_audit_cvr) &&
         the_cvr_under_audit.recordType().isAuditorGenerated()) {
       // the CVRs match!
-      my_submitted_audit_cvrs.set(index, the_audit_cvr.id());
       result = true;
+      boolean increment = false;
+      for (int index = first_index; index <= last_index; index++) {
+        if (my_cvrs_to_audit.get(index).equals(the_cvr_under_audit.id()) &&
+            my_submitted_audit_cvrs.get(index) == null) {
+          // we bump the number of ballots audited as long as this is not a
+          // replacement for an already-audited result
+          // TODO: do we allow such replacements at all? 
+          increment = true;
+          my_submitted_audit_cvrs.set(index, the_audit_cvr.id());
+        }
+      }
+      if (increment) {
+        my_ballots_audited = my_ballots_audited + 1;
+        boolean disagree = false;
+        boolean discrepancy = false;
+        for (final CVRContestInfo ci : the_audit_cvr.contestInfo()) {
+          disagree |= ci.consensus() == ConsensusValue.NO;
+          discrepancy |= my_rla_algorithm.discrepancy(the_cvr_under_audit, 
+                                                      the_audit_cvr) != 0;
+        }
+        if (disagree) {
+          my_disagreements = my_disagreements + 1;
+        }
+        if (discrepancy) {
+          my_discrepancies = my_discrepancies + 1;
+        }
+      }
     } 
 
     return result;
@@ -395,6 +457,48 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
       }
     }
     return null;
+  }
+  
+  /**
+   * @return the number of ballots audited.
+   */
+  public synchronized Integer ballotsAudited() {
+    return my_ballots_audited;
+  }
+  
+  /**
+   * @return the number of discrepancies found in the audit so far.
+   */
+  public synchronized Integer discrepancies() {
+    return my_discrepancies;
+  }
+  
+  /**
+   * @return the number of disagreements found in the audit so far.
+   */
+  public synchronized Integer disagreements() {
+    return my_disagreements;
+  }
+  
+  /**
+   * @return the estimated number of ballots to audit.
+   */
+  public synchronized Integer estimatedBallotsToAudit() {
+    int result = 0;
+    if (!my_cvrs_to_audit.isEmpty()) {
+      initializeRLAAlgorithm();
+      result = my_rla_algorithm.estimatedBallotsToAudit();
+    }
+    return result;
+  }
+  
+  /**
+   * Initialize the RLAAlgorithm object for this dashboard, if it is uninitialized.
+   */
+  private synchronized void initializeRLAAlgorithm() {
+    if (my_rla_algorithm == null && !my_cvrs_to_audit.isEmpty()) {
+      my_rla_algorithm = new RLAAlgorithm(this);
+    }
   }
   
   /**

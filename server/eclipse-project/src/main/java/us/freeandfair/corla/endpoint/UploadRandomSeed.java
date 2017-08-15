@@ -23,9 +23,9 @@ import spark.Response;
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.json.SubmittedRandomSeed;
-import us.freeandfair.corla.model.DepartmentOfStateDashboard;
+import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.DepartmentOfStateDashboardQueries;
+import us.freeandfair.corla.query.DoSDashboardQueries;
 
 /**
  * The endpoint for uploading the random seed.
@@ -84,8 +84,8 @@ public class UploadRandomSeed extends AbstractDoSDashboardEndpoint {
     try {
       final SubmittedRandomSeed seed = 
           Main.GSON.fromJson(the_request.body(), SubmittedRandomSeed.class);
-      if (DepartmentOfStateDashboard.isValidSeed(seed.seed())) {
-        final DepartmentOfStateDashboard dosd = DepartmentOfStateDashboardQueries.get();
+      if (DoSDashboard.isValidSeed(seed.seed())) {
+        final DoSDashboard dosd = DoSDashboardQueries.get();
         if (dosd == null) {
           Main.LOGGER.error("could not get department of state dashboard");
           serverError(the_response, "could not set random seed");
