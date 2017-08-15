@@ -51,11 +51,16 @@ import us.freeandfair.corla.persistence.Persistence;
 //this class has many fields that would normally be declared final, but
 //cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
-public class CountyDashboard extends AbstractEntity implements Serializable {   
+public class CountyDashboard extends AbstractEntity implements Serializable {
   /**
    * The minimum number of members on an audit board.
    */
   public static final int MIN_AUDIT_BOARD_MEMBERS = 2;
+  
+  /**
+   * The empty RLA algorithm constant.
+   */
+  private static final RLAAlgorithm NO_RLA_ALGORITHM = null;
   
   /**
    * The "index" string.
@@ -319,6 +324,9 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
     }
     my_cvrs_to_audit = new ArrayList<Long>(the_cvrs_to_audit);
     my_submitted_audit_cvrs.clear();
+    my_discrepancies = 0;
+    my_disagreements = 0;
+    my_rla_algorithm = NO_RLA_ALGORITHM;
     for (int i = 0; i < my_cvrs_to_audit.size(); i++) {
       my_submitted_audit_cvrs.add(null);
     }
