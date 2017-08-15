@@ -18,4 +18,4 @@ const setRiskLimit = createSubmitAction({
 });
 
 
-export default (riskLimit: number) => format(riskLimit);
+export default (riskLimit: number) => setRiskLimit(format(riskLimit));
