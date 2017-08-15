@@ -107,6 +107,7 @@ public class ACVRUpload extends AbstractAuditBoardDashboardEndpoint {
         }
       }
       Persistence.saveOrUpdate(cdb);
+      ok(the_response, "ACVR submitted");
     } catch (final JsonSyntaxException e) {
       Main.LOGGER.error("malformed audit CVR upload");
       badDataContents(the_response, "Invalid audit CVR upload");
@@ -114,7 +115,6 @@ public class ACVRUpload extends AbstractAuditBoardDashboardEndpoint {
       Main.LOGGER.error("could not save audit CVR");
       serverError(the_response, "Unable to save audit CVR");
     }
-    ok(the_response, "ACVR submitted");
     return my_endpoint_result;
   }
   
