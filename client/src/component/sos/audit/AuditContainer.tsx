@@ -22,7 +22,7 @@ class AuditContainer extends React.Component<any, any> {
 
 const mapStateToProps = () => ({});
 
-const mapDispatchToProps = (dispatch: any) => bindActionCreators({
+const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
     setRiskLimit,
 }, dispatch);
 
