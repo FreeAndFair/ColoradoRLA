@@ -246,8 +246,7 @@ public class RLAAlgorithm {
         // no votes changed for winners, and no losers gained votes,
         // so losers must have lost votes; if _all_ the losers lost
         // votes, it'd be a 1-vote understatement
-
-        if (loser_gains.equals(the_losers)) {
+        if (loser_losses.equals(the_losers)) {
           result = -1;
         }
       } else {
