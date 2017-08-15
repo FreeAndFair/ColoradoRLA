@@ -23,7 +23,11 @@ const Breadcrumb = ({ county }: any) => (
     </ul>
 );
 
-const CountyDetails = ({ county }: any) => {
+const CountyDetails = ({ county, status }: any) => {
+    const started = status !== 'NO_DATA' ? '✔' : '';
+    const submitted = '';
+    const discrepancies = '';
+
     return (
         <div className='pt-card'>
             <table className='pt-table pt-bordered pt-condensed'>
@@ -38,15 +42,15 @@ const CountyDetails = ({ county }: any) => {
                     </tr>
                     <tr>
                         <td>Started:</td>
-                        <td>{ county.started }</td>
+                        <td>{ started }</td>
                     </tr>
                     <tr>
                         <td>Ballots Submitted:</td>
-                        <td>{ county.submitted }</td>
+                        <td>{ submitted }</td>
                     </tr>
                     <tr>
                         <td>Discrepancies:</td>
-                        <td>{ county.discrepancies }</td>
+                        <td>{ discrepancies }</td>
                     </tr>
                 </tbody>
             </table>
@@ -61,15 +65,13 @@ const CountyDetails = ({ county }: any) => {
 };
 
 
-const CountyDetailPage = (props: any) => {
-    const { county } = props;
-
+const CountyDetailPage = ({ county, status }: any) => {
     return (
         <div>
             <Nav />
             <Breadcrumb county={ county } />
             <h3>{ county.name }</h3>
-            <CountyDetails county={ county } />
+            <CountyDetails county={ county } status={ status } />
         </div>
     );
 };
