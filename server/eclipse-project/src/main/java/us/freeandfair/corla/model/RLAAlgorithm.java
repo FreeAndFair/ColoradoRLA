@@ -30,6 +30,7 @@ import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CastVoteRecordQueries;
 import us.freeandfair.corla.query.DoSDashboardQueries;
 import us.freeandfair.corla.util.Pair;
+import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
  * The top-level class providing the API to drive RLAs for Colorado.
@@ -314,6 +315,8 @@ public class RLAAlgorithm {
    * Computes the discrepancies between CVRs to audit and submitted audit CVRs.
    */
   @SuppressWarnings("checkstyle:magicnumber")
+  // false positive: there is in fact a default in the switch statement
+  @SuppressFBWarnings("SF_SWITCH_NO_DEFAULT")
   private Discrepancies calculateDiscrepancies() {
     final Discrepancies result = new Discrepancies();
     // for every CVR under audit in the prefix for which aCVRs exist, 
