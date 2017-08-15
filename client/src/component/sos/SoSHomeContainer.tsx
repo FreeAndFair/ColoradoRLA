@@ -16,8 +16,11 @@ class SoSHomeContainer extends React.Component<any, any> {
     public render() {
         const { dosDashboardRefresh, fetchContests } = this.props;
 
-        setTimeout(dosDashboardRefresh, 1000);
-        setTimeout(fetchContests, 1000);
+        const refresh = () => {
+            dosDashboardRefresh();
+            fetchContests();
+        };
+        setTimeout(refresh, 10 * 1000);
 
         return <SoSHomePage { ...this.props } />;
     }
