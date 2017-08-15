@@ -13,7 +13,12 @@ const createFetchAction = ({
     return (dispatch: Dispatch<any>) => {
         dispatch({ type: sendType });
 
-        fetch(url)
+        const init: any = {
+            credentials: 'include',
+            method: 'get',
+        };
+
+        fetch(url, init)
             .then(r => {
                 if (!r.ok) {
                     dispatch({ type: failType });
