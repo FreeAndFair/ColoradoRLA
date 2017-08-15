@@ -44,6 +44,7 @@ import us.freeandfair.corla.asm.AuditBoardDashboardASM;
 import us.freeandfair.corla.asm.CountyDashboardASM;
 import us.freeandfair.corla.asm.DoSDashboardASM;
 import us.freeandfair.corla.asm.PersistentASMState;
+import us.freeandfair.corla.endpoint.CORSFilter;
 import us.freeandfair.corla.endpoint.Endpoint;
 import us.freeandfair.corla.json.FreeAndFairNamingStrategy;
 import us.freeandfair.corla.model.Administrator;
@@ -231,6 +232,7 @@ public final class Main {
       Main.LOGGER.error("invalid endpoint class specified: " + e);
     }
 
+    my_spark.afterAfter(new CORSFilter(my_properties));
     for (final Endpoint e : endpoints) {
       my_spark.before(e.endpointName(), (the_request, the_response) -> 
           e.before(the_request, the_response));

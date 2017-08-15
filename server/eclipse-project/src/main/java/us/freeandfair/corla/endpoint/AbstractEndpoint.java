@@ -341,9 +341,6 @@ public abstract class AbstractEndpoint implements Endpoint {
   @SuppressWarnings("PMD.ConfusingTernary")
   @Override
   public void before(final Request the_request, final Response the_response) {
-    // Allow cross-origin requests.
-    the_response.header("access-control-allow-origin", "*");
-    
     // Presume everything goes ok.
     ok(the_response);
 
