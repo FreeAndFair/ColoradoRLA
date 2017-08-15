@@ -476,15 +476,19 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
    * @return the estimated number of ballots to audit.
    */
   public synchronized Integer estimatedNumberOfBallotsToAudit() {
-    initializeRLAAlgorithm();
-    return my_rla_algorithm.estimatedBallotsToAudit();
+    int result = 0;
+    if (!my_cvrs_to_audit.isEmpty()) {
+      initializeRLAAlgorithm();
+      result = my_rla_algorithm.estimatedBallotsToAudit();
+    }
+    return result;
   }
   
   /**
    * Initialize the RLAAlgorithm object for this dashboard, if it is uninitialized.
    */
   private synchronized void initializeRLAAlgorithm() {
-    if (my_rla_algorithm == null) {
+    if (my_rla_algorithm == null && !my_cvrs_to_audit.isEmpty()) {
       my_rla_algorithm = new RLAAlgorithm(this);
     }
   }
