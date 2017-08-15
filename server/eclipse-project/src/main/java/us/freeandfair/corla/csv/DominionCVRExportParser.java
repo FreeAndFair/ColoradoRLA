@@ -277,7 +277,7 @@ public class DominionCVRExportParser implements CVRExportParser {
                              imprinted_id, ballot_type, 
                              contest_info);
       Persistence.saveOrUpdate(new_cvr);
-      Main.LOGGER.info("parsed CVR: " + new_cvr);
+      Main.LOGGER.debug("parsed CVR: " + new_cvr);
       return new_cvr;
     } catch (final NumberFormatException e) {
       return null;
