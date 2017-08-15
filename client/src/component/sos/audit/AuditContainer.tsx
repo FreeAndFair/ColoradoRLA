@@ -9,10 +9,11 @@ import setRiskLimit from '../../../action/setRiskLimit';
 
 class AuditContainer extends React.Component<any, any> {
     public render() {
-        const { history, setRiskLimit } = this.props;
+        const { history, riskLimit, setRiskLimit } = this.props;
 
         const props = {
             nextPage: () => history.push('/sos/audit/seed'),
+            riskLimit,
             setRiskLimit,
         };
 
@@ -20,7 +21,10 @@ class AuditContainer extends React.Component<any, any> {
     }
 }
 
-const mapStateToProps = () => ({});
+const mapStateToProps = ({ sos }: any) => {
+    const { riskLimit } = sos;
+    return { riskLimit, sos };
+};
 
 const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
     setRiskLimit,
