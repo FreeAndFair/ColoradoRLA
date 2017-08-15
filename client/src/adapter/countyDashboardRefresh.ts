@@ -52,12 +52,12 @@ export const parse = (data: CountyDashboard, state: any): any => {
 
     return {
         auditBoardMembers: data.audit_board_members.map(parseBoardMember),
-        auditTime: parseTimestamp(data.audit_time),
+        auditTime: data.audit_time ? parseTimestamp(data.audit_time) : null,
         ballotManifestDigest: data.ballot_manifest_digest,
         ballotUnderAuditId: data.ballot_under_audit_id,
         ballotsToAudit: data.ballots_to_audit,
         contests: data.contests.map(findContest),
-        contestsUnderAudit: data.contests_under_audit.map(findContest),
+        contestsUnderAudit: _.mapValues(data.contests_under_audit, findContest),
         cvrExportDigest: data.cvr_export_digest,
         estimatedBallotsToAudit: data.estimated_ballots_to_audit,
         generalInformation: data.general_information,
