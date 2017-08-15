@@ -378,7 +378,7 @@ public class RLAAlgorithm {
                                              discrepancies.my_two_votes_over,
                                              discrepancies.my_one_vote_under,
                                              discrepancies.my_two_votes_under) - 
-                    my_dashboard.numberOfBallotsAudited(), 0);
+                    my_dashboard.ballotsAudited(), 0);
   }
   
   /**

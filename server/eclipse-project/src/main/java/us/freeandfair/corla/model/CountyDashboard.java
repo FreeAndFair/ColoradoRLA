@@ -454,28 +454,28 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
   /**
    * @return the number of ballots audited.
    */
-  public synchronized Integer numberOfBallotsAudited() {
+  public synchronized Integer ballotsAudited() {
     return my_ballots_audited;
   }
   
   /**
    * @return the number of discrepancies found in the audit so far.
    */
-  public synchronized Integer numberOfDiscrepancies() {
+  public synchronized Integer discrepancies() {
     return my_discrepancies;
   }
   
   /**
    * @return the number of disagreements found in the audit so far.
    */
-  public synchronized Integer numberOfDisagreements() {
+  public synchronized Integer disagreements() {
     return my_disagreements;
   }
   
   /**
    * @return the estimated number of ballots to audit.
    */
-  public synchronized Integer estimatedNumberOfBallotsToAudit() {
+  public synchronized Integer estimatedBallotsToAudit() {
     int result = 0;
     if (!my_cvrs_to_audit.isEmpty()) {
       initializeRLAAlgorithm();

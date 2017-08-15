@@ -249,10 +249,10 @@ public class CountyDashboardRefreshResponse {
                                               contests,
                                               contests_under_audit,
                                               the_dashboard.auditTimestamp(),
-                                              the_dashboard.estimatedNumberOfBallotsToAudit(),
-                                              the_dashboard.numberOfBallotsAudited(),
-                                              the_dashboard.numberOfDiscrepancies(),
-                                              the_dashboard.numberOfDisagreements(),
+                                              the_dashboard.estimatedBallotsToAudit(),
+                                              the_dashboard.ballotsAudited(),
+                                              the_dashboard.discrepancies(),
+                                              the_dashboard.disagreements(),
                                               the_dashboard.cvrsToAudit(),
                                               the_dashboard.cvrUnderAudit());
   }
