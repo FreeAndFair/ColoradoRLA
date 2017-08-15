@@ -80,13 +80,15 @@ public class ACVRUpload extends AbstractAuditBoardDashboardEndpoint {
       final SubmittedAuditCVR submission =
           Main.GSON.fromJson(the_request.body(), SubmittedAuditCVR.class);
       final CastVoteRecord acvr = submission.auditCVR();
+      acvr.setID(null);
       final CastVoteRecord real_acvr = 
           new CastVoteRecord(RecordType.AUDITOR_ENTERED, Instant.now(), 
                              acvr.countyID(), acvr.scannerID(), acvr.batchID(), 
                              acvr.recordID(), acvr.imprintedID(), acvr.ballotType(), 
                              acvr.contestInfo());
       Persistence.saveOrUpdate(real_acvr);
-      Main.LOGGER.info("Audit CVR parsed and stored as id " + real_acvr.id());
+      Main.LOGGER.info("Audit CVR for CVR id " + submission.cvrID() + 
+                       " parsed and stored as id " + real_acvr.id());
       final OptionalLong count = count();
       if (count.isPresent()) {
         Main.LOGGER.info(count.getAsLong() + " ACVRs in storage");
