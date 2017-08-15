@@ -13,10 +13,13 @@ interface FormState {
 }
 
 
+const DEFAULT_RISK_LIMIT = 0.05;
+
+
 class RiskLimitForm extends React.Component<FormProps & any, FormState> {
     public state: FormState = {
-        ballotPollingLimit: 0.05,
-        comparisonLimit: 0.05,
+        ballotPollingLimit: DEFAULT_RISK_LIMIT,
+        comparisonLimit: DEFAULT_RISK_LIMIT,
     };
 
     public render() {
