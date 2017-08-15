@@ -111,7 +111,6 @@ public class AuthenticateStateAdministrator extends AbstractEndpoint {
       } catch (final JsonSyntaxException e) {
         unauthorized(the_response, "Authentication failed");
       }
-      unauthorized(the_response, "Authentication failed");
     }
     return my_endpoint_result;
   }
