@@ -34,7 +34,9 @@ import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.PersistentASMStateQueries;
 
 /**
- * Reset the database, except for authentication information.
+ * Reset the database, except for authentication information and uploaded
+ * artifact data (the latter is cleaned up at the database level, not by this 
+ * code).
  * 
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 0.0.1

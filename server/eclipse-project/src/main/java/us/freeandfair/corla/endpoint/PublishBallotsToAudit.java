@@ -41,7 +41,7 @@ public class PublishBallotsToAudit extends AbstractDoSDashboardEndpoint {
    */
   @Override
   public EndpointType endpointType() {
-    return EndpointType.GET;
+    return EndpointType.POST;
   }
   
   /**
@@ -49,7 +49,7 @@ public class PublishBallotsToAudit extends AbstractDoSDashboardEndpoint {
    */
   @Override
   public String endpointName() {
-    return "/ballots-to-audit";
+    return "/ballots-to-audit/publish";
   }
 
   /**
