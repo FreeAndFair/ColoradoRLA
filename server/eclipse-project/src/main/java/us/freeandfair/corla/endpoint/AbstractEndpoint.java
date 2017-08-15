@@ -85,19 +85,41 @@ public abstract class AbstractEndpoint implements Endpoint {
   }
 
   /**
-   * @return The classname of the ASM used by this endpoint.
+   * @return the abstract state machine class for this endpoint. By default,
+   * the endpoint does not have an abstract state machine.
    */
-  protected abstract Class<? extends AbstractStateMachine> asmClass(); 
+  // this method is not empty!
+  @SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract")
+  protected Class<? extends AbstractStateMachine> asmClass() {
+    return null;
+  }
   
   /**
    * Gets the identity of the ASM used by this endpoint for this
-   * request (as necessary).
+   * request (as necessary). By default, the endpoint does not have
+   * an abstract state machine.
    * 
    * @param the_request The request.
    * @return The identity of the ASM used by this endpoint for this
    * request. 
    */
-  protected abstract String asmIdentity(Request the_request);
+  // this method is not empty!
+  @SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract")
+  protected String asmIdentity(final Request the_request) {
+    return null;
+  }
+ 
+  /**
+   * Which event does this endpoint wish to take? By default, it
+   * does not execute an event.
+   * 
+   * @return the event.
+   */
+  // this method is not empty!
+  @SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract")
+  protected ASMEvent endpointEvent() {
+    return null;
+  }
   
   /**
    * Load the appropriate ASM from the database and make sure that
@@ -165,13 +187,6 @@ public abstract class AbstractEndpoint implements Endpoint {
     Persistence.saveOrUpdate(my_persistent_asm_state);
     return true;
   }
-  
-  /**
-   * Which event does this endpoint wish to take?
-   * @todo kiniry We may in the end just automatically look this up in
-   * the ASMEventTo
-   */
-  protected abstract ASMEvent endpointEvent();
 
   /**
    * Indicate that the operation completed successfully.
