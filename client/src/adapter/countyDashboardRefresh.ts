@@ -47,6 +47,43 @@ const parseTimestamp = (ts: Timestamp): Date => {
     return d;
 };
 
+const pivot = (a: any) => {
+    const o: any = {};
+
+    a.forEach((v: any) => {
+        o[v.id] = v;
+    });
+
+    return o;
+};
+
+const parseContests = (contestIds: any, state: any): any => {
+    if (!state.county.contests) {
+        return [];
+    }
+
+    if (_.isEmpty(state.county.contests)) {
+        return [];
+    }
+
+    const contests = pivot(state.county.contests);
+
+    return _.map(contestIds, (id: any) => {
+        const c = contests[id];
+        const { description, name } = c;
+
+        const choices = _.zip(
+            c.choice_names,
+            c.choice_descriptions,
+        ).map((name: any, description: any) => ({
+            name,
+            description,
+        }));
+
+        return { id, choices, description, name };
+    });
+};
+
 
 export const parse = (data: CountyDashboard, state: any): any => {
     const findContest = (id: any) => state.county.contests[id];
@@ -57,7 +94,7 @@ export const parse = (data: CountyDashboard, state: any): any => {
         ballotManifestDigest: data.ballot_manifest_digest,
         ballotUnderAuditId: data.ballot_under_audit_id,
         ballotsToAudit: data.ballots_to_audit,
-        contests: data.contests.map(findContest),
+        contests: parseContests(data.contests, state),
         contestsUnderAudit: _.mapValues(data.contests_under_audit, findContest),
         cvrExportDigest: data.cvr_export_digest,
         estimatedBallotsToAudit: data.estimated_ballots_to_audit,
