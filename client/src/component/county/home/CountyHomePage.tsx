@@ -57,6 +57,9 @@ const ContestInfoTable = ({ contest }: any) => {
 
 const ContestInfo = ({ contests }: any): any => {
     const contestTables = _.map(contests, (c: any) => {
+        if (!c) {
+            return <div />;
+        }
         return <ContestInfoTable key={ c.name } contest={ c } />;
     });
 

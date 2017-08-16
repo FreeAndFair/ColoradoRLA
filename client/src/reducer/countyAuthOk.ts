@@ -1,6 +1,6 @@
 export default (state: any) => ({
     ...state,
-    county: {},
+    county: { contests: {} },
     dashboard: 'county',
     loggedIn: true,
 });
