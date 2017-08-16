@@ -83,6 +83,7 @@ public class PublishBallotsToAudit extends AbstractDoSDashboardEndpoint {
           final RLAAlgorithm rlaa = new RLAAlgorithm(cdb);
           if (cdb.cvrUploadTimestamp() != null) {
             cdb.setCVRsToAudit(rlaa.computeBallotOrder(dosdb.randomSeed()));
+            Persistence.saveOrUpdate(cdb);
           }
         } catch (final IllegalArgumentException e) {
           Main.LOGGER.info("could not set ballot list for county " + cdb.countyID());
