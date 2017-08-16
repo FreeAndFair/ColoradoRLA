@@ -1,7 +1,5 @@
 import { Dispatch } from 'redux';
 
-import { apiHost } from '../config';
-
 
 const createSubmitAction = ({
     failType,

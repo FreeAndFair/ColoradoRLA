@@ -1,11 +1,11 @@
 import { Dispatch } from 'redux';
 
-import { apiHost } from '../config';
+import { endpoint } from '../config';
 
 import createFetchAction from './createFetchAction';
 
 
-const url = `http://${apiHost}/contest`;
+const url = endpoint('contest');
 
 const fetchContests = createFetchAction({
     failType: 'DOS_FETCH_CONTESTS_FAIL',
