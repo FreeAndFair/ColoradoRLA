@@ -22,7 +22,7 @@
 %%% The rules pertaining to election audits are found in Code of
 %%% Colorado Regulations, Secretary of State, State of Colorado,
 %%% Department of State Elections Rules
-%%% \href{http://www.sos.state.co.us/CCR/GenerateRulePdf.do?ruleVersionId=7121&fileName=8%20CCR%201505-1}{\textbf{8
+%%% \href{http://www.sos.state.co.us/pubs/rule_making/CurrentRules/8CCR1505-1/Rule25.pdf}{\textbf{8
 %%% CCR 1505-1}}. We will call that document \emph{Rules 1505-1} for
 %%% the purpose of traceability in this specification.
 %%% 
@@ -960,7 +960,6 @@ BEGIN
        election: election,
        audit_board: audit_board,
        county_administrator: county_administrator #]
-% @review CDOS What must be included according to (E) above?
 
 % @trace RDPR-6-Jul-2017 Section 25.2.2(D)(1)
 % @description This report shows the total number of overvotes,
