@@ -1,11 +1,12 @@
+import { merge } from 'lodash';
+
 import { parse } from '../adapter/countyDashboardRefresh';
 
 
 export default (state: any, action: any) => {
-    const nextState = { ...state };
+    const nextState = merge({}, state );
 
-    const newState = parse(action.data, state);
-    nextState.county = { ...state.county, ...newState };
+    nextState.county = merge({}, state.county, parse(action.data, state));
 
     return nextState;
 };
