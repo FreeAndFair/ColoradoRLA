@@ -25,6 +25,7 @@ interface CountyDashboard {
     contests_under_audit: number[];
     estimated_ballots_to_audit: number;
     general_information: string;
+    id: number;
     number_of_ballots_audited: number;
     number_of_disagreements: number;
     number_of_discrepancies: number;
@@ -61,6 +62,7 @@ export const parse = (data: CountyDashboard, state: any): any => {
         cvrExportDigest: data.cvr_export_digest,
         estimatedBallotsToAudit: data.estimated_ballots_to_audit,
         generalInformation: data.general_information,
+        id: data.id,
         numberOfBallotsAudited: data.number_of_ballots_audited,
         numberOfDisagreements: data.number_of_disagreements,
         numberOfDiscrepancies: data.number_of_discrepancies,
