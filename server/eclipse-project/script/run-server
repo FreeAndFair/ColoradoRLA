@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -eux -o pipefail
+readonly __dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+readonly target_jar="$(ls target/*-shaded.jar | head -n1)"
+
+java -jar ${target_jar}

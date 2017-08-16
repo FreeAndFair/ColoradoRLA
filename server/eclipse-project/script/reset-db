@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -eux -o pipefail
+
+readonly __dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+${__dir}/drop-db || true
+${__dir}/create-db
