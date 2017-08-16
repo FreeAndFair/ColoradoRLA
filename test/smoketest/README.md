@@ -9,17 +9,24 @@ See results in smoketest.*.out, generated like this:
 Note: the pytest tests from zerotest are currently unused and disabled.
 
 ## Installing Test Dependencies
+
 For now, you'll need to install
 [zerotest](https://github.com/jjyr/zerotest)
 to run these tests, and/or generate new ones in the same way.
 
 This is mainly tested with python3, but has been seen to work
-on python2 also.  You will need these libraries for some of the tests:
+on python2 also.  To install dependencies:
 
-`pip install zerotest requests`
+    pip install -r requirements.txt
 
-or `pip3 install zerotest requests` (or similar) if you have
-multiple Python installations.
+or perhaps the following (or similar) if you have multiple Python
+installations.
+
+    pip3 install -r requirements.txt
+
+Installing inside an isolated
+[virtual environment](https://packaging.python.org/tutorials/installing-packages/#creating-virtual-environments)
+(aka virtualenv) is the preferred approach.
 
 ## Running a smoketest
 
@@ -141,7 +148,7 @@ Interim test of captured queries:
 Generate raw test script which should work with existing database:
 
 ```
-zerotest generate --ignore-all-headers server_test.json > server_test_raw.py 
+zerotest generate --ignore-all-headers server_test.json > server_test_raw.py
 sed 's,localhost:8887,localhost:8888,' server_test_raw.py > server_test_raw2.py
 ```
 

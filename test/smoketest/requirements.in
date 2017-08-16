@@ -1,0 +1,8 @@
+# "Abstract" dependencies for the project
+#
+# The sibling requirements.txt file contains the corresponding concrete /
+# pinned dependencies.  You can use pip-tools to automatically update
+# requirements.txt from this file:
+# https://github.com/jazzband/pip-tools
+requests
+zerotest
