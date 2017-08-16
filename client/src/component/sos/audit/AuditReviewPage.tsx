@@ -17,35 +17,26 @@ const Breadcrumb = () => (
         </li>
         <li>
             <a className='pt-breadcrumb pt-breadcrumb-current'>
-                Ballot List
+                Review
             </a>
         </li>
     </ul>
 );
 
 
-const Audit = ({ back, saveAndDone }: any) => {
+const AuditReview = ({ back, saveAndDone }: any) => {
     const nop = () => ({});
 
     return (
         <div>
             <Nav />
             <Breadcrumb />
-            <h2>Administer an Audit</h2>
-            <h3>Audit Definition - Ballot List</h3>
+            <h2>Audit</h2>
+            <h3>Audit Definition Review</h3>
             <div>
-                This is the list of ballots to audit generated from the random seed.
-                Once this is submitted, it will be released to the counties and the
-                previous pages will not be editable.
-            </div>
-            <div className='pt-card'>
-                Ballot List:
-                <div>
-                    <label className='pt-file-upload'>
-                        <input type='file' onChange={ nop } />
-                        <span className='pt-file-upload-input'>AcmeCountyBallotManifest.csv</span>
-                    </label>
-                </div>
+                This is the set of audit data which will be used to define the list of
+                ballots to audit for each county. Once this is submitted, it will be released
+                to the counties and the previous pages will not be editable.
             </div>
             <div>
                 <button onClick={ back } className='pt-button'>
@@ -60,4 +51,4 @@ const Audit = ({ back, saveAndDone }: any) => {
 };
 
 
-export default Audit;
+export default AuditReview;
