@@ -1,11 +1,11 @@
 import { Dispatch } from 'redux';
 
-import { apiHost } from '../config';
+import { endpoint } from '../config';
 
 import createFetchAction from './createFetchAction';
 
 
-const url = `http://${apiHost}/dos-dashboard`;
+const url = endpoint('dos-dashboard');
 
 const dosDashboardRefresh = createFetchAction({
     failType: 'DOS_DASHBOARD_REFRESH_FAIL',

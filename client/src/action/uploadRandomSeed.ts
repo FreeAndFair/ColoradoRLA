@@ -1,11 +1,11 @@
 import { Dispatch } from 'redux';
 
-import { apiHost } from '../config';
+import { endpoint } from '../config';
 
 import createSubmitAction from './createSubmitAction';
 
 
-const url = `http://${apiHost}/random-seed`;
+const url = endpoint('random-seed');
 
 const uploadRandomSeed = createSubmitAction({
     failType: 'UPLOAD_RANDOM_SEED_FAIL',

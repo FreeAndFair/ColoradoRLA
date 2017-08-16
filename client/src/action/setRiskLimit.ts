@@ -1,13 +1,13 @@
 import { Dispatch } from 'redux';
 
-import { apiHost } from '../config';
+import { endpoint } from '../config';
 
 import createSubmitAction from './createSubmitAction';
 
 import { format } from '../adapter/setRiskLimit';
 
 
-const url = `http://${apiHost}/risk-limit-comp-audits`;
+const url = endpoint('risk-limit-comp-audits');
 
 const setRiskLimit = createSubmitAction({
     failType: 'SET_RISK_LIMIT_FAIL',

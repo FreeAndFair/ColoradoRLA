@@ -1,13 +1,13 @@
 import { Dispatch } from 'redux';
 
-import { apiHost } from '../config';
+import { endpoint } from '../config';
 
 
 const uploadCvrExport = (countyId: number, file: Blob, hash: string) => {
     return (dispatch: Dispatch<any>) => {
         dispatch({ type: 'UPLOAD_CVR_EXPORT_SEND' });
 
-        const url = `http://${apiHost}/upload-cvr-export`;
+        const url = endpoint('upload-cvr-export');
 
         const formData = new FormData();
         formData.append('county', `${countyId}`);

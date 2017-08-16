@@ -1,11 +1,11 @@
 import { Dispatch } from 'redux';
 
-import { apiHost } from '../config';
+import { endpoint } from '../config';
 
 import createFetchAction from './createFetchAction';
 
 
-const url = `http://${apiHost}/county-dashboard`;
+const url = endpoint('county-dashboard');
 
 const countyDashboardRefresh = createFetchAction({
     failType: 'COUNTY_DASHBOARD_REFRESH_FAIL',
