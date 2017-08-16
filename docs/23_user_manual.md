@@ -48,15 +48,13 @@ Dashboards.
 Once logged in, users from the Department of State will see the Department of 
 State home page.
 
----
-
 ![Secretary of State Home Screenshot](./screenshots/SoSHome.png)
 
 Logged in County users will see a home page tailored to that County.
 
----
-
 ![County Home Screenshot](./screenshots/CountyHome.png)
+
+---
 
 ### Navigation
 
@@ -69,17 +67,23 @@ in the upper left corner.
 
 ![County Navigation Screenshot](./screenshots/CountyNav.png)
 
+---
+
 ### 25.2.2 (A), Entering the Risk Limit
 
 On this page the Sectretary of State will enter the Risk Limit for comparison audits.
 
 ![State Risk Limit Entry Screenshot](./screenshots/RiskLimitEntry.png)
 
+---
+
 ### 25.2.2 (F) or (G), <a name="comparison-audit-upload"></a>Audit Uploads
 
 On this page county officials can upload their hashed Ballot Manifest and CVR files.
 
 ![Audit Upload Screenshot](./screenshots/AuditUpload.png)
+
+---
 
 ### 25.2.2 (H), Entering the Random Seed
 
@@ -90,6 +94,8 @@ on the following page, and will be published to the County and Public Dashboards
 
 ![State Random Seed Entry Screenshot](./screenshots/RandomSeedEntry.png)
 
+---
+
 ### 25.2.2 (I) Selecting Contests
 
 This page allows the Secretary of State to select which statewide contest, and 
@@ -97,6 +103,8 @@ which countywide contests to audit. This information will be published to the
 County Dashboard when the selections have been made.
 
 ![State Contest Selection Screenshot](./screenshots/ContestSelection.png)
+
+---
 
 #### 25.2.3 (A)(1) Comparison Audits
 
