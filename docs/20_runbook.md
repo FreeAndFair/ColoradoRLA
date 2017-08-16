@@ -54,6 +54,7 @@ see a home page tailored to that County
 ![County Home Screenshot](./screenshots/CountyHome.png)
 
 ### Navigation
+
 Both the Secretary of State site and each County site has a navigation menu in the upper 
 left corner.
 
@@ -63,7 +64,7 @@ left corner.
 
 ### 25.2.2 (A), Entering the Risk Limit
 
-The Sectretary of State will enter the Risk Limit for comparison audits.
+The Secretary of State will enter the Risk Limit for comparison audits.
 
 ![State Risk Limit Entry Screenshot](./screenshots/RiskLimitEntry.png)
 
