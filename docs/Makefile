@@ -14,5 +14,8 @@ book.pdf: $(MD_DOCS)
 book.html: $(MD_DOCS)
 	pandoc *.md --toc -f markdown -t html5 -o book.html
 
+runbook.docx: 20_runbook.md
+	pandoc 20_runbook.md -f markdown -t docx -o runbook.docx
+
 clean:
 	rm -f book.pdf book.html
