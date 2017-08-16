@@ -1,13 +1,13 @@
 import { Dispatch } from 'redux';
 
-import { apiHost } from '../config';
+import { endpoint } from '../config';
 
 import createSubmitAction from './createSubmitAction';
 
 import { format } from '../adapter/establishBoard';
 
 
-const url = `http://${apiHost}/audit-board`;
+const url = endpoint('audit-board');
 
 const establishAuditBoard = createSubmitAction({
     failType: 'ESABLISH_AUDIT_BOARD_FAIL',

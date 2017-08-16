@@ -1,13 +1,13 @@
 import { Dispatch } from 'redux';
 
-import { apiHost } from '../config';
+import { endpoint } from '../config';
 
 import createSubmitAction from './createSubmitAction';
 
 import { format } from '../adapter/contestsForAudit';
 
 
-const url = `http://${apiHost}/select-contests`;
+const url = endpoint('select-contests');
 
 const selectContestsForAudit = createSubmitAction({
     failType: 'SELECT_CONTESTS_FOR_AUDIT_FAIL',

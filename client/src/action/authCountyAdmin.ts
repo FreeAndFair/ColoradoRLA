@@ -1,11 +1,11 @@
 import { Dispatch } from 'redux';
 
-import { apiHost } from '../config';
+import { endpoint } from '../config';
 
 import createSubmitAction from './createSubmitAction';
 
 
-const url = `http://${apiHost}/auth-county-admin`;
+const url = endpoint('auth-county-admin');
 
 const authCountyAdmin = createSubmitAction({
     failType: 'AUTH_COUNTY_ADMIN_FAIL',

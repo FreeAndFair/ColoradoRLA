@@ -1,13 +1,13 @@
 import { Dispatch } from 'redux';
 
-import { apiHost } from '../config';
+import { endpoint } from '../config';
 
 import createSubmitAction from './createSubmitAction';
 
 import { format } from '../adapter/uploadAcvr';
 
 
-const url = `http://${apiHost}/upload-audit-cvr`;
+const url = endpoint('upload-audit-cvr');
 
 const uploadAcvr = createSubmitAction({
     failType: 'UPLOAD_ACVR_FAIL',
