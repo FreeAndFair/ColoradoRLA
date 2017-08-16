@@ -80,16 +80,6 @@ export default function root(state: AppState = defaultState, action: any) {
         return setRiskLimitOk(state, action);
     }
 
-    case 'UPDATE_BOARD_MEMBER': {
-        const { index, name, party } = action.data;
-        const nextState = { ...state };
-
-        nextState.county.auditBoard = _.clone(nextState.county.auditBoard);
-        nextState.county.auditBoard[index] = { name, party };
-
-        return nextState;
-    }
-
     case 'UPLOAD_BALLOT_MANIFEST_OK': {
         return uploadBallotManifestOk(state, action);
     }
