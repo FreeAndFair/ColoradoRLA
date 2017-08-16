@@ -13,15 +13,31 @@
 %%% risk limiting audits across all counties in the state
 %%% simultaneously.
 %%%
+%%% \subsection{Colorado Statues and Rules}
+%%%
 %%% The Colorado election law pertaining to election audits is
 %%% \href{http://law.justia.com/codes/colorado/2016/title-1/general-primary-recall-and-congressional-vacancy-elections/article-7/part-5/section-1-7-515/}
-%%% {Section 1-7-515, C.R.S.}, where ``C.R.S.'' denotes ``Colorado Revised Statutes''. The rules pertaining to election audits are
-%%% found in the ``Revised Draft of Proposed Rules'' whose latest
-%%% version is labeled CCR 1505-1 and dated July 6, 2017. Section 25,
-%%% Post-Election Audit, of that document is the salient portion of
-%%% that document for our purposes. We will call that document
-%%% RDPR-6-Jul-2017 for the purpose of traceability in this
-%%% specification.
+%%% {Section 1-7-515, C.R.S.}, where ``C.R.S.'' denotes ``Colorado Revised Statutes''.
+%%%
+%%% The rules pertaining to election audits are found in Code of
+%%% Colorado Regulations, Secretary of State, State of Colorado,
+%%% Department of State Elections Rules
+%%% \href{http://www.sos.state.co.us/pubs/rule_making/CurrentRules/8CCR1505-1/Rule25.pdf}{\textbf{8
+%%% CCR 1505-1}}. We will call that document \emph{Rules 1505-1} for
+%%% the purpose of traceability in this specification.
+%%% 
+%%% The contract for this system was solicited while these rules were
+%%% still under development. The final rules were adopted during week
+%%% seven of the project. The initial version of these specifications
+%%% was written against ``Revised Draft of Proposed Rules''
+%%% (\textbf{CCR 1505-1}) dated July 6, 2017. We will call that
+%%% document \emph{RDPR-6-Jul-2017} for the purpose of traceability in
+%%% this specification.
+%%% 
+%%% Section 25, Post-Election Audit, of these documents is the salient
+%%% portion of the rules for our purposes.
+%%%
+%%% %%% \subsection{Colorado Statues and Rules}
 %%%
 %%% This domain model is based upon that law, its rules, the
 %%% procurement contract between CDOS and Free \& Fair, our
@@ -170,14 +186,15 @@
 %%% The Colorado \emph{statutes} (i.e., the law) pertaining to
 %%% election audits is
 %%% \href{http://law.justia.com/codes/colorado/2016/title-1/general-primary-recall-and-congressional-vacancy-elections/article-7/part-5/section-1-7-515/}
-%%% {Section 1-7-515, of the C.R.S.}. The \emph{rules} (i.e., the interpretation of the statutes
-%%% and an explanation for how to realize their goals) pertaining to
-%%% such are found in the ``Revised Draft of Proposed Rules'' whose
-%%% latest version is labeled CCR 1505-1 and dated July 6,
-%%% 2017. Section 25, Post-Election Audit, of that document is the
-%%% salient portion of that document. We will call that particular
-%%% version of the document RDPR-6-Jul-2017 for the purpose of
-%%% traceability in this specification. 
+%%% {Section 1-7-515, of the C.R.S.}. The \emph{rules} (i.e., the
+%%% interpretation of the statutes and an explanation for how to
+%%% realize their goals) pertaining to such are found in the
+%%% aforementioned \emph{Rules 1505-1}. Section 25, Post-Election
+%%% Audit, of that document is the salient portion of that
+%%% document. We will call the draft version of that document against
+%%% which we originally wrote this specification
+%%% \emph{RDPR-6-Jul-2017}, and the final version \emph{Rules 1505-1},
+%%% for the purpose of traceability in this specification.
 %%%
 %%% This domain model is based upon these statutes, their associated
 %%% rules, our contract with CDOS for the RLA Tool or requirements
@@ -196,6 +213,18 @@
 %%% @trace <SOURCE ARTIFACT> Discussion of traceability relationship.
 %%% \end{alltt}
 %%% \end{center}
+%%%
+%%% Such annotations exist directly in the source text of this
+%%% document (the file \texttt{corla.pvs} in the \texttt{spec/pvs}
+%%% folder of the
+%%% \href{https://github.com/FreeAndFair/ColoradoRLA/}{ColoradoRLA
+%%% GitHub project}. They also will be included as margin comments
+%%% with hyperlinks to the relevant target for refinement. If we are
+%%% \emph{refining \textbf{from}} requirements stated in statute or
+%%% rules, then we link to those higher-level documents. If we are
+%%% \emph{refining \textbf{to}} implementation artifacts, then we link
+%%% directly to those lower level artifacts as they exist in our
+%%% source code repository.
 %%%
 %%% If a concept is introduced and it has no explicitly annotated
 %%% traceability relation, then the reason for its introduce should be
@@ -311,6 +340,7 @@
 FAFSSL: THEORY
 BEGIN
   TBD: boolean = TRUE
+  TBD_TYPE: TYPE
 %  first_release: []
 %  second_release: []
 %  third_release: []
@@ -981,6 +1011,8 @@ BEGIN
   IMPORTING elections,
             FAFSSL
 
+%%% Audit board members are members of the public who come from different political parties. According to 
+
   audit_board_member: TYPE FROM person
   canvass_board: TYPE = set[person]
 
@@ -1308,6 +1340,7 @@ END audits
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%% \subsection{Colorado RLAs}
+%%% \label{sec:Colorado_RLAs}
 
 %%% Audits ideally come after all the votes are tabulated, canvassed
 %%% and reconciled. In Colorado, however, since the certification
@@ -2857,7 +2890,10 @@ END asm
 endpoints: THEORY
 BEGIN
   IMPORTING dashboard,
-            asm
+            asm,
+	    department_of_state_dashboard,
+	    county_dashboard,
+	    audit_board_dashboard
 %%% In order to relate the ASM to the core implementation constructs
 %%% in a RESTful client-server architecture, we must relate UI events
 %%% to ASM events and ASM events to server endpoints. Communication to
@@ -3281,7 +3317,7 @@ BEGIN
      #)
   intermediate_audit_report: server_endpoint = % UNDERWAY
     (# endpoint_type := POST,
-       callback := undefined_callback,
+       callback := undefined_callback, % signoff_intermediate_audit_report
        uri := "/intermediate-audit-report", % placeholder
        implementation_class := "IntermediateAuditReport", % placeholder
        in_stream := audit_report,
@@ -3315,6 +3351,14 @@ BEGIN
        county_event := n_e,
        audit_event := r_e
      #)
+
+%%% \subsection{New Endpoints to Document and Categorize}
+%%%
+%%% \begin{enumerate}
+%%% \item \texttt{/reset-database}
+%%% \item \texttt{}
+%%% \end{enumerate}
+%%%
 %%% \todokiniry{Explain these relations and their use.}
   ui_to_asm_event_relation: pred[[ui_event, asm_event]]
   asm_event_to_endpoint_relation: pred[[asm_event, server_endpoint]]
