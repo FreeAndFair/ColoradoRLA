@@ -10,9 +10,11 @@ import fetchContestsByCounty from '../../../action/fetchContestsByCounty';
 
 class CountyHomeContainer extends React.Component<any, any> {
     public render() {
-        setTimeout(() => {
+        const refresh = () => {
+            this.props.countyDashboardRefresh();
             this.props.fetchContestsByCounty(this.props.county.id);
-        }, 1000);
+        };
+        setTimeout(refresh, 2000);
 
         const startAudit = () =>
             this.props.history.push('/county/audit');
