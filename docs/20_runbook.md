@@ -132,7 +132,7 @@ Ballot retrieval from storage container and verification of
 seals relative to the chain-of-custody logs must be done 
 outside the RLA Tool. 
 
-#### 25.2.3 (A)(1) Comparison Auditsg
+#### 25.2.3 (A)(1) Comparison Audits
 
 The Audit Board does not log directly into the RLA Tool with
 computer system usernames and passwords. However, whenever 
