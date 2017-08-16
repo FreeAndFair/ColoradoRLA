@@ -43,6 +43,24 @@ County first must log in to the RLA Tool.
 
 ![State Login Screenshot](./screenshots/StateLogin.png)
 
+The RLA Tool will direct each user to the appropriate home page. A user from the Department of State will
+see the Department of State home page. .
+
+![Secretary of State Home Screenshot](./screenshots/SoSHome.png)
+
+A County user will 
+see a home page tailored to that County
+
+![County Home Screenshot](./screenshots/CountyHome.png)
+
+### Navigation
+Both the Secretary of State site and each County site has a navigation menu in the upper 
+left corner.
+
+![Secretary of State Navigation Screenshot](./screenshots/SoSNav.png)
+
+![County Navigation Screenshot](./screenshots/CountyNav.png)
+
 ### 25.2.2 (A), Entering the Risk Limit
 
 The Sectretary of State will enter the Risk Limit for comparison audits.
