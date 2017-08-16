@@ -360,14 +360,6 @@ public class RLAAlgorithm {
       count = count + 1;
     }
     
-    // for every remaining CVR under audit, conservatively assume a two-vote 
-    // overstatement
-    
-    while (count < audit_cvrs.size()) {
-      result.my_two_votes_over = result.my_two_votes_over + 1;
-      count = count + 1;
-    }
-    
     return result;
   }
   
