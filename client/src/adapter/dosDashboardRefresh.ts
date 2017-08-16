@@ -17,6 +17,6 @@ export const parse = (data: any) => ({
     auditStage: data.audit_stage,
     countyStatus: parseCountyStatus(data.county_status),
     handCountContests: data.hand_count_contests,
-    riskLimit: data.riskLimit,
+    riskLimit: data.risk_limit,
     seed: data.random_seed,
 });
