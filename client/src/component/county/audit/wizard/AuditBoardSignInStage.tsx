@@ -4,13 +4,12 @@ import AuditBoardSignInForm from './AuditBoardSignInForm';
 
 
 const AuditBoardSignInStage = (props: any) => {
-    const { auditBoard, county, nextStage, updateBoardMember } = props;
+    const { auditBoard, county, establishAuditBoard, nextStage } = props;
 
     const forms: any = { auditBoard: [] };
 
     const submit = () => {
-        console.log()
-        updateBoardMember();
+        establishAuditBoard(forms.auditBoard);
         nextStage();
     };
 

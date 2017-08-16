@@ -10,7 +10,7 @@ class AuditBoardSignInForm extends React.Component<any, any> {
     }
 
     public render() {
-        const { boardMemberIndex, forms, updateBoardMember } = this.props;
+        const { boardMemberIndex, forms } = this.props;
 
         forms.auditBoard[boardMemberIndex] = this.state;
 
