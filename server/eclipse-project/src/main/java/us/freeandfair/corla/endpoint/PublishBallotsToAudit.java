@@ -86,6 +86,8 @@ public class PublishBallotsToAudit extends AbstractDoSDashboardEndpoint {
             Persistence.saveOrUpdate(cdb);
           }
         } catch (final IllegalArgumentException e) {
+          serverError(the_response, "could not set ballot list for county " + 
+                      cdb.countyID());
           Main.LOGGER.info("could not set ballot list for county " + cdb.countyID());
         }
       }

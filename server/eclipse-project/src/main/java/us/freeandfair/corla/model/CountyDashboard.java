@@ -36,6 +36,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
+import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.CVRContestInfo.ConsensusValue;
 import us.freeandfair.corla.persistence.AbstractEntity;
 import us.freeandfair.corla.persistence.Persistence;
@@ -372,7 +373,7 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
       boolean increment = false;
       for (int index = first_index; index <= last_index; index++) {
         if (my_cvrs_to_audit.get(index).equals(the_cvr_under_audit.id()) &&
-            my_submitted_audit_cvrs.get(index) == null) {
+            my_submitted_audit_cvrs.get(index) == Long.MIN_VALUE) {
           // we bump the number of ballots audited as long as this is not a
           // replacement for an already-audited result
           // TODO: do we allow such replacements at all? 
@@ -395,6 +396,9 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
         if (discrepancy) {
           my_discrepancies = my_discrepancies + 1;
         }
+      } else {
+        Main.LOGGER.info("ACVR submitted for already-audited CVR ID " + 
+                         the_cvr_under_audit.id());
       }
     } 
 
