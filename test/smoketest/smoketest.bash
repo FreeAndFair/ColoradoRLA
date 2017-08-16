@@ -49,6 +49,10 @@ psql -d corla -a -f ../corla-test-credentials.psql > credentials.stdout
 
 psql -d corla -a -f tabulate.sql | diff tabulate.out -
 
-pytest server_test.py > server_test.stdout || true
+psql -d corla -f ../corla-compare-manifest-cvr.psql > manifest-vs-cvr.out
 
-egrep '====|____' server_test.out
+echo "All done!"
+
+# pytest server_test.py > server_test.stdout || true
+
+# egrep '====|____' server_test.out

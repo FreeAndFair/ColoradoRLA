@@ -15,11 +15,11 @@ SELECT ccd.contest_id AS contest,
 ;
  contest |   candidate    | votes 
 ---------+----------------+-------
-     201 | Clear Winner   |   123
-     201 | Distant Loser  |    14
-     202 | Janet Lee Cook |    27
-     202 | Jeff Baker     |    12
-     203 | NO             |    31
-     203 | YES            |    30
+     204 | Clear Winner   |   170
+     204 | Distant Loser  |    19
+     205 | Janet Lee Cook |    35
+     205 | Jeff Baker     |    18
+     206 | NO             |    46
+     206 | YES            |    40
 (6 rows)
 
