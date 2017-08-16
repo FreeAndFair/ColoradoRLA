@@ -81,8 +81,9 @@ To prepare for upload the ballot manifest and the CVR file must be
 first verified and hashed, using any SHA-256 hash utility. The RLA Tool 
 itself does not provide a utility for verification or hashing.
 
-Once the ballot manifest files have been hashed, the County user can 
-upload them into the RLA Tool.
+Once the ballot manifest and CVR files are verified and hashed, 
+they can be uploaded into the RLA Tool. If the upload process is interrupted the
+process will have to be repeated. It is not possible to resume interrupted uploads.
 
 ![Audit Upload Screenshot](./screenshots/AuditUpload.png)
 
@@ -116,10 +117,7 @@ The number of ballot cards to audit changes during the course of the audit depen
 on the risk level, which in turn depends on the number of overstatements (i.e., ballots whose correction by the Audit Board
 decreases a margin of victory in one of the selected contests) so far.
 
-The current number of ballot cards to audit can be found.
-<!-- to SoS? to County? to both? -->
-
-![Number to Audit View](./screenshots/NumberToAudit.png)
+<!-- ![Number to Audit View](./screenshots/NumberToAudit.png) -->
 
 ### 25.2.2 (K) Random Selection of Ballot Cards for Audit
 
@@ -127,10 +125,8 @@ Based on the pseudo-random number generator
 and random seed from 25.2.2 (H)
 and the current risk levels,
 the RLA Tool determines the selection of ballot cards for audit. 
-The selection of ballots can be viewed. 
-<!-- to SoS? to County? to both? -->
 
-![Ballots to Audit View](./screenshots/BallotsToAudit.png)
+<!-- ![Ballots to Audit View](./screenshots/BallotsToAudit.png) -->
 
 ### 25.2.3 (A) Ballot Retrieval, Chain of Custody and Examination
 
@@ -181,15 +177,7 @@ The RLA Tool automatically randomly selects additional ballots for audit as nece
 
 
 
-### Logging In
 
-Screenshot (County Admin Authentication) ---
-
-***ballot manifest upload prep
-
-Once the ballot manifest and CVR files are verified and hashed, 
-they can be uploaded. If the upload process is interrupted the
-process will have to be repeated, it will not resume uploads.
 
 Screenshot (page:county) ---
 
