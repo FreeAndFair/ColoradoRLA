@@ -1,6 +1,8 @@
+const scheme = 'http';
 const hostname = 'localhost';
 const port = 8888;
 
-export const apiHost = `${hostname}:${port}`;
+const devEndpointPrefix = `${scheme}://${hostname}:${port}`;
+const prodEndpointPrefix = '/api';
 
-export const endpoint = (path: string) => `/api/${path}`;
+export const endpoint = (path: string) => `${devEndpointPrefix}/${path}`;
