@@ -8,13 +8,23 @@ import countyDashboardRefresh from '../../../action/countyDashboardRefresh';
 import fetchContestsByCounty from '../../../action/fetchContestsByCounty';
 
 
+const intervalIds: any = {
+    refreshId: null,
+    fetchContestsId: null,
+};
+
 class CountyHomeContainer extends React.Component<any, any> {
     public render() {
-        const refresh = () => {
-            this.props.countyDashboardRefresh();
-            this.props.fetchContestsByCounty(this.props.county.id);
-        };
-        setTimeout(refresh, 2000);
+        if (!intervalIds.refreshId) {
+            intervalIds.refreshId = setInterval(this.props.countyDashboardRefresh, 2000);
+        }
+
+        if (!intervalIds.fetchContestsId) {
+            intervalIds.fetchContestsId = setInterval(
+                () => this.props.fetchContestsByCounty(this.props.county.id),
+                1000,
+            );
+        }
 
         const startAudit = () =>
             this.props.history.push('/county/audit');
