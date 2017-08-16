@@ -186,14 +186,15 @@
 %%% The Colorado \emph{statutes} (i.e., the law) pertaining to
 %%% election audits is
 %%% \href{http://law.justia.com/codes/colorado/2016/title-1/general-primary-recall-and-congressional-vacancy-elections/article-7/part-5/section-1-7-515/}
-%%% {Section 1-7-515, of the C.R.S.}. The \emph{rules} (i.e., the interpretation of the statutes
-%%% and an explanation for how to realize their goals) pertaining to
-%%% such are found in the ``Revised Draft of Proposed Rules'' whose
-%%% latest version is labeled CCR 1505-1 and dated July 6,
-%%% 2017. Section 25, Post-Election Audit, of that document is the
-%%% salient portion of that document. We will call that particular
-%%% version of the document RDPR-6-Jul-2017 for the purpose of
-%%% traceability in this specification. 
+%%% {Section 1-7-515, of the C.R.S.}. The \emph{rules} (i.e., the
+%%% interpretation of the statutes and an explanation for how to
+%%% realize their goals) pertaining to such are found in the
+%%% aforementioned \emph{Rules 1505-1}. Section 25, Post-Election
+%%% Audit, of that document is the salient portion of that
+%%% document. We will call the draft version of that document against
+%%% which we originally wrote this specification
+%%% \emph{RDPR-6-Jul-2017}, and the final version \emph{Rules 1505-1},
+%%% for the purpose of traceability in this specification.
 %%%
 %%% This domain model is based upon these statutes, their associated
 %%% rules, our contract with CDOS for the RLA Tool or requirements
@@ -212,6 +213,18 @@
 %%% @trace <SOURCE ARTIFACT> Discussion of traceability relationship.
 %%% \end{alltt}
 %%% \end{center}
+%%%
+%%% Such annotations exist directly in the source text of this
+%%% document (the file \texttt{corla.pvs} in the \texttt{spec/pvs}
+%%% folder of the
+%%% \href{https://github.com/FreeAndFair/ColoradoRLA/}{ColoradoRLA
+%%% GitHub project}. They also will be included as margin comments
+%%% with hyperlinks to the relevant target for refinement. If we are
+%%% \emph{refining \textbf{from}} requirements stated in statute or
+%%% rules, then we link to those higher-level documents. If we are
+%%% \emph{refining \textbf{to}} implementation artifacts, then we link
+%%% directly to those lower level artifacts as they exist in our
+%%% source code repository.
 %%%
 %%% If a concept is introduced and it has no explicitly annotated
 %%% traceability relation, then the reason for its introduce should be
@@ -3339,6 +3352,14 @@ BEGIN
        county_event := n_e,
        audit_event := r_e
      #)
+
+%%% \subsection{New Endpoints to Document and Categorize}
+%%%
+%%% \begin{enumerate}
+%%% \item \texttt{/reset-database}
+%%% \item \texttt{}
+%%% \end{enumerate}
+%%%
 %%% \todokiniry{Explain these relations and their use.}
   ui_to_asm_event_relation: pred[[ui_event, asm_event]]
   asm_event_to_endpoint_relation: pred[[asm_event, server_endpoint]]
