@@ -13,8 +13,11 @@ class AuditBoardSignInStageContainer extends React.Component<any, any> {
     }
 }
 
-const mapStateToProps = ({ county }: any) =>
-    ({ auditBoard: county.auditBoard, county });
+const mapStateToProps = ({ county }: any) => {
+    return {
+        auditBoard: county.auditBoardMembers, county
+    };
+};
 
 const mapDispatchToProps = (dispatch: any) => bindActionCreators({
     establishAuditBoard,
