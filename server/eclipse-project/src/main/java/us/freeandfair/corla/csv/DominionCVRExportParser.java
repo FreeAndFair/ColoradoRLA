@@ -34,6 +34,7 @@ import us.freeandfair.corla.model.Choice;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.query.ContestQueries;
 
 /**
  * @description <description>
@@ -216,9 +217,8 @@ public class DominionCVRExportParser implements CVRExportParser {
       // now that we have all the choices, we can create a Contest object for 
       // this contest (note the empty contest description at the moment, below, 
       // as that's not in the CVR files and may not actually be used)
-      my_contests.add(Persistence.get(new Contest(cn, "", choices, 
-                                                  the_votes_allowed.get(cn)),
-                                      Contest.class));
+      my_contests.add(ContestQueries.matching(new Contest(cn, "", choices, 
+                                                          the_votes_allowed.get(cn))));
     }
   }
   

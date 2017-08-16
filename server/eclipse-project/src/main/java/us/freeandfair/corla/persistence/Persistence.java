@@ -29,7 +29,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -39,7 +38,6 @@ import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Environment;
-import org.hibernate.criterion.Example;
 import org.hibernate.query.Query;
 
 import us.freeandfair.corla.Main;
@@ -448,70 +446,6 @@ public final class Persistence {
   }
   
   /**
-   * Gets a single entity in the current session equivalent to the specified object, 
-   * and persists the specified object if there is no match. This method is meant to 
-   * be used with completely specified entities only, and will neither persist the 
-   * specified object nor return a result from the database if there are multiple 
-   * matches in the database.
-   * 
-   * @param the_object The object.
-   * @param the_class The class of the object to search for.
-   * @return the equivalent entity, or the original object if no equivalent entity 
-   * exists.
-   * @exception PersistenceException if the database isn't running.
-   */
-  // the one unchecked casts that Java thinks are in this method are actually 
-  // checked casts
-  @SuppressWarnings("unchecked")
-  public static <T extends PersistentEntity> T get(final T the_object, 
-                                                   final Class<T> the_class) 
-      throws PersistenceException {
-    if (hasDB()) {
-      T result = the_object;
-      final Session session = currentSession();
-      boolean transaction = false;
-      Main.LOGGER.info("searching session for object " + the_object);
-      transaction = beginTransaction();
-      @SuppressWarnings("deprecation") // no query by example in JPA
-      final Criteria cr = session.createCriteria(the_class);
-      cr.add(Example.create(the_object));
-      try {
-        final Object match = cr.uniqueResult();
-        if (match == null) {
-          Main.LOGGER.info("object not found");
-          session.saveOrUpdate(result); 
-        } else if (match.equals(the_object)) {
-          // this is a checked cast even though Java thinks it isn't
-          Main.LOGGER.info("object found: " + match);
-          result = (T) match;
-        } else {
-          // we found an object but it didn't match
-          Main.LOGGER.info("search returned mismatched object " + match);
-          session.saveOrUpdate(result); 
-        }
-        if (transaction) {
-          commitTransaction();
-        }
-      } catch (final HibernateException e) {
-        if (transaction) {
-          try {
-            rollbackTransaction();
-          } catch (final IllegalStateException | PersistenceException ex) {
-            // ignore
-          }        
-        }
-        Main.LOGGER.info("exception when searching for object matching " + 
-                         the_object + ": " + e);
-        result = the_object;
-      }
-      
-      return result; 
-    } else {
-      throw new PersistenceException(NO_DATABASE);
-    }
-  }
-  
-  /**
    * Gets the entity in the current session that has the specified ID and class.
    * 
    * @param the_id The ID.
@@ -624,66 +558,6 @@ public final class Persistence {
     }
     
     return result;
-  }
-  
-  /**
-   * Gets a list of entities in the current session that match the filled
-   * fields of the specified object. If database persistence is not running, 
-   * or an error occurs while performing the search, the returned list is
-   * empty. Searching the local cache for matches is the responsibility of 
-   * the caller, if the local cache is in use.
-   * 
-   * @param the_object The object.
-   * @param the_class The class of the object to search for.
-   * @return a list of result entities.
-   * @exception PersistenceException if the database isn't running.
-   */
-  // the one unchecked cast that Java thinks is in this method is actually
-  // a checked cast
-  // TODO: make streaming or iterable
-  @SuppressWarnings("unchecked")
-  public static <T> List<T> getMatching(final T the_object, 
-                                        final Class<T> the_class) 
-      throws PersistenceException {
-    if (hasDB()) {
-      final List<T> result = new ArrayList<T>();
-      final Session session = currentSession();
-      boolean transaction = false;
-
-      try {
-        // try to use the provided object as an example
-        transaction = beginTransaction();
-        @SuppressWarnings("deprecation") // no query by example in JPA
-        final Criteria cr = session.createCriteria(the_class);
-        cr.add(Example.create(the_object));
-        final List<?> matches = cr.list();
-        for (final Object o : matches) {
-          if (the_class.isAssignableFrom(o.getClass())) {
-            // this is a checked cast even though Java thinks it isn't
-            result.add((T) o);
-          }
-        }
-        if (transaction) {
-          commitTransaction();
-        }
-      } catch (final HibernateException e) {
-        if (transaction) {
-          try {
-            rollbackTransaction();
-          } catch (final IllegalStateException | PersistenceException ex) {
-            // ignore
-          }
-          Main.LOGGER.info("exception when searching for object matching " + 
-              the_object + ": " + e);
-          result.clear();
-          result.add(the_object);
-        }
-      }
-      
-      return result;
-    } else {
-      throw new PersistenceException(NO_DATABASE);
-    }
   }
 }
 
