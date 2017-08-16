@@ -38,7 +38,7 @@ information to be used for a Public Audit Center, but does not contain it.
 ### Logging In
 
 On this page authorized users from the Secretary of State's office, as well as 
-persons from the County can enter their login credentials to access the RLA Tool’s 
+persons from the County, can enter their login credentials to access the RLA Tool’s 
 Dashboards.
 
 ![State Login Screenshot](./screenshots/StateLogin.png)
@@ -60,7 +60,7 @@ Logged in County users will see a home page tailored to that County.
 
 ### Navigation
 
-Both the Secretary of State site and each County site has a navigation menu 
+***Both the Secretary of State site and each County site has a navigation menu 
 in the upper left corner.
 
 ![Secretary of State Navigation Screenshot](./screenshots/SoSNav.png)
@@ -71,7 +71,7 @@ in the upper left corner.
 
 ---
 
-### 25.2.2 (A), Entering the Risk Limit
+### Entering the Risk Limit
 
 On this page the Sectretary of State will enter the Risk Limit for comparison audits.
 
@@ -87,7 +87,7 @@ On this page county officials can upload their hashed Ballot Manifest and CVR fi
 
 ---
 
-### 25.2.2 (H), Entering the Random Seed
+### Entering the Random Seed
 
 This page allows the Secretary of State Once to enter the random seed, which 
 is a 20 digit number chosen during a public ceremony. Once entered, this will 
@@ -98,7 +98,7 @@ on the following page, and will be published to the County and Public Dashboards
 
 ---
 
-### 25.2.2 (I) Selecting Contests
+### Selecting Contests
 
 This page allows the Secretary of State to select which statewide contest, and 
 which countywide contests to audit. This information will be published to the 
@@ -108,7 +108,7 @@ County Dashboard when the selections have been made.
 
 ---
 
-#### 25.2.3 (A)(1) Comparison Audits
+#### Audit Board Sign In
 
 On this page authorized Audit Board members can sign into the system to conduct 
 the audit.
