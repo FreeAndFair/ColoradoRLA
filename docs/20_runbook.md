@@ -136,19 +136,46 @@ outside the RLA Tool.
 
 #### 25.2.3 (A)(1) Comparison Auditsg
 
-The RLA Tool provides a sign-in page for Audit Board members starting 
-an audit or resuming after a break.
+The Audit Board does not log directly into the RLA Tool with
+computer system usernames and passwords. However, whenever 
+the Audit Board begins to interact with the RLA Tool, either 
+at the beginning of an audit round or after taking a break, 
+there is an informal sign-in process. After the authenticated County Audit 
+Administrator formally logs in, there is a screen where the identity and 
+party affiliation of Audit Board Members can be entered or changed.
 
 ![Audit Board Signin Screenshot](./screenshots/ABsignin.png)
 
 The RLA Tool allows Audit Boards to report the markings on each individual ballot.
 
-![Report Marks Screenshot](./screenshots/ReportMarks.png)
+Before recording voter intent, please double-check that the paper ballot
+ID and Ballot Style match the ID and ballot style listed on the screen.
+Then record on the screen all final voter intent marked on the paper ballot.
+In case of an overvote, mark each of the (too many) choices the voter 
+intended; the RLA tool will recognize the overvote. In case the Audit 
+Board cannot reach consensus, mark the "No Consensus" box on the screen.
+Audit Board members can make notes in the comment field.
+<!-- Review CDOS -->
+
+Click "Review"![Report Marks Screenshot](./screenshots/ReportMarks.png)
 
 After entering the interpretation of the markings from any one ballot, the 
 Audit Board can review what was entered.
 
 ![Review Marks Screenshot](./screenshots/ReviewMarks.png)
+
+Check that the information on the review screen reflects the 
+Audit Board's interpretation of the ballot. Note that in case of 
+an overvote, the review screen will say, simply, "overvote".
+
+If the review screen matches the Audit Board's interpretation,
+click "Submit and Next Ballot". This submission is final. There 
+is no way to revise a ballot interpretation once it has been submitted
+from the Review Screen.
+
+Note: do *not* use your browser's "back" arrow during the audit process.
+If the review screen does not match the Audit Board's interpretation,
+click the "Back" button.
 
 ### 25.2.3 (A)(2) Ballot Polling Audits
 The conduct and reporting of the Audit Board for a Ballot Polling Audit 
@@ -173,84 +200,3 @@ The RLA Tool also allows the Secretary of State to designate a contest for hand 
 ![Full Hand Count Screen](./screenshots/FullHandCount.png)
 
 The RLA Tool automatically randomly selects additional ballots for audit as necessary.
-
-
-
-
-
-
-Screenshot (page:county) ---
-
-Note that the RLA Tool does not support export of the
-tabulation results to the Election Night Reporting System. 
-
-### 25.2.2 (G), Ballot Polling Audit Upload
-
-The current version RLA Tool is designed for comparison audits, which require a voting
-system capable of exporting CVR files. However, Counties whose voting systems do not
-export CVR files can use the RLA Tool to upload ballot manifests, described
-in the [Comparison Audit Upload](#comparison-audit-upload) 
-section.
-
-### List of Ballot for Audit
-
-To see the list of ballots to be audited in the next round.
-
-Screenshot (???) ---
-
-## For County Audit Boards
-
-========
-
-### Signing In
-
-The Audit Board does not log directly into the RLA Tool with
-computer system usernames and passwords. However, whenever 
-the Audit Board begins to interact with the RLA Tool, either 
-at the beginning of an audit round or after taking a break, 
-there is an informal sign-in process. After the authenticated County Audit 
-Administrator formally logs in, there is a screen where the identity and 
-party affiliation of Audit Board Members can be entered or changed.
-
-Screenshot (page:Acme County) ---
-
-Click on "Start Audit"
-
-Screenshot (page:Audit Board Sign In) ---
-
-Click "Next"
-
-### Auditing Ballots
-
-Note: do *not* use your browser's "back" arrow during the audit process.
-
-Screenshot (Ballot Verification) ---
-
-Before recording voter intent, please double-check that the paper ballot
-ID and Ballot Style match the ID and ballot style listed on the screen.
-Then record on the screen all final voter intent marked on the paper ballot.
-In case of an overvote, mark each of the (too many) choices the voter 
-intended; the RLA tool will recognize the overvote. In case the Audit 
-Board cannot reach consensus, mark the "No Consensus" box on the screen.
-Audit Board members can make notes in the comment field.
-***Review CDOS
-
-Click "Review"
-
-Screenshot (Review Screen) ---
-
-Check that the information on the review screen reflects the 
-Audit Board's interpretation of the ballot. Note that in case of 
-an overvote, the review screen will say, simply, "overvote".
-
-Note: do *not* use your browser's "back" arrow during the audit process.
-If the review screen does not match the Audit Board's interpretation,
-click the "Back" button.
-
-If the review screen matches the Audit Board's interpretation,
-click "Submit and Next Ballot". This submission is final. There 
-is no way to revise a ballot interpretation once it has been submitted
-from the Review Screen.
-
-This process continues until the audit is complete, or a Full Hand Count
-has been called by the CDOS.
