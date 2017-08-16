@@ -17,7 +17,6 @@ const sosInitialState = (): any => ({
     auditStage: 'PRE_AUDIT',
     auditedContests: [],
     countyStatus: initialCountyStatus(),
-    riskLimit: 0.05,
 });
 
 
