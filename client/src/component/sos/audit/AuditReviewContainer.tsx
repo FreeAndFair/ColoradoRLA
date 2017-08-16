@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import AuditBallotListPage from './AuditBallotListPage';
+import AuditReviewPage from './AuditReviewPage';
 
 
 class AuditBallotListContainer extends React.Component<any, any> {
@@ -9,7 +9,7 @@ class AuditBallotListContainer extends React.Component<any, any> {
         const back = () => this.props.history.push('/sos/audit/seed');
         const saveAndDone = () => this.props.history.push('/sos');
 
-        return <AuditBallotListPage { ...{ back, saveAndDone} } />;
+        return <AuditReviewPage { ...{ back, saveAndDone} } />;
     }
 }
 
