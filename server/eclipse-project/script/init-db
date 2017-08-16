@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -eux -o pipefail
+readonly __dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+readonly cmd="psql -d corla -a -f "${__dir}/insert-test-creds.sql""
+
+sudo -u postgres ${cmd}
