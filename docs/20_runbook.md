@@ -36,6 +36,9 @@ to the public.
  
 ### Logging In
 
+Persons from the Secretary of State's office as well as persons from the 
+County first must log in to the RLA Tool.
+
 ![State Login Screenshot](./screenshots/StateLogin.png)
 
 ### 25.2.2 (A), Entering the Risk Limit
