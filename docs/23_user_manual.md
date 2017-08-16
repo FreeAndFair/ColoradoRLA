@@ -207,7 +207,6 @@ Work.
 * **start-up period** - The period starting on the Effective Date and
 ending on the Operational Start Date.
 
-% @todo kiniry Does the ballot manifest list ballots or ballot cards?
 
 * **ballot manifest** - A document that describes how ballot cards are
 organized and stored, and relates a Cast Vote Records to the physical
