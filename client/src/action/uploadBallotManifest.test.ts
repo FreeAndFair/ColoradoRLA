@@ -9,12 +9,12 @@ import uploadBallotManifest from './uploadBallotManifest';
 
 
 const setup = () => {
-    const countyId = '1234';
+    const countyId = 1234;
     const file = new Blob();
     const hash = 'deadbeef';
 
     const formData = new FormData();
-    formData.append('county', countyId);
+    formData.append('county', `${countyId}`);
     formData.append('bmi_file', file);
     formData.append('hash', hash);
 
