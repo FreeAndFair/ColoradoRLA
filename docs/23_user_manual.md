@@ -43,8 +43,12 @@ Dashboards.
 
 ![State Login Screenshot](./screenshots/StateLogin.png)
 
+---
+
 Once logged in, users from the Department of State will see the Department of 
 State home page.
+
+---
 
 ![Secretary of State Home Screenshot](./screenshots/SoSHome.png)
 
