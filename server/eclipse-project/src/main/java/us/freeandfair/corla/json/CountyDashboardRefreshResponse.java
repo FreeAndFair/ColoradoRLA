@@ -49,6 +49,11 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
 @SuppressFBWarnings(value = {"URF_UNREAD_FIELD"}, justification = "Field is read by Gson.")
 public class CountyDashboardRefreshResponse {
   /**
+   * The county ID.
+   */
+  private final Integer my_id;
+  
+  /**
    * The county status.
    */
   private final CountyStatus my_status;
@@ -126,6 +131,7 @@ public class CountyDashboardRefreshResponse {
   /**
    * Constructs a new CountyDashboardRefreshResponse.
    * 
+   * @param the_id The ID.
    * @param the_status The status.
    * @param the_general_information The general information.
    * @param the_audit_board_members The audit board members.
@@ -142,7 +148,8 @@ public class CountyDashboardRefreshResponse {
    * @param the_ballot_under_audit The index of the CVR under audit.
    */
   @SuppressWarnings("PMD.ExcessiveParameterList")
-  protected CountyDashboardRefreshResponse(final CountyStatus the_status,
+  protected CountyDashboardRefreshResponse(final Integer the_id,
+                                           final CountyStatus the_status,
                                            final Map<String, String> the_general_information,
                                            final Set<Elector> the_audit_board_members, 
                                            final String the_ballot_manifest_digest,
@@ -156,6 +163,7 @@ public class CountyDashboardRefreshResponse {
                                            final Integer the_number_of_disagreements,
                                            final List<Long> the_ballots_to_audit,
                                            final Long the_ballot_under_audit) {
+    my_id = the_id;
     my_status = the_status;
     my_general_information = the_general_information;
     my_audit_board_members = the_audit_board_members;
@@ -241,7 +249,8 @@ public class CountyDashboardRefreshResponse {
     
     // ballot under audit = from dashboard
     
-    return new CountyDashboardRefreshResponse(the_dashboard.status(),
+    return new CountyDashboardRefreshResponse(county_id, 
+                                              the_dashboard.status(),
                                               general_information,
                                               the_dashboard.auditBoardMembers(),
                                               manifest_digest,

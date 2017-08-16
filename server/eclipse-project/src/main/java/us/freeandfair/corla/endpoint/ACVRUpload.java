@@ -80,13 +80,15 @@ public class ACVRUpload extends AbstractAuditBoardDashboardEndpoint {
       final SubmittedAuditCVR submission =
           Main.GSON.fromJson(the_request.body(), SubmittedAuditCVR.class);
       final CastVoteRecord acvr = submission.auditCVR();
+      acvr.setID(null);
       final CastVoteRecord real_acvr = 
           new CastVoteRecord(RecordType.AUDITOR_ENTERED, Instant.now(), 
                              acvr.countyID(), acvr.scannerID(), acvr.batchID(), 
                              acvr.recordID(), acvr.imprintedID(), acvr.ballotType(), 
                              acvr.contestInfo());
       Persistence.saveOrUpdate(real_acvr);
-      Main.LOGGER.info("Audit CVR parsed and stored as id " + real_acvr.id());
+      Main.LOGGER.info("Audit CVR for CVR id " + submission.cvrID() + 
+                       " parsed and stored as id " + real_acvr.id());
       final OptionalLong count = count();
       if (count.isPresent()) {
         Main.LOGGER.info(count.getAsLong() + " ACVRs in storage");
@@ -101,16 +103,21 @@ public class ACVRUpload extends AbstractAuditBoardDashboardEndpoint {
         final CastVoteRecord cvr = Persistence.getByID(submission.cvrID(), 
                                                        CastVoteRecord.class);
         if (cvr == null) {
+          Main.LOGGER.error("could not find original CVR");
           this.badDataContents(the_response, "could not find original CVR");
         } else {
-          cdb.submitAuditCVR(cvr, real_acvr);
+          if (cdb.submitAuditCVR(cvr, real_acvr)) {
+            Persistence.saveOrUpdate(cdb);
+            ok(the_response, "ACVR submitted");
+          } else {
+            Main.LOGGER.error("invalid audit CVR uploaded");
+            badDataContents(the_response, "invalid audit CVR uploaded");
+          }
         }
       }
-      Persistence.saveOrUpdate(cdb);
-      ok(the_response, "ACVR submitted");
     } catch (final JsonSyntaxException e) {
       Main.LOGGER.error("malformed audit CVR upload");
-      badDataContents(the_response, "Invalid audit CVR upload");
+      badDataContents(the_response, "malformed audit CVR upload");
     } catch (final PersistenceException e) {
       Main.LOGGER.error("could not save audit CVR");
       serverError(the_response, "Unable to save audit CVR");

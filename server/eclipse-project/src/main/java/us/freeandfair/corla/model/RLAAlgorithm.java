@@ -329,7 +329,7 @@ public class RLAAlgorithm {
     
     int count = 0;
     while (count < audit_cvrs.size() && count < cvrs_to_audit.size()) {
-      if (audit_cvrs.get(count) == null) {
+      if (audit_cvrs.get(count) == Long.MIN_VALUE) {
         break;
       } else {
         final CastVoteRecord cvr = 

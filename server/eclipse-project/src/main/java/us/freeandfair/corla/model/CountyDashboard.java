@@ -328,7 +328,7 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
     my_disagreements = 0;
     my_rla_algorithm = NO_RLA_ALGORITHM;
     for (int i = 0; i < my_cvrs_to_audit.size(); i++) {
-      my_submitted_audit_cvrs.add(null);
+      my_submitted_audit_cvrs.add(Long.MIN_VALUE);
     }
   }
 
@@ -363,8 +363,10 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
     if (first_index >= 0 && 
         the_cvr_under_audit.equals(Persistence.getByID(the_cvr_under_audit.id(), 
                                                        CastVoteRecord.class)) &&
+        the_audit_cvr.equals(Persistence.getByID(the_audit_cvr.id(),
+                                                 CastVoteRecord.class)) &&
         the_cvr_under_audit.isAuditPairWith(the_audit_cvr) &&
-        the_cvr_under_audit.recordType().isAuditorGenerated()) {
+        the_audit_cvr.recordType().isAuditorGenerated()) {
       // the CVRs match!
       result = true;
       boolean increment = false;
@@ -401,9 +403,9 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
   
   /**
    * @return the list of audit CVRs submitted. The result will contain
-   * a null value for each element in the cvrsToAudit() list where there
-   * has been no audit CVR submitted. Thus, most computations on this list
-   * will use the sublist preceding the first null value.
+   * the value Long.MIN_VALUE for each element in the cvrsToAudit() list 
+   * where there has been no audit CVR submitted. Thus, most computations on 
+   * this list will use the sublist preceding the first Long.MIN_VALUE value.
    */
   public List<Long> submittedAuditCVRs() {
     return Collections.unmodifiableList(my_submitted_audit_cvrs);
@@ -452,7 +454,7 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
    */
   public synchronized Long cvrUnderAudit() {
     for (int i = 0; i < my_submitted_audit_cvrs.size(); i++) {
-      if (my_submitted_audit_cvrs.get(i) == null) {
+      if (my_submitted_audit_cvrs.get(i) == Long.MIN_VALUE) {
         return my_cvrs_to_audit.get(i);
       }
     }
