@@ -79,7 +79,7 @@ On this page the Sectretary of State will enter the Risk Limit for comparison au
 
 ---
 
-### 25.2.2 (F) or (G), <a name="comparison-audit-upload"></a>Audit Uploads
+### County Home Page
 
 On this page county officials can upload their hashed Ballot Manifest and CVR files.
 
