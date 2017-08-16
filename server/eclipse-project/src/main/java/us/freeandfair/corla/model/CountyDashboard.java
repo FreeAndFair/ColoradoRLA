@@ -385,6 +385,7 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
         my_ballots_audited = my_ballots_audited + 1;
         boolean disagree = false;
         boolean discrepancy = false;
+        initializeRLAAlgorithm();
         for (final CVRContestInfo ci : the_audit_cvr.contestInfo()) {
           disagree |= ci.consensus() == ConsensusValue.NO;
           discrepancy |= my_rla_algorithm.discrepancy(the_cvr_under_audit, 
