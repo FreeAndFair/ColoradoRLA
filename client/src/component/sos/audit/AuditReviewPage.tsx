@@ -24,8 +24,11 @@ const Breadcrumb = () => (
 );
 
 
-const AuditReview = ({ back, saveAndDone }: any) => {
-    const nop = () => ({});
+const AuditReview = ({ back, publishBallotsToAudit, saveAndDone }: any) => {
+    const launch = () => {
+        publishBallotsToAudit();
+        saveAndDone();
+    };
 
     return (
         <div>
