@@ -17,11 +17,11 @@ selects contests to
 guide the audit, 
 counties will then use the RLA Tool to upload ballot manifests, 
 cast vote records (CVRs), and summary results to a central server. The RLA 
-Tool will use this data to determine the ballots to be checked 
+Tool will use this data to determine the ballot cards to be checked 
 for each contest based on the risk limit and the margins of victory in the 
 selected contests. The RLA Tool will report this information to each 
 county, where the Audit Board, consisting of representatives of different 
-political parties, will retrieve the appropriate ballots and record their 
+political parties, will physically retrieve the appropriate ballots and record their 
 interpretations of voter intent in the RLA Tool. 
 Randomly selected ballots will be presented to County Audit Boards 
 until either the risk limit is satisfied or 
@@ -29,7 +29,9 @@ the Secretary of State indicates that a full hand count is required.
 Complete audit results and artifacts allowing the public to 
 check, independently, that the audit was carried out correctly 
 are exported from the RLA 
-Tool for import to a Public Audit Center hosted on the official CDOS website.
+Tool for import to a Public Audit Center hosted on the official CDOS
+website. *(Ed note: Report export is not included in the stage-1
+deliverable, as we need clarity on the exact contents of said report.)*
 
 ## Dashboards
 
@@ -44,7 +46,8 @@ dashboards require authentication to login.
 
 On this page authorized users from the Secretary of State's office, as well as 
 persons from the County, can enter their login credentials to access the RLA Tool’s 
-Dashboards.
+Dashboards. *(Ed. note: Two-factor authentication to CDOS's
+authentication servers will be included in a later release.)*
 
 ![State Login Screenshot](./screenshots/StateLogin.png)
 
@@ -107,10 +110,9 @@ on the following page, and will be published to the County and Public Dashboards
 
 This page provides an overview of the audit in progress, updated in real time. 
 It shows County level and Contest level details, and will indicate when: 1) the 
-audit is complete, 2) another round of ballots must be counted*, and 3) if a Full
-Hand Count is required.
-
-*the notion of rounds is still under discussion and not baked into the stage-1 release
+audit is complete, 2) another round of ballots must be counted, and 3) if a Full
+Hand Count is required. *(Ed. note: The notion of rounds is still under discussion and not
+included in the stage-1 release.)*
 
 ![Audit Ongoing Screenshot](./screenshots/AuditOngoing.png)
 
@@ -140,7 +142,7 @@ The RLA Tool allows Audit Boards to report the markings on each individual ballo
 
 This page allows Audit Board members to enter their collective interpretation 
 of choices marked on the ballot. Once they have entered their interpretations, 
-Audit Board members click ‘Review.’ to be taken to the Audit Board Interpretation 
+Audit Board members click the "Review" button to be taken to the Audit Board Interpretation 
 Review Screen.
 
 Click "Review"![Report Marks Screenshot](./screenshots/ReportMarks.png)
@@ -150,14 +152,16 @@ Click "Review"![Report Marks Screenshot](./screenshots/ReportMarks.png)
 ### Audit Board Interpretation Review Page
 
 This page allows Audit Board members to review their choices, and then 
-‘Submit and Next Ballot’ when ready to proceed to the next ballot. This 
+press "Submit and Next Ballot" when ready to proceed to the next ballot. This 
 process continues until all of the ballots are entered. This submission is 
-final. There is no way to revise a ballot interpretation  once it has been 
+final. There is no way to revise a ballot interpretation once it has been 
 submitted from the Review Screen.
 
 Note: do *not* use your browser's "back" arrow during the audit process.
 If the review screen does not match the Audit Board's interpretation,
-click the "Back" button.
+click the "Back" button on the user interface. *(Ed. note: We intend 
+to ensure that pressing the brower's back button is not harmful in 
+a later delivery.)*
 
 ![Review Marks Screenshot](./screenshots/ReviewMarks.png)
 
@@ -167,6 +171,10 @@ click the "Back" button.
 
 See also the working documents at [VVSG-Interoperability Voting Glossary](http://collaborate.nist.gov/voting/bin/view/Voting/Glossary)
 and the glossary in: ["Risk-Limiting Post-Election Audits: Why and How"](https://www.stat.berkeley.edu/~stark/Preprints/RLAwhitepaper12.pdf)
+
+*(Ed. note: This glossary still has a number of terms that need
+definitions. It is also unsorted at the moment. It will be included in
+the final version of the RLA Tool in an appendix.)*
 
 * **RLA Tool** A computer system for conducting a
 Risk Limiting Audit
