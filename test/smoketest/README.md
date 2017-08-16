@@ -1,10 +1,12 @@
 # Smoketest of RLA server
 
-This smoketest has been tested against master commit d91c667.
+This smoketest has been tested against master commit 126b74c.
 See results in smoketest.*.out, generated like this:
 
 * Find most recent master commit in git log.
-* Run `time ./smoketest.bash 2>&1 | tee smoketest.<commit>.out`
+* Run `time ./smoketest.bash 2>&1 | tee history/smoketest.<commit>.out`
+
+Note: the pytest tests from zerotest are currently unused and disabled.
 
 ## Installing Test Dependencies
 For now, you'll need to install
