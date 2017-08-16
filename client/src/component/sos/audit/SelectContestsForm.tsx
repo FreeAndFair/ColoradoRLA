@@ -12,10 +12,9 @@ interface FormState {
 }
 
 const auditReasons = [
-    { id: 'no_reason', text: 'No reason' },
+    { id: 'close_contest', text: 'Close contest' },
     { id: 'state_wide_contest', text: 'State-wide contest' },
     { id: 'county_wide_contest', text: 'County-wide contest' },
-    { id: 'close_contest', text: 'Close contest' },
     { id: 'geographical_scope', text: 'Geographical scope' },
     { id: 'concern_regarding_accuracy', text: 'Concern regarding accuracy' },
     { id: 'opportunistic_benefits', text: 'Opportunistic benefits' },
