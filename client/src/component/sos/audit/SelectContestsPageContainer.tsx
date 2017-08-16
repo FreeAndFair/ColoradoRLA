@@ -14,7 +14,7 @@ class SelectContestsPageContainer extends React.Component<any, any> {
         const props = {
             back: () => history.push('/sos/audit'),
             contests,
-            nextPage: () => history.push('/sos/audit/ballots'),
+            nextPage: () => history.push('/sos/audit/review'),
             selectContestsForAudit,
         };
 
