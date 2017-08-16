@@ -8,7 +8,7 @@ export const format = (formData: any) => {
         if (r.audit) {
             data.push({
                 audit: 'COMPARISON',
-                contest: id,
+                contest: parseInt(id, 10),
                 reason: r.reason.id.toUpperCase(),
             });
             return;
@@ -16,7 +16,7 @@ export const format = (formData: any) => {
         if (r.handCount) {
             data.push({
                 audit: 'HAND_COUNT',
-                contest: id,
+                contest: parseInt(id, 10),
                 reason: 'NO_AUDIT',
             });
             return;
