@@ -5,10 +5,15 @@ import { bindActionCreators, Dispatch } from 'redux';
 import CountyHomePage from './CountyHomePage';
 
 import countyDashboardRefresh from '../../../action/countyDashboardRefresh';
+import fetchContestsByCounty from '../../../action/fetchContestsByCounty';
 
 
 class CountyHomeContainer extends React.Component<any, any> {
     public render() {
+        setTimeout(() => {
+            this.props.fetchContestsByCounty(this.props.county.id);
+        }, 1000);
+
         const startAudit = () =>
             this.props.history.push('/county/audit');
 
@@ -26,6 +31,7 @@ const mapStateToProps = ({ county }: any) => {
 
 const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
     countyDashboardRefresh,
+    fetchContestsByCounty,
 }, dispatch);
 
 export default connect(
