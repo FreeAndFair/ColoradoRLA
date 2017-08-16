@@ -14,7 +14,13 @@ const uploadBallotManifest = (countyId: number, file: Blob, hash: string) => {
         formData.append('bmi_file', file);
         formData.append('hash', hash);
 
-        fetch(url, { method: 'post', body: formData })
+        const init: any = {
+            body: formData,
+            credentials: 'include',
+            method: 'post',
+        };
+
+        fetch(url, init)
             .then(r => {
                 if (r.ok) {
                     dispatch({ type: 'UPLOAD_BALLOT_MANIFEST_OK' });
