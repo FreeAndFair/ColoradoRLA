@@ -153,15 +153,17 @@ public class DoSDashboard extends AbstractEntity implements Serializable {
   //@ requires the_contest_to_audit != null;
   public void updateContestToAudit(final ContestToAudit the_contest_to_audit) {
     // check to see if the contest is in our set
+    final Set<ContestToAudit> contests_to_remove = new HashSet<>();
     for (final ContestToAudit c : my_contests_to_audit) {
       if (c.contest().equals(the_contest_to_audit.contest())) {
-        // remove the old entry
-        my_contests_to_audit.remove(c);
+        // flag the entry for removal
+        contests_to_remove.add(c);
         c.setDashboard(null);
       }
     }
-    the_contest_to_audit.setDashboard(this);
+    my_contests_to_audit.removeAll(contests_to_remove);
     if (the_contest_to_audit.audit() != AuditType.NONE) {
+      the_contest_to_audit.setDashboard(this);
       my_contests_to_audit.add(the_contest_to_audit);
     }
   }
