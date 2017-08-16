@@ -36,6 +36,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
+import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.CVRContestInfo.ConsensusValue;
 import us.freeandfair.corla.persistence.AbstractEntity;
 import us.freeandfair.corla.persistence.Persistence;
@@ -395,6 +396,9 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
         if (discrepancy) {
           my_discrepancies = my_discrepancies + 1;
         }
+      } else {
+        Main.LOGGER.info("ACVR submitted for already-audited CVR ID " + 
+                         the_cvr_under_audit.id());
       }
     } 
 
