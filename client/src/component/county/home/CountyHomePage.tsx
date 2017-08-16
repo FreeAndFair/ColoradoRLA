@@ -26,15 +26,15 @@ const Main = ({ buttonEnabled, name, startAudit }: any) => (
 );
 
 const ContestInfoTableRow = ({ choice }: any) => (
-    <tr key={ choice.id }>
-        <td>{ choice.id }</td>
+    <tr>
         <td>{ choice.name }</td>
+        <td>{ choice.description }</td>
     </tr>
 );
 
 const ContestInfoTable = ({ contest }: any) => {
     const body = _.map(contest.choices, (c: any) => {
-        return <ContestInfoTableRow key={ c.id } choice={ c } />;
+        return <ContestInfoTableRow key={ c.name } choice={ c } />;
     });
 
     return (
@@ -43,8 +43,8 @@ const ContestInfoTable = ({ contest }: any) => {
             <table className='pt-table'>
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Name</th>
+                        <th>Description</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -60,6 +60,7 @@ const ContestInfo = ({ contests }: any): any => {
         if (!c) {
             return <div />;
         }
+
         return <ContestInfoTable key={ c.name } contest={ c } />;
     });
 
@@ -104,14 +105,12 @@ const CountyHomePage = (props: any) => {
 
     const info = { auditDate: startTimestamp };
 
-    setTimeout(countyDashboardRefresh, 1000);
-
     return (
         <div className='county-root'>
             <CountyNav />
             <div>
                 <Main name={ name } startAudit={ startAudit } />
-                <Info info={ info } contests={ county.contests } />
+                <Info info={ info } contests={ contests } />
             </div>
         </div>
     );
