@@ -26,14 +26,26 @@ const Breadcrumb = () => (
 );
 
 
-const AuditSeedPage = ({ back, nextPage, uploadRandomSeed }: any) => {
+const AuditSeedPage = ({ back, nextPage, seed, uploadRandomSeed }: any) => {
     const forms: any = {};
 
     const onSaveAndNext = () => {
-        const { seed } = forms.seedForm;
-        uploadRandomSeed(seed);
+        if (forms.seedForm) {
+            const { seed } = forms.seedForm;
+            uploadRandomSeed(seed);
+        }
+
         nextPage();
     };
+
+    const setSeedDiv = (
+        <div>
+            Random seed: { seed }
+        </div>
+    );
+
+    const dynamicSeedForm = <SeedForm forms={ forms } />;
+    const seedForm = seed ? setSeedDiv : dynamicSeedForm;
 
     return (
         <div>
@@ -45,7 +57,7 @@ const AuditSeedPage = ({ back, nextPage, uploadRandomSeed }: any) => {
 
                 <h4>Audit Random Seed</h4>
                 <div>Please enter the seed generated from the public meeting.</div>
-                <SeedForm forms={ forms } />
+                { seedForm }
             </div>
             <div>
                 <button onClick={ back } className='pt-button'>
