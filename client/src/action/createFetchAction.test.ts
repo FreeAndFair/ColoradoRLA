@@ -18,6 +18,10 @@ const setup = () => {
         failType: 'EXAMPLE_FAIL',
         fetch: (m: any, r: any) =>
             fetch.mock(m, r).catch(500),
+        init: {
+            credentials: 'include',
+            method: 'get',
+        },
         networkFailType: 'EXAMPLE_NETWORK_FAIL',
         okType: 'EXAMPLE_OK',
         sendType: 'EXAMPLE_SEND',
@@ -53,7 +57,7 @@ test('createFetchAction', s => {
         t.equal(fetch.calls().matched.length, 1, 'fetched to the URL');
 
         const args: any = fetch.lastCall()[1];
-        t.equal(args, undefined);
+        t.deepEqual(args, f.init);
 
         teardown(f);
     });
