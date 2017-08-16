@@ -123,7 +123,13 @@ County Dashboard when the selections have been made.
 ### Audit Board Sign In
 
 On this page authorized Audit Board members can sign into the system to conduct 
-the audit. 
+the audit.
+
+![Audit Board Signin Screenshot](./screenshots/ABsignin.png)
+
+---
+
+### Audit Board Interpretation Page
 
 The RLA Tool allows Audit Boards to report the markings on each individual ballot.
 
@@ -132,13 +138,11 @@ of choices marked on the ballot. Once they have entered their interpretations,
 Audit Board members click ‘Review.’ to be taken to the Audit Board Interpretation 
 Review Screen.
 
-![Audit Board Signin Screenshot](./screenshots/ABsignin.png)
-
----
-
 Click "Review"![Report Marks Screenshot](./screenshots/ReportMarks.png)
 
 ---
+
+### Audit Board Interpretation Review Page
 
 This page allows Audit Board members to review their choices, and then 
 ‘Submit and Next Ballot’ when ready to proceed to the next ballot. This 
