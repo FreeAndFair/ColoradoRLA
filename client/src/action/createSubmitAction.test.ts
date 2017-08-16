@@ -56,7 +56,7 @@ test('createSubmitAction', s => {
         const args: any = fetch.lastCall()[1];
 
         t.equal(args.method, 'post', 'with the right HTTP method');
-        t.deepEqual(args.body, f.body, 'with the right HTTP body');
+        t.deepEqual(args.body, JSON.stringify(f.body), 'with the right HTTP body');
 
         teardown(f);
     });
