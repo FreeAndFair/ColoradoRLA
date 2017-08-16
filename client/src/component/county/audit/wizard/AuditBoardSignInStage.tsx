@@ -8,6 +8,10 @@ const AuditBoardSignInStage = (props: any) => {
 
     const forms: any = { auditBoard: [] };
 
+    if (!auditBoard) {
+        return <div />;
+    }
+
     const submit = () => {
         establishAuditBoard(forms.auditBoard);
         nextStage();
@@ -44,7 +48,7 @@ const AuditBoardSignInStage = (props: any) => {
                 </div>
                 <div>
                 </div>
-                <button className='pt-button pt-intent-primary' onClick={ submit }>
+                <button className='pt-button pt-intent-primary' onClick={ nextStage }>
                     Submit & Next
                 </button>
             </div>
