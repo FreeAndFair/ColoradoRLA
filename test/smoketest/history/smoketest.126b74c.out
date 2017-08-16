@@ -1,0 +1,936 @@
+Built target/colorado_rla-0.0.1-shaded.jar
+<Response [200]> /auth-state-admin
+<Response [200]> /auth-county-admin
+<Response [200]> /reset-database {
+  "result": "database reset; run vacuumlo on the database to recover space from large object storage"
+}
+<Response [200]> /risk-limit-comp-audits {
+  "result": "risk limit set to 0.1"
+}
+<Response [200]> /audit-board {
+  "result": "audit board for county County [name\u003dArapahoe, id\u003d3] set to [Elector [first_name\u003dMary, last_name\u003dDoe, political_party\u003dDemocrat], Elector [first_name\u003dJohn, last_name\u003dDoe, political_party\u003dRepublican]]"
+}
+<Response [200]> /upload-ballot-manifest
+<Response [200]> /upload-cvr-export {
+  "result": "file successfully uploaded and hash matched"
+}
+<Response [200]> /contest [
+  {
+    "name": "Regent of the University of Colorado - At Large",
+    "description": "",
+    "choice_names": [
+      "Clear Winner",
+      "Distant Loser"
+    ],
+    "choice_descriptions": {
+      "Distant Loser": "REP",
+      "Clear Winner": "DEM"
+    },
+    "votes_allowed": 1,
+    "id": 204
+  },
+  {
+    "name": "COUNTY COMMISSIONER DISTRICT 3",
+    "description": "",
+    "choice_names": [
+      "Jeff Baker",
+      "Janet Lee Cook"
+    ],
+    "choice_descriptions": {
+      "Janet Lee Cook": "DEM",
+      "Jeff Baker": "REP"
+    },
+    "votes_allowed": 1,
+    "id": 205
+  },
+  {
+    "name": "Proposition 107 (Statutory)",
+    "description": "",
+    "choice_names": [
+      "YES",
+      "NO"
+    ],
+    "choice_descriptions": {
+      "NO": "",
+      "YES": ""
+    },
+    "votes_allowed": 1,
+    "id": 206
+  }
+]
+[{u'name': u'Regent of the University of Colorado - At Large', u'choice_descriptions': {u'Distant Loser': u'REP', u'Clear Winner': u'DEM'}, u'choice_names': [u'Clear Winner', u'Distant Loser'], u'votes_allowed': 1, u'id': 204, u'description': u''}, {u'name': u'COUNTY COMMISSIONER DISTRICT 3', u'choice_descriptions': {u'Janet Lee Cook': u'DEM', u'Jeff Baker': u'REP'}, u'choice_names': [u'Jeff Baker', u'Janet Lee Cook'], u'votes_allowed': 1, u'id': 205, u'description': u''}, {u'name': u'Proposition 107 (Statutory)', u'choice_descriptions': {u'YES': u'', u'NO': u''}, u'choice_names': [u'YES', u'NO'], u'votes_allowed': 1, u'id': 206, u'description': u''}]
+<Response [200]> /select-contests {
+  "result": "Contests selected"
+}
+<Response [200]> /select-contests {
+  "result": "Contests selected"
+}
+<Response [404]> /publish-data-to-audit <html><body><h2>404 Not found</h2></body></html>
+<Response [200]> /random-seed {
+  "result": "random seed set to 01234567890123456789"
+}
+<Response [200]> /ballots-to-audit/publish {
+  "result": "ballot lists published"
+}
+Received table of 165 CVRs
+Selected cvr 36: id: 209 RecordID: 3-800-2
+Selected cvr 44: id: 223 RecordID: 3-800-9
+Selected cvr 62: id: 372 RecordID: 4-1200-25
+Selected cvr 67: id: 314 RecordID: 4-1200-3
+Selected cvr 71: id: 392 RecordID: 4-1200-33
+Selected cvr 89: id: 320 RecordID: 4-1200-5
+Selected cvr 120: id: 475 RecordID: 9-3200-14
+Selected cvr 128: id: 491 RecordID: 9-3200-21
+Selected cvr 138: id: 514 RecordID: 9-3200-30
+Selected cvr 143: id: 568 RecordID: 9-3200-35
+Selected cvr 148: id: 554 RecordID: 9-3200-4
+[
+  [
+    3, 
+    [
+      {
+        "record_id": "2", 
+        "scanner_id": "3", 
+        "timestamp": {
+          "seconds": 1502850435, 
+          "nanos": 645000000
+        }, 
+        "imprinted_id": "3-800-2", 
+        "record_type": "AUDITOR_ENTERED", 
+        "ballot_type": "51", 
+        "contest_info": [
+          {
+            "choices": [
+              "Clear Winner"
+            ], 
+            "contest": 204
+          }, 
+          {
+            "choices": [
+              "NO"
+            ], 
+            "contest": 206
+          }
+        ], 
+        "county_id": 3, 
+        "batch_id": "800", 
+        "id": 209
+      }, 
+      {
+        "record_id": "9", 
+        "scanner_id": "3", 
+        "timestamp": {
+          "seconds": 1502850435, 
+          "nanos": 645000000
+        }, 
+        "imprinted_id": "3-800-9", 
+        "record_type": "AUDITOR_ENTERED", 
+        "ballot_type": "55", 
+        "contest_info": [
+          {
+            "choices": [], 
+            "contest": 204
+          }
+        ], 
+        "county_id": 3, 
+        "batch_id": "800", 
+        "id": 223
+      }, 
+      {
+        "record_id": "25", 
+        "scanner_id": "4", 
+        "timestamp": {
+          "seconds": 1502850435, 
+          "nanos": 645000000
+        }, 
+        "imprinted_id": "4-1200-25", 
+        "record_type": "AUDITOR_ENTERED", 
+        "ballot_type": "38", 
+        "contest_info": [
+          {
+            "choices": [
+              "Distant Loser"
+            ], 
+            "contest": 204
+          }
+        ], 
+        "county_id": 3, 
+        "batch_id": "1200", 
+        "id": 372
+      }, 
+      {
+        "record_id": "3", 
+        "scanner_id": "4", 
+        "timestamp": {
+          "seconds": 1502850435, 
+          "nanos": 645000000
+        }, 
+        "imprinted_id": "4-1200-3", 
+        "record_type": "AUDITOR_ENTERED", 
+        "ballot_type": "27", 
+        "contest_info": [
+          {
+            "choices": [
+              "Clear Winner"
+            ], 
+            "contest": 204
+          }, 
+          {
+            "choices": [
+              "Jeff Baker"
+            ], 
+            "contest": 205
+          }
+        ], 
+        "county_id": 3, 
+        "batch_id": "1200", 
+        "id": 314
+      }, 
+      {
+        "record_id": "33", 
+        "scanner_id": "4", 
+        "timestamp": {
+          "seconds": 1502850435, 
+          "nanos": 645000000
+        }, 
+        "imprinted_id": "4-1200-33", 
+        "record_type": "AUDITOR_ENTERED", 
+        "ballot_type": "43", 
+        "contest_info": [
+          {
+            "choices": [
+              "Clear Winner"
+            ], 
+            "contest": 204
+          }
+        ], 
+        "county_id": 3, 
+        "batch_id": "1200", 
+        "id": 392
+      }, 
+      {
+        "record_id": "5", 
+        "scanner_id": "4", 
+        "timestamp": {
+          "seconds": 1502850435, 
+          "nanos": 645000000
+        }, 
+        "imprinted_id": "4-1200-5", 
+        "record_type": "AUDITOR_ENTERED", 
+        "ballot_type": "28", 
+        "contest_info": [
+          {
+            "choices": [
+              "Distant Loser"
+            ], 
+            "contest": 204
+          }, 
+          {
+            "choices": [
+              "Janet Lee Cook"
+            ], 
+            "contest": 205
+          }
+        ], 
+        "county_id": 3, 
+        "batch_id": "1200", 
+        "id": 320
+      }, 
+      {
+        "record_id": "14", 
+        "scanner_id": "9", 
+        "timestamp": {
+          "seconds": 1502850435, 
+          "nanos": 645000000
+        }, 
+        "imprinted_id": "9-3200-14", 
+        "record_type": "AUDITOR_ENTERED", 
+        "ballot_type": "10", 
+        "contest_info": [
+          {
+            "choices": [
+              "Clear Winner"
+            ], 
+            "contest": 204
+          }, 
+          {
+            "choices": [
+              "Janet Lee Cook"
+            ], 
+            "contest": 205
+          }
+        ], 
+        "county_id": 3, 
+        "batch_id": "3200", 
+        "id": 475
+      }, 
+      {
+        "record_id": "21", 
+        "scanner_id": "9", 
+        "timestamp": {
+          "seconds": 1502850435, 
+          "nanos": 645000000
+        }, 
+        "imprinted_id": "9-3200-21", 
+        "record_type": "AUDITOR_ENTERED", 
+        "ballot_type": "16", 
+        "contest_info": [
+          {
+            "choices": [
+              "Clear Winner"
+            ], 
+            "contest": 204
+          }, 
+          {
+            "choices": [], 
+            "contest": 206
+          }
+        ], 
+        "county_id": 3, 
+        "batch_id": "3200", 
+        "id": 491
+      }, 
+      {
+        "record_id": "30", 
+        "scanner_id": "9", 
+        "timestamp": {
+          "seconds": 1502850435, 
+          "nanos": 645000000
+        }, 
+        "imprinted_id": "9-3200-30", 
+        "record_type": "AUDITOR_ENTERED", 
+        "ballot_type": "18", 
+        "contest_info": [
+          {
+            "choices": [
+              "Clear Winner"
+            ], 
+            "contest": 204
+          }, 
+          {
+            "choices": [
+              "YES"
+            ], 
+            "contest": 206
+          }
+        ], 
+        "county_id": 3, 
+        "batch_id": "3200", 
+        "id": 514
+      }, 
+      {
+        "record_id": "35", 
+        "scanner_id": "9", 
+        "timestamp": {
+          "seconds": 1502850435, 
+          "nanos": 645000000
+        }, 
+        "imprinted_id": "9-3200-35", 
+        "record_type": "AUDITOR_ENTERED", 
+        "ballot_type": "17", 
+        "contest_info": [
+          {
+            "choices": [
+              "Distant Loser"
+            ], 
+            "contest": 204
+          }, 
+          {
+            "choices": [
+              "Jeff Baker"
+            ], 
+            "contest": 205
+          }
+        ], 
+        "county_id": 3, 
+        "batch_id": "3200", 
+        "id": 568
+      }, 
+      {
+        "record_id": "4", 
+        "scanner_id": "9", 
+        "timestamp": {
+          "seconds": 1502850435, 
+          "nanos": 645000000
+        }, 
+        "imprinted_id": "9-3200-4", 
+        "record_type": "AUDITOR_ENTERED", 
+        "ballot_type": "2", 
+        "contest_info": [
+          {
+            "choices": [
+              "Clear Winner"
+            ], 
+            "contest": 204
+          }, 
+          {
+            "choices": [], 
+            "contest": 206
+          }
+        ], 
+        "county_id": 3, 
+        "batch_id": "3200", 
+        "id": 554
+      }
+    ]
+  ]
+]
+<Response [200]> /county-dashboard {
+  "id": 3,
+  "status": "NO_DATA",
+  "general_information": {},
+  "audit_board_members": [
+    {
+      "first_name": "Mary",
+      "last_name": "Doe",
+      "political_party": "Democrat",
+      "id": 195
+    },
+    {
+      "first_name": "John",
+      "last_name": "Doe",
+      "political_party": "Republican",
+      "id": 196
+    }
+  ],
+  "ballot_manifest_digest": "42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94",
+  "cvr_export_digest": "413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF",
+  "contests": [
+    204,
+    205,
+    206
+  ],
+  "contests_under_audit": {
+    "204": "COUNTY_WIDE_CONTEST",
+    "205": "COUNTY_WIDE_CONTEST"
+  },
+  "estimated_ballots_to_audit": 56,
+  "number_of_ballots_audited": 0,
+  "number_of_discrepancies": 0,
+  "number_of_disagreements": 0,
+  "ballots_to_audit": [
+    597,
+    277,
+    240,
+    543,
+    568,
+    568,
+    350,
+    394,
+    409,
+    293,
+    409,
+    514,
+    293,
+    377,
+    639,
+    617,
+    532,
+    500,
+    560,
+    280,
+    551,
+    314,
+    628,
+    481,
+    526,
+    601,
+    407,
+    652,
+    305,
+    520,
+    646,
+    252,
+    404,
+    394,
+    554,
+    338,
+    442,
+    437,
+    379,
+    225,
+    411,
+    568,
+    532,
+    220,
+    437,
+    574,
+    494,
+    311,
+    483,
+    329,
+    323,
+    538,
+    636,
+    329,
+    392,
+    563,
+    255,
+    478,
+    240,
+    220,
+    568,
+    424,
+    366,
+    674,
+    520,
+    429,
+    472,
+    429,
+    277,
+    242,
+    356,
+    543,
+    548,
+    384,
+    263,
+    597,
+    517,
+    411,
+    469,
+    268,
+    363,
+    217,
+    439,
+    369,
+    209,
+    407,
+    228,
+    478,
+    579,
+    489,
+    642,
+    332,
+    621,
+    506,
+    571,
+    466,
+    617,
+    560,
+    332,
+    639,
+    419,
+    593,
+    358,
+    486,
+    481,
+    517,
+    252,
+    656,
+    332,
+    293,
+    506,
+    605,
+    245,
+    509,
+    414,
+    299,
+    632,
+    560,
+    399,
+    466,
+    565,
+    551,
+    258,
+    245,
+    500,
+    209,
+    379,
+    347,
+    209,
+    242,
+    369,
+    220,
+    293,
+    231,
+    369,
+    454,
+    323,
+    674,
+    411,
+    384,
+    605,
+    445,
+    260,
+    671,
+    593,
+    233,
+    489,
+    347,
+    387,
+    260,
+    317,
+    228,
+    628,
+    283,
+    557,
+    497,
+    563,
+    523,
+    387,
+    605,
+    311,
+    217,
+    369,
+    379
+  ],
+  "ballot_under_audit_id": 597
+}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 55, u'ballot_under_audit_id': 277, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 1, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 54, u'ballot_under_audit_id': 240, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 2, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 53, u'ballot_under_audit_id': 543, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 3, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 52, u'ballot_under_audit_id': 568, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 4, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 51, u'ballot_under_audit_id': 350, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 5, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 51, u'ballot_under_audit_id': 350, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 5, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 50, u'ballot_under_audit_id': 394, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 6, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 49, u'ballot_under_audit_id': 409, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 7, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 48, u'ballot_under_audit_id': 293, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 8, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 47, u'ballot_under_audit_id': 514, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 9, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 47, u'ballot_under_audit_id': 514, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 9, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 46, u'ballot_under_audit_id': 377, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 10, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 46, u'ballot_under_audit_id': 377, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 10, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 45, u'ballot_under_audit_id': 639, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 11, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 44, u'ballot_under_audit_id': 617, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 12, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 43, u'ballot_under_audit_id': 532, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 13, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 42, u'ballot_under_audit_id': 500, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 14, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 41, u'ballot_under_audit_id': 560, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 15, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 40, u'ballot_under_audit_id': 280, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 16, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 39, u'ballot_under_audit_id': 551, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 17, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 38, u'ballot_under_audit_id': 314, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 18, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 37, u'ballot_under_audit_id': 628, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 19, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 36, u'ballot_under_audit_id': 481, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 20, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 35, u'ballot_under_audit_id': 526, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 21, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 34, u'ballot_under_audit_id': 601, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 22, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 33, u'ballot_under_audit_id': 407, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 23, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 32, u'ballot_under_audit_id': 652, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 24, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 31, u'ballot_under_audit_id': 305, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 25, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 30, u'ballot_under_audit_id': 520, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 26, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 29, u'ballot_under_audit_id': 646, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 27, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 28, u'ballot_under_audit_id': 252, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 28, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 27, u'ballot_under_audit_id': 404, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 29, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 26, u'ballot_under_audit_id': 554, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 30, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 26, u'ballot_under_audit_id': 554, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 30, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 25, u'ballot_under_audit_id': 338, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 31, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 24, u'ballot_under_audit_id': 442, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 32, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 23, u'ballot_under_audit_id': 437, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 33, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 22, u'ballot_under_audit_id': 379, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 34, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 21, u'ballot_under_audit_id': 225, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 35, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 20, u'ballot_under_audit_id': 411, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 36, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 19, u'ballot_under_audit_id': 220, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 37, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 19, u'ballot_under_audit_id': 220, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 37, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 19, u'ballot_under_audit_id': 220, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 37, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 18, u'ballot_under_audit_id': 574, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 38, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 18, u'ballot_under_audit_id': 574, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 38, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 17, u'ballot_under_audit_id': 494, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 39, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 16, u'ballot_under_audit_id': 311, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 40, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 15, u'ballot_under_audit_id': 483, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 41, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 14, u'ballot_under_audit_id': 329, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 42, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 13, u'ballot_under_audit_id': 323, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 43, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 12, u'ballot_under_audit_id': 538, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 44, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 11, u'ballot_under_audit_id': 636, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 45, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 10, u'ballot_under_audit_id': 392, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 46, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 10, u'ballot_under_audit_id': 392, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 46, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 9, u'ballot_under_audit_id': 563, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 47, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 8, u'ballot_under_audit_id': 255, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 48, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 7, u'ballot_under_audit_id': 478, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 49, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 6, u'ballot_under_audit_id': 424, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 50, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 6, u'ballot_under_audit_id': 424, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 50, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 6, u'ballot_under_audit_id': 424, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 50, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 6, u'ballot_under_audit_id': 424, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 50, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 5, u'ballot_under_audit_id': 366, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 51, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 4, u'ballot_under_audit_id': 674, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 52, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 3, u'ballot_under_audit_id': 429, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 53, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 3, u'ballot_under_audit_id': 429, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 53, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 2, u'ballot_under_audit_id': 472, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 54, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 1, u'ballot_under_audit_id': 242, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 55, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 1, u'ballot_under_audit_id': 242, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 55, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 1, u'ballot_under_audit_id': 242, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 55, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+<Response [200]> /upload-audit-cvr {
+  "result": "ACVR submitted"
+}
+<Response [200]> /county-dashboard
+{u'status': u'NO_DATA', u'estimated_ballots_to_audit': 0, u'ballot_under_audit_id': 356, u'general_information': {}, u'contests_under_audit': {u'205': u'COUNTY_WIDE_CONTEST', u'204': u'COUNTY_WIDE_CONTEST'}, u'cvr_export_digest': u'413BEFB5BC3E577E637BD789A92DA425D0309310C51CFE796E57C01A1987F4BF', u'audit_board_members': [{u'first_name': u'Mary', u'last_name': u'Doe', u'political_party': u'Democrat', u'id': 195}, {u'first_name': u'John', u'last_name': u'Doe', u'political_party': u'Republican', u'id': 196}], u'number_of_discrepancies': 0, u'ballots_to_audit': 'SUPPRESSED', u'number_of_ballots_audited': 56, u'number_of_disagreements': 0, u'contests': [204, 205, 206], u'id': 3, u'ballot_manifest_digest': u'42D409D3394243046CF92E3CE569B7078CBA0815D626602D15D0DA3E5E844A94'}
+
+To see the ends of the logs (some of which might not have been created):
+tail /srv/s/electionaudits/ColoradoRLA/server/eclipse-project/target/mvn.stdout
+tail /srv/s/electionaudits/ColoradoRLA/server/eclipse-project/target/server.stdout
+tail credentials.stdout
+tail server_test.stdout
+If you're done with the server: pkill -f java.-jar.target/colorado_rla
+If this script doesn't exit now, kill it from the keyboard. FIXME.

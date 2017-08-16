@@ -1,10 +1,12 @@
 # Smoketest of RLA server
 
-This smoketest has been tested against master commit d91c667.
+This smoketest has been tested against master commit 126b74c.
 See results in smoketest.*.out, generated like this:
 
 * Find most recent master commit in git log.
-* Run `time ./smoketest.bash 2>&1 | tee smoketest.<commit>.out`
+* Run `time ./smoketest.bash 2>&1 | tee history/smoketest.<commit>.out`
+
+Note: the pytest tests from zerotest are currently unused and disabled.
 
 ## Installing Test Dependencies
 For now, you'll need to install
@@ -12,11 +14,11 @@ For now, you'll need to install
 to run these tests, and/or generate new ones in the same way.
 
 This is mainly tested with python3, but has been seen to work
-on python2 also.  You will need this library for some of the tests:
+on python2 also.  You will need these libraries for some of the tests:
 
-`pip install zerotest`
+`pip install zerotest requests`
 
-or `pip3 install zerotest` (or similar) if you have
+or `pip3 install zerotest requests` (or similar) if you have
 multiple Python installations.
 
 ## Running a smoketest
