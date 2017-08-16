@@ -57,36 +57,40 @@ const pivot = (a: any) => {
     return o;
 };
 
-const parseContests = (contestIds: any, state: any): any => {
-    if (!state.county.contests) {
+export const parseContests = (contestIds: any, state: any): any => {
+    if (!state.county.contestDefs) {
         return [];
     }
 
-    if (_.isEmpty(state.county.contests)) {
+    if (_.isEmpty(state.county.contestDefs)) {
         return [];
     }
 
-    const contests = pivot(state.county.contests);
+    const { contestDefs } = state.county;
 
-    return _.map(contestIds, (id: any) => {
-        const c = contests[id];
-        const { description, name } = c;
+    return _.map(contestIds, (id: any) => contestDefs[id]);
+};
 
-        const choices = _.zip(
-            c.choice_names,
-            c.choice_descriptions,
-        ).map((name: any, description: any) => ({
-            name,
-            description,
-        }));
+const parseContestsUnderAudit = (contestIds: any, state: any): any => {
+    if (!state.county.contestDefs) {
+        return [];
+    }
 
-        return { id, choices, description, name };
+    if (_.isEmpty(state.county.contestDefs)) {
+        return [];
+    }
+
+    const { contestDefs } = state.county;
+
+    return _.map(contestIds, (reason: any, id: any) => {
+        const def = state.county.contestDefs[id];
+        return { ...def, reason };
     });
 };
 
 
 export const parse = (data: CountyDashboard, state: any): any => {
-    const findContest = (id: any) => state.county.contests[id];
+    const findContest = (id: any) => state.county.contestDefs[id];
 
     return {
         auditBoardMembers: data.audit_board_members.map(parseBoardMember),
@@ -95,7 +99,7 @@ export const parse = (data: CountyDashboard, state: any): any => {
         ballotUnderAuditId: data.ballot_under_audit_id,
         ballotsToAudit: data.ballots_to_audit,
         contests: parseContests(data.contests, state),
-        contestsUnderAudit: _.mapValues(data.contests_under_audit, findContest),
+        contestsUnderAudit: parseContestsUnderAudit(data.contests_under_audit, state),
         cvrExportDigest: data.cvr_export_digest,
         estimatedBallotsToAudit: data.estimated_ballots_to_audit,
         generalInformation: data.general_information,
