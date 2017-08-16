@@ -252,7 +252,7 @@ if __name__ == "__main__":
     if len(selected) < 1:
         print("No ballots_to_audit")
 
-    for i in range(min(len(selected), 70)):
+    for i in range(len(selected) * 2):
         acvr = cvrtable[selected[i]]
         acvr['record_type'] = 'AUDITOR_ENTERED'
         test_endpoint_json(base, county_s1, "/upload-audit-cvr",
@@ -263,6 +263,10 @@ if __name__ == "__main__":
         # The list of ballots_to_audit takes up way too much space in the output....
         resp['ballots_to_audit'] = "SUPPRESSED"
         print(resp)
+
+        if resp['estimated_ballots_to_audit'] <= 0:
+            print("\nAudit completed after %d ballots" % i + 1)
+            break
 
     r = test_endpoint_json(base, county_s1, "/intermediate-audit-report", {})
     r = test_endpoint_json(base, county_s1, "/audit-report", {})
