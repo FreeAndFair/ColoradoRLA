@@ -12,29 +12,33 @@ widescale basis.
 
 ## Basic Structure of Risk Limiting Audits
 
-Once the Secretary of State establishes a risk limit and selects contests to 
-be audited, counties will then use the RLA Tool to upload ballot manifests, 
+Once the Secretary of State uses the RLA Tool to establish a risk limit and 
+selects contests to 
+guide the audit, 
+counties will then use the RLA Tool to upload ballot manifests, 
 cast vote records (CVRs), and summary results to a central server. The RLA 
-Tool will use this data to determine the initial set of ballots to be checked 
+Tool will use this data to determine the ballots to be checked 
 for each contest based on the risk limit and the margins of victory in the 
-contests to be audited. The RLA Tool will report this information to each 
+selected contests. The RLA Tool will report this information to each 
 county, where the Audit Board, consisting of representatives of different 
 political parties, will retrieve the appropriate ballots and record their 
-interpretations of voter intent in the RLA Tool. If there are too many 
-mismatches between the Audit Board’s interpretations and the choices 
-reported by the vote-tallying system, additional ballots may need to be 
-randomly selected until either the risk limit is satisfied or a complete 
-hand count is conducted. The SOS can indicate that a contest must do a full 
-hand count at any time. Complete audit results are exported from the RLA 
+interpretations of voter intent in the RLA Tool. 
+Randomly selected ballots will be presented to County Audit Boards 
+until either the risk limit is satisfied or 
+the Secretary of State indicates that a full hand count is required.
+Complete audit results and artifacts allowing the public to 
+check, independently, that the audit was carried out correctly 
+are exported from the RLA 
 Tool for import to a Public Audit Center hosted on the official CDOS website.
 
-## RLA Tool
+## Dashboards
 
 The RLA Tool facilitates running a risk limiting audit across all counties 
-in Colorado simultaneously. The RLA Tool has two dashboards. One dashboard 
-serves CDOS, and the other serves the Counties. Both the CDOS and County 
-dashboards require authentication to login. The RLA Tool also provides 
-information to be used for a Public Audit Center, but does not contain it.
+in Colorado simultaneously. The RLA Tool has a dashboard for the 
+statewide election adminstrators who work for the 
+Secretary of State. Each of the 64 Counties has
+a customized dashboard. All of these 
+dashboards require authentication to login. 
 
 ### Logging In
 
@@ -114,7 +118,8 @@ Hand Count is required.
 
 This page allows the Secretary of State to select which statewide contest, and 
 which countywide contests to audit. This information will be published to the 
-County Dashboard when the selections have been made.
+County Dashboard when the selections have been made. On this same page the 
+Secretary of State may select contests for full hand counts.
 
 ![State Contest Selection Screenshot](./screenshots/ContestSelection.png)
 
