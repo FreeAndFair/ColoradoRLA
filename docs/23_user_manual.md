@@ -50,6 +50,8 @@ State home page.
 
 ![Secretary of State Home Screenshot](./screenshots/SoSHome.png)
 
+---
+
 Logged in County users will see a home page tailored to that County.
 
 ![County Home Screenshot](./screenshots/CountyHome.png)
