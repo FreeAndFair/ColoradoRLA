@@ -35,7 +35,7 @@ interface CountyDashboard {
 const parseBoardMember = (e: Elector): any => ({
     firstName: e.first_name,
     lastName: e.last_name,
-    politicalParty: e.political_party,
+    party: e.political_party,
 });
 
 const parseTimestamp = (ts: Timestamp): Date => {
