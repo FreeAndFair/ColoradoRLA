@@ -9,10 +9,11 @@ import uploadRandomSeed from '../../../action/uploadRandomSeed';
 
 class AuditSeedContainer extends React.Component<any, any> {
     public render() {
-        const { history, uploadRandomSeed } = this.props;
+        const { history, seed, uploadRandomSeed } = this.props;
 
         const props = {
             back: () => history.push('/sos/audit'),
+            seed,
             nextPage: () => history.push('/sos/audit/select-contests'),
             uploadRandomSeed,
         };
@@ -21,7 +22,7 @@ class AuditSeedContainer extends React.Component<any, any> {
     }
 }
 
-const mapStateToProps = () => ({});
+const mapStateToProps = ({ sos }: any) => ({ sos, seed: sos.seed });
 
 const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
     uploadRandomSeed,
