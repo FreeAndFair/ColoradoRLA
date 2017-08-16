@@ -9,8 +9,6 @@ The Run Book will assist these election administrators
 in using to tool to carry out the actions required
 for a RLA.
 
-### What the RLA Tool Does
-
 The Risk-Limiting Audit tool, developed by Free & Fair 
 for the Colorado Department of
 State for use in elections from November 2017 forward, supports a 
@@ -33,33 +31,9 @@ enter interpretations of ballots into the tool. And the Secretary of
 State can monitor the progress of the individual Counties.
 
 The RLA Tool also creates export files for use in the Audit
-Center, a website disseminating audit-related information
+Center, a website required by Rule 25 to disseminate audit-related information
 to the public.
  
-### What the RLA Tool Does Not Do
-
-Although the rules governing the RLA requires Counties to 
-generate and preserve a Summary Results Report and a Results File Export, the 
-RLA Tool does not interact with these particular files in any way. 
-Nor does the RLA Tool aid the CVR Export Verification required by the 
-rules. These processes and files are not discussed in this Run Book.
-
-While the RLA Tool does provide for upload of the 
-hashed Ballot Manifest, the hashed CVR file and their hashes, 
-the RLA Tool does not provide a hashing utility.
-
-The current version of the RLA Tool does not provide any support
-for chain of custody logs. Nor does it provide any rules 
-or suggestions for interpretation of the marks on any particular ballot. 
-
-Looking at Rule 25, the following required actions must be completed 
-outside of the RLA Tool:
-* 25.2.2 (B), (C), (D), (E)
-
-Looking at Rule 25, the following required actions are performed automatically 
-by the RLA Tool:
-* 25.2.2 
-
 ### Logging In
 
 ![State Login Screenshot](./screenshots/StateLogin.png)
