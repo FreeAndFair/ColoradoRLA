@@ -54,15 +54,18 @@ State home page.
 
 Logged in County users will see a home page tailored to that County.
 
+---
+
 ![County Home Screenshot](./screenshots/CountyHome.png)
 
 ### Navigation
 
 Both the Secretary of State site and each County site has a navigation menu 
-in the upper 
-left corner.
+in the upper left corner.
 
 ![Secretary of State Navigation Screenshot](./screenshots/SoSNav.png)
+
+---
 
 ![County Navigation Screenshot](./screenshots/CountyNav.png)
 
@@ -102,6 +105,8 @@ the audit.
 
 ![Audit Board Signin Screenshot](./screenshots/ABsignin.png)
 
+---
+
 The RLA Tool allows Audit Boards to report the markings on each individual ballot.
 
 This page allows Audit Board members to enter their collective interpretation 
@@ -110,6 +115,8 @@ Audit Board members click ‘Review.’’ to be taken to the Audit Board Interp
 Review Screen.
 
 Click "Review"![Report Marks Screenshot](./screenshots/ReportMarks.png)
+
+---
 
 This page allows Audit Board members to review their choices, and then 
 ‘Submit and Next Ballot’ when ready to proceed to the next ballot. This 
