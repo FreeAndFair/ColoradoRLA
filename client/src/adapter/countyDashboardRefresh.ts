@@ -49,7 +49,7 @@ const parseTimestamp = (ts: Timestamp): Date => {
 
 
 export const parse = (data: CountyDashboard, state: any): any => {
-    const findContest = (id: any) => state.contests[id];
+    const findContest = (id: any) => state.county.contests[id];
 
     return {
         auditBoardMembers: data.audit_board_members.map(parseBoardMember),
