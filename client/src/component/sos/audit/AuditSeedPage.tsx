@@ -31,8 +31,7 @@ const AuditSeedPage = ({ back, nextPage, seed, uploadRandomSeed }: any) => {
 
     const onSaveAndNext = () => {
         if (forms.seedForm) {
-            const { seed } = forms.seedForm;
-            uploadRandomSeed(seed);
+            uploadRandomSeed(forms.seedForm.seed);
         }
 
         nextPage();
