@@ -24,7 +24,8 @@ interpretations of voter intent in the RLA Tool. If there are too many
 mismatches between the Audit Board’s interpretations and the choices 
 reported by the vote-tallying system, additional ballots may need to be 
 randomly selected until either the risk limit is satisfied or a complete 
-hand count is conducted. Complete audit results are exported from the RLA 
+hand count is conducted. The SOS can indicate that a contest must do a full 
+hand count at any time. Complete audit results are exported from the RLA 
 Tool for import to a Public Audit Center hosted on the official CDOS website.
 
 ## RLA Tool
@@ -98,6 +99,17 @@ on the following page, and will be published to the County and Public Dashboards
 
 ---
 
+### Audit Ongoing Page
+
+This page provides an overview of the audit in progress, updated in real time. 
+It shows County level and Contest level details, and will indicate when: 1) the 
+audit is complete, 2) another round of ballots must be counted*, and 3) if a Full
+Hand Count is required.
+
+*the notion of rounds is still under discussion and not baked into the stage-1 release
+
+![Audit Ongoing Screenshot](./screenshots/AuditOngoing.png)
+
 ### Selecting Contests
 
 This page allows the Secretary of State to select which statewide contest, and 
@@ -121,7 +133,7 @@ The RLA Tool allows Audit Boards to report the markings on each individual ballo
 
 This page allows Audit Board members to enter their collective interpretation 
 of choices marked on the ballot. Once they have entered their interpretations, 
-Audit Board members click ‘Review.’’ to be taken to the Audit Board Interpretation 
+Audit Board members click ‘Review.’ to be taken to the Audit Board Interpretation 
 Review Screen.
 
 Click "Review"![Report Marks Screenshot](./screenshots/ReportMarks.png)
@@ -130,9 +142,9 @@ Click "Review"![Report Marks Screenshot](./screenshots/ReportMarks.png)
 
 This page allows Audit Board members to review their choices, and then 
 ‘Submit and Next Ballot’ when ready to proceed to the next ballot. This 
-process continues until all of the ballots for the batch are entered.
- This submission is final. There is no way to revise a ballot interpretation 
- once it has been submitted from the Review Screen.
+process continues until all of the ballots are entered. This submission is 
+final. There is no way to revise a ballot interpretation  once it has been 
+submitted from the Review Screen.
 
 Note: do *not* use your browser's "back" arrow during the audit process.
 If the review screen does not match the Audit Board's interpretation,
