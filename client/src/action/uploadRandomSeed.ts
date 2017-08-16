@@ -5,7 +5,7 @@ import { apiHost } from '../config';
 import createSubmitAction from './createSubmitAction';
 
 
-const url = `http://${apiHost}/upload-random-seed`;
+const url = `http://${apiHost}/random-seed`;
 
 const uploadRandomSeed = createSubmitAction({
     failType: 'UPLOAD_RANDOM_SEED_FAIL',
