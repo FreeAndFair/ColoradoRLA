@@ -6,8 +6,6 @@ import ReviewStage from './ReviewStage';
 
 import uploadAcvr from '../../../../action/uploadAcvr';
 
-import findById from '../../../../findById';
-
 
 class ReviewStageContainer extends React.Component<any, any> {
     public render() {
@@ -16,15 +14,11 @@ class ReviewStageContainer extends React.Component<any, any> {
 }
 
 const mapStateToProps = ({ county }: any) => {
-    const { ballots, currentBallotId } = county;
+    const { ballots, currentBallot } = county;
 
-    const currentBallot = findById(county.ballots, county.currentBallotId);
+    const marks = county.acvr[currentBallot.id];
 
-    return {
-        county,
-        currentBallot,
-        marks: currentBallot.marks,
-    };
+    return { county, currentBallot, marks };
 };
 
 const mapDispatchToProps = (dispatch: any) => bindActionCreators({
