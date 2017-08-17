@@ -16,12 +16,11 @@ class ReviewStageContainer extends React.Component<any, any> {
 }
 
 const mapStateToProps = ({ county }: any) => {
-    const { ballots, ballotStyles, currentBallotId } = county;
+    const { ballots, currentBallotId } = county;
 
     const currentBallot = findById(county.ballots, county.currentBallotId);
 
     return {
-        ballotStyles,
         county,
         currentBallot,
         marks: currentBallot.marks,

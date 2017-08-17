@@ -10,8 +10,7 @@ class CountyAuditWizardContainer extends React.Component<any, any> {
     }
 }
 
-const mapStateToProps = ({ ballotStyles, county }: any) =>
-    ({ ballotStyles, county });
+const mapStateToProps = ({ county }: any) => ({ county });
 
 const mapDispatchToProps = (dispatch: any) => ({});
 
