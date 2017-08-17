@@ -30,7 +30,9 @@ export default (state: any, action: any) => {
         comments,
     };
 
-    nextMarks.noConsensus = !!noConsensus;
+    if (!_.isUndefined(noConsensus)) {
+        nextMarks.noConsensus = !!noConsensus;
+    }
 
     const marks = nextState.county.acvrs[ballotId][contestId];
     nextState.county.acvrs[ballotId][contestId] = _.merge({}, marks, nextMarks);
