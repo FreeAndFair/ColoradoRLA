@@ -29,12 +29,14 @@ class CountyHomeContainer extends React.Component<any, any> {
         }
 
         if (!intervalIds.fetchContestsId) {
-            fetchContestsByCounty(county.id);
+            if (county.id) {
+                fetchContestsByCounty(county.id);
 
-            intervalIds.fetchContestsId = setInterval(
-                () => fetchContestsByCounty(county.id),
-                1000,
-            );
+                intervalIds.fetchContestsId = setInterval(
+                    () => fetchContestsByCounty(county.id),
+                    1000,
+                );
+            }
         }
 
         const startAudit = () => this.props.history.push('/county/audit');
