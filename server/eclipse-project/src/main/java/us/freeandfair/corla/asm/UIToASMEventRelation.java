@@ -72,7 +72,7 @@ public class UIToASMEventRelation {
     my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         UPLOAD_CVRS_EVENT));
     my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
-        START_AUDIT_EVENT));
+        COUNTY_START_AUDIT_EVENT));
   }
   
   private void addAuditBoardDashboardPairs() {

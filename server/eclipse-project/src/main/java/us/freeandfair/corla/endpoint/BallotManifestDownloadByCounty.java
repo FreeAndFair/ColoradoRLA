@@ -11,8 +11,6 @@
 
 package us.freeandfair.corla.endpoint;
 
-import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.COUNTY_SKIP_EVENT;
-
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -36,7 +34,6 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.model.BallotManifestInfo;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.util.SparkHelper;
@@ -63,14 +60,6 @@ public class BallotManifestDownloadByCounty extends AbstractCountyDashboardEndpo
   @Override
   public String endpointName() {
     return "/ballot-manifest/county";
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected ASMEvent endpointEvent() {
-    return COUNTY_SKIP_EVENT;
   }
   
   /**

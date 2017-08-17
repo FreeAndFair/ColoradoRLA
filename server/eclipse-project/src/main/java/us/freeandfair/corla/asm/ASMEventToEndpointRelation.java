@@ -88,7 +88,7 @@ public class ASMEventToEndpointRelation {
         UPLOAD_CVRS_EVENT,
         UNIMPLEMENTED));
     my_relation.add(new Pair<ASMEvent, String>(
-        START_AUDIT_EVENT,
+        COUNTY_START_AUDIT_EVENT,
         UNIMPLEMENTED));
   }
   

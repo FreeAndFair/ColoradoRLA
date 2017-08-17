@@ -166,8 +166,9 @@ public class DoSDashboardRefreshResponse {
       final CountyDashboard db = CountyDashboardQueries.get(c.identifier());
       if (db == null) {
         throw new PersistenceException("unable to read county dashboard state.");
-      } else {
-        status_map.put(db.countyID(), CountyDashboardRefreshResponse.createResponse(db));
+      } else {   
+        status_map.put(db.countyID(), 
+                       CountyDashboardRefreshResponse.createAbbreviatedResponse(db));
       }
     }
     

@@ -32,9 +32,7 @@ public interface ASMEvent extends Event {
     INDICATE_FULL_HAND_COUNT_CONTEST_EVENT, // public inbound event
     COUNTY_AUDIT_COMPLETE_EVENT, // private internal event
     AUDIT_COMPLETE_EVENT, // private internal event
-    PUBLISH_AUDIT_REPORT_EVENT, // public inbound event
-    DOS_REFRESH_EVENT, // private internal event
-    DOS_SKIP_EVENT // private internal event
+    PUBLISH_AUDIT_REPORT_EVENT // public inbound event
   }
   
   /**
@@ -45,9 +43,9 @@ public interface ASMEvent extends Event {
     ESTABLISH_AUDIT_BOARD_EVENT, // public inbound event
     UPLOAD_BALLOT_MANIFEST_EVENT, // public inbound event
     UPLOAD_CVRS_EVENT, // public inbound event
-    START_AUDIT_EVENT, // public inbound event
-    COUNTY_REFRESH_EVENT, // private internal event
-    COUNTY_SKIP_EVENT // private internal event
+    COUNTY_START_AUDIT_EVENT, // public inbound event
+    COMPLETE_AUDIT_EVENT, // private internal event
+    DEADLINE_MISSED_EVENT // private internal event
   }
   
   /**
@@ -55,20 +53,11 @@ public interface ASMEvent extends Event {
    * @trace asm.audit_board_dashboard_event
    */
   enum AuditBoardDashboardEvent implements ASMEvent {
+    AUDIT_BOARD_START_AUDIT_EVENT, // private internal event
     REPORT_MARKINGS_EVENT, // public inbound event
     REPORT_BALLOT_NOT_FOUND_EVENT, // public inbound event
     SUBMIT_AUDIT_INVESTIGATION_REPORT_EVENT, // public inbound event
     SUBMIT_AUDIT_REPORT_EVENT, // public inbound event
-    SUBMIT_INTERMEDIATE_AUDIT_REPORT_EVENT, // public inbound event
-    AUDIT_SKIP_EVENT, // private internal event
-    AUDIT_REFRESH_EVENT // private internal event
-  }
-  
-  /**
-   * The RLA Tool's events.
-   * @trace asm.rla_tool_event
-   */
-  enum RLAToolEvent implements ASMEvent {
-    RLA_TOOL_SKIP_EVENT // private internal event
+    SUBMIT_INTERMEDIATE_AUDIT_REPORT_EVENT // public inbound event
   }
 }

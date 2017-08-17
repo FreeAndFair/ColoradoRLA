@@ -12,12 +12,8 @@
 
 package us.freeandfair.corla.endpoint;
 
-import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.DOS_SKIP_EVENT;
-
 import spark.Request;
 import spark.Response;
-
-import us.freeandfair.corla.asm.ASMEvent;
 
 /**
  * Download all ballots to audit for the entire state.
@@ -48,14 +44,6 @@ public class ReportBallotsToAudit extends AbstractDoSDashboardEndpoint {
    */
   public AuthorizationType requiredAuthorization() {
     return AuthorizationType.STATE;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected ASMEvent endpointEvent() {
-    return DOS_SKIP_EVENT;
   }
 
   /**
