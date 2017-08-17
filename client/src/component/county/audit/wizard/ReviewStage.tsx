@@ -7,47 +7,6 @@ import findById from '../../../../findById';
 import BackButton from './BackButton';
 
 
-const BallotContestResultVoteForN = () => (
-    <div className='pt-card'>
-        <div className='pt-card'>
-            <div>Ballot contest 1</div>
-            <div>Acme County School District RE-1</div>
-            <div>Director</div>
-        </div>
-        <div className='pt-card'>
-            <div>Choice B</div>
-            <div>Choice C</div>
-        </div>
-    </div>
-);
-
-const BallotContestResultYesNo = () => (
-    <div className='pt-card'>
-        <div className='pt-card'>
-            <div>Ballot contest 2</div>
-            <div>Prop 101</div>
-        </div>
-        <div className='pt-card'>
-            Yes
-        </div>
-    </div>
-);
-
-const BallotContestResultUndervote = () => (
-    <div className='pt-card'>
-        <div className='pt-card'>
-            <div>Ballot contest 3</div>
-            <div>Governor</div>
-        </div>
-        <div className='pt-card'>
-            Undervote
-        </div>
-        <div className='pt-card'>
-            Comments: Faint markings visible.
-        </div>
-    </div>
-);
-
 const BallotContestReview = ({ contest, marks }: any) => {
     const { comments, noConsensus, } = marks;
     const { votesAllowed } = contest;
