@@ -57,9 +57,9 @@ class CountyHomeContainer extends React.Component<any, any> {
 
         const startAudit = () => history.push('/county/audit');
 
-        const countyName = counties[county.id].name;
+        const countyInfo = county.id ? counties[county.id] : {};
 
-        const props = { countyName, startAudit, ...this.props };
+        const props = { countyInfo, startAudit, ...this.props };
 
         return <CountyHomePage { ...props } />;
     }
