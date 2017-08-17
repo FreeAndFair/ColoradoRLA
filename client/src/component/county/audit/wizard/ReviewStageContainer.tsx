@@ -14,9 +14,9 @@ class ReviewStageContainer extends React.Component<any, any> {
 }
 
 const mapStateToProps = ({ county }: any) => {
-    const { ballots, currentBallot } = county;
+    const { currentBallot } = county;
 
-    const marks = county.acvr[currentBallot.id];
+    const marks = county.acvrs[currentBallot.id];
 
     return { county, currentBallot, marks };
 };
