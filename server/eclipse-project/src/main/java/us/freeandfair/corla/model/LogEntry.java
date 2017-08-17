@@ -17,6 +17,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -48,18 +49,28 @@ public class LogEntry extends AbstractEntity implements Serializable {
   private static final long serialVersionUID = 1L;
   
   /**
+   * The result code of this log entry. In most cases, this will be an HTTP
+   * result code, as enumerated in HttpStatus.
+   */
+  @Column(updatable = false)
+  private Integer my_result_code;
+  
+  /**
    * The informational string of this log entry.
    */
+  @Column(updatable = false, nullable = false)
   private String my_information;
   
   /**
    * The timestamp of this log entry.
    */
+  @Column(updatable = false, nullable = false)
   private Instant my_timestamp;
   
   /**
    * The hash chain entry of this log entry.
    */
+  @Column(updatable = false, nullable = false)
   private String my_hash;
   
   /**
@@ -78,9 +89,10 @@ public class LogEntry extends AbstractEntity implements Serializable {
    * @param the_timestamp The timestamp.
    * @param the_previous_entry The previous log entry.
    */
-  public LogEntry(final String the_information, final Instant the_timestamp,
-                  final LogEntry the_previous_entry) {
+  public LogEntry(final Integer the_result_code, final String the_information, 
+                  final Instant the_timestamp, final LogEntry the_previous_entry) {
     super();
+    my_result_code = the_result_code;
     my_information = the_information;
     my_timestamp = the_timestamp;
     my_hash = calculateHash(the_previous_entry);
@@ -97,9 +109,7 @@ public class LogEntry extends AbstractEntity implements Serializable {
    */
   private String calculateHash(final LogEntry the_previous_entry) {
     String result = ROOT_HASH;
-    final StringBuilder hash_input = new StringBuilder();
-    hash_input.append(my_timestamp.toString());
-    hash_input.append(my_information);
+    final StringBuilder hash_input = new StringBuilder(hashString());
     if (the_previous_entry == null) {
       hash_input.append(ROOT_HASH);
     } else {
@@ -114,6 +124,13 @@ public class LogEntry extends AbstractEntity implements Serializable {
       Main.LOGGER.error("could not use SHA-256");
     }
     return result;
+  }
+  
+  /**
+   * @return the result code in this log entry.
+   */
+  public Integer resultCode() {
+    return my_result_code;
   }
   
   /**
@@ -135,6 +152,20 @@ public class LogEntry extends AbstractEntity implements Serializable {
    */
   public String hash() {
     return my_hash;
+  }
+  
+  /**
+   * Returns a String based on the data in this log entry and used as part
+   * of the hash computation.
+   * 
+   * @return the String.
+   */
+  public final String hashString() {
+    final StringBuilder hash_input = new StringBuilder();
+    hash_input.append(my_result_code.toString());
+    hash_input.append(my_information);
+    hash_input.append(my_timestamp.toString());
+    return hash_input.toString();
   }
   
   /**

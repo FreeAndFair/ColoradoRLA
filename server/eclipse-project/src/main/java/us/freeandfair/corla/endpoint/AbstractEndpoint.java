@@ -165,6 +165,7 @@ public abstract class AbstractEndpoint implements Endpoint {
   public void ok(final Response the_response) {
     the_response.status(HttpStatus.OK_200);   
     my_endpoint_result = "";
+    
   }
   
   /**
