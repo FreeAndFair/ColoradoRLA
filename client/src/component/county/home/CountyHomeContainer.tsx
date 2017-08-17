@@ -21,6 +21,7 @@ class CountyHomeContainer extends React.Component<any, any> {
             county,
             countyDashboardRefresh,
             fetchContestsByCounty,
+            fetchCvrById,
             history,
         } = this.props;
 
@@ -46,16 +47,13 @@ class CountyHomeContainer extends React.Component<any, any> {
                 fetchCvrById(county.ballotUnderAuditId);
 
                 intervalIds.fetchCvrId = setInterval(
-                    () => {
-                        const { id } = this.props.county;
-                        fetchCvrById(this.props.county.ballotUnderAuditId);
-                    },
+                    () => fetchCvrById(this.props.county.ballotUnderAuditId),
                     1000,
                 );
             }
         }
 
-        const startAudit = () => this.props.history.push('/county/audit');
+        const startAudit = () => history.push('/county/audit');
 
         const props = { startAudit, ...this.props };
 
