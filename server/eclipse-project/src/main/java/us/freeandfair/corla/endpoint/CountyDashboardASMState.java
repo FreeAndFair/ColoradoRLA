@@ -15,8 +15,6 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.asm.ASMEvent;
-import us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent;
 import us.freeandfair.corla.json.ServerASMResponse;
 
 /**
@@ -56,14 +54,4 @@ public class CountyDashboardASMState extends AbstractCountyDashboardEndpoint {
                                                   my_asm.enabledUIEvents())));
     return my_endpoint_result;
   }
-
-  /**
-   * {@inheritDoc}
-   */
-  /*@ pure @*/
-  @Override
-  protected ASMEvent endpointEvent() {
-    return CountyDashboardEvent.COUNTY_REFRESH_EVENT;
-  }
-
 }

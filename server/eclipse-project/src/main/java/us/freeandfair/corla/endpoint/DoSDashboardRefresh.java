@@ -11,15 +11,12 @@
 
 package us.freeandfair.corla.endpoint;
 
-import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.DOS_REFRESH_EVENT;
-
 import javax.persistence.PersistenceException;
 
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.json.DoSDashboardRefreshResponse;
 import us.freeandfair.corla.query.DoSDashboardQueries;
 
@@ -46,14 +43,6 @@ public class DoSDashboardRefresh extends AbstractDoSDashboardEndpoint {
   @Override
   public String endpointName() {
     return "/dos-dashboard";
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected ASMEvent endpointEvent() {
-    return DOS_REFRESH_EVENT;
   }
   
   /**

@@ -11,15 +11,12 @@
 
 package us.freeandfair.corla.endpoint;
 
-import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.COUNTY_REFRESH_EVENT;
-
 import javax.persistence.PersistenceException;
 
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.json.CountyDashboardRefreshResponse;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.query.CountyDashboardQueries;
@@ -47,14 +44,6 @@ public class CountyDashboardRefresh extends AbstractCountyDashboardEndpoint {
   @Override
   public String endpointName() {
     return "/county-dashboard";
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected ASMEvent endpointEvent() {
-    return COUNTY_REFRESH_EVENT;
   }
   
   /**

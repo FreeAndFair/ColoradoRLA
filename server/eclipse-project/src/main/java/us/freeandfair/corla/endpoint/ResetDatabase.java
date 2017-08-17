@@ -15,8 +15,6 @@ package us.freeandfair.corla.endpoint;
 import spark.Request;
 import spark.Response;
 
-import us.freeandfair.corla.asm.ASMEvent;
-import us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent;
 import us.freeandfair.corla.asm.AbstractStateMachine;
 import us.freeandfair.corla.asm.AuditBoardDashboardASM;
 import us.freeandfair.corla.asm.CountyDashboardASM;
@@ -83,14 +81,6 @@ public class ResetDatabase extends AbstractEndpoint {
    */
   public AuthorizationType requiredAuthorization() {
     return AuthorizationType.STATE;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected ASMEvent endpointEvent() {
-    return DoSDashboardEvent.DOS_SKIP_EVENT;
   }
   
   /**
