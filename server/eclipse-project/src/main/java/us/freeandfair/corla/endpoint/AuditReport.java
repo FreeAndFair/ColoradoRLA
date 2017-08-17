@@ -15,16 +15,11 @@ package us.freeandfair.corla.endpoint;
 import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.SUBMIT_AUDIT_REPORT_EVENT;
 import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.COMPLETE_AUDIT_EVENT;
 import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.*;
-import static us.freeandfair.corla.asm.ASMState.CountyDashboardState.*;
-
-import java.util.HashSet;
-import java.util.Set;
 
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.asm.ASMEvent;
-import us.freeandfair.corla.asm.ASMState;
 import us.freeandfair.corla.asm.ASMUtilities;
 import us.freeandfair.corla.asm.CountyDashboardASM;
 import us.freeandfair.corla.asm.DoSDashboardASM;
@@ -38,22 +33,7 @@ import us.freeandfair.corla.persistence.Persistence;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class AuditReport extends AbstractAuditBoardDashboardEndpoint {
-  /**
-   * The set of states that indicate a county is "done" with the audit.
-   */
-  private static final Set<ASMState> AUDIT_DONE_STATES = new HashSet<>();
-  
-  static {
-    // a county is done if they're not auditing
-    AUDIT_DONE_STATES.add(COUNTY_INITIAL_STATE); 
-    // a county is done if they're done
-    AUDIT_DONE_STATES.add(COUNTY_AUDIT_COMPLETE);
-    // a county is done if they uploaded something too late
-    AUDIT_DONE_STATES.add(UPLOAD_BALLOT_MANIFEST_TOO_LATE);
-    AUDIT_DONE_STATES.add(UPLOAD_CVRS_TOO_LATE);
-  }
-  
+public class AuditReport extends AbstractAuditBoardDashboardEndpoint {  
   /**
    * {@inheritDoc}
    */
@@ -99,7 +79,7 @@ public class AuditReport extends AbstractAuditBoardDashboardEndpoint {
         for (final County c : Persistence.getAll(County.class)) {
           final CountyDashboardASM asm = 
               ASMUtilities.asmFor(CountyDashboardASM.class, String.valueOf(c.identifier()));
-          all_complete &= AUDIT_DONE_STATES.contains(asm.currentState());           
+          all_complete &= asm.isInFinalState();       
         }
         if (all_complete) {
           ASMUtilities.step(AUDIT_COMPLETE_EVENT, DoSDashboardASM.class, null);

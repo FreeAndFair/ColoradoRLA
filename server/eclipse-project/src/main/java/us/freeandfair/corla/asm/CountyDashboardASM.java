@@ -40,8 +40,7 @@ public class CountyDashboardASM extends AbstractStateMachine {
    * The final states of this ASM.
    */
   private static final ASMState[] FINAL_STATES = 
-      {CountyDashboardState.UPLOAD_BALLOT_MANIFEST_TOO_LATE,
-       CountyDashboardState.UPLOAD_CVRS_TOO_LATE,
+      {CountyDashboardState.DEADLINE_MISSED,
        CountyDashboardState.COUNTY_AUDIT_COMPLETE};
   
   /**
