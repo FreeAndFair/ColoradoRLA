@@ -12,15 +12,26 @@ import dosDashboardRefresh from '../../action/dosDashboardRefresh';
 import fetchContests from '../../action/fetchContests';
 
 
+const intervalIds: any = {
+    refreshId: null,
+    fetchContestsId: null,
+};
+
 class SoSHomeContainer extends React.Component<any, any> {
     public render() {
         const { dosDashboardRefresh, fetchContests } = this.props;
 
-        const refresh = () => {
+        if (!intervalIds.refreshId) {
             dosDashboardRefresh();
+
+            intervalIds.refreshId = setInterval(dosDashboardRefresh, 2000);
+        }
+
+        if (!intervalIds.fetchContestsId) {
             fetchContests();
-        };
-        setTimeout(refresh, 1000);
+
+            intervalIds.fetchContestsId = setInterval(fetchContests, 2000);
+        }
 
         return <SoSHomePage { ...this.props } />;
     }
