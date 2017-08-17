@@ -13,7 +13,20 @@ const parseCountyStatus = (countyStatus: any) => {
     return result;
 };
 
+const parseAuditedContests = (data: any) => {
+    const result: any = {};
+
+    _.forEach(data, (reason: any, idStr: any) => {
+        const id = parseInt(idStr, 10);
+        result[id] = { id, reason };
+    });
+
+    return result;
+};
+
+
 export const parse = (data: any) => ({
+    auditedContests: parseAuditedContests(data.audited_contests),
     auditStage: data.audit_stage,
     countyStatus: parseCountyStatus(data.county_status),
     handCountContests: data.hand_count_contests,
