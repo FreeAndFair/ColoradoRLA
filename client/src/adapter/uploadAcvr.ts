@@ -12,16 +12,19 @@ interface Timestamp {
 }
 
 interface Acvr {
-    ballot_type: string;
-    batch_id: string;
-    contest_info: ContestInfo[];
-    county_id: number;
-    id: number;
-    imprinted_id: string;
-    record_id: string;
-    record_type: string;
-    scanner_id: string;
-    timestamp: Timestamp;
+    audit_cvr: {
+        ballot_type: string;
+        batch_id: string;
+        contest_info: ContestInfo[];
+        county_id: number;
+        id: number;
+        imprinted_id: string;
+        record_id: string;
+        record_type: string;
+        scanner_id: string;
+        timestamp: Timestamp;
+    }
+    cvr_id: number;
 }
 
 const formatContestInfo = (mark: any, contestId: any): ContestInfo => {
@@ -46,14 +49,17 @@ const formatDate = (d: Date): Timestamp => {
 
 
 export const format = (marks: any, cvr: any): Acvr => ({
-    ballot_type: cvr.ballotType,
-    batch_id: cvr.batchId,
-    contest_info: _.map(marks, formatContestInfo),
-    county_id: cvr.countyId,
-    id: cvr.id,
-    imprinted_id: cvr.imprintedId,
-    record_id: cvr.recordId,
-    record_type: cvr.recordType,
-    scanner_id: cvr.scannerId,
-    timestamp: formatDate(new Date()),
+    audit_cvr: {
+        ballot_type: cvr.ballotType,
+        batch_id: cvr.batchId,
+        contest_info: _.map(marks, formatContestInfo),
+        county_id: cvr.countyId,
+        id: cvr.id,
+        imprinted_id: cvr.imprintedId,
+        record_id: cvr.recordId,
+        record_type: cvr.recordType,
+        scanner_id: cvr.scannerId,
+        timestamp: formatDate(new Date()),
+    },
+    cvr_id: cvr.id,
 });
