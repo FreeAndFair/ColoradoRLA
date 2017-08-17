@@ -70,9 +70,9 @@ public class CountyDashboardRefreshResponse {
   private final Set<Elector> my_audit_board_members;
   
   /**
-   * The ballot manifest digest.
+   * The ballot manifest hash.
    */
-  private final String my_manifest_digest;
+  private final String my_ballot_manifest_hash;
   
   /**
    * The ballot manifest timestamp.
@@ -80,9 +80,9 @@ public class CountyDashboardRefreshResponse {
   private final Instant my_manifest_timestamp;
   
   /**
-   * The CVR export digest.
+   * The CVR export hash.
    */
-  private final String my_cvr_digest;
+  private final String my_cvr_export_hash;
   
   /**
    * The CVR export timestamp.
@@ -114,17 +114,17 @@ public class CountyDashboardRefreshResponse {
   /**
    * The number of ballots audited.
    */
-  private final Integer my_ballots_audited;
+  private final Integer my_audited_ballot_count;
   
   /**
    * The number of discrepancies found.
    */
-  private final Integer my_discrepancies;
+  private final Integer my_discrepancy_count;
   
   /**
    * The number of disagreements found.
    */
-  private final Integer my_disagreements;
+  private final Integer my_disagreement_count;
 
   /**
    * The list of ballots to audit (by CVR ID).
@@ -143,15 +143,15 @@ public class CountyDashboardRefreshResponse {
    * @param the_status The status.
    * @param the_general_information The general information.
    * @param the_audit_board_members The audit board members.
-   * @param the_manifest_digest The ballot manifest digest.
-   * @param the_cvr_digest The CVR export digest.
+   * @param the_ballot_manifest_hash The ballot manifest hash.
+   * @param the_cvr_export_hash The CVR export hash.
    * @param the_contests The contests.
    * @param the_contests_under_audit The contests under audit, with reasons.
    * @param the_audit_time The audit time.
    * @param the_estimated_ballots_to_audit The estimated ballots to audit.
-   * @param the_ballots_audited The number of ballots audited.
-   * @param the_discrepencies The number of discrepencies.
-   * @param the_disagreements The number of disagreements.
+   * @param the_audited_ballot_count The number of ballots audited.
+   * @param the_discrepancy_count The number of discrepencies.
+   * @param the_disagreement_count The number of disagreements.
    * @param the_ballots_to_audit The list of CVRs to audit.
    * @param the_ballot_under_audit The index of the CVR under audit.
    */
@@ -160,34 +160,34 @@ public class CountyDashboardRefreshResponse {
                                            final CountyStatus the_status,
                                            final Map<String, String> the_general_information,
                                            final Set<Elector> the_audit_board_members, 
-                                           final String the_manifest_digest,
+                                           final String the_ballot_manifest_hash,
                                            final Instant the_manifest_timestamp,
-                                           final String the_cvr_digest,
+                                           final String the_cvr_export_hash,
                                            final Instant the_cvr_timestamp,
                                            final Set<Long> the_contests,
                                            final Map<Long, String> the_contests_under_audit,
                                            final Instant the_audit_time,
                                            final Integer the_estimated_ballots_to_audit,
-                                           final Integer the_ballots_audited,
-                                           final Integer the_discrepencies, 
-                                           final Integer the_disagreements,
+                                           final Integer the_audited_ballot_count,
+                                           final Integer the_discrepancy_count, 
+                                           final Integer the_disagreement_count,
                                            final List<Long> the_ballots_to_audit,
                                            final Long the_ballot_under_audit) {
     my_id = the_id;
     my_status = the_status;
     my_general_information = the_general_information;
     my_audit_board_members = the_audit_board_members;
-    my_manifest_digest = the_manifest_digest;
+    my_ballot_manifest_hash = the_ballot_manifest_hash;
     my_manifest_timestamp = the_manifest_timestamp;
-    my_cvr_digest = the_cvr_digest;
+    my_cvr_export_hash = the_cvr_export_hash;
     my_cvr_timestamp = the_cvr_timestamp;
     my_contests = the_contests;
     my_contests_under_audit = the_contests_under_audit;
     my_audit_time = the_audit_time;
     my_estimated_ballots_to_audit = the_estimated_ballots_to_audit;
-    my_ballots_audited = the_ballots_audited;
-    my_discrepancies = the_discrepencies;
-    my_disagreements = the_disagreements;
+    my_audited_ballot_count = the_audited_ballot_count;
+    my_discrepancy_count = the_discrepancy_count;
+    my_disagreement_count = the_disagreement_count;
     my_ballots_to_audit = the_ballots_to_audit;
     my_ballot_under_audit_id = the_ballot_under_audit;
   }
