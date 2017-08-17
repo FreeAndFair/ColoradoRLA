@@ -9,9 +9,16 @@ import selectContestsForAudit from '../../../action/selectContestsForAudit';
 
 class SelectContestsPageContainer extends React.Component<any, any> {
     public render() {
-        const { history, contests, selectContestsForAudit } = this.props;
+        const {
+            auditedContests,
+            contests,
+            history,
+            selectContestsForAudit,
+            sos,
+        } = this.props;
 
         const props = {
+            auditedContests,
             back: () => history.push('/sos/audit'),
             contests,
             nextPage: () => history.push('/sos/audit/review'),
@@ -23,6 +30,7 @@ class SelectContestsPageContainer extends React.Component<any, any> {
 }
 
 const mapStateToProps = ({ sos }: any) => ({
+    auditedContests: sos.auditedContests,
     contests: sos.contests,
     sos,
 });
