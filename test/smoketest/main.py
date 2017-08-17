@@ -210,12 +210,18 @@ if __name__ == "__main__":
                              "audit": "COMPARISON"}])
 
     # Each contest is selected separately, despite the endpoint name
-    r = test_endpoint_json(base, state_s, "/select-contests",
-                           [{"contest": contests[1]['id'],
-                             "reason": "COUNTY_WIDE_CONTEST",
-                             "audit": "COMPARISON"}])
+    if True:  # TODO: add a command-line option for contest selection
+        r = test_endpoint_json(base, state_s, "/select-contests",
+                               [{"contest": contests[1]['id'],
+                                 "reason": "COUNTY_WIDE_CONTEST",
+                                 "audit": "COMPARISON"}])
 
-    # HUH? r = test_endpoint_post(base, state_s, "/publish-data-to-audit", {})
+    if False:
+        # TODO: sometimes hit ballot-not-found test
+        pass
+
+    # TODO shouldn't this be a POST ala this?
+    # r = test_endpoint_post(base, state_s, "/publish-data-to-audit", {})
     r = test_endpoint_get(base, state_s, "/publish-data-to-audit")
 
     seed = "01234567890123456789"
@@ -256,8 +262,22 @@ if __name__ == "__main__":
         if i % 10 == 0:
             r = test_endpoint_get(base, state_s, "/dos-dashboard")
 
-        acvr = cvrtable[selected[i]]
+        acvr = cvrtable[selected[i]].copy()
+        print("Original CVR: %s" % json.dumps(acvr))
         acvr['record_type'] = 'AUDITOR_ENTERED'
+
+        # Modify the aCVR sometimes.
+        # TODO: provide command-line parameters for discrepancy rates?
+        if False:
+            print('Possible discrepancy: blindly setting choices for first contest to ["Distant Loser"]')
+            acvr['contest_info'][0]['choices'] = ["Distant Loser"]
+
+        if False:
+            # Test: make uploaded cvr not match
+            # TODO: Decide what API should be for mismatch in contests between CVR and paper
+            del acvr['contest_info'][0]
+
+        print("Submitting aCVR: %s" % json.dumps(acvr))
         test_endpoint_json(base, county_s1, "/upload-audit-cvr",
                            {'cvr_id': selected[i], 'audit_cvr': acvr})
 
