@@ -12,7 +12,9 @@ class BallotAuditStageContainer extends React.Component<any, any> {
 }
 
 const mapStateToProps = ({ county }: any) => {
-    return { county };
+    const { currentBallot } = county;
+
+    return { county, currentBallot };
 };
 
 const mapDispatchToProps = (dispatch: any) => bindActionCreators({
