@@ -83,9 +83,9 @@ const CountyInfo = ({ county, info }: any) => {
         ['County ID:', county.id],
         ['Status:', county.status],
         ['# Ballots to audit:', unauditedBallotCount],
-        ['# Ballots audited:', county.numberOfBallotsAudited],
-        ['# Disagreements:', county.numberOfDisagreements],
-        ['# Discrepancies:', county.numberOfDiscrepancies],
+        ['# Ballots audited:', county.auditedBallotCount],
+        ['# Disagreements:', county.disagreementCount],
+        ['# Discrepancies:', county.discrepancyCount],
 
     ].map(([k, v]: any) => (
         <tr key={ k }>
