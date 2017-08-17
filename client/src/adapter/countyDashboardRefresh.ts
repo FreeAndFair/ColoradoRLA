@@ -17,18 +17,19 @@ type Status = 'NO_DATA' | 'CVRS_UPLOADED_SUCCESSFULLY' | 'ERROR_IN_UPLOADED_DATA
 interface CountyDashboard {
     audit_board_members: Elector[];
     audit_time: Timestamp;
+    audited_ballot_count: number;
     ballot_manifest_digest: string;
     ballot_under_audit_id: number;
     ballots_to_audit: number[];
     cvr_export_digest: string;
     contests: number[];
     contests_under_audit: number[];
+    disagreement_count: number;
+    discrepancy_count: number;
     estimated_ballots_to_audit: number;
     general_information: string;
     id: number;
-    number_of_ballots_audited: number;
-    number_of_disagreements: number;
-    number_of_discrepancies: number;
+
     status: Status;
 }
 
@@ -95,18 +96,18 @@ export const parse = (data: CountyDashboard, state: any): any => {
     return {
         auditBoardMembers: data.audit_board_members.map(parseBoardMember),
         auditTime: data.audit_time ? parseTimestamp(data.audit_time) : null,
+        auditedBallotCount: data.audited_ballot_count,
         ballotManifestDigest: data.ballot_manifest_digest,
         ballotUnderAuditId: data.ballot_under_audit_id,
         ballotsToAudit: data.ballots_to_audit,
         contests: parseContests(data.contests, state),
         contestsUnderAudit: parseContestsUnderAudit(data.contests_under_audit, state),
         cvrExportDigest: data.cvr_export_digest,
+        disagreementCount: data.disagreement_count,
+        discrepancyCount: data.discrepancy_count,
         estimatedBallotsToAudit: data.estimated_ballots_to_audit,
         generalInformation: data.general_information,
         id: data.id,
-        numberOfBallotsAudited: data.number_of_ballots_audited,
-        numberOfDisagreements: data.number_of_disagreements,
-        numberOfDiscrepancies: data.number_of_discrepancies,
         status: data.status,
     };
 };
