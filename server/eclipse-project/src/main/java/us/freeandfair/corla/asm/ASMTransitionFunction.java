@@ -36,30 +36,41 @@ public interface ASMTransitionFunction {
     ONE(new ASMTransition(DOS_INITIAL_STATE, 
                           ESTABLISH_RISK_LIMIT_FOR_COMPARISON_AUDITS_EVENT,
                           RISK_LIMITS_SET)),
+    /*
+    // right now, PUBLISH_AUDIT_DATA_EVENT never happens, so we jump
+    // straight to DATA_TO_AUDIT_PUBLISHED
+     
     TWO(new ASMTransition(RISK_LIMITS_SET, 
                           SELECT_CONTESTS_FOR_COMPARISON_AUDIT_EVENT,
                           CONTESTS_TO_AUDIT_IDENTIFIED)),
-    THREE(new ASMTransition(DATA_TO_AUDIT_PUBLISHED, 
-                            PUBLIC_SEED_EVENT,
-                            RANDOM_SEED_PUBLISHED)),
-    FOUR(new ASMTransition(RANDOM_SEED_PUBLISHED, 
+    THREE(new ASMTransition(CONTESTS_TO_AUDIT_IDENTIFIED, 
+                            PUBLISH_AUDIT_DATA_EVENT,
+                            DATA_TO_AUDIT_PUBLISHED)),
+    */
+    TWOTHREE(new ASMTransition(RISK_LIMITS_SET,
+                               SELECT_CONTESTS_FOR_COMPARISON_AUDIT_EVENT,
+                               DATA_TO_AUDIT_PUBLISHED)),
+    FOUR(new ASMTransition(DATA_TO_AUDIT_PUBLISHED, 
+                           PUBLIC_SEED_EVENT,
+                           RANDOM_SEED_PUBLISHED)),
+    FIVE(new ASMTransition(RANDOM_SEED_PUBLISHED, 
                            PUBLISH_BALLOTS_TO_AUDIT_EVENT,
                            DOS_AUDIT_ONGOING)),
-    FIVE(new ASMTransition(DOS_AUDIT_ONGOING, 
-                           AUDIT_EVENT,
-                           DOS_AUDIT_ONGOING)),
     SIX(new ASMTransition(DOS_AUDIT_ONGOING, 
-                          INDICATE_FULL_HAND_COUNT_CONTEST_EVENT,
+                          AUDIT_EVENT,
                           DOS_AUDIT_ONGOING)),
     SEVEN(new ASMTransition(DOS_AUDIT_ONGOING, 
+                            INDICATE_FULL_HAND_COUNT_CONTEST_EVENT,
+                            DOS_AUDIT_ONGOING)),
+    EIGHT(new ASMTransition(DOS_AUDIT_ONGOING, 
                             COUNTY_AUDIT_COMPLETE_EVENT,
-                            DOS_AUDIT_COMPLETE)),
-    EIGHT(new ASMTransition(DOS_AUDIT_COMPLETE, 
-                            PUBLISH_AUDIT_REPORT_EVENT,
-                            AUDIT_RESULTS_PUBLISHED)),
-    NINE(new ASMTransition(CONTESTS_TO_AUDIT_IDENTIFIED, 
-                           PUBLISH_AUDIT_DATA_EVENT,
-                           DATA_TO_AUDIT_PUBLISHED));
+                            DOS_AUDIT_ONGOING)),
+    NINE(new ASMTransition(DOS_AUDIT_ONGOING,
+                           AUDIT_COMPLETE_EVENT,
+                           DOS_AUDIT_COMPLETE)),
+    TEN(new ASMTransition(DOS_AUDIT_COMPLETE, 
+                          PUBLISH_AUDIT_REPORT_EVENT,
+                          AUDIT_RESULTS_PUBLISHED));
     
     /**
      * A single transition.
