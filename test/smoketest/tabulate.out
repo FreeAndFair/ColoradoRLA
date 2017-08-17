@@ -1,4 +1,4 @@
-SELECT ccd.contest_id AS contest, 
+SELECT ccd.description AS contest, 
         ccd.choice AS candidate, 
         count(ccic.cvr_contest_info_id) as votes
     FROM contest_choice_description AS ccd 
@@ -15,11 +15,11 @@ SELECT ccd.contest_id AS contest,
 ;
  contest |   candidate    | votes 
 ---------+----------------+-------
-     204 | Clear Winner   |   170
-     204 | Distant Loser  |    19
-     205 | Janet Lee Cook |    35
-     205 | Jeff Baker     |    18
-     206 | NO             |    46
-     206 | YES            |    40
+         | NO             |    49
+         | YES            |    40
+ DEM     | Clear Winner   |   179
+ DEM     | Janet Lee Cook |    37
+ REP     | Distant Loser  |    20
+ REP     | Jeff Baker     |    20
 (6 rows)
 

@@ -1,4 +1,4 @@
-SELECT ccd.contest_id AS contest, 
+SELECT ccd.description AS contest, 
         ccd.choice AS candidate, 
         count(ccic.cvr_contest_info_id) as votes
     FROM contest_choice_description AS ccd 

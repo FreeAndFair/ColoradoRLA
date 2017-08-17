@@ -222,8 +222,6 @@ if __name__ == "__main__":
 
     r = test_endpoint_json(base, state_s, "/random-seed",
                            {'seed': seed})
-    # TODO: make this a POST now?  GET ? /ballots-to-audit/publish
-    # r = test_endpoint_get(base, state_s, "/ballots-to-audit")
     r = test_endpoint_post(base, state_s, "/ballots-to-audit/publish", {})
 
     cvrs = get_cvrs(base, county_s1)
@@ -265,7 +263,7 @@ if __name__ == "__main__":
         print(resp)
 
         if resp['estimated_ballots_to_audit'] <= 0:
-            print("\nAudit completed after %d ballots" % i + 1)
+            print("\nAudit completed after %d ballots" % (i + 1))
             break
 
     r = test_endpoint_json(base, county_s1, "/intermediate-audit-report", {})
@@ -275,3 +273,4 @@ if __name__ == "__main__":
 
     # server_sequence()
 
+    sys.exit(0)
