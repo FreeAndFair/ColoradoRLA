@@ -45,7 +45,7 @@ const AuditReview = ({ back, publishBallotsToAudit, saveAndDone }: any) => {
                 <button onClick={ back } className='pt-button'>
                     Back
                 </button>
-                <button onClick={ saveAndDone } className='pt-button pt-intent-primary'>
+                <button onClick={ launch } className='pt-button pt-intent-primary'>
                     Launch Audit
                 </button>
             </div>
