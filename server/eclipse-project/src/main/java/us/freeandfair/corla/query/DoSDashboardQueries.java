@@ -56,7 +56,7 @@ public final class DoSDashboardQueries {
         // create a Department of State Dashboard
         db = new DoSDashboard();
         Persistence.saveOrUpdate(db);
-        Main.LOGGER.info("attempting to create new department of state dashboard");
+        Main.LOGGER.debug("attempting to create new department of state dashboard");
       } else if (db_list.size() > 1) {
         Main.LOGGER.error("multiple department of state dashboards found");
       } else {

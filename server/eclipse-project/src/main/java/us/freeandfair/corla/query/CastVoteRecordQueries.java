@@ -105,9 +105,9 @@ public final class CastVoteRecordQueries {
       Main.LOGGER.error(COULD_NOT_QUERY_DATABASE);
     }
     if (result == null) {
-      Main.LOGGER.info("found no CVRs for type " + the_type);
+      Main.LOGGER.debug("found no CVRs for type " + the_type);
     } else {
-      Main.LOGGER.info("query succeeded, returning CVR stream");
+      Main.LOGGER.debug("query succeeded, returning CVR stream");
     }
     return result;
   }
@@ -150,10 +150,10 @@ public final class CastVoteRecordQueries {
       Main.LOGGER.error(COULD_NOT_QUERY_DATABASE);
     }
     if (result == null) {
-      Main.LOGGER.info("found no CVRs for county " + the_county + 
-                       ", type " + the_type);
+      Main.LOGGER.debug("found no CVRs for county " + the_county + 
+                        ", type " + the_type);
     } else {
-      Main.LOGGER.info("query succeeded, returning CVR stream");
+      Main.LOGGER.debug("query succeeded, returning CVR stream");
     }
     return result;
   }
@@ -199,11 +199,11 @@ public final class CastVoteRecordQueries {
       Main.LOGGER.error(COULD_NOT_QUERY_DATABASE);
     }
     if (result == null) {
-      Main.LOGGER.info("found no CVRs for timestamp " + the_timestamp + 
-                       ", county " + the_county_id + ", type " + 
-                       the_type);
+      Main.LOGGER.debug("found no CVRs for timestamp " + the_timestamp + 
+                        ", county " + the_county_id + ", type " + 
+                        the_type);
     } else {
-      Main.LOGGER.info("query succeeded, returning CVR stream");
+      Main.LOGGER.debug("query succeeded, returning CVR stream");
     }
     return result;
   }
@@ -257,11 +257,11 @@ public final class CastVoteRecordQueries {
       Main.LOGGER.error(COULD_NOT_QUERY_DATABASE);
     }
     if (result == null) {
-      Main.LOGGER.info("found no CVR for timestamp " + the_timestamp + 
-                       ", county " + the_county_id + ", type " + 
-                       the_type);
+      Main.LOGGER.debug("found no CVR for timestamp " + the_timestamp + 
+                        ", county " + the_county_id + ", type " + 
+                        the_type);
     } else {
-      Main.LOGGER.info("found CVR " + result);
+      Main.LOGGER.debug("found CVR " + result);
     }
     
     return result;
@@ -307,11 +307,11 @@ public final class CastVoteRecordQueries {
       Main.LOGGER.error(COULD_NOT_QUERY_DATABASE);
     }
     if (result == null) {
-      Main.LOGGER.info("found no CVRs for timestamp " + the_timestamp + 
-                       ", county " + the_county_id + ", type " + 
-                       the_type);
+      Main.LOGGER.debug("found no CVRs for timestamp " + the_timestamp + 
+                        ", county " + the_county_id + ", type " + 
+                        the_type);
     } else {
-      Main.LOGGER.info("query succeeded, returning CVR count");
+      Main.LOGGER.debug("query succeeded, returning CVR count");
     }
     return result;
   }
@@ -354,11 +354,11 @@ public final class CastVoteRecordQueries {
       Main.LOGGER.error(COULD_NOT_QUERY_DATABASE);
     }
     if (result == null) {
-      Main.LOGGER.info("found no CVRs for timestamp " + the_timestamp + 
-                       ", county " + the_county_id + ", type " + 
-                       the_type);
+      Main.LOGGER.debug("found no CVRs for timestamp " + the_timestamp + 
+                        ", county " + the_county_id + ", type " + 
+                        the_type);
     } else {
-      Main.LOGGER.info("query succeeded, returning CVR IDs");
+      Main.LOGGER.debug("query succeeded, returning CVR IDs");
     }
     return result;
   }

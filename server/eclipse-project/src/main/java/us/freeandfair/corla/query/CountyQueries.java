@@ -80,9 +80,9 @@ public final class CountyQueries {
       Main.LOGGER.error("could not query database for county");
     }
     if (result == null) {
-      Main.LOGGER.info("found no county for id " + the_id);
+      Main.LOGGER.debug("found no county for id " + the_id);
     } else {
-      Main.LOGGER.info("found county " + result);
+      Main.LOGGER.debug("found county " + result);
     }
     return result;
   }
@@ -126,9 +126,9 @@ public final class CountyQueries {
       Main.LOGGER.error("could not query database for county");
     }
     if (result == null) {
-      Main.LOGGER.info("found no county for administrator " + the_administrator);
+      Main.LOGGER.debug("found no county for administrator " + the_administrator);
     } else {
-      Main.LOGGER.info("found county " + result + " for administrator " + the_administrator);
+      Main.LOGGER.debug("found county " + result + " for administrator " + the_administrator);
     }
     
     return result;
@@ -181,9 +181,9 @@ public final class CountyQueries {
       Main.LOGGER.error("could not query database for county");
     }
     if (result == null) {
-      Main.LOGGER.info("found no county for string " + the_string);
+      Main.LOGGER.debug("found no county for string " + the_string);
     } else {
-      Main.LOGGER.info("found county " + result + " for string " + the_string);
+      Main.LOGGER.debug("found county " + result + " for string " + the_string);
     }
     
     return result;

@@ -85,8 +85,8 @@ public final class PersistentASMStateQueries {
                                        the_class.getName() + ", identity " + the_identity);
       } else if (!query_results.isEmpty()) {
         asm = query_results.get(0);
-        Main.LOGGER.info("found ASM state " + asm + " for class " + the_class.getName() + 
-                         ", identity " + the_identity);
+        Main.LOGGER.debug("found ASM state " + asm + " for class " + the_class.getName() + 
+                          ", identity " + the_identity);
       }
       if (transaction) {
         try {

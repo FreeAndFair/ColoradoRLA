@@ -97,9 +97,9 @@ public final class ContestQueries {
       Main.LOGGER.error("could not query database for contest");
     }
     if (result == null) {
-      Main.LOGGER.info("found no contest matching + " + the_contest);
+      Main.LOGGER.debug("found no contest matching + " + the_contest);
     } else {
-      Main.LOGGER.info("found contest " + result);
+      Main.LOGGER.debug("found contest " + result);
     }
     return result;
   }
@@ -143,9 +143,9 @@ public final class ContestQueries {
       Main.LOGGER.error("could not query database for county");
     }
     if (result == null) {
-      Main.LOGGER.info("found no county for administrator " + the_administrator);
+      Main.LOGGER.debug("found no county for administrator " + the_administrator);
     } else {
-      Main.LOGGER.info("found county " + result + " for administrator " + the_administrator);
+      Main.LOGGER.debug("found county " + result + " for administrator " + the_administrator);
     }
     
     return result;
@@ -198,9 +198,9 @@ public final class ContestQueries {
       Main.LOGGER.error("could not query database for county");
     }
     if (result == null) {
-      Main.LOGGER.info("found no county for string " + the_string);
+      Main.LOGGER.debug("found no county for string " + the_string);
     } else {
-      Main.LOGGER.info("found county " + result + " for string " + the_string);
+      Main.LOGGER.debug("found county " + result + " for string " + the_string);
     }
     
     return result;
