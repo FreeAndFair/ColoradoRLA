@@ -4,8 +4,6 @@ import { bindActionCreators } from 'redux';
 
 import BallotAuditStage from './BallotAuditStage';
 
-import findById from '../../../../findById';
-
 
 class BallotAuditStageContainer extends React.Component<any, any> {
     public render() {
