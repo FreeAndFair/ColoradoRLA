@@ -122,8 +122,8 @@ public abstract class AbstractEndpoint implements Endpoint {
   protected void loadAndCheckASM(final Request the_request,
                                  final Response the_response) {
     // get the state of the ASM
-    if (DISABLE_ASM || asmClass() == null) {
-      // there is no ASM for this endpoint
+    if (DISABLE_ASM || asmClass() == null || endpointEvent() == null) {
+      // there is no ASM event for this endpoint
       return;
     }
     my_asm = ASMUtilities.asmFor(asmClass(), asmIdentity(the_request));
@@ -144,8 +144,8 @@ public abstract class AbstractEndpoint implements Endpoint {
    */
   @SuppressWarnings("unused")
   protected boolean transitionAndSaveASM(final Response the_response)  {
-    if (DISABLE_ASM || my_asm == null) {
-      // there is no ASM for this endpoint
+    if (DISABLE_ASM || my_asm == null || endpointEvent() == null) {
+      // there is no ASM event for this endpoint
       return true;
     }
     try {
