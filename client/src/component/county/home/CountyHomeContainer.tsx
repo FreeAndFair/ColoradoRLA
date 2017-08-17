@@ -15,19 +15,29 @@ const intervalIds: any = {
 
 class CountyHomeContainer extends React.Component<any, any> {
     public render() {
+        const {
+            county,
+            countyDashboardRefresh,
+            fetchContestsByCounty,
+            history,
+        } = this.props;
+
         if (!intervalIds.refreshId) {
-            intervalIds.refreshId = setInterval(this.props.countyDashboardRefresh, 2000);
+            countyDashboardRefresh();
+
+            intervalIds.refreshId = setInterval(countyDashboardRefresh, 2000);
         }
 
         if (!intervalIds.fetchContestsId) {
+            fetchContestsByCounty(county.id);
+
             intervalIds.fetchContestsId = setInterval(
-                () => this.props.fetchContestsByCounty(this.props.county.id),
+                () => fetchContestsByCounty(county.id),
                 1000,
             );
         }
 
-        const startAudit = () =>
-            this.props.history.push('/county/audit');
+        const startAudit = () => this.props.history.push('/county/audit');
 
         const props = { startAudit, ...this.props };
 
