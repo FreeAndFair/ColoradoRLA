@@ -15,7 +15,7 @@ const initialCountyStatus = () => _.mapValues(counties, () => 'NO_DATA');
 
 const sosInitialState = (): any => ({
     auditStage: 'PRE_AUDIT',
-    auditedContests: [],
+    auditedContests: {},
     countyStatus: initialCountyStatus(),
 });
 
