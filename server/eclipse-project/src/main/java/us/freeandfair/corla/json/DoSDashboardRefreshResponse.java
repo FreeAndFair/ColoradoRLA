@@ -25,7 +25,6 @@ import us.freeandfair.corla.model.ContestToAudit;
 import us.freeandfair.corla.model.ContestToAudit.AuditReason;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
-import us.freeandfair.corla.model.CountyDashboard.CountyStatus;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CountyDashboardQueries;
@@ -61,9 +60,9 @@ public class DoSDashboardRefreshResponse {
   private final Map<Long, AuditReason> my_audited_contests;
   
   /**
-   * A map from county IDs to county statuses.
+   * A map from county IDs to county status.
    */
-  private final Map<Integer, CountyStatus> my_county_status;
+  private final Map<Integer, CountyDashboardRefreshResponse> my_county_status;
   
   /**
    * The random seed.
@@ -88,7 +87,8 @@ public class DoSDashboardRefreshResponse {
   protected DoSDashboardRefreshResponse(final AuditStage the_audit_stage,
                                         final BigDecimal the_risk_limit,
                                         final Map<Long, AuditReason> the_audited_contests,
-                                        final Map<Integer, CountyStatus> the_county_status,
+                                        final Map<Integer, CountyDashboardRefreshResponse> 
+                                           the_county_status,
                                         final String the_random_seed,
                                         final Set<Long> the_hand_count_contests) {
     my_audit_stage = the_audit_stage;
@@ -157,9 +157,9 @@ public class DoSDashboardRefreshResponse {
    * 
    * @return a map from county identifiers to statuses.
    */
-  private static Map<Integer, CountyStatus> countyStatusMap() {
-    final Map<Integer, CountyStatus> status_map = 
-        new HashMap<Integer, CountyStatus>();
+  private static Map<Integer, CountyDashboardRefreshResponse> countyStatusMap() {
+    final Map<Integer, CountyDashboardRefreshResponse> status_map = 
+        new HashMap<Integer, CountyDashboardRefreshResponse>();
     final List<County> counties = Persistence.getAll(County.class);
     
     for (final County c : counties) {
@@ -167,7 +167,7 @@ public class DoSDashboardRefreshResponse {
       if (db == null) {
         throw new PersistenceException("unable to read county dashboard state.");
       } else {
-        status_map.put(db.countyID(), db.status());
+        status_map.put(db.countyID(), CountyDashboardRefreshResponse.createResponse(db));
       }
     }
     
