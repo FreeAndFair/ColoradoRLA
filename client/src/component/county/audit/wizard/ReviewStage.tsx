@@ -48,9 +48,10 @@ const BallotContestResultUndervote = () => (
     </div>
 );
 
-const BallotContestReview = ({ comments, contest, marks, noConsensus }: any) => {
+const BallotContestReview = ({ contest, marks }: any) => {
+    const { comments, noConsensus, } = marks;
     const { votesAllowed } = contest;
-    const votesMarked = marks.length;
+    const votesMarked = _.size(marks.choices);
 
     const noConsensusDiv = (
         <div>
@@ -64,10 +65,10 @@ const BallotContestReview = ({ comments, contest, marks, noConsensus }: any) => 
         </div>
     );
 
-    const markedChoiceDivs = _.map(marks, (m: any) => {
+    const markedChoiceDivs = _.map(marks.choices, (_: any, name: any) => {
         return (
-            <div key={ m.id } className='pt-card'>
-                <div>{ m.name }</div>
+            <div key={ name } className='pt-card'>
+                <div>{ name }</div>
             </div>
         );
     });
@@ -106,10 +107,17 @@ const BallotContestReview = ({ comments, contest, marks, noConsensus }: any) => 
     );
 };
 
-const BallotReview = ({ ballotMarks }: any) => {
-    const contestReviews = _.map(ballotMarks, (contestMarks: any) => {
-        const key = contestMarks.contest.id;
-        return <BallotContestReview key={ key } { ...contestMarks } />;
+const BallotReview = ({ county, marks }: any) => {
+    const contestReviews = _.map(marks, (m: any, contestId: any) => {
+        const contest = county.contestDefs[contestId];
+
+        return (
+            <BallotContestReview
+                key={ contestId }
+                contest={ contest }
+                marks={ m }
+            />
+        );
     });
 
     return <div className='pt-card'>{ contestReviews }</div>;
@@ -119,20 +127,13 @@ const ReviewStage = (props: any) => {
     const {
         county,
         currentBallot,
-        marks: rawMarks,
+        marks,
         nextStage,
         prevStage,
         selectNextBallot,
         uploadAcvr,
     } = props;
 
-    const ballotMarks = _.mapValues(rawMarks, (rawMark: any, contestId: any) => {
-        const { choices, comments, noConsensus } = rawMark;
-        const contest = findById(county.contests, contestId);
-        const marks = _.map(choices, (id: any) => findById(contest.choices, id));
-
-        return { comments, contest, marks, noConsensus };
-    });
     const onClick = () => {
         const acvr = {};
 
@@ -143,7 +144,7 @@ const ReviewStage = (props: any) => {
 
     return (
         <div>
-            <BallotReview ballotMarks={ ballotMarks } />
+            <BallotReview county={ county } marks={ marks } />
             <div className='pt-card'>
                 <BackButton back={ prevStage } />
                 <button className='pt-button pt-intent-primary' onClick={ onClick }>
