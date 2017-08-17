@@ -11,7 +11,10 @@ History
 
 * Outline and first draft, 5 July 2017 by Joe Kiniry.
 * Second draft, 6 July 2017 by Joe Kiniry. Still no refined system
-  requirements above and beyond those in the DQ.
+  requirements above and beyond those in the [Documented Quote](http://bcn.boulder.co.us/~neal/elections/corla/DQ_RLA_0500517_FE_KRT_VAAA_2017-1420.pdf) 
+  issued by the Colorado Department of State (DQ).
+* Third draft, in progress August 2017, by Stephanie Singer, based
+  on the final Rule 25 promulgated by the Colorado Department of State
 
 Mandatory Requirements
 ----------------------
