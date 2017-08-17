@@ -4,8 +4,6 @@ import * as _ from 'lodash';
 
 import { Checkbox, EditableText, Radio, RadioGroup } from '@blueprintjs/core';
 
-import findById from '../../../../findById';
-
 import BackButton from './BackButton';
 
 
@@ -13,14 +11,15 @@ const AuditInstructions = ({ ballotsToAudit, currentBallot }: any) => (
     <div className='pt-card'>
         <div>
             Use this page to report the voter markings on the ballot with ID
-            #{ currentBallot.id }, out of { ballotsToAudit } ballots that you must
-            audit.
+            #{ currentBallot.id }, out of { ballotsToAudit.length } ballots that you
+            must audit.
         </div>
         <div>
             The current ballot is:
             <ul>
-                <li>{ currentBallot.id }</li>
-                <li>{ currentBallot.style.name }</li>
+                <li>Ballot ID: { currentBallot.id }</li>
+                <li>Ballot Style: { currentBallot.ballotType }</li>
+                <li>Imprinted ID: { currentBallot.imprintedId }</li>
             </ul>
             <div>
                 Please ensure that the paper ballot you are examining is the
@@ -158,15 +157,13 @@ const BallotAuditForm = (props: any) => {
 
 const BallotAuditStage = (props: any) => {
     const {
-        ballots,
         county,
         nextStage,
         prevStage,
         updateBallotMarks,
     } = props;
 
-    const ballotsToAudit = county.ballots.length;
-    const currentBallot = findById(county.ballots, county.currentBallotId);
+    const { ballotsToAudit, currentBallot } = county;
 
     return (
         <div>
