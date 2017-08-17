@@ -74,21 +74,41 @@ const ContestInfo = ({ contests }: any): any => {
     );
 };
 
-const CountyInfo = ({ info }: any) => (
-    <div className='county-info pt-card'>
-        <h3>County Info</h3>
-        <div>
-            Election Date: { info.electionDate }
-        </div>
-        <div>
-            Audit Date: { info.auditDate }
-        </div>
-    </div>
-);
+const CountyInfo = ({ county, info }: any) => {
+    const { ballotsToAudit } = county;
+    const unauditedBallotCount = ballotsToAudit ? ballotsToAudit.length : '';
 
-const Info = ({ info, contests }: any) => (
+    const rows = [
+        ['County:', info.name],
+        ['County ID:', county.id],
+        ['Status:', county.status],
+        ['# Ballots to audit:', unauditedBallotCount],
+        ['# Ballots audited:', county.numberOfBallotsAudited],
+        ['# Disagreements:', county.numberOfDisagreements],
+        ['# Discrepancies:', county.numberOfDiscrepancies],
+
+    ].map(([k, v]: any) => (
+        <tr key={ k }>
+            <td><strong>{ k }</strong></td>
+            <td>{ v }</td>
+        </tr>
+    ));
+
+    return (
+        <div className='county-info pt-card'>
+            <h3>County info</h3>
+            <div className='pt-card'>
+                <table className='pt-table pt-condensed'>
+                    <tbody>{ rows }</tbody>
+                </table>
+            </div>
+        </div>
+    );
+}
+
+const Info = ({ info, contests, county }: any) => (
     <div className='info pt-card'>
-        <CountyInfo info={ info } />
+        <CountyInfo county={ county } info={ info } />
         <ContestInfo contests={ contests } />
     </div>
 );
@@ -97,7 +117,7 @@ const CountyHomePage = (props: any) => {
     const {
         contests,
         county,
-        countyName,
+        countyInfo,
         countyDashboardRefresh,
         startAudit,
     } = props;
@@ -109,8 +129,8 @@ const CountyHomePage = (props: any) => {
         <div className='county-root'>
             <CountyNav />
             <div>
-                <Main name={ countyName } startAudit={ startAudit } />
-                <Info info={ info } contests={ contests } />
+                <Main name={ countyInfo.name } startAudit={ startAudit } />
+                <Info info={ countyInfo } contests={ contests } county={ county } />
             </div>
         </div>
     );
