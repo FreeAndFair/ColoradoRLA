@@ -88,10 +88,10 @@ public final class ElectorQueries {
       Main.LOGGER.error("could not query database for administrator");
     }
     if (result == null) {
-      Main.LOGGER.info("found no elector for data (" + the_first_name + ", " +
-                       the_last_name + ", " + the_political_party + ")");
+      Main.LOGGER.debug("found no elector for data (" + the_first_name + ", " +
+                        the_last_name + ", " + the_political_party + ")");
     } else {
-      Main.LOGGER.info("found elector " + result);
+      Main.LOGGER.debug("found elector " + result);
     }
     return result;
   }

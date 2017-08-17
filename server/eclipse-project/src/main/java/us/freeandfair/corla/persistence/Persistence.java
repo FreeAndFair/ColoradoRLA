@@ -140,7 +140,7 @@ public final class Persistence {
         try {
           result = session_factory.getCurrentSession();
         } catch (final HibernateException e) {
-          Main.LOGGER.info("Exception getting Hibernate session: " + e);
+          Main.LOGGER.error("Exception getting Hibernate session: " + e);
           failed = true;
         }
       }
@@ -207,7 +207,7 @@ public final class Persistence {
             } catch (final ClassNotFoundException e) {
               Main.LOGGER.error("could not add entity, no such class: " + entity_class);
             }
-            Main.LOGGER.info("added entity class " + entity_class);
+            Main.LOGGER.debug("added entity class " + entity_class);
           }
           scanner.close();
         }
@@ -218,9 +218,9 @@ public final class Persistence {
       
       // create session factory
       session_factory = metadata.getSessionFactoryBuilder().build();
-      Main.LOGGER.info("started Hibernate");
+      Main.LOGGER.debug("started Hibernate");
     } catch (final RuntimeException e) {
-      Main.LOGGER.info("could not start Hibernate, persistence is disabled: " + e);
+      Main.LOGGER.error("could not start Hibernate, persistence is disabled: " + e);
       if (service_registry != null) {
         StandardServiceRegistryBuilder.destroy(service_registry);
       }
@@ -356,10 +356,12 @@ public final class Persistence {
             commitTransaction();
           } catch (final RollbackException | HibernateException e) {
             rollbackTransaction();
+            Main.LOGGER.debug("could not save/update object " + the_object + ": " + e);
             result = false;
           }
         }
       } catch (final PersistenceException e) {
+        Main.LOGGER.debug("could not save/update object " + the_object + ": " + e);
         result = false;
       }
       
@@ -390,11 +392,13 @@ public final class Persistence {
             commitTransaction();
           } catch (final RollbackException | HibernateException e) {
             rollbackTransaction();
+            Main.LOGGER.debug("could not delete object " + the_object + ": " + e);
             result = false;
           }
         }
       } catch (final PersistenceException e) {
         result = false;
+        Main.LOGGER.debug("could not delete object " + the_object + ": " + e);
       }
       
       return result;
@@ -432,10 +436,14 @@ public final class Persistence {
             commitTransaction();
           } catch (final RollbackException | HibernateException e) {
             rollbackTransaction();
+            Main.LOGGER.debug("error deleting object of class " + the_class + 
+                              "with ID " + the_id + ": " + e);
             result = false;
           }
         }
       } catch (final PersistenceException e) {
+        Main.LOGGER.debug("error deleting object of class " + the_class + 
+                          "with ID " + the_id + ": " + e);
         result = false;
       }
       
@@ -454,12 +462,12 @@ public final class Persistence {
    * @exception PersistenceException if the database isn't running.
    */
   public static <T extends PersistentEntity> T getByID(final Serializable the_id, 
-                                             final Class<T> the_class) 
+                                                       final Class<T> the_class) 
       throws PersistenceException {
     if (hasDB()) {
       T result = null;
       boolean transaction = false;
-      Main.LOGGER.info("searching session for object " + the_class + "/" + the_id);
+      Main.LOGGER.debug("searching session for object " + the_class + "/" + the_id);
       try {
         transaction = beginTransaction();
         result = currentSession().get(the_class, the_id);
@@ -474,8 +482,8 @@ public final class Persistence {
             // ignore
           }        
         }
-        Main.LOGGER.info("exception when searching for " + the_class + "/" + the_id + 
-                         ": " + e);
+        Main.LOGGER.error("exception when searching for " + the_class + "/" + the_id + 
+                          ": " + e);
       }
       return result;
     } else {

@@ -71,7 +71,7 @@ public final class CountyDashboardQueries {
         // create a new County dashboard for the specified county
         db = new CountyDashboard(the_county_id, CountyStatus.NO_DATA, null);
         Persistence.saveOrUpdate(db);
-        Main.LOGGER.info("attempting to create new county dashboard");
+        Main.LOGGER.debug("attempting to create new county dashboard");
       } else if (query_results.size() > 1) {
         Main.LOGGER.error("multiple county dashboards found");
       } else {

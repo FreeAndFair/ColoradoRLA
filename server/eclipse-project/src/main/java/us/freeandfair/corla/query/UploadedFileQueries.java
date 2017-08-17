@@ -88,11 +88,11 @@ public final class UploadedFileQueries {
       Main.LOGGER.error("could not query database for uploaded file");
     }
     if (result == null) {
-      Main.LOGGER.info("found no uploaded file for county " + the_county_id + 
-                       ", timestamp " + the_timestamp + ", type " + 
-                       the_type);
+      Main.LOGGER.debug("found no uploaded file for county " + the_county_id + 
+                        ", timestamp " + the_timestamp + ", type " + 
+                        the_type);
     } else {
-      Main.LOGGER.info("found uploaded file " + result);
+      Main.LOGGER.debug("found uploaded file " + result);
     }
     return result;
   }
