@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 
 export default (state: any, action: any) => {
     const nextState: any = _.merge({}, state);
+    const { county } = nextState;
 
     const {
         ballotId,
@@ -12,16 +13,27 @@ export default (state: any, action: any) => {
         noConsensus,
     } = action.data;
 
-    const acvr = {
-        [contestId]: {
-            choices,
-            comments,
-            noConsensus,
-        },
+    if (!nextState.county.acvrs) {
+        nextState.county.acvrs = {};
+    }
+
+    if (!nextState.county.acvrs[ballotId]) {
+        nextState.county.acvrs[ballotId] = {};
+    }
+
+    if (!nextState.county.acvrs[ballotId][contestId]) {
+        nextState.county.acvrs[ballotId][contestId] = {};
+    }
+
+    const nextMarks: any = {
+        choices,
+        comments,
     };
 
-    const acvrs = { [ballotId]: acvr };
-    nextState.county.acvrs = _.merge({}, state.county.acvrs, acvrs);
+    nextMarks.noConsensus = !!noConsensus;
+
+    const marks = nextState.county.acvrs[ballotId][contestId];
+    nextState.county.acvrs[ballotId][contestId] = _.merge({}, marks, nextMarks);
 
     return nextState;
 }
