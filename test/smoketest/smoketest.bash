@@ -30,6 +30,7 @@ pkill -f java.-jar.target/colorado_rla || true
 dropdb corla || true
 createdb -O corla corla
 
+mkdir -p tarket
 mvn package > target/mvn.stdout
 
 # Surprising how kludgey this seems to be https://stackoverflow.com/a/45657043/507544

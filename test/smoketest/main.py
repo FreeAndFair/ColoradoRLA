@@ -284,7 +284,8 @@ if __name__ == "__main__":
         r = test_endpoint_get(base, county_s1, "/county-dashboard", show=False)
         resp = r.json()
         # The list of ballots_to_audit takes up way too much space in the output....
-        resp['ballots_to_audit'] = "SUPPRESSED"
+        if 'ballots_to_audit' in resp:
+            resp['ballots_to_audit'] = "SUPPRESSED"
         print(resp)
 
         if resp['estimated_ballots_to_audit'] <= 0:
