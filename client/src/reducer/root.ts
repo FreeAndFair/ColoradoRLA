@@ -11,6 +11,7 @@ import dosDashboardRefreshOk from './dosDashboardRefreshOk';
 import establishAuditBoardOk from './establishAuditBoardOk';
 import selectContestsForAuditOk from './selectContestsForAuditOk';
 import setRiskLimitOk from './setRiskLimitOk';
+import updateAcvrForm from './updateAcvrForm';
 import uploadAcvrOk from './uploadAcvrOk';
 import uploadBallotManifestOk from './uploadBallotManifestOk';
 import uploadCvrExportOk from './uploadCvrExportOk';
@@ -95,6 +96,10 @@ export default function root(state: AppState = defaultState, action: any) {
         return setRiskLimitOk(state, action);
     }
 
+    case 'UPDATE_ACVR_FORM': {
+        return updateAcvrForm(state, action);
+    }
+
     case 'UPLOAD_BALLOT_MANIFEST_OK': {
         return uploadBallotManifestOk(state, action);
     }
@@ -105,41 +110,6 @@ export default function root(state: AppState = defaultState, action: any) {
 
     case 'UPLOAD_CVR_EXPORT_OK': {
         return uploadCvrExportOk(state, action);
-    }
-
-    case 'UPDATE_BALLOT_MARKS': {
-        const {
-            ballotId,
-            choices,
-            comments,
-            contestId,
-            noConsensus,
-        } = action.data;
-        const nextState = { ...state };
-
-        const ballots = _.clone(nextState.county.ballots);
-        const ballotIndex = _.findIndex(ballots, (b: any) => b.id === ballotId);
-
-        const ballot = { ...ballots[ballotIndex] };
-        ballot.audited = true;
-
-        const marks = { ...ballot.marks[contestId] };
-        if (choices) {
-            marks.choices = choices;
-        }
-        if (comments) {
-            marks.comments = comments;
-        }
-        if (_.isEmpty(noConsensus)) {
-            marks.noConsensus = !!noConsensus;
-        }
-
-        ballot.marks[contestId] = marks;
-
-        ballots[ballotIndex] = ballot;
-        nextState.county.ballots = ballots;
-
-        return nextState;
     }
 
     case 'UPLOAD_RANDOM_SEED_OK': {

@@ -21,7 +21,7 @@ const mapStateToProps = ({ county }: any) => {
 const mapDispatchToProps = (dispatch: any) => bindActionCreators({
     updateBallotMarks: (data: any) => ({
         data,
-        type: 'UPDATE_BALLOT_MARKS',
+        type: 'UPDATE_ACVR_FORM',
     }),
 }, dispatch);
 
