@@ -38,7 +38,7 @@ class CountyHomeContainer extends React.Component<any, any> {
                 fetchContestsByCounty(county.id);
 
                 intervalIds.fetchContestsId = setInterval(
-                    () => fetchContestsByCounty(county.ballotUnderAuditId),
+                    () => fetchContestsByCounty(county.id),
                     1000,
                 );
             }
