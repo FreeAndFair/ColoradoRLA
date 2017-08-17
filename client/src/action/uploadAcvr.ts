@@ -18,4 +18,4 @@ const uploadAcvr = createSubmitAction({
 });
 
 
-export default (acvr: any) => uploadAcvr(format(acvr));
+export default (marks: any, cvr: any) => uploadAcvr(format(marks, cvr));
