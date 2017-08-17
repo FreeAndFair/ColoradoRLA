@@ -237,6 +237,8 @@ if __name__ == "__main__":
     # TODO or FIXME - doesn't yet match "ballots_to_audit" from the dashboard
     print(json.dumps(publish_ballots_to_audit(seed, cvrs), indent=2))
 
+    r = test_endpoint_get(base, state_s, "/dos-dashboard")
+
     r = test_endpoint_get(base, county_s1, "/county-dashboard")
     # r = test_endpoint_get(base, county_s1, "/audit-board-asm-state")
     # r = test_endpoint_json(base, county_s1, "/audit-board-dashboard", {})
@@ -251,6 +253,9 @@ if __name__ == "__main__":
         print("No ballots_to_audit")
 
     for i in range(len(selected) * 2):
+        if i % 10 == 0:
+            r = test_endpoint_get(base, state_s, "/dos-dashboard")
+
         acvr = cvrtable[selected[i]]
         acvr['record_type'] = 'AUDITOR_ENTERED'
         test_endpoint_json(base, county_s1, "/upload-audit-cvr",
@@ -266,8 +271,12 @@ if __name__ == "__main__":
             print("\nAudit completed after %d ballots" % (i + 1))
             break
 
+    r = test_endpoint_get(base, state_s, "/dos-dashboard")
+
     r = test_endpoint_json(base, county_s1, "/intermediate-audit-report", {})
     r = test_endpoint_json(base, county_s1, "/audit-report", {})
+
+    r = test_endpoint_get(base, state_s, "/dos-dashboard")
 
     r = test_endpoint_json(base, state_s, "/publish-report", {})
 
