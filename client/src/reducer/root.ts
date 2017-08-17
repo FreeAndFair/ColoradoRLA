@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import countyAuthOk from './countyAuthOk';
 import countyDashboardRefreshOk from './countyDashboardRefreshOk';
 import countyFetchContestsOk from './countyFetchContestsOk';
+import countyFetchCvrsOk from './countyFetchCvrsOk';
 import dosAuthOk from './dosAuthOk';
 import dosContestFetchOk from './dosContestFetchOk';
 import dosDashboardRefreshOk from './dosDashboardRefreshOk';
@@ -44,6 +45,10 @@ export default function root(state: AppState = defaultState, action: any) {
 
     case 'COUNTY_FETCH_CONTESTS_OK': {
         return countyFetchContestsOk(state, action);
+    }
+
+    case 'COUNTY_FETCH_CVRS_OK': {
+        return countyFetchCvrsOk(state, action);
     }
 
     case 'DOS_DASHBOARD_REFRESH_OK': {
