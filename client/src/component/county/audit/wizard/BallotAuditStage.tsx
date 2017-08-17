@@ -52,26 +52,22 @@ const ContestInfo = ({ contest }: any) => {
 const ContestChoices = (props: any) => {
     const { choices, marks, noConsensus, updateBallotMarks } = props;
 
-    const updateChoiceById = (id: number) => (e: any) => {
-        const nextChoices = _.without(marks.choices, id);
+    const updateChoiceByName = (name: string) => (e: any) => {
+        const checkbox = e.target;
 
-        if (e.target.checked) {
-            nextChoices.push(id);
-        }
-
-        updateBallotMarks({ choices: nextChoices });
+        updateBallotMarks({ choices: { [name]: checkbox.checked } });
     };
 
-    const choiceForms = _.map(choices, (c: any) => {
-        const checked = _.includes(marks.choices, c.id);
+    const choiceForms = _.map(choices, (choice: any) => {
+        const checked = (marks.choices || {})[choice.name];
 
         return (
             <Checkbox
-                key={ c.id }
+                key={ choice.name }
                 disabled={ noConsensus }
                 checked={ checked }
-                onChange={ updateChoiceById(c.id) }
-                label={ c.name }
+                onChange={ updateChoiceByName(choice.name) }
+                label={ choice.name }
             />
         );
     });
