@@ -37,7 +37,7 @@ Server ASMs
 -----------
 
 *The visual rendering of server ASMs will be included in either the
-stage-2 or stage-3 deliverable.*
+phase-2 or phase-3 deliverable.*
 
 The implementation server ASMs is found in the
 [us.freeandfair.corla.asm package](https://github.com/FreeAndFair/ColoradoRLA/tree/master/server/eclipse-project/src/main/java/us/freeandfair/corla/asm).

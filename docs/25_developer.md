@@ -26,6 +26,8 @@ History
 * Outline and first draft, 5 July 2017 by Joe Kiniry.
 * Second draft that is mostly textually complete, 6 July 2017 by Joe
   Kiniry.
+* Third draft with updates for phase-1 delivery, 17 August 2017 by Joe
+  Kiniry.
 
 Platform and Programming Languages
 ----------------------------------
@@ -206,6 +208,13 @@ psql -U corla -d corla -a -f corla-test-credentials.psql
 
 That's it. If the database is there the server will use it and will,
 at this stage, create all its tables and such automatically.
+
+If you need to delete the database---perhaps because due to a recent
+merge the DB schema has evolved---use the `dropdb corla` command and
+then recreate the DB.
+
+There are helpful scripts for automating these actions located in the
+`server/eclipse_project/script` directory.
 
 *TBD: Describe the [Hibernate ORM](http://hibernate.org/orm/) and its
 use.*
