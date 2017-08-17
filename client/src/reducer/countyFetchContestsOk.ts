@@ -10,11 +10,12 @@ const parseChoices = (names: any, descriptions: any) => {
 };
 
 const parseDef = (c: any): any => {
-    const { description, id, name } = c;
+    const { description, id, name, votes_allowed } = c;
+    const votesAllowed = votes_allowed;
 
     const choices = parseChoices(c.choice_names, c.choice_descriptions);
 
-    return { id, choices, description, name };
+    return { id, choices, description, name, votesAllowed };
 };
 
 const parse = (data: any, state: any) => {
