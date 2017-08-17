@@ -44,8 +44,7 @@ public interface ASMEvent extends Event {
     UPLOAD_BALLOT_MANIFEST_EVENT, // public inbound event
     UPLOAD_CVRS_EVENT, // public inbound event
     COUNTY_START_AUDIT_EVENT, // private internal event
-    COMPLETE_AUDIT_EVENT, // private internal event
-    DEADLINE_MISSED_EVENT // private internal event
+    COMPLETE_AUDIT_EVENT // private internal event
   }
   
   /**
