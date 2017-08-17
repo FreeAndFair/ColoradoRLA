@@ -97,18 +97,16 @@ const ContestComments = ({ comments, onChange }: any) => {
 const BallotContestMarkForm = (props: any) => {
     const { contest, county, currentBallot, updateBallotMarks } = props;
     const { name, description, choices, votesAllowed } = contest;
-    const { marks } = currentBallot;
 
-    const contestMarks = marks[contest.id];
-
-    const noConsensus = !!contestMarks.noConsensus;
+    const acvr = ((county.acvrs || {})[currentBallot.id]) || {};
+    const contestMarks = acvr[contest.id] || {};
 
     const updateComments = (comments: any) => {
         updateBallotMarks({ comments });
     };
 
     const updateConsensus = (e: any) => {
-        updateBallotMarks({ noConsensus: e.target.checked });
+        updateBallotMarks({ noConsensus: !!e.target.checked });
     };
 
     return (
@@ -117,13 +115,13 @@ const BallotContestMarkForm = (props: any) => {
             <ContestChoices
                 choices={ choices }
                 marks={ contestMarks }
-                noConsensus={ noConsensus }
+                noConsensus={ !!contestMarks.noConsensus }
                 updateBallotMarks={ updateBallotMarks }
             />
             <div className='pt-card'>
                 <Checkbox
                     label='No consensus'
-                    checked={ noConsensus }
+                    checked={ !!contestMarks.noConsensus }
                     onChange={ updateConsensus }
                 />
             </div>
@@ -135,17 +133,19 @@ const BallotContestMarkForm = (props: any) => {
 const BallotAuditForm = (props: any) => {
     const { county, currentBallot } = props;
 
-    const contestForms = _.map(currentBallot.style.contests, (c: any) => {
+    const contestForms = _.map(currentBallot.contestInfo, (info: any) => {
+        const contest = county.contestDefs[info.contest];
+
         const updateBallotMarks: any = (data: any) => props.updateBallotMarks({
             ballotId: currentBallot.id,
-            contestId: c.id,
+            contestId: contest.id,
             ...data,
         });
 
         return (
             <BallotContestMarkForm
-                key={ c.id }
-                contest={ c }
+                key={ contest.id }
+                contest={ contest }
                 county={ county }
                 currentBallot={ currentBallot }
                 updateBallotMarks={ updateBallotMarks } />
