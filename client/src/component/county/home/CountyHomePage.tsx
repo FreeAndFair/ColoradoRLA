@@ -95,7 +95,6 @@ const Info = ({ info, contests }: any) => (
 
 const CountyHomePage = (props: any) => {
     const {
-        ballotStyles,
         contests,
         county,
         countyDashboardRefresh,

@@ -158,7 +158,6 @@ const BallotAuditForm = (props: any) => {
 
 const BallotAuditStage = (props: any) => {
     const {
-        ballotStyles,
         ballots,
         county,
         nextStage,

@@ -36,9 +36,9 @@ class CountyHomeContainer extends React.Component<any, any> {
 }
 
 const mapStateToProps = ({ county }: any) => {
-    const { ballotStyles, contests } = county;
+    const { contests } = county;
 
-    return { ballotStyles, contests, county };
+    return { contests, county };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
