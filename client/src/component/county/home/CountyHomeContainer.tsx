@@ -6,11 +6,13 @@ import CountyHomePage from './CountyHomePage';
 
 import countyDashboardRefresh from '../../../action/countyDashboardRefresh';
 import fetchContestsByCounty from '../../../action/fetchContestsByCounty';
+import fetchCvrById from '../../../action/fetchCvrById';
 
 
 const intervalIds: any = {
     refreshId: null,
     fetchContestsId: null,
+    fetchCvrId: null,
 };
 
 class CountyHomeContainer extends React.Component<any, any> {
@@ -33,7 +35,21 @@ class CountyHomeContainer extends React.Component<any, any> {
                 fetchContestsByCounty(county.id);
 
                 intervalIds.fetchContestsId = setInterval(
-                    () => fetchContestsByCounty(county.id),
+                    () => fetchContestsByCounty(county.ballotUnderAuditId),
+                    1000,
+                );
+            }
+        }
+
+        if (!intervalIds.fetchCvrId) {
+            if (county.ballotUnderAuditId) {
+                fetchCvrById(county.ballotUnderAuditId);
+
+                intervalIds.fetchCvrId = setInterval(
+                    () => {
+                        const { id } = this.props.county;
+                        fetchCvrById(this.props.county.ballotUnderAuditId);
+                    },
                     1000,
                 );
             }
@@ -56,6 +72,7 @@ const mapStateToProps = ({ county }: any) => {
 const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
     countyDashboardRefresh,
     fetchContestsByCounty,
+    fetchCvrById,
 }, dispatch);
 
 export default connect(
