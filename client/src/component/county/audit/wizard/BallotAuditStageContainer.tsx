@@ -14,7 +14,6 @@ class BallotAuditStageContainer extends React.Component<any, any> {
 }
 
 const mapStateToProps = ({ county }: any) => {
-
     return { county };
 };
 
