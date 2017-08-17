@@ -182,8 +182,6 @@ the build system.*
 
 ### Data Persistence
 
-*TBD: Describe [PostgresSQL]() and its use.*
-
 In order to use the Postgres database in development, one must:
 
 1. Install PostgreSQL (brew install postgres, apt-get install
@@ -201,7 +199,7 @@ createdb -O corla corla
 4. Run the server (to create all the database tables).
 5. Load test authentication credentials into the database, by executing
 the SQL in `corla-test-credentials.sql` (found in the `test` directory
-of the repository). This can be done with the following command:
+of the repository). This can be done with the following command on OS X:
 ```
 psql -U corla -d corla -a -f corla-test-credentials.psql
 ```
@@ -341,7 +339,7 @@ recent version number) in the `target` directory.
 
 Run it via:
 ```
-java -jar target/colorado_rla-0.0.1-shaded.jar
+java -jar target/colorado_rla-0.7.0-shaded.jar
 ```
 
 You can test it by opening this simple html page in a browser:
