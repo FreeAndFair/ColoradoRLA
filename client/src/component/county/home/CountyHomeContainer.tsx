@@ -2,6 +2,8 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 
+import counties from '../../../data/counties';
+
 import CountyHomePage from './CountyHomePage';
 
 import countyDashboardRefresh from '../../../action/countyDashboardRefresh';
@@ -55,7 +57,9 @@ class CountyHomeContainer extends React.Component<any, any> {
 
         const startAudit = () => history.push('/county/audit');
 
-        const props = { startAudit, ...this.props };
+        const countyName = counties[county.id].name;
+
+        const props = { countyName, startAudit, ...this.props };
 
         return <CountyHomePage { ...props } />;
     }

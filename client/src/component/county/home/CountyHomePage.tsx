@@ -11,7 +11,7 @@ import CVRUploaderContainer from './CVRUploaderContainer';
 
 const Main = ({ buttonEnabled, name, startAudit }: any) => (
     <div className='county-main pt-card'>
-        <h1>Hello, { name }!</h1>
+        <h1>Hello, { name } County!</h1>
         <div>
             <div>
                 Please upload your Ballot Manifest and Cast Vote Records.
@@ -97,10 +97,11 @@ const CountyHomePage = (props: any) => {
     const {
         contests,
         county,
+        countyName,
         countyDashboardRefresh,
         startAudit,
     } = props;
-    const { ballots, name, startTimestamp, status } = county;
+    const { ballots, startTimestamp, status } = county;
 
     const info = { auditDate: startTimestamp };
 
@@ -108,7 +109,7 @@ const CountyHomePage = (props: any) => {
         <div className='county-root'>
             <CountyNav />
             <div>
-                <Main name={ name } startAudit={ startAudit } />
+                <Main name={ countyName } startAudit={ startAudit } />
                 <Info info={ info } contests={ contests } />
             </div>
         </div>
