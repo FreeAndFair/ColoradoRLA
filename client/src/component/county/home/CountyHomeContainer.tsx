@@ -15,11 +15,13 @@ const intervalIds: any = {
     refreshId: null,
     fetchContestsId: null,
     fetchCvrId: null,
+    ballotUnderAuditId: null,
 };
 
 class CountyHomeContainer extends React.Component<any, any> {
     public render() {
         const {
+            ballotUnderAuditId,
             county,
             countyDashboardRefresh,
             fetchContestsByCounty,
@@ -45,11 +47,26 @@ class CountyHomeContainer extends React.Component<any, any> {
         }
 
         if (!intervalIds.fetchCvrId) {
-            if (county.ballotUnderAuditId) {
-                fetchCvrById(county.ballotUnderAuditId);
+            if (ballotUnderAuditId) {
+                intervalIds.ballotUnderAuditId = ballotUnderAuditId
+                fetchCvrById(ballotUnderAuditId);
 
                 intervalIds.fetchCvrId = setInterval(
-                    () => fetchCvrById(this.props.county.ballotUnderAuditId),
+                    () => fetchCvrById(this.props.ballotUnderAuditId),
+                    1000,
+                );
+            }
+        } else {
+            clearInterval(intervalIds.fetchCvrId);
+
+            if (ballotUnderAuditId &&
+                ballotUnderAuditId !== intervalIds.ballotUnderAuditId) {
+
+                intervalIds.ballotUnderAuditId = ballotUnderAuditId;
+                fetchCvrById(ballotUnderAuditId);
+
+                intervalIds.fetchCvrId = setInterval(
+                    () => fetchCvrById(this.props.ballotUnderAuditId),
                     1000,
                 );
             }
@@ -66,9 +83,9 @@ class CountyHomeContainer extends React.Component<any, any> {
 }
 
 const mapStateToProps = ({ county }: any) => {
-    const { contests } = county;
+    const { ballotUnderAuditId, contests } = county;
 
-    return { contests, county };
+    return { ballotUnderAuditId, contests, county };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
