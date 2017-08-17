@@ -16,9 +16,6 @@
 
 package us.freeandfair.corla.endpoint;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
 import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
 
@@ -30,12 +27,11 @@ import spark.Spark;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
+import us.freeandfair.corla.asm.ASMUtilities;
 import us.freeandfair.corla.asm.AbstractStateMachine;
-import us.freeandfair.corla.asm.PersistentASMState;
 import us.freeandfair.corla.json.Result;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.PersistentASMStateQueries;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
@@ -61,20 +57,14 @@ public abstract class AbstractEndpoint implements Endpoint {
   public static final boolean DISABLE_ASM = false;
   
   /**
-   * The endpoint result for the ongoing transaction.
-   */
-  protected String my_endpoint_result;
-  
-  /**
    * The ASM for this endpoint.
    */
   protected AbstractStateMachine my_asm;
   
   /**
-   * The persistent state for this endpoint's ASM, loaded in the `before`
-   * of the endpoint and saved in the `after`.
+   * The endpoint result for the ongoing transaction.
    */
-  protected PersistentASMState my_persistent_asm_state;
+  protected String my_endpoint_result;
   
   /**
    * Halts the endpoint execution by ending the request and returning the
@@ -136,26 +126,7 @@ public abstract class AbstractEndpoint implements Endpoint {
       // there is no ASM for this endpoint
       return;
     }
-    final String asm_id = asmIdentity(the_request);
-    try {
-      if (asm_id == null) {
-        // this is a singleton ASM, so it has a no-argument constructor
-        my_asm = asmClass().getConstructor().newInstance();
-      } else {
-        // this ASM has an identity, so we need a 1-argument constructor 
-        // that takes a String
-        final Constructor<? extends AbstractStateMachine> constructor = 
-            asmClass().getConstructor(String.class);
-        my_asm = constructor.newInstance(asm_id);
-      }
-    } catch (final IllegalAccessException | InstantiationException | 
-                   InvocationTargetException | NoSuchMethodException e) {
-      Main.LOGGER.error("Unable to construct ASM of class " + asmClass() +
-                        " with identity " + asm_id);
-    }
-    my_persistent_asm_state = 
-        PersistentASMStateQueries.get(asmClass(), asm_id);
-    my_persistent_asm_state.applyTo(my_asm);
+    my_asm = ASMUtilities.asmFor(asmClass(), asmIdentity(the_request));
     // check that we are in the right ASM state
     if (!my_asm.enabledASMEvents().contains(endpointEvent())) {
       illegalTransition(the_response,
@@ -164,7 +135,7 @@ public abstract class AbstractEndpoint implements Endpoint {
                         " from state " + my_asm.currentState());
     }
   }
-  
+
   /**
    * Save the ASM back to the database.
    * 
@@ -183,11 +154,9 @@ public abstract class AbstractEndpoint implements Endpoint {
       illegalTransition(the_response, e.getMessage());
       return false;
     }
-    my_persistent_asm_state.updateFrom(my_asm);
-    Persistence.saveOrUpdate(my_persistent_asm_state);
-    return true;
+    return ASMUtilities.save(my_asm);
   }
-
+  
   /**
    * Indicate that the operation completed successfully.
    * @param the_response the HTTP response.
@@ -383,7 +352,7 @@ public abstract class AbstractEndpoint implements Endpoint {
   public void after(final Request the_request, final Response the_response) {
     // try to take the transition for this endpoint in the ASM and save it to the DB
     // note that we do not try to commit when we have an error code in the response
-    if (the_response.status() == HttpStatus.OK_200 &&
+    if (the_response.status() == HttpStatus.OK_200 && 
         transitionAndSaveASM(the_response) && 
         Persistence.isTransactionRunning()) {
       try {
