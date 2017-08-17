@@ -47,8 +47,7 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
 // Justification: False positive because we are weaving in behavior
 // in before() to initialize my_persistent_asm_state.
     "SF_SWITCH_NO_DEFAULT"})
-// Justification: False positive; there is a default case.
-@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.TooManyMethods"})
+@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.TooManyMethods", "PMD.GodClass"})
 public abstract class AbstractEndpoint implements Endpoint {
   /**
    * A flag that disables ASM checks, when true.
@@ -168,6 +167,7 @@ public abstract class AbstractEndpoint implements Endpoint {
   public void ok(final Response the_response) {
     the_response.status(HttpStatus.OK_200);   
     my_endpoint_result = "";
+    
   }
   
   /**
