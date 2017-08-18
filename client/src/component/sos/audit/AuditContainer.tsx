@@ -12,7 +12,7 @@ class AuditContainer extends React.Component<any, any> {
         const { history, riskLimit, setRiskLimit } = this.props;
 
         const props = {
-            nextPage: () => history.push('/sos/audit/seed'),
+            nextPage: () => history.push('/sos/audit/select-contests'),
             riskLimit,
             setRiskLimit,
         };

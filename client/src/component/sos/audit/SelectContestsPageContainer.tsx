@@ -21,7 +21,7 @@ class SelectContestsPageContainer extends React.Component<any, any> {
             auditedContests,
             back: () => history.push('/sos/audit'),
             contests,
-            nextPage: () => history.push('/sos/audit/review'),
+            nextPage: () => history.push('/sos/audit/seed'),
             selectContestsForAudit,
         };
 
