@@ -17,7 +17,7 @@ const UploadedBallotManifest = ({ hash }: any) => (
 
 class BallotManifestUploaderContainer extends React.Component<any, any> {
     public render() {
-        const { county, uploadBallotManifest } = this.props;
+        const { auditStarted, county, uploadBallotManifest } = this.props;
         const forms: any = {};
 
         const upload = () => {
@@ -26,7 +26,7 @@ class BallotManifestUploaderContainer extends React.Component<any, any> {
             uploadBallotManifest(county.id, file, hash);
         };
 
-        if (county.ballotManifestHash) {
+        if (auditStarted) {
             return <UploadedBallotManifest hash={ county.ballotManifestHash } />;
         }
 
@@ -34,7 +34,10 @@ class BallotManifestUploaderContainer extends React.Component<any, any> {
     }
 }
 
-const mapStateToProps = ({ county }: any) => ({ county });
+const mapStateToProps = ({ county }: any) => ({
+    auditStarted: !!county.ballotUnderAuditId,
+    county,
+});
 
 const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
     uploadBallotManifest,
