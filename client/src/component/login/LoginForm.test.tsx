@@ -41,7 +41,7 @@ test('LoginForm', s => {
         t.equal(passwordField.prop('value'), '', 'the password field is empty');
 
         const submitButton = c.find('button.submit').first();
-        t.ok(submitButton.prop('disabled'), 'submit button is disabled');
+        t.ok(!submitButton.prop('disabled'), 'submit button is enabled');
     });
 
     s.test('with password only', t => {
