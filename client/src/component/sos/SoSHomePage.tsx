@@ -64,7 +64,6 @@ const CountyUpdates = ({ countyStatus }: any) => {
                 <td>{ c.discrepancyCount }</td>
                 <td>{ c.disagreementCount }</td>
                 <td>{ c.estimatedBallotsToAudit }</td>
-                <td>{ c.status }</td>
             </tr>
         );
     });
@@ -83,7 +82,6 @@ const CountyUpdates = ({ countyStatus }: any) => {
                             <td>Discrepancies</td>
                             <td>Disagreements</td>
                             <td>To Audit</td>
-                            <td>Status</td>
                         </tr>
                     </thead>
                     <tbody>
