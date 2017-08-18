@@ -120,7 +120,7 @@ public class ResetDatabase extends AbstractEndpoint {
     // for each County, reset its state and the states of its ASMs
     for (final County c : Persistence.getAll(County.class)) {
       c.contests().clear();
-      final String id = String.valueOf(c.identifier());
+      final String id = String.valueOf(c.id());
       final PersistentASMState county_asm = 
           PersistentASMStateQueries.get(CountyDashboardASM.class, id);
       if (county_asm != null) {

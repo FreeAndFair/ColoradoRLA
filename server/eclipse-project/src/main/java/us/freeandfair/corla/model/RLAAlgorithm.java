@@ -28,7 +28,6 @@ import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.ContestToAudit.AuditType;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CastVoteRecordQueries;
-import us.freeandfair.corla.query.DoSDashboardQueries;
 import us.freeandfair.corla.util.Pair;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
@@ -72,7 +71,8 @@ public class RLAAlgorithm {
     }
     // what is the risk limit for this contest?
     final BigDecimal risk_limit = 
-        DoSDashboardQueries.get().getRiskLimitForComparisonAudits();
+        Persistence.getByID(DoSDashboard.ID, 
+                            DoSDashboard.class).getRiskLimitForComparisonAudits();
     
     // a map describing all contests in an election that are under audit.
     // as documented in ComparisonAudit:
@@ -98,7 +98,7 @@ public class RLAAlgorithm {
         new HashMap<String, Pair<Integer, Map<String, Integer>>>();
     // <contest-name, Pair<number-of-winners, Map<candidate, total>>>
     // first, get all the contests    
-    final DoSDashboard dosdb = DoSDashboardQueries.get();
+    final DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
     
     // brute force
     for (final ContestToAudit contest : dosdb.contestsToAudit()) {
@@ -271,7 +271,9 @@ public class RLAAlgorithm {
     if (the_cvr == null || the_acvr == null) {
       throw new IllegalStateException("nonexistent cvr or acvr in audit list");
     }
-    final Set<ContestToAudit> contests = DoSDashboardQueries.get().contestsToAudit();
+    final Set<ContestToAudit> contests = 
+        Persistence.getByID(DoSDashboard.ID, DoSDashboard.class).contestsToAudit();
+
     int worst_discrepancy = Integer.MIN_VALUE;
     for (final ContestToAudit cta : contests) {
       final CVRContestInfo cvr_ci = the_cvr.contestInfoForContest(cta.contest());

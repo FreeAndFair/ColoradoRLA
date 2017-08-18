@@ -78,7 +78,7 @@ public class AuditReport extends AbstractAuditBoardDashboardEndpoint {
         boolean all_complete = true;
         for (final County c : Persistence.getAll(County.class)) {
           final CountyDashboardASM asm = 
-              ASMUtilities.asmFor(CountyDashboardASM.class, String.valueOf(c.identifier()));
+              ASMUtilities.asmFor(CountyDashboardASM.class, String.valueOf(c.id()));
           all_complete &= asm.isInFinalState();       
         }
         if (all_complete) {

@@ -272,7 +272,7 @@ public class DominionCVRExportParser implements CVRExportParser {
       // appear twice here too. 
       final CastVoteRecord new_cvr = 
           new CastVoteRecord(RecordType.UPLOADED, 
-                             the_timestamp, my_county.identifier(), 
+                             the_timestamp, my_county.id(), 
                              tabulator_id, batch_id, record_id, 
                              imprinted_id, ballot_type, 
                              contest_info);

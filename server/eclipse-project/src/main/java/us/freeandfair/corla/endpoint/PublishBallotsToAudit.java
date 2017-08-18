@@ -31,7 +31,6 @@ import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.model.RLAAlgorithm;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.DoSDashboardQueries;
 
 /**
  * Download all ballots to audit for the entire state.
@@ -80,7 +79,7 @@ public class PublishBallotsToAudit extends AbstractDoSDashboardEndpoint {
                          final Response the_response) {
     // update every county dashboard with a list of ballots to audit
     try {
-      final DoSDashboard dosdb = DoSDashboardQueries.get();
+      final DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
       final List<CountyDashboard> cdbs = Persistence.getAll(CountyDashboard.class);
       
       for (final CountyDashboard cdb : cdbs) {

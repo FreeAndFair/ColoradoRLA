@@ -32,7 +32,6 @@ import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.Elector;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.CountyDashboardQueries;
 import us.freeandfair.corla.query.ElectorQueries;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
@@ -104,7 +103,7 @@ public class EstablishAuditBoard extends AbstractCountyDashboardEndpoint {
           Main.LOGGER.error("could not get authenticated county");
           unauthorized(the_response, "not authorized to set an audit board");
         } else {
-          final CountyDashboard cdb = CountyDashboardQueries.get(county.identifier());
+          final CountyDashboard cdb = Persistence.getByID(county.id(), CountyDashboard.class);
           if (cdb == null) {
             Main.LOGGER.error("could not get county dashboard");
             serverError(the_response, "could not set audit board");
