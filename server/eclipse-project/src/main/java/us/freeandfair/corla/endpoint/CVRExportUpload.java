@@ -48,7 +48,7 @@ import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.UploadedFile;
-import us.freeandfair.corla.model.UploadedFile.FileType;
+import us.freeandfair.corla.model.UploadedFile.FileStatus;
 import us.freeandfair.corla.model.UploadedFile.HashStatus;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CastVoteRecordQueries;
@@ -124,7 +124,8 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
         hash_status = HashStatus.MISMATCH;
       }
       result = new UploadedFile(the_info.my_timestamp, the_county_id,
-                                FileType.CAST_VOTE_RECORD_EXPORT, 
+                                the_info.my_filename,
+                                FileStatus.IMPORTED_AS_CVR_EXPORT, 
                                 the_info.my_uploaded_hash,
                                 hash_status, blob);
       Persistence.saveOrUpdate(result);
@@ -187,6 +188,7 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
             the_info.my_form_fields.put(item.getFieldName(), Streams.asString(stream));
           } else if ("cvr_file".equals(name)) {
             // save the file
+            the_info.my_filename = item.getName();
             the_info.my_file = File.createTempFile("upload", ".csv");
             final OutputStream os = new FileOutputStream(the_info.my_file);
             final int total =
@@ -331,6 +333,11 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
      */
     protected File my_file;
 
+    /**
+     * The original name of the uploaded file.
+     */
+    protected String my_filename;
+    
     /**
      * The timestamp of the upload.
      */

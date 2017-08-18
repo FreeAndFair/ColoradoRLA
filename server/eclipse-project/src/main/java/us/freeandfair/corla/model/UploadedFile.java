@@ -64,11 +64,17 @@ public class UploadedFile implements PersistentEntity {
   private Long my_county_id;
   
   /**
-   * The type of the file.
+   * The status of the file.
    */
-  @Column(updatable = false, nullable = false)
+  @Column(nullable = false)
   @Enumerated(EnumType.STRING)
-  private FileType my_type;
+  private FileStatus my_status;
+  
+  /**
+   * The orignal filename.
+   */
+  @Column(updatable = false)
+  private String my_filename;
   
   /**
    * The hash of the file.
@@ -102,7 +108,8 @@ public class UploadedFile implements PersistentEntity {
    * 
    * @param the_timestamp The timestamp.
    * @param the_county_id The county that uploaded the file.
-   * @param the_type The file type.
+   * @param the_name The original filename.
+   * @param the_status The file status.
    * @param the_hash The hash entered at upload time.
    * @param the_hash_status A flag indicating whether the file matches
    * the hash.
@@ -110,14 +117,16 @@ public class UploadedFile implements PersistentEntity {
    */
   public UploadedFile(final Instant the_timestamp,
                       final Long the_county_id,
-                      final FileType the_type,
+                      final String the_filename,
+                      final FileStatus the_status,
                       final String the_hash,
                       final HashStatus the_hash_status,
                       final Blob the_file) {
     super();
     my_timestamp = the_timestamp;
     my_county_id = the_county_id;
-    my_type = the_type;
+    my_filename = the_filename;
+    my_status = the_status;
     my_hash = the_hash;
     my_hash_status = the_hash_status;
     my_file = the_file;
@@ -162,10 +171,17 @@ public class UploadedFile implements PersistentEntity {
   }
   
   /**
+   * @return the original filename of this file.
+   */
+  public String filename() {
+    return my_filename;
+  }
+  
+  /**
    * @return the type of this file.
    */
-  public FileType type() {
-    return my_type;
+  public FileStatus type() {
+    return my_status;
   }
   
   /**
@@ -192,9 +208,10 @@ public class UploadedFile implements PersistentEntity {
   /**
    * An enumeration of file types that can be uploaded.
    */
-  public enum FileType {
-    BALLOT_MANIFEST,
-    CAST_VOTE_RECORD_EXPORT;
+  public enum FileStatus {
+    NOT_IMPORTED,
+    IMPORTED_AS_BALLOT_MANIFEST,
+    IMPORTED_AS_CVR_EXPORT
   }
   
   /**
