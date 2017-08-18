@@ -175,9 +175,11 @@ public class RLAAlgorithm {
                                              my_dashboard.id(),
                                              RecordType.UPLOADED);
     final List<Long> result = new ArrayList<>();
+    
     for (final int index : list_of_cvrs_to_audit) {
       result.add(list_of_cvr_ids.get(index));
     }
+    
     return result;
   }
   
