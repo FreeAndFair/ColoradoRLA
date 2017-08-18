@@ -1,0 +1,31 @@
+# make changes like https://github.com/FreeAndFair/ColoradoRLA/pull/353
+
+set -eux -o pipefail
+
+export TRAVIS_BUILD_DIR=`git rev-parse --show-toplevel`
+export CLIENT_DIR="${TRAVIS_BUILD_DIR}/client"
+export SERVER_DIR="${TRAVIS_BUILD_DIR}/server/eclipse-project"
+export TEST_DIR="${TRAVIS_BUILD_DIR}/test"
+
+releasever=0.7.1
+reldir=$SERVER_DIR/target/release-$releasever
+mkdir -p $reldir
+
+cd /srv/s/electionaudits/ColoradoRLA/client
+script/dist
+cd dist
+zip -r $reldir/corla-client.zip *
+
+cd $SERVER_DIR
+version=$(sed < pom.xml '2 s/xmlns=".*"//g' | xmllint --xpath '/project/version/text()' - 2>/dev/null)
+jar=target/colorado_rla-$version-shaded.jar
+cp $jar $reldir/corla-server.jar
+
+cp $TEST_DIR/corla-test-credentials.psql $reldir
+
+relzip=$SERVER_DIR/target/deliverable-now
+
+cd $reldir
+zip $relzip *
+
+# TODO also: INSTALL.html README.html runbook.docx user_manual.docx
