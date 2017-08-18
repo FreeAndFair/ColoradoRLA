@@ -10,13 +10,10 @@ type AuditStage
     | 'AUDIT_COMPLETE'
     | 'AUDIT_RESULTS_PUBLISHED';
 
-
-const initialCountyStatus = () => _.mapValues(counties, () => 'NO_DATA');
-
 const sosInitialState = (): any => ({
     auditStage: 'PRE_AUDIT',
     auditedContests: {},
-    countyStatus: initialCountyStatus(),
+    countyStatus: {},
 });
 
 
