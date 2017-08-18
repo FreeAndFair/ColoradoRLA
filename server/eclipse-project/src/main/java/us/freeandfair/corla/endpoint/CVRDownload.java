@@ -19,7 +19,6 @@ import java.io.UncheckedIOException;
 import java.util.stream.Stream;
 
 import javax.persistence.PersistenceException;
-import javax.persistence.RollbackException;
 
 import com.google.gson.stream.JsonWriter;
 

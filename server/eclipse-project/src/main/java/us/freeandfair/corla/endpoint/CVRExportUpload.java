@@ -142,7 +142,7 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
       badDataType(the_response, "could not persist file of size " + 
                                 the_info.my_file.length());
     }
-
+    Persistence.beginTransaction(); // AbstractEndpoint expects a running transaction
     return result;
   }
 

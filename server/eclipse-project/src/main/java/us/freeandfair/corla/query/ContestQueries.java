@@ -114,7 +114,7 @@ public final class ContestQueries {
     Set<Contest> result = null;
     
     try {
-      Persistence.beginTransaction();
+      final boolean transaction = Persistence.beginTransaction();
       final Set<Contest> query_results = new HashSet<Contest>();
       for (final Integer county_id : the_county_ids) {
         final County c = CountyQueries.byID(county_id);
@@ -123,10 +123,12 @@ public final class ContestQueries {
         }
       }
       result = query_results;
-      try {
-        Persistence.commitTransaction();
-      } catch (final RollbackException e) {
-        Persistence.rollbackTransaction();
+      if (transaction) {
+        try {
+          Persistence.commitTransaction();
+        } catch (final RollbackException e) {
+          Persistence.rollbackTransaction();
+        }
       }
     } catch (final PersistenceException e) {
       Main.LOGGER.error("Exception when reading contests from database: " + e);
