@@ -16,7 +16,7 @@ const UploadedCvrExport = ({ hash }: any) => (
 
 class CVRUploaderContainer extends React.Component<any, any> {
     public render() {
-        const { county, uploadCvrExport } = this.props;
+        const { auditStarted, county, uploadCvrExport } = this.props;
         const forms: any = {};
 
         const upload = () => {
@@ -25,7 +25,7 @@ class CVRUploaderContainer extends React.Component<any, any> {
             uploadCvrExport(county.id, file, hash);
         };
 
-        if (county.cvrExportHash) {
+        if (auditStarted) {
             return <UploadedCvrExport hash={ county.cvrExportHash } />;
         }
 
@@ -33,7 +33,10 @@ class CVRUploaderContainer extends React.Component<any, any> {
     }
 }
 
-const mapStateToProps = ({ county }: any) => ({ county });
+const mapStateToProps = ({ county }: any) => ({
+    auditStarted: !!county.ballotUnderAuditId,
+    county,
+});
 
 const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
     uploadCvrExport,
