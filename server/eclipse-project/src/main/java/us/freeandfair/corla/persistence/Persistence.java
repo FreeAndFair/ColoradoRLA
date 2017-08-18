@@ -39,6 +39,7 @@ import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Environment;
 import org.hibernate.query.Query;
+import org.hibernate.resource.transaction.spi.TransactionStatus;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.util.Pair;
@@ -232,14 +233,32 @@ public final class Persistence {
    * false otherwise.
    * @exception PersistenceException if the database isn't running.
    */
-  public static boolean isTransactionRunning() 
+  public static boolean isTransactionActive() 
       throws PersistenceException {
     if (hasDB()) {
       final Pair<Session, Transaction> session_transaction = transaction_info.get();
 
       return session_transaction != null && 
              session_transaction.getFirst().equals(Persistence.currentSession()) &&
-             session_transaction.getSecond().isActive();
+             session_transaction.getSecond().getStatus() == TransactionStatus.ACTIVE;
+    } else {
+      throw new PersistenceException(NO_DATABASE);
+    }
+  }
+  
+  /**
+   * @return true if a long-lived transaction can be rolled back,
+   * false otherwise.
+   * @exception PersistenceException if the database isn't running.
+   */
+  public static boolean canTransactionRollback()
+      throws PersistenceException {
+    if (hasDB()) {
+      final Pair<Session, Transaction> session_transaction = transaction_info.get();
+
+      return session_transaction != null && 
+             session_transaction.getFirst().equals(Persistence.currentSession()) &&
+             session_transaction.getSecond().getStatus().canRollback();
     } else {
       throw new PersistenceException(NO_DATABASE);
     }
@@ -543,7 +562,7 @@ public final class Persistence {
    */
   public static <T extends PersistentEntity> Stream<T> 
       getAllAsStream(final Class<T> the_class) throws PersistenceException {
-    if (!isTransactionRunning()) {
+    if (!isTransactionActive()) {
       throw new IllegalStateException("no running transaction");
     }
    

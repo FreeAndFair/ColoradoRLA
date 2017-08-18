@@ -354,7 +354,7 @@ public abstract class AbstractEndpoint implements Endpoint {
     // note that we do not try to commit when we have an error code in the response
     if (the_response.status() == HttpStatus.OK_200 && 
         transitionAndSaveASM(the_response) && 
-        Persistence.isTransactionRunning()) {
+        Persistence.isTransactionActive()) {
       try {
         // since the transition finished, let's commit
         Persistence.commitTransaction();
@@ -371,14 +371,15 @@ public abstract class AbstractEndpoint implements Endpoint {
         }
       }
     } else {
-      try {
-        Persistence.rollbackTransaction();
-      } catch (final IllegalStateException ex) {
-        Main.LOGGER.info("transaction had already been committed or rolled back " + 
-                         "for error response");
-      } catch (final PersistenceException ex) {
-        Main.LOGGER.error("could not roll back transaction for error response: " +
-                          ex.getMessage());
+      if (Persistence.canTransactionRollback()) {
+        try {
+          Persistence.rollbackTransaction();
+        } catch (final PersistenceException ex) {
+          Main.LOGGER.error("could not roll back transaction for error response: " +
+                            ex.getMessage());
+        }
+      } else {
+        Main.LOGGER.error("could not roll back transaction for error response");
       }
     }
   }
