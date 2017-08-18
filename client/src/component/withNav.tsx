@@ -38,6 +38,8 @@ const LogoutButton = ({ logout }: any) =>
 export default function withNav(Menu: any, path: any): any {
     class Nav extends React.Component<any, any> {
         public render() {
+            const logout = () => window.location.replace('/login');
+
             return (
                 <nav className='pt-navbar'>
                     <div className='pt-navbar-group pt-align-left'>
@@ -49,7 +51,7 @@ export default function withNav(Menu: any, path: any): any {
                     <div className='pt-navbar-group pt-align-right'>
                         <HomeButton path={ path } />
                         <Divider />
-                        <LogoutButton logout={ this.props.logout }/>
+                        <LogoutButton logout={ logout }/>
                     </div>
                 </nav>
             );
