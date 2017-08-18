@@ -18,10 +18,10 @@ interface CountyDashboard {
     audit_board_members: Elector[];
     audit_time: Timestamp;
     audited_ballot_count: number;
-    ballot_manifest_digest: string;
+    ballot_manifest_hash: string;
     ballot_under_audit_id: number;
     ballots_to_audit: number[];
-    cvr_export_digest: string;
+    cvr_export_hash: string;
     contests: number[];
     contests_under_audit: number[];
     disagreement_count: number;
@@ -97,12 +97,12 @@ export const parse = (data: CountyDashboard, state: any): any => {
         auditBoardMembers: data.audit_board_members.map(parseBoardMember),
         auditTime: data.audit_time ? parseTimestamp(data.audit_time) : null,
         auditedBallotCount: data.audited_ballot_count,
-        ballotManifestDigest: data.ballot_manifest_digest,
+        ballotManifestHash: data.ballot_manifest_hash,
         ballotUnderAuditId: data.ballot_under_audit_id,
         ballotsToAudit: data.ballots_to_audit,
         contests: parseContests(data.contests, state),
         contestsUnderAudit: parseContestsUnderAudit(data.contests_under_audit, state),
-        cvrExportDigest: data.cvr_export_digest,
+        cvrExportHash: data.cvr_export_hash,
         disagreementCount: data.disagreement_count,
         discrepancyCount: data.discrepancy_count,
         estimatedBallotsToAudit: data.estimated_ballots_to_audit,
