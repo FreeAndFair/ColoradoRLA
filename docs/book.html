@@ -1,0 +1,719 @@
+<h1 id="the-colorado-rla-tool-book">The Colorado RLA Tool Book</h1>
+<h3 id="free-fair">Free &amp; Fair</h3>
+<h4 id="july-2017">July 2017</h4>
+
+<h1 id="license">License</h1>
+<p>This project will be licensed under an OSI-approved license. Discussions are ongoing with the Colorado Department of State about which Open Source license is most appropriate for this system.</p>
+<ul>
+<li>TBD: justification for license choice</li>
+</ul>
+
+<h1 id="project-members">Project Members</h1>
+<p><strong>Dr. Joseph Kiniry</strong> is Chief Scientist and CEO of Free &amp; Fair. Prior to working for Free &amp; Fair, Dr. Kiniry provided commercial and public consultancy services to several governments on matters relating to elections, their technology, security, processes, and verifiability. He has worked on election systems for fifteen years; has audited the security, correctness, and reliability of numerous physical and Internet-based voting systems; and has developed high-assurance prototypes and products of several election technologies (including, but not limited to, tallying, auditing, voting, ballot marking, and e-poll book (EPB) systems).</p>
+<p>Dr. Kiniry has formally advised four national governments (the USA, The Netherlands, the Republic of Ireland, and Denmark) on matters relating to digital elections and has testified before two parliaments. He has also provided informal input and advice to the governments of Norway, Estonia, and the United States. He co-founded and co-ran a multi-year research project on digital elections (the DemTech project) and has supervised numerous B.S., M.S., and Ph.D. theses focusing on election technologies. His research group developed several high-assurance peer-reviewed election software systems, including a tally system used in binding European elections for The Netherlands in 2004 and an EPB system used in Danish national elections in 2012. Dr. Kiniry has served as a Principal Investigator on research projects for the European Union Council, various Department of Defense branches, the National Science Foundation, and several national funding agencies in Ireland, The Netherlands, and Denmark. He has also started and run a half dozen technology firms and has held tenured positions at four university in three countries. He holds five advanced degrees, including a Ph.D. from the California Institute of Technology.</p>
+<p><strong>Joe Ranweiler</strong> is a software engineering consultant for Free &amp; Fair. He has over 5 years of professional experience building software, spanning research and development, data engineering, and commercially-deployed web applications. Joe helped write Free &amp; Fair’s end-to-end verifiable voting system demonstrator, including its core cryptographic components. He is a regular open-source software contributor and was recently the technical lead on Free &amp; Fair’s OpenRLA risk-limiting audit system prototype, which was built using modern web application technologies. Joe has a B.S. in Mathematics from Arizona State University.</p>
+<p><strong>Neal McBurnett</strong> has been developing open source software related to election audits for over a decade, and worked as a software developer for tools and the Internet as a Distinguished Member of Technical Staff at Bell Labs for two decades before that. He consulted with the Colorado Secretary of State on the Colorado Risk-Limiting Audit project, and is a member of the team that worked with County Clerk Dana DeBeauvoir in Travis County, TX on the design and RFP for STAR-Vote, a novel voting system supporting end-to-end and risk-limiting audits. He served as vice-chair of the IEEE P1622 standards committee on a common data format for elections, and continues to participate in the U.S. Election Assistance Commission’s VVSG-Interoperability Working Group, developing standards for Cast Vote Records and related formats. Using his open source web-based ElectionAudits software, Boulder County, CO performed nationally-recognized audits in 2008 and 2010. He also audited the groundbreaking open source Scantegrity end-to-end election in Takoma Park, MD in 2011. Mr. McBurnett was a major contributor to &quot;Principles and Best Practices for Post-Election Audits&quot; (September 2008) and the 2010 American Statistical Association statement on Risk-Limiting Small Batch Audits. He has participated actively in election processes since 2002 as an observer, election official, auditor and public witness. He is an active participant in the Election Verification Network. He holds an M.S. in Computer Science from the University of California at Berkeley, and a B.S. in Computer Science from Brown University.</p>
+<p><strong>Dr. Daniel Zimmerman</strong>, the Technology Lead at Free &amp; Fair, has extensive experience in formal methods, high-assurance software engineering, concurrent and distributed systems, and foundations of computer science. He taught computer science at multiple universities for over a decade. In industry, he has worked primarily in the areas of rigorous software engineering and verifiable election technology. He holds three advanced degrees, including a Ph.D., all from the California Institute of Technology.</p>
+<p><strong>Dr. Joey Dodds</strong> has focused mainly on research and development facilitating correctness proofs for a variety of programs, including cryptographic algorithms. At Free &amp; Fair, Dodds has implemented both a tabulator and a risk-limiting audit system and written formal specifications for both. He also fully proved the correctness of the tabulator. He is a key participant in the verification of Amazon’s s2n library, responsible for both the verification of the library and implementing a system to automatically report metrics about the progress of the project to Amazon’s upper management. He holds a Ph.D. from Princeton University and holds two other advanced degrees.</p>
+<p><strong>Dr. Stephanie Singer</strong> has developed web-based applications querying relational databases to make customized reports of election results available to the general public. As a member of the Philadelphia County Board of Elections in Pennsylvania, she oversaw the creation and deployment of a modern voter-facing election website. She also held a tenured position in mathematics at Haverford College for over a decade and earned several degrees, including a Ph.D. in mathematics from NYU.</p>
+<p><strong>Mike Kiniry</strong> is a communication expert, with backgrounds in radio, print, and photojournalism, who specializes in clearly communicating complicated concepts. He spent nearly a decade as a public radio reporter, producer, and host and has been a freelance writer and photographer for the past 15 years. Mike is also a videographer and editor, and is the Election Verification Network’s dedicated videographer/media producer.</p>
+<p><strong>Morgan Miller</strong> is an experienced User Experience (UX) professional with a deep background in scientific research. She is currently a User Experience Architect for Morgan Miller UX, LLC, where she leads teams through a UX discovery, architecture, and research process; designs and executes research studies; synthesizes research data to create actionable recommendations; and builds information architecture including taxonomy, sitemaps, and wireframes. She has done work for Overseas Vote Foundation, Intel, Mozilla Foundation, BMC Software, Esri, World Wildlife Fund, Nike, Moda, Providence Health, and Cambia Health. She earned a B.A. in Mathematics from Reed College and an M.S. in Computer Science from the University of Lugano, Switzerland, where she was a cryptography researcher.</p>
+
+<h1 id="installation-and-use">Installation and Use</h1>
+<h2 id="downloading">Downloading</h2>
+<p>This system is open source and freely available via GitHub. One can download the entire project, including all development artifacts and source code, via the  webpage, either by cloning its git repository or as an archive file.</p>
+<p>We also automatically build a distribution archive using the Node package manager (for the front-end) and an Maven-based Java archive file compilation (for the back-end). See the <a href="client%20README%20file">client/README.md</a> for more information about the former, particularly the <code>npm run pack</code> command. See the [server/README-ECLIPSE.md] file for more information about the latter.</p>
+<h2 id="installation">Installation</h2>
+<p>This system is installed at the moment by installing a Postgres database and running the server in a Java 8 Virtual Machine (VM).</p>
+<p>Database installation and setup is documented in the <em>Data Persistence</em> section of the <em>Developer Instructions</em> chapter of this book.</p>
+<h2 id="example-of-use">Example of Use</h2>
+<p>See the <a href="user_manual.docx">User Manual</a> and <a href="runbook.docx">Run Book</a>.</p>
+<h2 id="running-the-latest-development-version">Running the latest development version</h2>
+<p>For testing purposes, you can run the latest versions of the client and server directly from a clone of the <a href="https://github.com/FreeAndFair/ColoradoRLA">git repository</a>.</p>
+<p>For the server, follow the directions in <a href="../server/README-ECLIPSE.md"><code>server/README-ECLIPSE</code></a> to install Eclipse, and use Eclipse's Run menu.</p>
+<p>Running the system can be accomplished by running the application directly (as in <code>java -jar ../server/eclipse-project/target/colorado_rla-0.7.0-shaded.jar</code>) or installing the system in a webserver with a Java container.</p>
+<p>To test the client in a standalone manner (rather than from the server), you'll need to get <a href="https://www.npmjs.com/get-npm">Node.js and npm</a>. Next, run:</p>
+<pre><code>cd client
+npm install
+npm start</code></pre>
+<p>Then visit <a href="http://localhost:3000/"><code>http://localhost:3000/</code></a> in a supported web browser.</p>
+<h1 id="colorado-risk-limiting-audit">Colorado Risk Limiting Audit</h1>
+<h1 id="run-book">Run Book</h1>
+<h2 id="introduction">Introduction</h2>
+<p>This Run Book is written for election administrators who will be implementing a Risk Limiting Audit (RLA) using the RLA Tool. The Run Book will assist these election administrators in using to tool to carry out the actions required for a RLA.</p>
+<p>The Risk-Limiting Audit (RLA) Tool, developed by Free &amp; Fair for the Colorado Department of State for use in elections from November 2017 forward, supports running a Risk-Limiting Audit as required by Colorado statute and as described in the <a href="http://www.sos.state.co.us/pubs/rule_making/CurrentRules/8CCR1505-1/ElectionRules.pdf">Colorado Secretary of State's Rule 25</a> for elections. The RLA Tool supports a variety of requirements of Rule 25.2.2 and Rule 25.2.3, as described in detail below.</p>
+<p>The RLA Tool enables the Secretary of State and each individual County to carry out a Risk-Limiting Audit. Using the RLA Tool, Secretary of State enter the risk limit, the publicly-generated random seed, and the contests that drive the audit process. The Secretary of State can also identify, at any time, contests that should go to a full hand count. Counties upload verified ballot manifests and cast vote record (CVR) files. The RLA Tool performs the necessary calculations to run the RLA, such as choosing random samples of ballots for audit and determining actual risk levels. County Audit Boards then enter interpretations of ballots into the Tool. While audits are ongoing, the Secretary of State can monitor the progress of the individual Counties.</p>
+<p>The RLA Tool also creates export files for use in the Audit Center, a website required by Rule 25 to disseminate audit-related information to the public.</p>
+<h3 id="logging-in">Logging In</h3>
+<p>Persons from the Secretary of State's office as well as persons from the County first must log in to the RLA Tool.</p>
+<figure>
+<img src="./screenshots/StateLogin.png" alt="State Login Screenshot" /><figcaption>State Login Screenshot</figcaption>
+</figure>
+<p>The RLA Tool will direct each user to the appropriate home page. A user from the Department of State will see the (initially empty) Department of State home page.</p>
+<figure>
+<img src="./screenshots/StateDashboardEmpty.png" alt="Secretary of State Home Screenshot" /><figcaption>Secretary of State Home Screenshot</figcaption>
+</figure>
+<p>A County user will see a home page tailored to that County.</p>
+<figure>
+<img src="./screenshots/CountyHome.png" alt="County Home Screenshot" /><figcaption>County Home Screenshot</figcaption>
+</figure>
+<h3 id="navigation">Navigation</h3>
+<p>Both the Secretary of State site and each County site has a navigation menu in the upper left corner.</p>
+<figure>
+<img src="./screenshots/SoSNav.png" alt="Secretary of State Navigation Screenshot" /><figcaption>Secretary of State Navigation Screenshot</figcaption>
+</figure>
+<figure>
+<img src="./screenshots/CountyNav.png" alt="County Navigation Screenshot" /><figcaption>County Navigation Screenshot</figcaption>
+</figure>
+<h3 id="a-entering-the-risk-limit">25.2.2 (A), Entering the Risk Limit</h3>
+<p>The Secretary of State will enter the Risk Limit for comparison audits.</p>
+<figure>
+<img src="./screenshots/RiskLimitEntry.png" alt="State Risk Limit Entry Screenshot" /><figcaption>State Risk Limit Entry Screenshot</figcaption>
+</figure>
+<h3 id="b---e">25.2.2 (B) - (E)</h3>
+<p>These parts of Rule 25 must be completed outside of the RLA Tool.</p>
+<h3 id="f-or-g-audit-uploads">25.2.2 (F) or (G), <a name="comparison-audit-upload">Audit Uploads</a></h3>
+<p>To prepare for upload, the ballot manifest and the CVR file must be first verified and hashed using any SHA-256 hash utility. The RLA Tool itself does not provide a utility for verification or hashing.</p>
+<p>Once the ballot manifest and CVR files are verified and hashed, they can be uploaded into the RLA Tool. If the upload process is interrupted the process will have to be repeated. It is not possible to resume interrupted uploads.</p>
+<figure>
+<img src="./screenshots/CountyBallotManifestUpload.png" alt="Audit Upload Screenshot" /><figcaption>Audit Upload Screenshot</figcaption>
+</figure>
+<p>After successfully uploading both the Ballot Manifest and the CVR files, the County Dashboard shows the current audit status, including all contests on all CVRs.</p>
+<figure>
+<img src="./screenshots/CountyInfoAfterUploadsSuccessful.png" alt="All County Files Successfully Uploaded" /><figcaption>All County Files Successfully Uploaded</figcaption>
+</figure>
+<p>The upload of RLA Tabulation Results Export to the State's Election Night Reporting System required by 25.2.2 (F)(3) must be completed outside of the RLA Tool.</p>
+<h3 id="h-entering-the-random-seed">25.2.2 (H), Entering the Random Seed</h3>
+<p>The Secretary of State will enter the random seed.</p>
+<figure>
+<img src="./screenshots/RandomSeedEntry.png" alt="State Random Seed Entry Screenshot" /><figcaption>State Random Seed Entry Screenshot</figcaption>
+</figure>
+<p>The RLA Tool uses the random seed in the required pseudo-random number generator. The RLA Tool also exports the random seed in a standard format, which the Secretary of State can post to the Audit Center hosted on the Secretary of State website. <em>(Ed. note: This feature is not included in the stage-1 deliverable.)</em> <!-- comment: is this implemented? --></p>
+<h3 id="i-selecting-contests">25.2.2 (I) Selecting Contests</h3>
+<p>The Secretary of State will select the contests that will drive the sample size and stop/go decisions for each round. Note that while Rule 25 calls these &quot;contests to be audited&quot;, the RLA Tool effectively audits all contests, while using the contests selected by the Secretary of State to calculate the risk levels. <em>(Ed. note: The notion of &quot;rounds&quot; is still under discussion and not included in the stage-1 deliverable.)</em></p>
+<figure>
+<img src="./screenshots/ContestSelection.png" alt="State Contest Selection Screenshot" /><figcaption>State Contest Selection Screenshot</figcaption>
+</figure>
+<h3 id="j-number-of-ballot-cards-to-audit">25.2.2 (J) Number of Ballot Cards to Audit</h3>
+<p>The number of ballot cards to audit changes during the course of the audit depending on the risk level, which in turn depends on the number of overstatements (i.e., ballots whose correction by the Audit Board decreases a margin of victory in one of the selected contests) so far.</p>
+<!-- ![Number to Audit View](./screenshots/NumberToAudit.png) -->
+<h3 id="k-random-selection-of-ballot-cards-for-audit">25.2.2 (K) Random Selection of Ballot Cards for Audit</h3>
+<p>Based on the pseudo-random number generator and random seed from 25.2.2 (H) and the current risk levels, the RLA Tool determines the selection of ballot cards for audit.</p>
+<!-- ![Ballots to Audit View](./screenshots/BallotsToAudit.png) -->
+<h3 id="a-ballot-retrieval-chain-of-custody-and-examination">25.2.3 (A) Ballot Retrieval, Chain of Custody and Examination</h3>
+<p>Ballot retrieval from storage container and verification of seals relative to the chain-of-custody logs must be done outside the RLA Tool.</p>
+<h4 id="a1-comparison-audits">25.2.3 (A)(1) Comparison Audits</h4>
+<p>The Audit Board does not log directly into the RLA Tool with usernames and passwords. However, whenever the Audit Board begins to interact with the RLA Tool, either at the beginning of an audit round or after taking a break, there is an informal sign-in process. After the authenticated County Audit Administrator formally logs in, there is a screen where the identity and party affiliation of Audit Board Members can be entered or changed.</p>
+<figure>
+<img src="./screenshots/AuditBoardSignin.png" alt="Audit Board Signin Screenshot" /><figcaption>Audit Board Signin Screenshot</figcaption>
+</figure>
+<p>The RLA Tool allows Audit Boards to report the markings on each individual ballot.</p>
+<p>Before recording voter intent, please double-check that the paper ballot ID and Ballot Style match the ID and ballot style listed on the screen. Then record on the screen all final voter intent marked on the paper ballot. In case of an overvote, mark each of the (too many or too few) choices the voter intended; the RLA tool will recognize overvotes and undervotes. In case the Audit Board cannot reach consensus, mark the &quot;No Consensus&quot; box on the screen. Audit Board members can make notes in the comment field. <!-- Review CDOS --></p>
+<p>Click &quot;Review&quot;<img src="./screenshots/ReportMarks.png" alt="Report Marks Screenshot" /></p>
+<p>After entering the interpretation of the markings from any one ballot, the Audit Board can review what was entered.</p>
+<figure>
+<img src="./screenshots/ReviewMarks.png" alt="Review Marks Screenshot" /><figcaption>Review Marks Screenshot</figcaption>
+</figure>
+<p>Check that the information on the review screen reflects the Audit Board's interpretation of the ballot. Note that in case of an overvote, the review screen will say, simply, &quot;overvote&quot;.</p>
+<p>If the review screen matches the Audit Board's interpretation, click &quot;Submit and Next Ballot&quot;. This submission is final. There is no way to revise a ballot interpretation once it has been submitted from the Review Screen.</p>
+<p>Note: do <em>not</em> use your browser's &quot;back&quot; arrow during the audit process. If the review screen does not match the Audit Board's interpretation, click the &quot;Back&quot; button. <em>(Ed. note: We intend to ensure that pressing the brower's back button is not harmful in a later delivery.)</em></p>
+<h3 id="a2-ballot-polling-audits">25.2.3 (A)(2) Ballot Polling Audits</h3>
+<p>The conduct and reporting of the Audit Board for a Ballot Polling Audit must be completed outside the RLA Tool.</p>
+<h3 id="b-non-unanimous-audit-board">25.2.3 (B) Non-Unanimous Audit Board</h3>
+<p>An Audit Board can use the RLA Tool to report lack of consensus on any particular contest on any particular ballot.</p>
+<figure>
+<img src="./screenshots/NoConsensus.png" alt="No Consensus Screenshot" /><figcaption>No Consensus Screenshot</figcaption>
+</figure>
+<h3 id="c-comparisons-termination-additional-ballots">25.2.3 (C) Comparisons, Termination, Additional Ballots</h3>
+<p>The RLA Tool performs the comparison of the Audit Board's interpretations with the corresponding cast vote record from the voting computer system. The results of this comparison are exported for the Secretary of State to post on the Audit (outside the RLA Tool). The RLA Tool will allow the Secretary of State to see if the required Risk Limit has been met for the selected contests. <em>(Ed. note: This UI does not yet update in the phase-1 deliverable.)</em></p>
+<figure>
+<img src="./screenshots/LimitMetQuery.png" alt="Risk Limit Met Query Screen" /><figcaption>Risk Limit Met Query Screen</figcaption>
+</figure>
+<p>The RLA Tool also allows the Secretary of State to designate a contest for hand counting at any time. <em>(Ed. note: Handling this asynchronous notification is not supported in the stage-1 deliverable.)</em></p>
+<figure>
+<img src="./screenshots/FullHandCount.png" alt="Full Hand Count Screen" /><figcaption>Full Hand Count Screen</figcaption>
+</figure>
+<p>The RLA Tool automatically randomly selects additional ballots for audit as necessary.</p>
+<h1 id="colorado-risk-limiting-audit-1">Colorado Risk Limiting Audit</h1>
+<h1 id="user-manual">User Manual</h1>
+<p>This User Manual provides an overview of the components that comprise the Colorado Department of State’s (CDOS) Risk Limiting Audit Tool (RLA Tool). It contains annotated screenshots with detailed descriptions of what is contained on every page users will experience. It also contains a glossary of relevant terms. This RLA Tool represents the cutting edge in efforts to provide verifiable evidence that election results are accurate, and November 2017 is the first time any state or jurisdiction has implemented them on a wide scale basis.</p>
+<h2 id="basic-structure-of-risk-limiting-audits">Basic Structure of Risk Limiting Audits</h2>
+<p>Once the Secretary of State uses the RLA Tool to establish a risk limit and selects contests to guide the audit, counties will then use the RLA Tool to upload ballot manifests, cast vote records (CVRs), and summary results to a central server. The RLA Tool will use this data to determine the ballot cards to be checked for each contest based on the risk limit and the margins of victory in the selected contests. The RLA Tool will report this information to each county, where the Audit Board, consisting of representatives of different political parties, will physically retrieve the appropriate ballots and record their interpretations of voter intent in the RLA Tool. Randomly selected ballots will be presented to County Audit Boards until either the risk limit is satisfied or the Secretary of State indicates that a full hand count is required. Complete audit results and artifacts allowing the public to check, independently, that the audit was carried out correctly are exported from the RLA Tool for import to a Public Audit Center hosted on the official CDOS website. <em>(Ed note: Report export is not included in the stage-1 deliverable, as we need clarity on the exact contents of said report.)</em></p>
+<h2 id="dashboards">Dashboards</h2>
+<p>The RLA Tool facilitates running a risk limiting audit across all counties in Colorado simultaneously. The RLA Tool has a dashboard for the statewide election adminstrators who work for the Secretary of State. Each of the 64 Counties has a customized dashboard. All of these dashboards require authentication to login.</p>
+<h3 id="logging-in-1">Logging In</h3>
+<p>On this page authorized users from the Secretary of State's office, as well as persons from the County, can enter their login credentials to access the RLA Tool’s Dashboards. <em>(Ed. note: Two-factor authentication to CDOS's authentication servers will be included in a later release.)</em></p>
+<figure>
+<img src="./screenshots/StateLogin.png" alt="State Login Screenshot" /><figcaption>State Login Screenshot</figcaption>
+</figure>
+<hr />
+<p>Once logged in, users from the Department of State will see the (initially empty) Department of State home page.</p>
+<figure>
+<img src="./screenshots/StateDashboardEmpty.png" alt="Secretary of State Home Screenshot" /><figcaption>Secretary of State Home Screenshot</figcaption>
+</figure>
+<hr />
+<p>Logged in County users will see a home page tailored to that County.</p>
+<figure>
+<img src="./screenshots/CountyHome.png" alt="County Home Screenshot" /><figcaption>County Home Screenshot</figcaption>
+</figure>
+<hr />
+<h3 id="navigation-1">Navigation</h3>
+<p>Both the Secretary of State site and each County site has a navigation menu in the upper left corner.</p>
+<figure>
+<img src="./screenshots/SoSNav.png" alt="Secretary of State Navigation Screenshot" /><figcaption>Secretary of State Navigation Screenshot</figcaption>
+</figure>
+<hr />
+<figure>
+<img src="./screenshots/CountyNav.png" alt="County Navigation Screenshot" /><figcaption>County Navigation Screenshot</figcaption>
+</figure>
+<hr />
+<h3 id="entering-the-risk-limit">Entering the Risk Limit</h3>
+<p>On this page the Sectretary of State will enter the Risk Limit for comparison audits.</p>
+<figure>
+<img src="./screenshots/RiskLimitEntry.png" alt="State Risk Limit Entry Screenshot" /><figcaption>State Risk Limit Entry Screenshot</figcaption>
+</figure>
+<hr />
+<h3 id="county-home-page">County Home Page</h3>
+<p>On this page county officials can upload their hashed Ballot Manifest and CVR files.</p>
+<figure>
+<img src="./screenshots/CountyBallotManifestUpload.png" alt="Audit Upload Screenshot" /><figcaption>Audit Upload Screenshot</figcaption>
+</figure>
+<hr />
+<h3 id="entering-the-random-seed">Entering the Random Seed</h3>
+<p>This page allows the Secretary of State Once to enter the random seed, which is a 20 digit number chosen during a public ceremony. Once entered, this will trigger the random selection of which ballots to audit, which will be listed on the following page, and will be published to the County and Public Dashboards.</p>
+<figure>
+<img src="./screenshots/RandomSeedEntry.png" alt="State Random Seed Entry Screenshot" /><figcaption>State Random Seed Entry Screenshot</figcaption>
+</figure>
+<hr />
+<h3 id="audit-ongoing-page">Audit Ongoing Page</h3>
+<p>This page provides an overview of the audit in progress, updated in real time. It shows County level and Contest level details, and will indicate when: 1) the audit is complete, 2) another round of ballots must be counted, and 3) if a Full Hand Count is required. <em>(Ed. note: The notion of rounds is still under discussion and not included in the stage-1 release.)</em></p>
+<figure>
+<img src="./screenshots/AuditOngoing.png" alt="Audit Ongoing Screenshot" /><figcaption>Audit Ongoing Screenshot</figcaption>
+</figure>
+<h3 id="selecting-contests">Selecting Contests</h3>
+<p>This page allows the Secretary of State to select which statewide contest, and which countywide contests to audit. This information will be published to the County Dashboard when the selections have been made. On this same page the Secretary of State may select contests for full hand counts.</p>
+<figure>
+<img src="./screenshots/ContestSelection.png" alt="State Contest Selection Screenshot" /><figcaption>State Contest Selection Screenshot</figcaption>
+</figure>
+<hr />
+<h3 id="audit-board-sign-in">Audit Board Sign In</h3>
+<p>On this page authorized Audit Board members can sign into the system to conduct the audit.</p>
+<figure>
+<img src="./screenshots/AuditBoardSignin.png" alt="Audit Board Signin Screenshot" /><figcaption>Audit Board Signin Screenshot</figcaption>
+</figure>
+<hr />
+<h3 id="audit-board-interpretation-page">Audit Board Interpretation Page</h3>
+<p>The RLA Tool allows Audit Boards to report the markings on each individual ballot.</p>
+<p>This page allows Audit Board members to enter their collective interpretation of choices marked on the ballot. Once they have entered their interpretations, Audit Board members click the &quot;Review&quot; button to be taken to the Audit Board Interpretation Review Screen.</p>
+<p>Click &quot;Review&quot;<img src="./screenshots/ReportMarks.png" alt="Report Marks Screenshot" /></p>
+<hr />
+<h3 id="audit-board-interpretation-review-page">Audit Board Interpretation Review Page</h3>
+<p>This page allows Audit Board members to review their choices, and then press &quot;Submit and Next Ballot&quot; when ready to proceed to the next ballot. This process continues until all of the ballots are entered. This submission is final. There is no way to revise a ballot interpretation once it has been submitted from the Review Screen.</p>
+<p>Note: do <em>not</em> use your browser's &quot;back&quot; arrow during the audit process. If the review screen does not match the Audit Board's interpretation, click the &quot;Back&quot; button on the user interface. <em>(Ed. note: We intend to ensure that pressing the brower's back button is not harmful in a later delivery.)</em></p>
+<figure>
+<img src="./screenshots/ReviewMarks.png" alt="Review Marks Screenshot" /><figcaption>Review Marks Screenshot</figcaption>
+</figure>
+
+<h1 id="developer-instructions">Developer Instructions</h1>
+<p>This document is for developers interested in contributing to this project. It describes the technologies used, the modules and libraries on which we depend, and how to build the system. It also covers how to perform quality assurance, validation, verification, and deployment of the system.</p>
+<p>Determining if the system is correct includes both checking behavioral properties and non-behavioral properties. Behavioral properties are all about correctness and boil down to decidable (<em>yes or no</em>) questions about the system. Non-behavioral properties are measurable---such as how many resources the system uses, how reliable it is, or whether it is secure---and checking them entails ensuring that measures are as we specify. More specifically, we cover system performance and reliability.</p>
+<p>Finally, the document closes with a link to our project dashboard.</p>
+<h2 id="history">History</h2>
+<ul>
+<li>Outline and first draft, 5 July 2017 by Joe Kiniry.</li>
+<li>Second draft that is mostly textually complete, 6 July 2017 by Joe Kiniry.</li>
+<li>Third draft with updates for phase-1 delivery, 17 August 2017 by Joe Kiniry.</li>
+</ul>
+<h2 id="platform-and-programming-languages">Platform and Programming Languages</h2>
+<p>To fulfill Colorado’s requirements, we use a modular system design and standard, well-understood web application technologies.</p>
+<p>We are using a Java-based web application running on a Linux server, hosted in the CDOS data center. Deployment is targeted for a JVM version that supports Java 8.</p>
+<p>The choice of deployment on JVM is made due to IT constraints on the part of CDOS. (See page 11, &quot;Hosting Environment&quot;, of the DQ.) While we could have developed on .Net, and there are very good tools for rigorous engineering on such (which we have used in, e.g., our electronic poll book demonstrator), there are still significant challenges in multi-platform development and deployment. We would rather have a straightforward cross-platform system development and deployment story, thus we use Java 8 on the server-side.</p>
+<p>We are using <a href="https://www.postgresql.org/">PostgreSQL</a>, via the <a href="http://hibernate.org/orm/">Hibernate ORM</a>, for data persistence.</p>
+<p>The user interface (UI) is browser-based. The client is written in TypeScript, a mainstream, Microsoft-supported variant of JavaScript that offers opt-in, Java-like type safety. TypeScript compiles to plain, human-readable JavaScript, so this choice supports client-side correctness without requiring any special web browser support.</p>
+<h2 id="developer-tools">Developer Tools</h2>
+<p>We are using many of the following tools. Developers need not download and install this long list of technologies. We have provided developers with a pre-configured <a href="https://eclipse.org/">Eclipse</a> install, a bootstrapping Eclipse workspace, and a VM image which can be loaded into VirtualBox or other comparable virtualization platform. We provide these resources in order to both decrease new developers' ramp-up time as well as to standardize on specific versions of tools for development.</p>
+<p>Instructions for installing Eclipse and the plugins we use are at <a href="../server/README-ECLIPSE.md">README-ECLIPSE.md</a>.</p>
+<ul>
+<li><a href="https://github.com/FreeAndFair/ColoradoRLA">GitHub</a> for distributed version control, issue tracking, and development documentation</li>
+<li>the <a href="http://pvs.csl.sri.com/">PVS specification and verification system</a> or the <a href="http://alloy.mit.edu/alloy/">Alloy tool</a> for specifying and reasoning about formal domain models and automatically synthesizing system tests</li>
+<li>the <a href="https://saw.galois.com/">Software Analysis Workbench (SAW)</a> for formal verification of intermediate representations and reasoning</li>
+<li>the <a href="http://checkstyle.sourceforge.net/">CheckStyle</a> lightweight static checkers for ensuring code standard conformance,</li>
+<li>the <a href="http://findbugs.sourceforge.net/">FindBugs</a> lightweight static checker for code quality evaluation,</li>
+<li>the <a href="https://pmd.github.io/">PMD</a> lightweight static checker for code quality evaluation,</li>
+<li>the <a href="http://jmlspecs.org/">Java Modeling Language (JML)</a> for formally specifying the behavior of our Java implementation</li>
+<li>the <a href="http://www.openjml.org/">OpenJML tools suite</a> for performing runtime verification, extended static checking, and full functional verification of Java implementations against JML specifications</li>
+<li>the <a href="http://insttech.secretninjaformalmethods.org/software/jmlunitng/">JMLunitNG</a> tool for automatically generating test benches from JML-annotated Java code</li>
+<li>the <a href="https://coq.inria.fr/">Coq proof assistant</a> for formally specifying and reasoning about various formal models of the system and elections in general</li>
+<li>(optionally) the <a href="https://www.key-project.org/">KeY tool</a> for performing full functional verification and test case generation of implementations with JML formal specifications</li>
+<li>(optionally) the <a href="https://cryptol.net/">Cryptol tool</a> for specifying and reasoning about cryptographic algorithms</li>
+<li>(optionally) the <a href="https://www.fstar-lang.org/">F* tool</a> and <a href="https://tamarin-prover.github.io/">Tamarin prover</a> for specifying and reasoning about cryptographic protocols</li>
+<li>the <a href="https://gcc.gnu.org/">Gnu Compiler Collection (gcc)</a>, the <a href="https://clang.llvm.org/">clang compiler</a>, and (optionally) the <a href="http://compcert.inria.fr/">CompCert compiler</a> for compiling C code</li>
+<li>various automated theorem provers such as <a href="https://github.com/Z3Prover/z3">Z3</a>, the <a href="https://leanprover.github.io/">Lean theorem prover</a>, <a href="http://cvc4.cs.stanford.edu/web/">CVC4</a>, <a href="http://yices.csl.sri.com/">Yices</a>, and <a href="https://people.eecs.berkeley.edu/~alanmi/abc/abc.htm">ABC</a> for automatically reasoning about formal models * <a href="https://www.gnu.org/software/emacs/">Emacs</a>, <a href="https://eclipse.org/">Eclipse</a>, <a href="https://www.jetbrains.com/idea/">IntelliJ IDEA</a>, and <a href="https://www.jetbrains.com/products.html?fromMenu">other JetBrains technologies</a> for Integrated Development Environments,</li>
+<li>(optionally) the <a href="http://czt.sourceforge.net/">Community Z Tools (CZT)</a> supporting the Z formal method, the <a href="http://www.event-b.org/install.html">Rodin platform</a> supporting the <a href="http://www.event-b.org/">Event-B formal method</a>, the <a href="http://overturetool.org/">Overture tool</a> supporting the <a href="http://overturetool.org/method/">VDM formal method</a>, and the <a href="http://spd-web.terma.com/Projects/RAISE/">RAISE tool</a> supporting the RAISE specification language (RSL) for specifying and reasoning about formal models of systems</li>
+<li>the <a href="http://openjdk.java.net/">OpenJDK</a> Java developers kit</li>
+<li><a href="http://insttech.secretninjaformalmethods.org/software/jmlunitng/">JMLUnitNG</a> for automatic test code generation</li>
+<li>standard test coverage tools such as <a href="https://yp-engineering.github.io/jcov/">JCov</a> and <a href="http://cobertura.github.io/cobertura/">Cobertura</a></li>
+<li>(optionally) <a href="http://javapathfinder.sourceforge.net/">Java PathFinder (JPF)</a> and similar model checkers for reasoning about safety properties of implementations</li>
+<li><a href="https://www.omnigroup.com/omnigraffle">OmniGraffle</a> for drawing diagrams</li>
+<li>various <a href="https://github.com/FreeAndFair/BON">BON-related tools</a>, including the <a href="http://kindsoftware.com/products/opensource/BONc/">BONc</a> and <a href="https://github.com/FreeAndFair/BON/tree/master/FAFESSL/BON">FAFESSL</a> tool suites, which are based upon the <a href="http://www.bon-method.com/">BON method</a>, for system specification</li>
+<li>the <a href="https://github.com/FreeAndFair/Beetlz/">Beetlz tool</a> for refinement checking of BON specifications against JML-annotated Java implementations</li>
+<li>(optionally) <a href="http://prosecco.gforge.inria.fr/personal/bblanche/proverif/">ProVerif</a>, <a href="http://www.uppaal.org/">UPPAAL</a>, and the <a href="http://lamport.azurewebsites.net/tla/tools.html">TLA+ tools</a> for distributed algorithm specification and reasoning</li>
+<li>the <a href="https://www.typescriptlang.org/">TypeScript</a> language for front-end development, using the <a href="https://facebook.github.io/react/">React</a> UI framework</li>
+<li><em>TBD Daikon</em></li>
+<li><em>TBD AutoGrader</em></li>
+<li>and <a href="https://travis-ci.org/">Travis CI</a> for continuous integration</li>
+</ul>
+<h2 id="dependencies">Dependencies</h2>
+<p><em>TBD: A concrete list of dependencies, preferably at the module/library level, complete with versioning information. Note that we prefer that this dependency list is automatically generated and kept up-to-date by the build system.</em></p>
+<h3 id="spark">Spark</h3>
+<p><em>TBD: Describe <a href="http://sparkjava.com/">Spark</a> and its use.</em></p>
+<h3 id="data-persistence">Data Persistence</h3>
+<p>In order to use the Postgres database in development, one must:</p>
+<ol type="1">
+<li>Install PostgreSQL (brew install postgres, apt-get install postgres, or whatever is appropriate) and start it running.</li>
+<li>Create a database called &quot;corla&quot;, and grant all privileges on it to a user called &quot;corla&quot; with password &quot;corla&quot;.</li>
+<li><p>Initialize the &quot;corla&quot; database with test administrator data. For example, to accomplish the above on OS X using brew, one issues the following commands:</p>
+<pre><code>brew install postgres
+createuser -P corla
+createdb -O corla corla</code></pre></li>
+<li>Run the server (to create all the database tables).</li>
+<li><p>Load test authentication credentials into the database, by executing the SQL in <code>corla-test-credentials.sql</code> (found in the <code>test</code> directory of the repository). This can be done with the following command on OS X:</p>
+<pre><code>psql -U corla -d corla -a -f corla-test-credentials.psql</code></pre></li>
+</ol>
+<p>That's it. If the database is there the server will use it and will, at this stage, create all its tables and such automatically.</p>
+<p>If you need to delete the database---perhaps because due to a recent merge the DB schema has evolved---use the <code>dropdb corla</code> command and then recreate the DB.</p>
+<p>There are helpful scripts for automating these actions located in the <code>server/eclipse_project/script</code> directory.</p>
+<p><em>TBD: Describe the <a href="http://hibernate.org/orm/">Hibernate ORM</a> and its use.</em></p>
+<h3 id="communication-formats">Communication Formats</h3>
+<p><em>TBD: Describe the <a href="https://github.com/google/gson">Google GSon library and tools</a>.</em></p>
+<h2 id="code-review-and-source-management">Code Review and Source Management</h2>
+<p>We use the Git SCM for version control, with GitHub for hosting and code review. The development worfklow is as follows:</p>
+<ol type="1">
+<li>Locally, pull the latest changes on the <code>master</code> branch of the upstream repo, hosted on GitHub.</li>
+<li>Check out a new topic branch based on the above changes.</li>
+<li>Commit changes to your local branch.</li>
+<li>For the sake of visibility, you may open a work-in-progress Pull Request from your branch to <code>master</code>. If you do, add the <code>wip</code> label.</li>
+<li>When you are ready to merge to <code>master</code>, make sure your branch has been pushed to the remote repository and open a Pull Request (if you haven't already). Remove any <code>wip</code> label and add the <code>review</code> label.</li>
+<li>If appropriate, use the GitHub &quot;Reviewers&quot; dropdown to formally request a review from a specific person. Either way, paste a link to the PR in Slack to alert others who may wish to review it.</li>
+<li>At least one other person must review any changes to the <code>master</code> branch and approve it via the GitHub PR interface comments. A <em>reviewer</em> should check that all new commits are signed, and all necessary comments are addressed.</li>
+<li>Before it can be merged, you will generally have to <code>rebase</code> your branch on to the <code>master</code> branch in order to preserve a clean commit history. You can do this with commands in your branch: <code>git fetch</code>, then <code>git rebase origin/master</code> (addressing any merge conflicts if necessary), and finally <code>git push --force-with-lease origin &lt;yourbranch&gt;</code>.</li>
+<li>Note that <em>force-pushes can be dangerous</em>, so make sure that you know that no one else has pushed changes to the branch which aren't in the history of your branch. If others on the team are pulling and testing it locally, they will need fix up their local branches with <code>git checkout &lt;yourbranch&gt;</code>, <code>git fetch</code>, and <code>git reset --hard origin/&lt;yourbranch&gt;</code>. For more details, see <a href="http://willi.am/blog/2014/08/12/the-dark-side-of-the-force-push/">The Dark Side of the Force Push - Will Anderson</a> and <a href="https://developer.atlassian.com/blog/2015/04/force-with-lease/">--force considered harmful; understanding git's --force-with-lease - Atlassian Developers</a></li>
+<li>Finally, a <em>reviewer</em> with merge permissions can merge the PR using the GitHub &quot;Merge pull request&quot; button. This will introduce an <em>unsigned</em> merge commit, but preserve the signatures on the actual branch's commits. Finally, the PR submitter, not the reviewer, should delete the merged branch.</li>
+</ol>
+<p><strong>Guidelines:</strong></p>
+<ul>
+<li>Do not commit directly to <code>master</code>.</li>
+<li>To support bisecting, do not merge WIP commits that break the build. On topic branches, squash commits as needed before merging.</li>
+<li>Write short, useful commit messages with a consistent style. Follow these <a href="https://chris.beams.io/posts/git-commit/#seven-rules">seven rules</a>, with the amendment that on this project, we have adopted the convention of ending the subject line with a period.</li>
+<li>Keep your topic branches small to facilitate review.</li>
+<li>Before merging someone else's PR, make sure other reviewers' comments are resolved, and that the PR author considers the PR ready to merge.</li>
+<li>For security-sensitive code, ensure your changes have received an in-depth review, preferably from multiple reviewers.</li>
+<li>Configure Git so that your commits are <a href="https://git-scm.com/book/en/v2/Git-Tools-Signing-Your-Work">signed</a>.</li>
+<li>Whenever possible, use automation to avoid committing errors or noise (e.g. extraneous whitespace). Use linters, automatic code formatters, test runners, and other static analysis tools. Configure your editor to use them, and when feasible, integrate them into the upstream continuous integration checks.</li>
+<li>WARNING: sub-projects (e.g. the client, server) should <em>not</em> directly depend on files outside of their directory tree. Our CI is configured to run checks only for projects that have had some file changed. If you must depend on out-of-tree files, update <a href="../.travis.yml"><code>.travis.yml</code></a> to avoid false positives.</li>
+</ul>
+<h2 id="building">Building</h2>
+<p><em>TBD discussion of which build systems we use and why.</em></p>
+<p>We provide both an integrated Eclipse-based build system and a traditional Make-based build system. The former permits us to support a rich and interactive design, development, validation, and verification experience in an IDE. The latter facilitates cross-platform, IDE-independent builds and continuous integration with Travis CI.</p>
+<p>The Eclipse-based build system is built into our Eclipse IDE image and our workspace, as specified in <code>server/eclipse.setup</code>.</p>
+<p>The Make-based system is rooted in our top-level <a href="../Makefile">Makefile</a>. That build system not only compiles the RLA tool, but also generates documentation, analyzes the system for quality and correctness, and more.</p>
+<p>But the Make-based system is not implemented yet, and the server and client are not integrated yet. In the meantime, you can build the client via:</p>
+<pre><code>cd client
+script/dist</code></pre>
+<p>Run it via:</p>
+<pre><code>cd dist
+python3 -m http.server</code></pre>
+<p>For the server, package it by running <code>mvn package</code> in the <code>server/eclipse-project</code> directory. This will create <code>colorado_rla-0.0.1-shaded.jar</code> (potentially with a more recent version number) in the <code>target</code> directory.</p>
+<p>Run it via:</p>
+<pre><code>java -jar target/colorado_rla-0.7.0-shaded.jar</code></pre>
+<p>You can test it by opening this simple html page in a browser: <a href="../test/corla-server-test.html"><code>test/corla-server-test.html</code></a></p>
+<h2 id="quality-assurance">Quality Assurance</h2>
+<p><em>TBD discussion of the various facets of quality and how these ideas are concretized into metrics and measures that are automatically assessed and reported upon, both within the IDE and during continuous V&amp;V.</em></p>
+<p>We measure quality of systems by using a variety of <em>dynamic</em> and <em>static</em> techniques.</p>
+<p>Dynamic analysis means that we run the system and observe it, measuring various properties of the system and checking to see if those measures are in the range that we expect. We say &quot;range&quot; because many measures have a sweet spot---a good value is not too high and not too low. Running the system means that we either execute the system in a normal environment (e.g., a Java virtual machine) or we execute a model of the system in a test environment (e.g., an instrumented executable or a debugger).</p>
+<p>Static analysis entails examining a system <em>without</em> executing it. Static analysis that only examines a system's <em>syntactic</em> structure is what we call lightweight static analysis. For example, the source code's style and shape is syntactic. Static analysis that examines a system's <em>semantic</em> structure is what we call heavyweight static analysis. For example, theorem proving with extended static checking is heavyweight static analysis.</p>
+<p>Each kind of static analysis results in a <em>measure</em> of a <em>property</em>. Decidable properties are either <em>true</em> or <em>false</em>, thus a good measure for a property is simply &quot;yes&quot; or &quot;no&quot;. Other static analyses have more interesting measures, such as grades (&quot;A&quot; through &quot;F&quot;) or a number.</p>
+<p>In order to automatically measure the quality of a system, we define the set of properties that we wish to measure and the what the optimal ranges are for the measure of each property. We automate this evaluation, both in the IDE and in continuous integration. The current status of our continuous integration checks is displayed via a dynamic status image on our <a href="../README.md">repository's home page</a>.</p>
+<p>Also, we have a tool called the AutoGrader that automatically combines the output of multiple analyses and &quot;grades&quot; the system, and consequently its developers. By consistently seeing automated feedback from a set of tuned static analysis tools, developers quickly learn the development practices of a team and a project and also often learn more about rigorous software engineering in general.</p>
+<h2 id="validation-and-verification">Validation and Verification</h2>
+<p><em>TBD high level discussion here about how the goals and technologies discussed in the V&amp;V document are realized.</em></p>
+<p>Determining whether the system you are creating is the system that a client wants is called <em>validation</em>. <em>Testing</em> is one means by which to perform validation. Mathematically proving that a system performs exactly as specified under an explicitly stated set of assumptions is called <em>verification</em>.</p>
+<p>Some of the quality assurance tools and techniques discussed above are a part of validation and verification.</p>
+<p>The <a href="40_v_and_v.md">Validation and Verification</a> document focuses on this topic in great detail.</p>
+<h2 id="deployment">Deployment</h2>
+<p>Free &amp; Fair develops open source software systems in full public view. Therefore, all artifacts associated with a given project or product are immediately available to all stakeholders, at any time, via a web-based collaborative development environment, such as our <a href="https://github.com/FreeAndFair">GitHub organization</a>. This means that various versions of the same system (e.g., builds for various platforms, experimental branches in which new features are being explored, etc.) are immediately available to anyone who browses the project website and clicks on the right download link, or clones the repository and builds it for themselves.</p>
+<p>Delivery of production systems to a client or stakeholder is accomplished by providing the modern equivalent of &quot;golden master disks&quot; of yesteryear. The nature of these deliveries differs according to decisions made during contracting and development, in tandem with the client.</p>
+<p>For example, if the deployment platform is a flavor of Linux, one of the standard software packaging systems such as RPM or dpkg is used to deliver products. If the deployment system is Microsoft Windows or Apple OS X, the standard open source packaging software is used to deploy production systems.</p>
+<h2 id="system-performance">System Performance</h2>
+<p><em>TBD discussion of automated performance testing</em></p>
+<h2 id="system-reliability">System Reliability</h2>
+<p><em>TBD discussion of automated deployment reliability testing</em></p>
+<p>To ensure business continuity, we are applying techniques we have been developing since the 1990s to create systems for clients requiring no more than 0.001% downtime. These techniques include practical applied formal methods (the application of mathematical techniques to the design, development, and assurance of software systems) and a peer-reviewed rigorous systems engineering methodology. Our methodology was recently recommended by a NIST internal report (IR 8151 &quot;Dramatically Reducing Software Vulnerabilities&quot;), presented to the White House Office of Science and Technology at their request in November, 2016.</p>
+<h2 id="project-dashboard">Project Dashboard</h2>
+<p>We use <a href="https://travis-ci.org/">Travis CI</a> for continuous integration. It produces new builds for every check-in and runs our test suites, as specified in our <a href="../.travis.yml"><code>.travis.yml</code></a> file and in the <a href="../ci"><code>ci</code></a> directory.</p>
+<p>Current build status for the <code>master</code> branch status is reflected in the <code>README.md</code> of our main GitHub page. Build status logs, can be found at our dashboard: <a href="https://travis-ci.org/FreeAndFair/ColoradoRLA">FreeAndFair/ColoradoRLA</a>.</p>
+<p>The raw build logs provide details on which versions of our build tools and libraries were used each step along the way.</p>
+<h2 id="bibliography">Bibliography</h2>
+<p><em>TBD add references to appropriate papers</em></p>
+
+<h1 id="project-management">Project Management</h1>
+<p>The time-to-delivery of this project is extremely short, so it is critical that we take an efficient, economical approach to building the proposed RLA software tool. We view the RLA tool specified in this DQ as a reimplementation and extension of our existing, open source RLA product demonstrator, OpenRLA. The Free &amp; Fair team has extensive pre-existing RLA software development experience and deep domain knowledge. This experience, together with a grounding in lightweight formal methods for high-assurance software engineering, will enable us to build a secure, user-friendly RLA application within the limited timeline.</p>
+<h2 id="project-management-practices">Project Management Practices</h2>
+<p>In this section we review Free &amp; Fair’s project management practices, which we have used to deliver millions of dollars worth of high assurance systems on time and under budget. Our core project management principles focus on Customer Caretaking, Social Contracts, Continuous Improvement, Artifacts and Evidence, and Transparency.</p>
+<h3 id="customer-caretaking">Customer Caretaking</h3>
+<p>For all projects we have a dedicated Free &amp; Fair team member whose role is to represent the interests of the client to others at Free &amp; Fair. They are actively engaged with the client and have a role in all project management decisions. They build a deep trust relationship with the client’s key performers. This position is a reflection of the trust relationship between us and our clients.</p>
+<h3 id="social-contracts">Social Contracts</h3>
+<p>Our systems engineering artifacts capture technical interdependencies between project team members, but the glue that holds the team together and makes the team work well is our collective social contracts. Our performers explicitly discuss and acknowledge client-supplier relationships between team members and always perform to exceed not only the expectations of our external client (in this case, the Colorado Department of State), but also each internal client (another team member).</p>
+<h3 id="continuous-improvement">Continuous Improvement</h3>
+<p>Social contracts are renegotiated frequently and fluidly and are directly reflected upon immediately upon completion. For example, at the end of a thirty minute stand-up meeting discussing a milestone that we just reached and what comes next, we often have a five minute discussion about what worked well and where improvements can be made with regards to that particular piece of work. In particular, we focus on its embedded social contracts. The individuals in our organization always attempt to maximize efficiency, impact, and joy at work.</p>
+<h3 id="artifacts-and-evidence">Artifacts and Evidence</h3>
+<p>We focus on artifacts and evidence in a project or product. &quot;Meta&quot; aspects like processes and checklists serve meaningful outcomes. This focus on the meaningful is pervasive. Principles trump rules. For example, provable security is mandatory; &quot;security theater&quot; is prohibited.</p>
+<h3 id="transparency">Transparency</h3>
+<p>Finally, whether it is with regard to our technology, business practices, or project management approach, transparency is the core principle by which we operate. Telling each other, and the client, when something is working well or working poorly, early and honestly, is common. If necessary, we will tell a client that a technical direction they are excited about is inappropriate and provide objective evidence to justify that conclusion. We always keep the client informed, whether we are ahead of the game or behind the eight ball. In all aspects, and for all projects, we believe that transparency is the keystone of our operation. Without it, our election systems cannot be trustworthy and will not be successful.</p>
+<h2 id="project-management-structure-and-responsibilities">Project Management Structure and Responsibilities</h2>
+<p>Dr. J. Kiniry holds final responsibility for the success of this project. Dr. Zimmerman and Dr. Dodds, working with Dr. J. Kiniry, will write the system specification, design and verify the client/server communication protocol and the server/server synchronization protocol, and implement the server-side and communication subsystems, including the audit computation subsystem and the datastore subsystem. Ms. Miller will work with Mr. Ranweiler and Mr. McBurnett on the UX of the system and will mock up UIs. Mr. Ranweiler is responsible for designing and implementing the client side of the system against the system specification and the UI/UX design. Mr. McBurnett will provide domain expertise in Colorado elections and ballot-level comparison risk-limiting audits, will red team system architecture, design, and implementation, and will perform Q/A on the tool, and will help write documentation. He will also coordinate with the EVN CORLA2 team to get statistical algorithm input, advice, and feedback, and will be on call during deployment for the trial runs of the tool during Logic and Accuracy testing and after the election until the audits are done. Mr. M. Kiniry will write the user guide for the system and will revise the developer’s documentation. Dr. Singer will be the customer caretaker and project lead.</p>
+
+<h1 id="development-process-and-methodology">Development Process and Methodology</h1>
+<p>We detail below our rigorous systems engineering and software engineering process and methodology. We make objective decisions about the appropriate programming languages, tools, and technologies for each project or product. Our toolbox, especially in matters related to rigorous systems engineering and applied formal methods, is broader and deeper than that of any other company in the world.</p>
+<h2 id="history-1">History</h2>
+<ul>
+<li>Outline and first draft, 5 July 2017 by Joe Kiniry.</li>
+</ul>
+<h2 id="the-free-fair-development-methodology">The Free &amp; Fair Development Methodology</h2>
+<p>The specific development methodology we use for all of our software is a variant of Design by Contract with some aspects of a Correctness by Construction approach. Our process, method, tools and technologies span several deployment and development platforms, specification and programming languages, and communication and coordination schemes. In short, we use a combination of the following methodologies:</p>
+<ul>
+<li>Correct-By-Construction</li>
+<li>Design-By-Contract</li>
+<li>Refinement-Based Process</li>
+<li>Kiniry-Zimmerman Methodology</li>
+<li>Business Object Methodology</li>
+<li>Formal Hardware/Software Co-Design</li>
+<li>Formal Methods (Alloy, CASL, Event B, RAISE, VDM, Z)</li>
+</ul>
+<p>The design specified in the RFP includes security, fault tolerance for robustness, and scalability. Our software development process emphasizes those same qualities. This type of development process has been used to develop hundreds of millions of dollars’ worth of military, aviation, biomedical and financial systems that must not fail, because human lives and billions of dollars hang in the balance. We believe that election systems are just as important, because protecting democracy protects human lives and our whole economic system.</p>
+<p>Our systems are all fault tolerant and have sufficient redundancy, both in algorithm design and physical architecture, to ensure that they can survive the simultaneous failure of multiple machines or networks.</p>
+<p>We will apply the same high-assurance techniques to ensure that this project is developed not only with generic coding best practices, but also with best practices for systems critical to homeland security and medical applications. The system will be far less prone to failure than even the best standard office software.</p>
+<p>One important coding best practice for critical systems is performing a machine-checked functional verification of the core algorithms of the software. We first design a mathematical model that is as easily understood as the English language specification. We then provide an implementation that is mathematically proven to meet the specification. This mathematical proof can be automatically checked on a computer, giving unparalleled assurance that the software is correct. These techniques have historically been used for safety-critical systems, where the failure of a system would result in loss of life (e.g., flight control systems at Airbus) or have enormous cost implications (e.g., failure of a mission to Mars).</p>
+<p>By combining these techniques, we create a chain of correctness that starts with the high-level system specification and traces down to the smallest implementation details of the most critical parts of the system. At each step in the chain we focus on providing evidence of correctness, generally in multiple forms, including refinement proofs from informal to formal specifications, unit test suites, and mathematical proofs of correctness and security. In other words, all the effort we put into ensuring that our system is correct generates tangible evidence that gives external parties (e.g. certification labs, security experts, political parties, and the American public) the same confidence in our software that we have.</p>
+<p>We strictly adhere to well-documented code standards for the various programming languages in which we develop software, and we use appropriate development and testing environments (IDEs, continuous integration systems, issue trackers) to support our development efforts. We aggressively employ techniques such as linting (automated syntactic checks to catch early programming errors), static analysis, and automated testing to provide continuous feedback on our software development practices.</p>
+<p>Our formal domain models provide a high-level view of the logical and modular design of the system, ensuring robustness and scalability. From this view, it is easy to see how the components communicate and what their interdependencies are. It is easy to detect components that are too tightly coupled, which would make future replacement or revision challenging; a loosely-coupled system allows for easy extensibility. Our domain models also make it clear what interfaces need to be satisfied by any future module replacement. This means that there is no danger of swapping out a module for a replacement that does not have all the expected functionality. Once the domain model is satisfactory, we continuously use analysis tools to guarantee that all code we write conforms to the model.</p>
+<p>We also create formal models of every data format that we use, both internally and externally. We can use these formal models to generate software that allows a variety of programming languages to communicate natively via our data formats, providing fluent interoperability.</p>
+<p>Our designs are always highly modular. Each module uses only open data formats for communication, resulting in a system that can easily integrate with third party systems and can be modified and upgraded by anyone who is familiar with the data formats. A modular architecture assists with validation and verification, allows for experimentation with user experience variants, and enables phased user acceptance testing. It can also ease customization of the system, allowing new voting methods and audit protocols to be swapped into the system as needed without requiring system-wide changes.</p>
+<p>Our development repositories contain the code under development, the full set of development artifacts described above, and unit, performance, and integrated functional test suites for each subsystem and for the system as a whole. Our test servers pull from these repositories and perform automated builds and testing whenever code is updated. In addition to standard functional tests we place a particular emphasis on performance tests, which allow us to ensure that feature changes do not impact performance.</p>
+<h2 id="example-use-of-our-methodology">Example Use of Our Methodology</h2>
+<p>Historically, this kind of system has been evaluated in an ad hoc manner based upon informal requirements documents, a repository of source code, a User’s Manual, and some examples of its use. By contrast, our rigorous system design and assurance tests are derived systematically from the client requirements.</p>
+<p>Our rigorous systems development method for the aforementioned Dutch election system produced three particularly useful artifacts: (1) a formal specification of the domain model of Dutch elections, (2) a formal architecture description, and (3) a model-based design-by-contract specification of the system.</p>
+<p>Producing item (1) revealed over one hundred errors in Dutch election law and the election system that we were asked to integrate with. Catching these errors engendered confidence that the system we created fulfilled the requirements stipulated in law.</p>
+<p>Item (2) let the team decompose the development work into three strictly separated subsystems (UI, I/O, and core data types and algorithms), implement and verify those subsystems completely apart from each other (this is called compositional verification), and plug them together at the end of the project, resulting in a system that operated correctly the very first time it was executed. This decoupling permitted the team to parallelize work, avoiding inefficiencies related to inappropriate relationships between subsystems, and let us ensure that the implementation of the system conformed to its architecture, avoiding what is known as architecture drift.</p>
+<p>Item (3) helped achieve greater assurance faster than any traditional engineering approach. In particular, our methodology enabled the team to automatically generate unit, subsystem, and integration tests from model-based specifications, saving an enormous amount of time over hand-written tests. Additionally, we provided assurance about the consistency and coverage of those tests against election law and client requirements because we were able to trace tests all the way from law to code. Finally, we used those specifications to formally verify that the implementation behaved correctly under all possible inputs. We performed this verification using an advanced static analysis technique known as extended static checking, a technology for which Dr. Kiniry and other team members are internationally recognized.</p>
+<h2 id="continuous-validation-verification-integration-and-deployment">Continuous Validation, Verification, Integration, and Deployment</h2>
+<p>Development follows a continuous validation, verification, integration, and deployment approach. Each code change is assessed automatically, as soon as it can be, to catch defects as early as possible. Continuous integration is a proven way to reduce development cost and improve productivity. In continuous deployment, code that has passed validation and verification (&quot;V&amp;V&quot;) and integration testing is promoted automatically from the main development branch to a deployment staging area that allows all project personnel to access and test the latest working code in a whole-system context.</p>
+<p>We will use the external build tool Travis CI, which is configurable and is free of charge to open source projects.</p>
+<p>Documentation and commenting is interwoven with development. Beginning with our formal domain models, we lay out the requirements and expectations of each module. We do this both formally (in a language that we can automatically check later) and in plain English. Moving forward, we translate both of these specifications into appropriate constructs (documentation comments, assertions, annotations, type specifications) in our programming language of choice. This enables the automatic generation of PDF and HTML documentation describing each piece of the software and showing relevant code snippets.</p>
+<p>We use Git for version control within GitHub and leverage commit hooks (for automatically running testing tools, static checking tools, etc. every time the codebase is changed) and issue tracking. Many of the tools we enumerate in the <a href="developer.md">Developer Instruction</a> documentation have built-in sharing and version control capabilities. We leverage those capabilities and have snapshots of design artifacts captured in our distributed version control system like any other engineering artifact.</p>
+<p>When Free &amp; Fair notices a defect, we will log the issue immediately into the issue tracking system within GitHub. If the Colorado Department of State would like direct access to GitHub to log issue, we will provide access; the Colorado Department of State may prefer to notify Free &amp; Fair by email so that Free &amp; Fair can enter the issue into the tracking system. Within a day of entry to the system, each issue will be categorized and assigned to a team member who will be responsible for driving the effort to fix the issue. Each code change that has an effect on an issue will reference that issue, so that progress towards a fix can be observed as it occurs. We will maintain a policy that an issue can be closed only once the party that raises the issue signs off that the issue has, in fact, been fixed.</p>
+<p>All development-related team communication is facilitated by an Asana project and several Slack channels that are accessible to and editable by all team members. Specific Slack channels also serve as the reporting facility for team metrics and the home of software documentation during development activities. We use metrics such as test suite success rate and defect escape rate to monitor code health, adapting our test suites and design review processes to meet goal lines for each metric.</p>
+<p>If Colorado wishes to contract us for ongoing upgrades to the system, we will use Ansible or a similar configuration management tool to ensure that environments remain consistent across machines. Note that, since configuration management exists for the convenience of the client, we are comfortable with any variety of configuration management tools (such as CFEngine, Puppet, Chef, etc., as appropriate for the given programming language and deployment platform) and will work with CDOS department to come to a suitable solution.</p>
+<p>Finally, we can also package and deliver full snapshots of development environments in virtual machine images. We typically use VirtualBox for such work.</p>
+
+<h1 id="validation-and-verification-1">Validation and Verification</h1>
+<p>Determining whether the system you are creating is the system that a client wants is called <em>validation</em>. <em>Testing</em> is one means by which to perform validation. Mathematically proving that a system performs exactly as specified under an explicitly stated set of assumptions is called <em>verification</em>.</p>
+<p>We perform both validation and verification on a regular basis, every night when nightly builds are created and on every merge of new or corrected functionality into the release branch of the development repository. This is standard development practice and minimizes problems that can occur during component integration. It is also part of our continuous integration practice. We discuss our rigorous systems engineering method in greater detail in the <a href="methodology.md">Development Process and Methodology</a> document.</p>
+<h2 id="testing-and-proving">Testing and Proving</h2>
+<p>Testing provides some degree of assurance that a system will behave according to its requirements. In mainstream software engineering, test-driven development, often couched in agile processes, is in vogue and considered a best practice. While we realize testing is important, we do not use testing in the same fashion as other R&amp;D organizations. We are different because, as discussed elsewhere at length, we use a rigorous systems engineering methodology based upon applied formal methods.</p>
+<p>Essentially, because we reason about programs and their specifications, rather than hand-writing and hand-maintaining tests that only describe a small fraction of a system’s functionality, we formally describe how a system is meant to behave and <em>prove</em> (formally, mathematically, mechanically) that the system will always behave that way under all conditions. These correctness proofs give as much assurance as testing every possible state of the system. This field of R&amp;D is known as formal verification; our team includes world leaders in this topic, who have previously been professors and professionals inventing and publishing new concepts, mathematics, tools, and techniques in this area for decades.</p>
+<p>Many properties a system should have cannot be tested; security is one of the most noteworthy of these. Certainly, one can search the system for known bad practices or &quot;gotchas&quot; (this is often viewed as &quot;security testing&quot; in mainstream software engineering), but avoiding all of the <em>known</em> mistakes one can make says nothing about all of the possible <em>unknown</em> mistakes that can introduce security failures in systems.</p>
+<p>Despite the level of assurance we can achieve through formal verification, there is still much to be learned from executing a system and examining its behavior under execution, whether in a virtual environment (e.g., virtualization) or in a physical one (across different CPUs, operating systems, etc.). Below we explain the means by which we test, and how that testing complements formal verification.</p>
+<h2 id="system-validation">System Validation</h2>
+<p>Free &amp; Fair will ensure that the delivered system meets its intended security, performance, and accuracy (correctness) requirements by applying dynamic checking (classic testing) at three levels: <em>unit testing</em>, <em>functional testing</em>, and <em>user interface (UI) testing</em>.</p>
+<p>Unit testing exercises each basic software component of the system to ensure it meets its specification. The specification is obtained as part of the refinement of the high-level system requirements through the design process. Using our tools, most of these tests will be generated automatically. Unit tests provide a low-level indication that the basic components of a system are working as intended and provide an early warning if changes cause requirements and implementation to diverge.</p>
+<p>Functional testing exercises the overall functionality of the system. A range of use scenarios is designed to cover the full requirements of the system, including even unlikely combinations of input data. Functional tests can be designed without a full implementation in hand, based on the system requirements and the input data formats; this helps to ensure that the tests accurately represent the system requirements without being influenced by implementation choices.</p>
+<p>There are two types of user interface (UI) testing: <em>usability/accessibility testing</em> and <em>UI functional testing</em>. Usability and accessibility testing will be handled by the Colorado Department of State (CDOS) for this project, in accordance with their processes for such; however, before delivering a version of the system to CDOS for testing, we will run our own set of UI functional tests to ensure that the implemented UI conforms to the design and the product requirements built into the design. UI functional testing is automated using tools that can drive the UI based on test scenarios; the testing is run regularly to be sure that no inadvertent code changes cause the implementation to diverge from the design.</p>
+<p>A part of the regular reporting during the project will be the status of test suite development and test suite success, across all of the kinds of dynamic testing described above. Since it is typically not possible to test all possible scenarios, dynamic checking only provides indicative evidence that a system performs as intended; therefore, we will not only report test suite success information, but also indicate what fraction of system behaviors our test suite covers.</p>
+<h2 id="system-verification">System Verification</h2>
+<p>In addition to system validation through dynamic checking, described above, Free &amp; Fair will use static (formal) verification to prove that key components implement the system requirements. In contrast to dynamic checking, static verification is performed without executing the software, and provides information about the software's behavior that is independent of particular test scenarios.</p>
+<p>To perform static verification, the software implementation and specification are each translated into an equivalent logical representation and automated proof tools are used to ensure that the implementation satisfies the specification. This is the formal variant of testing processes that are known by many names, such as component-based, component-level, and subsystem-level testing. Because our specification and reasoning methods are compositional—we can perform verification on each individual element of the software independently of the others—these techniques also subsume what is normally known as integration testing.</p>
+<p>A part of regular reporting during the project will be the status of static verification, including information about exactly what functionality has been statically verified.</p>
+
+<h1 id="security">Security</h1>
+<p>This system will be hosted in CDOS data centers. In this document, we will therefore only explicitly address issues not implicitly addressed by this choice. Concretely, due to planned hosting in CDOS data centers, all of the following items are implicitly addressed:</p>
+<ul>
+<li>System fault-tolerance, redundant hosting, and fail-over</li>
+<li>GeoIP blocking, IP whitelisting/blacklisting</li>
+<li>Web application firewalling</li>
+<li>Web application penetration testing and vulnerability scanning</li>
+<li>Distributed denial-of-service prevention</li>
+<li>Anti-malware scanning and other host protections, such as file and configuration integrity monitoring</li>
+<li>Centralized logging</li>
+<li>Network segmentation</li>
+<li>Systems administration and remote access</li>
+<li>We now address the remaining security requirements.</li>
+</ul>
+<h2 id="user-management-and-controls">User management and controls</h2>
+<p>Upon user registration, users will be prompted to create a password conforming to the requirements listed in [CO-RLA-DQ, 13]. For authentication and authorization we will either integrate with the existing CDOS User Management System or implement the following best practices.</p>
+<p>Passwords will be salted and stretched using a secure key-derivation function such as PBKDF2 or Argon2, which can be tuned to increase the work factor required for password guess attempts.</p>
+<p>Two-factor authentication will be provided via the Time-Based One-Time Password (TOTP) algorithm or another two-factor scheme negotiated with the client.</p>
+<p>Policies around password expiry, access attempt controls, and session duration limits will be enforced by the application in accordance with [CO-RLA-DQ, 13] or more recent NIST standards, as negotiated with the client.</p>
+<p>User provisioning and password management will be performed by Free &amp; Fair, coordinated with the state.</p>
+<h2 id="system-operations-security-and-privacy">System operations, security, and privacy</h2>
+<p>Free &amp; Fair engineers are experts in secure software engineering practices, and regular clients include the Department of Defense and the United States intelligence community. All software will undergo a documented security review before production release, and will be specifically audited against the OWASP Top 10. In particular, the RLA application will satisfy the Colorado State OIT Secure Applications Coding Standard as described in [TS-CISO-006].</p>
+<h2 id="systems-hardening-and-protection">Systems hardening and protection</h2>
+<p>Free &amp; Fair-delivered systems will be hardened according to best practices. Any sensitive data, including personally-identifiable information (PII), will be stored encrypted. Application-level logging will be implemented using syslog and standard Java logging mechanisms, which will then be aggregated by CDOS-provided centralized logging, using NTP for time synchronization. We will build the system with the security design principles we have used for years for Department of Defense and U.S. intelligence community clients.</p>
+
+<h1 id="requirements">Requirements</h1>
+<p>This document contains the requirements of the specification of the ColoradoRLA system.</p>
+<h2 id="history-2">History</h2>
+<ul>
+<li>Outline and first draft, 5 July 2017 by Joe Kiniry.</li>
+<li>Second draft, 6 July 2017 by Joe Kiniry. Still no refined system requirements above and beyond those in the DQ.</li>
+</ul>
+<h2 id="mandatory-requirements">Mandatory Requirements</h2>
+<h3 id="mandatory-behavioral-requirements">Mandatory Behavioral Requirements</h3>
+<ul>
+<li><p>Ballot manifests and cast vote records (CVRs) will be uploaded to the server via HTTPS.</p></li>
+<li><p>The status of uploaded data will be summarized in a state-wide dashboard, along with information on which counties have not yet uploaded their CVRs, and uploads that have formatting or content issues. The status of data, and results as audits are performed, will be provided for each contest to be audited.</p></li>
+<li><p>Random selections of ballots for performing a ballot-level comparison risk limiting audit will be automatically generated based on the provided random seed using the SHA-256-based pseudo-random number generator specified in the DQ, as well as the computed contest margins and other indicated parameters including any discrepancies found.</p></li>
+<li><p>A county view of the audit will display information on the progress of each audited contest in the county, with a summary of discrepancies.</p></li>
+<li><p>We will tailor view/edit permissions for each screen of information to users with appropriate authorizations as defined by the state.</p></li>
+<li><p>Public access to appropriate data and reports will be provided in standard file formats.</p></li>
+</ul>
+<h3 id="mandatory-non-behavioral-requirements">Mandatory Non-Behavioral Requirements</h3>
+<p>We summarize our approaches to three critical non-behavioral properties of this system below: how we achieve <em>fault tolerance</em>, how we perform <em>synchronization</em>, and some reflections on the <em>dynamism of the UI and user experience (UX)</em>.</p>
+<h4 id="fault-tolerance">Fault tolerance</h4>
+<p>We have built many fault tolerant distributed systems over the years. For example, Dr. Kiniry was co-architect of Sprint’s Internet Service Provider product (what later became a part of Earthlink) in 1995. While the underlying platforms and technology have evolved several times since then, the underlying principles remain the same.</p>
+<p>For this particular application, we propose a two server deployment, preferably in separate locations which have independent power subsystems and network backbones. Each server will have two power supplies and two network cards, which should be on separate, independent subnets. Servers will have hot-swappable SSDs in a RAID 5 configuration for local data redundancy and fault tolerance.</p>
+<h4 id="synchronization">Synchronization</h4>
+<p>We can design a distributed synchronization protocol in either a primary/secondary architecture (with support for dynamic failover in the case of network or system unavailability) or in a peer-to-peer configuration, where inbound requests can go to either server using DNS load balancing. We can also use a distributed synchronization mechanism already integrated into the client-selected backend database system, if that is an appropriate choice. The decision of what synchronization protocol to use will be made in consultation with the client.</p>
+<h4 id="ui-and-ux-dynamism">UI and UX Dynamism</h4>
+<p>Rather than simply create a plain-old-HTML front-end, our UI and UX will use rich JavaScript UI libraries to create a browser-based user experience that feels like a modern application one might find in any of the mainstream online app stores. Our UX expert will work with the client to ensure that the UI’s dynamism and presentation facilitates OpenRLA’s critical users, election officials running audits.</p>
+<h2 id="secondary-requirements">Secondary Requirements</h2>
+<ul>
+<li><p>This system will be hosted in the CDOS data center, which will support failover, as described in the Documented Quote [CO-RLA-DQ, p. 16].</p></li>
+<li><p>Our system includes all necessary features for fault tolerance summarized earlier, including a redundant standby server with separate network cards and power supplies, dual CPUs, and hard drives in a RAID 5 configuration.</p></li>
+<li><p>We expect regular backups to be configured to use CDOS Disaster Recovery facility.</p></li>
+<li><p>Ensure business continuity of the system with at least four nines (99.99%) availability.</p></li>
+</ul>
+
+<h1 id="system-specification">System Specification</h1>
+<p>The formal system of the RLA Tool is specified in a Literate PVS specification in <code>specs/pvs/corla.pvs</code>. We will integrate the two documents for final system delivery. See the working draft, generated from that formal specification, in our <a href="https://github.com/FreeAndFair/ColoradoRLA/blob/master/specs/pvs/corla_model.pdf">GitHub repository</a>.</p>
+<h2 id="domain-analysis-and-engineering">Domain Analysis and Engineering</h2>
+<p><em>To be written.</em></p>
+<h2 id="system-architecture">System Architecture</h2>
+<p><em>To be written.</em></p>
+<h2 id="behavioral-specification">Behavioral Specification</h2>
+<p><em>To be written.</em></p>
+<h2 id="non-behavioral-specification">Non-Behavioral Specification</h2>
+<p><em>To be written.</em></p>
+
+<h1 id="deployment-considerations">Deployment Considerations</h1>
+<p>The ColoradoRLA system is conceptually a 3-tier system (browser-based TypeScript client, server-side Java application, database). However, because it is relatively lightweight, it can be deployed in many configurations ranging from a single machine hosting all 3 tiers to multiple redundant servers hosting each tier. Because the system stores state only in the database (and on the user's local machine, in the browser-based client), load can be balanced across the client layer and the Java application layer using basic techniques such as DNS round-robin and load-balancing front-end servers. Balancing load across the database layer, however, requires ensuring database consistency in one of various ways.</p>
+<h2 id="high-availability">High Availability</h2>
+<p>The ColoradoRLA system deployment for the Colorado Department of State has a high availability requirement. Achieving high availability for the client-side and server-side applications through the use of multiple servers is straightforward. For the database, high availability requires some form of replication that ensures data consistency.</p>
+<p>We are using the Postgres DBMS for the database layer. Postgres supports several different types of replication. For the CDOS deployment, our initial recommendation is to deploy two Postgres servers (one primary server and one replica) and use Postgres's integrated streaming replication functionality, with synchronous commits enabled to achieve group-safe and 1-safe replication. In this configuration, the only possibility for data loss is if both the primary server and the replica crash simultaneously, <em>and</em> the database on the primary server is corrupted at the same time. We could opt for a stronger durability guarantee, achieving 2-safe replication (the only possibility for data loss is if both servers crash simultaneously in a way that corrupts both databases), but that would cause longer transaction times. See https://www.postgresql.org/docs/current/static/warm-standby.html#SYNCHRONOUS-REPLICATION and http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.10.140 for more information.</p>
+
+<h1 id="glossary">Glossary</h1>
+<p>See also the working documents at <a href="http://collaborate.nist.gov/voting/bin/view/Voting/Glossary">VVSG-Interoperability Voting Glossary</a> and the glossary in: <a href="https://www.stat.berkeley.edu/~stark/Preprints/RLAwhitepaper12.pdf">&quot;Risk-Limiting Post-Election Audits: Why and How&quot;</a></p>
+<ul>
+<li><p><strong>RLA Tool</strong> A computer system for conducting a Risk Limiting Audit</p></li>
+<li><p><strong>business interruption</strong> - Any event that disrupts Contractor’s ability to complete the Work for a period of time, and may include, but is not limited to a Disaster, power outage, strike, loss of necessary personnel or computer virus.</p></li>
+<li><p><strong>closeout period</strong> - The period beginning on the earlier of 90 days prior to the end of the last Extension Term or notice by the State of its decision to not exercise its option for an Extension Term, and ending on the day that the Department has accepted the final deliverable for the Closeout Period, as determined in the Department-approved and updated Closeout Plan, and has determined that the closeout is complete.</p></li>
+<li><p><strong>deliverable</strong> - Any tangible or intangible object produced by Contractor as a result of the work that is intended to be delivered to the State, regardless of whether the object is specifically described or called out as a “Deliverable” or not.</p></li>
+<li><p><strong>disaster</strong> - An event that makes it impossible for Contractor to perform the Work out of its regular facility or facilities, and may include, but is not limited to, natural disasters, fire or terrorist attacks.</p></li>
+<li><p><strong>key personnel</strong> - The position or positions that are specifically designated as such in this Contract.</p></li>
+<li><p><strong>operational start date</strong> - When the State authorizes Contractor to begin fulfilling its obligations under the Contract.</p></li>
+<li><p><strong>other personnel</strong> - Individuals and Subcontractors, in addition to Key Personnel, assigned to positions to complete tasks associated with the Work.</p></li>
+<li><p><strong>start-up period</strong> - The period starting on the Effective Date and ending on the Operational Start Date.</p></li>
+</ul>
+<p>% <span class="citation" data-cites="todo">@todo</span> kiniry Does the ballot manifest list ballots or ballot cards?</p>
+<ul>
+<li><p><strong>ballot manifest</strong> - A document that describes how ballot cards are organized and stored, and relates a Cast Vote Records to the physical location in which the tabulated ballot card is stored. The ballot manifest specifies the physical location of a ballot card to allow staff to find the specific ballot card represented by a given CVR. A ballot manifest will contain the following information: county ID, tabulator ID, batch ID, the number of ballot cards in each batch, and the storage location where the batch is secured following tabulation. A sample ballot manifest is provided at <a href="samples/manifest-dq.csv"><code>manifest-dq.csv</code></a></p></li>
+<li><p><strong>cast vote record (CVR)</strong> - An electronic record indicating how the marks on a ballot card were interpreted as votes. May be created by a scanner or DRE, or manually during an audit. Sample CVRs in Dominion's format are in <code>test/dominion-2017-CVR_Export_20170310104116.csv</code>. See also <a href="http://collaborate.nist.gov/voting/bin/view/Voting/BallotDefinition">VVSG-Interoperability CVR Subgroup</a>.</p></li>
+<li><p><strong>contest</strong> - Any decision to be made by voters in an election, such as a partisan or nonpartisan candidate race, or a ballot measure. Ex: Jane Doe for Colorado Secretary of State. Each option for the voter is called a <em>choice</em>.</p></li>
+<li><p><strong>choice</strong> Any possible outcome of a Contest. In a Contest to determine who will fill a certain office, each choice is a person, called a candidate for the office. In a ballot question contest, the choices are &quot;Yes&quot; and &quot;No&quot;.</p></li>
+<li><p><strong>coordinated election</strong> - Coordinated Elections occur on the first Tuesday of November in odd-numbered years. If the Secretary of State certifies at least one statewide ballot measure to the counties, every county will conduct the Coordinated Election, and the vast majority of counties will include additional local ballot content in the election. If the Secretary of State does not certify at least one statewide ballot measure to the counties, then only those counties to which local political subdivisions certify ballot content will conduct a Coordinated Election in that year.</p></li>
+<li><p><strong>county administrator</strong> - The designated representative(s) of each county clerk and recorder who possesses RLA administrative user privileges sufficient to upload a cast vote record and ballot manifest for the county.</p></li>
+<li><p><strong>contest name</strong> - The title of a contest.</p></li>
+<li><p><strong>election day</strong> - The final day on which voters can cast a ballot in a State Primary Election, Presidential Primary Election, Coordinated Election, or General Election.</p></li>
+<li><p><strong>offeror</strong> - A vendor that submits a responsible bid for this Documented Quote.</p></li>
+<li><p><strong>pseudo-random number generator</strong> - A random number generator application that is further explained at http://statistics.berkeley.edu/~stark/Java/Html/sha256Rand.htm Test data is available at https://github.com/cjerdonek/rivest-sampler-tests</p></li>
+<li><p><strong>random seed</strong> - A random seed (or seed state, or just seed) is data, such as a number, vector or string, used to initialize a pseudorandom number generator.</p></li>
+<li><p><strong>responsible bid</strong> - A bid from a vendor that can responsibly (i.e. is reasonably able and qualified) do the work stated in the solicitation.</p></li>
+<li><p><strong>risk-limiting audit (RLA)</strong> - A procedure for manually checking a sample of ballot (cards) (or other voter-verifiable records) that is guaranteed to have a large, pre-specified chance of correcting the reported outcome if the reported outcome is wrong. (An outcome is wrong if it disagrees with the outcome that a full hand count would show.) One paper describing risk-limiting audits is located at https://www.stat.berkeley.edu/~stark/Preprints/gentle12.pdf.</p></li>
+<li><p><strong>state administrator</strong> - The designated person who possesses RLA administrative user privileges to perform administrative tasks.</p></li>
+<li><p><strong>tabulation</strong> - Aggregation of tallies of interpretations of voter choices into election results. <span class="citation" data-cites="review">@review</span> NIST Election Modeling group separates interpretation, tally and tabulation.</p></li>
+<li><p><strong>tabulated ballots</strong> - Paper ballot cards that have been scanned on a ballot scanning device, and the voter’s markings on which have been interpreted by the voting system as valid votes, undervotes, or overvotes. Tabulated ballots may be duplicates of original ballots. <span class="citation" data-cites="review">@review</span> this means ballots counted by hand weren't &quot;tabulated&quot;. Is that what we want to say?</p></li>
+<li><strong>two-factor authentication</strong> - Defined as two out of the three following requirements:</li>
+<li>Something you have (Examples: token code, grid card)</li>
+<li>Something you know (Example: passwords)</li>
+<li><p>Something you are (Example: biometrics)</p></li>
+<li><p><strong>ENR system</strong> An Election Night Reporting system, a computer system enabling publication of election results starting on election night, and continuing through the end of certification.</p></li>
+<li><p><strong>reported outcome</strong> - The set of contest winners published by the ENR system.</p></li>
+<li><p><strong>calculated outcome</strong> - The set of contest winners according to the CVRs that are being audited.</p></li>
+<li><p><strong>wrong outcome</strong> - When the reported outcome for a given contest does not match the outcome that a full hand count of the paper ballots would show. This can happen due to equipment failures, adjudication errors, and other reasons.</p></li>
+<li><p><strong>full hand count</strong> - TBD along these lines: A procedure for determining the correct outcome of a contest, suitable for use in an RLA. It involves a tabulation of the votes for each choice in a contest which involves manual interpretation of each ballot, and may involve verifiable machine assist with checking the counts. See one suggested procedure at <a href="http://www.sos.state.co.us/pubs/rule_making/written_comments/2017/20170718BranscombMcCarthy.pdf">Branscomb full hand countproposal</a>. Cf. <em>recount</em>.</p></li>
+<li><p><strong>recount</strong> TBD, a procedure under Colorado law that happens <em>after</em> certification if the margin is too tight, or if a candidate requests it. A recount doesn't have to involve manual interpretation of each ballot. Cf. <em>full hand count</em>.</p></li>
+<li><p><strong>overstatement of the margin</strong> An error whose correction reduces the margin https://www.stat.berkeley.edu/~stark/Preprints/evidenceVote12.pdf</p></li>
+<li><p><strong>understatement of the margin</strong> An error whose correction increases the margin https://www.stat.berkeley.edu/~stark/Preprints/evidenceVote12.pdf</p></li>
+<li><p><strong>evidence-based elections</strong> - An approach to achieving election integrity in which each election provides affirmative evidence that the reported outcomes actually reflect how people voted. This is done via software-independent voting systems, compliance audits and risk-limiting audits. An alternative to certifying voting equipment and hoping that it functions properly in real elections. See also <em>resilient canvass framework</em>. See <a href="https://www.stat.berkeley.edu/~stark/Preprints/evidenceVote12.pdf">Evidence-Based Elections - P.B. Stark and D.A. Wagner</a></p></li>
+<li><p><strong>resilient canvass framework</strong> - A fault-tolerant approach to conducting elections that gives strong evidence that the reported outcome is correct, or reports that the evidence is not convincing. See also <em>evidence-based elections</em>.</p></li>
+<li><p><strong>compliance audit</strong> - An audit which checks that the audit trail is sufficiently complete and accurate to tell who won. Generally includes poll book accounting, ballot accounting, chain of custody checks, security checks, signature verification audits, voter registration record auditing, etc. Related terms include election canvass, ballot reconciliation. See https://www.stat.berkeley.edu/~stark/Preprints/evidenceVote12.pdf</p></li>
+<li><p><strong>audit board</strong> - Given a County, a group of electors in the county nominated by the major party chairpersons, which carries out an audit, with the assistance of the designated election official, members of his or her staff, and other duly appointed election judges.</p></li>
+<li><p><strong>audit</strong> A process by which the performance or outcome of a system is verified. <span class="citation" data-cites="review">@review</span> TBD May include ballot tabulation audits, compliance audits, ...</p></li>
+<li><p><strong>RLA</strong> Risk Limiting Audit</p></li>
+<li><p><strong>Risk Limiting Audit</strong> An Audit designed to reduce the statistical probablility that a wrong election winner was determined by an interpretation and tabulation system.</p></li>
+<li><p><strong>ballot tabulation audits</strong> An Audit of a vote-tabulation system. <span class="citation" data-cites="review">@review</span> TBD. including risk-limiting audits, opportunistic audits, bayesian audits, fixed-percentage audits, etc. <span class="citation" data-cites="review">@review</span> if we honor the NIST Election Modeling Group distinction between interpretation and tabulation, this definition describes a &quot;ballot interpretation and tabulation audit&quot;</p></li>
+<li><p><strong>opportunistic audit</strong> - An auditing technique designed to efficiently generate evidence for additional contests in a ballot-level audit. A significant part of the effort in doing a risk-limiting audit involves physically retrieving the ballots selected for audit. While doing the manual tabulation and entering the data for the contests on that ballot which are subject to strict risk limits, it is possible to &quot;opportunistically&quot; do the same thing for other contests that are observed on the same ballot, producing evidence about them for little additional effort. These are called &quot;opportunistic contests&quot;. If an opportunistic contest achieves a risk limit, it can be &quot;settled&quot;, and when it appears on subsequent ballots during the audit, it need not be tabulated. TBD: discuss need to consider possibility of sampling bias when evaluating and reporting, considerations for possible escalation, etc.</p></li>
+<li><p><strong>mandatory contest</strong> - A Contest in a Risk Limiting Audit which is subject to a Risk Limit and hence is factored in to the sampling calculations.</p></li>
+<li><p><strong>opportunistic contest</strong> - A contest to be audited opportunistically.</p></li>
+<li><p><strong>Risk Limit Goal</strong> In a Risk-Limiting Audit, each Contest has a Risk-Limit Goal, namely, the acceptable risk that an incorrect outcome will escape notice.</p></li>
+<li><p><strong>Dynamic Risk</strong> In a Risk-Limiting Audit in progress, for any specific Contest Under Audit, at any given time the Dynamic Risk is the probability, based on Ballots audited so far, that an incorrect outcome of the Contest as escaped notice.</p></li>
+<li><p><strong>Under Audit</strong> A Contest that has been chosen for audit.</p></li>
+<li><p><strong>active contest</strong> At any given time, a Contest Under Audit whose Dynamic Risk exceeds the Risk Limit Goal <span class="citation" data-cites="review">@review</span> this is just a guess <span class="citation" data-cites="review">@review</span> what's the origin of this term? Couldn't find it in Stark or Lindeman/Stark.</p></li>
+<li><p><strong>settled contest</strong> At any given time, a Contest Under Audit whose Dynamic Risk is less than or equal to the Risk Limit Goal <span class="citation" data-cites="review">@review</span> TBD involving having achieved Risk Limit Goal. Note need to ensure that calculations take into account the way the samples were selected, in case any samples were taken in a stratified manner or taken non-uniformly in order to target non-county-wide contests.</p></li>
+<li><p><strong>uncontested contest</strong> A Contest for which the number of choices is less than or equal to the number of winners <span class="citation" data-cites="review">@review</span> Consider a contest with three winners where each voter can vote for two. Are we OK calling that an &quot;uncontested contest&quot;?</p></li>
+<li><p><strong>bayesian audits</strong> <span class="citation" data-cites="review">@review</span> Neal McBurnett</p></li>
+<li><p><strong>voting method</strong> TBD</p></li>
+<li><p><strong>electoral system</strong> the method used to calculate the number of elected positions in government that individuals and parties are awarded after elections.</p></li>
+<li><p><strong>ballot</strong> a list of contests and, for each contest in the list, a list of choices, in a form that allows a person to record choices and allows a person or a computer (or both) to read recorded choices. Each ballot is composed of one or more ballot cards, and each ballot card has a unique ID.</p></li>
+<li><p><strong>ballot card</strong> a single physical page of a ballot.</p></li>
+<li><p><strong>margin</strong> Given a contest and two choices in that contest, the numerical difference between the choice that got more votes and the choice that got fewer votes.</p></li>
+<li><p><strong>hash function</strong> TBD, mentioning specifically SHA-256</p></li>
+<li><p><strong>RLA software</strong> The software component of an RLA Tool.</p></li>
+<li><p><strong>ballot storage bin</strong> A physical container for a set of paper ballot cards.</p></li>
+<li><p><strong>batch</strong> A set of Ballot Cards which has a numeric id and a size (the number of Ballot Cards contained in the batch).</p></li>
+<li><p><strong>batch id</strong> Each Batch has a unique Ballot Identifier.</p></li>
+<li><p><strong>batch size</strong> the size of a batch, and virtually all batches are identically sized.</p></li>
+<li><p><strong>chain of custody</strong> Given an item (e.g., Marked Ballots, Unmarked Ballots, Ballot Cards) in need of security over a certain time period, the chain of custody is the sequence of people, organizations or locations where the item remains secured over the given time period.</p></li>
+<li><p><strong>county</strong> (in the US) a political and administrative division of a state, providing certain local governmental services, including conducting elections.</p></li>
+<li><p><strong>scanner</strong> A machine that can take Paper Ballots as input and whose output is a CVR for each Paper Ballot.</p></li>
+<li><p><strong>imprinted ballot</strong> - A Paper Ballot Card on which a unique Ballot Card identifier has been imprinted in order to facilitate a Ballot Card-level audit. The unique Ballot Card identifier might for instance include a unique Batch Identifier and the sequence of the Ballot Card within the Batch, or it might be a new identifier which is also included in the CVR. Imprinting should be done after the ballot card is cast and with care taken to avoid causing anonymity problems.</p></li>
+<li><p><strong>ballot order</strong> A specific ordering of a set of Ballot Cards.</p></li>
+<li><p><strong>Secretary of State (SOS)</strong> In most states in the United States, an office of government defined in the state constitution.</p></li>
+<li><p><strong>Department of State (DOS)</strong> An agency of government which, in most states of the United States of America, is charged with oversight of state elections.</p></li>
+<li><p><strong>audit report</strong> TBD</p></li>
+<li><p><strong>SOS audit form</strong> TBD</p></li>
+<li><p><strong>ballot certification</strong> TBD</p></li>
+<li><p><strong>UOCAVA voter</strong> A person entitled to cast a UOCAVA Ballot</p></li>
+<li><p><strong>UOCAVA ballot</strong> A certain type of absentee ballot prescribed by the federal Uniformed and Overseas Citizens Absentee Voting Act and codified in 52 USC Ch. 203.</p></li>
+<li><p><strong>mail ballot</strong> A Paper Ballot that may be cast by physical delivery to the Board of Elections, usually via the US Postal Service.</p></li>
+<li><p><strong>election canvass</strong> The process of counting and verifying, or “canvassing,” the various precinct votes and making determinations on the election results.</p></li>
+<li><p><strong>canvass board</strong> The body which conducts the election canvass and certifies the winners of county and local offices, as well as certifies county vote totals for state and federal offices that extend beyond the county limits.</p></li>
+<li><p><strong>post-election (historical, random) audit</strong> Traditional post-election audits typically entail randomly selecting a few precincts or voting machines, and checking the associated results with a hand count of the paper ballots. While these audits do provide some evidence that the machines have correctly interpreted voters’ intent, they audit only a few samples, often using an artificially created subset of results, rather than the actual election results.</p></li>
+<li><p><strong>county clerk</strong> An office of County government, established by the Colorado Constitution (Article XIV, Section 8) and responsible for conducting elections in the County.</p></li>
+<li><p><strong>sample size</strong> TBD including <strong>initial sample size</strong></p></li>
+<li><p><strong>equipment</strong> TBD</p></li>
+<li><p><strong>VVPAT</strong> - A Voter-Verifiable Paper Trail consists of an audit trail of Voter-Verifiable Paper Records (VVPRs). Elections which produce a VVPAT allow an audit to gather evidence which the voter had an opportunity to verify. The VVPRs may appear in a continuous roll of paper used to provide auditability for a DRE.</p></li>
+<li><p><strong>VVPR</strong> - A Voter-Verifiable Paper Record, also known as a Voter-Verifiable Paper Ballot (VVPB). 'Voter-verified' refers to the fact that the voter is given the opportunity to verify that the choices indicated on the paper record correspond to the choices that the voter has made in casting the ballot. Risk-limiting audits require VVPRs.</p></li>
+<li><p><strong>non-voter-verifiable ballot</strong> (NVVB) - A ballot for which there is no auditable VVPR. For example a ballot sent via an online ballot return system or email, for which the voter has not returned a matching voter verifiable paper ballot. AKA digital ballot.</p></li>
+<li><p><strong>phantom ballot</strong> An entry in the Ballot Manifest for which there is no corresponding Paper Ballot Card. Phantom ballots can represent pancies between the manifest and the actual paper ballot card batches. A manifest with a batch of purely phantom ballots can also be used to represent the maximum number of possibly late-tabluation ballots.</p></li>
+<li><p><strong>late-tabulation ballot</strong> - A ballot which is tabulated after the CVR report and manifest are generated, but before the canvass is finished.</p></li>
+<li><p><strong>duplicated ballot</strong> A Ballot marked by an Election Official by copying voter choices from another Ballot.</p></li>
+<li><p><strong>original ballot</strong> A Ballot from which a Duplicated Ballot has been created.</p></li>
+<li><p><strong>DRE</strong> A voting system whose primary record of voter intent is an electronic record created by a voter's physical interaction with a voting machine.</p></li>
+<li><p><strong>votes allowed</strong> Given a Contest, the maximum number of choices a voter may legitimately select in that Contest.</p></li>
+<li><p><strong>overvote</strong> Given a Marked Ballot and a Contest, a selection of more choices than the Votes Allowed for that Contest.</p></li>
+<li><p><strong>stray mark</strong> A Ballot Mark that does not carry any information about voter intent.</p></li>
+<li><p><strong>damage</strong> TBD</p></li>
+<li><p><strong>undervote</strong> Given a Marked Ballot and a Contest, a selection of fewer choices than the Votes Allowed for that Contest.</p></li>
+<li><p><strong>risk limit</strong> - The pre-specified minimum chance of requiring a full hand count if the outcome of a full hand count would differ from the reported tabulation outcome.</p></li>
+<li><p><strong>voting system</strong> TBD</p></li>
+<li><p><strong>Dr. Philip Stark</strong> Associate Dean, Division of Mathematical and hysical Sciences, Professor of Statistics, University of California. https://www.stat.berkeley.edu/~stark/</p></li>
+<li><p><strong>Dr. Mark Lindeman</strong> Mark Lindeman is a political scientist who studies public opinion and elections. He presently lectures at Columbia University in quantitative methods, and led the revision of Carroll Glynn et al.’s multidisciplinary textbook Public Opinion. https://electionverification.org/aee-statistics-and-auditing/</p></li>
+<li><p><strong>Dr. Ron Rivest</strong> Professor Rivest is an Institute Professor at MIT. He joined MIT in 1974 as a faculty member in the Department of Electrical Engineering and Computer Science. He is a member of MIT's Computer Science and Artificial Intelligence Laboratory (CSAIL), a member of the lab's Theory of Computation Group and a founder of its Cryptography and Information Security Group. He is a co-author (with Cormen, Leiserson, and Stein) of the text, Introduction to Algorithms. He is also a founder of RSA Data Security, now named RSA Security (the security division of EMC), Versign, and Peppercoin. Professor Rivest has research interests in cryptography, computer and network security, electronic voting, and algorithms. http://people.csail.mit.edu/rivest/</p></li>
+<li><p><strong>Colorado House Bill 09-1335</strong> an act of the Colorado Legislature concerning requirements for voting equipment.</p></li>
+<li><p><strong>EAC</strong> An independent, bipartisan commission of the United States Federal Government, established by the Help America Vote Act of 2002.</p></li>
+<li><p><strong>Clear Ballot Group</strong> An election technology company. https://www.clearballot.com/</p></li>
+<li><p><strong>Clear Ballot ClearCount</strong> Clear Ballot Group's browser-based central count tabulation, consolidation and reporting system.</p></li>
+<li><p><strong>OpenCount</strong> OpenCount is a system that can interpret scanned paper ballots and interpret them into cast vote records. It can understand some of the existing proprietary file formats for other vendors’ equipment, and can semi-automatically figure out the shape and nature of a ballot with a little help from an elections official. OpenCount was originally designed and implemented at Berkeley under the guidance of Prof. David Wagner.</p></li>
+<li><p><strong>Dominion</strong> Dominion Voting Systems is an election technology company. http://www.dominionvoting.com/</p></li>
+<li><p><strong>Dominion Democracy Suite</strong> Dominion's election management system for setting up an election as well as acquiring, tallying and reporting election results.</p></li>
+<li><p><strong>dashboard</strong> A computer user interface.</p></li>
+<li><p><strong>developer dashboard</strong> TBD</p></li>
+<li><p><strong>state-wide dashboard</strong> A Dashboard enabling the Secretary of State to carry out actions required by the Risk Limiting Audit process.</p></li>
+<li><p><strong>county dashboard</strong> A Dashboard enabling County election officials to carry out actions required by the Risk Limiting Audit process.</p></li>
+<li><p><strong>audit progress</strong> TBD</p></li>
+<li><p><strong>discrepency</strong> Given a Contest and an audited ballot, an integer between -2 and 2 (inclusive) indicating the amount to be added to the margin of victory due to the difference between the audited interpretation and the CVR.</p></li>
+<li><p><strong>random</strong> TBD</p></li>
+<li><p><strong>contest margin</strong> The Margin between the winning choice with the least votes of all winning choices and the losing choice with the most votes among all losing choices.</p></li>
+<li><p><strong>access control</strong> TBD</p></li>
+<li><p><strong>role</strong> TBD</p></li>
+<li><p><strong>fault tolerance</strong> TBD</p></li>
+<li><p><strong>user interface (UI)</strong> The means by which the user and a computer system interact, in particular the use of input devices and software.</p></li>
+<li><p><strong>user experience (UX)</strong> The overall experience of a person using a product such as a website or computer application, especially in terms of how easy or pleasing it is to use.</p></li>
+<li><p><strong>data synchronization</strong> TBD</p></li>
+<li><p><strong>Colorado Department of State (CDOS)</strong> An agency of Colorado state government created by C.R.S. Title 24 Article 21.</p></li>
+<li><p><strong>abstract state machine</strong> (AST) - TBD including <a href="https://en.wikipedia.org/wiki/Abstract_state_machines">Abstract state machine</a></p></li>
+<li><p><strong>audit center</strong> (aka the public interface to the system) TBD</p></li>
+<li><p><strong>public audit meeting</strong> The meeting where the random seed (and possibly more) is determined.</p></li>
+<li><p><strong>working group</strong> TBD</p></li>
+<li><p><strong>regional training</strong> TBD</p></li>
+<li><p><strong>list of ballot cards to audit</strong> An ordered list of ballot cards selected for audit by the Risk-Limiting Audit algorithm</p></li>
+<li><p><strong>uploading interface</strong> A part of the county dashboard.</p></li>
+<li><p><strong>authenticate</strong> (also known as log-in)</p></li>
+<li><p><strong>comma separated value</strong> (aka CSV)</p></li>
+<li><p><strong>county number</strong> each county has a unique number associated with it, as defined by CDOS.</p></li>
+<li><p><strong>county name</strong> The name of one county.</p></li>
+<li><p><strong>scanner ID number</strong> each scanner has a unique number associated with it. All references to scanners in artifacts such as Cast Vote Records use scanner ID numbers.</p></li>
+<li><p><strong>batch number</strong> TBD</p></li>
+<li><p><strong>storage bin</strong> (aka transfer case, ballot box, secured container) A physical means by which to securely store ballot cards.</p></li>
+<li><p><strong>CVR file</strong> TBD</p></li>
+<li><p><strong>CVR number</strong> concatenation of scanner number - batch number - ballot card position within the batch</p></li>
+<li><p><strong>database table</strong> TBD</p></li>
+<li><p><strong>tool back-end</strong> TBD</p></li>
+<li><p><strong>tool front-end</strong> TBD</p></li>
+<li><p><strong>county auditing interface</strong> TBD</p></li>
+<li><p><strong>paper ballot</strong> A Ballot made of paper.</p></li>
+<li><p><strong>audit adjudication interface</strong> A computer user interface enabling an Audit Board to record interpretations of the ballot cards selected for audit.</p></li>
+<li><p><strong>ballot style</strong> A short name for the set of contests appearing on a Ballot Card</p></li>
+<li><p><strong>political party</strong> Any group of registered electors who, by petition or assembly, nominate candidates for the official general election ballot (Colorado Constitution, Article XXVIII Section 2).</p></li>
+<li><p><strong>username</strong> An identification used by a person with access to a computer, network, or online service.</p></li>
+<li><p><strong>password</strong> A secret word, phrase or string of characters that must be used to gain admission to a computer, interface, or system.</p></li>
+<li><p><strong>credentials</strong> TBD</p></li>
+<li><p><strong>audit supervisor</strong> TBD</p></li>
+<li><p><strong>audit board member</strong> (aka auditor?) TBD</p></li>
+<li><p><strong>email</strong> Messages distributed by electronic means from one computer user to one or more recipients via a network.</p></li>
+<li><p><strong>audit round</strong> TBD</p></li>
+<li><p><strong>audit round results</strong> (reviewed/submitted/acknowledged)</p></li>
+<li><p><strong>press</strong> TBD</p></li>
+<li><p><strong>audit mistake</strong> TBD</p></li>
+<li><p><strong>ballot instructions</strong> TBD</p></li>
+<li><p><strong>digital ballot adjudication</strong> TBD</p></li>
+<li><p><strong>manual ballot adjudication</strong> TBD</p></li>
+<li><p><strong>ambiguous mark</strong> A Ballot Mark whose interpretation as a voter choice is uncertain.</p></li>
+<li><p><strong>SOS voter intent guide</strong> TBD</p></li>
+<li><p><strong>ballot mark</strong> Any mark on a Paper Ballot that was not printed on the Paper Ballot by the Board of Election.</p></li>
+<li><p><strong>voter marking</strong> TBD</p></li>
+<li><p><strong>EO survey</strong> TBD</p></li>
+<li><p><strong>SOS rule making</strong> TBD</p></li>
+<li><p><strong>detailed project plan</strong> TBD</p></li>
+<li><p><strong>closeout plan</strong> TBD</p></li>
+<li><p><strong>load testing</strong> TBD</p></li>
+<li><p><strong>penetration testing</strong> TBD</p></li>
+<li><p><strong>go live date</strong> TBD</p></li>
+<li><p><strong>domain model</strong> TBD</p></li>
+<li><p><strong>domain engineering</strong> TBD</p></li>
+<li><p><strong>formal method</strong> TBD</p></li>
+<li><p><strong>formal model</strong> TBD</p></li>
+<li><p><strong>requirement</strong> TBD</p></li>
+<li><p><strong>system architecture</strong> TBD</p></li>
+<li><p><strong>design-by-contract</strong> TBD</p></li>
+<li><p><strong>continuous integration</strong> TBD</p></li>
+<li><p><strong>issue tracker</strong> TBD</p></li>
+<li><p><strong>repository</strong> The purpose of Git is to manage a project, or a set of files, as they change over time. Git stores this information in a data structure called a repository. A git repository contains, among other things, the following: A set of commit objects. A set of references to commit objects, called heads.</p></li>
+<li><p><strong>git</strong> A version control system (VCS) for tracking changes in computer files and coordinating work on those files among multiple people.</p></li>
+<li><p><strong>Asana</strong> A web and mobile application designed to help teams track their work.</p></li>
+<li><p><strong>Slack</strong> A cloud-based set of team collaboration tools and services.</p></li>
+<li><p><strong>Paused Audit</strong> <span class="citation" data-cites="review">@review</span> morganmillerux I'm unclear if they will be allowed to pause and audit but it seems valuable to state what it is and then explicitly allow or disallow it.</p></li>
+<li><p><strong>Missing/Not Found Ballot</strong> A Phantom Ballot.</p></li>
+<li><p><strong>Credentialing Authority</strong> <span class="citation" data-cites="review">@review</span> morganmillerux Do we need a concept of who's allowed to author credentials?</p></li>
+<li><p><strong>Submit Ballot Interpretation</strong> <span class="citation" data-cites="review">@review</span> morganmillerux I see an entry for Audit Results but I think it would also be helpful to define the granular steps of submitting each ballot interpretation.</p></li>
+<li><p><strong>Ballot Interpretation</strong> <span class="citation" data-cites="review">@review</span> morganmillerux Perhaps I didn't a synonym for this, but this should be included.</p></li>
+<li><p><strong>Ballot Retrieval</strong> <span class="citation" data-cites="review">@review</span> morganmillerux the process of getting the ballots seems like a specific point of concern and merits being called out.</p></li>
+</ul>
+
+<h1 id="bibliography-1">Bibliography</h1>
+<p><em>Introduction to be written. We will be creating a new repository for the bibliography. The contents will be copied from the <a href="https://github.com/FreeAndFair/OpenRLA">OpenRLA repository</a> and organized here.</em></p>
+<h2 id="risk-limiting-audits">Risk-Limiting Audits</h2>
+<p><em>To be written.</em></p>
+<h2 id="jurisdiction-sources">Jurisdiction Sources</h2>
+<p><em>To be written.</em></p>
