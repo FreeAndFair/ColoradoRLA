@@ -7,6 +7,13 @@ import CVRUploader from './CVRUploader';
 import uploadCvrExport from '../../../action/uploadCvrExport';
 
 
+const UploadedCvrExport = ({ hash }: any) => (
+    <div className='pt-card'>
+        <div>CVR export <strong>uploaded</strong>.</div>
+        <div>SHA-256 hash: { hash }</div>
+    </div>
+);
+
 class CVRUploaderContainer extends React.Component<any, any> {
     public render() {
         const { county, uploadCvrExport } = this.props;
@@ -17,6 +24,10 @@ class CVRUploaderContainer extends React.Component<any, any> {
 
             uploadCvrExport(county.id, file, hash);
         };
+
+        if (county.cvrExportHash) {
+            return <UploadedCvrExport hash={ county.cvrExportHash } />;
+        }
 
         return <CVRUploader upload={ upload } forms={ forms } />;
     }
