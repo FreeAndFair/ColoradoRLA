@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Provider, Store } from 'react-redux';
+import { connect, Provider, Store } from 'react-redux';
 import {
     BrowserRouter as Router,
     Redirect,
@@ -38,10 +38,8 @@ export interface RootContainerProps {
     store: Store<any>;
 }
 
-const LoginRoute = ({ store, page: Page, ...rest }: any) => {
+const UnconnectedLoginRoute = ({ loggedIn, page: Page, ...rest }: any) => {
     const render = (props: any) => {
-        const { loggedIn } = store.getState();
-
         if (loggedIn) {
             return <Page { ...props } />;
         }
@@ -57,17 +55,21 @@ const LoginRoute = ({ store, page: Page, ...rest }: any) => {
     return <Route render={ render } { ...rest } />;
 };
 
+const LoginRoute: any = connect(
+    ({ loggedIn }: any) => ({ loggedIn }),
+)(UnconnectedLoginRoute);
+
 type RouteDef = [string, React.ComponentClass];
 
 const makeRoute = (store: any) => (def: RouteDef) => {
     const [path, Page] = def;
+
     return (
         <LoginRoute
             exact
             key={ path }
             path={ path }
             page={ Page }
-            store={ store }
         />
     );
 };
