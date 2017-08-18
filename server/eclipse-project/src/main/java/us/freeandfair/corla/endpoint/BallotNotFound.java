@@ -48,7 +48,7 @@ public class BallotNotFound extends AbstractAuditBoardDashboardEndpoint {
    */
   @Override
   public EndpointType endpointType() {
-    return EndpointType.GET;
+    return EndpointType.POST;
   }
 
   /**
