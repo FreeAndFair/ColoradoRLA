@@ -6,7 +6,7 @@ Installation and Use
 Downloading
 -----------
 
-This system is open source and freely available via GitHub. Once can
+This system is open source and freely available via GitHub. One can
 download the entire project, including all development artifacts and
 source code, via the
 \href{https://github.com/FreeAndFair/ColoradoRLA}{GitHub Colorado RLA
