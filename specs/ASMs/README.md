@@ -3,7 +3,7 @@ ASMs
 
 This directory contains specifications, using the standard abbreviated
 visual notation for Abstract State Machines (ASMs), of client/UI and
-server ASMs for the Colorado RLA Tool
+server ASMs for the Colorado RLA Tool.
 
 The specification of all ASMs is found in [the formal specification
 of the RLA Tool](https://github.com/FreeAndFair/ColoradoRLA/blob/master/specs/pvs/corla_model.pdf).
