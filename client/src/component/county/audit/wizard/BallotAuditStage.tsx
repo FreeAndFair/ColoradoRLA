@@ -154,12 +154,17 @@ const BallotAuditForm = (props: any) => {
 const BallotAuditStage = (props: any) => {
     const {
         county,
+        fetchCvrById,
         nextStage,
         prevStage,
         updateBallotMarks,
     } = props;
 
-    const { ballotsToAudit, currentBallot } = county;
+    const { ballotsToAudit, ballotUnderAuditId, currentBallot } = county;
+
+    if (ballotUnderAuditId !== currentBallot.id) {
+        fetchCvrById(ballotUnderAuditId);
+    }
 
     return (
         <div>
