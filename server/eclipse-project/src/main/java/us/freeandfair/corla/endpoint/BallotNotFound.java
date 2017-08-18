@@ -13,14 +13,19 @@ package us.freeandfair.corla.endpoint;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.PersistenceException;
+
+import com.google.gson.JsonSyntaxException;
 
 import spark.Request;
 import spark.Response;
 
+import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent;
+import us.freeandfair.corla.json.SubmittedBallotNotFound;
 import us.freeandfair.corla.model.CVRContestInfo;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
@@ -35,7 +40,8 @@ import us.freeandfair.corla.query.CountyDashboardQueries;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-@SuppressWarnings("PMD.AtLeastOneConstructor")
+@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.CyclomaticComplexity",
+    "PMD.ModifiedCyclomaticComplexity", "PMD.StdCyclomaticComplexity"})
 public class BallotNotFound extends AbstractAuditBoardDashboardEndpoint {
   /**
    * {@inheritDoc}
@@ -88,25 +94,37 @@ public class BallotNotFound extends AbstractAuditBoardDashboardEndpoint {
     
     // attempt to read the CVR ID from the request
     try {
-      final Long cvr_id = Long.valueOf(the_request.body());
-      final int index = cdb.cvrsToAudit().indexOf(cvr_id);
+      
+      final SubmittedBallotNotFound sbnf = 
+          Main.GSON.fromJson(the_request.body(), SubmittedBallotNotFound.class);
+      if (sbnf.id() == null) {
+        throw new JsonSyntaxException("invalid ballot ID");
+      }
+      final int index = cdb.cvrsToAudit().indexOf(sbnf.id());
       if (index >= 0) {
-        final CastVoteRecord cvr = Persistence.getByID(cvr_id, CastVoteRecord.class);
+        final CastVoteRecord cvr = Persistence.getByID(sbnf.id(), CastVoteRecord.class);
         if (cvr == null) {
           badDataContents(the_response, "could not find CVR");
         } else {
+          final List<CVRContestInfo> contest_info = new ArrayList<>();
+          for (final CVRContestInfo ci : cvr.contestInfo()) {
+            contest_info.add(new CVRContestInfo(ci.contest(), "ballot not found", 
+                                                null, new ArrayList<String>()));
+          }
           final CastVoteRecord acvr =
               new CastVoteRecord(RecordType.PHANTOM_BALLOT,
                                  Instant.now(), cvr.countyID(), cvr.scannerID(),
                                  cvr.batchID(), cvr.recordID(),
                                  cvr.imprintedID(), cvr.ballotType(),
-                                 new ArrayList<CVRContestInfo>());
+                                 contest_info);
           Persistence.saveOrUpdate(acvr);
           if (cdb.submitAuditCVR(cvr, acvr)) {
             ok(the_response, "audit CVR submitted");
           }
         }
       }
+    } catch (final JsonSyntaxException e) {
+      this.badDataType(the_response, "invalid request format");
     } catch (final NumberFormatException e) {
       this.badDataContents(the_response, "invalid CVR id");
     } catch (final PersistenceException e) {
