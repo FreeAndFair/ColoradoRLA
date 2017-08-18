@@ -83,19 +83,19 @@ const BallotReview = ({ county, marks }: any) => {
 const ReviewStage = (props: any) => {
     const {
         county,
+        countyDashboardRefresh,
         currentBallot,
         marks,
         nextStage,
         prevStage,
-        selectNextBallot,
         uploadAcvr,
     } = props;
 
     const onClick = () => {
         const marks = county.acvrs[currentBallot.id];
 
-        uploadAcvr(marks, currentBallot);
-        selectNextBallot();
+        uploadAcvr(marks, currentBallot)
+            .then(() => countyDashboardRefresh());
         nextStage();
     };
 

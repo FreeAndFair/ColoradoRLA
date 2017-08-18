@@ -4,6 +4,7 @@ import { bindActionCreators } from 'redux';
 
 import ReviewStage from './ReviewStage';
 
+import countyDashboardRefresh from '../../../../action/countyDashboardRefresh';
 import uploadAcvr from '../../../../action/uploadAcvr';
 
 
@@ -22,6 +23,7 @@ const mapStateToProps = ({ county }: any) => {
 };
 
 const mapDispatchToProps = (dispatch: any) => bindActionCreators({
+    countyDashboardRefresh,
     selectNextBallot: () => ({ type: 'SELECT_NEXT_BALLOT' }),
     uploadAcvr,
 }, dispatch);
