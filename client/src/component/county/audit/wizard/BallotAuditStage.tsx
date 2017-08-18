@@ -7,7 +7,8 @@ import { Checkbox, EditableText, MenuDivider, Radio, RadioGroup } from '@bluepri
 import BackButton from './BackButton';
 
 
-const BallotNotFoundForm = ({ noBallot }: any) => {
+const BallotNotFoundForm = ({ ballotNotFound, currentBallot }: any) => {
+    const onClick = () => ballotNotFound(currentBallot.id);
     return (
         <div>
             <div>
@@ -15,14 +16,14 @@ const BallotNotFoundForm = ({ noBallot }: any) => {
                 Style, and Imprinted ID cannot be found, select the "Ballot Card Not Found"
                 button and you will be given a new ballot card to audit.
             </div>
-            <button className='pt-button pt-intent-primary' onClick={ noBallot }>
+            <button className='pt-button pt-intent-primary' onClick={ onClick }>
                 Ballot Card Not Found
             </button>
         </div>
     );
 };
 
-const AuditInstructions = ({ ballotsToAudit, currentBallot }: any) => (
+const AuditInstructions = ({ ballotNotFound, ballotsToAudit, currentBallot }: any) => (
     <div className='pt-card'>
         <div>
             Use this page to report the voter markings on the ballot with ID
@@ -50,7 +51,9 @@ const AuditInstructions = ({ ballotsToAudit, currentBallot }: any) => (
                     the overvote. Please include notes in the comments field.
                 </div>
                 <MenuDivider />
-                <BallotNotFoundForm />
+                <BallotNotFoundForm
+                    ballotNotFound={ ballotNotFound }
+                    currentBallot={ currentBallot } />
             </div>
         </div>
     </div>
@@ -172,6 +175,7 @@ const BallotAuditForm = (props: any) => {
 
 const BallotAuditStage = (props: any) => {
     const {
+        ballotNotFound,
         county,
         fetchCvrById,
         nextStage,
@@ -189,6 +193,7 @@ const BallotAuditStage = (props: any) => {
         <div>
             <h2>Ballot verification</h2>
             <AuditInstructions
+                ballotNotFound={ ballotNotFound }
                 ballotsToAudit={ ballotsToAudit }
                 currentBallot={ currentBallot }
             />

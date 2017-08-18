@@ -4,6 +4,7 @@ import { bindActionCreators } from 'redux';
 
 import BallotAuditStage from './BallotAuditStage';
 
+import ballotNotFound from '../../../../action/ballotNotFound';
 import fetchCvrById from '../../../../action/fetchCvrById';
 
 
@@ -20,6 +21,7 @@ const mapStateToProps = ({ county }: any) => {
 };
 
 const mapDispatchToProps = (dispatch: any) => bindActionCreators({
+    ballotNotFound,
     fetchCvrById,
     updateBallotMarks: (data: any) => ({
         data,
