@@ -9,19 +9,20 @@ import publishBallotsToAudit from '../../../action/publishBallotsToAudit';
 
 class AuditBallotListContainer extends React.Component<any, any> {
     public render() {
-        const { history, publishBallotsToAudit } = this.props;
+        const { history, publishBallotsToAudit, sos } = this.props;
 
         const props = {
             back: () => history.push('/sos/audit/seed'),
             publishBallotsToAudit,
             saveAndDone: () => history.push('/sos'),
+            sos,
         };
 
         return <AuditReviewPage { ...props } />;
     }
 }
 
-const mapStateToProps = () => ({});
+const mapStateToProps = ({ sos }: any) => ({ sos });
 
 const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
     publishBallotsToAudit,

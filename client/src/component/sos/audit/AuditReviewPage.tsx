@@ -24,7 +24,7 @@ const Breadcrumb = () => (
 );
 
 
-const AuditReview = ({ back, publishBallotsToAudit, saveAndDone }: any) => {
+const AuditReview = ({ back, publishBallotsToAudit, saveAndDone, sos }: any) => {
     const launch = () => {
         publishBallotsToAudit();
         saveAndDone();
@@ -40,6 +40,20 @@ const AuditReview = ({ back, publishBallotsToAudit, saveAndDone }: any) => {
                 This is the set of audit data which will be used to define the list of
                 ballots to audit for each county. Once this is submitted, it will be released
                 to the counties and the previous pages will not be editable.
+            </div>
+            <div className='pt-card'>
+                <table className='pt-table'>
+                    <tbody>
+                        <tr>
+                            <td>Risk Limit:</td>
+                            <td>{ sos.riskLimit }</td>
+                        </tr>
+                        <tr>
+                            <td>Random Number Generator Seed:</td>
+                            <td>{ sos.seed }</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
             <div>
                 <button onClick={ back } className='pt-button'>
