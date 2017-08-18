@@ -17,7 +17,7 @@ const createSubmitAction = ({
             method: 'post',
         };
 
-        fetch(url, init)
+        return fetch(url, init)
             .then(r => {
                 if (!r.ok) {
                     dispatch({ type: failType });
