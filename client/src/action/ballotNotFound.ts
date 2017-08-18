@@ -18,4 +18,4 @@ const ballotNotFound = createSubmitAction({
 });
 
 
-export default (id: any) => ballotNotFound(id);
+export default (id: any) => ballotNotFound({ id });
