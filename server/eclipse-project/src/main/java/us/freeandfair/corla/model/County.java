@@ -41,6 +41,11 @@ import us.freeandfair.corla.persistence.PersistentEntity;
 @SuppressWarnings("PMD.ImmutableField")
 public class County implements PersistentEntity, Serializable {
   /**
+   * The "my_id" string.
+   */
+  private static final String MY_ID = "my_id";
+  
+  /**
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1L;
@@ -63,9 +68,9 @@ public class County implements PersistentEntity, Serializable {
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "county_contest",
             joinColumns = @JoinColumn(name = "county_id", 
-                                      referencedColumnName = "my_identifier"),
+                                      referencedColumnName = MY_ID),
             inverseJoinColumns = @JoinColumn(name = "contest_id", 
-                                             referencedColumnName = "my_id"))
+                                             referencedColumnName = MY_ID))
   private Set<Contest> my_contests;
   
   /**
@@ -74,9 +79,9 @@ public class County implements PersistentEntity, Serializable {
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "county_administrator",
              joinColumns = @JoinColumn(name = "county_id", 
-                                       referencedColumnName = "my_identifier"),
+                                       referencedColumnName = MY_ID),
              inverseJoinColumns = @JoinColumn(name = "administrator_id", 
-                                              referencedColumnName = "my_id"))
+                                              referencedColumnName = MY_ID))
   private Set<Administrator> my_administrators;
 
   /**
