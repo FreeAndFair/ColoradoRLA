@@ -7,6 +7,14 @@ import BallotManifestUploader from './BallotManifestUploader';
 import uploadBallotManifest from '../../../action/uploadBallotManifest';
 
 
+const UploadedBallotManifest = ({ hash }: any) => (
+    <div className='pt-card'>
+        <div>Ballot manifest <strong>uploaded</strong>.</div>
+        <div>SHA-256 hash: { hash }</div>
+    </div>
+);
+
+
 class BallotManifestUploaderContainer extends React.Component<any, any> {
     public render() {
         const { county, uploadBallotManifest } = this.props;
@@ -17,6 +25,10 @@ class BallotManifestUploaderContainer extends React.Component<any, any> {
 
             uploadBallotManifest(county.id, file, hash);
         };
+
+        if (county.ballotManifestHash) {
+            return <UploadedBallotManifest hash={ county.ballotManifestHash } />;
+        }
 
         return <BallotManifestUploader upload={ upload } forms={ forms } />;
     }
