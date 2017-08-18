@@ -7,7 +7,7 @@ class AuditBoardSignInForm extends React.Component<any, any> {
     public state = {
         name: '',
         party: '',
-    }
+    };
 
     public render() {
         const { boardMemberIndex, forms } = this.props;
@@ -58,17 +58,17 @@ class AuditBoardSignInForm extends React.Component<any, any> {
         s.name = name;
 
         this.setState(s);
-    };
+    }
 
     private onPartyChange = (e: any) => {
         const s = { ...this.state };
 
-        const party = e.target.value
+        const party = e.target.value;
         s.party = party;
 
         this.setState(s);
-    };
-};
+    }
+}
 
 
 export default AuditBoardSignInForm;

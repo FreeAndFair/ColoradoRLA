@@ -12,10 +12,10 @@ import fetchCvrById from '../../../action/fetchCvrById';
 
 
 const intervalIds: any = {
-    refreshId: null,
+    ballotUnderAuditId: null,
     fetchContestsId: null,
     fetchCvrId: null,
-    ballotUnderAuditId: null,
+    refreshId: null,
 };
 
 class CountyHomeContainer extends React.Component<any, any> {
@@ -48,7 +48,7 @@ class CountyHomeContainer extends React.Component<any, any> {
 
         if (!intervalIds.fetchCvrId) {
             if (ballotUnderAuditId) {
-                intervalIds.ballotUnderAuditId = ballotUnderAuditId
+                intervalIds.ballotUnderAuditId = ballotUnderAuditId;
                 fetchCvrById(ballotUnderAuditId);
 
                 intervalIds.fetchCvrId = setInterval(

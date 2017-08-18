@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 const parseCountyStatus = (countyStatus: any) => {
     const result: any = {};
 
-    _.forEach(countyStatus, (c) => {
+    _.forEach(countyStatus, c => {
         result[c.id] = {
             auditedBallotCount: c.audited_ballot_count,
             ballotManifestHash: c.ballot_manifest_hash,
@@ -35,8 +35,8 @@ const parseAuditedContests = (data: any) => {
 
 
 export const parse = (data: any) => ({
-    auditedContests: parseAuditedContests(data.audited_contests),
     auditStage: data.audit_stage,
+    auditedContests: parseAuditedContests(data.audited_contests),
     countyStatus: parseCountyStatus(data.county_status),
     handCountContests: data.hand_count_contests,
     riskLimit: data.risk_limit,

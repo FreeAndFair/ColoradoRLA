@@ -67,7 +67,7 @@ const SelectContestsPage = (props: any) => {
         back,
         contests,
         nextPage,
-        selectContestsForAudit
+        selectContestsForAudit,
     } = props;
 
     const forms: any = {};

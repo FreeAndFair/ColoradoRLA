@@ -11,8 +11,8 @@ import fetchContests from '../../action/fetchContests';
 
 
 const intervalIds: any = {
-    refreshId: null,
     fetchContestsId: null,
+    refreshId: null,
 };
 
 class SoSHomeContainer extends React.Component<any, any> {

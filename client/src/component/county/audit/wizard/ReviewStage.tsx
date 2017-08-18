@@ -6,7 +6,7 @@ import BackButton from './BackButton';
 
 
 const BallotContestReview = ({ contest, marks }: any) => {
-    const { comments, noConsensus, } = marks;
+    const { comments, noConsensus } = marks;
     const { votesAllowed } = contest;
     const votesMarked = _.size(marks.choices);
 
@@ -92,9 +92,9 @@ const ReviewStage = (props: any) => {
     } = props;
 
     const onClick = () => {
-        const marks = county.acvrs[currentBallot.id];
+        const m = county.acvrs[currentBallot.id];
 
-        uploadAcvr(marks, currentBallot)
+        uploadAcvr(m, currentBallot)
             .then(() => countyDashboardRefresh());
         nextStage();
     };

@@ -104,7 +104,7 @@ const CountyInfo = ({ county, info }: any) => {
             </div>
         </div>
     );
-}
+};
 
 const Info = ({ info, contests, county }: any) => (
     <div className='info pt-card'>

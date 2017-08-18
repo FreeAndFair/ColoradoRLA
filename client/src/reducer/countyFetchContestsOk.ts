@@ -4,8 +4,8 @@ const { merge } = _;
 
 const parseChoices = (names: any, descriptions: any) => {
     return _.map(names, (name: any) => ({
-        name,
         description: descriptions[name],
+        name,
     }));
 };
 
@@ -26,7 +26,7 @@ const parse = (data: any, state: any) => {
     });
 
     return defs;
-}
+};
 
 
 export default (state: any, action: any) => {

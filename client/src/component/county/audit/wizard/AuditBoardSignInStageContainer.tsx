@@ -15,7 +15,8 @@ class AuditBoardSignInStageContainer extends React.Component<any, any> {
 
 const mapStateToProps = ({ county }: any) => {
     return {
-        auditBoard: county.auditBoardMembers, county
+        auditBoard: county.auditBoardMembers,
+        county,
     };
 };
 

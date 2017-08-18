@@ -38,4 +38,4 @@ export default (state: any, action: any) => {
     nextState.county.acvrs[ballotId][contestId] = _.merge({}, marks, nextMarks);
 
     return nextState;
-}
+};

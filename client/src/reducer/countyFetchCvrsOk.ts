@@ -16,7 +16,7 @@ const parseContestInfo = (state: any) => (data: any) => {
     const contest = state.county.contestDefs[contestId];
 
     return { choices, contest };
-}
+};
 
 
 const parseCvr = (state: any) => (data: any) => ({
@@ -38,7 +38,7 @@ const parse = (data: any, state: any) => data.map(parseCvr(state));
 export default (state: any, action: any) => {
     if (!state.county.contestDefs) {
         return state;
-    };
+    }
 
     const county = merge({}, state.county);
 

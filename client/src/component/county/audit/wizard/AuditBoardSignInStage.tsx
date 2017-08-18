@@ -17,7 +17,7 @@ const AuditBoardSignInStage = (props: any) => {
         nextStage();
     };
 
-    if (auditBoard.length == 2) {
+    if (auditBoard.length === 2) {
         return (
             <div>
                 <div>

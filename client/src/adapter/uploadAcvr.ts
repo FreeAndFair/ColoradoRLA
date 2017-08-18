@@ -23,7 +23,7 @@ interface Acvr {
         record_type: string;
         scanner_id: string;
         timestamp: Timestamp;
-    }
+    };
     cvr_id: number;
 }
 

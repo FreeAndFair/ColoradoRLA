@@ -6,7 +6,7 @@ import createFetchAction from './createFetchAction';
 
 
 export default (id: number) => (dispatch: Dispatch<any>) => {
-    const e = endpoint('cvr/county')
+    const e = endpoint('cvr/county');
     const url = `${e}?${id}`;
 
     const action = createFetchAction({
