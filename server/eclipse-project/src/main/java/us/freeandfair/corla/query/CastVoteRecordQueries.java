@@ -14,6 +14,7 @@ package us.freeandfair.corla.query;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.OptionalLong;
 import java.util.stream.Stream;
 
 import javax.persistence.PersistenceException;
@@ -274,13 +275,13 @@ public final class CastVoteRecordQueries {
    * @param the_timestamp The timestamp.
    * @param the_county_id The county.
    * @param the_type The type.
-   * @return the count, or -1 if the query could not be completed 
-   * successfully.
+   * @return the count, as an OptionalLong (empty if the query was 
+   * unsuccessful).
    */
-  public static Long countMatching(final Instant the_timestamp,
-                                   final Integer the_county_id,
-                                   final RecordType the_type) {
-    Long result = Long.valueOf(-1);
+  public static OptionalLong countMatching(final Instant the_timestamp,
+                                           final Integer the_county_id,
+                                           final RecordType the_type) {
+    OptionalLong result = OptionalLong.empty();
     
     try {
       final boolean transaction = Persistence.beginTransaction();
@@ -295,7 +296,7 @@ public final class CastVoteRecordQueries {
       cq.select(cb.count(root));
       cq.where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
       final Query<Long> query = s.createQuery(cq);
-      result = query.getSingleResult();
+      result = OptionalLong.of(query.getSingleResult());
       if (transaction) {
         try {
           Persistence.commitTransaction();
@@ -313,6 +314,32 @@ public final class CastVoteRecordQueries {
     } else {
       Main.LOGGER.debug("query succeeded, returning CVR count");
     }
+    return result;
+  }
+  
+  /**
+   * Counts the CastVoteRecord objects with the specified type.
+   *
+   * @param the_type The type.
+   * @return the count, as an OptionalLong (empty if the query was 
+   * unsuccessful).
+   */
+  public static OptionalLong countMatching(final RecordType the_type) {
+    OptionalLong result = OptionalLong.empty();
+
+    try {
+      final Session s = Persistence.currentSession();
+      final CriteriaBuilder cb = s.getCriteriaBuilder();
+      final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+      final Root<CastVoteRecord> root = cq.from(CastVoteRecord.class);
+      cq.select(cb.count(root));
+      cq.where(cb.equal(root.get("my_record_type"), the_type));
+      final TypedQuery<Long> query = s.createQuery(cq);
+      result = OptionalLong.of(query.getSingleResult());
+    } catch (final PersistenceException e) {
+      // ignore
+    }
+
     return result;
   }
   
@@ -362,5 +389,4 @@ public final class CastVoteRecordQueries {
     }
     return result;
   }
-
 }
