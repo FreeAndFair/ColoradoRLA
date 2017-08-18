@@ -24,7 +24,7 @@ runbook.docx: 20_runbook.md
 	pandoc 20_runbook.md --variable linkcolor -f markdown -t docx -o runbook.docx
 
 user_manual.docx: 23_user_manual.md
-	pandoc 23_user_manual.md --variable linkcolor -f markdown -t docx -o user_manual.docx
+	pandoc 23_user_manual.md 89_glossary.md --variable linkcolor -f markdown -t docx -o user_manual.docx
 
 clean:
 	rm -f book.pdf book.html runbook.docx user_manual.docx
