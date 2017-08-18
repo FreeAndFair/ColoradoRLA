@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import NavMenu from './NavMenu';
 
 import logout from '../action/logout';
+import resetDatabase from '../action/resetDatabase';
 
 
 const MenuButton = () =>
@@ -35,10 +36,23 @@ const LogoutButton = ({ logout }: any) =>
     <button className='pt-button pt-minimal pt-icon-log-out' onClick={ logout } />;
 
 
+const ResetDatabaseButton = ({ reset }: any) => (
+    <button
+        className='pt-button pt-intent-danger pt-icon-warning-sign'
+        onClick={ reset }>
+        DANGER: Reset Database
+    </button>
+);
+
+
 export default function withNav(Menu: any, path: any): any {
     class Nav extends React.Component<any, any> {
         public render() {
             const logout = () => window.location.replace('/login');
+
+            const resetSection = path === '/sos'
+                               ? <ResetDatabaseButton reset={ this.props.resetDatabase } />
+                               : <div />;
 
             return (
                 <nav className='pt-navbar'>
@@ -49,10 +63,13 @@ export default function withNav(Menu: any, path: any): any {
                         <Heading />
                     </div>
                     <div className='pt-navbar-group pt-align-right'>
+                        { resetSection }
+                        <Divider />
                         <HomeButton path={ path } />
                         <Divider />
                         <LogoutButton logout={ logout }/>
                     </div>
+
                 </nav>
             );
         }
@@ -60,6 +77,7 @@ export default function withNav(Menu: any, path: any): any {
 
     const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
         logout,
+        resetDatabase,
     }, dispatch);
 
     return connect(null, mapDispatchToProps)(Nav);
