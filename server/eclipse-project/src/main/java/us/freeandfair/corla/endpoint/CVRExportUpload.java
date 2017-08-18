@@ -56,7 +56,6 @@ import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.model.UploadedFile.FileType;
 import us.freeandfair.corla.model.UploadedFile.HashStatus;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.CountyDashboardQueries;
 import us.freeandfair.corla.util.FileHelper;
 import us.freeandfair.corla.util.SparkHelper;
 
@@ -112,7 +111,7 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
    */
   private UploadedFile attemptFilePersistence(final Response the_response, 
                                               final UploadInformation the_info,
-                                              final Integer the_county_id) {
+                                              final Long the_county_id) {
     UploadedFile result = null;
     
     try (FileInputStream is = new FileInputStream(the_info.my_file)) {
@@ -153,9 +152,9 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
    * @param the_timestamp The timestamp.
    */
   private void updateCountyDashboard(final Response the_response, 
-                                     final Integer the_county_id, 
+                                     final Long the_county_id, 
                                      final Instant the_timestamp) {
-    final CountyDashboard cdb = CountyDashboardQueries.get(the_county_id);
+    final CountyDashboard cdb = Persistence.getByID(the_county_id, CountyDashboard.class);
     if (cdb == null) {
       serverError(the_response, "could not locate county dashboard");
     } else {
@@ -245,7 +244,7 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
       // abort the transaction and leave the server state unchanged.
       badDataContents(the_response, "hash mismatch");
       the_info.my_ok = false;
-      attemptFilePersistence(the_response, the_info, the_county.identifier());
+      attemptFilePersistence(the_response, the_info, the_county.id());
       Main.LOGGER.info("hash did not match for uploaded file");
     }
 
@@ -261,9 +260,9 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
           if (count.isPresent()) {
             Main.LOGGER.info(count.getAsLong() + " uploaded CVRs in storage");
           }
-          updateCountyDashboard(the_response, the_county.identifier(), 
+          updateCountyDashboard(the_response, the_county.id(), 
                                 the_info.my_timestamp);
-          attemptFilePersistence(the_response, the_info, the_county.identifier());
+          attemptFilePersistence(the_response, the_info, the_county.id());
           ok(the_response, "file successfully uploaded and hash matched");
         } else {
           Main.LOGGER.info("could not parse malformed CVR export file");

@@ -51,7 +51,6 @@ import us.freeandfair.corla.model.Administrator;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.CountyQueries;
 import us.freeandfair.corla.query.PersistentASMStateQueries;
 
 /**
@@ -300,7 +299,7 @@ public final class Main {
     // next, iterate over the counties and check the county and 
     // audit board dashboards
     for (final County c : the_counties) {
-      final String asm_id = String.valueOf(c.identifier());
+      final String asm_id = String.valueOf(c.id());
       final PersistentASMState county_state =
           PersistentASMStateQueries.get(CountyDashboardASM.class, asm_id);
       restoreOrPersistState(new CountyDashboardASM(asm_id), county_state);
@@ -337,9 +336,9 @@ public final class Main {
       for (final String s : properties.stringPropertyNames()) {
         // if the property name is an integer, we assume it's a county ID
         try {
-          final Integer id = Integer.valueOf(s);
+          final Long id = Long.valueOf(s);
           final String name = properties.getProperty(s);
-          County county = CountyQueries.byID(id);
+          County county = Persistence.getByID(id, County.class);
           if (county == null) {
             county = 
                 new County(name, id, new HashSet<Contest>(), new HashSet<Administrator>());

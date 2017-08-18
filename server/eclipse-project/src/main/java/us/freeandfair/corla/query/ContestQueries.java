@@ -117,7 +117,7 @@ public final class ContestQueries {
       final boolean transaction = Persistence.beginTransaction();
       final Set<Contest> query_results = new HashSet<Contest>();
       for (final Integer county_id : the_county_ids) {
-        final County c = CountyQueries.byID(county_id);
+        final County c = Persistence.getByID(county_id, County.class);
         if (c != null) {
           query_results.addAll(c.contests());
         }

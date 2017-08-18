@@ -36,7 +36,6 @@ import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.CountyDashboardQueries;
 
 /**
  * The "audit CVR upload" endpoint.
@@ -98,8 +97,8 @@ public class ACVRUpload extends AbstractAuditBoardDashboardEndpoint {
           Main.LOGGER.info(count.getAsLong() + " ACVRs in storage");
         }
         final CountyDashboard cdb = 
-            CountyDashboardQueries.get(Authentication.
-                                       authenticatedCounty(the_request).identifier());
+            Persistence.getByID(Authentication.authenticatedCounty(the_request).id(),
+                                CountyDashboard.class);
         if (cdb == null) {
           Main.LOGGER.error("could not get audit board dashboard");
           serverError(the_response, "Could not save ACVR to dashboard");

@@ -26,7 +26,6 @@ import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.IntermediateAuditReportInfo;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.CountyDashboardQueries;
 
 /**
  * Publish the intermediate audit report by the audit board.
@@ -77,8 +76,8 @@ public class IntermediateAuditReport extends AbstractAuditBoardDashboardEndpoint
       final IntermediateAuditReportInfo report =
           Main.GSON.fromJson(the_request.body(), IntermediateAuditReportInfo.class);
       final CountyDashboard cdb = 
-          CountyDashboardQueries.get(Authentication.
-                                     authenticatedCounty(the_request).identifier());
+          Persistence.getByID(Authentication.authenticatedCounty(the_request).id(),
+                              CountyDashboard.class);
       if (cdb == null) {
         Main.LOGGER.error("could not get audit board dashboard");
         serverError(the_response, "Could not save intermediate audit report");
