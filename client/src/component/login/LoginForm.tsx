@@ -12,7 +12,7 @@ export interface FormFields {
 function isFormValid(form: FormFields): boolean {
     const { username, password } = form;
 
-    return (username.length > 0) && (password.length > 0);
+    return username.length > 0;
 }
 
 interface LoginFormProps {
