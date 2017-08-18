@@ -2,37 +2,58 @@ import * as React from 'react';
 
 import * as _ from 'lodash';
 
-import { Checkbox, EditableText, Radio, RadioGroup } from '@blueprintjs/core';
-
-import findById from '../../../../findById';
+import { Checkbox, EditableText, MenuDivider, Radio, RadioGroup } from '@blueprintjs/core';
 
 import BackButton from './BackButton';
 
 
-const AuditInstructions = ({ ballotsToAudit, currentBallot }: any) => (
+const BallotNotFoundForm = ({ ballotNotFound, currentBallot }: any) => {
+    const onClick = () => ballotNotFound(currentBallot.id);
+    return (
+        <div>
+            <div>
+                If the ballot card corresponding to the above Ballot ID, Ballot
+                Style, and Imprinted ID cannot be found, select the "Ballot Card Not Found"
+                button and you will be given a new ballot card to audit.
+            </div>
+            <button className='pt-button pt-intent-primary' onClick={ onClick }>
+                Ballot Card Not Found
+            </button>
+        </div>
+    );
+};
+
+const AuditInstructions = ({ ballotNotFound, ballotsToAudit, currentBallot }: any) => (
     <div className='pt-card'>
         <div>
             Use this page to report the voter markings on the ballot with ID
-            #{ currentBallot.id }, out of { ballotsToAudit } ballots that you must
-            audit.
+            #{ currentBallot.id }, out of { ballotsToAudit.length } ballots that you
+            must audit.
         </div>
         <div>
             The current ballot is:
             <ul>
-                <li>{ currentBallot.id }</li>
-                <li>{ currentBallot.style.name }</li>
+                <li>Ballot ID: { currentBallot.id }</li>
+                <li>Ballot Style: { currentBallot.ballotType }</li>
+                <li>Imprinted ID: { currentBallot.imprintedId }</li>
             </ul>
             <div>
                 Please ensure that the paper ballot you are examining is the
                 same ballot style/ID.
             </div>
             <div className='pt-card'>
-                Record here the <strong> voter intent </strong> as described by the Voter
-                Intent Guide from the Secretary of State. All markings <strong> do not </strong>
-                need to be recorded. Replicate on this page all <strong> valid votes </strong> in
-                each ballot contest contained on this paper ballot. Or, in case of an
-                <strong> overvote</strong>, record all final voter choices that contribute to
-                the overvote. Please include notes in the comments field.
+                <div>
+                    Record here the <strong> voter intent </strong> as described by the Voter
+                    Intent Guide from the Secretary of State. All markings <strong> do not </strong>
+                    need to be recorded. Replicate on this page all <strong> valid votes </strong> in
+                    each ballot contest contained on this paper ballot. Or, in case of an
+                    <strong> overvote</strong>, record all final voter choices that contribute to
+                    the overvote. Please include notes in the comments field.
+                </div>
+                <MenuDivider />
+                <BallotNotFoundForm
+                    ballotNotFound={ ballotNotFound }
+                    currentBallot={ currentBallot } />
             </div>
         </div>
     </div>
@@ -53,26 +74,22 @@ const ContestInfo = ({ contest }: any) => {
 const ContestChoices = (props: any) => {
     const { choices, marks, noConsensus, updateBallotMarks } = props;
 
-    const updateChoiceById = (id: number) => (e: any) => {
-        const nextChoices = _.without(marks.choices, id);
+    const updateChoiceByName = (name: string) => (e: any) => {
+        const checkbox = e.target;
 
-        if (e.target.checked) {
-            nextChoices.push(id);
-        }
-
-        updateBallotMarks({ choices: nextChoices });
+        updateBallotMarks({ choices: { [name]: checkbox.checked } });
     };
 
-    const choiceForms = _.map(choices, (c: any) => {
-        const checked = _.includes(marks.choices, c.id);
+    const choiceForms = _.map(choices, (choice: any) => {
+        const checked = (marks.choices || {})[choice.name];
 
         return (
             <Checkbox
-                key={ c.id }
+                key={ choice.name }
                 disabled={ noConsensus }
                 checked={ checked }
-                onChange={ updateChoiceById(c.id) }
-                label={ c.name }
+                onChange={ updateChoiceByName(choice.name) }
+                label={ choice.name }
             />
         );
     });
@@ -98,18 +115,16 @@ const ContestComments = ({ comments, onChange }: any) => {
 const BallotContestMarkForm = (props: any) => {
     const { contest, county, currentBallot, updateBallotMarks } = props;
     const { name, description, choices, votesAllowed } = contest;
-    const { marks } = currentBallot;
 
-    const contestMarks = marks[contest.id];
-
-    const noConsensus = !!contestMarks.noConsensus;
+    const acvr = ((county.acvrs || {})[currentBallot.id]) || {};
+    const contestMarks = acvr[contest.id] || {};
 
     const updateComments = (comments: any) => {
         updateBallotMarks({ comments });
     };
 
     const updateConsensus = (e: any) => {
-        updateBallotMarks({ noConsensus: e.target.checked });
+        updateBallotMarks({ noConsensus: !!e.target.checked });
     };
 
     return (
@@ -118,13 +133,13 @@ const BallotContestMarkForm = (props: any) => {
             <ContestChoices
                 choices={ choices }
                 marks={ contestMarks }
-                noConsensus={ noConsensus }
+                noConsensus={ !!contestMarks.noConsensus }
                 updateBallotMarks={ updateBallotMarks }
             />
             <div className='pt-card'>
                 <Checkbox
                     label='No consensus'
-                    checked={ noConsensus }
+                    checked={ !!contestMarks.noConsensus }
                     onChange={ updateConsensus }
                 />
             </div>
@@ -136,17 +151,19 @@ const BallotContestMarkForm = (props: any) => {
 const BallotAuditForm = (props: any) => {
     const { county, currentBallot } = props;
 
-    const contestForms = _.map(currentBallot.style.contests, (c: any) => {
+    const contestForms = _.map(currentBallot.contestInfo, (info: any) => {
+        const contest = county.contestDefs[info.contest];
+
         const updateBallotMarks: any = (data: any) => props.updateBallotMarks({
             ballotId: currentBallot.id,
-            contestId: c.id,
+            contestId: contest.id,
             ...data,
         });
 
         return (
             <BallotContestMarkForm
-                key={ c.id }
-                contest={ c }
+                key={ contest.id }
+                contest={ contest }
                 county={ county }
                 currentBallot={ currentBallot }
                 updateBallotMarks={ updateBallotMarks } />
@@ -158,21 +175,31 @@ const BallotAuditForm = (props: any) => {
 
 const BallotAuditStage = (props: any) => {
     const {
-        ballotStyles,
-        ballots,
+        ballotNotFound,
         county,
+        countyDashboardRefresh,
+        fetchCvrById,
         nextStage,
         prevStage,
         updateBallotMarks,
     } = props;
 
-    const ballotsToAudit = county.ballots.length;
-    const currentBallot = findById(county.ballots, county.currentBallotId);
+    const { ballotsToAudit, ballotUnderAuditId, currentBallot } = county;
+
+    if (ballotUnderAuditId !== currentBallot.id) {
+        fetchCvrById(ballotUnderAuditId);
+    }
+
+    const notFoundAndRefresh = () => {
+        ballotNotFound(currentBallot.id);
+        countyDashboardRefresh();
+    };
 
     return (
         <div>
             <h2>Ballot verification</h2>
             <AuditInstructions
+                ballotNotFound={ notFoundAndRefresh }
                 ballotsToAudit={ ballotsToAudit }
                 currentBallot={ currentBallot }
             />

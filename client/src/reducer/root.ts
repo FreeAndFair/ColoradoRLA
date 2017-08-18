@@ -1,9 +1,28 @@
 import * as _ from 'lodash';
 
+import countyAuthOk from './countyAuthOk';
+import countyDashboardRefreshOk from './countyDashboardRefreshOk';
+import countyFetchContestsOk from './countyFetchContestsOk';
+import countyFetchCvrsByIdOk from './countyFetchCvrsByIdOk';
+import countyFetchCvrsOk from './countyFetchCvrsOk';
+import dosAuthOk from './dosAuthOk';
+import dosContestFetchOk from './dosContestFetchOk';
+import dosDashboardRefreshOk from './dosDashboardRefreshOk';
+import establishAuditBoardOk from './establishAuditBoardOk';
+import selectContestsForAuditOk from './selectContestsForAuditOk';
+import setRiskLimitOk from './setRiskLimitOk';
+import updateAcvrForm from './updateAcvrForm';
+import uploadAcvrOk from './uploadAcvrOk';
+import uploadBallotManifestOk from './uploadBallotManifestOk';
+import uploadCvrExportOk from './uploadCvrExportOk';
+import uploadRandomSeedOk from './uploadRandomSeedOk';
+
 
 interface AppState {
     loggedIn: boolean;
+    dashboard?: Dashboard;
     county?: any;
+    sos?: any;
 }
 
 const defaultState = {
@@ -14,82 +33,68 @@ const defaultState = {
 export default function root(state: AppState = defaultState, action: any) {
     switch (action.type) {
 
-    case 'LOGIN': {
-        return { ...state, loggedIn: true };
+    case 'AUTH_COUNTY_ADMIN_OK': {
+        return countyAuthOk(state);
     }
 
-    case 'FETCH_INITIAL_STATE_SEND': {
-        // TODO: add flag to indicate pending fetch.
-        return state;
+    case 'AUTH_STATE_ADMIN_OK': {
+        return dosAuthOk(state);
     }
 
-    case 'FETCH_INITIAL_STATE_RECEIVE': {
-        // TODO: should be a deep merge.
-        return action.data;
+    case 'COUNTY_DASHBOARD_REFRESH_OK': {
+        return countyDashboardRefreshOk(state, action);
     }
 
-    case 'SELECT_NEXT_BALLOT': {
-        const nextState = { ...state };
-
-        const { ballots, currentBallotId } = state.county;
-        const currentIndex = _.findIndex(ballots, (b: any) => b.id === currentBallotId);
-        const nextIndex = currentIndex + 1;
-
-        if (nextIndex >= ballots.length) {
-            // All ballots audited.
-            // TODO: change audit status.
-            return state;
-        }
-
-        const nextBallotId = ballots[nextIndex].id;
-        nextState.county.currentBallotId = nextBallotId;
-
-        return nextState;
+    case 'COUNTY_FETCH_CONTESTS_OK': {
+        return countyFetchContestsOk(state, action);
     }
 
-    case 'UPDATE_BOARD_MEMBER': {
-        const { index, name, party } = action.data;
-        const nextState = { ...state };
-
-        nextState.county.auditBoard = _.clone(nextState.county.auditBoard);
-        nextState.county.auditBoard[index] = { name, party };
-
-        return nextState;
+    case 'COUNTY_FETCH_CVR_BY_ID_OK': {
+        return countyFetchCvrsByIdOk(state, action);
     }
 
-    case 'UPDATE_BALLOT_MARKS': {
-        const {
-            ballotId,
-            choices,
-            comments,
-            contestId,
-            noConsensus,
-        } = action.data;
-        const nextState = { ...state };
+    case 'COUNTY_FETCH_CVRS_OK': {
+        return countyFetchCvrsOk(state, action);
+    }
 
-        const ballots = _.clone(nextState.county.ballots);
-        const ballotIndex = _.findIndex(ballots, (b: any) => b.id === ballotId);
+    case 'DOS_DASHBOARD_REFRESH_OK': {
+        return dosDashboardRefreshOk(state, action);
+    }
 
-        const ballot = { ...ballots[ballotIndex] };
-        ballot.audited = true;
+    case 'DOS_FETCH_CONTESTS_OK': {
+        return dosContestFetchOk(state, action);
+    }
 
-        const marks = { ...ballot.marks[contestId] };
-        if (choices) {
-            marks.choices = choices;
-        }
-        if (comments) {
-            marks.comments = comments;
-        }
-        if (_.isEmpty(noConsensus)) {
-            marks.noConsensus = !!noConsensus;
-        }
+    case 'ESTABLISH_AUDIT_BOARD_OK': {
+        return establishAuditBoardOk(state, action);
+    }
 
-        ballot.marks[contestId] = marks;
+    case 'SELECT_CONTESTS_FOR_AUDIT_OK': {
+        return selectContestsForAuditOk(state, action);
+    }
 
-        ballots[ballotIndex] = ballot;
-        nextState.county.ballots = ballots;
+    case 'SET_RISK_LIMIT_OK': {
+        return setRiskLimitOk(state, action);
+    }
 
-        return nextState;
+    case 'UPDATE_ACVR_FORM': {
+        return updateAcvrForm(state, action);
+    }
+
+    case 'UPLOAD_BALLOT_MANIFEST_OK': {
+        return uploadBallotManifestOk(state, action);
+    }
+
+    case 'UPLOAD_ACVR_OK': {
+        return uploadAcvrOk(state, action);
+    }
+
+    case 'UPLOAD_CVR_EXPORT_OK': {
+        return uploadCvrExportOk(state, action);
+    }
+
+    case 'UPLOAD_RANDOM_SEED_OK': {
+        return uploadRandomSeedOk(state, action);
     }
 
     default:

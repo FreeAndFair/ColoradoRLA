@@ -4,7 +4,9 @@ import { bindActionCreators } from 'redux';
 
 import BallotAuditStage from './BallotAuditStage';
 
-import findById from '../../../../findById';
+import ballotNotFound from '../../../../action/ballotNotFound';
+import countyDashboardRefresh from '../../../../action/countyDashboardRefresh';
+import fetchCvrById from '../../../../action/fetchCvrById';
 
 
 class BallotAuditStageContainer extends React.Component<any, any> {
@@ -13,19 +15,19 @@ class BallotAuditStageContainer extends React.Component<any, any> {
     }
 }
 
-const mapStateToProps = (state: any) => {
-    const { ballotStyles, county } = state;
-    const { ballots, currentBallotId } = county;
+const mapStateToProps = ({ county }: any) => {
+    const { currentBallot } = county;
 
-    const currentBallot = findById(ballots, currentBallotId);
-
-    return { ballotStyles, county, currentBallot, marks: currentBallot.marks };
+    return { county, currentBallot };
 };
 
 const mapDispatchToProps = (dispatch: any) => bindActionCreators({
+    ballotNotFound,
+    countyDashboardRefresh,
+    fetchCvrById,
     updateBallotMarks: (data: any) => ({
         data,
-        type: 'UPDATE_BALLOT_MARKS',
+        type: 'UPDATE_ACVR_FORM',
     }),
 }, dispatch);
 

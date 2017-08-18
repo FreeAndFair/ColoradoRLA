@@ -4,6 +4,8 @@ import * as _ from 'lodash';
 
 import SoSNav from './Nav';
 
+import counties from '../../data/counties';
+
 
 const SeedInfo = ({ seed }: any) => {
     return (
@@ -48,33 +50,42 @@ const ContestUpdates = ({ contests, seed }: any) => {
     );
 };
 
-const CountyUpdates = ({ counties }: any) => {
-    const countyStatuses = _.map(counties, (c: any) => (
-        <tr key={ c.id }>
-            <td>{ c.id }</td>
-            <td>{ c.name }</td>
-            <td>{ c.started }</td>
-            <td>{ c.submitted }</td>
-            <td>{ c.progress }</td>
-        </tr>
-    ));
+const CountyUpdates = ({ countyStatus }: any) => {
+    const countyStatusRows = _.map(countyStatus, (c: any) => {
+        const county = _.find(counties, (x: any) => x.id === c.id);
+        const started = c.auditedBallotCount ? '✓' : '';
+
+        return (
+            <tr key={ c.id }>
+                <td>{ c.id }</td>
+                <td>{ county.name }</td>
+                <td>{ started }</td>
+                <td>{ c.auditedBallotCount }</td>
+                <td>{ c.discrepancyCount }</td>
+                <td>{ c.disagreementCount }</td>
+                <td>{ c.estimatedBallotsToAudit }</td>
+            </tr>
+        );
+    });
 
     return (
         <div className='pt-card'>
             <h3>County Updates</h3>
             <div className='pt-card'>
-                <table className='pt-table'>
+                <table className='pt-table pt-bordered pt-condensed '>
                     <thead>
                         <tr>
                             <td>ID</td>
                             <td>Name</td>
                             <td>Started</td>
                             <td>Submitted</td>
-                            <td>Progress</td>
+                            <td>Discrepancies</td>
+                            <td>Disagreements</td>
+                            <td>To Audit</td>
                         </tr>
                     </thead>
                     <tbody>
-                        { ...countyStatuses }
+                        { ...countyStatusRows }
                     </tbody>
                 </table>
             </div>
@@ -84,7 +95,7 @@ const CountyUpdates = ({ counties }: any) => {
 
 
 const SoSHomePage = (props: any) => {
-    const { contests, counties, seed } = props;
+    const { contests, countyStatus, seed } = props;
 
     return (
         <div className='sos-home'>
@@ -93,7 +104,7 @@ const SoSHomePage = (props: any) => {
                 <em>No notifications.</em>
             </div>
             <div className='sos-info pt-card'>
-                <CountyUpdates counties={ counties} />
+                <CountyUpdates countyStatus={ countyStatus } />
                 <ContestUpdates contests={ contests } seed={ seed } />
             </div>
             <div>

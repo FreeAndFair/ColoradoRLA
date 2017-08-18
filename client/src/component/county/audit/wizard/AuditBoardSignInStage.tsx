@@ -1,61 +1,59 @@
 import * as React from 'react';
 
-import { EditableText, Radio, RadioGroup } from '@blueprintjs/core';
+import AuditBoardSignInForm from './AuditBoardSignInForm';
 
-
-const AuditBoardSignInForm = (props: any) => {
-    const { boardMember, updateBoardMember } = props;
-    const { index, name, party } = boardMember;
-
-    const onNameChange = (nextName: string) => {
-        updateBoardMember(index, nextName, party);
-    };
-
-    const onPartyChange = (e: any) => {
-        const nextParty = e.target.value;
-        updateBoardMember(index, name, nextParty);
-    };
-
-    return (
-        <div>
-            <h3>Audit Board Member</h3>
-            <div className='pt-card'>
-                <label>Full Name:
-                    <EditableText value={ name } onChange={ onNameChange } />
-                </label>
-            </div>
-            <div className='pt-card'>
-                <RadioGroup
-                    label='Party Affiliation'
-                    onChange={ onPartyChange }
-                    selectedValue={ party }
-                >
-                    <Radio
-                        label='Democratic Party'
-                        value='Democratic Party'
-                    />
-                    <Radio
-                        label='Republican Party'
-                        value='Republican Party'
-                    />
-                    <Radio
-                        label='Other Party'
-                        value='Other Party'
-                    />
-                    <Radio
-                        label='Unaffiliated'
-                        value='Unaffiliated'
-                    />
-                </RadioGroup>
-            </div>
-        </div>
-    );
-};
 
 const AuditBoardSignInStage = (props: any) => {
-    const { auditBoard, county, nextStage, updateBoardMember } = props;
+    const { auditBoard, county, establishAuditBoard, nextStage } = props;
 
-    const boardMember = (i: number) => ({ index: i, ...auditBoard[i] });
+    const forms: any = { auditBoard: [] };
+
+    if (!auditBoard) {
+        return <div />;
+    }
+
+    const submit = () => {
+        establishAuditBoard(forms.auditBoard);
+        nextStage();
+    };
+
+    if (auditBoard.length == 2) {
+        return (
+            <div>
+                <div>
+                    <h2>Audit Board Sign-in</h2>
+                    <div className='pt-card'>
+                        Enter the full names and party affiliations of each member of
+                        the Acme County Audit Board who will be conducting this audit
+                        today:
+                    </div>
+                </div>
+                <div className='pt-card'>
+                    <h4>Board Member 1:</h4>
+                    <div>
+                        Name: { auditBoard[0].firstName } { auditBoard[0].lastName }
+                    </div>
+                    <div>
+                        Political party: { auditBoard[0].party }
+                    </div>
+                </div>
+                <div className='pt-card'>
+                    <h4>Board Member 2:</h4>
+                    <div>
+                        Name: { auditBoard[1].firstName } { auditBoard[1].lastName }
+                    </div>
+                    <div>
+                        Political party: { auditBoard[1].party }
+                    </div>
+                </div>
+                <div>
+                </div>
+                <button className='pt-button pt-intent-primary' onClick={ nextStage }>
+                    Submit & Next
+                </button>
+            </div>
+        );
+    }
 
     return (
         <div>
@@ -68,15 +66,15 @@ const AuditBoardSignInStage = (props: any) => {
                 </div>
             </div>
             <AuditBoardSignInForm
-                boardMember={ boardMember(0) }
-                updateBoardMember={ updateBoardMember }
+                boardMemberIndex={ 0 }
+                forms={ forms }
             />
             <AuditBoardSignInForm
-                boardMember={ boardMember(1) }
-                updateBoardMember={ updateBoardMember }
+                boardMemberIndex={ 1 }
+                forms={ forms }
             />
-            <button className='pt-button pt-intent-primary' onClick={ nextStage }>
-                Next
+            <button className='pt-button pt-intent-primary' onClick={ submit }>
+                Submit & Next
             </button>
         </div>
     );

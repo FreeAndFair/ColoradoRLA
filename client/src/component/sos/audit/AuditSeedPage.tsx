@@ -2,6 +2,8 @@ import * as React from 'react';
 
 import Nav from '../Nav';
 
+import SeedForm from './SeedForm';
+
 
 const Breadcrumb = () => (
     <ul className='pt-breadcrumbs'>
@@ -23,7 +25,27 @@ const Breadcrumb = () => (
     </ul>
 );
 
-const AuditSeedPage = ({ back, saveAndNext }: any) => {
+
+const AuditSeedPage = ({ back, nextPage, seed, uploadRandomSeed }: any) => {
+    const forms: any = {};
+
+    const onSaveAndNext = () => {
+        if (forms.seedForm) {
+            uploadRandomSeed(forms.seedForm.seed);
+        }
+
+        nextPage();
+    };
+
+    const setSeedDiv = (
+        <div>
+            Random seed: { seed }
+        </div>
+    );
+
+    const dynamicSeedForm = <SeedForm forms={ forms } />;
+    const seedForm = seed ? setSeedDiv : dynamicSeedForm;
+
     return (
         <div>
             <Nav />
@@ -34,15 +56,13 @@ const AuditSeedPage = ({ back, saveAndNext }: any) => {
 
                 <h4>Audit Random Seed</h4>
                 <div>Please enter the seed generated from the public meeting.</div>
-                <label>Seed
-                    <input className='pt-input' type='text' />
-                </label>
+                { seedForm }
             </div>
             <div>
                 <button onClick={ back } className='pt-button'>
                     Back
                 </button>
-                <button onClick={ saveAndNext} className='pt-button pt-intent-primary'>
+                <button onClick={ onSaveAndNext } className='pt-button pt-intent-primary'>
                     Save & Next
                 </button>
             </div>

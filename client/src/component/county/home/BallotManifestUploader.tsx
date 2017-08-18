@@ -1,16 +1,63 @@
 import * as React from 'react';
 
+import { EditableText } from '@blueprintjs/core';
 
-const BallotManifestUploader = ({ onChange, fileName }: any) => (
-    <div className='pt-card'>
-        Ballot Manifest:
-        <div>
-            <label className='pt-file-upload'>
-                <input type='file' onChange={ onChange } />
-                <span className='pt-file-upload-input'>{ fileName }</span>
-            </label>
-        </div>
-    </div>
-);
+
+class BallotManifestUploader extends React.Component<any, any> {
+    public state: any = {
+        file: null,
+        hash: '',
+    };
+
+    public render() {
+        const { forms, upload } = this.props;
+        const { file, hash } = this.state;
+
+        forms.ballotManifestForm = this.state;
+
+        const fileName = file ? file.name : '';
+
+        return (
+            <div className='pt-card'>
+                <div>
+                    Ballot Manifest file:
+                    <label className='pt-file-upload'>
+
+                        <input type='file' onChange={ this.onFileChange } />
+                        <span className='pt-file-upload-input'>{ fileName }</span>
+                    </label>
+                </div>
+                SHA-256 hash for Ballot Manifest file:
+                <label>
+
+                    <EditableText
+                        className='pt-input'
+                        value={ hash }
+                        onChange={ this.onHashChange } />
+                    <button className='pt-button' onClick={ upload }>
+                        Upload
+                    </button>
+                </label>
+            </div>
+        );
+    }
+
+    public onFileChange = (e: any) => {
+        const s = { ...this.state };
+
+        s.file = e.target.files[0];
+
+        this.setState(s);
+    }
+
+    public onHashChange = (hash: any) => {
+        const s = { ...this.state };
+
+        s.hash = hash;
+
+        this.setState(s);
+    }
+}
+
 
 export default BallotManifestUploader;
