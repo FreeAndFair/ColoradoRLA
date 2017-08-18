@@ -177,6 +177,7 @@ const BallotAuditStage = (props: any) => {
     const {
         ballotNotFound,
         county,
+        countyDashboardRefresh,
         fetchCvrById,
         nextStage,
         prevStage,
@@ -189,11 +190,16 @@ const BallotAuditStage = (props: any) => {
         fetchCvrById(ballotUnderAuditId);
     }
 
+    const notFoundAndRefresh = () => {
+        ballotNotFound(currentBallot.id);
+        countyDashboardRefresh();
+    };
+
     return (
         <div>
             <h2>Ballot verification</h2>
             <AuditInstructions
-                ballotNotFound={ ballotNotFound }
+                ballotNotFound={ notFoundAndRefresh }
                 ballotsToAudit={ ballotsToAudit }
                 currentBallot={ currentBallot }
             />
