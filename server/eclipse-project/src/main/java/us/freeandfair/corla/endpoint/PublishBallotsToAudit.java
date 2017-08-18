@@ -24,15 +24,14 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
+import us.freeandfair.corla.asm.ASMUtilities;
 import us.freeandfair.corla.asm.AuditBoardDashboardASM;
 import us.freeandfair.corla.asm.CountyDashboardASM;
-import us.freeandfair.corla.asm.PersistentASMState;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.model.RLAAlgorithm;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.DoSDashboardQueries;
-import us.freeandfair.corla.query.PersistentASMStateQueries;
 
 /**
  * Download all ballots to audit for the entire state.
@@ -93,23 +92,10 @@ public class PublishBallotsToAudit extends AbstractDoSDashboardEndpoint {
           }
           // update the ASMs for the county and audit board
           if (!DISABLE_ASM) {
-            final CountyDashboardASM county_asm = 
-                new CountyDashboardASM(String.valueOf(cdb.countyID()));
-            final PersistentASMState county_asm_state =
-                PersistentASMStateQueries.get(county_asm.getClass(), county_asm.identity());
-            county_asm_state.applyTo(county_asm);
-            county_asm.stepEvent(COUNTY_START_AUDIT_EVENT);
-            county_asm_state.updateFrom(county_asm);
-            Persistence.saveOrUpdate(county_asm_state);
-
-            final AuditBoardDashboardASM audit_asm = 
-                new AuditBoardDashboardASM(String.valueOf(cdb.countyID()));
-            final PersistentASMState audit_asm_state =
-                PersistentASMStateQueries.get(county_asm.getClass(), county_asm.identity());
-            audit_asm_state.applyTo(audit_asm);
-            audit_asm.stepEvent(AUDIT_BOARD_START_AUDIT_EVENT);
-            audit_asm_state.updateFrom(audit_asm);
-            Persistence.saveOrUpdate(audit_asm_state);
+            ASMUtilities.step(COUNTY_START_AUDIT_EVENT, CountyDashboardASM.class, 
+                              String.valueOf(cdb.countyID()));
+            ASMUtilities.step(AUDIT_BOARD_START_AUDIT_EVENT, AuditBoardDashboardASM.class, 
+                              String.valueOf(cdb.countyID()));
           }
         } catch (final IllegalArgumentException e) {
           serverError(the_response, "could not set ballot list for county " + 

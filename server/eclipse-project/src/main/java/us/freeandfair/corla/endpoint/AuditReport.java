@@ -13,11 +13,18 @@
 package us.freeandfair.corla.endpoint;
 
 import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.SUBMIT_AUDIT_REPORT_EVENT;
+import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.COMPLETE_AUDIT_EVENT;
+import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.*;
 
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.asm.ASMEvent;
+import us.freeandfair.corla.asm.ASMUtilities;
+import us.freeandfair.corla.asm.CountyDashboardASM;
+import us.freeandfair.corla.asm.DoSDashboardASM;
+import us.freeandfair.corla.model.County;
+import us.freeandfair.corla.persistence.Persistence;
 
 /**
  * Publish the intermediate audit report by the audit board.
@@ -26,7 +33,7 @@ import us.freeandfair.corla.asm.ASMEvent;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class AuditReport extends AbstractAuditBoardDashboardEndpoint {
+public class AuditReport extends AbstractAuditBoardDashboardEndpoint {  
   /**
    * {@inheritDoc}
    */
@@ -64,7 +71,26 @@ public class AuditReport extends AbstractAuditBoardDashboardEndpoint {
   @Override
   public String endpoint(final Request the_request,
                          final Response the_response) {
-    ok(the_response, "Save a final audit report.");
+    try {
+      if (!DISABLE_ASM) {
+        ASMUtilities.step(COMPLETE_AUDIT_EVENT, CountyDashboardASM.class, my_asm.identity());
+        // check to see if all counties are complete
+        boolean all_complete = true;
+        for (final County c : Persistence.getAll(County.class)) {
+          final CountyDashboardASM asm = 
+              ASMUtilities.asmFor(CountyDashboardASM.class, String.valueOf(c.identifier()));
+          all_complete &= asm.isInFinalState();       
+        }
+        if (all_complete) {
+          ASMUtilities.step(AUDIT_COMPLETE_EVENT, DoSDashboardASM.class, null);
+        } else {
+          ASMUtilities.step(COUNTY_AUDIT_COMPLETE_EVENT, DoSDashboardASM.class, null);
+        }
+      }
+      ok(the_response, "Final audit report saved (actual action to be specified by CDOS)");
+    } catch (final IllegalStateException e) {
+      illegalTransition(the_response, e.getMessage());
+    }
     return my_endpoint_result;
   }
 }

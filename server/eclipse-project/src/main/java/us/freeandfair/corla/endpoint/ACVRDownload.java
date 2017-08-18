@@ -19,7 +19,6 @@ import java.io.UncheckedIOException;
 import java.util.stream.Stream;
 
 import javax.persistence.PersistenceException;
-import javax.persistence.RollbackException;
 
 import com.google.gson.stream.JsonWriter;
 
@@ -76,7 +75,6 @@ public class ACVRDownload extends AbstractEndpoint {
       final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
       final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
       final JsonWriter jw = new JsonWriter(bw);
-      Persistence.beginTransaction();
       jw.beginArray();
       final Stream<CastVoteRecord> matches = 
           Stream.concat(CastVoteRecordQueries.getMatching(RecordType.AUDITOR_ENTERED),
@@ -92,11 +90,6 @@ public class ACVRDownload extends AbstractEndpoint {
       jw.endArray();
       jw.flush();
       jw.close();
-      try {
-        Persistence.commitTransaction(); 
-      } catch (final RollbackException e) {
-        Persistence.rollbackTransaction();
-      } 
     } catch (final UncheckedIOException | IOException | PersistenceException e) {
       serverError(the_response, "Unable to stream response");
     }
