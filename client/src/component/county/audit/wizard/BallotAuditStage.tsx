@@ -2,10 +2,25 @@ import * as React from 'react';
 
 import * as _ from 'lodash';
 
-import { Checkbox, EditableText, Radio, RadioGroup } from '@blueprintjs/core';
+import { Checkbox, EditableText, MenuDivider, Radio, RadioGroup } from '@blueprintjs/core';
 
 import BackButton from './BackButton';
 
+
+const BallotNotFoundForm = ({ noBallot }: any) => {
+    return (
+        <div>
+            <div>
+                If the ballot card corresponding to the above Ballot ID, Ballot
+                Style, and Imprinted ID cannot be found, select the "Ballot Card Not Found"
+                button and you will be given a new ballot card to audit.
+            </div>
+            <button className='pt-button pt-intent-primary' onClick={ noBallot }>
+                Ballot Card Not Found
+            </button>
+        </div>
+    );
+};
 
 const AuditInstructions = ({ ballotsToAudit, currentBallot }: any) => (
     <div className='pt-card'>
@@ -26,12 +41,16 @@ const AuditInstructions = ({ ballotsToAudit, currentBallot }: any) => (
                 same ballot style/ID.
             </div>
             <div className='pt-card'>
-                Record here the <strong> voter intent </strong> as described by the Voter
-                Intent Guide from the Secretary of State. All markings <strong> do not </strong>
-                need to be recorded. Replicate on this page all <strong> valid votes </strong> in
-                each ballot contest contained on this paper ballot. Or, in case of an
-                <strong> overvote</strong>, record all final voter choices that contribute to
-                the overvote. Please include notes in the comments field.
+                <div>
+                    Record here the <strong> voter intent </strong> as described by the Voter
+                    Intent Guide from the Secretary of State. All markings <strong> do not </strong>
+                    need to be recorded. Replicate on this page all <strong> valid votes </strong> in
+                    each ballot contest contained on this paper ballot. Or, in case of an
+                    <strong> overvote</strong>, record all final voter choices that contribute to
+                    the overvote. Please include notes in the comments field.
+                </div>
+                <MenuDivider />
+                <BallotNotFoundForm />
             </div>
         </div>
     </div>
