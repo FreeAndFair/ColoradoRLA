@@ -19,7 +19,7 @@ package us.freeandfair.corla.json;
  */
 public class SubmittedBallotNotFound {
   /**
-   * The seed.
+   * The id.
    */
   private final Long my_id;
   
