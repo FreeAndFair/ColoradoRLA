@@ -94,7 +94,6 @@ public class BallotNotFound extends AbstractAuditBoardDashboardEndpoint {
     
     // attempt to read the CVR ID from the request
     try {
-      
       final SubmittedBallotNotFound sbnf = 
           Main.GSON.fromJson(the_request.body(), SubmittedBallotNotFound.class);
       if (sbnf.id() == null) {
