@@ -18,17 +18,12 @@ import java.io.OutputStreamWriter;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.PersistenceException;
-import javax.persistence.RollbackException;
-
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.Contest;
-import us.freeandfair.corla.model.County;
-import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.CountyQueries;
+import us.freeandfair.corla.query.ContestQueries;
 import us.freeandfair.corla.util.SparkHelper;
 
 /**
@@ -73,7 +68,8 @@ public class ContestDownloadByCounty extends AbstractEndpoint {
       for (final String s : the_request.queryParams()) {
         county_set.add(Integer.valueOf(s));
       }
-      final Set<Contest> contest_set = getMatchingContests(county_set);
+      final Set<Contest> contest_set = 
+          ContestQueries.forCounties(county_set);
       if (contest_set == null) {
         serverError(the_response, "Error retrieving records from database");
       } else {
@@ -113,37 +109,6 @@ public class ContestDownloadByCounty extends AbstractEndpoint {
       }
     }
     
-    return result;
-  }
-  
-  /**
-   * Gets contests that are in the specified set of counties.
-   * 
-   * @param the_county_ids The counties.
-   * @return the matching contests, or null if the query fails.
-   */
-  private Set<Contest> getMatchingContests(final Set<Integer> the_county_ids) {
-    Set<Contest> result = null;
-    
-    try {
-      Persistence.beginTransaction();
-      final Set<Contest> query_results = new HashSet<Contest>();
-      for (final Integer county_id : the_county_ids) {
-        final County c = CountyQueries.byID(county_id);
-        if (c != null) {
-          query_results.addAll(c.contests());
-        }
-      }
-      result = query_results;
-      try {
-        Persistence.commitTransaction();
-      } catch (final RollbackException e) {
-        Persistence.rollbackTransaction();
-      }
-    } catch (final PersistenceException e) {
-      Main.LOGGER.error("Exception when reading contests from database: " + e);
-    }
-
     return result;
   }
 }

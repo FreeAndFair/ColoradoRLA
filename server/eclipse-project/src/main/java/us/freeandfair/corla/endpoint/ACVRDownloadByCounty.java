@@ -21,7 +21,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import javax.persistence.PersistenceException;
-import javax.persistence.RollbackException;
 
 import com.google.gson.stream.JsonWriter;
 
@@ -79,7 +78,6 @@ public class ACVRDownloadByCounty extends AbstractEndpoint {
       county_set.add(Integer.valueOf(s));
     }
     try {
-      Persistence.beginTransaction();
       final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
       final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
       final JsonWriter jw = new JsonWriter(bw);
@@ -102,11 +100,6 @@ public class ACVRDownloadByCounty extends AbstractEndpoint {
       jw.endArray();
       jw.flush();
       jw.close();
-      try {
-        Persistence.commitTransaction(); 
-      } catch (final RollbackException e) {
-        Persistence.rollbackTransaction();
-      } 
     } catch (final UncheckedIOException | IOException | PersistenceException e) {
       serverError(the_response, "Unable to stream response");
     }

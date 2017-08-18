@@ -76,7 +76,6 @@ public class CVRDownload extends AbstractEndpoint {
       final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
       final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
       final JsonWriter jw = new JsonWriter(bw);
-      Persistence.beginTransaction();
       jw.beginArray();
       final Stream<CastVoteRecord> matches = 
           CastVoteRecordQueries.getMatching(RecordType.UPLOADED);
@@ -91,11 +90,6 @@ public class CVRDownload extends AbstractEndpoint {
       jw.endArray();
       jw.flush();
       jw.close();
-      try {
-        Persistence.commitTransaction(); 
-      } catch (final RollbackException e) {
-        Persistence.rollbackTransaction();
-      } 
       ok(the_response);
     } catch (final UncheckedIOException | IOException | PersistenceException e) {
       serverError(the_response, "Unable to stream response");

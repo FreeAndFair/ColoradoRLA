@@ -114,7 +114,6 @@ public class RLAAlgorithm {
       result.put(name, new Pair<Integer, Map<String, Integer>>(num_winners, vote_totals));
     }
     
-    final boolean transaction = Persistence.beginTransaction();
     final Stream<CastVoteRecord> cvrs =
         CastVoteRecordQueries.getMatching(the_dashboard.cvrUploadTimestamp(), 
                                           the_dashboard.countyID(),
@@ -137,10 +136,7 @@ public class RLAAlgorithm {
       }
       Persistence.currentSession().evict(the_cvr);
     });
-    if (transaction) {
-      Persistence.commitTransaction();
-    }
-    
+
     return result;
   }
   
