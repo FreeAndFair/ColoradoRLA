@@ -2,55 +2,13 @@ import * as React from 'react';
 
 import * as _ from 'lodash';
 
-import findById from '../../../../findById';
-
 import BackButton from './BackButton';
 
 
-const BallotContestResultVoteForN = () => (
-    <div className='pt-card'>
-        <div className='pt-card'>
-            <div>Ballot contest 1</div>
-            <div>Acme County School District RE-1</div>
-            <div>Director</div>
-        </div>
-        <div className='pt-card'>
-            <div>Choice B</div>
-            <div>Choice C</div>
-        </div>
-    </div>
-);
-
-const BallotContestResultYesNo = () => (
-    <div className='pt-card'>
-        <div className='pt-card'>
-            <div>Ballot contest 2</div>
-            <div>Prop 101</div>
-        </div>
-        <div className='pt-card'>
-            Yes
-        </div>
-    </div>
-);
-
-const BallotContestResultUndervote = () => (
-    <div className='pt-card'>
-        <div className='pt-card'>
-            <div>Ballot contest 3</div>
-            <div>Governor</div>
-        </div>
-        <div className='pt-card'>
-            Undervote
-        </div>
-        <div className='pt-card'>
-            Comments: Faint markings visible.
-        </div>
-    </div>
-);
-
-const BallotContestReview = ({ comments, contest, marks, noConsensus }: any) => {
+const BallotContestReview = ({ contest, marks }: any) => {
+    const { comments, noConsensus } = marks;
     const { votesAllowed } = contest;
-    const votesMarked = marks.length;
+    const votesMarked = _.size(marks.choices);
 
     const noConsensusDiv = (
         <div>
@@ -64,10 +22,10 @@ const BallotContestReview = ({ comments, contest, marks, noConsensus }: any) => 
         </div>
     );
 
-    const markedChoiceDivs = _.map(marks, (m: any) => {
+    const markedChoiceDivs = _.map(marks.choices, (_: any, name: any) => {
         return (
-            <div key={ m.id } className='pt-card'>
-                <div>{ m.name }</div>
+            <div key={ name } className='pt-card'>
+                <div>{ name }</div>
             </div>
         );
     });
@@ -106,10 +64,17 @@ const BallotContestReview = ({ comments, contest, marks, noConsensus }: any) => 
     );
 };
 
-const BallotReview = ({ ballotMarks }: any) => {
-    const contestReviews = _.map(ballotMarks, (contestMarks: any) => {
-        const key = contestMarks.contest.id;
-        return <BallotContestReview key={ key } { ...contestMarks } />;
+const BallotReview = ({ county, marks }: any) => {
+    const contestReviews = _.map(marks, (m: any, contestId: any) => {
+        const contest = county.contestDefs[contestId];
+
+        return (
+            <BallotContestReview
+                key={ contestId }
+                contest={ contest }
+                marks={ m }
+            />
+        );
     });
 
     return <div className='pt-card'>{ contestReviews }</div>;
@@ -118,28 +83,25 @@ const BallotReview = ({ ballotMarks }: any) => {
 const ReviewStage = (props: any) => {
     const {
         county,
+        countyDashboardRefresh,
         currentBallot,
-        marks: rawMarks,
+        marks,
         nextStage,
         prevStage,
-        selectNextBallot,
+        uploadAcvr,
     } = props;
 
-    const ballotMarks = _.mapValues(rawMarks, ({choices, comments, noConsensus }: any, contestId: any) => {
-        const contest = findById(county.contests, contestId);
-        const marks = _.map(choices, (id: any) => findById(contest.choices, id));
+    const onClick = () => {
+        const m = county.acvrs[currentBallot.id];
 
-        return { comments, contest, marks, noConsensus };
-    });
-
-    const onClick  = () => {
-        selectNextBallot();
+        uploadAcvr(m, currentBallot)
+            .then(() => countyDashboardRefresh());
         nextStage();
     };
 
     return (
         <div>
-            <BallotReview ballotMarks={ ballotMarks } />
+            <BallotReview county={ county } marks={ marks } />
             <div className='pt-card'>
                 <BackButton back={ prevStage } />
                 <button className='pt-button pt-intent-primary' onClick={ onClick }>

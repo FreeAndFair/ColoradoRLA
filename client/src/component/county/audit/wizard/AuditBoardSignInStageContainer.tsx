@@ -4,6 +4,8 @@ import { bindActionCreators } from 'redux';
 
 import AuditBoardSignInStage from './AuditBoardSignInStage';
 
+import establishAuditBoard from '../../../../action/establishAuditBoard';
+
 
 class AuditBoardSignInStageContainer extends React.Component<any, any> {
     public render() {
@@ -11,14 +13,15 @@ class AuditBoardSignInStageContainer extends React.Component<any, any> {
     }
 }
 
-const mapStateToProps = ({ county }: any) =>
-    ({ auditBoard: county.auditBoard, county });
+const mapStateToProps = ({ county }: any) => {
+    return {
+        auditBoard: county.auditBoardMembers,
+        county,
+    };
+};
 
 const mapDispatchToProps = (dispatch: any) => bindActionCreators({
-    updateBoardMember: (index: any, name: any, party: any) => ({
-        data: { index, name, party },
-        type: 'UPDATE_BOARD_MEMBER',
-    }),
+    establishAuditBoard,
 }, dispatch);
 
 export default connect(

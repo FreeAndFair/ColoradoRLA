@@ -1,7 +1,5 @@
 import * as React from 'react';
 
-import { Checkbox, EditableText, Radio, RadioGroup } from '@blueprintjs/core';
-
 import CountyNav from '../Nav';
 
 import CountyAuditWizardContainer from './wizard/CountyAuditWizardContainer';

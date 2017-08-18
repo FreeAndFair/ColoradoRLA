@@ -1,18 +1,16 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
-import { createStore } from 'redux';
+import { applyMiddleware, createStore } from 'redux';
+import thunk from 'redux-thunk';
 
 import { RootContainer } from './component/RootContainer';
 import rootReducer from './reducer/root';
 
-import fetchInitialState from './action/fetchInitialState';
 
-
-const store = createStore(rootReducer);
+const store = createStore(rootReducer, applyMiddleware(thunk));
 const rootEl = document.getElementById('root');
 
-fetchInitialState(store.dispatch);
 
 const render = (NextRootContainer: any) => {
     const appContainer = (

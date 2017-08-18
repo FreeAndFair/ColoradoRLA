@@ -1,27 +1,46 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators, Dispatch } from 'redux';
 
 import CVRUploader from './CVRUploader';
 
+import uploadCvrExport from '../../../action/uploadCvrExport';
+
+
+const UploadedCvrExport = ({ hash }: any) => (
+    <div className='pt-card'>
+        <div>CVR export <strong>uploaded</strong>.</div>
+        <div>SHA-256 hash: { hash }</div>
+    </div>
+);
 
 class CVRUploaderContainer extends React.Component<any, any> {
     public render() {
-        const onChange = (e: any) => {
-            const input = e.target;
-            const file = input.files[0];
-            // Trigger async file upload action here.
+        const { auditStarted, county, uploadCvrExport } = this.props;
+        const forms: any = {};
+
+        const upload = () => {
+            const { file, hash } = forms.cvrExportForm;
+
+            uploadCvrExport(county.id, file, hash);
         };
 
-        // This will change in app state upon successful file upload.
-        const fileName = 'No file uploaded.';
+        if (auditStarted) {
+            return <UploadedCvrExport hash={ county.cvrExportHash } />;
+        }
 
-        return <CVRUploader onChange={ onChange } fileName={ fileName } />;
+        return <CVRUploader upload={ upload } forms={ forms } />;
     }
 }
 
-const mapStateToProps = () => ({});
+const mapStateToProps = ({ county }: any) => ({
+    auditStarted: !!county.ballotUnderAuditId,
+    county,
+});
 
-const mapDispatchToProps = (dispatch: any) => ({});
+const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
+    uploadCvrExport,
+}, dispatch);
 
 export default connect(
     mapStateToProps,

@@ -1,15 +1,18 @@
 import * as React from 'react';
 
+import { Radio, RadioGroup } from '@blueprintjs/core';
+
 
 export interface FormFields {
-    email: string;
+    dashboard: Dashboard;
     password: string;
+    username: string;
 }
 
 function isFormValid(form: FormFields): boolean {
-    const { email, password } = form;
+    const { username, password } = form;
 
-    return (email.length > 0) && (password.length > 0);
+    return username.length > 0;
 }
 
 interface LoginFormProps {
@@ -27,8 +30,9 @@ extends React.Component<LoginFormProps, LoginFormState> {
 
         this.state = {
             form: {
-                email: '',
+                dashboard: 'sos',
                 password: '',
+                username: '',
             },
         };
     }
@@ -41,10 +45,10 @@ extends React.Component<LoginFormProps, LoginFormState> {
             <div>
                 <label className='pt-label'>
                     Email
-                    <input className='pt-input email'
+                    <input className='pt-input username'
                            type='text'
                            onChange={ this.onEmailChange }
-                           value={ form.email } />
+                           value={ form.username } />
                 </label>
                 <label className='pt-label'>
                     Password
@@ -53,6 +57,13 @@ extends React.Component<LoginFormProps, LoginFormState> {
                            onChange={ this.onPasswordChange }
                            value={ form.password } />
                 </label>
+                <RadioGroup
+                    label='Dashboard'
+                    onChange={ this.onDashboardChange }
+                    selectedValue={ this.state.form.dashboard }>
+                    <Radio label='Secretary of State' value='sos' />
+                    <Radio label='County' value='county' />
+                </RadioGroup>
                 <button
                     disabled={ disabled }
                     className='pt-primary submit'
@@ -63,9 +74,15 @@ extends React.Component<LoginFormProps, LoginFormState> {
         );
     }
 
+    private onDashboardChange = (e: React.ChangeEvent<any>) => {
+        const s = { ...this.state };
+        s.form.dashboard = e.target.value;
+        this.setState(s);
+    }
+
     private onEmailChange = (e: React.ChangeEvent<any>) => {
         const s = { ...this.state };
-        s.form.email = e.target.value;
+        s.form.username = e.target.value;
         this.setState(s);
     }
 

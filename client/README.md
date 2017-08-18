@@ -47,7 +47,7 @@ public audit dashboard, which is not part of the CORLA browser client.
 | `/sos/contest` | Contest Overview |
 | `/sos/contest/{contestId}` | Contest Detail |
 | `/sos/audit` | Audit |
-| `/sos/audit/ballots` | Ballot Selection |
+| `/sos/audit/review` | Review Audit |
 | `/sos/audit/seed` | Seed |
 
 

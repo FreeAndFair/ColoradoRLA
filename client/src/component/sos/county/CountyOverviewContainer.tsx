@@ -1,6 +1,10 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
+import * as _ from 'lodash';
+
+import counties from '../../../data/counties';
+
 import CountyOverviewPage from './CountyOverviewPage';
 
 
@@ -10,11 +14,10 @@ class CountyOverviewContainer extends React.Component<any, any> {
     }
 }
 
-const mapStateToProps = (state: any) => {
-    const { sos } = state;
-    const { counties } = sos;
+const mapStateToProps = ({ sos }: any) => {
+    const { countyStatus } = sos;
 
-    return { counties, sos };
+    return { counties, countyStatus, sos };
 };
 
 const mapDispatchToProps = (dispatch: any) => ({});

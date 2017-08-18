@@ -1,27 +1,47 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators, Dispatch } from 'redux';
 
 import BallotManifestUploader from './BallotManifestUploader';
+
+import uploadBallotManifest from '../../../action/uploadBallotManifest';
+
+
+const UploadedBallotManifest = ({ hash }: any) => (
+    <div className='pt-card'>
+        <div>Ballot manifest <strong>uploaded</strong>.</div>
+        <div>SHA-256 hash: { hash }</div>
+    </div>
+);
 
 
 class BallotManifestUploaderContainer extends React.Component<any, any> {
     public render() {
-        const onChange = (e: any) => {
-            const input = e.target;
-            const file = input.files[0];
-            // Trigger async file upload action here.
+        const { auditStarted, county, uploadBallotManifest } = this.props;
+        const forms: any = {};
+
+        const upload = () => {
+            const { file, hash } = forms.ballotManifestForm;
+
+            uploadBallotManifest(county.id, file, hash);
         };
 
-        // This will change in app state upon successful file upload.
-        const fileName = 'No file uploaded.';
+        if (auditStarted) {
+            return <UploadedBallotManifest hash={ county.ballotManifestHash } />;
+        }
 
-        return <BallotManifestUploader onChange={ onChange } fileName={ fileName } />;
+        return <BallotManifestUploader upload={ upload } forms={ forms } />;
     }
 }
 
-const mapStateToProps = () => ({});
+const mapStateToProps = ({ county }: any) => ({
+    auditStarted: !!county.ballotUnderAuditId,
+    county,
+});
 
-const mapDispatchToProps = (dispatch: any) => ({});
+const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
+    uploadBallotManifest,
+}, dispatch);
 
 export default connect(
     mapStateToProps,

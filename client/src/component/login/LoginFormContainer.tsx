@@ -1,10 +1,13 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { bindActionCreators, Dispatch } from 'redux';
 
 import LoginForm, { FormFields } from './LoginForm';
 
-import submitLogin from '../../action/submitLogin';
+import authCountyAdmin from '../../action/authCountyAdmin';
+import authStateAdmin from '../../action/authStateAdmin';
+import dosDashboardRefresh from '../../action/dosDashboardRefresh';
+import fetchContests from '../../action/fetchContests';
 
 
 export class LoginFormContainer extends React.Component<any, any> {
@@ -17,9 +20,31 @@ export class LoginFormContainer extends React.Component<any, any> {
 
 const mapStateToProps = () => ({});
 
-const mapDispatchToProps = (dispatch: any) => bindActionCreators({
-    submit: submitLogin,
-}, dispatch);
+const mapDispatchToProps = (dispatch: Dispatch<any>) => {
+    const b = bindActionCreators({
+        authCountyAdmin,
+        authStateAdmin,
+        dosDashboardRefresh,
+        fetchContests,
+    }, dispatch);
+
+    const submit = ({ dashboard, username, password }: any) => {
+        switch (dashboard) {
+            case 'sos': {
+                b.authStateAdmin(username, password);
+                b.dosDashboardRefresh();
+                b.fetchContests();
+                break;
+            }
+            case 'county': {
+                b.authCountyAdmin(username, password);
+                break;
+            }
+        }
+    };
+
+    return { submit };
+};
 
 export default connect(
     mapStateToProps,
