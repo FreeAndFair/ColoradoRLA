@@ -4,10 +4,19 @@ import * as _ from 'lodash';
 const parseCountyStatus = (countyStatus: any) => {
     const result: any = {};
 
-    _.forEach(countyStatus, (status, strId) => {
-        const id = parseInt(strId, 10);
-
-        result[id] = status;
+    _.forEach(countyStatus, (c) => {
+        result[c.id] = {
+            auditedBallotCount: c.audited_ballot_count,
+            ballotManifestHash: c.ballot_manifest_hash,
+            cvrExportHash: c.cvr_export_hash,
+            cvrTimestamp: c.cvr_timestamp,
+            disagreementCount: c.disagreement_count,
+            discrepancyCount: c.discrepancy_count,
+            estimatedBallotsToAudit: c.estimated_ballots_to_audit,
+            id: c.id,
+            manifestTimestamp: c.manifest_timestamp,
+            status: c.status,
+        };
     });
 
     return result;
