@@ -53,7 +53,7 @@ import us.freeandfair.corla.model.BallotManifestInfo;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.UploadedFile;
-import us.freeandfair.corla.model.UploadedFile.FileType;
+import us.freeandfair.corla.model.UploadedFile.FileStatus;
 import us.freeandfair.corla.model.UploadedFile.HashStatus;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CountyDashboardQueries;
@@ -129,7 +129,8 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
         hash_status = HashStatus.MISMATCH;
       }
       result = new UploadedFile(the_info.my_timestamp, the_county_id,
-                                FileType.BALLOT_MANIFEST, 
+                                the_info.my_filename,
+                                FileStatus.IMPORTED_AS_BALLOT_MANIFEST, 
                                 the_info.my_uploaded_hash,
                                 hash_status, blob);
       Persistence.saveOrUpdate(result);
@@ -178,6 +179,7 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
                                         Streams.asString(stream));
           } else if ("bmi_file".equals(name)) {
             // save the file
+            the_info.my_filename = item.getName();
             the_info.my_file = File.createTempFile("upload", ".csv");
             final OutputStream os = new FileOutputStream(the_info.my_file);
             final int total =
@@ -373,7 +375,12 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
      * The uploaded file.
      */
     protected File my_file;
-
+    
+    /**
+     * The original name of the uploaded file.
+     */
+    protected String my_filename;
+    
     /**
      * The timestamp of the upload.
      */
