@@ -216,10 +216,6 @@ if __name__ == "__main__":
                                  "reason": "COUNTY_WIDE_CONTEST",
                                  "audit": "COMPARISON"}])
 
-    if False:
-        # TODO: sometimes hit ballot-not-found test
-        pass
-
     # TODO shouldn't this be a POST ala this?
     # r = test_endpoint_post(base, state_s, "/publish-data-to-audit", {})
     r = test_endpoint_get(base, state_s, "/publish-data-to-audit")
@@ -265,6 +261,9 @@ if __name__ == "__main__":
         acvr = cvrtable[selected[i]].copy()
         print("Original CVR: %s" % json.dumps(acvr))
         acvr['record_type'] = 'AUDITOR_ENTERED'
+
+        if False:
+            r = test_endpoint_json(base, county_s1, "/ballot-not-found", {'id': cvr['id']})
 
         # Modify the aCVR sometimes.
         # TODO: provide command-line parameters for discrepancy rates?
