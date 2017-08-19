@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
 
 import fetchContests from '../../../action/fetchContests';
 
@@ -9,7 +8,7 @@ import ContestDetailPage from './ContestDetailPage';
 
 class ContestDetailContainer extends React.Component<any, any> {
     public render() {
-        const { contests, fetchContests } = this.props;
+        const { contests } = this.props;
 
         if (!contests) {
             fetchContests();
@@ -31,11 +30,5 @@ class ContestDetailContainer extends React.Component<any, any> {
 
 const mapStateToProps = ({ sos }: any) => ({ contests: sos.contests });
 
-const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
-    fetchContests,
-}, dispatch);
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(ContestDetailContainer);
+export default connect(mapStateToProps)(ContestDetailContainer);

@@ -22,14 +22,13 @@ const mapStateToProps = () => ({});
 const mapDispatchToProps = (dispatch: Dispatch<any>) => {
     const b = bindActionCreators({
         authCountyAdmin,
-        fetchContests,
     }, dispatch);
 
     const submit = ({ dashboard, username, password }: any) => {
         switch (dashboard) {
             case 'sos': {
                 dosLogin(username, password);
-                b.fetchContests();
+                fetchContests();
                 break;
             }
             case 'county': {

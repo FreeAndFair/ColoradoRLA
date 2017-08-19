@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
 
 import * as _ from 'lodash';
 
@@ -17,8 +16,6 @@ const intervalIds: any = {
 
 class SoSHomeContainer extends React.Component<any, any> {
     public render() {
-        const { fetchContests } = this.props;
-
         if (!intervalIds.refreshId) {
             dosDashboardRefresh();
 
@@ -46,12 +43,5 @@ const mapStateToProps = (state: any) => {
     };
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
-    fetchContests,
 
-}, dispatch);
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(SoSHomeContainer);
+export default connect(mapStateToProps)(SoSHomeContainer);
