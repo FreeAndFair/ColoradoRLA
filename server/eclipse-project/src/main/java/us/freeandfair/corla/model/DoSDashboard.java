@@ -28,6 +28,7 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 import us.freeandfair.corla.model.ContestToAudit.AuditType;
 import us.freeandfair.corla.persistence.PersistentEntity;
@@ -67,6 +68,13 @@ public class DoSDashboard implements PersistentEntity, Serializable {
    */
   @Id
   private Long my_id = ID;
+  
+  /**
+   * The version (for optimistic locking).
+   */
+  @Version
+  @SuppressWarnings("PMD.UnusedPrivateField")
+  private Long my_version;
   
   /**
    * The contests to be audited and the reasons for auditing.

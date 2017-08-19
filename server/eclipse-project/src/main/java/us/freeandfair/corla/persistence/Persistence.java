@@ -168,7 +168,8 @@ public final class Persistence {
       settings.put(Environment.PASS, system_properties.getProperty("hibernate.pass", ""));
       settings.put(Environment.DIALECT, 
                    system_properties.getProperty("hibernate.dialect", ""));
-
+      settings.put(Environment.STATEMENT_BATCH_SIZE, "10");
+      
       // automatic schema generation
       settings.put(Environment.HBM2DDL_AUTO, 
                    system_properties.getProperty("hibernate.hbm2ddl.auto", ""));
