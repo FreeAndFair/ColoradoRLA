@@ -53,9 +53,6 @@ public final class ContestQueries {
    * @param the_contest The contest object to match.
    * @return the matched contest object, if one exists.
    */
-  // we are checking to see if exactly one result is in a list, and
-  // PMD doesn't like it
-  @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
   public static Contest matching(final Contest the_contest) {
     Contest result = null;
     
