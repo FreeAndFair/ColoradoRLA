@@ -1,8 +1,14 @@
 # "Abstract" dependencies for the project
 #
 # The sibling requirements.txt file contains the corresponding concrete /
-# pinned dependencies.  You can use pip-tools to automatically update
-# requirements.txt from this file:
-# https://github.com/jazzband/pip-tools
+# pinned dependencies.
+#
+# To update requirements.txt (e.g. to check for upgrades in package
+# dependencies or to add a new dependency to the current file), run the
+# following from a new virtual environment:
+#
+#     $ pip install -r requirements.in
+#     $ pip freeze > requirements.txt
+#
 requests
 zerotest

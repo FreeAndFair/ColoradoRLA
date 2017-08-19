@@ -10,23 +10,46 @@ Note: the pytest tests from zerotest are currently unused and disabled.
 
 ## Installing Test Dependencies
 
-For now, you'll need to install
-[zerotest](https://github.com/jjyr/zerotest)
+For now, you need to install [zerotest](https://github.com/jjyr/zerotest)
 to run these tests, and/or generate new ones in the same way.
 
-This is mainly tested with python3, but has been seen to work
-on python2 also.  To install dependencies:
+This is mainly tested with python3, but has been seen to work on python2.
 
-    pip install -r requirements.txt
+### Create a Python virtual environment
 
-or perhaps the following (or similar) if you have multiple Python
-installations.
+Create a new [virtual environment](https://packaging.python.org/tutorials/installing-packages/#creating-virtual-environments)
+for the project:
 
-    pip3 install -r requirements.txt
+    $ python3 -m venv smoketest-venv
 
-Installing inside an isolated
-[virtual environment](https://packaging.python.org/tutorials/installing-packages/#creating-virtual-environments)
-(aka virtualenv) is the preferred approach.
+(This creates a directory called "smoketest-venv" inside the current
+directory.)
+
+On Debian/Ubuntu systems, the command above may instruct you to first install
+`python3-venv`.  If you are using Python 3.4 and installing `python3-venv`
+gives you an error like the following:
+
+> E: Unable to locate package python3-venv
+
+then you can try installing `python3.4-venv` instead.  This was seen
+[to be required](https://bugs.launchpad.net/ubuntu/+source/python3.4/+bug/1532231)
+on Ubuntu.
+
+To activate the virtual environment in a new shell window:
+
+    $ source smoketest-venv/bin/activate
+
+### Installing Python dependencies
+
+Install the Python dependencies in your Python environment (e.g. in the
+virtual environment you created above):
+
+    $ pip install -r requirements.txt
+
+(You may need to replace `pip` with `pip3` above depending on your system.)
+
+If `requirements.txt` ever needs updating, you can follow the instructions
+inside `requirements.in`.
 
 ## Running a smoketest
 
