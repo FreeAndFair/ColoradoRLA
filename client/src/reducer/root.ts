@@ -5,9 +5,9 @@ import countyDashboardRefreshOk from './countyDashboardRefreshOk';
 import countyFetchContestsOk from './countyFetchContestsOk';
 import countyFetchCvrsByIdOk from './countyFetchCvrsByIdOk';
 import countyFetchCvrsOk from './countyFetchCvrsOk';
-import dosAuthOk from './dosAuthOk';
 import dosContestFetchOk from './dosContestFetchOk';
 import dosDashboardRefreshOk from './dosDashboardRefreshOk';
+import dosLoginOk from './dosLoginOk';
 import establishAuditBoardOk from './establishAuditBoardOk';
 import selectContestsForAuditOk from './selectContestsForAuditOk';
 import setRiskLimitOk from './setRiskLimitOk';
@@ -62,7 +62,7 @@ export default function root(state: AppState = defaultState, action: any) {
     }
 
     case 'DOS_LOGIN_OK': {
-        return dosAuthOk(state);
+        return dosLoginOk(state);
     }
 
     case 'ESTABLISH_AUDIT_BOARD_OK': {
