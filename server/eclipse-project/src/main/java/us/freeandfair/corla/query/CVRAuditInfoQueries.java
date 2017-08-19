@@ -95,10 +95,10 @@ public final class CVRAuditInfoQueries {
       Main.LOGGER.error("could not query database for cvr audit info");
     }
     if (result == null) {
-      Main.LOGGER.info("found no cvr audit info matching county " +
+      Main.LOGGER.debug("found no cvr audit info matching county " +
                         the_dashboard.id() + ", CVR " + the_cvr_id);
     } else {
-      Main.LOGGER.info("found cvr audit info " + result);
+      Main.LOGGER.debug("found cvr audit info " + result);
     }
     return result;
   }
@@ -115,10 +115,11 @@ public final class CVRAuditInfoQueries {
     try {
       final boolean transaction = Persistence.beginTransaction();
       final Session s = Persistence.currentSession();
-      // this is going to be far, far faster with a native query
-      final TypedQuery<Long> query = 
-          s.createNativeQuery("select cvr_id from cvr_audit_info where dashboard_id = " + 
-                              the_dashboard.id(), Long.class);
+      final CriteriaBuilder cb = s.getCriteriaBuilder();
+      final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+      final Root<CVRAuditInfo> root = cq.from(CVRAuditInfo.class);
+      cq.select(root.get("my_cvr_id"));
+      final TypedQuery<Long> query = s.createQuery(cq);
       result = query.getResultList();
       if (transaction) {
         try {
