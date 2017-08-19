@@ -78,10 +78,10 @@ public class SelectContestsForAudit extends AbstractDoSDashboardEndpoint {
         for (final ContestToAudit c : contests) {
           Main.LOGGER.info("updating contest audit status: " + c);
           dosdb.updateContestToAudit(c);
+          Persistence.saveOrUpdate(dosdb);
+          ok(the_response, "Contests selected");
         }
       }
-      Persistence.saveOrUpdate(dosdb);
-      ok(the_response, "Contests selected");
     } catch (final JsonSyntaxException e) {
       Main.LOGGER.error("malformed contest selection");
       badDataContents(the_response, "Invalid contest selection data");
