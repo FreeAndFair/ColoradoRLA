@@ -52,12 +52,9 @@ public final class CVRAuditInfoQueries {
    * @param the_cvr_id The CVR ID to match.
    * @return the matched CVRAuditInfo object, if one exists.
    */
-  // we are checking to see if exactly one result is in a list, and
-  // PMD doesn't like it
-  @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
-  public static CVRAuditInfo matching(final CountyDashboard the_dashboard,
-                                      final Long the_cvr_id) {
-    CVRAuditInfo result = null;
+  public static List<CVRAuditInfo> matching(final CountyDashboard the_dashboard,
+                                            final Long the_cvr_id) {
+    List<CVRAuditInfo> result = null;
     
     try {
       final boolean transaction = Persistence.beginTransaction();
@@ -70,20 +67,7 @@ public final class CVRAuditInfoQueries {
       conjuncts.add(cb.equal(root.get("my_cvr_id"), the_cvr_id));
       cq.select(root).where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
       final TypedQuery<CVRAuditInfo> query = s.createQuery(cq);
-      final List<CVRAuditInfo> query_results = query.getResultList();
-      // there should be only a single result because of the unique constraint 
-      if (query_results.size() == 1) {
-        result = query_results.get(0);
-      } else if (query_results.isEmpty()) {
-        // we need to persist a new object
-        result = new CVRAuditInfo(the_dashboard, the_cvr_id);
-        Persistence.saveOrUpdate(result);
-      } else {
-        if (transaction) {
-          Persistence.rollbackTransaction();
-        }
-        throw new IllegalStateException("violation of CVRAuditInfo unique constraint");
-      }
+      result = query.getResultList();
       if (transaction) {
         try {
           Persistence.commitTransaction();
@@ -95,10 +79,10 @@ public final class CVRAuditInfoQueries {
       Main.LOGGER.error("could not query database for cvr audit info");
     }
     if (result == null) {
-      Main.LOGGER.debug("found no cvr audit info matching county " +
+      Main.LOGGER.debug("found no cvr audit infos matching county " +
                         the_dashboard.id() + ", CVR " + the_cvr_id);
     } else {
-      Main.LOGGER.debug("found cvr audit info " + result);
+      Main.LOGGER.debug("found cvr audit infos " + result);
     }
     return result;
   }
