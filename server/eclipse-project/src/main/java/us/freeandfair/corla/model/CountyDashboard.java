@@ -403,8 +403,8 @@ public class CountyDashboard implements PersistentEntity, Serializable {
                        the_cvr_under_audit.id() + " not under audit");
     } else if (checkACVRSanity(the_cvr_under_audit, the_audit_cvr)) {
       // update the record, which will update it every time it occurs in the list
-      final boolean increment = info.acvr() == null;
-      info.setACVR(the_audit_cvr);
+      final boolean increment = info.acvrID() == null;
+      info.setACVRID(the_audit_cvr.id());
       Persistence.saveOrUpdate(info);
       result = true;
       if (increment) {
@@ -442,7 +442,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
     int index = my_cvr_under_audit;
     my_cvr_under_audit = -1;
     while (index < my_cvr_audit_info.size()) {
-      if (my_cvr_audit_info.get(index).acvr() == null) {
+      if (my_cvr_audit_info.get(index).acvrID() == null) {
         my_cvr_under_audit = index;
         break;
       }
@@ -504,7 +504,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
         my_cvr_audit_info.size() <= my_cvr_under_audit) {
       return null;
     } else {
-      return my_cvr_audit_info.get(my_cvr_under_audit).cvr().id();
+      return my_cvr_audit_info.get(my_cvr_under_audit).cvrID();
     }
   }
   
