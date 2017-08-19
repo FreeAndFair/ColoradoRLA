@@ -5,23 +5,15 @@ import * as _ from 'lodash';
 
 import SoSHomePage from './SoSHomePage';
 
-import dosDashboardRefresh from '../../action/dosDashboardRefresh';
 import dosFetchContests from '../../action/dosFetchContests';
 
 
 const intervalIds: any = {
     fetchContestsId: null,
-    refreshId: null,
 };
 
 class SoSHomeContainer extends React.Component<any, any> {
     public render() {
-        if (!intervalIds.refreshId) {
-            dosDashboardRefresh();
-
-            intervalIds.refreshId = setInterval(dosDashboardRefresh, 2000);
-        }
-
         if (!intervalIds.fetchContestsId) {
             dosFetchContests();
 
