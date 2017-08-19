@@ -192,7 +192,8 @@ public final class Persistence {
                    "org.hibernate.cache.ehcache.EhCacheRegionFactory");
       settings.put(Environment.USE_SECOND_LEVEL_CACHE, "true");
       settings.put(Environment.USE_QUERY_CACHE, "true");
-
+      settings.put(Environment.DEFAULT_CACHE_CONCURRENCY_STRATEGY, "transactional");
+      
       // apply settings
       rb.applySettings(settings);
       

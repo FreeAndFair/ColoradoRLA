@@ -11,6 +11,7 @@
 
 package us.freeandfair.corla.persistence;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -26,6 +27,7 @@ import javax.persistence.InheritanceType;
  * @version 0.0.1
  */
 @Entity
+@Cacheable
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class AbstractEntity implements PersistentEntity {
   /**

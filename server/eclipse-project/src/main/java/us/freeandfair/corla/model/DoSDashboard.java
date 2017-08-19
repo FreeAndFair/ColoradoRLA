@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -40,6 +41,7 @@ import us.freeandfair.corla.persistence.PersistentEntity;
 // this is an unusual entity, in that it is a singleton; it thus has only one
 // possible id (0).
 @Entity
+@Cacheable
 @Table(name = "dos_dashboard")
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
