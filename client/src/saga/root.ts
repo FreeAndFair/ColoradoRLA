@@ -8,10 +8,13 @@ import {
 } from 'redux-saga/effects';
 
 import dosDashboardRefresh from '../action/dosDashboardRefresh';
+import dosFetchContests from '../action/dosFetchContests';
 
 
 function* dosLogin() {
     dosDashboardRefresh();
+    dosFetchContests();
+
     yield put({ type: 'DOS_POLL' });
 }
 
