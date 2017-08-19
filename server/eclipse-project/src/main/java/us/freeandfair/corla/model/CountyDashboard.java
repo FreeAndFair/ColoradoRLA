@@ -345,6 +345,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
       final CVRAuditInfo info = CVRAuditInfoQueries.matching(this, cvr.id());
       my_cvr_audit_info.add(info);
     }
+    my_cvr_under_audit = 0;
     my_discrepancies = 0;
     my_disagreements = 0;
     my_rla_algorithm = NO_RLA_ALGORITHM;
