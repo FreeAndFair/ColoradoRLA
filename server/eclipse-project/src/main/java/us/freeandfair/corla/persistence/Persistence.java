@@ -161,33 +161,38 @@ public final class Persistence {
       final StandardServiceRegistryBuilder rb = new StandardServiceRegistryBuilder();      
       final Map<String, String> settings = new HashMap<>();
       
-      // get settings from our properties file
+      // database settings
       settings.put(Environment.DRIVER, system_properties.getProperty("hibernate.driver", ""));
       settings.put(Environment.URL, system_properties.getProperty("hibernate.url", ""));
       settings.put(Environment.USER, system_properties.getProperty("hibernate.user", ""));
       settings.put(Environment.PASS, system_properties.getProperty("hibernate.pass", ""));
       settings.put(Environment.DIALECT, 
                    system_properties.getProperty("hibernate.dialect", ""));
-      settings.put(Environment.C3P0_MIN_SIZE, 
-                   system_properties.getProperty("hibernate.c3p0.min_size", ""));
-      settings.put(Environment.C3P0_MAX_SIZE, 
-                   system_properties.getProperty("hibernate.c3p0.max_size", ""));
-      settings.put(Environment.C3P0_IDLE_TEST_PERIOD,
-                   system_properties.getProperty("hibernate.c3p0.idle_test_period", ""));
-      settings.put(Environment.C3P0_MAX_STATEMENTS, 
-                   system_properties.getProperty("hibernate.c3p0.max_statements", ""));
-      settings.put(Environment.C3P0_TIMEOUT, 
-                   system_properties.getProperty("hibernate.c3p0.timeout", ""));
+
+      // automatic schema generation
       settings.put(Environment.HBM2DDL_AUTO, 
                    system_properties.getProperty("hibernate.hbm2ddl.auto", ""));
+      
+      // sql debugging
       settings.put(Environment.SHOW_SQL, 
                    system_properties.getProperty("hibernate.show_sql", ""));
+      
+      // table and column naming
       settings.put(Environment.PHYSICAL_NAMING_STRATEGY, 
                    "us.freeandfair.corla.persistence.FreeAndFairNamingStrategy");
+      
+      // concurrency and isolation
       settings.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
       settings.put(Environment.USE_STREAMS_FOR_BINARY, "true");
       settings.put(Environment.ISOLATION, "SERIALIZABLE");
       
+      // caching
+      settings.put(Environment.CACHE_PROVIDER_CONFIG, "org.hibernate.cache.EhCacheProvider");
+      settings.put(Environment.CACHE_REGION_FACTORY, 
+                   "org.hibernate.cache.ehcache.EhCacheRegionFactory");
+      settings.put(Environment.USE_SECOND_LEVEL_CACHE, "true");
+      settings.put(Environment.USE_QUERY_CACHE, "true");
+
       // apply settings
       rb.applySettings(settings);
       
