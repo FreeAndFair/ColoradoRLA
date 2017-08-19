@@ -26,7 +26,6 @@ import org.hibernate.Session;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.CVRAuditInfo;
-import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 
@@ -50,14 +49,14 @@ public final class CVRAuditInfoQueries {
    * and persisted.
    *
    * @param the_dashboard The dashboard to match.
-   * @param the_cvr The CVR to match.
+   * @param the_cvr_id The CVR ID to match.
    * @return the matched CVRAuditInfo object, if one exists.
    */
   // we are checking to see if exactly one result is in a list, and
   // PMD doesn't like it
   @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
   public static CVRAuditInfo matching(final CountyDashboard the_dashboard,
-                                      final CastVoteRecord the_cvr) {
+                                      final Long the_cvr_id) {
     CVRAuditInfo result = null;
     
     try {
@@ -68,7 +67,7 @@ public final class CVRAuditInfoQueries {
       final Root<CVRAuditInfo> root = cq.from(CVRAuditInfo.class);
       final List<Predicate> conjuncts = new ArrayList<>();
       conjuncts.add(cb.equal(root.get("my_dashboard"), the_dashboard));
-      conjuncts.add(cb.equal(root.get("my_cvr"), the_cvr));
+      conjuncts.add(cb.equal(root.get("my_cvr_id"), the_cvr_id));
       cq.select(root).where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
       final TypedQuery<CVRAuditInfo> query = s.createQuery(cq);
       final List<CVRAuditInfo> query_results = query.getResultList();
@@ -77,7 +76,7 @@ public final class CVRAuditInfoQueries {
         result = query_results.get(0);
       } else if (query_results.isEmpty()) {
         // we need to persist a new object
-        result = new CVRAuditInfo(the_dashboard, the_cvr.id());
+        result = new CVRAuditInfo(the_dashboard, the_cvr_id);
         Persistence.saveOrUpdate(result);
       } else {
         if (transaction) {
@@ -97,7 +96,7 @@ public final class CVRAuditInfoQueries {
     }
     if (result == null) {
       Main.LOGGER.info("found no cvr audit info matching county " +
-                        the_dashboard.id() + ", CVR " + the_cvr.id());
+                        the_dashboard.id() + ", CVR " + the_cvr_id);
     } else {
       Main.LOGGER.info("found cvr audit info " + result);
     }
