@@ -50,7 +50,8 @@ import us.freeandfair.corla.persistence.PersistentEntity;
  */
 @Entity
 @Table(name = "county_dashboard")
-@SuppressWarnings({"PMD.ImmutableField", "PMD.TooManyMethods", "PMD.TooManyFields"})
+@SuppressWarnings({"PMD.ImmutableField", "PMD.TooManyMethods", "PMD.TooManyFields",
+    "PMD.GodClass"})
 public class CountyDashboard implements PersistentEntity, Serializable {
   /**
    * The minimum number of members on an audit board.
@@ -441,13 +442,14 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    */
   private void updateCVRUnderAudit(final int the_index) {
     int index = the_index;
-    do {
+    my_cvr_under_audit = -1;
+    while (index < my_submitted_audit_cvrs.size()) {
       if (my_submitted_audit_cvrs.get(index) == Long.MIN_VALUE) {
         my_cvr_under_audit = index;
         break;
       }
       index = index + 1;
-    } while (index < my_submitted_audit_cvrs.size());
+    }
   }
   
   /**
@@ -510,7 +512,12 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * no next CVR to audit.
    */
   public Long cvrUnderAudit() {
-    return my_cvrs_to_audit.get(my_cvr_under_audit);
+    if (my_cvrs_to_audit == null || my_cvr_under_audit == null ||
+        my_cvrs_to_audit.size() <= my_cvr_under_audit) {
+      return null;
+    } else {
+      return my_cvrs_to_audit.get(my_cvr_under_audit);
+    }
   }
   
   /**
