@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import fetchContests from '../../../action/fetchContests';
+import dosFetchContests from '../../../action/dosFetchContests';
 
 import ContestDetailPage from './ContestDetailPage';
 
@@ -11,7 +11,7 @@ class ContestDetailContainer extends React.Component<any, any> {
         const { contests } = this.props;
 
         if (!contests) {
-            fetchContests();
+            dosFetchContests();
             return <div />;
         }
 
@@ -20,7 +20,7 @@ class ContestDetailContainer extends React.Component<any, any> {
 
         if (!contest) {
             // This might only ever be evidence of a bug.
-            fetchContests();
+            dosFetchContests();
             return <div />;
         }
 

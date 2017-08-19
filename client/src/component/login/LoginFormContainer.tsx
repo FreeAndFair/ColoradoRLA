@@ -5,8 +5,8 @@ import { bindActionCreators, Dispatch } from 'redux';
 import LoginForm, { FormFields } from './LoginForm';
 
 import authCountyAdmin from '../../action/authCountyAdmin';
+import dosFetchContests from '../../action/dosFetchContests';
 import dosLogin from '../../action/dosLogin';
-import fetchContests from '../../action/fetchContests';
 
 
 export class LoginFormContainer extends React.Component<any, any> {
@@ -28,7 +28,7 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => {
         switch (dashboard) {
             case 'sos': {
                 dosLogin(username, password);
-                fetchContests();
+                dosFetchContests();
                 break;
             }
             case 'county': {
