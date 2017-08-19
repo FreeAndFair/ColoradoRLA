@@ -342,7 +342,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
         throw new IllegalArgumentException("nonexistent cvr in audit cvr list");
       }
       // get or create a persistent record
-      final CVRAuditInfo info = CVRAuditInfoQueries.matching(this, cvr);
+      final CVRAuditInfo info = CVRAuditInfoQueries.matching(this, cvr.id());
       my_cvr_audit_info.add(info);
     }
     my_discrepancies = 0;
@@ -396,7 +396,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
     boolean result = false;
     
     final CVRAuditInfo info = 
-        CVRAuditInfoQueries.matching(this, the_cvr_under_audit);
+        CVRAuditInfoQueries.matching(this, the_cvr_under_audit.id());
     
     if (info == null) {
       Main.LOGGER.info("attempt to submit ACVR for county " + id() + ", cvr " +
