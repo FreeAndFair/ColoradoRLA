@@ -335,7 +335,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
     if (the_cvrs_to_audit.contains(null)) {
       throw new IllegalArgumentException("null elements in audit cvr list");
     }
-    my_cvr_audit_info = new ArrayList<CVRAuditInfo>();
+    my_cvr_audit_info.clear();
     for (final Long cvr_id : the_cvrs_to_audit) {
       final CastVoteRecord cvr = Persistence.getByID(cvr_id, CastVoteRecord.class);
       if (cvr == null) {
