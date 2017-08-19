@@ -64,7 +64,7 @@ public class DoSDashboard implements PersistentEntity, Serializable {
    * The ID. This is always 0, because this object is a singleton.
    */
   @Id
-  private Long my_id;
+  private Long my_id = ID;
   
   /**
    * The contests to be audited and the reasons for auditing.
