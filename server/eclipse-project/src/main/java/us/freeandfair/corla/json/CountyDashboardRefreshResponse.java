@@ -271,7 +271,7 @@ public class CountyDashboardRefreshResponse {
   @SuppressWarnings({"PMD.NPathComplexity", "PMD.CyclomaticComplexity"})
   public static CountyDashboardRefreshResponse 
       createAbbreviatedResponse(final CountyDashboard the_dashboard) {
-    final Long county_id = the_dashboard.countyID();
+    final Long county_id = the_dashboard.id();
     final County county = Persistence.getByID(county_id, County.class);
 
     if (county == null) {

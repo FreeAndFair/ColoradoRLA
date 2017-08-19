@@ -96,10 +96,10 @@ public final class CVRAuditInfoQueries {
       Main.LOGGER.error("could not query database for cvr audit info");
     }
     if (result == null) {
-      Main.LOGGER.debug("found no cvr audit info matching county " +
+      Main.LOGGER.info("found no cvr audit info matching county " +
                         the_dashboard.id() + ", CVR " + the_cvr.id());
     } else {
-      Main.LOGGER.debug("found cvr audit info " + result);
+      Main.LOGGER.info("found cvr audit info " + result);
     }
     return result;
   }

@@ -238,13 +238,6 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   }
   
   /**
-   * @return the county ID for this dashboard.
-   */
-  public Long countyID() {
-    return my_id;
-  }
-  
-  /**
    * @return the status for this dashboard.
    */
   public CountyStatus status() {
