@@ -5,7 +5,6 @@ import { bindActionCreators, Dispatch } from 'redux';
 import LoginForm, { FormFields } from './LoginForm';
 
 import authCountyAdmin from '../../action/authCountyAdmin';
-import dosDashboardRefresh from '../../action/dosDashboardRefresh';
 import dosLogin from '../../action/dosLogin';
 import fetchContests from '../../action/fetchContests';
 
@@ -30,7 +29,6 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => {
         switch (dashboard) {
             case 'sos': {
                 dosLogin(username, password);
-                dosDashboardRefresh();
                 b.fetchContests();
                 break;
             }
