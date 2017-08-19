@@ -19,6 +19,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -56,7 +57,7 @@ public class ContestToAudit extends AbstractEntity implements Serializable {
   /**
    * The contest to audit.
    */
-  @ManyToOne(optional = false)
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   private Contest my_contest;
   
   /**

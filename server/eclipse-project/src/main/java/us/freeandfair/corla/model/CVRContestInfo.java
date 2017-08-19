@@ -58,14 +58,14 @@ public class CVRContestInfo extends AbstractEntity implements Serializable {
   /**
    * The CVR to which this record belongs. 
    */
-  @ManyToOne(optional = false)
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn
   private CastVoteRecord my_cvr;
   
   /**
    * The contest in this record.
    */
-  @ManyToOne(optional = false)
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   private Contest my_contest;
   
   /** 
@@ -87,7 +87,7 @@ public class CVRContestInfo extends AbstractEntity implements Serializable {
   // this is a list of choice names to make persistence more straightforward; if it
   // were a list of Choice, then the mapping between contests and choices would
   // need to be more complex
-  @ElementCollection(fetch = FetchType.EAGER)
+  @ElementCollection(fetch = FetchType.LAZY)
   @CollectionTable(name = "cvr_contest_info_choice",
                    joinColumns = @JoinColumn(name = "cvr_contest_info_id", 
                                              referencedColumnName = "my_id"))

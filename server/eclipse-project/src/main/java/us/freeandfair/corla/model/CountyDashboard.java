@@ -218,14 +218,11 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * 
    * @param the_county_id The county ID.
    * @param the_status The status.
-   * @param the_cvr_upload_timestamp The CVR upload timestamp.
    */
-  public CountyDashboard(final Integer the_county_id, final CountyStatus the_status,
-                         final Instant the_cvr_upload_timestamp) {
+  public CountyDashboard(final Long the_county_id, final CountyStatus the_status) {
     super();
-    setID(Long.valueOf(the_county_id));
+    setID(the_county_id);
     my_status = the_status;
-    my_cvr_upload_timestamp = the_cvr_upload_timestamp;
   }
   
   /**

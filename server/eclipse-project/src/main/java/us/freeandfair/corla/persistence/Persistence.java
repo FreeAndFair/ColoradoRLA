@@ -186,6 +186,7 @@ public final class Persistence {
                    "us.freeandfair.corla.persistence.FreeAndFairNamingStrategy");
       settings.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
       settings.put(Environment.USE_STREAMS_FOR_BINARY, "true");
+      settings.put(Environment.ISOLATION, "SERIALIZABLE");
       
       // apply settings
       rb.applySettings(settings);

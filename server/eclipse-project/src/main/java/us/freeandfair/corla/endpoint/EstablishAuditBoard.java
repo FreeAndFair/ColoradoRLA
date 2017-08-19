@@ -109,10 +109,10 @@ public class EstablishAuditBoard extends AbstractCountyDashboardEndpoint {
             serverError(the_response, "could not set audit board");
           } else {
             cdb.setAuditBoardMembers(audit_board);
+            Persistence.saveOrUpdate(cdb);
+            ok(the_response, "audit board for county " + county +  
+                             " set to " + audit_board);
           }
-          Persistence.saveOrUpdate(cdb);
-          ok(the_response, "audit board for county " + county +  
-                           " set to " + audit_board);
         }
       } else {
         invariantViolation(the_response, "Invalid audit board membership");

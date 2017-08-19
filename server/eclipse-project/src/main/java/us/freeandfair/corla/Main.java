@@ -50,6 +50,9 @@ import us.freeandfair.corla.json.FreeAndFairNamingStrategy;
 import us.freeandfair.corla.model.Administrator;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.County;
+import us.freeandfair.corla.model.CountyDashboard;
+import us.freeandfair.corla.model.CountyDashboard.CountyStatus;
+import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.PersistentASMStateQueries;
 
@@ -272,12 +275,12 @@ public final class Main {
       throws PersistenceException {
     if (the_state == null) {
       // there is no such state in the database, so persist one
-      Main.LOGGER.info("no state found for " + the_asm + 
-                       ", persisting one");
+      Main.LOGGER.debug("no state found for " + the_asm + 
+                        ", persisting one");
       final PersistentASMState new_state = PersistentASMState.stateFor(the_asm);
       Persistence.saveOrUpdate(new_state);
     } else {
-      Main.LOGGER.info(the_asm + " state found in db: " + the_state);
+      Main.LOGGER.debug(the_asm + " state found in db: " + the_state);
     }
   }
   
@@ -288,13 +291,19 @@ public final class Main {
    * @param the_counties The counties to initialize ASMs for.
    * @exception PersistenceException if we can't initialize the ASMs.
    */
-  private void initializeASMs(final List<County> the_counties) 
+  private void initializeASMsAndDashboards(final List<County> the_counties) 
       throws PersistenceException {
     Persistence.beginTransaction();
     // first, check the DoS dashboard
     final PersistentASMState dos_state = 
         PersistentASMStateQueries.get(DoSDashboardASM.class, null);
     restoreOrPersistState(new DoSDashboardASM(), dos_state);
+    
+    DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
+    if (dosdb == null) {
+      dosdb = new DoSDashboard();
+      Persistence.saveOrUpdate(dosdb);
+    }
     
     // next, iterate over the counties and check the county and 
     // audit board dashboards
@@ -303,10 +312,16 @@ public final class Main {
       final PersistentASMState county_state =
           PersistentASMStateQueries.get(CountyDashboardASM.class, asm_id);
       restoreOrPersistState(new CountyDashboardASM(asm_id), county_state);
-      
+
       final PersistentASMState audit_state =
           PersistentASMStateQueries.get(AuditBoardDashboardASM.class, asm_id);
       restoreOrPersistState(new AuditBoardDashboardASM(asm_id), audit_state);      
+      
+      CountyDashboard cdb = Persistence.getByID(c.id(), CountyDashboard.class);
+      if (cdb == null) {
+        cdb = new CountyDashboard(c.id(), CountyStatus.NO_DATA);
+        Persistence.saveOrUpdate(cdb);
+      }
     }
     
     try {
@@ -372,7 +387,7 @@ public final class Main {
     Persistence.setProperties(my_properties);
 
     if (Persistence.hasDB()) {
-      initializeASMs(initializeCounties());
+      initializeASMsAndDashboards(initializeCounties());
     } else {
       LOGGER.error("could not open database connection");
       return;
