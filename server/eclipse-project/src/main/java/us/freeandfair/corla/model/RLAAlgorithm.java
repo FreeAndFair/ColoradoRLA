@@ -326,10 +326,14 @@ public class RLAAlgorithm {
     
     int count = 0;
     for (final CVRAuditInfo cvrai : audit_info) {
-      if (cvrai.acvr() == null) {
+      if (cvrai.acvrID() == null) {
         break;
       } else {
-        final int discrepancy = discrepancy(cvrai.cvr(), cvrai.acvr());
+        final CastVoteRecord cvr = 
+            Persistence.getByID(cvrai.cvrID(), CastVoteRecord.class);
+        final CastVoteRecord acvr = 
+            Persistence.getByID(cvrai.cvrID(), CastVoteRecord.class);
+        final int discrepancy = discrepancy(cvr, acvr);
         switch (discrepancy) {
           case -2: 
             result.my_two_votes_under = result.my_two_votes_under + 1;

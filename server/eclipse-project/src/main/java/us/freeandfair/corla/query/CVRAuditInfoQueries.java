@@ -77,7 +77,7 @@ public final class CVRAuditInfoQueries {
         result = query_results.get(0);
       } else if (query_results.isEmpty()) {
         // we need to persist a new object
-        result = new CVRAuditInfo(the_dashboard, the_cvr);
+        result = new CVRAuditInfo(the_dashboard, the_cvr.id());
         Persistence.saveOrUpdate(result);
       } else {
         if (transaction) {
