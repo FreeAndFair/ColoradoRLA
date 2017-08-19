@@ -341,9 +341,9 @@ public class CountyDashboard implements PersistentEntity, Serializable {
       if (cvr == null) {
         throw new IllegalArgumentException("nonexistent cvr in audit cvr list");
       }
-      // get or create a persistent record
-      final CVRAuditInfo info = CVRAuditInfoQueries.matching(this, cvr.id());
-      my_cvr_audit_info.add(info);
+      // create a persistent record
+      final CVRAuditInfo cvrai = new CVRAuditInfo(this, cvr_id);
+      my_cvr_audit_info.add(cvrai);
     }
     my_cvr_under_audit = 0;
     my_discrepancies = 0;
@@ -396,18 +396,20 @@ public class CountyDashboard implements PersistentEntity, Serializable {
     // are the same card
     boolean result = false;
     
-    final CVRAuditInfo info = 
+    final List<CVRAuditInfo> info = 
         CVRAuditInfoQueries.matching(this, the_cvr_under_audit.id());
     
-    if (info == null) {
+    if (info == null || info.isEmpty()) {
       Main.LOGGER.info("attempt to submit ACVR for county " + id() + ", cvr " +
                        the_cvr_under_audit.id() + " not under audit");
     } else if (checkACVRSanity(the_cvr_under_audit, the_audit_cvr)) {
       // update the record, which will update it every time it occurs in the list
-      final boolean increment = info.acvrID() == null;
-      info.setACVRID(the_audit_cvr.id());
-      Persistence.saveOrUpdate(info);
-      result = true;
+      boolean increment = false;
+      for (final CVRAuditInfo cvrai : info) {
+        increment |= cvrai.acvrID() == null;
+        cvrai.setACVRID(the_audit_cvr.id());
+        Persistence.saveOrUpdate(cvrai);
+      }
       if (increment) {
         my_ballots_audited = my_ballots_audited + 1;
         boolean disagree = false;
@@ -425,7 +427,12 @@ public class CountyDashboard implements PersistentEntity, Serializable {
         Main.LOGGER.info("ACVR submitted for already-audited CVR ID " + 
                          the_cvr_under_audit.id());
       }
-    } 
+      result = true;
+    }  else {
+      Main.LOGGER.info("attempt to submit non-corresponding ACVR " +
+                       the_audit_cvr.id() + " for county " + id() + 
+                       ", cvr " + the_cvr_under_audit.id());
+    }
 
     updateCVRUnderAudit();
     updateEstimatedBallotsToAudit();

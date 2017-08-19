@@ -21,7 +21,6 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 
 import us.freeandfair.corla.persistence.AbstractEntity;
 
@@ -32,10 +31,7 @@ import us.freeandfair.corla.persistence.AbstractEntity;
  * @version 0.0.1
  */
 @Entity
-@Table(name = "cvr_audit_info",
-       uniqueConstraints = {
-           @UniqueConstraint(columnNames = { "dashboard_id", "my_cvr_id" })
-       })
+@Table(name = "cvr_audit_info")
 //this class has many fields that would normally be declared final, but
 //cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
