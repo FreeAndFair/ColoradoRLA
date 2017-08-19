@@ -23,7 +23,6 @@ const mapStateToProps = () => ({});
 const mapDispatchToProps = (dispatch: Dispatch<any>) => {
     const b = bindActionCreators({
         authCountyAdmin,
-        dosDashboardRefresh,
         fetchContests,
     }, dispatch);
 
@@ -31,7 +30,7 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => {
         switch (dashboard) {
             case 'sos': {
                 dosLogin(username, password);
-                b.dosDashboardRefresh();
+                dosDashboardRefresh();
                 b.fetchContests();
                 break;
             }

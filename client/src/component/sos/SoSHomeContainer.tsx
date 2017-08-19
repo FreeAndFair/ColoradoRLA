@@ -17,7 +17,7 @@ const intervalIds: any = {
 
 class SoSHomeContainer extends React.Component<any, any> {
     public render() {
-        const { dosDashboardRefresh, fetchContests } = this.props;
+        const { fetchContests } = this.props;
 
         if (!intervalIds.refreshId) {
             dosDashboardRefresh();
@@ -47,7 +47,6 @@ const mapStateToProps = (state: any) => {
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
-    dosDashboardRefresh,
     fetchContests,
 
 }, dispatch);
