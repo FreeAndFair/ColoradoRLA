@@ -5,8 +5,8 @@ import { bindActionCreators, Dispatch } from 'redux';
 import LoginForm, { FormFields } from './LoginForm';
 
 import authCountyAdmin from '../../action/authCountyAdmin';
-import authStateAdmin from '../../action/authStateAdmin';
 import dosDashboardRefresh from '../../action/dosDashboardRefresh';
+import dosLogin from '../../action/dosLogin';
 import fetchContests from '../../action/fetchContests';
 
 
@@ -23,7 +23,6 @@ const mapStateToProps = () => ({});
 const mapDispatchToProps = (dispatch: Dispatch<any>) => {
     const b = bindActionCreators({
         authCountyAdmin,
-        authStateAdmin,
         dosDashboardRefresh,
         fetchContests,
     }, dispatch);
@@ -31,7 +30,7 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => {
     const submit = ({ dashboard, username, password }: any) => {
         switch (dashboard) {
             case 'sos': {
-                b.authStateAdmin(username, password);
+                dosLogin(username, password);
                 b.dosDashboardRefresh();
                 b.fetchContests();
                 break;
