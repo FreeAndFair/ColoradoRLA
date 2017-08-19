@@ -37,6 +37,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.CVRContestInfo.ConsensusValue;
@@ -85,6 +86,13 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    */
   @Id
   private Long my_id;
+  
+  /**
+   * The version (for optimistic locking).
+   */
+  @Version
+  @SuppressWarnings("PMD.UnusedPrivateField")
+  private Long my_version;
   
   /**
    * The county status of this dashboard.
