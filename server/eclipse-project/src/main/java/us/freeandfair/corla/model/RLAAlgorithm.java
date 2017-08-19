@@ -22,7 +22,6 @@ import java.util.stream.Stream;
 
 import us.freeandfair.corla.comparisonaudit.ComparisonAudit;
 // I don't know why Checkstyle wants this blank line here
-
 import us.freeandfair.corla.crypto.PseudoRandomNumberGenerator;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.ContestToAudit.AuditType;
@@ -322,19 +321,14 @@ public class RLAAlgorithm {
     // for every CVR under audit in the prefix for which aCVRs exist, 
     // for every contest under audit, calculate the discrepancy and record it
     
-    final List<Long> cvrs_to_audit = my_dashboard.cvrsToAudit();
-    final List<Long> audit_cvrs = my_dashboard.submittedAuditCVRs();
+    final List<CVRAuditInfo> audit_info = my_dashboard.cvrAuditInfo();
     
     int count = 0;
-    while (count < audit_cvrs.size() && count < cvrs_to_audit.size()) {
-      if (audit_cvrs.get(count) == Long.MIN_VALUE) {
+    for (final CVRAuditInfo cvrai : audit_info) {
+      if (cvrai.acvr() == null) {
         break;
       } else {
-        final CastVoteRecord cvr = 
-            Persistence.getByID(cvrs_to_audit.get(count), CastVoteRecord.class);
-        final CastVoteRecord acvr = 
-            Persistence.getByID(audit_cvrs.get(count), CastVoteRecord.class);
-        final int discrepancy = discrepancy(cvr, acvr);
+        final int discrepancy = discrepancy(cvrai.cvr(), cvrai.acvr());
         switch (discrepancy) {
           case -2: 
             result.my_two_votes_under = result.my_two_votes_under + 1;
