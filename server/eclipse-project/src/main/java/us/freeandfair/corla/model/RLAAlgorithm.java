@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 
 import us.freeandfair.corla.comparisonaudit.ComparisonAudit;
 // I don't know why Checkstyle wants this blank line here
+
 import us.freeandfair.corla.crypto.PseudoRandomNumberGenerator;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.ContestToAudit.AuditType;
@@ -63,10 +64,10 @@ public class RLAAlgorithm {
     // count CVRs for contest under audit
     final Long cvr_count = 
         CastVoteRecordQueries.countMatching(the_dashboard.cvrUploadTimestamp(), 
-                                            the_dashboard.countyID(),
+                                            the_dashboard.id(),
                                             RecordType.UPLOADED);
     if (cvr_count == 0) {
-      throw new IllegalArgumentException("no votes in county " + the_dashboard.countyID());
+      throw new IllegalArgumentException("no votes in county " + the_dashboard.id());
     }
     // what is the risk limit for this contest?
     final BigDecimal risk_limit = 
@@ -115,7 +116,7 @@ public class RLAAlgorithm {
     
     final Stream<CastVoteRecord> cvrs =
         CastVoteRecordQueries.getMatching(the_dashboard.cvrUploadTimestamp(), 
-                                          the_dashboard.countyID(),
+                                          the_dashboard.id(),
                                           RecordType.UPLOADED);
 
     cvrs.forEach((the_cvr) -> {
@@ -155,7 +156,7 @@ public class RLAAlgorithm {
     // correct range for our actual list of CVRs (indexed from 0).
     final Long max_long = 
         CastVoteRecordQueries.countMatching(my_dashboard.cvrUploadTimestamp(), 
-                                            my_dashboard.countyID(),
+                                            my_dashboard.id(),
                                             RecordType.UPLOADED) - 1;
 
     final int maximum = max_long.intValue();
@@ -167,7 +168,7 @@ public class RLAAlgorithm {
         prng.getRandomNumbers(minimum, maximum);
     final List<Long> list_of_cvr_ids = 
         CastVoteRecordQueries.idsForMatching(my_dashboard.cvrUploadTimestamp(), 
-                                             my_dashboard.countyID(),
+                                             my_dashboard.id(),
                                              RecordType.UPLOADED);
     final List<Long> result = new ArrayList<>();
     for (final int index : list_of_cvrs_to_audit) {

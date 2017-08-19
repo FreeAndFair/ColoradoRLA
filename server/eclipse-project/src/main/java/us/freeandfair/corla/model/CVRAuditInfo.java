@@ -15,7 +15,6 @@ import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -120,7 +119,7 @@ public class CVRAuditInfo extends AbstractEntity implements Serializable {
    */
   @Override
   public String toString() {
-    return "CVRAuditInfo [dashboard=" + my_dashboard.countyID() + 
+    return "CVRAuditInfo [dashboard=" + my_dashboard.id() + 
            ", cvr=" + my_cvr.id() + ", acvr=" + my_acvr.id() + "]";
   }
   

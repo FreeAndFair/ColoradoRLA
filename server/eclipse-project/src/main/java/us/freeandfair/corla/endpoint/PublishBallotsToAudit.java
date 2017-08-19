@@ -84,22 +84,24 @@ public class PublishBallotsToAudit extends AbstractDoSDashboardEndpoint {
       
       for (final CountyDashboard cdb : cdbs) {
         try {
-          final RLAAlgorithm rlaa = new RLAAlgorithm(cdb);
-          if (cdb.cvrUploadTimestamp() != null) {
+          if (cdb.cvrUploadTimestamp() == null) {
+            Main.LOGGER.info("county " + cdb.id() + " missed the file upload deadline");
+          } else {
+            final RLAAlgorithm rlaa = new RLAAlgorithm(cdb);
             cdb.setCVRsToAudit(rlaa.computeBallotOrder(dosdb.randomSeed()));
             Persistence.saveOrUpdate(cdb);
-          }
+          } 
           // update the ASMs for the county and audit board
           if (!DISABLE_ASM) {
             ASMUtilities.step(COUNTY_START_AUDIT_EVENT, CountyDashboardASM.class, 
-                              String.valueOf(cdb.countyID()));
+                              String.valueOf(cdb.id()));
             ASMUtilities.step(AUDIT_BOARD_START_AUDIT_EVENT, AuditBoardDashboardASM.class, 
-                              String.valueOf(cdb.countyID()));
+                              String.valueOf(cdb.id()));
           }
         } catch (final IllegalArgumentException e) {
           serverError(the_response, "could not set ballot list for county " + 
-                      cdb.countyID());
-          Main.LOGGER.info("could not set ballot list for county " + cdb.countyID());
+                      cdb.id());
+          Main.LOGGER.info("could not set ballot list for county " + cdb.id());
         }
       }
       
