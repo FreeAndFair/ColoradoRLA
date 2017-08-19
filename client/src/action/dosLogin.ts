@@ -8,10 +8,10 @@ import createSubmitAction from './next/createSubmitAction';
 const url = endpoint('auth-state-admin');
 
 const dosLogin = createSubmitAction({
-    failType: 'AUTH_STATE_ADMIN_FAIL',
-    networkFailType: 'AUTH_STATE_ADMIN_NETWORK_FAIL',
-    okType: 'AUTH_STATE_ADMIN_OK',
-    sendType: 'AUTH_STATE_ADMIN_SEND',
+    failType: 'DOS_LOGIN_FAIL',
+    networkFailType: 'DOS_LOGIN_NETWORK_FAIL',
+    okType: 'DOS_LOGIN_OK',
+    sendType: 'DOS_LOGIN_SEND',
     url,
 });
 

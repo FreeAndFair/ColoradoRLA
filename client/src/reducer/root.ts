@@ -37,10 +37,6 @@ export default function root(state: AppState = defaultState, action: any) {
         return countyAuthOk(state);
     }
 
-    case 'AUTH_STATE_ADMIN_OK': {
-        return dosAuthOk(state);
-    }
-
     case 'COUNTY_DASHBOARD_REFRESH_OK': {
         return countyDashboardRefreshOk(state, action);
     }
@@ -63,6 +59,10 @@ export default function root(state: AppState = defaultState, action: any) {
 
     case 'DOS_FETCH_CONTESTS_OK': {
         return dosContestFetchOk(state, action);
+    }
+
+    case 'DOS_LOGIN_OK': {
+        return dosAuthOk(state);
     }
 
     case 'ESTABLISH_AUDIT_BOARD_OK': {
