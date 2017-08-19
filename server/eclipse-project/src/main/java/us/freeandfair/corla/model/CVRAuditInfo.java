@@ -32,9 +32,9 @@ import us.freeandfair.corla.persistence.AbstractEntity;
  * @version 0.0.1
  */
 @Entity
-@Table(name = "cvr_audit_info", 
+@Table(name = "cvr_audit_info",
        uniqueConstraints = {
-           @UniqueConstraint(columnNames = { "dashboard_id", "cvr_id" })
+           @UniqueConstraint(columnNames = { "dashboard_id", "my_cvr_id" })
        })
 //this class has many fields that would normally be declared final, but
 //cannot be for compatibility with Hibernate and JPA.
