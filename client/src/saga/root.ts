@@ -37,7 +37,10 @@ function* dosPoll() {
     if (dashboard !== 'sos') { return null; }
 
     yield call(delay, DOS_POLL_DELAY);
+
     dosDashboardRefresh();
+    dosFetchContests();
+
     yield put({ type: 'DOS_POLL' });
 }
 

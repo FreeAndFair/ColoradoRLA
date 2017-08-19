@@ -5,21 +5,9 @@ import * as _ from 'lodash';
 
 import SoSHomePage from './SoSHomePage';
 
-import dosFetchContests from '../../action/dosFetchContests';
-
-
-const intervalIds: any = {
-    fetchContestsId: null,
-};
 
 class SoSHomeContainer extends React.Component<any, any> {
     public render() {
-        if (!intervalIds.fetchContestsId) {
-            dosFetchContests();
-
-            intervalIds.fetchContestsId = setInterval(dosFetchContests, 2000);
-        }
-
         return <SoSHomePage { ...this.props } />;
     }
 }
