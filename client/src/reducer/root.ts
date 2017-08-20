@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 
 import countyDashboardRefreshOk from './countyDashboardRefreshOk';
 import countyFetchContestsOk from './countyFetchContestsOk';
-import countyFetchCvrsByIdOk from './countyFetchCvrsByIdOk';
+import countyFetchCvrOk from './countyFetchCvrOk';
 import countyFetchCvrsOk from './countyFetchCvrsOk';
 import countyLoginOk from './countyLoginOk';
 import dosContestFetchOk from './dosContestFetchOk';
@@ -42,7 +42,7 @@ export default function root(state: AppState = defaultState, action: any) {
     }
 
     case 'COUNTY_FETCH_CVR_OK': {
-        return countyFetchCvrsByIdOk(state, action);
+        return countyFetchCvrOk(state, action);
     }
 
     case 'COUNTY_FETCH_CVRS_OK': {
