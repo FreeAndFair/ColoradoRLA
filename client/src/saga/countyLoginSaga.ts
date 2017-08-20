@@ -1,7 +1,7 @@
 import {
     put,
     select,
-    takeEvery,
+    takeLatest,
 } from 'redux-saga/effects';
 
 import countyDashboardRefresh from '../action/countyDashboardRefresh';
@@ -14,5 +14,5 @@ function* countyLoginOk() {
 }
 
 export default function* dosLoginSaga() {
-    yield takeEvery('COUNTY_LOGIN_OK', countyLoginOk);
+    yield takeLatest('COUNTY_LOGIN_OK', countyLoginOk);
 }

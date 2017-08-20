@@ -1,6 +1,6 @@
 import {
     put,
-    takeEvery,
+    takeLatest,
 } from 'redux-saga/effects';
 
 import dosDashboardRefresh from '../action/dosDashboardRefresh';
@@ -15,5 +15,5 @@ function* dosLoginOk() {
 }
 
 export default function* dosLoginSaga() {
-    yield takeEvery('DOS_LOGIN_OK', dosLoginOk);
+    yield takeLatest('DOS_LOGIN_OK', dosLoginOk);
 }
