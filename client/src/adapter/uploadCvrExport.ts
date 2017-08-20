@@ -1,4 +1,4 @@
-export const parse = (formData: any) => ({
-    fileName: formData.get('cvr_file').name,
-    hash: formData.get('hash'),
+export const parse = (sent: any) => ({
+    fileName: sent.file.name,
+    hash: sent.hash,
 });

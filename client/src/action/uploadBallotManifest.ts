@@ -23,7 +23,9 @@ const uploadBallotManifest = (countyId: number, file: Blob, hash: string) => {
         fetch(url, init)
             .then(r => {
                 if (r.ok) {
-                    dispatch({ type: 'UPLOAD_BALLOT_MANIFEST_OK', sent: formData });
+                    const sent = { countyId, file, hash };
+
+                    dispatch({ type: 'UPLOAD_BALLOT_MANIFEST_OK', sent });
                 } else {
                     dispatch({ type: 'UPLOAD_BALLOT_MANIFEST_FAIL' });
                 }

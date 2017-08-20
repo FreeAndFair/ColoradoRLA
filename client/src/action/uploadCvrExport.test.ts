@@ -12,6 +12,7 @@ const setup = () => {
     const countyId = 1234;
     const file = new Blob();
     const hash = 'deadbeef';
+    const sent = { countyId, file, hash };
 
     const formData = new FormData();
     formData.append('county', `${countyId}`);
@@ -27,6 +28,7 @@ const setup = () => {
         file,
         formData,
         hash,
+        sent,
         store,
     };
 };
@@ -75,7 +77,7 @@ test('uploadCvrExport', s => {
         fetch.flush().then(() => {
             t.deepEqual(f.store.getActions(), [
                 { type: 'UPLOAD_CVR_EXPORT_SEND' },
-                { type: 'UPLOAD_CVR_EXPORT_OK' },
+                { type: 'UPLOAD_CVR_EXPORT_OK', sent: f.sent },
             ]);
 
             teardown(f);
