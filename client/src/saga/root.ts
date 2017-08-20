@@ -8,21 +8,11 @@ import {
 } from 'redux-saga/effects';
 
 import debugSaga from './debugSaga';
+import dosLoginSaga from './dosLoginSaga';
 
 import dosDashboardRefresh from '../action/dosDashboardRefresh';
 import dosFetchContests from '../action/dosFetchContests';
 
-
-function* dosLoginOk() {
-    dosDashboardRefresh();
-    dosFetchContests();
-
-    yield put({ type: 'DOS_POLL' });
-}
-
-function* dosLoginSaga() {
-    yield takeEvery('DOS_LOGIN_OK', dosLoginOk);
-}
 
 function delay(t: number) {
     return new Promise(r => {
