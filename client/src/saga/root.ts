@@ -11,7 +11,7 @@ import dosDashboardRefresh from '../action/dosDashboardRefresh';
 import dosFetchContests from '../action/dosFetchContests';
 
 
-function* dosLogin() {
+function* dosLoginOk() {
     dosDashboardRefresh();
     dosFetchContests();
 
@@ -19,7 +19,7 @@ function* dosLogin() {
 }
 
 function* dosLoginSaga() {
-    yield takeEvery('DOS_LOGIN_OK', dosLogin);
+    yield takeEvery('DOS_LOGIN_OK', dosLoginOk);
 }
 
 function delay(t: number) {
