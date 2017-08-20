@@ -11,6 +11,14 @@ import dosDashboardRefresh from '../action/dosDashboardRefresh';
 import dosFetchContests from '../action/dosFetchContests';
 
 
+function* debugSaga() {
+    yield takeEvery('*', (a: any) => {
+        // tslint:disable
+        console.log('[debug]', a.type, a);
+        // tslint:enable
+    });
+}
+
 function* dosLoginOk() {
     dosDashboardRefresh();
     dosFetchContests();
@@ -51,6 +59,7 @@ function* dosPollSaga() {
 
 export default function* rootSaga() {
     yield all([
+        debugSaga(),
         dosLoginSaga(),
         dosPollSaga(),
     ]);
