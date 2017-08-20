@@ -6,16 +6,12 @@ import counties from '../../../data/counties';
 
 import CountyHomePage from './CountyHomePage';
 
-import countyDashboardRefresh from '../../../action/countyDashboardRefresh';
-import countyFetchContests from '../../../action/countyFetchContests';
 import fetchCvrById from '../../../action/fetchCvrById';
 
 
 const intervalIds: any = {
     ballotUnderAuditId: null,
-    fetchContestsId: null,
     fetchCvrId: null,
-    refreshId: null,
 };
 
 class CountyHomeContainer extends React.Component<any, any> {
@@ -26,23 +22,6 @@ class CountyHomeContainer extends React.Component<any, any> {
             fetchCvrById,
             history,
         } = this.props;
-
-        if (!intervalIds.refreshId) {
-            countyDashboardRefresh();
-
-            intervalIds.refreshId = setInterval(countyDashboardRefresh, 2000);
-        }
-
-        if (!intervalIds.fetchContestsId) {
-            if (county.id) {
-                countyFetchContests(county.id);
-
-                intervalIds.fetchContestsId = setInterval(
-                    () => countyFetchContests(county.id),
-                    1000,
-                );
-            }
-        }
 
         if (!intervalIds.fetchCvrId) {
             if (ballotUnderAuditId) {
