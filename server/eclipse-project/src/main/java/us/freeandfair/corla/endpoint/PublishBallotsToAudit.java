@@ -29,7 +29,6 @@ import us.freeandfair.corla.asm.AuditBoardDashboardASM;
 import us.freeandfair.corla.asm.CountyDashboardASM;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
-import us.freeandfair.corla.model.RLAAlgorithm;
 import us.freeandfair.corla.persistence.Persistence;
 
 /**
@@ -87,8 +86,7 @@ public class PublishBallotsToAudit extends AbstractDoSDashboardEndpoint {
           if (cdb.cvrUploadTimestamp() == null) {
             Main.LOGGER.info("county " + cdb.id() + " missed the file upload deadline");
           } else {
-            final RLAAlgorithm rlaa = new RLAAlgorithm(cdb);
-            cdb.setCVRsToAudit(rlaa.computeBallotOrder(dosdb.randomSeed()));
+            cdb.setCVRsToAudit(CountyDashboard.computeBallotOrder(cdb, dosdb.randomSeed()));
             Persistence.saveOrUpdate(cdb);
           } 
           // update the ASMs for the county and audit board

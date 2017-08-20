@@ -130,11 +130,9 @@ public class CVRAuditInfo extends AbstractEntity implements Serializable {
     boolean result = true;
     if (id() != null && the_other instanceof CVRAuditInfo) {
       final CVRAuditInfo other_info = (CVRAuditInfo) the_other;
-      // this is a shortcut; since there's a unique constraint on 
-      // dashboard and cvr, we can check the ID alone because
-      // by definition any two different records will not be
-      // equivalent
-      result &= nullableEquals(other_info.id(), id());
+      result &= nullableEquals(other_info.cvrID(), cvrID());
+      result &= nullableEquals(other_info.acvrID(), acvrID());
+      result &= nullableEquals(other_info.dashboard().id(), dashboard().id());
     } else {
       result = false;
     }

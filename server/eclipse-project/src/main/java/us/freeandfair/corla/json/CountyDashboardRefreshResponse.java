@@ -32,6 +32,7 @@ import us.freeandfair.corla.model.Elector;
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.model.UploadedFile.FileType;
 import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.query.ContestQueries;
 import us.freeandfair.corla.query.UploadedFileQueries;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
@@ -224,7 +225,7 @@ public class CountyDashboardRefreshResponse {
     
     // contests
     final Set<Long> contests = new HashSet<Long>();
-    for (final Contest c : county.contests()) {
+    for (final Contest c : ContestQueries.forCounty(county_id)) {
       contests.add(c.id());
     }
     

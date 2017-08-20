@@ -48,7 +48,6 @@ import us.freeandfair.corla.endpoint.CORSFilter;
 import us.freeandfair.corla.endpoint.Endpoint;
 import us.freeandfair.corla.json.FreeAndFairNamingStrategy;
 import us.freeandfair.corla.model.Administrator;
-import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.CountyDashboard.CountyStatus;
@@ -356,12 +355,12 @@ public final class Main {
           County county = Persistence.getByID(id, County.class);
           if (county == null) {
             county = 
-                new County(name, id, new HashSet<Contest>(), new HashSet<Administrator>());
+                new County(name, id, new HashSet<Administrator>());
           } else if (!county.name().equals(name)) {
             // update the county's name while preserving the rest of its info
             Main.LOGGER.info("Updating " + county.name() + " county name to " + name);
             final County new_county = 
-                new County(name, id, county.contests(), county.administrators());
+                new County(name, id, county.administrators());
             new_county.setID(county.id());
             county = new_county;
           }
