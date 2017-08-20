@@ -107,6 +107,5 @@ public final class CVRAuditInfoQueries {
       Main.LOGGER.debug("found list of cvrs to audit " + result);
     }
     return result;
-
   }
 }

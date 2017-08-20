@@ -157,6 +157,10 @@ public class CVRAuditInfo extends AbstractEntity implements Serializable {
    */
   @Override
   public int hashCode() {
-    return id().intValue();
+    if (id() == null) {
+      return 0;
+    } else {
+      return id().intValue();
+    } 
   }
 }

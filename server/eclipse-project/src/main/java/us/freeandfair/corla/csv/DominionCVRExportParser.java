@@ -35,8 +35,10 @@ import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.Choice;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.County;
+import us.freeandfair.corla.model.CountyContestResult;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.ContestQueries;
+import us.freeandfair.corla.query.CountyContestResultQueries;
 
 /**
  * @description <description>
@@ -99,6 +101,13 @@ public class DominionCVRExportParser implements CVRExportParser {
    */
   private final List<Contest> my_contests = new ArrayList<Contest>();
 
+  /**
+   * The list of county contest results we build from the supplied
+   * data export.
+   */
+  private final List<CountyContestResult> my_results = 
+      new ArrayList<CountyContestResult>();
+  
   /**
    * The county whose CVRs we are parsing.
    */
@@ -203,7 +212,7 @@ public class DominionCVRExportParser implements CVRExportParser {
   }
   
   /**
-   * Add full contest objects to our list of contests.
+   * Create contest and result objects for use later in parsing.
    * 
    * @param the_choice_line The CSV line containing the choice information.
    * @param the_expl_line The CSV line containing the choice explanations.
@@ -229,8 +238,15 @@ public class DominionCVRExportParser implements CVRExportParser {
       // now that we have all the choices, we can create a Contest object for 
       // this contest (note the empty contest description at the moment, below, 
       // as that's not in the CVR files and may not actually be used)
-      my_contests.add(ContestQueries.matching(new Contest(cn, "", choices, 
-                                                          the_votes_allowed.get(cn))));
+      final Contest c = ContestQueries.matching(new Contest(cn, "", choices, 
+                                                            the_votes_allowed.get(cn)));
+      CountyContestResult r = 
+          CountyContestResultQueries.matching(my_county.id(), c);
+      // in case the contests were defined wrong, we just drop the results object
+      Persistence.delete(r);
+      r = CountyContestResultQueries.matching(my_county.id(), c);
+      my_contests.add(c);
+      my_results.add(r);
     }
   }
   
@@ -305,6 +321,11 @@ public class DominionCVRExportParser implements CVRExportParser {
       Persistence.saveOrUpdate(new_cvr);
       my_parsed_cvrs.add(new_cvr);
       checkForFlush();
+      
+      // add the CVR to all of our results
+      for (final CountyContestResult r : my_results) {
+        r.addCVR(new_cvr);
+      }
       Main.LOGGER.debug("parsed CVR: " + new_cvr);
       return new_cvr;
     } catch (final NumberFormatException e) {
@@ -378,10 +399,9 @@ public class DominionCVRExportParser implements CVRExportParser {
     my_parse_status = true;
     my_parse_success = result;
     
-    if (my_parse_success) {
-      // add the contests to the county we're working with  
-      my_county.contests().addAll(my_contests);
-      Persistence.saveOrUpdate(my_county);
+    for (final CountyContestResult r : my_results) {
+      r.updateResults();
+      Persistence.saveOrUpdate(r);
     }
     
     return result;
