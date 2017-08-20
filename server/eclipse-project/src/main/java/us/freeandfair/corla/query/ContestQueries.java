@@ -114,17 +114,21 @@ public final class ContestQueries {
       final boolean transaction = Persistence.beginTransaction();
       final Session s = Persistence.currentSession();
       final CriteriaBuilder cb = s.getCriteriaBuilder();
-      final CriteriaQuery<Contest> cq = cb.createQuery(Contest.class);
+      final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
       final Root<CountyContestResult> root = cq.from(CountyContestResult.class);
       final List<Predicate> disjuncts = new ArrayList<Predicate>();
       for (final Integer id : the_county_ids) {
         disjuncts.add(cb.equal(root.get("my_county_id"), id));
       }
-      cq.select(root.get("my_contest"));
+      cq.select(root.get("my_contest_id"));
       cq.where(cb.or(disjuncts.toArray(new Predicate[disjuncts.size()])));
       cq.distinct(true);
-      final TypedQuery<Contest> query = s.createQuery(cq);
-      result = new HashSet<Contest>(query.getResultList());
+      final TypedQuery<Long> query = s.createQuery(cq);
+      final List<Long> query_result = query.getResultList();
+      result = new HashSet<Contest>();
+      for (final Long l : query_result) {
+        result.add(Persistence.getByID(l, Contest.class));
+      }
       if (transaction) {
         try {
           Persistence.commitTransaction();
@@ -152,13 +156,17 @@ public final class ContestQueries {
       final boolean transaction = Persistence.beginTransaction();
       final Session s = Persistence.currentSession();
       final CriteriaBuilder cb = s.getCriteriaBuilder();
-      final CriteriaQuery<Contest> cq = cb.createQuery(Contest.class);
+      final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
       final Root<CountyContestResult> root = cq.from(CountyContestResult.class);
-      cq.select(root.get("my_contest"));
+      cq.select(root.get("my_contest_id"));
       cq.where(cb.equal(root.get("my_county_id"), the_county_id));
       cq.distinct(true);
-      final TypedQuery<Contest> query = s.createQuery(cq);
-      result = new HashSet<Contest>(query.getResultList());
+      final TypedQuery<Long> query = s.createQuery(cq);
+      final List<Long> query_result = query.getResultList();
+      result = new HashSet<Contest>();
+      for (final Long l : query_result) {
+        result.add(Persistence.getByID(l, Contest.class));
+      }
       if (transaction) {
         try {
           Persistence.commitTransaction();
