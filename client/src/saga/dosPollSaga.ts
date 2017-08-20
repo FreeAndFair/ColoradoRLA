@@ -1,3 +1,4 @@
+import { delay } from 'redux-saga';
 import {
     call,
     put,
@@ -9,12 +10,6 @@ import dosDashboardRefresh from '../action/dosDashboardRefresh';
 import dosFetchContests from '../action/dosFetchContests';
 
 
-function delay(t: number) {
-    return new Promise(r => {
-        setTimeout(() => r(true), t);
-    });
-}
-
 function* dosPoll() {
     const DOS_POLL_DELAY = 1000 * 5;
 
@@ -23,7 +18,7 @@ function* dosPoll() {
     if (!loggedIn) { return null; }
     if (dashboard !== 'sos') { return null; }
 
-    yield call(delay, DOS_POLL_DELAY);
+    yield delay(DOS_POLL_DELAY);
 
     dosDashboardRefresh();
     dosFetchContests();

@@ -1,3 +1,4 @@
+import { delay } from 'redux-saga';
 import {
     call,
     put,
@@ -9,12 +10,6 @@ import countyDashboardRefresh from '../action/countyDashboardRefresh';
 import countyFetchContests from '../action/countyFetchContests';
 
 
-function delay(t: number) {
-    return new Promise(r => {
-        setTimeout(() => r(true), t);
-    });
-}
-
 function* countyPoll() {
     const COUNTY_POLL_DELAY = 1000 * 5;
 
@@ -23,7 +18,7 @@ function* countyPoll() {
     if (!loggedIn) { return null; }
     if (dashboard !== 'county') { return null; }
 
-    yield call(delay, COUNTY_POLL_DELAY);
+    yield delay(COUNTY_POLL_DELAY);
 
     countyDashboardRefresh();
 
