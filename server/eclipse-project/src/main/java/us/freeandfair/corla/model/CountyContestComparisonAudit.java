@@ -68,6 +68,7 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
   /**
    * The contest result for this audit state.
    */
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   private CountyContestResult my_contest_result;
   
   /**
