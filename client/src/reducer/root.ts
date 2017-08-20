@@ -1,10 +1,10 @@
 import * as _ from 'lodash';
 
-import countyAuthOk from './countyAuthOk';
 import countyDashboardRefreshOk from './countyDashboardRefreshOk';
 import countyFetchContestsOk from './countyFetchContestsOk';
 import countyFetchCvrsByIdOk from './countyFetchCvrsByIdOk';
 import countyFetchCvrsOk from './countyFetchCvrsOk';
+import countyLoginOk from './countyLoginOk';
 import dosContestFetchOk from './dosContestFetchOk';
 import dosDashboardRefreshOk from './dosDashboardRefreshOk';
 import dosLoginOk from './dosLoginOk';
@@ -33,10 +33,6 @@ const defaultState = {
 export default function root(state: AppState = defaultState, action: any) {
     switch (action.type) {
 
-    case 'AUTH_COUNTY_ADMIN_OK': {
-        return countyAuthOk(state);
-    }
-
     case 'COUNTY_DASHBOARD_REFRESH_OK': {
         return countyDashboardRefreshOk(state, action);
     }
@@ -51,6 +47,10 @@ export default function root(state: AppState = defaultState, action: any) {
 
     case 'COUNTY_FETCH_CVRS_OK': {
         return countyFetchCvrsOk(state, action);
+    }
+
+    case 'COUNTY_LOGIN_OK': {
+        return countyLoginOk(state);
     }
 
     case 'DOS_DASHBOARD_REFRESH_OK': {
