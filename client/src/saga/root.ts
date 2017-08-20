@@ -7,17 +7,11 @@ import {
     takeLatest,
 } from 'redux-saga/effects';
 
+import debugSaga from './debugSaga';
+
 import dosDashboardRefresh from '../action/dosDashboardRefresh';
 import dosFetchContests from '../action/dosFetchContests';
 
-
-function* debugSaga() {
-    yield takeEvery('*', (a: any) => {
-        // tslint:disable
-        console.log('[debug]', a.type, a);
-        // tslint:enable
-    });
-}
 
 function* dosLoginOk() {
     dosDashboardRefresh();
