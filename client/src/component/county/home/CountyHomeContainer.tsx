@@ -1,12 +1,11 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
 
 import counties from '../../../data/counties';
 
 import CountyHomePage from './CountyHomePage';
 
-import fetchCvrById from '../../../action/fetchCvrById';
+import countyFetchCvr from '../../../action/countyFetchCvr';
 
 
 const intervalIds: any = {
@@ -19,17 +18,16 @@ class CountyHomeContainer extends React.Component<any, any> {
         const {
             ballotUnderAuditId,
             county,
-            fetchCvrById,
             history,
         } = this.props;
 
         if (!intervalIds.fetchCvrId) {
             if (ballotUnderAuditId) {
                 intervalIds.ballotUnderAuditId = ballotUnderAuditId;
-                fetchCvrById(ballotUnderAuditId);
+                countyFetchCvr(ballotUnderAuditId);
 
                 intervalIds.fetchCvrId = setInterval(
-                    () => fetchCvrById(this.props.ballotUnderAuditId),
+                    () => countyFetchCvr(this.props.ballotUnderAuditId),
                     1000,
                 );
             }
@@ -40,10 +38,10 @@ class CountyHomeContainer extends React.Component<any, any> {
                 ballotUnderAuditId !== intervalIds.ballotUnderAuditId) {
 
                 intervalIds.ballotUnderAuditId = ballotUnderAuditId;
-                fetchCvrById(ballotUnderAuditId);
+                countyFetchCvr(ballotUnderAuditId);
 
                 intervalIds.fetchCvrId = setInterval(
-                    () => fetchCvrById(this.props.ballotUnderAuditId),
+                    () => countyFetchCvr(this.props.ballotUnderAuditId),
                     1000,
                 );
             }
@@ -65,11 +63,4 @@ const mapStateToProps = ({ county }: any) => {
     return { ballotUnderAuditId, contests, county };
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
-    fetchCvrById,
-}, dispatch);
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(CountyHomeContainer);
+export default connect(mapStateToProps)(CountyHomeContainer);
