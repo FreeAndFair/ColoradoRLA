@@ -381,7 +381,7 @@ public final class Persistence {
         if (transaction) {
           try {
             commitTransaction();
-          } catch (final RollbackException | HibernateException e) {
+          } catch (final RollbackException e) {
             rollbackTransaction();
             Main.LOGGER.debug("could not save/update object " + the_object + ": " + e);
             result = false;
@@ -417,7 +417,7 @@ public final class Persistence {
         if (transaction) {
           try {
             commitTransaction();
-          } catch (final RollbackException | HibernateException e) {
+          } catch (final RollbackException e) {
             rollbackTransaction();
             Main.LOGGER.debug("could not delete object " + the_object + ": " + e);
             result = false;
@@ -499,16 +499,13 @@ public final class Persistence {
         transaction = beginTransaction();
         result = currentSession().get(the_class, the_id);
         if (transaction) {
-          commitTransaction();
-        }
-      } catch (final HibernateException e) {
-        if (transaction) {
           try {
+            commitTransaction();
+          } catch (final RollbackException e) {
             rollbackTransaction();
-          } catch (final IllegalStateException | PersistenceException ex) {
-            // ignore
-          }        
+          }
         }
+      } catch (final PersistenceException e) {
         Main.LOGGER.error("exception when searching for " + the_class + "/" + the_id + 
                           ": " + e);
       }
