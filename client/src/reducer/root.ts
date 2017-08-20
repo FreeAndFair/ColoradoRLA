@@ -45,6 +45,10 @@ export default function root(state: AppState = defaultState, action: any) {
         return countyFetchCvrsByIdOk(state, action);
     }
 
+    case 'COUNTY_FETCH_CVR_OK': {
+        return countyFetchCvrsByIdOk(state, action);
+    }
+
     case 'COUNTY_FETCH_CVRS_OK': {
         return countyFetchCvrsOk(state, action);
     }
