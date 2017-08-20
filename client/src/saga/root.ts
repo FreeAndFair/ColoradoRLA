@@ -1,8 +1,8 @@
 import { all } from 'redux-saga/effects';
 
+import countyDashboardRefreshOkSaga from './countyDashboardRefreshOkSaga';
 import countyLoginSaga from './countyLoginSaga';
 import countyPollSaga from './countyPollSaga';
-import countyDashboardRefreshOkSaga from './countyDashboardRefreshOkSaga';
 import debugSaga from './debugSaga';
 import dosLoginSaga from './dosLoginSaga';
 import dosPollSaga from './dosPollSaga';
