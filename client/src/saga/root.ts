@@ -7,6 +7,7 @@ import countyPollSaga from './countyPollSaga';
 import debugSaga from './debugSaga';
 import dosLoginSaga from './dosLoginSaga';
 import dosPollSaga from './dosPollSaga';
+import fileUploadSaga from './fileUploadSaga';
 import uploadAcvrOkSaga from './uploadAcvrOkSaga';
 
 
@@ -19,6 +20,7 @@ export default function* rootSaga() {
         debugSaga(),
         dosLoginSaga(),
         dosPollSaga(),
+        fileUploadSaga(),
         uploadAcvrOkSaga(),
     ]);
 }
