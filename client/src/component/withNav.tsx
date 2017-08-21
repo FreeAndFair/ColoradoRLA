@@ -48,8 +48,6 @@ const ResetDatabaseButton = ({ reset }: any) => (
 export default function withNav(Menu: any, path: any): any {
     class Nav extends React.Component<any, any> {
         public render() {
-            const logout = () => window.location.replace('/login');
-
             const resetSection = path === '/sos'
                                ? <ResetDatabaseButton reset={ this.props.resetDatabase } />
                                : <div />;
@@ -76,7 +74,6 @@ export default function withNav(Menu: any, path: any): any {
     }
 
     const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
-        logout,
         resetDatabase,
     }, dispatch);
 
