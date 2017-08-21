@@ -20,6 +20,10 @@ module.exports = {
     },
 
     plugins: [
+        new webpack.DefinePlugin({
+            DEBUG: false,
+        }),
+
         new webpack.NamedModulesPlugin(),
 
         new webpack.NoEmitOnErrorsPlugin(),

@@ -1,5 +1,7 @@
 import { all } from 'redux-saga/effects';
 
+import * as config from '../config';
+
 import ballotNotFoundOkSaga from './ballotNotFoundOkSaga';
 import countyDashboardRefreshOkSaga from './countyDashboardRefreshOkSaga';
 import countyLoginSaga from './countyLoginSaga';
@@ -12,15 +14,20 @@ import uploadAcvrOkSaga from './uploadAcvrOkSaga';
 
 
 export default function* rootSaga() {
-    yield all([
+    const sagas = [
         ballotNotFoundOkSaga(),
         countyLoginSaga(),
         countyPollSaga(),
         countyDashboardRefreshOkSaga(),
-        debugSaga(),
         dosLoginSaga(),
         dosPollSaga(),
         fileUploadSaga(),
         uploadAcvrOkSaga(),
-    ]);
+    ];
+
+    if (config.debug) {
+        sagas.push(debugSaga());
+    }
+
+    yield all(sagas);
 }
