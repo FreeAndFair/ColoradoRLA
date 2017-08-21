@@ -89,7 +89,7 @@ const ContestChoices = (props: any) => {
             <Checkbox
                 key={ choice.name }
                 disabled={ noConsensus }
-                checked={ checked }
+                checked={ checked || false }
                 onChange={ updateChoiceByName(choice.name) }
                 label={ choice.name }
             />
@@ -108,7 +108,7 @@ const ContestComments = ({ comments, onChange }: any) => {
         <div className='pt-card'>
             <label>
                 Comments:
-                <EditableText multiline value={ comments } onChange={ onChange } />
+                <EditableText multiline value={ comments || '' } onChange={ onChange } />
             </label>
         </div>
     );
