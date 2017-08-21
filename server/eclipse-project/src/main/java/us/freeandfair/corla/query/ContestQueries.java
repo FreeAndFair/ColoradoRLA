@@ -107,13 +107,13 @@ public final class ContestQueries {
    * @param the_county_ids The counties.
    * @return the matching contests, or null if the query fails.
    */
-  public static Set<Contest> forCounties(final Set<Integer> the_county_ids) {
+  public static Set<Contest> forCounties(final Set<Long> the_county_ids) {
     Set<Contest> result = null;
     
     try {
       final boolean transaction = Persistence.beginTransaction();
       final Set<Contest> query_results = new HashSet<Contest>();
-      for (final Integer county_id : the_county_ids) {
+      for (final Long county_id : the_county_ids) {
         final County c = Persistence.getByID(county_id, County.class);
         if (c != null) {
           query_results.addAll(c.contests());
