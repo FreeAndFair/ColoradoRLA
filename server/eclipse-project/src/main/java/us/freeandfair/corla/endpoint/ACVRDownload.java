@@ -82,7 +82,7 @@ public class ACVRDownload extends AbstractEndpoint {
       matches.forEach((the_cvr) -> {
         try {
           jw.jsonValue(Main.GSON.toJson(the_cvr));
-          Persistence.currentSession().evict(the_cvr);
+          Persistence.evict(the_cvr);
         } catch (final IOException e) {
           throw new UncheckedIOException(e);
         } 

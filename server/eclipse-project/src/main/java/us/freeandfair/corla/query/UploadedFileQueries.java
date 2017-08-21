@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.PersistenceException;
-import javax.persistence.RollbackException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -61,7 +60,6 @@ public final class UploadedFileQueries {
     UploadedFile result = null;
     
     try {
-      final boolean transaction = Persistence.beginTransaction();
       final Session s = Persistence.currentSession();
       final CriteriaBuilder cb = s.getCriteriaBuilder();
       final CriteriaQuery<UploadedFile> cq = cb.createQuery(UploadedFile.class);
@@ -77,13 +75,6 @@ public final class UploadedFileQueries {
       if (query_results.size() == 1) {
         result = query_results.get(0);
       } 
-      if (transaction) {
-        try {
-          Persistence.commitTransaction();
-        } catch (final RollbackException e) {
-          Persistence.rollbackTransaction();
-        }
-      }
     } catch (final PersistenceException e) {
       Main.LOGGER.error("could not query database for uploaded file");
     }

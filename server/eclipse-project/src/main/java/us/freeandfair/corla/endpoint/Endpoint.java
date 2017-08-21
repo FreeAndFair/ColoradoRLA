@@ -66,6 +66,14 @@ public interface Endpoint {
   void after(Request the_request, Response the_response);
   
   /**
+   * The after-after-filter for this endpoint.
+   * 
+   * @param the_request The request object.
+   * @param the_response The response object.
+   */
+  void afterAfter(Request the_request, Response the_response);
+  
+  /**
    * @return the required authorization type for this endpoint.
    */
   AuthorizationType requiredAuthorization();

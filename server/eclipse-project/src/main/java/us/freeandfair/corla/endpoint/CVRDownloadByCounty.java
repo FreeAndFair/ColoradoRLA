@@ -73,22 +73,22 @@ public class CVRDownloadByCounty extends AbstractEndpoint {
   // necessary to break out of the lambda expression in case of IOException
   @SuppressWarnings("PMD.ExceptionAsFlowControl")
   public String endpoint(final Request the_request, final Response the_response) {
-    final Set<Integer> county_set = new HashSet<Integer>();
+    final Set<Long> county_set = new HashSet<Long>();
     for (final String s : the_request.queryParams()) {
-      county_set.add(Integer.valueOf(s));
+      county_set.add(Long.valueOf(s));
     }
     try {
       final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
       final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
       final JsonWriter jw = new JsonWriter(bw);
       jw.beginArray();
-      for (final Integer county : county_set) {
+      for (final Long county : county_set) {
         final Stream<CastVoteRecord> matches = 
             CastVoteRecordQueries.getMatching(county, RecordType.UPLOADED);
         matches.forEach((the_cvr) -> {
           try {
             jw.jsonValue(Main.GSON.toJson(the_cvr));
-            Persistence.currentSession().evict(the_cvr);
+            Persistence.evict(the_cvr);
           } catch (final IOException e) {
             throw new UncheckedIOException(e);
           } 

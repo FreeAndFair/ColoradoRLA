@@ -27,10 +27,6 @@ import java.util.Map;
 import java.util.OptionalLong;
 
 import javax.persistence.PersistenceException;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItemIterator;
@@ -48,7 +44,6 @@ import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.crypto.HashChecker;
 import us.freeandfair.corla.csv.CVRExportParser;
 import us.freeandfair.corla.csv.DominionCVRExportParser;
-import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
@@ -56,6 +51,7 @@ import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.model.UploadedFile.FileType;
 import us.freeandfair.corla.model.UploadedFile.HashStatus;
 import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.query.CastVoteRecordQueries;
 import us.freeandfair.corla.util.FileHelper;
 import us.freeandfair.corla.util.SparkHelper;
 
@@ -132,16 +128,11 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
                                 the_info.my_uploaded_hash,
                                 hash_status, blob);
       Persistence.saveOrUpdate(result);
-      // TODO: currently we have to commit this transaction here, because
-      // streaming a file to the database requires the file and its stream
-      // to actually stay in scope before the transaction commit;
-      // this will be remedied when we refactor uploading
-      Persistence.commitTransaction();
+      Persistence.flush();
     } catch (final PersistenceException | IOException e) {
       badDataType(the_response, "could not persist file of size " + 
                                 the_info.my_file.length());
     }
-    Persistence.beginTransaction(); // AbstractEndpoint expects a running transaction
     return result;
   }
 
@@ -256,7 +247,7 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
         if (parser.parse()) {
           Main.LOGGER.info(parser.parsedIDs().size() + " CVRs parsed from " + 
               the_county + " county upload file");
-          final OptionalLong count = count();
+          final OptionalLong count = CastVoteRecordQueries.countMatching(RecordType.UPLOADED);
           if (count.isPresent()) {
             Main.LOGGER.info(count.getAsLong() + " uploaded CVRs in storage");
           }
@@ -318,30 +309,6 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
       }
     }
     return my_endpoint_result;
-  }
-
-  /**
-   * Count the uploaded CVRs in storage.
-   * 
-   * @return the number of uploaded CVRs.
-   */
-  private OptionalLong count() {
-    OptionalLong result = OptionalLong.empty();
-
-    try {
-      final Session s = Persistence.currentSession();
-      final CriteriaBuilder cb = s.getCriteriaBuilder();
-      final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-      final Root<CastVoteRecord> root = cq.from(CastVoteRecord.class);
-      cq.select(cb.count(root)).where(
-          cb.equal(root.get("my_record_type"), RecordType.UPLOADED));
-      final TypedQuery<Long> query = s.createQuery(cq);
-      result = OptionalLong.of(query.getSingleResult());
-    } catch (final PersistenceException e) {
-      // ignore
-    }
-
-    return result;
   }
 
   /**
