@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 interface ContestInfo {
     choices: string[];
     contest: number;
+    consensus: string;
 }
 
 interface Timestamp {
@@ -30,7 +31,9 @@ interface Acvr {
 const formatContestInfo = (mark: any, contestId: any): ContestInfo => {
     const choices = _.map(mark.choices, (_, name: any) => name);
 
-    return { choices, contest: contestId };
+    const consensus = mark.noConsensus ? 'NO' : 'YES';
+
+    return { choices, consensus, contest: contestId };
 };
 
 const formatDate = (d: Date): Timestamp => {
