@@ -36,8 +36,9 @@ zip -r $reldir/corla-client.zip *
 
 cp $TEST_DIR/corla-test-credentials.psql $reldir
 
-relzip=$SERVER_DIR/target/deliverable-$version.zip
+relzip=$SERVER_DIR/target/$relname.zip
 
+cd $SERVER_DIR/target
 zip -r $relzip $relname
 
 echo "TODO also: add to $reldir:"
