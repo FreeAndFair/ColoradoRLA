@@ -18,17 +18,20 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 import us.freeandfair.corla.model.ContestToAudit.AuditType;
-import us.freeandfair.corla.persistence.AbstractEntity;
+import us.freeandfair.corla.persistence.PersistentEntity;
 
 /**
  * The Department of State dashboard.
@@ -36,14 +39,20 @@ import us.freeandfair.corla.persistence.AbstractEntity;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-// TODO this is an unusual entity in that it should really be a singleton; 
-// there may be a better way to handle this than what is being done now.
+// this is an unusual entity, in that it is a singleton; it thus has only one
+// possible id (0).
 @Entity
+@Cacheable
 @Table(name = "dos_dashboard")
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
-public class DoSDashboard extends AbstractEntity implements Serializable {  
+public class DoSDashboard implements PersistentEntity, Serializable {  
+  /**
+   * The DoS dashboard ID (it is a singleton).
+   */
+  public static final Long ID = Long.valueOf(0);
+  
   /**
    * The minimum number of random seed characters.
    */
@@ -55,10 +64,23 @@ public class DoSDashboard extends AbstractEntity implements Serializable {
   private static final long serialVersionUID = 1; 
   
   /**
+   * The ID. This is always 0, because this object is a singleton.
+   */
+  @Id
+  private Long my_id = ID;
+  
+  /**
+   * The version (for optimistic locking).
+   */
+  @Version
+  @SuppressWarnings("PMD.UnusedPrivateField")
+  private Long my_version;
+  
+  /**
    * The contests to be audited and the reasons for auditing.
    */
   @OneToMany(cascade = CascadeType.ALL, mappedBy = "my_dashboard", 
-             fetch = FetchType.EAGER, orphanRemoval = true)
+             fetch = FetchType.LAZY, orphanRemoval = true)
   @Column(name = "contest_to_audit")
   private Set<ContestToAudit> my_contests_to_audit = new HashSet<>();
 
@@ -88,6 +110,28 @@ public class DoSDashboard extends AbstractEntity implements Serializable {
     super();
   }
   
+  /**
+   * @return the database ID for this dashboard, which is the same as
+   * its county ID.
+   */
+  public Long id() {
+    return my_id;
+  }
+  
+  /**
+   * Sets the database ID for this dashboard.
+   * 
+   * @param the_id The ID, effectively ignored; the database ID for a DoS 
+   * dashboard is always 0.
+   * @exception IllegalArgumentException if the ID is not 0.
+   */
+  public final void setID(final Long the_id) {
+    if (!ID.equals(the_id)) {
+      throw new IllegalArgumentException("the only valid ID for a DoSDashboard is 0");
+    }
+    my_id = ID;
+  }
+
   /**
    * Checks the validity of a random seed. To be valid, a random seed must
    * have at least MIN_SEED_CHARACTERS characters, and all characters must

@@ -21,25 +21,31 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.crypto.PseudoRandomNumberGenerator;
 import us.freeandfair.corla.model.CVRContestInfo.ConsensusValue;
-import us.freeandfair.corla.persistence.AbstractEntity;
+import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.persistence.PersistentEntity;
+import us.freeandfair.corla.query.CVRAuditInfoQueries;
+import us.freeandfair.corla.query.CastVoteRecordQueries;
+import us.freeandfair.corla.query.CountyContestResultQueries;
 
 /**
  * The county dashboard.
@@ -48,20 +54,20 @@ import us.freeandfair.corla.persistence.Persistence;
  * @version 0.0.1
  */
 @Entity
+@Cacheable
 @Table(name = "county_dashboard")
-//this class has many fields that would normally be declared final, but
-//cannot be for compatibility with Hibernate and JPA.
-@SuppressWarnings("PMD.ImmutableField")
-public class CountyDashboard extends AbstractEntity implements Serializable {
+@SuppressWarnings({"PMD.ImmutableField", "PMD.TooManyMethods", "PMD.TooManyFields",
+    "PMD.GodClass", "PMD.ExcessiveImports"})
+public class CountyDashboard implements PersistentEntity, Serializable {
   /**
    * The minimum number of members on an audit board.
    */
   public static final int MIN_AUDIT_BOARD_MEMBERS = 2;
   
   /**
-   * The empty RLA algorithm constant.
+   * The "my_dashboard" string.
    */
-  private static final RLAAlgorithm NO_RLA_ALGORITHM = null;
+  private static final String MY_DASHBOARD = "my_dashboard";
   
   /**
    * The "index" string.
@@ -77,11 +83,19 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1; 
-
+  
   /**
-   * The county ID of this dashboard.
+   * The county ID.
    */
-  private Integer my_county_id;
+  @Id
+  private Long my_id;
+  
+  /**
+   * The version (for optimistic locking).
+   */
+  @Version
+  @SuppressWarnings("PMD.UnusedPrivateField")
+  private Long my_version;
   
   /**
    * The county status of this dashboard.
@@ -89,12 +103,6 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
   private CountyStatus my_status = CountyStatus.NO_DATA;
-  
-  /**
-   * The RLAAlgorithm of this dashboard. Computed on the fly when
-   * necessary.
-   */
-  private transient RLAAlgorithm my_rla_algorithm;
   
   /**
    * The timestamp of the most recent set of uploaded CVRs.
@@ -129,7 +137,7 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
   /**
    * The members of the audit board.
    */
-  @ManyToMany(fetch = FetchType.EAGER)
+  @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "audit_board_member",
              joinColumns = @JoinColumn(name = "county_dashboard_id", 
                                        referencedColumnName = MY_ID),
@@ -138,33 +146,26 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
   private Set<Elector> my_members = new HashSet<>();
   
   /**
-   * The ids of the CVRs to audit, in the order they should be audited.
+   * The sequence of CVRs to audit, stored as CVRAuditInfo records.
    */
-  @ElementCollection(fetch = FetchType.EAGER)
-  @CollectionTable(name = "county_dashboard_cvr_to_audit",
-                   joinColumns = @JoinColumn(name = "county_dashboard_id", 
-                                             referencedColumnName = MY_ID))
-  @OrderColumn(name = INDEX)
-  @Column(name = "cvr_id")
-  private List<Long> my_cvrs_to_audit = new ArrayList<>();
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = MY_DASHBOARD, 
+             fetch = FetchType.LAZY, orphanRemoval = true)
+  @OrderColumn(name = "index")
+  private List<CVRAuditInfo> my_cvr_audit_info = new ArrayList<>();
   
   /**
-   * The ids of the audit CVRs submitted, in the same order as the CVRs
-   * to audit. 
+   * The audit data.
    */
-  @ElementCollection(fetch = FetchType.EAGER)
-  @CollectionTable(name = "county_dashboard_submitted_audit_cvr",
-                   joinColumns = @JoinColumn(name = "county_dashboard_id", 
-                                             referencedColumnName = MY_ID))
-  @OrderColumn(name = INDEX)
-  @Column(name = "cvr_id")
-  private List<Long> my_submitted_audit_cvrs = new ArrayList<>();
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = MY_DASHBOARD, 
+             fetch = FetchType.LAZY, orphanRemoval = true)
+  private Set<CountyContestComparisonAudit> my_comparison_audits = 
+      new HashSet<>(); 
   
   /**
    * The audit investigation reports.
    */
-  @OneToMany(cascade = CascadeType.ALL, mappedBy = "my_dashboard", 
-             fetch = FetchType.EAGER, orphanRemoval = true)
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = MY_DASHBOARD, 
+             fetch = FetchType.LAZY, orphanRemoval = true)
   @OrderColumn(name = INDEX)
   private List<AuditInvestigationReportInfo> my_investigation_reports = 
       new ArrayList<>();
@@ -172,8 +173,8 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
   /**
    * The audit interim reports.
    */
-  @OneToMany(cascade = CascadeType.ALL, mappedBy = "my_dashboard", 
-             fetch = FetchType.EAGER, orphanRemoval = true)
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = MY_DASHBOARD, 
+             fetch = FetchType.LAZY, orphanRemoval = true)
   @OrderColumn(name = INDEX)
   private List<IntermediateAuditReportInfo> my_intermediate_reports = 
       new ArrayList<>();
@@ -183,6 +184,16 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
    */
   @Column(nullable = false)
   private Integer my_ballots_audited = 0;
+  
+  /**
+   * The estimated ballots to audit.
+   */
+  private Integer my_estimated_ballots_to_audit = 0;
+  
+  /**
+   * The index of the current CVR under audit.
+   */
+  private Integer my_cvr_under_audit;
   
   /**
    * The number of discrepancies found in the audit so far.
@@ -208,21 +219,28 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
    * 
    * @param the_county_id The county ID.
    * @param the_status The status.
-   * @param the_cvr_upload_timestamp The CVR upload timestamp.
    */
-  public CountyDashboard(final Integer the_county_id, final CountyStatus the_status,
-                         final Instant the_cvr_upload_timestamp) {
+  public CountyDashboard(final Long the_county_id, final CountyStatus the_status) {
     super();
-    my_county_id = the_county_id;
+    setID(the_county_id);
     my_status = the_status;
-    my_cvr_upload_timestamp = the_cvr_upload_timestamp;
   }
   
   /**
-   * @return the county ID for this dashboard.
+   * @return the database ID for this dashboard, which is the same as
+   * its county ID.
    */
-  public Integer countyID() {
-    return my_county_id;
+  public Long id() {
+    return my_id;
+  }
+  
+  /**
+   * Sets the database ID for this dashboard. This must be the county ID.
+   * 
+   * @param the_id The ID. 
+   */
+  public final void setID(final Long the_id) {
+    my_id = the_id;
   }
   
   /**
@@ -305,7 +323,7 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
    * 
    * @param the_members The members.
    */
-  public synchronized void setAuditBoardMembers(final Collection<Elector> the_members) {
+  public void setAuditBoardMembers(final Collection<Elector> the_members) {
     my_members.clear();
     my_members.addAll(the_members);
   }
@@ -318,28 +336,65 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
    * in the order they should be examined. It may contain duplicates, which
    * are dealt with appropriately when submitting audit CVRs.
    */
-  public synchronized void setCVRsToAudit(final List<Long> the_cvrs_to_audit) 
+  public void setCVRsToAudit(final List<Long> the_cvrs_to_audit) 
       throws IllegalArgumentException {
     if (the_cvrs_to_audit.contains(null)) {
       throw new IllegalArgumentException("null elements in audit cvr list");
     }
-    my_cvrs_to_audit = new ArrayList<Long>(the_cvrs_to_audit);
-    my_submitted_audit_cvrs.clear();
-    my_discrepancies = 0;
-    my_disagreements = 0;
-    my_rla_algorithm = NO_RLA_ALGORITHM;
-    for (int i = 0; i < my_cvrs_to_audit.size(); i++) {
-      my_submitted_audit_cvrs.add(Long.MIN_VALUE);
+    my_cvr_audit_info.clear();
+    for (final Long cvr_id : the_cvrs_to_audit) {
+      final CastVoteRecord cvr = Persistence.getByID(cvr_id, CastVoteRecord.class);
+      if (cvr == null) {
+        throw new IllegalArgumentException("nonexistent cvr in audit cvr list");
+      }
+      // create a persistent record
+      final CVRAuditInfo cvrai = new CVRAuditInfo(this, cvr_id);
+      my_cvr_audit_info.add(cvrai);
     }
+    initializeAuditData();
   }
 
   /**
+   * Initializes the audit data for this county dashboard.
+   */
+  private void initializeAuditData() {
+    my_cvr_under_audit = 0;
+    my_discrepancies = 0;
+    my_disagreements = 0;
+    my_comparison_audits.clear();
+    for (final CountyContestResult ccr : CountyContestResultQueries.forCounty(id())) {
+      final CountyContestComparisonAudit audit = new CountyContestComparisonAudit(this, ccr);
+      my_comparison_audits.add(audit);
+    }
+  }
+  
+  /**
    * @return the list of CVR IDs to audit.
    */
-  public synchronized List<Long> cvrsToAudit() {
-    return Collections.unmodifiableList(my_cvrs_to_audit);
+  public List<Long> cvrsToAudit() {
+    return CVRAuditInfoQueries.cvrsToAudit(this);
   }
 
+  /**
+   * @return the list of CVR audit info (for legacy RLA algorithm).
+   */
+  public List<CVRAuditInfo> cvrAuditInfo() {
+    return Collections.unmodifiableList(my_cvr_audit_info);
+  }
+  
+  /**
+   * Checks that the specified CVR and ACVR are an audit pair, and that
+   * the specified ACVR is auditor generated.
+   * 
+   * @param the_cvr The CVR.
+   * @param the_acvr The ACVR.
+   */
+  private boolean checkACVRSanity(final CastVoteRecord the_cvr,
+                                  final CastVoteRecord the_acvr) {
+    return the_cvr.isAuditPairWith(the_acvr) &&
+           the_acvr.recordType().isAuditorGenerated();
+  }
+  
   /**
    * Submit an audit CVR for a CVR under audit.
    * 
@@ -352,68 +407,165 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
   //@ require the_cvr_under_audit != null;
   //@ require the_acvr != null;
   @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.AvoidDeeplyNestedIfStmts"})
-  public synchronized boolean submitAuditCVR(final CastVoteRecord the_cvr_under_audit, 
-                                             final CastVoteRecord the_audit_cvr) {
+  public boolean submitAuditCVR(final CastVoteRecord the_cvr_under_audit, 
+                                final CastVoteRecord the_audit_cvr) {
     // performs a sanity check to make sure the CVR under audit and the ACVR
     // are the same card
     boolean result = false;
     
-    // a CVR can appear in the list more than once
-    final int first_index = my_cvrs_to_audit.indexOf(the_cvr_under_audit.id());
-    final int last_index = my_cvrs_to_audit.lastIndexOf(the_cvr_under_audit.id());
-    if (first_index >= 0 && 
-        the_cvr_under_audit.equals(Persistence.getByID(the_cvr_under_audit.id(), 
-                                                       CastVoteRecord.class)) &&
-        the_audit_cvr.equals(Persistence.getByID(the_audit_cvr.id(),
-                                                 CastVoteRecord.class)) &&
-        the_cvr_under_audit.isAuditPairWith(the_audit_cvr) &&
-        the_audit_cvr.recordType().isAuditorGenerated()) {
-      // the CVRs match!
-      result = true;
-      boolean increment = false;
-      for (int index = first_index; index <= last_index; index++) {
-        if (my_cvrs_to_audit.get(index).equals(the_cvr_under_audit.id()) &&
-            my_submitted_audit_cvrs.get(index) == Long.MIN_VALUE) {
-          // we bump the number of ballots audited as long as this is not a
-          // replacement for an already-audited result
-          // TODO: do we allow such replacements at all? 
-          increment = true;
-          my_submitted_audit_cvrs.set(index, the_audit_cvr.id());
+    final List<CVRAuditInfo> info = 
+        CVRAuditInfoQueries.matching(this, the_cvr_under_audit.id());
+    
+    if (info == null || info.isEmpty()) {
+      Main.LOGGER.info("attempt to submit ACVR for county " + id() + ", cvr " +
+                       the_cvr_under_audit.id() + " not under audit");
+    } else if (checkACVRSanity(the_cvr_under_audit, the_audit_cvr)) {
+      // if the record is the current CVR under audit, or if it hasn't been
+      // audited yet, we can just process it
+      final CVRAuditInfo ai = info.get(0);
+      if (ai.acvrID() == null) {
+        for (final CVRAuditInfo c : info) {
+          c.setACVRID(the_audit_cvr.id());
+          Persistence.saveOrUpdate(c);
         }
-      }
-      if (increment) {
-        my_ballots_audited = my_ballots_audited + 1;
-        boolean disagree = false;
-        boolean discrepancy = false;
-        initializeRLAAlgorithm();
-        for (final CVRContestInfo ci : the_audit_cvr.contestInfo()) {
-          disagree |= ci.consensus() == ConsensusValue.NO;
-          discrepancy |= my_rla_algorithm.discrepancy(the_cvr_under_audit, 
-                                                      the_audit_cvr) != 0;
-        }
-        if (disagree) {
-          my_disagreements = my_disagreements + 1;
-        }
-        if (discrepancy) {
-          my_discrepancies = my_discrepancies + 1;
-        }
+        // this just updates the counters; the actual "audit" happens later
+        audit(the_cvr_under_audit, the_audit_cvr, 0, true);
+        result = true;
       } else {
-        Main.LOGGER.info("ACVR submitted for already-audited CVR ID " + 
-                         the_cvr_under_audit.id());
+        // the record has been audited before, so we need to "unaudit" it 
+        // this, unfortunately, requires a linear time search to count
+        // the occurrences of this ballot before my_cvr_under_audit
+        int undo_count = 0;
+        for (int i = 0; i < my_cvr_under_audit; i++) {
+          if (ai.equals(my_cvr_audit_info.get(i))) {
+            undo_count = undo_count + 1;
+          }
+        }
+        unaudit(the_cvr_under_audit, 
+                Persistence.getByID(ai.acvrID(), CastVoteRecord.class), 
+                undo_count);
+        for (final CVRAuditInfo c : info) {
+          c.setACVRID(the_audit_cvr.id());
+          Persistence.saveOrUpdate(c);
+        }
+        audit(the_cvr_under_audit, the_audit_cvr, undo_count, true);
       }
-    } 
+    }  else {
+      Main.LOGGER.info("attempt to submit non-corresponding ACVR " +
+                       the_audit_cvr.id() + " for county " + id() + 
+                       ", cvr " + the_cvr_under_audit.id());
+    }
 
+    updateCVRUnderAudit();
+    updateEstimatedBallotsToAudit();
+    
     return result;
   }
   
   /**
-   * @return the list of audit CVRs submitted. The result will contain
-   * the value Long.MIN_VALUE for each element in the cvrsToAudit() list 
-   * where there has been no audit CVR submitted. Thus, most computations on 
-   * this list will use the sublist preceding the first Long.MIN_VALUE value.
+   * Audits a CVR/ACVR pair by adding it to all the audits in progress.
+   * This also updates the local audit counters, as appropriate.
+   * 
+   * @param the_cvr_under_audit The CVR under audit.
+   * @param the_audit_cvr The audit CVR.
+   * @param the_count The number of times to count this ballot in the
+   * audit.
+   * @param the_update_counters true to update the county dashboard 
+   * counters, false otherwise; false is used when this ballot has
+   * already been audited once.
    */
-  public List<Long> submittedAuditCVRs() {
-    return Collections.unmodifiableList(my_submitted_audit_cvrs);
+  private void audit(final CastVoteRecord the_cvr_under_audit,
+                     final CastVoteRecord the_audit_cvr, 
+                     final int the_count,
+                     final boolean the_update_counters) {
+    boolean discrepancy_found = false;
+    for (final CountyContestComparisonAudit ca : my_comparison_audits) {
+      final int discrepancy = ca.computeDiscrepancy(the_cvr_under_audit, the_audit_cvr);
+      for (int i = 0; i < the_count; i++) {
+        ca.recordDiscrepancy(discrepancy);
+      }
+      discrepancy_found |= discrepancy != 0;
+    }
+    if (the_update_counters) {
+      my_ballots_audited = my_ballots_audited + 1;
+      if (discrepancy_found) {
+        my_discrepancies = my_discrepancies + 1;
+      }
+      boolean disagree = false;
+      for (final CVRContestInfo ci : the_audit_cvr.contestInfo()) {
+        disagree |= ci.consensus() == ConsensusValue.NO;
+      }
+      if (disagree) {
+        my_disagreements = my_disagreements + 1;
+      }
+    }
+  }
+  
+  /**
+   * "Unaudits" a CVR/ACVR pair by removing it from all the audits in 
+   * progress. This also updates the local audit counters, as appropriate.
+   *
+   * @param the_cvr_under_audit The CVR under audit.
+   * @param the_audit_cvr The audit CVR.
+   * @param the_count The number of times to remove this ballot from the audit.
+   */
+  private void unaudit(final CastVoteRecord the_cvr_under_audit,
+                       final CastVoteRecord the_audit_cvr,
+                       final int the_count) {
+    boolean discrepancy_found = false;
+    for (final CountyContestComparisonAudit ca : my_comparison_audits) {
+      final int discrepancy = ca.computeDiscrepancy(the_cvr_under_audit, the_audit_cvr);
+      for (int i = 0; i < the_count; i++) {
+        ca.removeDiscrepancy(discrepancy);
+      }
+      discrepancy_found |= discrepancy != 0;
+    }
+    my_ballots_audited = my_ballots_audited - 1;
+    if (discrepancy_found) {
+      my_discrepancies = my_discrepancies - 1;
+    }
+    boolean disagree = false;
+    for (final CVRContestInfo ci : the_audit_cvr.contestInfo()) {
+      disagree |= ci.consensus() == ConsensusValue.NO;
+    }
+    if (disagree) {
+      my_disagreements = my_disagreements - 1;
+    }
+  }
+  
+  /**
+   * Updates the current CVR to audit index to the first non-audited CVR
+   * after the current CVR to audit index.
+   * 
+   * @param the_index The index.
+   */
+  private void updateCVRUnderAudit() {
+    int index = my_cvr_under_audit;
+    my_cvr_under_audit = -1;
+    while (index < my_cvr_audit_info.size()) {
+      final CVRAuditInfo cai = my_cvr_audit_info.get(index);
+      if (cai.acvrID() == null) {
+        my_cvr_under_audit = index;
+        break;
+      } else {
+        final CastVoteRecord cvr = 
+            Persistence.getByID(cai.cvrID(), CastVoteRecord.class);
+        final CastVoteRecord acvr =
+            Persistence.getByID(cai.acvrID(), CastVoteRecord.class);
+        audit(cvr, acvr, 1, false);
+      }
+      index = index + 1;
+    }
+  }
+  
+  /**
+   * Updates the estimated number of ballots to audit.
+   */
+  private void updateEstimatedBallotsToAudit() {
+    int ballots_to_audit = Integer.MIN_VALUE;
+    for (final CountyContestComparisonAudit ccca : my_comparison_audits) {
+      ballots_to_audit = Math.max(ballots_to_audit, ccca.ballotsToAudit());
+    }
   }
   
   /**
@@ -421,8 +573,7 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
    * 
    * @param the_report The audit investigation report.
    */
-  public synchronized void 
-      submitInvestigationReport(final AuditInvestigationReportInfo the_report) {
+  public void submitInvestigationReport(final AuditInvestigationReportInfo the_report) {
     the_report.setDashboard(this);
     my_investigation_reports.add(the_report);
   }
@@ -439,8 +590,7 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
    * 
    * @param the_report The audit investigation report.
    */
-  public synchronized void 
-      submitIntermediateReport(final IntermediateAuditReportInfo the_report) {
+  public void submitIntermediateReport(final IntermediateAuditReportInfo the_report) {
     the_report.setDashboard(this);
     my_intermediate_reports.add(the_report);
   }
@@ -457,55 +607,76 @@ public class CountyDashboard extends AbstractEntity implements Serializable {
    * of CVRs to audit that has no corresponding ACVR. Returns null if there is 
    * no next CVR to audit.
    */
-  public synchronized Long cvrUnderAudit() {
-    for (int i = 0; i < my_submitted_audit_cvrs.size(); i++) {
-      if (my_submitted_audit_cvrs.get(i) == Long.MIN_VALUE) {
-        return my_cvrs_to_audit.get(i);
-      }
+  public Long cvrUnderAudit() {
+    if (my_cvr_audit_info == null || my_cvr_under_audit == null ||
+        my_cvr_audit_info.size() <= my_cvr_under_audit) {
+      return null;
+    } else {
+      return my_cvr_audit_info.get(my_cvr_under_audit).cvrID();
     }
-    return null;
   }
   
   /**
    * @return the number of ballots audited.
    */
-  public synchronized Integer ballotsAudited() {
+  public Integer ballotsAudited() {
     return my_ballots_audited;
   }
   
   /**
    * @return the number of discrepancies found in the audit so far.
    */
-  public synchronized Integer discrepancies() {
+  public Integer discrepancies() {
     return my_discrepancies;
   }
   
   /**
    * @return the number of disagreements found in the audit so far.
    */
-  public synchronized Integer disagreements() {
+  public Integer disagreements() {
     return my_disagreements;
   }
   
   /**
    * @return the estimated number of ballots to audit.
    */
-  public synchronized Integer estimatedBallotsToAudit() {
-    int result = 0;
-    if (!my_cvrs_to_audit.isEmpty()) {
-      initializeRLAAlgorithm();
-      result = my_rla_algorithm.estimatedBallotsToAudit();
-    }
-    return result;
+  public Integer estimatedBallotsToAudit() {
+    return my_estimated_ballots_to_audit;
   }
   
   /**
-   * Initialize the RLAAlgorithm object for this dashboard, if it is uninitialized.
+   * Compute the order of ballot (cards) for audit.
    */
-  private synchronized void initializeRLAAlgorithm() {
-    if (my_rla_algorithm == null && !my_cvrs_to_audit.isEmpty()) {
-      my_rla_algorithm = new RLAAlgorithm(this);
+  public static List<Long> computeBallotOrder(final CountyDashboard the_cdb, 
+                                              final String the_seed) {
+    final boolean with_replacement = true;
+    // assuming that CVRs are indexed from 0
+    final int minimum = 0;
+    // the number of CVRs for the_contest_to_audit - note that the sequence
+    // generator generates a sequence of the numbers minimum ... maximum 
+    // inclusive, so we subtract 1 from the number of CVRs to give it the
+    // correct range for our actual list of CVRs (indexed from 0).
+    final Long max_long = 
+        CastVoteRecordQueries.countMatching(the_cdb.cvrUploadTimestamp(), 
+                                            the_cdb.id(),
+                                            RecordType.UPLOADED) - 1;
+
+    final int maximum = max_long.intValue();
+
+    final PseudoRandomNumberGenerator prng = 
+        new PseudoRandomNumberGenerator(the_seed, with_replacement,
+                                        minimum, maximum);
+    final List<Integer> list_of_cvrs_to_audit = 
+        prng.getRandomNumbers(minimum, maximum);
+    final List<Long> list_of_cvr_ids = 
+        CastVoteRecordQueries.idsForMatching(the_cdb.cvrUploadTimestamp(), 
+                                             the_cdb.id(),
+                                             RecordType.UPLOADED);
+    final List<Long> result = new ArrayList<>();
+    for (final int index : list_of_cvrs_to_audit) {
+      result.add(list_of_cvr_ids.get(index));
     }
+    return result;
   }
   
   /**

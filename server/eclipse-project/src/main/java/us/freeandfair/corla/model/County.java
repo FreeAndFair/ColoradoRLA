@@ -17,15 +17,18 @@ import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 import java.io.Serializable;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
-import us.freeandfair.corla.persistence.AbstractEntity;
+import us.freeandfair.corla.persistence.PersistentEntity;
 
 /**
  * A county involved in an audit.
@@ -34,48 +37,50 @@ import us.freeandfair.corla.persistence.AbstractEntity;
  * @version 0.0.1
  */
 @Entity
+@Cacheable
 @Table(name = "county")
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
-public class County extends AbstractEntity implements Serializable {
+public class County implements PersistentEntity, Serializable {
+  /**
+   * The "my_id" string.
+   */
+  private static final String MY_ID = "my_id";
+  
   /**
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1L;
 
   /**
+   * The database, and county, ID.
+   */
+  @Id
+  private Long my_id;
+  
+  /**
+   * The version (for optimistic locking).
+   */
+  @Version
+  @SuppressWarnings("PMD.UnusedPrivateField")
+  private Long my_version;
+  
+  /**
    * The county name.
    */
   @Column(nullable = false, updatable = false, unique = true)
   private String my_name;
-
-  /**
-   * The county ID.
-   */
-  @Column(nullable = false, updatable = false, unique = true)
-  private Integer my_identifier;
- 
-  /**
-   * The contests in this county.
-   */
-  @ManyToMany(fetch = FetchType.EAGER)
-  @JoinTable(name = "county_contest",
-            joinColumns = @JoinColumn(name = "county_id", 
-                                      referencedColumnName = "my_identifier"),
-            inverseJoinColumns = @JoinColumn(name = "contest_id", 
-                                             referencedColumnName = "my_id"))
-  private Set<Contest> my_contests;
   
   /**
    * The administrators for this county.
    */
-  @ManyToMany(fetch = FetchType.EAGER)
+  @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "county_administrator",
              joinColumns = @JoinColumn(name = "county_id", 
-                                       referencedColumnName = "my_identifier"),
+                                       referencedColumnName = MY_ID),
              inverseJoinColumns = @JoinColumn(name = "administrator_id", 
-                                              referencedColumnName = "my_id"))
+                                              referencedColumnName = MY_ID))
   private Set<Administrator> my_administrators;
 
   /**
@@ -90,16 +95,13 @@ public class County extends AbstractEntity implements Serializable {
    * 
    * @param the_name The county name.
    * @param the_identifier The county ID.
-   * @param the_contests The contests.
    * @param the_administrators The administrators.
    */
-  public County(final String the_name, final Integer the_identifier,
-                final Set<Contest> the_contests, 
+  public County(final String the_name, final Long the_identifier,
                 final Set<Administrator> the_administrators) {
     super();
     my_name = the_name;
-    my_identifier = the_identifier;
-    my_contests = the_contests;
+    my_id = the_identifier;
     my_administrators = the_administrators;
   }
 
@@ -113,16 +115,17 @@ public class County extends AbstractEntity implements Serializable {
   /**
    * @return the county ID.
    */
-  public Integer identifier() {
-    return my_identifier;
+  public Long id() {
+    return my_id;
   }
   
   /**
-   * @return the contests in this county. The result set is mutable,
-   * and can be used to change the persistent county record.
+   * Sets the ID of this county.
+   * 
+   * @param the_id The ID.
    */
-  public Set<Contest> contests() {
-    return my_contests;
+  public void setID(final Long the_id) {
+    my_id = the_id;
   }
   
   /**
@@ -139,7 +142,7 @@ public class County extends AbstractEntity implements Serializable {
   @Override
   public String toString() {
     return "County [name=" + my_name + ", id=" +
-           my_identifier + "]";
+           my_id + "]";
   }
 
   /**
@@ -154,8 +157,7 @@ public class County extends AbstractEntity implements Serializable {
     if (the_other instanceof County) {
       final County other_county = (County) the_other;
       result &= nullableEquals(other_county.name(), name());
-      result &= nullableEquals(other_county.identifier(), identifier());
-      result &= nullableEquals(other_county.contests(), contests());
+      result &= nullableEquals(other_county.id(), id());
     } else {
       result = false;
     }

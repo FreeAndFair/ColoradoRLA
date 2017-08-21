@@ -89,7 +89,7 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
   /**
    * The county ID to apply to the parsed manifest lines.
    */
-  private final Integer my_county_id;
+  private final Long my_county_id;
   
   /**
    * Construct a new Colorado ballot manifest parser using the specified Reader.
@@ -101,7 +101,7 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
    */
   public ColoradoBallotManifestParser(final Reader the_reader, 
                                       final Instant the_timestamp,
-                                      final Integer the_county_id) 
+                                      final Long the_county_id) 
       throws IOException {
     my_parser = new CSVParser(the_reader, CSVFormat.DEFAULT);
     my_timestamp = the_timestamp;
@@ -118,7 +118,7 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
    */
   public ColoradoBallotManifestParser(final String the_string, 
                                       final Instant the_timestamp,
-                                      final Integer the_county_id)
+                                      final Long the_county_id)
       throws IOException {
     my_parser = CSVParser.parse(the_string, CSVFormat.DEFAULT);
     my_timestamp = the_timestamp;

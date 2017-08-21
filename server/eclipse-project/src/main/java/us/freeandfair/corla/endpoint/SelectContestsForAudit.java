@@ -25,7 +25,6 @@ import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.model.ContestToAudit;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.DoSDashboardQueries;
 
 /**
  * The endpoint for selecting the contests to audit.
@@ -71,7 +70,7 @@ public class SelectContestsForAudit extends AbstractDoSDashboardEndpoint {
     try {
       final ContestToAudit[] contests = 
           Main.GSON.fromJson(the_request.body(), ContestToAudit[].class);
-      final DoSDashboard dosdb = DoSDashboardQueries.get();
+      final DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
       if (dosdb == null) {
         Main.LOGGER.error("could not get department of state dashboard");
         serverError(the_response, "Could not select contests");
@@ -79,10 +78,10 @@ public class SelectContestsForAudit extends AbstractDoSDashboardEndpoint {
         for (final ContestToAudit c : contests) {
           Main.LOGGER.info("updating contest audit status: " + c);
           dosdb.updateContestToAudit(c);
+          Persistence.saveOrUpdate(dosdb);
+          ok(the_response, "Contests selected");
         }
       }
-      Persistence.saveOrUpdate(dosdb);
-      ok(the_response, "Contests selected");
     } catch (final JsonSyntaxException e) {
       Main.LOGGER.error("malformed contest selection");
       badDataContents(the_response, "Invalid contest selection data");

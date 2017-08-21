@@ -32,7 +32,6 @@ import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.CountyDashboardQueries;
 
 /**
  * The endpoint for reporting ballots that could not be found by auditors.
@@ -85,8 +84,7 @@ public class BallotNotFound extends AbstractAuditBoardDashboardEndpoint {
       return my_endpoint_result;
     }
     
-    final CountyDashboard cdb = 
-        CountyDashboardQueries.get(county.identifier());
+    final CountyDashboard cdb = Persistence.getByID(county.id(), CountyDashboard.class);
     if (cdb == null) {
       serverError(the_response, "could not load audit board information");
       return my_endpoint_result;

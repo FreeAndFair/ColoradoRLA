@@ -7,7 +7,10 @@ us.freeandfair.corla.model.Choice
 us.freeandfair.corla.model.Contest
 us.freeandfair.corla.model.ContestToAudit
 us.freeandfair.corla.model.County
+us.freeandfair.corla.model.CountyContestComparisonAudit
+us.freeandfair.corla.model.CountyContestResult
 us.freeandfair.corla.model.CountyDashboard
+us.freeandfair.corla.model.CVRAuditInfo
 us.freeandfair.corla.model.CVRContestInfo
 us.freeandfair.corla.model.DoSDashboard
 us.freeandfair.corla.model.Elector

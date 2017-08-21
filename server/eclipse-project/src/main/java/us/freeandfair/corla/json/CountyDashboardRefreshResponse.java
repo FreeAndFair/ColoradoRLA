@@ -31,8 +31,8 @@ import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.model.Elector;
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.model.UploadedFile.FileType;
-import us.freeandfair.corla.query.CountyQueries;
-import us.freeandfair.corla.query.DoSDashboardQueries;
+import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.query.ContestQueries;
 import us.freeandfair.corla.query.UploadedFileQueries;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
@@ -51,7 +51,7 @@ public class CountyDashboardRefreshResponse {
   /**
    * The county ID.
    */
-  private final Integer my_id;
+  private final Long my_id;
   
   /**
    * The county status.
@@ -156,7 +156,7 @@ public class CountyDashboardRefreshResponse {
    * @param the_ballot_under_audit The index of the CVR under audit.
    */
   @SuppressWarnings("PMD.ExcessiveParameterList")
-  protected CountyDashboardRefreshResponse(final Integer the_id,
+  protected CountyDashboardRefreshResponse(final Long the_id,
                                            final CountyStatus the_status,
                                            final Map<String, String> the_general_information,
                                            final Set<Elector> the_audit_board_members, 
@@ -205,9 +205,9 @@ public class CountyDashboardRefreshResponse {
   @SuppressWarnings({"PMD.NPathComplexity", "PMD.CyclomaticComplexity"})
   public static CountyDashboardRefreshResponse 
       createResponse(final CountyDashboard the_dashboard) {
-    final Integer county_id = the_dashboard.countyID();
-    final County county = CountyQueries.byID(county_id);
-    final DoSDashboard dosd = DoSDashboardQueries.get();
+    final Long county_id = the_dashboard.id();
+    final County county = Persistence.getByID(county_id, County.class);
+    final DoSDashboard dosd = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
 
     if (county == null || dosd == null) {
       throw new PersistenceException("unable to read county dashboard state");
@@ -225,7 +225,7 @@ public class CountyDashboardRefreshResponse {
     
     // contests
     final Set<Long> contests = new HashSet<Long>();
-    for (final Contest c : county.contests()) {
+    for (final Contest c : ContestQueries.forCounty(county_id)) {
       contests.add(c.id());
     }
     
@@ -272,8 +272,8 @@ public class CountyDashboardRefreshResponse {
   @SuppressWarnings({"PMD.NPathComplexity", "PMD.CyclomaticComplexity"})
   public static CountyDashboardRefreshResponse 
       createAbbreviatedResponse(final CountyDashboard the_dashboard) {
-    final Integer county_id = the_dashboard.countyID();
-    final County county = CountyQueries.byID(county_id);
+    final Long county_id = the_dashboard.id();
+    final County county = Persistence.getByID(county_id, County.class);
 
     if (county == null) {
       throw new PersistenceException("unable to read county dashboard state");
@@ -313,7 +313,7 @@ public class CountyDashboardRefreshResponse {
    * @param the_type The type.
    * @return the hash.
    */
-  private static String hashForFile(final Integer the_id, 
+  private static String hashForFile(final Long the_id, 
                                     final Instant the_timestamp, 
                                     final FileType the_type) {
     String result = null;

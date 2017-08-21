@@ -18,7 +18,8 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.json.DoSDashboardRefreshResponse;
-import us.freeandfair.corla.query.DoSDashboardQueries;
+import us.freeandfair.corla.model.DoSDashboard;
+import us.freeandfair.corla.persistence.Persistence;
 
 /**
  * The endpoint for refreshing the Department of State dashboard status.
@@ -56,7 +57,7 @@ public class DoSDashboardRefresh extends AbstractDoSDashboardEndpoint {
     try {
       okJSON(the_response, 
              Main.GSON.toJson(DoSDashboardRefreshResponse.createResponse
-                              (DoSDashboardQueries.get())));
+                              (Persistence.getByID(DoSDashboard.ID, DoSDashboard.class))));
     } catch (final PersistenceException e) {
       serverError(the_response, "could not obtain dashboard state");
     }

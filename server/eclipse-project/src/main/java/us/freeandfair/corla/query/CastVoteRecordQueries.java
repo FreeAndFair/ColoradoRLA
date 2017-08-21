@@ -174,7 +174,7 @@ public final class CastVoteRecordQueries {
    */
   @SuppressWarnings("PMD.AvoidDuplicateLiterals")
   public static Stream<CastVoteRecord> getMatching(final Instant the_timestamp,
-                                                   final Integer the_county_id,
+                                                   final Long the_county_id,
                                                    final RecordType the_type) {
     if (!Persistence.isTransactionActive()) {
       throw new IllegalStateException("no running transaction");
@@ -223,7 +223,7 @@ public final class CastVoteRecordQueries {
   // PMD doesn't like it
   @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
   public static CastVoteRecord get(final Instant the_timestamp,
-                                   final Integer the_county_id,
+                                   final Long the_county_id,
                                    final RecordType the_type,
                                    final String the_imprinted_id) {
     CastVoteRecord result = null;
@@ -278,7 +278,7 @@ public final class CastVoteRecordQueries {
    * successfully.
    */
   public static Long countMatching(final Instant the_timestamp,
-                                   final Integer the_county_id,
+                                   final Long the_county_id,
                                    final RecordType the_type) {
     Long result = Long.valueOf(-1);
     
@@ -328,7 +328,7 @@ public final class CastVoteRecordQueries {
    * transaction.
    */
   public static List<Long> idsForMatching(final Instant the_timestamp,
-                                          final Integer the_county_id,
+                                          final Long the_county_id,
                                           final RecordType the_type) {
     if (!Persistence.isTransactionActive()) {
       throw new IllegalStateException("no running transaction");

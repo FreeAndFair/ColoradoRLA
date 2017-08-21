@@ -56,7 +56,6 @@ import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.model.UploadedFile.FileType;
 import us.freeandfair.corla.model.UploadedFile.HashStatus;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.CountyDashboardQueries;
 import us.freeandfair.corla.util.FileHelper;
 import us.freeandfair.corla.util.SparkHelper;
 
@@ -112,7 +111,7 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
    */
   private UploadedFile attemptFilePersistence(final Response the_response, 
                                               final UploadInformation the_info,
-                                              final Integer the_county_id) {
+                                              final Long the_county_id) {
     UploadedFile result = null;
     
     try (FileInputStream is = new FileInputStream(the_info.my_file)) {
@@ -214,9 +213,9 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
    * @param the_timestamp The timestamp.
    */
   private void updateCountyDashboard(final Response the_response, 
-                                     final Integer the_county_id, 
+                                     final Long the_county_id, 
                                      final Instant the_timestamp) {
-    final CountyDashboard cdb = CountyDashboardQueries.get(the_county_id);
+    final CountyDashboard cdb = Persistence.getByID(the_county_id, CountyDashboard.class);
     if (cdb == null) {
       serverError(the_response, "could not locate county dashboard");
     } else {
@@ -239,7 +238,7 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
   // the CSV parser can throw arbitrary runtime exceptions, which we must catch
   @SuppressWarnings({"PMD.AvoidCatchingGenericException"})
   private void parseAndPersistFile(final Response the_response, 
-                                   final Integer the_county_id,
+                                   final Long the_county_id,
                                    final UploadInformation the_info) {  
     if (the_info.my_uploaded_hash == null || the_info.my_file == null) {
       invariantViolation(the_response, "Bad Request");
@@ -315,7 +314,7 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
       info.my_computed_hash = HashChecker.hashFile(info.my_file);
       info.my_uploaded_hash = 
           info.my_form_fields.get("hash").toUpperCase(Locale.US).trim();
-      parseAndPersistFile(the_response, county.identifier(), info);
+      parseAndPersistFile(the_response, county.id(), info);
     }
     
     if (info.my_file != null) {

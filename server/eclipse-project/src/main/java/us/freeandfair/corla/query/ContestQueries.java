@@ -28,7 +28,7 @@ import org.hibernate.Session;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.Contest;
-import us.freeandfair.corla.model.County;
+import us.freeandfair.corla.model.CountyContestResult;
 import us.freeandfair.corla.persistence.Persistence;
 
 /**
@@ -53,9 +53,6 @@ public final class ContestQueries {
    * @param the_contest The contest object to match.
    * @return the matched contest object, if one exists.
    */
-  // we are checking to see if exactly one result is in a list, and
-  // PMD doesn't like it
-  @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
   public static Contest matching(final Contest the_contest) {
     Contest result = null;
     
@@ -115,14 +112,61 @@ public final class ContestQueries {
     
     try {
       final boolean transaction = Persistence.beginTransaction();
-      final Set<Contest> query_results = new HashSet<Contest>();
-      for (final Integer county_id : the_county_ids) {
-        final County c = CountyQueries.byID(county_id);
-        if (c != null) {
-          query_results.addAll(c.contests());
-        }
+      final Session s = Persistence.currentSession();
+      final CriteriaBuilder cb = s.getCriteriaBuilder();
+      final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+      final Root<CountyContestResult> root = cq.from(CountyContestResult.class);
+      final List<Predicate> disjuncts = new ArrayList<Predicate>();
+      for (final Integer id : the_county_ids) {
+        disjuncts.add(cb.equal(root.get("my_county_id"), id));
       }
-      result = query_results;
+      cq.select(root.get("my_contest_id"));
+      cq.where(cb.or(disjuncts.toArray(new Predicate[disjuncts.size()])));
+      cq.distinct(true);
+      final TypedQuery<Long> query = s.createQuery(cq);
+      final List<Long> query_result = query.getResultList();
+      result = new HashSet<Contest>();
+      for (final Long l : query_result) {
+        result.add(Persistence.getByID(l, Contest.class));
+      }
+      if (transaction) {
+        try {
+          Persistence.commitTransaction();
+        } catch (final RollbackException e) {
+          Persistence.rollbackTransaction();
+        }
+      }      
+    } catch (final PersistenceException e) {
+      Main.LOGGER.error("Exception when reading contests from database: " + e);
+    }
+
+    return result;
+  }
+  
+  /**
+   * Gets contests that are in the specified county.
+   * 
+   * @param the_county_ids The county.
+   * @return the matching contests, or null if the query fails.
+   */
+  public static Set<Contest> forCounty(final Long the_county_id) {
+    Set<Contest> result = null;
+    
+    try {
+      final boolean transaction = Persistence.beginTransaction();
+      final Session s = Persistence.currentSession();
+      final CriteriaBuilder cb = s.getCriteriaBuilder();
+      final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+      final Root<CountyContestResult> root = cq.from(CountyContestResult.class);
+      cq.select(root.get("my_contest_id"));
+      cq.where(cb.equal(root.get("my_county_id"), the_county_id));
+      cq.distinct(true);
+      final TypedQuery<Long> query = s.createQuery(cq);
+      final List<Long> query_result = query.getResultList();
+      result = new HashSet<Contest>();
+      for (final Long l : query_result) {
+        result.add(Persistence.getByID(l, Contest.class));
+      }
       if (transaction) {
         try {
           Persistence.commitTransaction();
