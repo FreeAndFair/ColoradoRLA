@@ -1,34 +1,51 @@
 import action from '..';
 
 
-const createSubmitAction = ({
-    failType,
-    networkFailType,
-    okType,
-    sendType,
-    url,
-}: any) => (body: any) => {
-    action(sendType);
+interface CreateSubmitConfig {
+    failType: string;
+    networkFailType: string;
+    okType: string;
+    sendType: string;
+    url: string;
+}
 
-    const init: any = {
-        body: JSON.stringify(body),
-        credentials: 'include',
-        method: 'post',
-    };
 
-    return fetch(url, init)
-        .then(r => {
+function createSubmitAction(config: CreateSubmitConfig) {
+    const {
+        failType,
+        networkFailType,
+        okType,
+        sendType,
+        url,
+    } = config;
+
+    async function submitAction(body: any) {
+        action(sendType);
+
+        const init: any = {
+            body: JSON.stringify(body),
+            credentials: 'include',
+            method: 'post',
+        };
+
+        try {
+            const r = await fetch(url, init);
+
             if (!r.ok) {
                 action(failType);
                 return;
             }
 
-            r.json().then(data => {
-                action(okType, data);
-            });
-        })
-        .catch(() => action(networkFailType));
-};
+            const data = await r.json();
+
+            action(okType, data);
+        } catch {
+            action(networkFailType);
+        }
+    }
+
+    return submitAction;
+}
 
 
 export default createSubmitAction;
