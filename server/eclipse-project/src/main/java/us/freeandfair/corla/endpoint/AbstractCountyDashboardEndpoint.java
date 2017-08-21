@@ -44,7 +44,6 @@ public abstract class AbstractCountyDashboardEndpoint extends AbstractEndpoint {
    */
   @Override
   protected String asmIdentity(final Request the_request) {
-    return String.valueOf(Authentication.
-                          authenticatedCounty(the_request).identifier());
+    return String.valueOf(Authentication.authenticatedCounty(the_request).id());
   }
 }

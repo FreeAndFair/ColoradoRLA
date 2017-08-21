@@ -64,9 +64,9 @@ public class ContestDownloadByCounty extends AbstractEndpoint {
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
     if (validateParameters(the_request)) {
-      final Set<Integer> county_set = new HashSet<Integer>();
+      final Set<Long> county_set = new HashSet<Long>();
       for (final String s : the_request.queryParams()) {
-        county_set.add(Integer.valueOf(s));
+        county_set.add(Long.valueOf(s));
       }
       final Set<Contest> contest_set = 
           ContestQueries.forCounties(county_set);

@@ -27,7 +27,6 @@ import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.CountyDashboardQueries;
 import us.freeandfair.corla.util.Pair;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
@@ -62,7 +61,7 @@ public class DoSDashboardRefreshResponse {
   /**
    * A map from county IDs to county status.
    */
-  private final Map<Integer, CountyDashboardRefreshResponse> my_county_status;
+  private final Map<Long, CountyDashboardRefreshResponse> my_county_status;
   
   /**
    * The random seed.
@@ -87,7 +86,7 @@ public class DoSDashboardRefreshResponse {
   protected DoSDashboardRefreshResponse(final AuditStage the_audit_stage,
                                         final BigDecimal the_risk_limit,
                                         final Map<Long, AuditReason> the_audited_contests,
-                                        final Map<Integer, CountyDashboardRefreshResponse> 
+                                        final Map<Long, CountyDashboardRefreshResponse> 
                                            the_county_status,
                                         final String the_random_seed,
                                         final Set<Long> the_hand_count_contests) {
@@ -157,17 +156,17 @@ public class DoSDashboardRefreshResponse {
    * 
    * @return a map from county identifiers to statuses.
    */
-  private static Map<Integer, CountyDashboardRefreshResponse> countyStatusMap() {
-    final Map<Integer, CountyDashboardRefreshResponse> status_map = 
-        new HashMap<Integer, CountyDashboardRefreshResponse>();
+  private static Map<Long, CountyDashboardRefreshResponse> countyStatusMap() {
+    final Map<Long, CountyDashboardRefreshResponse> status_map = 
+        new HashMap<Long, CountyDashboardRefreshResponse>();
     final List<County> counties = Persistence.getAll(County.class);
     
     for (final County c : counties) {
-      final CountyDashboard db = CountyDashboardQueries.get(c.identifier());
+      final CountyDashboard db = Persistence.getByID(c.id(), CountyDashboard.class);
       if (db == null) {
         throw new PersistenceException("unable to read county dashboard state.");
       } else {   
-        status_map.put(db.countyID(), 
+        status_map.put(db.id(), 
                        CountyDashboardRefreshResponse.createAbbreviatedResponse(db));
       }
     }

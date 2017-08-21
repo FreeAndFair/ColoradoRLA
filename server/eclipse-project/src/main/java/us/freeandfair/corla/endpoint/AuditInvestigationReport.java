@@ -26,7 +26,6 @@ import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.model.AuditInvestigationReportInfo;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.CountyDashboardQueries;
 
 /**
  * Submit an audit investigation report.
@@ -78,8 +77,8 @@ public class AuditInvestigationReport extends AbstractAuditBoardDashboardEndpoin
       final AuditInvestigationReportInfo report =
           Main.GSON.fromJson(the_request.body(), AuditInvestigationReportInfo.class);
       final CountyDashboard cdb = 
-          CountyDashboardQueries.get(Authentication.
-                                     authenticatedCounty(the_request).identifier());
+          Persistence.getByID(Authentication.authenticatedCounty(the_request).id(), 
+                              CountyDashboard.class);
       if (cdb == null) {
         Main.LOGGER.error("could not get audit board dashboard");
         serverError(the_response, "Could not save audit investigation report");

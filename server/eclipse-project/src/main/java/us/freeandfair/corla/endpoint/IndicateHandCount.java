@@ -26,7 +26,6 @@ import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.model.ContestToAudit;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.DoSDashboardQueries;
 
 /**
  * The endpoint for indicating that a contest must be hand-counted.
@@ -80,8 +79,7 @@ public class IndicateHandCount extends AbstractDoSDashboardEndpoint {
     try {
       final ContestToAudit[] contests = 
           Main.GSON.fromJson(the_request.body(), ContestToAudit[].class);
-      final DoSDashboard dosdb = 
-          DoSDashboardQueries.get();
+      final DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
       if (dosdb == null) {
         Main.LOGGER.error("could not get department of state dashboard");
         serverError(the_response, "Could not select contests");

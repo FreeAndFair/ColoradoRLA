@@ -18,6 +18,7 @@ import java.time.Instant;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -48,7 +49,7 @@ public class AuditInvestigationReportInfo extends AbstractEntity implements Seri
   /**
    * The audit board dashboard to which this report belongs. 
    */
-  @ManyToOne(optional = false)
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn
   private CountyDashboard my_dashboard;
   

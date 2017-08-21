@@ -11,6 +11,7 @@
 
 package us.freeandfair.corla.persistence;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,6 +19,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.Version;
 
 /**
  * The base class for entities, implements the ID number mechanism.
@@ -26,6 +28,7 @@ import javax.persistence.InheritanceType;
  * @version 0.0.1
  */
 @Entity
+@Cacheable
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class AbstractEntity implements PersistentEntity {
   /**
@@ -35,6 +38,13 @@ public abstract class AbstractEntity implements PersistentEntity {
   @Column(updatable = false, nullable = false)
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
   private Long my_id;
+  
+  /**
+   * The version (for optimistic locking).
+   */
+  @Version
+  @SuppressWarnings("PMD.UnusedPrivateField")
+  private Long my_version;
   
   /**
    * Constructs a new AbstractEntity with no ID.

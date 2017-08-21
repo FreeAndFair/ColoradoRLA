@@ -69,7 +69,7 @@ public class CastVoteRecord extends AbstractEntity implements Serializable {
    * The county ID of this cast vote record.
    */
   @Column(updatable = false, nullable = false)
-  private Integer my_county_id;
+  private Long my_county_id;
   
   /**
    * The scanner ID of this cast vote record.
@@ -105,7 +105,7 @@ public class CastVoteRecord extends AbstractEntity implements Serializable {
    * The contest information in this cast vote record.
    */
   @OneToMany(cascade = CascadeType.ALL, mappedBy = "my_cvr", 
-             fetch = FetchType.EAGER, orphanRemoval = true)
+             fetch = FetchType.LAZY, orphanRemoval = true)
   @OrderColumn(name = "index")
   private List<CVRContestInfo> my_contest_info;
   
@@ -132,7 +132,7 @@ public class CastVoteRecord extends AbstractEntity implements Serializable {
   @SuppressWarnings("PMD.ExcessiveParameterList")
   public CastVoteRecord(final RecordType the_record_type,
                         final Instant the_timestamp,
-                        final Integer the_county_id, final String the_scanner_id,
+                        final Long the_county_id, final String the_scanner_id,
                         final String the_batch_id, final String the_record_id,
                         final String the_imprinted_id,
                         final String the_ballot_type,
@@ -171,7 +171,7 @@ public class CastVoteRecord extends AbstractEntity implements Serializable {
   /**
    * @return the county ID.
    */
-  public Integer countyID() {
+  public Long countyID() {
     return my_county_id;
   }
   

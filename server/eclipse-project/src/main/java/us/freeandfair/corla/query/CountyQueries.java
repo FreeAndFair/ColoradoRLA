@@ -43,50 +43,7 @@ public final class CountyQueries {
   private CountyQueries() {
     // do nothing
   }
-  
-  /**
-   * Obtain the County object with a specific county identifier, if one exists.
-   *
-   * @param the_id The identifier.
-   * @return the matched county, if one exists, or null otherwise.
-   */
-  // we are checking to see if exactly one result is in a list, and
-  // PMD doesn't like it
-  @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
-  public static County byID(final Integer the_id) {
-    County result = null;
-    
-    try {
-      final boolean transaction = Persistence.beginTransaction();
-      final Session s = Persistence.currentSession();
-      final CriteriaBuilder cb = s.getCriteriaBuilder();
-      final CriteriaQuery<County> cq = cb.createQuery(County.class);
-      final Root<County> root = cq.from(County.class);
-      cq.select(root).where(cb.equal(root.get("my_identifier"), the_id));
-      final TypedQuery<County> query = s.createQuery(cq);
-      final List<County> query_results = query.getResultList();
-      // if there's exactly one result, return that
-      if (query_results.size() == 1) {
-        result = query_results.get(0);
-      } 
-      if (transaction) {
-        try {
-          Persistence.commitTransaction();
-        } catch (final RollbackException e) {
-          Persistence.rollbackTransaction();
-        }
-      }
-    } catch (final PersistenceException e) {
-      Main.LOGGER.error("could not query database for county");
-    }
-    if (result == null) {
-      Main.LOGGER.debug("found no county for id " + the_id);
-    } else {
-      Main.LOGGER.debug("found county " + result);
-    }
-    return result;
-  }
-  
+
   /**
    * Obtains the County object that corresponds to the specified administrator ID.
    * 

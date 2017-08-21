@@ -25,6 +25,7 @@ import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
+import us.freeandfair.corla.model.CountyDashboard.CountyStatus;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.model.Elector;
 import us.freeandfair.corla.model.UploadedFile;
@@ -97,11 +98,15 @@ public class ResetDatabase extends AbstractEndpoint {
       Persistence.delete(db);
     }
     
-    // reset the DoS dashboard ASM state
-    final PersistentASMState dos_asm = 
-        PersistentASMStateQueries.get(DoSDashboardASM.class, null);
-    dos_asm.updateFrom(new DoSDashboardASM());
-
+    // create new dashboards
+    final DoSDashboard dosdb = new DoSDashboard();
+    Persistence.saveOrUpdate(dosdb);
+    
+    for (final County c : Persistence.getAll(County.class)) {
+      final CountyDashboard cdb = new CountyDashboard(c.id(), CountyStatus.NO_DATA);
+      Persistence.saveOrUpdate(cdb);
+    }
+    
     // delete all the CVRs 
     for (final CastVoteRecord cvr : Persistence.getAll(CastVoteRecord.class)) {
       Persistence.delete(cvr);
@@ -116,11 +121,16 @@ public class ResetDatabase extends AbstractEndpoint {
     for (final Elector e : Persistence.getAll(Elector.class)) {
       Persistence.delete(e);
     }
-    
+
+    // reset the DoS dashboard ASM state
+    final PersistentASMState dos_asm = 
+        PersistentASMStateQueries.get(DoSDashboardASM.class, null);
+    dos_asm.updateFrom(new DoSDashboardASM());
+
     // for each County, reset its state and the states of its ASMs
     for (final County c : Persistence.getAll(County.class)) {
       c.contests().clear();
-      final String id = String.valueOf(c.identifier());
+      final String id = String.valueOf(c.id());
       final PersistentASMState county_asm = 
           PersistentASMStateQueries.get(CountyDashboardASM.class, id);
       if (county_asm != null) {

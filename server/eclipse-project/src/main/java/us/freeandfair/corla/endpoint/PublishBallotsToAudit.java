@@ -31,7 +31,6 @@ import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.model.RLAAlgorithm;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.DoSDashboardQueries;
 
 /**
  * Download all ballots to audit for the entire state.
@@ -80,27 +79,29 @@ public class PublishBallotsToAudit extends AbstractDoSDashboardEndpoint {
                          final Response the_response) {
     // update every county dashboard with a list of ballots to audit
     try {
-      final DoSDashboard dosdb = DoSDashboardQueries.get();
+      final DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
       final List<CountyDashboard> cdbs = Persistence.getAll(CountyDashboard.class);
       
       for (final CountyDashboard cdb : cdbs) {
         try {
-          final RLAAlgorithm rlaa = new RLAAlgorithm(cdb);
-          if (cdb.cvrUploadTimestamp() != null) {
+          if (cdb.cvrUploadTimestamp() == null) {
+            Main.LOGGER.info("county " + cdb.id() + " missed the file upload deadline");
+          } else {
+            final RLAAlgorithm rlaa = new RLAAlgorithm(cdb);
             cdb.setCVRsToAudit(rlaa.computeBallotOrder(dosdb.randomSeed()));
             Persistence.saveOrUpdate(cdb);
-          }
+          } 
           // update the ASMs for the county and audit board
           if (!DISABLE_ASM) {
             ASMUtilities.step(COUNTY_START_AUDIT_EVENT, CountyDashboardASM.class, 
-                              String.valueOf(cdb.countyID()));
+                              String.valueOf(cdb.id()));
             ASMUtilities.step(AUDIT_BOARD_START_AUDIT_EVENT, AuditBoardDashboardASM.class, 
-                              String.valueOf(cdb.countyID()));
+                              String.valueOf(cdb.id()));
           }
         } catch (final IllegalArgumentException e) {
           serverError(the_response, "could not set ballot list for county " + 
-                      cdb.countyID());
-          Main.LOGGER.info("could not set ballot list for county " + cdb.countyID());
+                      cdb.id());
+          Main.LOGGER.info("could not set ballot list for county " + cdb.id());
         }
       }
       

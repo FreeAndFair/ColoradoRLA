@@ -19,7 +19,8 @@ import spark.Response;
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.json.CountyDashboardRefreshResponse;
 import us.freeandfair.corla.model.County;
-import us.freeandfair.corla.query.CountyDashboardQueries;
+import us.freeandfair.corla.model.CountyDashboard;
+import us.freeandfair.corla.persistence.Persistence;
 
 /**
  * The endpoint for refreshing the county dashboard status.
@@ -59,7 +60,7 @@ public class CountyDashboardRefresh extends AbstractCountyDashboardEndpoint {
           
       okJSON(the_response, 
              Main.GSON.toJson(CountyDashboardRefreshResponse.createResponse
-                              (CountyDashboardQueries.get(county.identifier()))));
+                              (Persistence.getByID(county.id(), CountyDashboard.class))));
     } catch (final PersistenceException e) {
       serverError(the_response, "could not obtain dashboard state");
     }

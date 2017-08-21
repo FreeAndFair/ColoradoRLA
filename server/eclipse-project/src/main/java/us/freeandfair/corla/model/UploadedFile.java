@@ -46,7 +46,7 @@ public class UploadedFile extends AbstractEntity {
    * The county that uploaded the file.
    */
   @Column(updatable = false, nullable = false)
-  private Integer my_county_id;
+  private Long my_county_id;
   
   /**
    * The type of the file.
@@ -94,7 +94,7 @@ public class UploadedFile extends AbstractEntity {
    * @param the_file The file (as a Blob).
    */
   public UploadedFile(final Instant the_timestamp,
-                      final Integer the_county_id,
+                      final Long the_county_id,
                       final FileType the_type,
                       final String the_hash,
                       final HashStatus the_hash_status,
@@ -118,7 +118,7 @@ public class UploadedFile extends AbstractEntity {
   /**
    * @return the county ID that uploaded this file.
    */
-  public Integer countyID() {
+  public Long countyID() {
     return my_county_id;
   }
   

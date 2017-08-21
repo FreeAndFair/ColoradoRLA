@@ -28,7 +28,6 @@ import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.ContestToAudit.AuditType;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CastVoteRecordQueries;
-import us.freeandfair.corla.query.DoSDashboardQueries;
 import us.freeandfair.corla.util.Pair;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
@@ -65,14 +64,15 @@ public class RLAAlgorithm {
     // count CVRs for contest under audit
     final Long cvr_count = 
         CastVoteRecordQueries.countMatching(the_dashboard.cvrUploadTimestamp(), 
-                                            the_dashboard.countyID(),
+                                            the_dashboard.id(),
                                             RecordType.UPLOADED);
     if (cvr_count == 0) {
-      throw new IllegalArgumentException("no votes in county " + the_dashboard.countyID());
+      throw new IllegalArgumentException("no votes in county " + the_dashboard.id());
     }
     // what is the risk limit for this contest?
     final BigDecimal risk_limit = 
-        DoSDashboardQueries.get().getRiskLimitForComparisonAudits();
+        Persistence.getByID(DoSDashboard.ID, 
+                            DoSDashboard.class).getRiskLimitForComparisonAudits();
     
     // a map describing all contests in an election that are under audit.
     // as documented in ComparisonAudit:
@@ -98,7 +98,7 @@ public class RLAAlgorithm {
         new HashMap<String, Pair<Integer, Map<String, Integer>>>();
     // <contest-name, Pair<number-of-winners, Map<candidate, total>>>
     // first, get all the contests    
-    final DoSDashboard dosdb = DoSDashboardQueries.get();
+    final DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
     
     // brute force
     for (final ContestToAudit contest : dosdb.contestsToAudit()) {
@@ -116,7 +116,7 @@ public class RLAAlgorithm {
     
     final Stream<CastVoteRecord> cvrs =
         CastVoteRecordQueries.getMatching(the_dashboard.cvrUploadTimestamp(), 
-                                          the_dashboard.countyID(),
+                                          the_dashboard.id(),
                                           RecordType.UPLOADED);
 
     cvrs.forEach((the_cvr) -> {
@@ -156,7 +156,7 @@ public class RLAAlgorithm {
     // correct range for our actual list of CVRs (indexed from 0).
     final Long max_long = 
         CastVoteRecordQueries.countMatching(my_dashboard.cvrUploadTimestamp(), 
-                                            my_dashboard.countyID(),
+                                            my_dashboard.id(),
                                             RecordType.UPLOADED) - 1;
 
     final int maximum = max_long.intValue();
@@ -168,7 +168,7 @@ public class RLAAlgorithm {
         prng.getRandomNumbers(minimum, maximum);
     final List<Long> list_of_cvr_ids = 
         CastVoteRecordQueries.idsForMatching(my_dashboard.cvrUploadTimestamp(), 
-                                             my_dashboard.countyID(),
+                                             my_dashboard.id(),
                                              RecordType.UPLOADED);
     final List<Long> result = new ArrayList<>();
     for (final int index : list_of_cvrs_to_audit) {
@@ -271,7 +271,9 @@ public class RLAAlgorithm {
     if (the_cvr == null || the_acvr == null) {
       throw new IllegalStateException("nonexistent cvr or acvr in audit list");
     }
-    final Set<ContestToAudit> contests = DoSDashboardQueries.get().contestsToAudit();
+    final Set<ContestToAudit> contests = 
+        Persistence.getByID(DoSDashboard.ID, DoSDashboard.class).contestsToAudit();
+
     int worst_discrepancy = Integer.MIN_VALUE;
     for (final ContestToAudit cta : contests) {
       final CVRContestInfo cvr_ci = the_cvr.contestInfoForContest(cta.contest());
@@ -320,18 +322,17 @@ public class RLAAlgorithm {
     // for every CVR under audit in the prefix for which aCVRs exist, 
     // for every contest under audit, calculate the discrepancy and record it
     
-    final List<Long> cvrs_to_audit = my_dashboard.cvrsToAudit();
-    final List<Long> audit_cvrs = my_dashboard.submittedAuditCVRs();
+    final List<CVRAuditInfo> audit_info = my_dashboard.cvrAuditInfo();
     
     int count = 0;
-    while (count < audit_cvrs.size() && count < cvrs_to_audit.size()) {
-      if (audit_cvrs.get(count) == Long.MIN_VALUE) {
+    for (final CVRAuditInfo cvrai : audit_info) {
+      if (cvrai.acvrID() == null) {
         break;
       } else {
         final CastVoteRecord cvr = 
-            Persistence.getByID(cvrs_to_audit.get(count), CastVoteRecord.class);
+            Persistence.getByID(cvrai.cvrID(), CastVoteRecord.class);
         final CastVoteRecord acvr = 
-            Persistence.getByID(audit_cvrs.get(count), CastVoteRecord.class);
+            Persistence.getByID(cvrai.cvrID(), CastVoteRecord.class);
         final int discrepancy = discrepancy(cvr, acvr);
         switch (discrepancy) {
           case -2: 
