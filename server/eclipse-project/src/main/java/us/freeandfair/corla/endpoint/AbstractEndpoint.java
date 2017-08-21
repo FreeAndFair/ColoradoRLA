@@ -2,19 +2,17 @@
  * Free & Fair Colorado RLA System
  * 
  * @title ColoradoRLA
- * 
  * @created Aug 11, 2017
- * 
  * @copyright 2017 Free & Fair
- * 
  * @license GNU General Public License 3.0
- * 
  * @author Joe Kiniry <kiniry@freeandfair.us>
- * 
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
 package us.freeandfair.corla.endpoint;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
@@ -31,6 +29,7 @@ import us.freeandfair.corla.asm.ASMUtilities;
 import us.freeandfair.corla.asm.AbstractStateMachine;
 import us.freeandfair.corla.json.Result;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
+import us.freeandfair.corla.model.LogEntry;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
@@ -48,8 +47,7 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
 // Justification: False positive because we are weaving in behavior
 // in before() to initialize my_persistent_asm_state.
     "SF_SWITCH_NO_DEFAULT"})
-// Justification: False positive; there is a default case.
-@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.TooManyMethods"})
+@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.TooManyMethods", "PMD.GodClass"})
 public abstract class AbstractEndpoint implements Endpoint {
   /**
    * A flag that disables ASM checks, when true.
@@ -65,6 +63,11 @@ public abstract class AbstractEndpoint implements Endpoint {
    * The endpoint result for the ongoing transaction.
    */
   protected String my_endpoint_result;
+  
+  /**
+   * The log entries to be logged by this endpoint after execution.
+   */
+  protected List<LogEntry> my_log_entries = new ArrayList<>();
   
   /**
    * Halts the endpoint execution by ending the request and returning the
@@ -162,8 +165,9 @@ public abstract class AbstractEndpoint implements Endpoint {
    * @param the_response the HTTP response.
    */
   public void ok(final Response the_response) {
-    the_response.status(HttpStatus.OK_200);    
+    the_response.status(HttpStatus.OK_200);   
     my_endpoint_result = "";
+    
   }
   
   /**

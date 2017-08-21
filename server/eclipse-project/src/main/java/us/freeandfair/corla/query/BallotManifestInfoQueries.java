@@ -14,6 +14,7 @@ package us.freeandfair.corla.query;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.OptionalLong;
 import java.util.Set;
 
 import javax.persistence.PersistenceException;
@@ -79,6 +80,30 @@ public final class BallotManifestInfoQueries {
       Main.LOGGER.error("Exception when reading ballot manifests from database: " + e);
     }
 
+    return result;
+  }
+  
+  
+  /**
+   * Count the uploaded ballot manifest info records in storage.
+   * 
+   * @return the number of uploaded records.
+   */
+  public static OptionalLong count() {
+    OptionalLong result = OptionalLong.empty();
+    
+    try {
+      final Session s = Persistence.currentSession();
+      final CriteriaBuilder cb = s.getCriteriaBuilder();
+      final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+      final Root<BallotManifestInfo> root = cq.from(BallotManifestInfo.class);
+      cq.select(cb.count(root));
+      final TypedQuery<Long> query = s.createQuery(cq);
+      result = OptionalLong.of(query.getSingleResult());
+    } catch (final PersistenceException e) {
+      // ignore
+    }
+    
     return result;
   }
 }

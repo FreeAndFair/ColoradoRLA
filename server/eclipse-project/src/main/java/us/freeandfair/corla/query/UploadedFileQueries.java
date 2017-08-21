@@ -44,12 +44,61 @@ public final class UploadedFileQueries {
   }
   
   /**
+   * Obtain the UploadedFile object with a specific database ID and county 
+   * identifier, if one exists.
+   * 
+   * @param the_county_id The county identifier.
+   * @param the_database_id The database ID.
+   */
+  // we are checking to see if exactly one result is in a list, and
+  // PMD doesn't like it
+  @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
+  public static UploadedFile matching(final Integer the_county_id, 
+                                      final Long the_database_id) {
+    UploadedFile result = null;
+    
+    try {
+      final boolean transaction = Persistence.beginTransaction();
+      final Session s = Persistence.currentSession();
+      final CriteriaBuilder cb = s.getCriteriaBuilder();
+      final CriteriaQuery<UploadedFile> cq = cb.createQuery(UploadedFile.class);
+      final Root<UploadedFile> root = cq.from(UploadedFile.class);
+      final List<Predicate> conjuncts = new ArrayList<Predicate>();
+      conjuncts.add(cb.equal(root.get("my_county_id"), the_county_id));
+      conjuncts.add(cb.equal(root.get("my_id"), the_database_id));
+      cq.select(root).where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
+      final TypedQuery<UploadedFile> query = s.createQuery(cq);
+      final List<UploadedFile> query_results = query.getResultList();
+      // if there's exactly one result, return that
+      if (query_results.size() == 1) {
+        result = query_results.get(0);
+      } 
+      if (transaction) {
+        try {
+          Persistence.commitTransaction();
+        } catch (final RollbackException e) {
+          Persistence.rollbackTransaction();
+        }
+      }
+    } catch (final PersistenceException e) {
+      Main.LOGGER.error("could not query database for uploaded file");
+    }
+    if (result == null) {
+      Main.LOGGER.debug("found no uploaded file for county " + the_county_id + 
+                        ", id " + the_database_id);
+    } else {
+      Main.LOGGER.debug("found uploaded file " + result);
+    }
+    return result;    
+  }
+  
+  /**
    * Obtain the UploadedFile object with a specific county identifier, 
-   * timestamp, and type, if one exists.
+   * timestamp, and status, if one exists.
    *
    * @param the_county_id The county ID.
    * @param the_timestamp The timestamp.
-   * @param the_type The type.
+   * @param the_status The status.
    * @return the matched UploadedFile, if one exists, or null otherwise.
    */
   // we are checking to see if exactly one result is in a list, and
@@ -57,7 +106,7 @@ public final class UploadedFileQueries {
   @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
   public static UploadedFile matching(final Integer the_county_id,
                                       final Instant the_timestamp,
-                                      final UploadedFile.FileType the_type) {
+                                      final UploadedFile.FileStatus the_status) {
     UploadedFile result = null;
     
     try {
@@ -69,7 +118,7 @@ public final class UploadedFileQueries {
       final List<Predicate> conjuncts = new ArrayList<Predicate>();
       conjuncts.add(cb.equal(root.get("my_county_id"), the_county_id));
       conjuncts.add(cb.equal(root.get("my_timestamp"), the_timestamp));
-      conjuncts.add(cb.equal(root.get("my_type"), the_type));
+      conjuncts.add(cb.equal(root.get("my_type"), the_status));
       cq.select(root).where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
       final TypedQuery<UploadedFile> query = s.createQuery(cq);
       final List<UploadedFile> query_results = query.getResultList();
@@ -90,7 +139,7 @@ public final class UploadedFileQueries {
     if (result == null) {
       Main.LOGGER.debug("found no uploaded file for county " + the_county_id + 
                         ", timestamp " + the_timestamp + ", type " + 
-                        the_type);
+                        the_status);
     } else {
       Main.LOGGER.debug("found uploaded file " + result);
     }
