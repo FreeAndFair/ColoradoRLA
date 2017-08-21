@@ -2,9 +2,11 @@ import * as React from 'react';
 
 import AuditBoardSignInForm from './AuditBoardSignInForm';
 
+import establishAuditBoard from '../../../../action/establishAuditBoard';
+
 
 const AuditBoardSignInStage = (props: any) => {
-    const { auditBoard, county, establishAuditBoard, nextStage } = props;
+    const { auditBoard, county, nextStage } = props;
 
     const forms: any = { auditBoard: [] };
 

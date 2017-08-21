@@ -1,10 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 
 import AuditBoardSignInStage from './AuditBoardSignInStage';
-
-import establishAuditBoard from '../../../../action/establishAuditBoard';
 
 
 class AuditBoardSignInStageContainer extends React.Component<any, any> {
@@ -20,11 +17,5 @@ const mapStateToProps = ({ county }: any) => {
     };
 };
 
-const mapDispatchToProps = (dispatch: any) => bindActionCreators({
-    establishAuditBoard,
-}, dispatch);
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(AuditBoardSignInStageContainer);
+export default connect(mapStateToProps)(AuditBoardSignInStageContainer);
