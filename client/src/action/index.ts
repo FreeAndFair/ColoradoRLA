@@ -1,4 +1,4 @@
-import { store } from '..';
+import store from '../store';
 
 
 export default (type: any, data: any = {}) =>
