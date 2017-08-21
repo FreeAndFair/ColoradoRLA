@@ -324,13 +324,18 @@ via:
 
 ```
 cd client
-script/dist
+npm install
+npm run dist
 ```
 Run it via:
 ```
 cd dist
 python3 -m http.server
 ```
+
+The production client build configuration expects server endpoints to
+have an `/api` path prefix. To support user testing, we currently enable
+browser console logging in all builds.
 
 For the server, package it by running `mvn package` in the
 `server/eclipse-project` directory. This will create
