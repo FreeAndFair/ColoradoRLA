@@ -23,9 +23,9 @@ class CountyHomeContainer extends React.Component<any, any> {
 }
 
 const mapStateToProps = ({ county }: any) => {
-    const { contests } = county;
+    const { contestDefs } = county;
 
-    return { contests, county };
+    return { contests: contestDefs, county };
 };
 
 export default connect(mapStateToProps)(CountyHomeContainer);
