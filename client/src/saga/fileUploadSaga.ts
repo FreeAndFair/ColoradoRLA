@@ -18,7 +18,10 @@ function* uploadBallotManifestNetworkFail(): any {
     notice.danger('Network error: failed to upload ballot manifest.');
 }
 
-function* uploadCvrExportOk({ sent }: any): any {
+function* uploadCvrExportOk(action: any): any {
+    const { data } = action;
+    const { sent } = data;
+
     notice.ok(`Uploaded CVR export "${sent.file.name}".`);
 }
 
