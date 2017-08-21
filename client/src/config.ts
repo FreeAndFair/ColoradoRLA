@@ -1,3 +1,5 @@
+export const debug = true;  // Inlined by Webpack
+
 const scheme = 'http';
 const hostname = 'localhost';
 const port = 8888;
@@ -5,4 +7,6 @@ const port = 8888;
 const devEndpointPrefix = `${scheme}://${hostname}:${port}`;
 const prodEndpointPrefix = '/api';
 
-export const endpoint = (path: string) => `${devEndpointPrefix}/${path}`;
+const endpointPrefix = DEBUG ? devEndpointPrefix : prodEndpointPrefix;
+
+export const endpoint = (path: string) => `${endpointPrefix}/${path}`;

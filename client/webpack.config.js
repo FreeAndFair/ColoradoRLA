@@ -33,6 +33,10 @@ module.exports = {
     },
 
     plugins: [
+        new webpack.DefinePlugin({
+            DEBUG: true,
+        }),
+
         // Enable HMR, needed by `react-hot-loader`.
         new webpack.HotModuleReplacementPlugin(),
 
