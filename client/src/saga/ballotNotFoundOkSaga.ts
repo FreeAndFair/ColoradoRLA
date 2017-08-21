@@ -7,6 +7,6 @@ function* ballotNotFoundOk(): any {
     countyDashboardRefresh();
 }
 
-export default function* dosLoginSaga() {
+export default function* ballotNotFoundOkSaga() {
     yield takeLatest('BALLOT_NOT_FOUND_OK', ballotNotFoundOk);
 }

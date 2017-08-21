@@ -1,5 +1,6 @@
 import { all } from 'redux-saga/effects';
 
+import ballotNotFoundOkSaga from './ballotNotFoundOkSaga';
 import countyDashboardRefreshOkSaga from './countyDashboardRefreshOkSaga';
 import countyLoginSaga from './countyLoginSaga';
 import countyPollSaga from './countyPollSaga';
@@ -10,6 +11,7 @@ import dosPollSaga from './dosPollSaga';
 
 export default function* rootSaga() {
     yield all([
+        ballotNotFoundOkSaga(),
         countyLoginSaga(),
         countyPollSaga(),
         countyDashboardRefreshOkSaga(),
