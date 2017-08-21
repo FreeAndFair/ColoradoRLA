@@ -2,6 +2,7 @@ import action from '..';
 
 
 interface CreateSubmitConfig {
+    createData?: (sent: any, received: any) => any;
     failType: string;
     networkFailType: string;
     okType: string;
@@ -9,6 +10,10 @@ interface CreateSubmitConfig {
     url: string;
 }
 
+
+function defaultCreateData(sent: any, received: any): any {
+    return { received, sent };
+}
 
 function createSubmitAction(config: CreateSubmitConfig) {
     const {
@@ -19,11 +24,13 @@ function createSubmitAction(config: CreateSubmitConfig) {
         url,
     } = config;
 
-    async function submitAction(body: any) {
+    const createData = config.createData || defaultCreateData;
+
+    async function submitAction(sent: any) {
         action(sendType);
 
         const init: any = {
-            body: JSON.stringify(body),
+            body: JSON.stringify(sent),
             credentials: 'include',
             method: 'post',
         };
@@ -36,7 +43,8 @@ function createSubmitAction(config: CreateSubmitConfig) {
                 return;
             }
 
-            const data = await r.json();
+            const received = await r.json();
+            const data = createData(sent, received);
 
             action(okType, data);
         } catch {
