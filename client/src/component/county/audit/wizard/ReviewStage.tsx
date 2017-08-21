@@ -83,7 +83,6 @@ const BallotReview = ({ county, marks }: any) => {
 const ReviewStage = (props: any) => {
     const {
         county,
-        countyDashboardRefresh,
         currentBallot,
         marks,
         nextStage,
@@ -94,8 +93,7 @@ const ReviewStage = (props: any) => {
     const onClick = () => {
         const m = county.acvrs[currentBallot.id];
 
-        uploadAcvr(m, currentBallot)
-            .then(() => countyDashboardRefresh());
+        uploadAcvr(m, currentBallot);
         nextStage();
     };
 

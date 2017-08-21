@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
 
 import counties from '../../../data/counties';
 
@@ -11,7 +10,7 @@ import CountyDetailPage from './CountyDetailPage';
 
 class CountyDetailContainer extends React.Component<any, any> {
     public render() {
-        const { countyStatus, dosDashboardRefresh } = this.props;
+        const { countyStatus } = this.props;
 
         const { countyId } = this.props.match.params;
         const county: any = counties[countyId];
@@ -29,11 +28,5 @@ class CountyDetailContainer extends React.Component<any, any> {
 
 const mapStateToProps = ({ sos }: any) => ({ countyStatus: sos.countyStatus });
 
-const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
-    dosDashboardRefresh,
-}, dispatch);
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(CountyDetailContainer);
+export default connect(mapStateToProps)(CountyDetailContainer);

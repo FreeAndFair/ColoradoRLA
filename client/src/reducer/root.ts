@@ -1,13 +1,13 @@
 import * as _ from 'lodash';
 
-import countyAuthOk from './countyAuthOk';
 import countyDashboardRefreshOk from './countyDashboardRefreshOk';
+import countyFetchAllCvrsOk from './countyFetchAllCvrsOk';
 import countyFetchContestsOk from './countyFetchContestsOk';
-import countyFetchCvrsByIdOk from './countyFetchCvrsByIdOk';
-import countyFetchCvrsOk from './countyFetchCvrsOk';
-import dosAuthOk from './dosAuthOk';
+import countyFetchCvrOk from './countyFetchCvrOk';
+import countyLoginOk from './countyLoginOk';
 import dosContestFetchOk from './dosContestFetchOk';
 import dosDashboardRefreshOk from './dosDashboardRefreshOk';
+import dosLoginOk from './dosLoginOk';
 import establishAuditBoardOk from './establishAuditBoardOk';
 import selectContestsForAuditOk from './selectContestsForAuditOk';
 import setRiskLimitOk from './setRiskLimitOk';
@@ -33,28 +33,24 @@ const defaultState = {
 export default function root(state: AppState = defaultState, action: any) {
     switch (action.type) {
 
-    case 'AUTH_COUNTY_ADMIN_OK': {
-        return countyAuthOk(state);
-    }
-
-    case 'AUTH_STATE_ADMIN_OK': {
-        return dosAuthOk(state);
-    }
-
     case 'COUNTY_DASHBOARD_REFRESH_OK': {
         return countyDashboardRefreshOk(state, action);
+    }
+
+    case 'COUNTY_FETCH_ALL_CVRS_OK': {
+        return countyFetchAllCvrsOk(state, action);
     }
 
     case 'COUNTY_FETCH_CONTESTS_OK': {
         return countyFetchContestsOk(state, action);
     }
 
-    case 'COUNTY_FETCH_CVR_BY_ID_OK': {
-        return countyFetchCvrsByIdOk(state, action);
+    case 'COUNTY_FETCH_CVR_OK': {
+        return countyFetchCvrOk(state, action);
     }
 
-    case 'COUNTY_FETCH_CVRS_OK': {
-        return countyFetchCvrsOk(state, action);
+    case 'COUNTY_LOGIN_OK': {
+        return countyLoginOk(state);
     }
 
     case 'DOS_DASHBOARD_REFRESH_OK': {
@@ -63,6 +59,10 @@ export default function root(state: AppState = defaultState, action: any) {
 
     case 'DOS_FETCH_CONTESTS_OK': {
         return dosContestFetchOk(state, action);
+    }
+
+    case 'DOS_LOGIN_OK': {
+        return dosLoginOk(state);
     }
 
     case 'ESTABLISH_AUDIT_BOARD_OK': {

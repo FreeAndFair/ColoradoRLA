@@ -6,6 +6,8 @@ import { Checkbox, EditableText, MenuDivider, Radio, RadioGroup } from '@bluepri
 
 import BackButton from './BackButton';
 
+import countyFetchCvr from '../../../../action/countyFetchCvr';
+
 
 const BallotNotFoundForm = ({ ballotNotFound, currentBallot }: any) => {
     const onClick = () => ballotNotFound(currentBallot.id);
@@ -177,8 +179,6 @@ const BallotAuditStage = (props: any) => {
     const {
         ballotNotFound,
         county,
-        countyDashboardRefresh,
-        fetchCvrById,
         nextStage,
         prevStage,
         updateBallotMarks,
@@ -187,19 +187,18 @@ const BallotAuditStage = (props: any) => {
     const { ballotsToAudit, ballotUnderAuditId, currentBallot } = county;
 
     if (ballotUnderAuditId !== currentBallot.id) {
-        fetchCvrById(ballotUnderAuditId);
+        countyFetchCvr(ballotUnderAuditId);
     }
 
-    const notFoundAndRefresh = () => {
+    const notFound = () => {
         ballotNotFound(currentBallot.id);
-        countyDashboardRefresh();
     };
 
     return (
         <div>
             <h2>Ballot verification</h2>
             <AuditInstructions
-                ballotNotFound={ notFoundAndRefresh }
+                ballotNotFound={ notFound }
                 ballotsToAudit={ ballotsToAudit }
                 currentBallot={ currentBallot }
             />

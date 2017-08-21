@@ -1,18 +1,17 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
 
-import fetchContests from '../../../action/fetchContests';
+import dosFetchContests from '../../../action/dosFetchContests';
 
 import ContestDetailPage from './ContestDetailPage';
 
 
 class ContestDetailContainer extends React.Component<any, any> {
     public render() {
-        const { contests, fetchContests } = this.props;
+        const { contests } = this.props;
 
         if (!contests) {
-            fetchContests();
+            dosFetchContests();
             return <div />;
         }
 
@@ -21,7 +20,7 @@ class ContestDetailContainer extends React.Component<any, any> {
 
         if (!contest) {
             // This might only ever be evidence of a bug.
-            fetchContests();
+            dosFetchContests();
             return <div />;
         }
 
@@ -31,11 +30,5 @@ class ContestDetailContainer extends React.Component<any, any> {
 
 const mapStateToProps = ({ sos }: any) => ({ contests: sos.contests });
 
-const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
-    fetchContests,
-}, dispatch);
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(ContestDetailContainer);
+export default connect(mapStateToProps)(ContestDetailContainer);
