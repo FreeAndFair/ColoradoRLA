@@ -47,8 +47,14 @@ function createSubmitAction(config: CreateSubmitConfig) {
             const data = createData(sent, received);
 
             action(okType, data);
-        } catch {
-            action(networkFailType);
+        } catch (e) {
+            if (e.message === 'Failed to fetch') {
+                action(networkFailType);
+            }
+
+            action('INTERNAL_ERROR');
+
+            throw e;
         }
     }
 
