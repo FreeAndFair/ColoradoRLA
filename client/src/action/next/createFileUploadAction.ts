@@ -2,8 +2,8 @@ import action from '..';
 
 
 interface FileUploadActionConfig {
-    createFormData(...args: any[]): FormData;
-    createSent(...args: any[]): any;
+    createFormData: (...args: any[]) => FormData;
+    createSent: (...args: any[]) => any;
     failType: string;
     networkFailType: string;
     okType: string;
