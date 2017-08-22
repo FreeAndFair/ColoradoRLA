@@ -73,11 +73,6 @@ public abstract class AbstractEndpoint implements Endpoint {
   protected AbstractStateMachine my_asm;
   
   /**
-   * The host that connected to this endpoint.
-   */
-  protected String my_client_host;
-  
-  /**
    * The endpoint result for the ongoing transaction.
    */
   protected String my_endpoint_result;
