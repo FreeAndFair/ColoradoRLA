@@ -18,10 +18,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
-import us.freeandfair.corla.persistence.AbstractEntity;
+import us.freeandfair.corla.persistence.PersistentEntity;
 
 /**
  * An uploaded file, kept in persistent storage for archival.
@@ -35,7 +37,20 @@ import us.freeandfair.corla.persistence.AbstractEntity;
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
-public class UploadedFile extends AbstractEntity {
+public class UploadedFile implements PersistentEntity {
+  /**
+   * The database ID.
+   */
+  @Id
+  private Long my_id;
+  
+  /**
+   * The version (for optimistic locking).
+   */
+  @Version
+  @SuppressWarnings("PMD.UnusedPrivateField")
+  private Long my_version;
+
   /**
    * The timestamp for this ballot manifest info, in milliseconds since the epoch.
    */
@@ -108,6 +123,30 @@ public class UploadedFile extends AbstractEntity {
     my_file = the_file;
   }
   
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Long id() {
+    return my_id;
+  }
+  
+  /**
+   * {@inheritDoc}.
+   */
+  @Override
+  public final void setID(final Long the_id) {
+    my_id = the_id;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Long version() {
+    return my_version;
+  }
+
   /**
    * @return the timestamp of this file.
    */

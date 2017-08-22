@@ -28,10 +28,6 @@ import java.util.Map;
 import java.util.OptionalLong;
 
 import javax.persistence.PersistenceException;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItemIterator;
@@ -49,13 +45,13 @@ import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.crypto.HashChecker;
 import us.freeandfair.corla.csv.BallotManifestParser;
 import us.freeandfair.corla.csv.ColoradoBallotManifestParser;
-import us.freeandfair.corla.model.BallotManifestInfo;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.model.UploadedFile.FileType;
 import us.freeandfair.corla.model.UploadedFile.HashStatus;
 import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.query.BallotManifestInfoQueries;
 import us.freeandfair.corla.util.FileHelper;
 import us.freeandfair.corla.util.SparkHelper;
 
@@ -136,12 +132,11 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
       // streaming a file to the database requires the file and its stream
       // to actually stay in scope before the transaction commit;
       // this will be remedied when we refactor uploading
-      Persistence.commitTransaction();
+      Persistence.flush();
     } catch (final PersistenceException | IOException e) {
       badDataType(the_response, "could not persist file of size " + 
                                 the_info.my_file.length());
     }
-    Persistence.beginTransaction(); // AbstractEndpoint expects a running transaction
     return result;
   }
   
@@ -264,12 +259,12 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
                                              the_info.my_timestamp,
                                              the_county_id);
         if (parser.parse()) {
-          Main.LOGGER.info(parser.parsedIDs().size() + 
-              " ballot manifest records parsed from upload file");
-          final OptionalLong count = count();
+          Main.LOGGER.info(parser.recordCount().getAsInt() + 
+                           " ballot manifest records parsed from upload file");
+          final OptionalLong count = BallotManifestInfoQueries.count();
           if (count.isPresent()) {
             Main.LOGGER.info(count.getAsLong() + 
-                " uploaded ballot manifest records in storage");
+                             " uploaded ballot manifest records in storage");
           }
           updateCountyDashboard(the_response, the_county_id, the_info.my_timestamp);
           attemptFilePersistence(the_response, the_info, the_county_id);   
@@ -339,29 +334,6 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
    */
   public AuthorizationType requiredAuthorization() {
     return AuthorizationType.COUNTY;
-  }
-  
-  /**
-   * Count the uploaded ballot manifest info records in storage.
-   * 
-   * @return the number of uploaded records.
-   */
-  private OptionalLong count() {
-    OptionalLong result = OptionalLong.empty();
-    
-    try {
-      final Session s = Persistence.currentSession();
-      final CriteriaBuilder cb = s.getCriteriaBuilder();
-      final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-      final Root<BallotManifestInfo> root = cq.from(BallotManifestInfo.class);
-      cq.select(cb.count(root));
-      final TypedQuery<Long> query = s.createQuery(cq);
-      result = OptionalLong.of(query.getSingleResult());
-    } catch (final PersistenceException e) {
-      // ignore
-    }
-    
-    return result;
   }
   
   /**

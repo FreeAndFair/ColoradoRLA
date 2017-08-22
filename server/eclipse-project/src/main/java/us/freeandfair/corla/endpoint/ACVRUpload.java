@@ -17,12 +17,6 @@ import java.time.Instant;
 import java.util.OptionalLong;
 
 import javax.persistence.PersistenceException;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-
-import org.hibernate.Session;
 
 import com.google.gson.JsonSyntaxException;
 
@@ -36,6 +30,7 @@ import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.query.CastVoteRecordQueries;
 
 /**
  * The "audit CVR upload" endpoint.
@@ -92,7 +87,8 @@ public class ACVRUpload extends AbstractAuditBoardDashboardEndpoint {
         Persistence.saveOrUpdate(real_acvr);
         Main.LOGGER.info("Audit CVR for CVR id " + submission.cvrID() + 
                          " parsed and stored as id " + real_acvr.id());
-        final OptionalLong count = count();
+        final OptionalLong count = 
+            CastVoteRecordQueries.countMatching(RecordType.AUDITOR_ENTERED);
         if (count.isPresent()) {
           Main.LOGGER.info(count.getAsLong() + " ACVRs in storage");
         }
@@ -127,29 +123,5 @@ public class ACVRUpload extends AbstractAuditBoardDashboardEndpoint {
       serverError(the_response, "Unable to save audit CVR");
     }
     return my_endpoint_result;
-  }
-  
-  /**
-   * Count the ACVRs in storage.
-   * 
-   * @return the number of ACVRs, or -1 if the count could not be determined.
-   */
-  private OptionalLong count() {
-    OptionalLong result = OptionalLong.empty();
-    
-    try {
-      final Session s = Persistence.currentSession();
-      final CriteriaBuilder cb = s.getCriteriaBuilder();
-      final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-      final Root<CastVoteRecord> root = cq.from(CastVoteRecord.class);
-      cq.select(cb.count(root)).where(cb.equal(root.get("my_record_type"), 
-                                               RecordType.AUDITOR_ENTERED));
-      final TypedQuery<Long> query = s.createQuery(cq);
-      result = OptionalLong.of(query.getSingleResult());
-    } catch (final PersistenceException e) {
-      // ignore
-    }
-    
-    return result;
   }
 }

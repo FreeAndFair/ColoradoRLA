@@ -14,10 +14,10 @@ package us.freeandfair.corla.query;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.OptionalLong;
 import java.util.stream.Stream;
 
 import javax.persistence.PersistenceException;
-import javax.persistence.RollbackException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -113,6 +113,40 @@ public final class CastVoteRecordQueries {
   }
 
   /**
+   * Counts the CastVoteRecord objects with the specified type. 
+   *
+   * @param the_type The type.
+   * @return the count, empty if the query could not be completed 
+   * successfully.
+   */
+  @SuppressWarnings("PMD.AvoidDuplicateLiterals")
+  public static OptionalLong countMatching(final RecordType the_type) {
+    if (!Persistence.isTransactionActive()) {
+      throw new IllegalStateException("no running transaction");
+    }
+    
+    OptionalLong result = OptionalLong.empty();
+   
+    try {
+      final Session s = Persistence.currentSession();
+      final CriteriaBuilder cb = s.getCriteriaBuilder();
+      final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+      final Root<CastVoteRecord> root = cq.from(CastVoteRecord.class);
+      cq.select(cb.count(root)).where(cb.equal(root.get(RECORD_TYPE), the_type));
+      final Query<Long> query = s.createQuery(cq);
+      result = OptionalLong.of(query.getSingleResult());
+    } catch (final PersistenceException e) {
+      Main.LOGGER.error(COULD_NOT_QUERY_DATABASE);
+    }
+    if (result == null) {
+      Main.LOGGER.debug("found no CVRs for type " + the_type);
+    } else {
+      Main.LOGGER.debug("query succeeded, returning CVR stream");
+    }
+    return result;
+  }
+  
+  /**
    * Obtain a stream of CastVoteRecord objects with the specified county 
    * and type, ordered by their imprinted ID. This method <em>must</em>
    * be called from within a transaction, and the result stream must be
@@ -126,12 +160,8 @@ public final class CastVoteRecordQueries {
    * transaction.
    */
   @SuppressWarnings("PMD.AvoidDuplicateLiterals")
-  public static Stream<CastVoteRecord> getMatching(final Integer the_county,
+  public static Stream<CastVoteRecord> getMatching(final Long the_county,
                                                    final RecordType the_type) {
-    if (!Persistence.isTransactionActive()) {
-      throw new IllegalStateException("no running transaction");
-    }
-    
     Stream<CastVoteRecord> result = null;
    
     try {
@@ -157,18 +187,56 @@ public final class CastVoteRecordQueries {
     }
     return result;
   }
+  
+  /**
+   * Counts the CastVoteRecord objects with the specified county and type.
+   *
+   * @param the_county_id The county.
+   * @param the_type The type.
+   * @return the count, empty if the query could not be completed 
+   * successfully.
+   */
+  @SuppressWarnings("PMD.AvoidDuplicateLiterals")
+  public static OptionalLong countMatching(final Long the_county,
+                                           final RecordType the_type) {
+    OptionalLong result = OptionalLong.empty();
+   
+    try {
+      final Session s = Persistence.currentSession();
+      final CriteriaBuilder cb = s.getCriteriaBuilder();
+      final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+      final Root<CastVoteRecord> root = cq.from(CastVoteRecord.class);
+      final List<Predicate> conjuncts = new ArrayList<Predicate>();
+      conjuncts.add(cb.equal(root.get(COUNTY_ID), the_county));
+      conjuncts.add(cb.equal(root.get(RECORD_TYPE), the_type));
+      cq.select(cb.count(root));
+      cq.where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
+      cq.orderBy(cb.asc(root.get(IMPRINTED_ID)));
+      final Query<Long> query = s.createQuery(cq);
+      result = OptionalLong.of(query.getSingleResult());
+    } catch (final PersistenceException e) {
+      Main.LOGGER.error(COULD_NOT_QUERY_DATABASE);
+    }
+    if (result == null) {
+      Main.LOGGER.debug("found no CVRs for county " + the_county + 
+                        ", type " + the_type);
+    } else {
+      Main.LOGGER.debug("query succeeded, returning CVR stream");
+    }
+    return result;
+  }
 
   /**
-   * Obtain a stream of CastVoteRecord objects with the specified timestamp,
+   * Obtain a stream of CastVoteRecord objects with the specified timestamp, 
    * county, and type, ordered by their imprinted ID. This method <em>must</em>
    * be called from within a transaction, and the result stream must be
    * used within the same transaction.
    *
    * @param the_timestamp The timestamp.
-   * @param the_county_id The county.
+   * @param the_county The county.
    * @param the_type The type.
-   * @return the stream of CastVoteRecord objects, or null if one could not
-   * be acquired.
+   * @return the stream of CastVoteRecord objects, or null if one could
+   * not be acquired.
    * @exception IllegalStateException if this method is called outside a 
    * transaction.
    */
@@ -176,10 +244,6 @@ public final class CastVoteRecordQueries {
   public static Stream<CastVoteRecord> getMatching(final Instant the_timestamp,
                                                    final Long the_county_id,
                                                    final RecordType the_type) {
-    if (!Persistence.isTransactionActive()) {
-      throw new IllegalStateException("no running transaction");
-    }
-    
     Stream<CastVoteRecord> result = null;
    
     try {
@@ -209,81 +273,21 @@ public final class CastVoteRecordQueries {
   }
   
   /**
-   * Obtain the CastVoteRecord object with the specified timestamp,
-   * county, type, and imprinted ID. 
-   *
-   * @param the_timestamp The timestamp.
-   * @param the_county_id The county.
-   * @param the_type The type.
-   * @param the_imprinted_id The imprinted ID.
-   * @return the matching CastVoteRecord object, or null if no objects match
-   * or the query fails.
-   */
-  // we are checking to see if exactly one result is in a list, and
-  // PMD doesn't like it
-  @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
-  public static CastVoteRecord get(final Instant the_timestamp,
-                                   final Long the_county_id,
-                                   final RecordType the_type,
-                                   final String the_imprinted_id) {
-    CastVoteRecord result = null;
-   
-    try {
-      final boolean transaction = Persistence.beginTransaction();
-      final Session s = Persistence.currentSession();
-      final CriteriaBuilder cb = s.getCriteriaBuilder();
-      final CriteriaQuery<CastVoteRecord> cq = cb.createQuery(CastVoteRecord.class);
-      final Root<CastVoteRecord> root = cq.from(CastVoteRecord.class);
-      final List<Predicate> conjuncts = new ArrayList<Predicate>();
-      conjuncts.add(cb.equal(root.get(TIMESTAMP), the_timestamp));
-      conjuncts.add(cb.equal(root.get(COUNTY_ID), the_county_id));
-      conjuncts.add(cb.equal(root.get(RECORD_TYPE), the_type));
-      conjuncts.add(cb.equal(root.get(IMPRINTED_ID), the_imprinted_id));
-      cq.select(root).where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
-      final TypedQuery<CastVoteRecord> query = s.createQuery(cq);
-      final List<CastVoteRecord> query_results = query.getResultList();
-      // if there's exactly one result, return that
-      if (query_results.size() == 1) {
-        result = query_results.get(0);
-      } 
-      if (transaction) {
-        try {
-          Persistence.commitTransaction();
-        } catch (final RollbackException e) {
-          Persistence.rollbackTransaction();
-        }
-      }
-    } catch (final PersistenceException e) {
-      Main.LOGGER.error(COULD_NOT_QUERY_DATABASE);
-    }
-    if (result == null) {
-      Main.LOGGER.debug("found no CVR for timestamp " + the_timestamp + 
-                        ", county " + the_county_id + ", type " + 
-                        the_type);
-    } else {
-      Main.LOGGER.debug("found CVR " + result);
-    }
-    
-    return result;
-  }
-  
-  /**
    * Counts the CastVoteRecord objects with the specified timestamp,
    * county, and type. 
    *
    * @param the_timestamp The timestamp.
    * @param the_county_id The county.
    * @param the_type The type.
-   * @return the count, or -1 if the query could not be completed 
+   * @return the count, empty if the query could not be completed 
    * successfully.
    */
-  public static Long countMatching(final Instant the_timestamp,
-                                   final Long the_county_id,
-                                   final RecordType the_type) {
-    Long result = Long.valueOf(-1);
+  public static OptionalLong countMatching(final Instant the_timestamp,
+                                           final Long the_county_id,
+                                           final RecordType the_type) {
+    OptionalLong result = OptionalLong.empty();
     
     try {
-      final boolean transaction = Persistence.beginTransaction();
       final Session s = Persistence.currentSession();
       final CriteriaBuilder cb = s.getCriteriaBuilder();
       final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
@@ -295,14 +299,7 @@ public final class CastVoteRecordQueries {
       cq.select(cb.count(root));
       cq.where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
       final Query<Long> query = s.createQuery(cq);
-      result = query.getSingleResult();
-      if (transaction) {
-        try {
-          Persistence.commitTransaction();
-        } catch (final RollbackException e) {
-          Persistence.rollbackTransaction();
-        }
-      }
+      result = OptionalLong.of(query.getSingleResult());
     } catch (final PersistenceException e) {
       Main.LOGGER.error(COULD_NOT_QUERY_DATABASE);
     }
@@ -362,5 +359,55 @@ public final class CastVoteRecordQueries {
     }
     return result;
   }
-
+  
+  /**
+   * Obtain the CastVoteRecord object with the specified timestamp,
+   * county, type, and imprinted ID. 
+   *
+   * @param the_timestamp The timestamp.
+   * @param the_county_id The county.
+   * @param the_type The type.
+   * @param the_imprinted_id The imprinted ID.
+   * @return the matching CastVoteRecord object, or null if no objects match
+   * or the query fails.
+   */
+  // we are checking to see if exactly one result is in a list, and
+  // PMD doesn't like it
+  @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
+  public static CastVoteRecord get(final Instant the_timestamp,
+                                   final Long the_county_id,
+                                   final RecordType the_type,
+                                   final String the_imprinted_id) {
+    CastVoteRecord result = null;
+   
+    try {
+      final Session s = Persistence.currentSession();
+      final CriteriaBuilder cb = s.getCriteriaBuilder();
+      final CriteriaQuery<CastVoteRecord> cq = cb.createQuery(CastVoteRecord.class);
+      final Root<CastVoteRecord> root = cq.from(CastVoteRecord.class);
+      final List<Predicate> conjuncts = new ArrayList<Predicate>();
+      conjuncts.add(cb.equal(root.get(TIMESTAMP), the_timestamp));
+      conjuncts.add(cb.equal(root.get(COUNTY_ID), the_county_id));
+      conjuncts.add(cb.equal(root.get(RECORD_TYPE), the_type));
+      conjuncts.add(cb.equal(root.get(IMPRINTED_ID), the_imprinted_id));
+      cq.select(root).where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
+      final TypedQuery<CastVoteRecord> query = s.createQuery(cq);
+      final List<CastVoteRecord> query_results = query.getResultList();
+      // if there's exactly one result, return that
+      if (query_results.size() == 1) {
+        result = query_results.get(0);
+      } 
+    } catch (final PersistenceException e) {
+      Main.LOGGER.error(COULD_NOT_QUERY_DATABASE);
+    }
+    if (result == null) {
+      Main.LOGGER.debug("found no CVR for timestamp " + the_timestamp + 
+                        ", county " + the_county_id + ", type " + 
+                        the_type);
+    } else {
+      Main.LOGGER.debug("found CVR " + result);
+    }
+    
+    return result;
+  }
 }

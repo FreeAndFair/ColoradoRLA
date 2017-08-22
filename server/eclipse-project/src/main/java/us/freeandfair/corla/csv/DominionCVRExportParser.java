@@ -15,12 +15,14 @@ import java.io.IOException;
 import java.io.Reader;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.OptionalInt;
+import java.util.Set;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -42,6 +44,11 @@ import us.freeandfair.corla.query.ContestQueries;
  * @bon OPTIONAL_BON_TYPENAME
  */
 public class DominionCVRExportParser implements CVRExportParser {
+  /**
+   * The size of a batch of CVRs to be flushed to the database.
+   */
+  private static final int BATCH_SIZE = 50;
+  
   /**
    * The column containing the tabulator number in a Dominion export file.
    */
@@ -88,11 +95,6 @@ public class DominionCVRExportParser implements CVRExportParser {
   private final CSVParser my_parser;
   
   /**
-   * The list of CVRs parsed from the supplied data export.
-   */
-  private final List<Long> my_cvr_ids = new ArrayList<Long>();
-  
-  /**
    * The list of contests parsed from the supplied data export.
    */
   private final List<Contest> my_contests = new ArrayList<Contest>();
@@ -106,6 +108,16 @@ public class DominionCVRExportParser implements CVRExportParser {
    * The timestamp to apply to the parsed CVRs.
    */
   private final Instant my_timestamp;
+  
+  /**
+   * The number of parsed CVRs.
+   */
+  private OptionalInt my_record_count = OptionalInt.empty();
+  
+  /**
+   * The set of parsed CVRs that haven't yet been flushed to the database.
+   */
+  private final Set<CastVoteRecord> my_parsed_cvrs = new HashSet<>();
   
   /**
    * Construct a new Dominion CVR export parser using the specified Reader,
@@ -223,6 +235,20 @@ public class DominionCVRExportParser implements CVRExportParser {
   }
   
   /**
+   * Checks to see if the set of parsed CVRs needs flushing, and does so 
+   * if necessary.
+   */
+  private void checkForFlush() {
+    if (my_parsed_cvrs.size() % BATCH_SIZE == 0) {
+      Persistence.flush();
+      for (final CastVoteRecord cvr : my_parsed_cvrs) {
+        Persistence.evict(cvr);
+      }
+      my_parsed_cvrs.clear();
+    }
+  }
+  
+  /**
    * Extract a CVR from a line of the file.
    * 
    * @param the_line The line representing the CVR.
@@ -277,21 +303,14 @@ public class DominionCVRExportParser implements CVRExportParser {
                              imprinted_id, ballot_type, 
                              contest_info);
       Persistence.saveOrUpdate(new_cvr);
+      my_parsed_cvrs.add(new_cvr);
+      checkForFlush();
       Main.LOGGER.debug("parsed CVR: " + new_cvr);
       return new_cvr;
     } catch (final NumberFormatException e) {
       return null;
     } catch (final ArrayIndexOutOfBoundsException e) {
       return null;
-    }
-  }
-  
-  /**
-   * Aborts the changes from parsing.
-   */
-  private void abort() {
-    for (final Long id : my_cvr_ids) {
-      Persistence.delete(CastVoteRecord.class, id);
     }
   }
   
@@ -310,6 +329,8 @@ public class DominionCVRExportParser implements CVRExportParser {
     
     boolean result = true; // presume the parse will succeed
     final Iterator<CSVRecord> records = my_parser.iterator();
+    
+    my_record_count = OptionalInt.of(0);
     
     try {
       // we expect the first line to be the election name, which we currently discard
@@ -343,7 +364,7 @@ public class DominionCVRExportParser implements CVRExportParser {
           result = false;   
           break;
         } else {
-          my_cvr_ids.add(cvr.id());
+          my_record_count = OptionalInt.of(my_record_count.getAsInt() + 1);
         }
       }
     } catch (final NoSuchElementException | StringIndexOutOfBoundsException |
@@ -361,17 +382,16 @@ public class DominionCVRExportParser implements CVRExportParser {
       // add the contests to the county we're working with  
       my_county.contests().addAll(my_contests);
       Persistence.saveOrUpdate(my_county);
-    } else {
-      abort();
     }
+    
     return result;
   }
-
+  
   /**
-   * @return the CVRs parsed from the supplied data export.
+   * {@inheritDoc}
    */
   @Override
-  public synchronized List<Long> parsedIDs() {
-    return Collections.unmodifiableList(my_cvr_ids);
+  public synchronized OptionalInt recordCount() {
+    return my_record_count;
   }
 }

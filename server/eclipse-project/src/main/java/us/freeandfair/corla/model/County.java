@@ -37,7 +37,7 @@ import us.freeandfair.corla.persistence.PersistentEntity;
  * @version 0.0.1
  */
 @Entity
-@Cacheable
+@Cacheable(true)
 @Table(name = "county")
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
@@ -129,8 +129,17 @@ public class County implements PersistentEntity, Serializable {
   /**
    * @return the county ID.
    */
+  @Override
   public Long id() {
     return my_id;
+  }
+  
+  /**
+   * @return the version for this county.
+   */
+  @Override
+  public Long version() {
+    return my_version;
   }
   
   /**
@@ -138,6 +147,7 @@ public class County implements PersistentEntity, Serializable {
    * 
    * @param the_id The ID.
    */
+  @Override
   public void setID(final Long the_id) {
     my_id = the_id;
   }

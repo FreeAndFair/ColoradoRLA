@@ -12,6 +12,8 @@
 
 package us.freeandfair.corla.model;
 
+import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -42,7 +44,7 @@ import us.freeandfair.corla.persistence.PersistentEntity;
 // this is an unusual entity, in that it is a singleton; it thus has only one
 // possible id (0).
 @Entity
-@Cacheable
+@Cacheable(true)
 @Table(name = "dos_dashboard")
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
@@ -114,6 +116,7 @@ public class DoSDashboard implements PersistentEntity, Serializable {
    * @return the database ID for this dashboard, which is the same as
    * its county ID.
    */
+  @Override
   public Long id() {
     return my_id;
   }
@@ -125,6 +128,7 @@ public class DoSDashboard implements PersistentEntity, Serializable {
    * dashboard is always 0.
    * @exception IllegalArgumentException if the ID is not 0.
    */
+  @Override
   public final void setID(final Long the_id) {
     if (!ID.equals(the_id)) {
       throw new IllegalArgumentException("the only valid ID for a DoSDashboard is 0");
@@ -132,6 +136,14 @@ public class DoSDashboard implements PersistentEntity, Serializable {
     my_id = ID;
   }
 
+  /**
+   * @return the version for this dashboard.
+   */
+  @Override
+  public Long version() {
+    return my_version;
+  }
+  
   /**
    * Checks the validity of a random seed. To be valid, a random seed must
    * have at least MIN_SEED_CHARACTERS characters, and all characters must
@@ -234,5 +246,41 @@ public class DoSDashboard implements PersistentEntity, Serializable {
    */
   public String randomSeed() {
     return my_random_seed;
+  }
+  
+  /**
+   * @return a String representation of this contest.
+   */
+  @Override
+  public String toString() {
+    return "DoSDashboard [county=" + id() + "]";
+  }
+
+  /**
+   * Compare this object with another for equivalence.
+   * 
+   * @param the_other The other object.
+   * @return true if the objects are equivalent, false otherwise.
+   */
+  @Override
+  public boolean equals(final Object the_other) {
+    boolean result = true;
+    if (the_other instanceof DoSDashboard) {
+      final DoSDashboard other_ddb = (DoSDashboard) the_other;
+      // there can only be one DoS dashboard in the system for each
+      // ID, so we check their equivalence by ID
+      result &= nullableEquals(other_ddb.id(), id());
+    } else {
+      result = false;
+    }
+    return result;
+  }
+  
+  /**
+   * @return a hash code for this object.
+   */
+  @Override
+  public int hashCode() {
+    return toString().hashCode();
   }
 }

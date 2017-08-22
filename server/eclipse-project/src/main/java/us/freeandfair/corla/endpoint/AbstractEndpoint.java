@@ -17,7 +17,6 @@
 package us.freeandfair.corla.endpoint;
 
 import javax.persistence.PersistenceException;
-import javax.persistence.RollbackException;
 
 import org.eclipse.jetty.http.HttpStatus;
 
@@ -49,7 +48,8 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
 // in before() to initialize my_persistent_asm_state.
     "SF_SWITCH_NO_DEFAULT"})
 // Justification: False positive; there is a default case.
-@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.TooManyMethods"})
+@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.TooManyMethods", 
+                   "PMD.EmptyMethodInAbstractClassShouldBeAbstract"})
 public abstract class AbstractEndpoint implements Endpoint {
   /**
    * A flag that disables ASM checks, when true.
@@ -79,7 +79,6 @@ public abstract class AbstractEndpoint implements Endpoint {
    * the endpoint does not have an abstract state machine.
    */
   // this method is not empty!
-  @SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract")
   protected Class<? extends AbstractStateMachine> asmClass() {
     return null;
   }
@@ -94,7 +93,6 @@ public abstract class AbstractEndpoint implements Endpoint {
    * request. 
    */
   // this method is not empty!
-  @SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract")
   protected String asmIdentity(final Request the_request) {
     return null;
   }
@@ -106,7 +104,6 @@ public abstract class AbstractEndpoint implements Endpoint {
    * @return the event.
    */
   // this method is not empty!
-  @SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract")
   protected ASMEvent endpointEvent() {
     return null;
   }
@@ -344,12 +341,19 @@ public abstract class AbstractEndpoint implements Endpoint {
   } 
   
   /**
-   * The after filter for this endpoint. By default, it attempts to commit 
+   * The after filter for this endpoint. Currently, the implementation is empty.
+   */
+  public void after(final Request the_request, final Response the_response) {
+    // skip
+  }
+  
+  /**
+   * The afterAfter filter for this endpoint. By default, it attempts to commit 
    * any open transaction (this makes writing endpoint code more straightforward,
    * as the vast majority of endpoints will never have to deal with transactions
    * themselves).
    */
-  public void after(final Request the_request, final Response the_response) {
+  public void afterAfter(final Request the_request, final Response the_response) {
     // try to take the transition for this endpoint in the ASM and save it to the DB
     // note that we do not try to commit when we have an error code in the response
     if (the_response.status() == HttpStatus.OK_200 && 
@@ -358,7 +362,7 @@ public abstract class AbstractEndpoint implements Endpoint {
       try {
         // since the transition finished, let's commit
         Persistence.commitTransaction();
-      } catch (final RollbackException e) {
+      } catch (final PersistenceException e) {
         // this is an internal server error because we don't know what didn't
         // get committed
         serverError(the_response, 

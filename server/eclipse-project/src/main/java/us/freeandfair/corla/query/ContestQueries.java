@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.PersistenceException;
-import javax.persistence.RollbackException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -57,7 +56,6 @@ public final class ContestQueries {
     Contest result = null;
     
     try {
-      final boolean transaction = Persistence.beginTransaction();
       final Session s = Persistence.currentSession();
       final CriteriaBuilder cb = s.getCriteriaBuilder();
       final CriteriaQuery<Contest> cq = cb.createQuery(Contest.class);
@@ -82,13 +80,6 @@ public final class ContestQueries {
         Persistence.saveOrUpdate(the_contest);
         result = the_contest;
       }
-      if (transaction) {
-        try {
-          Persistence.commitTransaction();
-        } catch (final RollbackException e) {
-          Persistence.rollbackTransaction();
-        }
-      }
     } catch (final PersistenceException e) {
       Main.LOGGER.error("could not query database for contest");
     }
@@ -111,7 +102,6 @@ public final class ContestQueries {
     Set<Contest> result = null;
     
     try {
-      final boolean transaction = Persistence.beginTransaction();
       final Set<Contest> query_results = new HashSet<Contest>();
       for (final Long county_id : the_county_ids) {
         final County c = Persistence.getByID(county_id, County.class);
@@ -120,13 +110,6 @@ public final class ContestQueries {
         }
       }
       result = query_results;
-      if (transaction) {
-        try {
-          Persistence.commitTransaction();
-        } catch (final RollbackException e) {
-          Persistence.rollbackTransaction();
-        }
-      }
     } catch (final PersistenceException e) {
       Main.LOGGER.error("Exception when reading contests from database: " + e);
     }

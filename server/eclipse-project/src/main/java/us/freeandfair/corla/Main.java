@@ -26,7 +26,6 @@ import java.util.Properties;
 import java.util.Scanner;
 
 import javax.persistence.PersistenceException;
-import javax.persistence.RollbackException;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -241,6 +240,8 @@ public final class Main {
       my_spark.before(e.endpointName(), cors_and_before);
       my_spark.after(e.endpointName(), (the_request, the_response) -> 
           e.after(the_request, the_response));
+      my_spark.afterAfter(e.endpointName(), (the_request, the_response) -> 
+          e.afterAfter(the_request, the_response));
       switch (e.endpointType()) {
         case GET:
           my_spark.get(e.endpointName(), (the_request, the_response) -> 
@@ -293,7 +294,6 @@ public final class Main {
    */
   private void initializeASMsAndDashboards(final List<County> the_counties) 
       throws PersistenceException {
-    Persistence.beginTransaction();
     // first, check the DoS dashboard
     final PersistentASMState dos_state = 
         PersistentASMStateQueries.get(DoSDashboardASM.class, null);
@@ -322,13 +322,6 @@ public final class Main {
         cdb = new CountyDashboard(c.id(), CountyStatus.NO_DATA);
         Persistence.saveOrUpdate(cdb);
       }
-    }
-    
-    try {
-      Persistence.commitTransaction();
-    } catch (final RollbackException e) {
-      Persistence.rollbackTransaction();
-      throw new PersistenceException(e);
     }
   }
   
@@ -386,8 +379,13 @@ public final class Main {
     // provide properties to the persistence engine
     Persistence.setProperties(my_properties);
 
-    if (Persistence.hasDB()) {
+    if (Persistence.beginTransaction()) {
       initializeASMsAndDashboards(initializeCounties());
+      try {
+        Persistence.commitTransaction();
+      } catch (final PersistenceException e) {
+        throw new IllegalStateException("could not initialize data in database", e);
+      }
     } else {
       LOGGER.error("could not open database connection");
       return;

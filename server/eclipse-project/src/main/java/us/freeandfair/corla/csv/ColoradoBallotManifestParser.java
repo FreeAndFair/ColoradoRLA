@@ -14,11 +14,11 @@ package us.freeandfair.corla.csv;
 import java.io.IOException;
 import java.io.Reader;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.OptionalInt;
+import java.util.Set;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -34,6 +34,11 @@ import us.freeandfair.corla.persistence.Persistence;
  * @bon OPTIONAL_BON_TYPENAME
  */
 public class ColoradoBallotManifestParser implements BallotManifestParser {
+  /**
+   * The size of a batch of ballot manifests to be flushed to the database.
+   */
+  private static final int BATCH_SIZE = 50;
+
 //  TODO: if we want to validate county IDs against the county strings in
 //        the file, we'll need this later
 //  /**
@@ -77,11 +82,6 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
   private final CSVParser my_parser;
   
   /**
-   * The list of ballot manifest information IDs parsed from the supplied data.
-   */
-  private final List<Long> my_manifest_info = new ArrayList<Long>();
-  
-  /**
    * The timestamp to apply to the parsed manifest lines.
    */
   private final Instant my_timestamp;
@@ -90,6 +90,17 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
    * The county ID to apply to the parsed manifest lines.
    */
   private final Long my_county_id;
+  
+  /**
+   * The number of records parsed from the ballot manifest file.
+   */
+  private OptionalInt my_record_count = OptionalInt.empty();
+
+  /**
+   * The set of parsed ballot manifests that haven't yet been flushed to the 
+   * database.
+   */
+  private final Set<BallotManifestInfo> my_parsed_manifests = new HashSet<>();
   
   /**
    * Construct a new Colorado ballot manifest parser using the specified Reader.
@@ -126,6 +137,20 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
   }
   
   /**
+   * Checks to see if the set of parsed manifests needs flushing, and does so 
+   * if necessary.
+   */
+  private void checkForFlush() {
+    if (my_parsed_manifests.size() % BATCH_SIZE == 0) {
+      Persistence.flush();
+      for (final BallotManifestInfo bmi : my_parsed_manifests) {
+        Persistence.evict(bmi);
+      }
+      my_parsed_manifests.clear();
+    }
+  }
+  
+  /**
    * Extracts ballot manifest information from a single CSV line.
    * 
    * @param the_line The CSV line.
@@ -148,20 +173,14 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
                                                        get(NUM_BALLOTS_COLUMN)),
                                       the_line.get(BATCH_LOCATION_COLUMN));
       Persistence.saveOrUpdate(result);
+      my_parsed_manifests.add(result);
+      checkForFlush();
+      Main.LOGGER.debug("parsed ballot manifest: " + result);
     } catch (final NumberFormatException | ArrayIndexOutOfBoundsException e) {
       // return the null result
     }
     
     return result;
-  }
-  
-  /**
-   * Aborts the changes from parsing.
-   */
-  private void abort() {
-    for (final Long id : my_manifest_info) {
-      Persistence.delete(BallotManifestInfo.class, id);
-    }
   }
   
   /**
@@ -180,6 +199,8 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
     boolean result = true; // presume the parse will succeed
     final Iterator<CSVRecord> records = my_parser.iterator();
     
+    my_record_count = OptionalInt.of(0);
+    
     try {
       // we expect the first line to be the headers, which we currently discard
       records.next();
@@ -195,7 +216,7 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
           result = false;
           break;
         } else {
-          my_manifest_info.add(bmi.id());
+          my_record_count = OptionalInt.of(my_record_count.getAsInt() + 1);
         }
       }
     } catch (final NoSuchElementException e) {
@@ -207,20 +228,14 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
     my_parse_status = true;
     my_parse_success = result;
     
-    // if we had any kind of parse error, we scrap the whole import
-    
-    if (!result) {
-      abort();
-    }
-
     return result;
   }
 
   /**
-   * @return the CVRs parsed from the supplied data export.
+   * {@inheritDoc}
    */
   @Override
-  public synchronized List<Long> parsedIDs() {
-    return Collections.unmodifiableList(my_manifest_info);
+  public synchronized OptionalInt recordCount() {
+    return my_record_count;
   }
 }

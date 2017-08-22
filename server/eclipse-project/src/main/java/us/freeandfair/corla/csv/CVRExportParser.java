@@ -11,7 +11,7 @@
 
 package us.freeandfair.corla.csv;
 
-import java.util.List;
+import java.util.OptionalInt;
 
 /**
  * A common interface to parsers for CVR info in various formats.
@@ -30,7 +30,9 @@ public interface CVRExportParser {
   boolean parse();
   
   /**
-   * @return the IDs of the CVRs parsed from the export data. 
+   * The number of records parsed from the CVR file. 
+   * 
+   * @return the number of records; empty if parsing has not yet occurred.
    */
-  List<Long> parsedIDs();
+  OptionalInt recordCount();
 }

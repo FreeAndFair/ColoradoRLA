@@ -89,7 +89,6 @@ public class PublishBallotsToAudit extends AbstractDoSDashboardEndpoint {
           } else {
             final RLAAlgorithm rlaa = new RLAAlgorithm(cdb);
             cdb.setCVRsToAudit(rlaa.computeBallotOrder(dosdb.randomSeed()));
-            Persistence.saveOrUpdate(cdb);
           } 
           // update the ASMs for the county and audit board
           if (!DISABLE_ASM) {

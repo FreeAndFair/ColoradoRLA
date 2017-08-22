@@ -28,7 +28,7 @@ import javax.persistence.Version;
  * @version 0.0.1
  */
 @Entity
-@Cacheable
+@Cacheable(true)
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class AbstractEntity implements PersistentEntity {
   /**
@@ -67,6 +67,14 @@ public abstract class AbstractEntity implements PersistentEntity {
   @Override
   public void setID(final Long the_id) {
     my_id = the_id;
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Long version() {
+    return my_version;
   }
 }
 

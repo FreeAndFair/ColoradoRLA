@@ -14,10 +14,10 @@ package us.freeandfair.corla.query;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.OptionalLong;
 import java.util.Set;
 
 import javax.persistence.PersistenceException;
-import javax.persistence.RollbackException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -55,7 +55,6 @@ public final class BallotManifestInfoQueries {
     Set<BallotManifestInfo> result = null;
     
     try {
-      final boolean transaction = Persistence.beginTransaction();
       final Session s = Persistence.currentSession();
       final CriteriaBuilder cb = s.getCriteriaBuilder();
       final CriteriaQuery<BallotManifestInfo> cq = 
@@ -68,17 +67,34 @@ public final class BallotManifestInfoQueries {
       cq.select(root).where(cb.or(disjuncts.toArray(new Predicate[disjuncts.size()])));
       final TypedQuery<BallotManifestInfo> query = s.createQuery(cq);
       result = new HashSet<BallotManifestInfo>(query.getResultList());
-      if (transaction) {
-        try {
-          Persistence.commitTransaction();
-        } catch (final RollbackException e) {
-          Persistence.rollbackTransaction();
-        }
-      }
     } catch (final PersistenceException e) {
       Main.LOGGER.error("Exception when reading ballot manifests from database: " + e);
     }
 
+    return result;
+  }
+  
+  
+  /**
+   * Count the uploaded ballot manifest info records in storage.
+   * 
+   * @return the number of uploaded records.
+   */
+  public static OptionalLong count() {
+    OptionalLong result = OptionalLong.empty();
+    
+    try {
+      final Session s = Persistence.currentSession();
+      final CriteriaBuilder cb = s.getCriteriaBuilder();
+      final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+      final Root<BallotManifestInfo> root = cq.from(BallotManifestInfo.class);
+      cq.select(cb.count(root));
+      final TypedQuery<Long> query = s.createQuery(cq);
+      result = OptionalLong.of(query.getSingleResult());
+    } catch (final PersistenceException e) {
+      // ignore
+    }
+    
     return result;
   }
 }

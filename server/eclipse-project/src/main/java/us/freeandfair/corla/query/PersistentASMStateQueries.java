@@ -14,7 +14,6 @@ package us.freeandfair.corla.query;
 import java.util.List;
 
 import javax.persistence.PersistenceException;
-import javax.persistence.RollbackException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -62,7 +61,6 @@ public final class PersistentASMStateQueries {
     PersistentASMState result = null;
     try {
       final String class_name = the_class.getName();
-      final boolean transaction = Persistence.beginTransaction();
       final Session s = Persistence.currentSession();
       final CriteriaBuilder cb = s.getCriteriaBuilder();
       final CriteriaQuery<PersistentASMState> cq = cb.createQuery(PersistentASMState.class);
@@ -78,23 +76,12 @@ public final class PersistentASMStateQueries {
       PersistentASMState asm = null;
       if (query_results.size() > 1) {
         Main.LOGGER.error("multiple ASM states found");
-        if (transaction) {
-          Persistence.rollbackTransaction();
-        }
         throw new PersistenceException("multiple ASM states found for " + 
                                        the_class.getName() + ", identity " + the_identity);
       } else if (!query_results.isEmpty()) {
         asm = query_results.get(0);
         Main.LOGGER.debug("found ASM state " + asm + " for class " + the_class.getName() + 
                           ", identity " + the_identity);
-      }
-      if (transaction) {
-        try {
-          Persistence.commitTransaction();
-        } catch (final RollbackException e) {
-          Main.LOGGER.error("could not get persistent ASM state");
-          Persistence.rollbackTransaction();
-        }
       }
       result = asm;
     } catch (final PersistenceException e) {

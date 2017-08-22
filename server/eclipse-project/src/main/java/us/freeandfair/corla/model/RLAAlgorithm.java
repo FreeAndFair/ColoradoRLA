@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalLong;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -62,11 +63,11 @@ public class RLAAlgorithm {
    */
   public RLAAlgorithm(final CountyDashboard the_dashboard) {
     // count CVRs for contest under audit
-    final Long cvr_count = 
+    final OptionalLong cvr_count = 
         CastVoteRecordQueries.countMatching(the_dashboard.cvrUploadTimestamp(), 
                                             the_dashboard.id(),
                                             RecordType.UPLOADED);
-    if (cvr_count == 0) {
+    if (!cvr_count.isPresent() || cvr_count.getAsLong() == 0) {
       throw new IllegalArgumentException("no votes in county " + the_dashboard.id());
     }
     // what is the risk limit for this contest?
@@ -82,7 +83,7 @@ public class RLAAlgorithm {
     final Map<String, Pair<Integer, Map<String, Integer>>> contest_map = 
         getContestMap(the_dashboard);
     my_comparison_audit = 
-        new ComparisonAudit(cvr_count.intValue(), risk_limit, contest_map);
+        new ComparisonAudit((int) cvr_count.getAsLong(), risk_limit, contest_map);
     my_dashboard = the_dashboard;
   }
 
@@ -134,7 +135,7 @@ public class RLAAlgorithm {
           }
         }
       }
-      Persistence.currentSession().evict(the_cvr);
+      Persistence.evict(the_cvr);
     });
 
     return result;
@@ -147,6 +148,14 @@ public class RLAAlgorithm {
    * @param the_cvr_count the total number of CVRs in a given county.
    */
   public List<Long> computeBallotOrder(final String the_seed) {
+    final OptionalLong count = 
+        CastVoteRecordQueries.countMatching(my_dashboard.cvrUploadTimestamp(), 
+                                            my_dashboard.id(),
+                                            RecordType.UPLOADED);
+    if (!count.isPresent()) {
+      throw new IllegalStateException("unable to count CVRs for county " + my_dashboard.id());
+    }
+
     final boolean with_replacement = true;
     // assuming that CVRs are indexed from 0
     final int minimum = 0;
@@ -154,12 +163,7 @@ public class RLAAlgorithm {
     // generator generates a sequence of the numbers minimum ... maximum 
     // inclusive, so we subtract 1 from the number of CVRs to give it the
     // correct range for our actual list of CVRs (indexed from 0).
-    final Long max_long = 
-        CastVoteRecordQueries.countMatching(my_dashboard.cvrUploadTimestamp(), 
-                                            my_dashboard.id(),
-                                            RecordType.UPLOADED) - 1;
-
-    final int maximum = max_long.intValue();
+    final int maximum = (int) count.getAsLong() - 1;
 
     final PseudoRandomNumberGenerator prng = 
         new PseudoRandomNumberGenerator(the_seed, with_replacement,
