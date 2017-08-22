@@ -2,19 +2,18 @@
  * Free & Fair Colorado RLA System
  * 
  * @title ColoradoRLA
- * 
  * @created Aug 11, 2017
- * 
  * @copyright 2017 Free & Fair
- * 
  * @license GNU General Public License 3.0
- * 
  * @author Joe Kiniry <kiniry@freeandfair.us>
- * 
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
 package us.freeandfair.corla.endpoint;
+
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.PersistenceException;
 
@@ -29,8 +28,11 @@ import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.ASMUtilities;
 import us.freeandfair.corla.asm.AbstractStateMachine;
 import us.freeandfair.corla.json.Result;
+import us.freeandfair.corla.model.Administrator;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
+import us.freeandfair.corla.model.LogEntry;
 import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.query.LogEntryQueries;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
@@ -47,14 +49,23 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
 // Justification: False positive because we are weaving in behavior
 // in before() to initialize my_persistent_asm_state.
     "SF_SWITCH_NO_DEFAULT"})
-// Justification: False positive; there is a default case.
-@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.TooManyMethods", 
-                   "PMD.EmptyMethodInAbstractClassShouldBeAbstract"})
+@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.TooManyMethods",
+    "PMD.EmptyMethodInAbstractClassShouldBeAbstract", "PMD.GodClass"})
 public abstract class AbstractEndpoint implements Endpoint {
   /**
    * A flag that disables ASM checks, when true.
    */
   public static final boolean DISABLE_ASM = false;
+  
+  /**
+   * The number of times to retry committing logs for failed transactions.
+   */
+  public static final int LOG_COMMIT_RETRIES = 5;
+  
+  /**
+   * The "Retry-After" value for a transaction failure response, in seconds.
+   */
+  public static final String RETRY_AFTER_DELAY = "10";
   
   /**
    * The ASM for this endpoint.
@@ -65,6 +76,16 @@ public abstract class AbstractEndpoint implements Endpoint {
    * The endpoint result for the ongoing transaction.
    */
   protected String my_endpoint_result;
+  
+  /**
+   * The HTTP status for the ongoing transaction.
+   */
+  protected int my_status;
+  
+  /**
+   * The log entries to be logged by this endpoint after execution.
+   */
+  protected List<LogEntry> my_log_entries = new ArrayList<>();
   
   /**
    * Halts the endpoint execution by ending the request and returning the
@@ -108,6 +129,9 @@ public abstract class AbstractEndpoint implements Endpoint {
     return null;
   }
   
+  /**
+   * The endpoint method. Delegates immediately to the child class
+   */
   /**
    * Load the appropriate ASM from the database and make sure that
    * the transition we wish to take is legal.
@@ -155,11 +179,17 @@ public abstract class AbstractEndpoint implements Endpoint {
   }
   
   /**
-   * Indicate that the operation completed successfully.
+   * Indicate that the operation completed successfully. This method is only
+   * to be used when no response should be sent in the body beyond any 
+   * streaming that the endpoint has already done; to provide an OK response
+   * outside of a streaming context, use ok(Response, String) or 
+   * okJSON(Response, String).
+   * 
    * @param the_response the HTTP response.
    */
   public void ok(final Response the_response) {
-    the_response.status(HttpStatus.OK_200);    
+    my_log_entries.add(new LogEntry(HttpStatus.OK_200, endpointName(), Instant.now()));
+    my_status = HttpStatus.OK_200;
     my_endpoint_result = "";
   }
   
@@ -181,9 +211,8 @@ public abstract class AbstractEndpoint implements Endpoint {
    * @param the_json The JSON string to send as the body of the response.
    */
   public void okJSON(final Response the_response, final String the_json) {
-    the_response.status(HttpStatus.OK_200);
-    the_response.body(the_json);
-    Main.LOGGER.info("successful operation 200 on endpoint " + endpointName());
+    my_log_entries.add(new LogEntry(HttpStatus.OK_200, endpointName(), Instant.now()));
+    my_status = HttpStatus.OK_200;
     my_endpoint_result = the_json;
   }
   /**
@@ -195,10 +224,13 @@ public abstract class AbstractEndpoint implements Endpoint {
    */
   public void invariantViolation(final Response the_response, 
                                  final String the_body) {
-    the_response.status(HttpStatus.BAD_REQUEST_400);
+    my_log_entries.add(new LogEntry(HttpStatus.BAD_REQUEST_400,
+                                    "invariant violation on " + endpointName() + ": " +
+                                        the_body,
+                                    Instant.now()));
+    my_status = HttpStatus.BAD_REQUEST_400;
     my_endpoint_result = Main.GSON.toJson(new Result(the_body));
-    the_response.body(my_endpoint_result);
-    Main.LOGGER.error("invariant violation 400 on endpoint " + endpointName());
+    halt(the_response);
   }
   
   /**
@@ -208,12 +240,13 @@ public abstract class AbstractEndpoint implements Endpoint {
    */
   public void unauthorized(final Response the_response, 
                            final String the_body) {
-    the_response.status(HttpStatus.UNAUTHORIZED_401);
+    my_log_entries.add(new LogEntry(HttpStatus.UNAUTHORIZED_401,
+                                    "unauthorized access on " + endpointName() + ": " +
+                                        the_body,
+                                    Instant.now()));
+    my_status = HttpStatus.UNAUTHORIZED_401;
     my_endpoint_result = Main.GSON.toJson(new Result(the_body));
-    the_response.body(my_endpoint_result);
-    Main.LOGGER.error("unauthorized access 401 on endpoint " + endpointName());
-    // TODO: should we halt() the endpoint execution here and simply send 
-    // the response
+    halt(the_response);
   }
 
   /**
@@ -224,11 +257,13 @@ public abstract class AbstractEndpoint implements Endpoint {
    */
   public void illegalTransition(final Response the_response, 
                                 final String the_body) {
-    the_response.status(HttpStatus.FORBIDDEN_403);
+    my_log_entries.add(new LogEntry(HttpStatus.FORBIDDEN_403, 
+                                    "illegal transition attempt on " + endpointName() + ": " +
+                                        the_body,
+                                    Instant.now()));
+    my_status = HttpStatus.FORBIDDEN_403;
     my_endpoint_result = Main.GSON.toJson(new Result(the_body));
-    the_response.body(my_endpoint_result);
-    Main.LOGGER.error("illegal transition attempt 403 on endpoint " + 
-        endpointName());
+    halt(the_response);
   }
 
   /**
@@ -238,10 +273,13 @@ public abstract class AbstractEndpoint implements Endpoint {
    */
   public void dataNotFound(final Response the_response, 
                            final String the_body) {
-    the_response.status(HttpStatus.NOT_FOUND_404);
+    my_log_entries.add(new LogEntry(HttpStatus.NOT_FOUND_404,
+                                    "data not found on " + endpointName() + ": " +
+                                        the_body,
+                                    Instant.now()));
+    my_status = HttpStatus.NOT_FOUND_404;
     my_endpoint_result = Main.GSON.toJson(new Result(the_body));
-    the_response.body(my_endpoint_result);
-    Main.LOGGER.error("server error 404 on endpoint " + endpointName());
+    halt(the_response);
   }
 
   /**
@@ -251,11 +289,13 @@ public abstract class AbstractEndpoint implements Endpoint {
    */
   public void badDataType(final Response the_response, 
                           final String the_body) {
-    the_response.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE_415);
+    my_log_entries.add(new LogEntry(HttpStatus.UNSUPPORTED_MEDIA_TYPE_415,
+                                    "bad data type from client on " + endpointName() + ": " +
+                                        the_body,
+                                    Instant.now()));
+    my_status = HttpStatus.UNSUPPORTED_MEDIA_TYPE_415;
     my_endpoint_result = Main.GSON.toJson(new Result(the_body));
-    the_response.body(my_endpoint_result);
-    Main.LOGGER.error("bad data type from client 415 on endpoint " + 
-        endpointName());
+    halt(the_response);
   }
 
   /**
@@ -265,10 +305,13 @@ public abstract class AbstractEndpoint implements Endpoint {
    */
   public void badDataContents(final Response the_response, 
                               final String the_body) {
-    the_response.status(HttpStatus.UNPROCESSABLE_ENTITY_422);
+    my_log_entries.add(new LogEntry(HttpStatus.UNPROCESSABLE_ENTITY_422,
+                                    "bad data from client on " + endpointName() + ": " +
+                                        the_body,
+                                    Instant.now()));
+    my_status = HttpStatus.UNPROCESSABLE_ENTITY_422;
     my_endpoint_result = Main.GSON.toJson(new Result(the_body));
-    the_response.body(my_endpoint_result);
-    Main.LOGGER.error("bad data from client 422 on endpoint " + endpointName());
+    halt(the_response);
   }
 
   /**
@@ -278,25 +321,47 @@ public abstract class AbstractEndpoint implements Endpoint {
    */
   public void serverError(final Response the_response, 
                           final String the_body) {
-    the_response.status(HttpStatus.INTERNAL_SERVER_ERROR_500);
+    my_log_entries.add(new LogEntry(HttpStatus.INTERNAL_SERVER_ERROR_500,
+                                    "server error on " + endpointName() + ": " +
+                                        the_body,
+                                    Instant.now()));
+    my_status = HttpStatus.INTERNAL_SERVER_ERROR_500;
     my_endpoint_result = Main.GSON.toJson(new Result(the_body));
-    the_response.body(my_endpoint_result);
-    Main.LOGGER.error("server error 500 on endpoint " + endpointName());
+    halt(the_response);
   }
 
   /**
    * Indicate that the server is temporarily unavailable. This is typically due
-   * to a long-lived transaction running or server maintenance.
+   * to server maintenance.
    * @param the_response the HTTP response.
    * @param the_body the body of the HTTP response.
    */
   public void serverUnavailable(final Response the_response, 
                                 final String the_body) {
-    the_response.status(HttpStatus.SERVICE_UNAVAILABLE_503);
+    my_log_entries.add(new LogEntry(HttpStatus.SERVICE_UNAVAILABLE_503,
+                                    "service temporarily unavailable on " + 
+                                        endpointName() + ": " + the_body,
+                                    Instant.now()));
+    my_status = HttpStatus.SERVICE_UNAVAILABLE_503;
     my_endpoint_result = Main.GSON.toJson(new Result(the_body));
-    the_response.body(my_endpoint_result);
-    Main.LOGGER.error("server temporarily unavailable 503 on endpoint " + 
-        endpointName());
+    halt(the_response);
+  }
+  
+  /**
+   * Indicate that the endpoint action failed due to a transaction failure.
+   * 
+   * @param the_response The HTTP response.
+   * @param the_body The body of the HTTP response.
+   */
+  public void transactionFailure(final Response the_response, final String the_body) {
+    my_log_entries.add(new LogEntry(HttpStatus.SERVICE_UNAVAILABLE_503,
+                                    "transaction failure on " + endpointName() + ": " +
+                                        the_body,
+                                    Instant.now()));
+    my_status = HttpStatus.SERVICE_UNAVAILABLE_503;
+    the_response.header("Retry-After", RETRY_AFTER_DELAY);
+    my_endpoint_result = Main.GSON.toJson(new Result(the_body));
+    halt(the_response);
   }
 
   /**
@@ -307,9 +372,6 @@ public abstract class AbstractEndpoint implements Endpoint {
   @SuppressWarnings("PMD.ConfusingTernary")
   @Override
   public void before(final Request the_request, final Response the_response) {
-    // Presume everything goes ok.
-    ok(the_response);
-
     // If this is the root endpoint, just return.
     if ("/".equals(endpointName())) {
       return;
@@ -348,6 +410,81 @@ public abstract class AbstractEndpoint implements Endpoint {
   }
   
   /**
+   * Persists, and logs to the system logger, all accumulated log entries for
+   * this endpoint.
+   * 
+   * @param the_request The request (used to get the hostname of the client 
+   * and the authentication data for the log).
+   */
+  private void sendToLogger(final LogEntry the_log_entry) {
+    if (the_log_entry.resultCode() == HttpStatus.OK_200) {
+      Main.LOGGER.info("successful " + the_log_entry.information() + " by " + 
+                       the_log_entry.authenticationData() + " from " + 
+                       the_log_entry.clientHost());
+    } else {
+      Main.LOGGER.error("error " + the_log_entry.resultCode() + " " + 
+                        the_log_entry.information() + " by " + 
+                        the_log_entry.authenticationData() + " from " + 
+                        the_log_entry.clientHost());
+    }
+  }
+
+  private void persistLogEntries(final Request the_request) {
+    LogEntry previous_entry = LogEntryQueries.last();
+    
+    for (final LogEntry entry : my_log_entries) {
+      // create and persist a new hash-chained log entry for each log entry
+      final Administrator admin = Authentication.authenticatedAdministrator(the_request);
+      final String admin_data;
+      if (admin == null) {
+        admin_data = "(unauthenticated)";
+      } else {
+        admin_data = admin.username();
+      }
+      final LogEntry real_entry =
+          new LogEntry(entry.resultCode(), entry.information(), 
+                       admin_data, the_request.host(),
+                       entry.timestamp(), previous_entry);
+      Persistence.save(real_entry);
+      sendToLogger(real_entry);
+      previous_entry = real_entry;
+    }
+  }
+  
+  /**
+   * @returns true if the current set of log entries indicates a successful
+   * request, false otherwise.
+   */
+  private boolean successful() {
+    return !my_log_entries.isEmpty() &&
+           HttpStatus.isSuccess(my_log_entries.get(my_log_entries.size() - 1).resultCode());
+  }
+  
+  /**
+   * Attempts to commit, in a separate transaction, any straggling log entries that
+   * could not be committed due to error.
+   * 
+   * @param the_request The request (used for log data).
+   */
+  private void finalizeLogs(final Request the_request) {
+    int log_commit_retries = 0;
+    if (!my_log_entries.isEmpty() && log_commit_retries < LOG_COMMIT_RETRIES) {
+      try {
+        log_commit_retries = log_commit_retries + 1;
+        Persistence.beginTransaction();
+        persistLogEntries(the_request);
+        Persistence.commitTransaction();
+        my_log_entries.clear();
+      } catch (final PersistenceException e) {
+        Main.LOGGER.error("could not persist log entries for error response after " + 
+                          log_commit_retries + " attempt(s)");
+      }
+    } else if (!my_log_entries.isEmpty()) {
+      Main.LOGGER.error("maximum number of log entry commit attempts reached, aborting");
+    }
+  }
+  
+  /**
    * The afterAfter filter for this endpoint. By default, it attempts to commit 
    * any open transaction (this makes writing endpoint code more straightforward,
    * as the vast majority of endpoints will never have to deal with transactions
@@ -356,23 +493,19 @@ public abstract class AbstractEndpoint implements Endpoint {
   public void afterAfter(final Request the_request, final Response the_response) {
     // try to take the transition for this endpoint in the ASM and save it to the DB
     // note that we do not try to commit when we have an error code in the response
-    if (the_response.status() == HttpStatus.OK_200 && 
+    if (successful() && 
         transitionAndSaveASM(the_response) && 
         Persistence.isTransactionActive()) {
       try {
-        // since the transition finished, let's commit
+        // since the transition finished, let's log all the log entries and commit
+        persistLogEntries(the_request);
         Persistence.commitTransaction();
+        my_log_entries.clear();
       } catch (final PersistenceException e) {
         // this is an internal server error because we don't know what didn't
         // get committed
-        serverError(the_response, 
-                    "could not commit changes to persistent storage");
-        halt(the_response);
-        try {
-          Persistence.rollbackTransaction();
-        } catch (final PersistenceException ex) {
-          Main.LOGGER.error("could not roll back failed transaction: " + ex.getMessage());
-        }
+        transactionFailure(the_response, 
+                           "could not commit changes to persistent storage");
       }
     } else {
       if (Persistence.canTransactionRollback()) {
@@ -386,6 +519,10 @@ public abstract class AbstractEndpoint implements Endpoint {
         Main.LOGGER.error("could not roll back transaction for error response");
       }
     }
+    // if there are still log entries left, we need to persist them and print them
+    finalizeLogs(the_request);
+    the_response.body(my_endpoint_result);
+    the_response.status(my_status);
   }
   
   /**

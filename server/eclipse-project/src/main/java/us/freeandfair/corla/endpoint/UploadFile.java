@@ -10,21 +10,17 @@
 
 package us.freeandfair.corla.endpoint;
 
-import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.UPLOAD_CVRS_EVENT;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.sql.Blob;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.OptionalLong;
 
 import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletRequest;
@@ -40,29 +36,23 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.crypto.HashChecker;
-import us.freeandfair.corla.csv.CVRExportParser;
-import us.freeandfair.corla.csv.DominionCVRExportParser;
-import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.County;
-import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.model.UploadedFile.FileStatus;
 import us.freeandfair.corla.model.UploadedFile.HashStatus;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.CastVoteRecordQueries;
 import us.freeandfair.corla.util.FileHelper;
 import us.freeandfair.corla.util.SparkHelper;
 
 /**
- * The "CVR upload" endpoint.
+ * The "upload file" endpoint.
  * 
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
 @SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.ExcessiveImports"})
-public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
+public class UploadFile extends AbstractEndpoint {
   /**
    * The upload buffer size, in bytes.
    */
@@ -86,17 +76,19 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
    */
   @Override
   public String endpointName() {
-    return "/upload-cvr-export";
-  }
-  
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected ASMEvent endpointEvent() {
-    return UPLOAD_CVRS_EVENT;
+    return "/upload-file";
   }
 
+  /**
+   * This endpoint requires county authorization.
+   * 
+   * @return COUNTY
+   */
+  @Override
+  public AuthorizationType requiredAuthorization() {
+    return AuthorizationType.COUNTY;
+  }
+  
   /**
    * Attempts to save the specified file in the database.
    * 
@@ -129,34 +121,12 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
                                 the_info.my_uploaded_hash,
                                 hash_status, blob);
       Persistence.saveOrUpdate(result);
-      Persistence.flush();
+      session.flush();
     } catch (final PersistenceException | IOException e) {
       badDataType(the_response, "could not persist file of size " + 
                                 the_info.my_file.length());
     }
     return result;
-  }
-
-  /**
-   * Updates the appropriate county dashboard to reflect a new CVR export upload.
-   * @param the_response The response object (for error reporting).
-   * @param the_county_id The county ID.
-   * @param the_timestamp The timestamp.
-   */
-  private void updateCountyDashboard(final Response the_response, 
-                                     final Long the_county_id, 
-                                     final Instant the_timestamp) {
-    final CountyDashboard cdb = Persistence.getByID(the_county_id, CountyDashboard.class);
-    if (cdb == null) {
-      serverError(the_response, "could not locate county dashboard");
-    } else {
-      cdb.setCVRUploadTimestamp(the_timestamp);
-      try {
-        Persistence.flush();
-      } catch (final PersistenceException e) {
-        serverError(the_response, "could not update county dashboard");
-      }
-    }
   }
   
   /**
@@ -175,7 +145,7 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
       final HttpServletRequest raw = SparkHelper.getRaw(the_request);
       the_info.my_ok = ServletFileUpload.isMultipartContent(raw);
 
-      Main.LOGGER.info("handling CVR upload request from " + raw.getRemoteHost());
+      Main.LOGGER.info("handling file upload request from " + raw.getRemoteHost());
       if (the_info.my_ok) {
         final ServletFileUpload upload = new ServletFileUpload();
         final FileItemIterator fii = upload.getItemIterator(raw);
@@ -186,7 +156,7 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
 
           if (item.isFormField()) {
             the_info.my_form_fields.put(item.getFieldName(), Streams.asString(stream));
-          } else if ("cvr_file".equals(name)) {
+          } else if ("file".equals(name)) {
             // save the file
             the_info.my_filename = item.getName();
             the_info.my_file = File.createTempFile("upload", ".csv");
@@ -214,63 +184,6 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
   }
   
   /**
-   * Parses an uploaded CVR export and attempts to persist it to the database.
-   * 
-   * @param the_response The response (for error reporting).
-   * @param the_county The county for this file.
-   * @param the_info The upload information to use and update.
-   */
-  // the CSV parser can throw arbitrary runtime exceptions, which we must catch
-  @SuppressWarnings("PMD.AvoidCatchingGenericException")
-  private void parseAndPersistFile(final Response the_response,
-                                   final County the_county,
-                                   final UploadInformation the_info) {
-    if (the_info.my_uploaded_hash == null || the_info.my_file == null) {
-      invariantViolation(the_response, "Bad Request");
-      the_info.my_ok = false;
-    } else if (the_info.my_uploaded_hash.equals(the_info.my_computed_hash)) {
-      Main.LOGGER.info("hash matched for uploaded file");
-    } else {
-      // NOTE: the only reason this works right now and results in us storing
-      // the file anyway is that we're committing our transaction in 
-      // attemptFilePersistence(); otherwise, this failure response would
-      // abort the transaction and leave the server state unchanged.
-      badDataContents(the_response, "hash mismatch");
-      the_info.my_ok = false;
-      attemptFilePersistence(the_response, the_info, the_county.id());
-      Main.LOGGER.info("hash did not match for uploaded file");
-    }
-
-    if (the_info.my_ok) {
-      try (InputStream cvr_is = new FileInputStream(the_info.my_file)) {
-        final InputStreamReader cvr_isr = new InputStreamReader(cvr_is, "UTF-8");
-        final CVRExportParser parser =
-            new DominionCVRExportParser(cvr_isr, the_county, the_info.my_timestamp);
-        if (parser.parse()) {
-          Main.LOGGER.info(parser.recordCount().getAsInt() + " CVRs parsed from " + 
-                           the_county + " county upload file");
-          final OptionalLong count = CastVoteRecordQueries.countMatching(RecordType.UPLOADED);
-          if (count.isPresent()) {
-            Main.LOGGER.info(count.getAsLong() + " uploaded CVRs in storage");
-          }
-          updateCountyDashboard(the_response, the_county.id(), 
-                                the_info.my_timestamp);
-          attemptFilePersistence(the_response, the_info, the_county.id());
-          ok(the_response, "file successfully uploaded and hash matched");
-        } else {
-          Main.LOGGER.info("could not parse malformed CVR export file");
-          badDataContents(the_response, "Malformed CVR Export File");
-          the_info.my_ok = false;
-        }
-      } catch (final RuntimeException | IOException e) {
-        Main.LOGGER.info("could not parse malformed CVR export file: " + e);
-        badDataContents(the_response, "Malformed CVR Export File");
-        the_info.my_ok = false;
-      }
-    }
-  }
-
-  /**
    * {@inheritDoc}
    */
   @Override
@@ -296,16 +209,14 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
       info.my_computed_hash = HashChecker.hashFile(info.my_file);
       info.my_uploaded_hash = 
           info.my_form_fields.get("hash").toUpperCase(Locale.US).trim();
-      parseAndPersistFile(the_response, county, info);
+      attemptFilePersistence(the_response, info, county.id());
     }
 
     // delete the temp file, if it exists
 
     if (info.my_file != null) {
       try {
-        if (info.my_file.delete()) {
-          Main.LOGGER.info("Deleted temp file " + info.my_file);
-        } else {
+        if (!info.my_file.delete()) {
           Main.LOGGER.error("Unable to delete temp file " + info.my_file);
         }
       } catch (final SecurityException e) {
@@ -313,15 +224,6 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
       }
     }
     return my_endpoint_result;
-  }
-
-  /**
-   * This endpoint requires county authorization.
-   * 
-   * @return COUNTY
-   */
-  public AuthorizationType requiredAuthorization() {
-    return AuthorizationType.COUNTY;
   }
   
   /**

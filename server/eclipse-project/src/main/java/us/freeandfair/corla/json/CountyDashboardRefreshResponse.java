@@ -30,7 +30,7 @@ import us.freeandfair.corla.model.CountyDashboard.CountyStatus;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.model.Elector;
 import us.freeandfair.corla.model.UploadedFile;
-import us.freeandfair.corla.model.UploadedFile.FileType;
+import us.freeandfair.corla.model.UploadedFile.FileStatus;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.UploadedFileQueries;
 import us.freeandfair.corla.util.SuppressFBWarnings;
@@ -217,10 +217,10 @@ public class CountyDashboardRefreshResponse {
 
     final String manifest_digest = hashForFile(county_id, 
                                                the_dashboard.manifestUploadTimestamp(),
-                                               FileType.BALLOT_MANIFEST);
+                                               FileStatus.IMPORTED_AS_BALLOT_MANIFEST);
     final String cvr_digest = hashForFile(county_id, 
                                           the_dashboard.cvrUploadTimestamp(), 
-                                          FileType.CAST_VOTE_RECORD_EXPORT);
+                                          FileStatus.IMPORTED_AS_CVR_EXPORT);
     
     // contests
     final Set<Long> contests = new HashSet<Long>();
@@ -280,10 +280,10 @@ public class CountyDashboardRefreshResponse {
 
     final String manifest_digest = hashForFile(county_id, 
                                                the_dashboard.manifestUploadTimestamp(),
-                                               FileType.BALLOT_MANIFEST);
+                                               FileStatus.IMPORTED_AS_BALLOT_MANIFEST);
     final String cvr_digest = hashForFile(county_id, 
                                           the_dashboard.cvrUploadTimestamp(), 
-                                          FileType.CAST_VOTE_RECORD_EXPORT);
+                                          FileStatus.IMPORTED_AS_CVR_EXPORT);
 
     return new CountyDashboardRefreshResponse(county_id, 
                                               the_dashboard.status(),
@@ -314,7 +314,7 @@ public class CountyDashboardRefreshResponse {
    */
   private static String hashForFile(final Long the_id, 
                                     final Instant the_timestamp, 
-                                    final FileType the_type) {
+                                    final FileStatus the_type) {
     String result = null;
     final UploadedFile file = UploadedFileQueries.matching(the_id, the_timestamp, the_type);
     if (file != null) {

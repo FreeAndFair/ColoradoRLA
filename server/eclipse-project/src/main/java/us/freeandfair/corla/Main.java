@@ -11,6 +11,8 @@
 
 package us.freeandfair.corla;
 
+import static spark.Spark.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -129,21 +131,11 @@ public final class Main {
       new GsonBuilder().
       setFieldNamingStrategy(new FreeAndFairNamingStrategy()).
       setPrettyPrinting().create();
-    
-  /**
-   * The "no spark" constant.
-   */
-  private static final Service NO_SPARK = null;
   
   /**
    * The properties loaded from the properties file.
    */
   private final Properties my_properties;
-  
-  /**
-   * Our Spark service.
-   */
-  private Service my_spark = NO_SPARK;
   
   // Constructors
 
@@ -237,25 +229,25 @@ public final class Main {
       final CORSFilter cors_and_before = 
           new CORSFilter(my_properties, (the_request, the_response) ->
           e.before(the_request, the_response));
-      my_spark.before(e.endpointName(), cors_and_before);
-      my_spark.after(e.endpointName(), (the_request, the_response) -> 
+      before(e.endpointName(), cors_and_before);
+      after(e.endpointName(), (the_request, the_response) -> 
           e.after(the_request, the_response));
-      my_spark.afterAfter(e.endpointName(), (the_request, the_response) -> 
+      afterAfter(e.endpointName(), (the_request, the_response) -> 
           e.afterAfter(the_request, the_response));
       switch (e.endpointType()) {
         case GET:
-          my_spark.get(e.endpointName(), (the_request, the_response) -> 
-                       e.endpoint(the_request, the_response));
+          get(e.endpointName(), (the_request, the_response) -> 
+                  e.endpoint(the_request, the_response));
           break;
          
         case PUT:
-          my_spark.put(e.endpointName(), (the_request, the_response) ->
-                       e.endpoint(the_request, the_response));
+          put(e.endpointName(), (the_request, the_response) ->
+                  e.endpoint(the_request, the_response));
           break;
           
         case POST:
-          my_spark.post(e.endpointName(), (the_request, the_response) ->
-                        e.endpoint(the_request, the_response));
+          post(e.endpointName(), (the_request, the_response) ->
+                   e.endpoint(the_request, the_response));
           break;
           
         default:
@@ -412,14 +404,13 @@ public final class Main {
     // if we have a keystore, everything is on SSL except the redirect; otherwise,
     // everything is in plaintext
     
-    my_spark = Service.ignite();
     if (keystore_path == null) {
-      my_spark.port(http_port);
+      port(http_port);
     } else {
-      my_spark.port(https_port);
+      port(https_port);
       final String keystore_password = 
           my_properties.getProperty("keystore_password", null);
-      my_spark.secure(keystore_path, keystore_password, null, null);
+      secure(keystore_path, keystore_password, null, null);
 
       // redirect everything
       final Service redirect = Service.ignite();
@@ -429,7 +420,7 @@ public final class Main {
     }
     
     // static files location
-    my_spark.staticFileLocation("/us/freeandfair/corla/static");
+    staticFileLocation("/us/freeandfair/corla/static");
 
     // start the endpoints
     activateEndpoints();
