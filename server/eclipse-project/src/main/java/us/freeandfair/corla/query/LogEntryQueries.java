@@ -63,13 +63,18 @@ public final class LogEntryQueries {
       sq.select(cb.max(s_root.get("my_id")));
       cq.where(cb.equal(c_root.get("my_id"), sq));
       final TypedQuery<LogEntry> query = s.createQuery(cq);
+      // there should never be more than one result for max, but there could be 
+      // zero, so let's be safe
       final List<LogEntry> query_results = query.getResultList();
       // if there's exactly one result, return that
       if (query_results.size() == 1) {
         result = query_results.get(0);
-      } 
+      } else if (query_results.size() > 1) {
+        // there should never be more than one result
+        throw new PersistenceException("more than one max unique log entry id");
+      }
     } catch (final PersistenceException e) {
-      Main.LOGGER.error("could not query database for log entry");
+      Main.LOGGER.error("could not query database for log entry: " + e.getMessage());
     }
     if (result == null) {
       Main.LOGGER.debug("found no log entries");
