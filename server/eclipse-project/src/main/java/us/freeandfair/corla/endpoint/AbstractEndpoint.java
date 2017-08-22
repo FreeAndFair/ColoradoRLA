@@ -58,6 +58,11 @@ public abstract class AbstractEndpoint implements Endpoint {
   public static final boolean DISABLE_ASM = false;
   
   /**
+   * The number of times to retry committing logs for failed transactions.
+   */
+  public static final int LOG_COMMIT_RETRIES = 5;
+  
+  /**
    * The ASM for this endpoint.
    */
   protected AbstractStateMachine my_asm;
@@ -325,9 +330,6 @@ public abstract class AbstractEndpoint implements Endpoint {
   @SuppressWarnings("PMD.ConfusingTernary")
   @Override
   public void before(final Request the_request, final Response the_response) {
-    // Presume everything goes ok.
-    ok(the_response);
-
     // If this is the root endpoint, just return.
     if ("/".equals(endpointName())) {
       return;
@@ -374,7 +376,7 @@ public abstract class AbstractEndpoint implements Endpoint {
    */
   private void sendToLogger(final LogEntry the_log_entry) {
     if (the_log_entry.resultCode() == HttpStatus.OK_200) {
-      Main.LOGGER.info("successful operation " + the_log_entry.information() + " by " + 
+      Main.LOGGER.info("successful " + the_log_entry.information() + " by " + 
                        the_log_entry.authenticationData() + " from " + 
                        the_log_entry.clientHost());
     } else {
@@ -422,6 +424,30 @@ public abstract class AbstractEndpoint implements Endpoint {
   }
   
   /**
+   * Attempts to commit, in a separate transaction, any straggling log entries that
+   * could not be committed due to error.
+   * 
+   * @param the_request The request (used for log data).
+   */
+  private void finalizeLogs(final Request the_request) {
+    int log_commit_retries = 0;
+    if (!my_log_entries.isEmpty() && log_commit_retries < LOG_COMMIT_RETRIES) {
+      try {
+        log_commit_retries = log_commit_retries + 1;
+        Persistence.beginTransaction();
+        persistLogEntries(the_request);
+        Persistence.commitTransaction();
+        my_log_entries.clear();
+      } catch (final PersistenceException e) {
+        Main.LOGGER.error("could not persist log entries for error response after " + 
+                          log_commit_retries + " attempt(s)");
+      }
+    } else if (!my_log_entries.isEmpty()) {
+      Main.LOGGER.error("maximum number of log entry commit attempts reached, aborting");
+    }
+  }
+  
+  /**
    * The afterAfter filter for this endpoint. By default, it attempts to commit 
    * any open transaction (this makes writing endpoint code more straightforward,
    * as the vast majority of endpoints will never have to deal with transactions
@@ -457,15 +483,7 @@ public abstract class AbstractEndpoint implements Endpoint {
       }
     }
     // if there are still log entries left, we need to persist them and print them
-    if (!my_log_entries.isEmpty()) {
-      try {
-        Persistence.beginTransaction();
-        persistLogEntries(the_request);
-        Persistence.commitTransaction();
-      } catch (final PersistenceException e) {
-        Main.LOGGER.error("could not persist log entries for error response");
-      }
-    }
+    finalizeLogs(the_request);
   }
   
   /**
