@@ -10,6 +10,7 @@ import debugSaga from './debugSaga';
 import dosLoginSaga from './dosLoginSaga';
 import dosPollSaga from './dosPollSaga';
 import fileUploadSaga from './fileUploadSaga';
+import logoutSaga from './logoutSaga';
 import uploadAcvrOkSaga from './uploadAcvrOkSaga';
 
 
@@ -22,6 +23,7 @@ export default function* rootSaga() {
         dosLoginSaga(),
         dosPollSaga(),
         fileUploadSaga(),
+        logoutSaga(),
         uploadAcvrOkSaga(),
     ];
 

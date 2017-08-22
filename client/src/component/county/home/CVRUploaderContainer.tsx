@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
 
 import CVRUploader from './CVRUploader';
 
@@ -16,7 +15,7 @@ const UploadedCvrExport = ({ hash }: any) => (
 
 class CVRUploaderContainer extends React.Component<any, any> {
     public render() {
-        const { auditStarted, county, uploadCvrExport } = this.props;
+        const { auditStarted, county } = this.props;
         const forms: any = {};
 
         const upload = () => {
@@ -38,11 +37,5 @@ const mapStateToProps = ({ county }: any) => ({
     county,
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
-    uploadCvrExport,
-}, dispatch);
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(CVRUploaderContainer);
+export default connect(mapStateToProps)(CVRUploaderContainer);

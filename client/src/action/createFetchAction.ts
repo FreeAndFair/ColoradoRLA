@@ -1,37 +1,49 @@
-import { Dispatch } from 'redux';
+import action from '.';
 
 
-const createFetchAction = ({
-    failType,
-    networkFailType,
-    okType,
-    sendType,
-    url,
-}: any) => () => {
-    return (dispatch: Dispatch<any>) => {
-        dispatch({ type: sendType });
+interface CreateFetchConfig {
+    failType: string;
+    networkFailType: string;
+    okType: string;
+    sendType: string;
+    url: string;
+}
+
+
+function createFetchAction(config: CreateFetchConfig) {
+    const {
+        failType,
+        networkFailType,
+        okType,
+        sendType,
+        url,
+    } = config;
+
+    async function fetchAction() {
+        action(sendType);
 
         const init: any = {
             credentials: 'include',
             method: 'get',
         };
 
-        fetch(url, init)
-            .then(r => {
-                if (!r.ok) {
-                    dispatch({ type: failType });
-                    return;
-                }
+        try {
+            const r = await fetch(url, init);
 
-                r.json().then((data: any) => {
-                    dispatch({ type: okType, data });
-                });
-            })
-            .catch(() => {
-                dispatch({ type: networkFailType });
-            });
-    };
-};
+            if (!r.ok) {
+                action(failType);
+            }
+
+            const data = await r.json();
+
+            action(okType, data);
+        } catch {
+            action(networkFailType);
+        }
+    }
+
+    return fetchAction;
+}
 
 
 export default createFetchAction;

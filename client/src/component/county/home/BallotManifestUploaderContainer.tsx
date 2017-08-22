@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
 
 import BallotManifestUploader from './BallotManifestUploader';
 
@@ -17,7 +16,7 @@ const UploadedBallotManifest = ({ hash }: any) => (
 
 class BallotManifestUploaderContainer extends React.Component<any, any> {
     public render() {
-        const { auditStarted, county, uploadBallotManifest } = this.props;
+        const { auditStarted, county } = this.props;
         const forms: any = {};
 
         const upload = () => {
@@ -39,11 +38,4 @@ const mapStateToProps = ({ county }: any) => ({
     county,
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
-    uploadBallotManifest,
-}, dispatch);
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(BallotManifestUploaderContainer);
+export default connect(mapStateToProps)(BallotManifestUploaderContainer);

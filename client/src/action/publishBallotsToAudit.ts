@@ -1,13 +1,10 @@
-import { Dispatch } from 'redux';
-
 import { endpoint } from '../config';
 
 import createSubmitAction from './createSubmitAction';
 
-import { format } from '../adapter/setRiskLimit';
-
 
 const url = endpoint('ballots-to-audit/publish');
+
 
 export default createSubmitAction({
     failType: 'PUBLISH_BALLOTS_TO_AUDIT_FAIL',

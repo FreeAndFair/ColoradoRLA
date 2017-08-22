@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
 
 import AuditReviewPage from './AuditReviewPage';
 
@@ -9,7 +8,7 @@ import publishBallotsToAudit from '../../../action/publishBallotsToAudit';
 
 class AuditBallotListContainer extends React.Component<any, any> {
     public render() {
-        const { history, publishBallotsToAudit, sos } = this.props;
+        const { history, sos } = this.props;
 
         const props = {
             back: () => history.push('/sos/audit/seed'),
@@ -22,13 +21,7 @@ class AuditBallotListContainer extends React.Component<any, any> {
     }
 }
 
+
 const mapStateToProps = ({ sos }: any) => ({ sos });
 
-const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
-    publishBallotsToAudit,
-}, dispatch);
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(AuditBallotListContainer);
+export default connect(mapStateToProps)(AuditBallotListContainer);

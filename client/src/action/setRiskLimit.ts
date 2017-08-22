@@ -1,5 +1,3 @@
-import { Dispatch } from 'redux';
-
 import { endpoint } from '../config';
 
 import createSubmitAction from './createSubmitAction';

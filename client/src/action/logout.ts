@@ -1,4 +1,4 @@
-import { Dispatch } from 'redux';
+import action from '.';
 
 
-export default (dispatch: Dispatch<any>) => ({ type: 'LOGOUT' });
+export default () => action('LOGOUT');

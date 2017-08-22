@@ -1,10 +1,6 @@
-import { Dispatch } from 'redux';
-
 import { endpoint } from '../config';
 
 import createSubmitAction from './createSubmitAction';
-
-import { format } from '../adapter/uploadAcvr';
 
 
 const url = endpoint('ballot-not-found');

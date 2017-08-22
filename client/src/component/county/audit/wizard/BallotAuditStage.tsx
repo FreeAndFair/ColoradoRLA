@@ -6,6 +6,7 @@ import { Checkbox, EditableText, MenuDivider, Radio, RadioGroup } from '@bluepri
 
 import BackButton from './BackButton';
 
+import ballotNotFound from '../../../../action/ballotNotFound';
 import countyFetchCvr from '../../../../action/countyFetchCvr';
 
 
@@ -177,7 +178,6 @@ const BallotAuditForm = (props: any) => {
 
 const BallotAuditStage = (props: any) => {
     const {
-        ballotNotFound,
         county,
         nextStage,
         prevStage,

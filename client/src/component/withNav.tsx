@@ -1,6 +1,4 @@
 import * as React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
 
 import { Popover, Position } from '@blueprintjs/core';
 import { Link } from 'react-router-dom';
@@ -46,39 +44,26 @@ const ResetDatabaseButton = ({ reset }: any) => (
 
 
 export default function withNav(Menu: any, path: any): any {
-    class Nav extends React.Component<any, any> {
-        public render() {
-            const logout = () => window.location.replace('/login');
+    const resetSection = path === '/sos'
+                       ? <ResetDatabaseButton reset={ resetDatabase } />
+                       : <div />;
 
-            const resetSection = path === '/sos'
-                               ? <ResetDatabaseButton reset={ this.props.resetDatabase } />
-                               : <div />;
+    return () => (
+        <nav className='pt-navbar'>
+            <div className='pt-navbar-group pt-align-left'>
+                <Popover content={ <Menu /> } position={ Position.RIGHT_TOP }>
+                    <MenuButton />
+                </Popover>
+                <Heading />
+            </div>
+            <div className='pt-navbar-group pt-align-right'>
+                { resetSection }
+                <Divider />
+                <HomeButton path={ path } />
+                <Divider />
+                <LogoutButton logout={ logout }/>
+            </div>
 
-            return (
-                <nav className='pt-navbar'>
-                    <div className='pt-navbar-group pt-align-left'>
-                        <Popover content={ <Menu /> } position={ Position.RIGHT_TOP }>
-                            <MenuButton />
-                        </Popover>
-                        <Heading />
-                    </div>
-                    <div className='pt-navbar-group pt-align-right'>
-                        { resetSection }
-                        <Divider />
-                        <HomeButton path={ path } />
-                        <Divider />
-                        <LogoutButton logout={ logout }/>
-                    </div>
-
-                </nav>
-            );
-        }
-    }
-
-    const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
-        logout,
-        resetDatabase,
-    }, dispatch);
-
-    return connect(null, mapDispatchToProps)(Nav);
+        </nav>
+    );
 }

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
 
 import SelectContestsPage from './SelectContestsPage';
 
@@ -13,7 +12,6 @@ class SelectContestsPageContainer extends React.Component<any, any> {
             auditedContests,
             contests,
             history,
-            selectContestsForAudit,
             sos,
         } = this.props;
 
@@ -29,18 +27,11 @@ class SelectContestsPageContainer extends React.Component<any, any> {
     }
 }
 
+
 const mapStateToProps = ({ sos }: any) => ({
     auditedContests: sos.auditedContests,
     contests: sos.contests,
     sos,
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
-    selectContestsForAudit,
-}, dispatch);
-
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(SelectContestsPageContainer);
+export default connect(mapStateToProps)(SelectContestsPageContainer);

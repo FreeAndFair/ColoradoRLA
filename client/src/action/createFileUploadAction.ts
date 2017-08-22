@@ -1,8 +1,9 @@
 import action from '.';
 
 
-interface CreateSubmitConfig {
-    createData?: (sent: any, received: any) => any;
+interface FileUploadActionConfig {
+    createFormData: (...args: any[]) => FormData;
+    createSent: (...args: any[]) => any;
     failType: string;
     networkFailType: string;
     okType: string;
@@ -11,12 +12,10 @@ interface CreateSubmitConfig {
 }
 
 
-function defaultCreateData(sent: any, received: any): any {
-    return { received, sent };
-}
-
-function createSubmitAction(config: CreateSubmitConfig) {
+function createFileUploadAction(config: FileUploadActionConfig) {
     const {
+        createFormData,
+        createSent,
         failType,
         networkFailType,
         okType,
@@ -24,13 +23,13 @@ function createSubmitAction(config: CreateSubmitConfig) {
         url,
     } = config;
 
-    const createData = config.createData || defaultCreateData;
-
-    async function submitAction(sent: any) {
+    async function uploadAction(...args: any[]) {
         action(sendType);
 
+        const formData = createFormData(...args);
+
         const init: any = {
-            body: JSON.stringify(sent),
+            body: formData,
             credentials: 'include',
             method: 'post',
         };
@@ -43,10 +42,9 @@ function createSubmitAction(config: CreateSubmitConfig) {
                 return;
             }
 
-            const received = await r.json();
-            const data = createData(sent, received);
+            const sent = createSent(...args);
 
-            action(okType, data);
+            action(okType, { sent });
         } catch (e) {
             if (e.message === 'Failed to fetch') {
                 action(networkFailType);
@@ -58,8 +56,8 @@ function createSubmitAction(config: CreateSubmitConfig) {
         }
     }
 
-    return submitAction;
+    return uploadAction;
 }
 
 
-export default createSubmitAction;
+export default createFileUploadAction;
