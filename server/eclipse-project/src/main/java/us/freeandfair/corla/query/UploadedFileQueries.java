@@ -108,7 +108,7 @@ public final class UploadedFileQueries {
       final List<Predicate> conjuncts = new ArrayList<Predicate>();
       conjuncts.add(cb.equal(root.get("my_county_id"), the_county_id));
       conjuncts.add(cb.equal(root.get("my_timestamp"), the_timestamp));
-      conjuncts.add(cb.equal(root.get("my_type"), the_status));
+      conjuncts.add(cb.equal(root.get("my_status"), the_status));
       cq.select(root).where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
       final TypedQuery<UploadedFile> query = s.createQuery(cq);
       final List<UploadedFile> query_results = query.getResultList();
@@ -121,7 +121,7 @@ public final class UploadedFileQueries {
     }
     if (result == null) {
       Main.LOGGER.debug("found no uploaded file for county " + the_county_id + 
-                        ", timestamp " + the_timestamp + ", type " + 
+                        ", timestamp " + the_timestamp + ", status " + 
                         the_status);
     } else {
       Main.LOGGER.debug("found uploaded file " + result);
