@@ -1,6 +1,6 @@
 import { endpoint } from '../config';
 
-import createSubmitAction from './next/createSubmitAction';
+import createSubmitAction from './createSubmitAction';
 
 import { format } from '../adapter/uploadAcvr';
 

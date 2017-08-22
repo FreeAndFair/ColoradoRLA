@@ -1,6 +1,6 @@
 import { endpoint } from '../config';
 
-import createFetchAction from './next/createFetchAction';
+import createFetchAction from './createFetchAction';
 
 
 export default (id: number) => {

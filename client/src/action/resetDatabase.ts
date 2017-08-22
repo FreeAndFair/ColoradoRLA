@@ -1,6 +1,6 @@
 import { endpoint } from '../config';
 
-import createSubmitAction from './next/createSubmitAction';
+import createSubmitAction from './createSubmitAction';
 
 
 const url = endpoint('reset-database');

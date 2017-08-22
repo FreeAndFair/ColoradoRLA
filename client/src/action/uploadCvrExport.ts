@@ -1,6 +1,6 @@
 import { endpoint } from '../config';
 
-import createFileUploadAction from './next/createFileUploadAction';
+import createFileUploadAction from './createFileUploadAction';
 
 
 const url = endpoint('upload-cvr-export');
