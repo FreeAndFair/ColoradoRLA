@@ -1,8 +1,6 @@
-import { Dispatch } from 'redux';
-
 import { endpoint } from '../config';
 
-import createSubmitAction from './createSubmitAction';
+import createSubmitAction from './next/createSubmitAction';
 
 import { format } from '../adapter/contestsForAudit';
 
