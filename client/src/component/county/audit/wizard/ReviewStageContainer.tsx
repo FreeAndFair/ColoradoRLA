@@ -22,7 +22,6 @@ const mapStateToProps = ({ county }: any) => {
 };
 
 const mapDispatchToProps = (dispatch: any) => bindActionCreators({
-    selectNextBallot: () => ({ type: 'SELECT_NEXT_BALLOT' }),
     uploadAcvr,
 }, dispatch);
 
