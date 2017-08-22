@@ -2316,15 +2316,37 @@ BEGIN
                                      [department_of_state_dashboard, bool] =
 %%% In order to authenticate a state administrator, first we have to
 %%% authenticate their username/password credentials.
-   LET new_a_s = traditional_authenticate(a_s, a, corla_server) IN
-                                   (d, true)
+   LET (new_a_s, t_success) =
+     traditional_authenticate(a_s, a, corla_server, tfa) IN
+%%% Then, we that authentication succeeded, we must authenticate the
+%%% state administrator using their second factor credentials.
+     IF t_success
+     THEN LET (new_s_f_s, tf_success) =
+                second_factor_authenticate(s_f_s, a, corla_server, tfa) IN
+%%% If the second factor authentication succeeds, then authentication
+%%% succeeded overall, so we update the state of the dashboard and
+%%% indicate success. 
+       IF tf_success THEN (d, true) ELSE (d, false) ENDIF
+     ELSE
+%%% Otherwise, we fail and the dashboard state does not change.
+       (d, false)
+     ENDIF
 %%% Second, we must be able to authenticate a county administrator to
-%%% the County Dashboard.
+%%% the County Dashboard. This authentication algorithm is no
+%%% different from the Department of State algorithm.
   authenticate_county_administrator(d: county_dashboard,
                                     a: county_administrator,
                                     tfa: two_factor_authentication):
                                      [county_dashboard, bool] =
-                                   (d, true)
+   LET (new_a_s, t_success) =
+     traditional_authenticate(a_s, a, corla_server, tfa) IN
+     IF t_success
+     THEN LET (new_s_f_s, tf_success) =
+                second_factor_authenticate(s_f_s, a, corla_server, tfa) IN
+       IF tf_success THEN (d, true) ELSE (d, false) ENDIF
+     ELSE
+       (d, false)
+     ENDIF
 %%% Likewise, from the user point of view, we must be able to log an
 %%% administrator out.
   logout_state_administrator:
