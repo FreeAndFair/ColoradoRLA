@@ -148,10 +148,6 @@ public class RLAAlgorithm {
    * @param the_cvr_count the total number of CVRs in a given county.
    */
   public List<Long> computeBallotOrder(final String the_seed) {
-    // the number of CVRs for the_contest_to_audit - note that the sequence
-    // generator generates a sequence of the numbers minimum ... maximum 
-    // inclusive, so we subtract 1 from the number of CVRs to give it the
-    // correct range for our actual list of CVRs (indexed from 0).
     final OptionalLong count = 
         CastVoteRecordQueries.countMatching(my_dashboard.cvrUploadTimestamp(), 
                                             my_dashboard.id(),
@@ -163,6 +159,10 @@ public class RLAAlgorithm {
     final boolean with_replacement = true;
     // assuming that CVRs are indexed from 0
     final int minimum = 0;
+    // the number of CVRs for the_contest_to_audit - note that the sequence
+    // generator generates a sequence of the numbers minimum ... maximum 
+    // inclusive, so we subtract 1 from the number of CVRs to give it the
+    // correct range for our actual list of CVRs (indexed from 0).
     final int maximum = (int) count.getAsLong() - 1;
 
     final PseudoRandomNumberGenerator prng = 

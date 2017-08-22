@@ -395,4 +395,3 @@ public class DominionCVRExportParser implements CVRExportParser {
     return my_record_count;
   }
 }
- 
