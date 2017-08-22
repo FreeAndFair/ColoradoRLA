@@ -46,7 +46,7 @@ import us.freeandfair.corla.util.FileHelper;
 import us.freeandfair.corla.util.SparkHelper;
 
 /**
- * The "CVR upload" endpoint.
+ * The "upload file" endpoint.
  * 
  * @author Daniel M. Zimmerman
  * @version 0.0.1
