@@ -5,7 +5,8 @@ import { EditableText, Radio, RadioGroup } from '@blueprintjs/core';
 
 class AuditBoardSignInForm extends React.Component<any, any> {
     public state = {
-        name: '',
+        firstName: '',
+        lastName: '',
         party: '',
     };
 
@@ -14,14 +15,23 @@ class AuditBoardSignInForm extends React.Component<any, any> {
 
         forms.auditBoard[boardMemberIndex] = this.state;
 
-        const { name, party } = this.state;
+        const { firstName, lastName, party } = this.state;
 
         return (
             <div>
                 <h3>Audit Board Member</h3>
                 <div className='pt-card'>
-                    <label>Full Name:
-                        <EditableText value={ name } onChange={ this.onNameChange } />
+                    <label>
+                        First Name:
+                        <EditableText
+                            className='pt-input'
+                            value={ firstName }
+                            onChange={ this.onFirstNameChange } />
+                        Last Name:
+                        <EditableText
+                            className='pt-input'
+                            value={ lastName }
+                            onChange={ this.onLastNameChange } />
                     </label>
                 </div>
                 <div className='pt-card'>
@@ -52,10 +62,18 @@ class AuditBoardSignInForm extends React.Component<any, any> {
         );
     }
 
-    private onNameChange = (name: string) => {
+    private onFirstNameChange = (name: string) => {
         const s = { ...this.state };
 
-        s.name = name;
+        s.firstName = name
+
+        this.setState(s);
+    }
+
+    private onLastNameChange = (name: string) => {
+        const s = { ...this.state };
+
+        s.lastName = name;
 
         this.setState(s);
     }
