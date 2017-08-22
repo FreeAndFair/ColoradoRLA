@@ -5,6 +5,9 @@ set -eux -o pipefail
 # Uncomment to single-step thru this bash script
 # trap read debug
 
+echo "Have you applied any necessary changes for deployment? C-c if not."
+read
+
 export TRAVIS_BUILD_DIR=`git rev-parse --show-toplevel`
 export CLIENT_DIR="${TRAVIS_BUILD_DIR}/client"
 export SERVER_DIR="${TRAVIS_BUILD_DIR}/server/eclipse-project"
