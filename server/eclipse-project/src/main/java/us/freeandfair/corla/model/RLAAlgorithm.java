@@ -146,8 +146,9 @@ public class RLAAlgorithm {
    * 
    * @param the_seed the seed provided by the Department of State.
    * @param the_cvr_count the total number of CVRs in a given county.
+   * @return the ballot order.
    */
-  public List<Long> computeBallotOrder(final String the_seed) {
+  public List<CastVoteRecord> computeBallotOrder(final String the_seed) {
     final OptionalLong count = 
         CastVoteRecordQueries.countMatching(my_dashboard.cvrUploadTimestamp(), 
                                             my_dashboard.id(),
@@ -174,10 +175,10 @@ public class RLAAlgorithm {
         CastVoteRecordQueries.idsForMatching(my_dashboard.cvrUploadTimestamp(), 
                                              my_dashboard.id(),
                                              RecordType.UPLOADED);
-    final List<Long> result = new ArrayList<>();
+    final List<CastVoteRecord> result = new ArrayList<>();
     
     for (final int index : list_of_cvrs_to_audit) {
-      result.add(list_of_cvr_ids.get(index));
+      result.add(Persistence.getByID(list_of_cvr_ids.get(index), CastVoteRecord.class));
     }
     
     return result;
@@ -332,13 +333,11 @@ public class RLAAlgorithm {
     
     int count = 0;
     for (final CVRAuditInfo cvrai : audit_info) {
-      if (cvrai.acvrID() == null) {
+      if (cvrai.acvr() == null) {
         break;
       } else {
-        final CastVoteRecord cvr = 
-            Persistence.getByID(cvrai.cvrID(), CastVoteRecord.class);
-        final CastVoteRecord acvr = 
-            Persistence.getByID(cvrai.cvrID(), CastVoteRecord.class);
+        final CastVoteRecord cvr = cvrai.cvr();
+        final CastVoteRecord acvr = cvrai.acvr();
         final int discrepancy = discrepancy(cvr, acvr);
         switch (discrepancy) {
           case -2: 

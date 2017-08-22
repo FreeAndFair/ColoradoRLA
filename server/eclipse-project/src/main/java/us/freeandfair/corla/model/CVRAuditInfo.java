@@ -15,7 +15,6 @@ import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -51,13 +50,16 @@ public class CVRAuditInfo extends AbstractEntity implements Serializable {
   /**
    * The CVR to audit.
    */
-  @Column(updatable = false)
-  private Long my_cvr_id;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn
+  private CastVoteRecord my_cvr;
   
   /**
    * The submitted audit CVR.
    */
-  private Long my_acvr_id;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn
+  private CastVoteRecord my_acvr;
 
   /**
    * Constructs an empty CVRAuditInfo, solely for persistence.
@@ -71,13 +73,13 @@ public class CVRAuditInfo extends AbstractEntity implements Serializable {
    * CVR to audit.
    * 
    * @param the_dashboard The dashboard this record belongs to.
-   * @param the_cvr_id The ID of the CVR to audit.
+   * @param the_cvr The CVR to audit.
    */
   public CVRAuditInfo(final CountyDashboard the_dashboard,
-                      final Long the_cvr_id) {
+                      final CastVoteRecord the_cvr) {
     super();
     my_dashboard = the_dashboard;
-    my_cvr_id = the_cvr_id;
+    my_cvr = the_cvr;
   }
 
   /**
@@ -90,24 +92,24 @@ public class CVRAuditInfo extends AbstractEntity implements Serializable {
   /**
    * @return the CVR to audit.
    */
-  public Long cvrID() {
-    return my_cvr_id;
+  public CastVoteRecord cvr() {
+    return my_cvr;
   }
 
   /**
    * @return the submitted audit CVR..
    */
-  public Long acvrID() {
-    return my_acvr_id;
+  public CastVoteRecord acvr() {
+    return my_acvr;
   }
 
   /**
    * Sets the submitted audit CVR for this record.
    * 
-   * @param the_acvr_id The audit CVR ID.
+   * @param the_acvr The audit CVR.
    */
-  public void setACVRID(final Long the_acvr_id) {
-    my_acvr_id = the_acvr_id;
+  public void setACVR(final CastVoteRecord the_acvr) {
+    my_acvr = the_acvr;
   }
   
   /**
@@ -115,8 +117,20 @@ public class CVRAuditInfo extends AbstractEntity implements Serializable {
    */
   @Override
   public String toString() {
+    final String cvr;
+    final String acvr;
+    if (my_cvr == null) {
+      cvr = "null";
+    } else {
+      cvr = my_cvr.id().toString();
+    }
+    if (my_acvr == null) {
+      acvr = "null";
+    } else {
+      acvr = my_acvr.id().toString();
+    }
     return "CVRAuditInfo [dashboard=" + my_dashboard.id() + 
-           ", cvr=" + my_cvr_id + ", acvr=" + my_acvr_id + "]";
+           ", cvr=" + cvr + ", acvr=" + acvr + "]";
   }
   
   /**
