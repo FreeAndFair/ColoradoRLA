@@ -59,6 +59,16 @@ public final class Persistence {
       "us/freeandfair/corla/persistence/entity_classes";
   
   /**
+   * The "true" constant.
+   */
+  public static final String TRUE = "true";
+  
+  /**
+   * The "false" constant.
+   */
+  public static final String FALSE = "false";
+  
+  /**
    * The "NO SESSION" constant.
    */
   public static final Session NO_SESSION = null;
@@ -146,7 +156,9 @@ public final class Persistence {
   /**
    * Sets up the session factory from the properties in the properties file.
    */
-  @SuppressWarnings("PMD.AvoidCatchingGenericException")
+  @SuppressWarnings({"PMD.AvoidCatchingGenericException", "PMD.ExcessiveMethodLength",
+                     "checkstyle:magicnumber", "checkstyle:executablestatementcount",
+                     "checkstyle:methodlength"})
   private static synchronized void setupSessionFactory() {
     Main.LOGGER.info("attempting to create Hibernate session factory");
     
@@ -174,7 +186,8 @@ public final class Persistence {
                    system_properties.getProperty("hibernate.c3p0.max_statements", ""));
       settings.put(Environment.C3P0_TIMEOUT, 
                    system_properties.getProperty("hibernate.c3p0.timeout", ""));
-
+      settings.put("hibernate.c3p0.privilegeSpawnedThreads", TRUE);
+      settings.put("hibernate.c3p0.contextClassLoaderSource", "library");
       // automatic schema generation
       settings.put(Environment.HBM2DDL_AUTO, 
                    system_properties.getProperty("hibernate.hbm2ddl.auto", ""));
@@ -193,16 +206,18 @@ public final class Persistence {
       
       // concurrency and isolation
       settings.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
-      settings.put(Environment.USE_STREAMS_FOR_BINARY, "true");
-      settings.put(Environment.ISOLATION, "SERIALIZABLE");
+      settings.put(Environment.USE_STREAMS_FOR_BINARY, TRUE);
+      settings.put(Environment.AUTOCOMMIT, FALSE);
+      settings.put(Environment.CONNECTION_PROVIDER_DISABLES_AUTOCOMMIT, TRUE);
+      settings.put(Environment.ISOLATION, "REPEATABLE_READ");
       
       // caching 
       settings.put(Environment.JPA_SHARED_CACHE_MODE, "ENABLE_SELECTIVE");
       settings.put(Environment.CACHE_PROVIDER_CONFIG, "org.hibernate.cache.EhCacheProvider");
       settings.put(Environment.CACHE_REGION_FACTORY, 
                    "org.hibernate.cache.ehcache.EhCacheRegionFactory");
-      settings.put(Environment.USE_SECOND_LEVEL_CACHE, "true");
-      settings.put(Environment.USE_QUERY_CACHE, "false");
+      settings.put(Environment.USE_SECOND_LEVEL_CACHE, TRUE);
+      settings.put(Environment.USE_QUERY_CACHE, FALSE);
       settings.put(Environment.DEFAULT_CACHE_CONCURRENCY_STRATEGY, "read-write"); 
       
       // apply settings
