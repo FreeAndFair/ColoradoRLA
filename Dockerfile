@@ -1,5 +1,3 @@
-# CentOS 7-based containter for ColoradoRLA
-# Based on https://serverfault.com/a/825027/64546 for resolving systemd issues
 FROM centos
 MAINTAINER Neal McBurnett <nealmcb@freeandfair.us>
 ENV container docker
@@ -13,19 +11,29 @@ rm -f /lib/systemd/system/sockets.target.wants/*udev*; \
 rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
 rm -f /lib/systemd/system/basic.target.wants/*;\
 rm -f /lib/systemd/system/anaconda.target.wants/*;
+
 RUN yum -y install httpd
-RUN yum -y install wget
 RUN yum -y install java-1.8.0-openjdk
+
+# Packages for development version
 RUN yum -y install unzip
+RUN yum -y install wget
 RUN yum -y install git
+
 RUN yum -y install epel-release
 RUN wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 RUN yum -y install ./epel-release-latest-*.noarch.rpm
 RUN yum -y update
 RUN yum -y install python-pip
+RUN yum -y install tmux
 
-# Several additional steps are necessary to set up the environment for ColoradoRLA,
-# currently done by hand as documented in docker/README.md
+EXPOSE 8888 80 443
+# TODO PostgreSQL port for debugging only
+EXPOSE 5432
+
+# TODO open corla volume
+
+USER corla:wheel
 
 VOLUME [ “/sys/fs/cgroup” ]
 CMD [“/usr/sbin/init”]
