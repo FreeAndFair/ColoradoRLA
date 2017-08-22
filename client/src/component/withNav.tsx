@@ -44,32 +44,26 @@ const ResetDatabaseButton = ({ reset }: any) => (
 
 
 export default function withNav(Menu: any, path: any): any {
-    class Nav extends React.Component<any, any> {
-        public render() {
-            const resetSection = path === '/sos'
-                               ? <ResetDatabaseButton reset={ resetDatabase } />
-                               : <div />;
+    const resetSection = path === '/sos'
+                       ? <ResetDatabaseButton reset={ resetDatabase } />
+                       : <div />;
 
-            return (
-                <nav className='pt-navbar'>
-                    <div className='pt-navbar-group pt-align-left'>
-                        <Popover content={ <Menu /> } position={ Position.RIGHT_TOP }>
-                            <MenuButton />
-                        </Popover>
-                        <Heading />
-                    </div>
-                    <div className='pt-navbar-group pt-align-right'>
-                        { resetSection }
-                        <Divider />
-                        <HomeButton path={ path } />
-                        <Divider />
-                        <LogoutButton logout={ logout }/>
-                    </div>
+    return () => (
+        <nav className='pt-navbar'>
+            <div className='pt-navbar-group pt-align-left'>
+                <Popover content={ <Menu /> } position={ Position.RIGHT_TOP }>
+                    <MenuButton />
+                </Popover>
+                <Heading />
+            </div>
+            <div className='pt-navbar-group pt-align-right'>
+                { resetSection }
+                <Divider />
+                <HomeButton path={ path } />
+                <Divider />
+                <LogoutButton logout={ logout }/>
+            </div>
 
-                </nav>
-            );
-        }
-    }
-
-    return Nav;
+        </nav>
+    );
 }
