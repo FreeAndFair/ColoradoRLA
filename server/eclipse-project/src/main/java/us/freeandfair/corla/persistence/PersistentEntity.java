@@ -30,4 +30,9 @@ public interface PersistentEntity {
    * @param the_id The new ID number.
    */
   void setID(Long the_id);
+  
+  /**
+   * @return the version number of this entity. This is primarily for debugging.
+   */
+  Long version();
 }

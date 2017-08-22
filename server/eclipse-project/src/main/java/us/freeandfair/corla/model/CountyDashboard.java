@@ -12,6 +12,8 @@
 
 package us.freeandfair.corla.model;
 
+import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
+
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -21,7 +23,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -37,6 +38,9 @@ import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.CVRContestInfo.ConsensusValue;
 import us.freeandfair.corla.persistence.Persistence;
@@ -50,7 +54,7 @@ import us.freeandfair.corla.query.CVRAuditInfoQueries;
  * @version 0.0.1
  */
 @Entity
-@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Table(name = "county_dashboard")
 @SuppressWarnings({"PMD.ImmutableField", "PMD.TooManyMethods", "PMD.TooManyFields",
     "PMD.GodClass"})
@@ -224,6 +228,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * @return the database ID for this dashboard, which is the same as
    * its county ID.
    */
+  @Override
   public Long id() {
     return my_id;
   }
@@ -233,8 +238,17 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * 
    * @param the_id The ID. 
    */
+  @Override
   public final void setID(final Long the_id) {
     my_id = the_id;
+  }
+  
+  /**
+   * @return the version for this dashboard.
+   */
+  @Override
+  public Long version() {
+    return my_version;
   }
   
   /**
@@ -542,6 +556,42 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    */
   public Integer estimatedBallotsToAudit() {
     return my_estimated_ballots_to_audit;
+  }
+  
+  /**
+   * @return a String representation of this contest.
+   */
+  @Override
+  public String toString() {
+    return "CountyDashboard [county=" + id() + "]";
+  }
+
+  /**
+   * Compare this object with another for equivalence.
+   * 
+   * @param the_other The other object.
+   * @return true if the objects are equivalent, false otherwise.
+   */
+  @Override
+  public boolean equals(final Object the_other) {
+    boolean result = true;
+    if (the_other instanceof CountyDashboard) {
+      final CountyDashboard other_cdb = (CountyDashboard) the_other;
+      // there can only be one county dashboard in the system for each
+      // ID, so we check their equivalence by ID
+      result &= nullableEquals(other_cdb.id(), id());
+    } else {
+      result = false;
+    }
+    return result;
+  }
+  
+  /**
+   * @return a hash code for this object.
+   */
+  @Override
+  public int hashCode() {
+    return toString().hashCode();
   }
   
   /**

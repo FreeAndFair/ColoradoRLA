@@ -151,7 +151,7 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
     } else {
       cdb.setCVRUploadTimestamp(the_timestamp);
       try {
-        Persistence.saveOrUpdate(cdb);
+        Persistence.flush();
       } catch (final PersistenceException e) {
         serverError(the_response, "could not update county dashboard");
       }
@@ -301,7 +301,9 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
 
     if (info.my_file != null) {
       try {
-        if (!info.my_file.delete()) {
+        if (info.my_file.delete()) {
+          Main.LOGGER.info("Deleted temp file " + info.my_file);
+        } else {
           Main.LOGGER.error("Unable to delete temp file " + info.my_file);
         }
       } catch (final SecurityException e) {

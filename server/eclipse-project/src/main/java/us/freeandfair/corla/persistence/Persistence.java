@@ -50,8 +50,7 @@ import us.freeandfair.corla.Main;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-// we actually do need all these imports to run the persistence subsystem
-@SuppressWarnings("PMD.ExcessiveImports")
+@SuppressWarnings({"PMD.ExcessiveImports", "PMD.GodClass"})
 public final class Persistence {
   /**
    * The path to the resource containing the list of entity classes.
@@ -175,7 +174,7 @@ public final class Persistence {
                    system_properties.getProperty("hibernate.c3p0.max_statements", ""));
       settings.put(Environment.C3P0_TIMEOUT, 
                    system_properties.getProperty("hibernate.c3p0.timeout", ""));
-      
+
       // automatic schema generation
       settings.put(Environment.HBM2DDL_AUTO, 
                    system_properties.getProperty("hibernate.hbm2ddl.auto", ""));
@@ -183,6 +182,10 @@ public final class Persistence {
       // sql debugging
       settings.put(Environment.SHOW_SQL, 
                    system_properties.getProperty("hibernate.show_sql", ""));
+      settings.put(Environment.FORMAT_SQL, 
+                   system_properties.getProperty("hibernate.format_sql", ""));
+      settings.put(Environment.USE_SQL_COMMENTS, 
+                   system_properties.getProperty("hibernate.use_sql_comments", ""));
       
       // table and column naming
       settings.put(Environment.PHYSICAL_NAMING_STRATEGY, 
@@ -193,13 +196,13 @@ public final class Persistence {
       settings.put(Environment.USE_STREAMS_FOR_BINARY, "true");
       settings.put(Environment.ISOLATION, "SERIALIZABLE");
       
-      // caching
+      // caching 
       settings.put(Environment.CACHE_PROVIDER_CONFIG, "org.hibernate.cache.EhCacheProvider");
       settings.put(Environment.CACHE_REGION_FACTORY, 
                    "org.hibernate.cache.ehcache.EhCacheRegionFactory");
-      settings.put(Environment.USE_SECOND_LEVEL_CACHE, "true");
+      settings.put(Environment.USE_SECOND_LEVEL_CACHE, "false");
       settings.put(Environment.USE_QUERY_CACHE, "false");
-      settings.put(Environment.DEFAULT_CACHE_CONCURRENCY_STRATEGY, "transactional");
+      settings.put(Environment.DEFAULT_CACHE_CONCURRENCY_STRATEGY, "read-write"); 
       
       // apply settings
       rb.applySettings(settings);
@@ -367,6 +370,38 @@ public final class Persistence {
     }
 
     return result;
+  }
+  
+  /**
+   * Saves the specified object in persistent storage. This will cause an 
+   * exception if there is already an object in persistent storage with the same
+   * class and ID. This method must be called within a transaction.
+   * 
+   * @param the_object The object to save.
+   * @exception IllegalStateException if no database is available or no 
+   * transaction is running.
+   * @exception PersistenceException if the object cannot be saved.
+   */
+  public static void save(final PersistentEntity the_object) 
+      throws IllegalStateException, PersistenceException {
+    checkForRunningTransaction();
+    currentSession().save(the_object);
+  }
+  
+  /**
+   * Updates the specified object in persistent storage. This will cause an
+   * exception if there is no object in persistent storage with the same class
+   * and ID. This method must be called within a transaction.
+   * 
+   * @param the_object The object to save.
+   * @exception IllegalStateException if no database is available or no
+   * transaction is running.
+   * @exception PersistenceException if the object cannot be updated.
+   */
+  public static void update(final PersistentEntity the_object)
+      throws IllegalStateException, PersistenceException {
+    checkForRunningTransaction();
+    currentSession().update(the_object);
   }
   
   /**
