@@ -11,6 +11,7 @@
 
 package us.freeandfair.corla.persistence;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,9 +21,6 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Version;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 /**
  * The base class for entities, implements the ID number mechanism.
  * 
@@ -30,7 +28,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
  * @version 0.0.1
  */
 @Entity
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@Cacheable(true)
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class AbstractEntity implements PersistentEntity {
   /**

@@ -197,10 +197,11 @@ public final class Persistence {
       settings.put(Environment.ISOLATION, "SERIALIZABLE");
       
       // caching 
+      settings.put(Environment.JPA_SHARED_CACHE_MODE, "ENABLE_SELECTIVE");
       settings.put(Environment.CACHE_PROVIDER_CONFIG, "org.hibernate.cache.EhCacheProvider");
       settings.put(Environment.CACHE_REGION_FACTORY, 
                    "org.hibernate.cache.ehcache.EhCacheRegionFactory");
-      settings.put(Environment.USE_SECOND_LEVEL_CACHE, "false");
+      settings.put(Environment.USE_SECOND_LEVEL_CACHE, "true");
       settings.put(Environment.USE_QUERY_CACHE, "false");
       settings.put(Environment.DEFAULT_CACHE_CONCURRENCY_STRATEGY, "read-write"); 
       
@@ -319,7 +320,9 @@ public final class Persistence {
   }
   
   /**
-   * Commits the active long-lived transaction.
+   * Commits the active long-lived transaction. This also closes the current 
+   * session, regardless of the transaction's success (it is rolled back if 
+   * it does not succeed).
    * 
    * @exception IllegalStateException if no such transaction is running.
    * @exception PersistenceException if there is a problem with persistent storage.
@@ -328,11 +331,18 @@ public final class Persistence {
   public static void commitTransaction() 
       throws IllegalStateException, PersistenceException, RollbackException {
     checkForRunningTransaction();
-    currentSession().getTransaction().commit(); 
+    try {
+      currentSession().getTransaction().commit();
+    } finally {
+      currentSession().close();
+      session_info.remove();
+    }
+    
   }
   
   /**
-   * Rolls back the active long lived transaction.
+   * Rolls back the active long lived transaction. This also closes the current
+   * session, regardless of the rollback's success.
    * 
    * @exception IllegalStateException if no such transaction is running, or if the
    * running transaction cannot be rolled back.
@@ -341,7 +351,12 @@ public final class Persistence {
   public static void rollbackTransaction() 
       throws IllegalStateException, PersistenceException {
     if (canTransactionRollback()) {
-      currentSession().getTransaction().rollback();
+      try {
+        currentSession().getTransaction().rollback();
+      } finally {
+        currentSession().close();
+        session_info.remove();
+      }
     } else {
       throw new IllegalStateException("no active transaction to roll back");
     }

@@ -85,7 +85,6 @@ public class PublishBallotsToAudit extends AbstractDoSDashboardEndpoint {
       for (final CountyDashboard cdb : cdbs) {
         try {
           if (cdb.cvrUploadTimestamp() == null) {
-            System.out.println(cdb + " " + cdb.version());
             Main.LOGGER.info("county " + cdb.id() + " missed the file upload deadline");
           } else {
             final RLAAlgorithm rlaa = new RLAAlgorithm(cdb);

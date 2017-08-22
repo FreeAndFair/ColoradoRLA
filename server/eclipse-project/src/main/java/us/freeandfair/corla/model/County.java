@@ -17,6 +17,7 @@ import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 import java.io.Serializable;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -27,9 +28,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 import us.freeandfair.corla.persistence.PersistentEntity;
 
 /**
@@ -39,7 +37,7 @@ import us.freeandfair.corla.persistence.PersistentEntity;
  * @version 0.0.1
  */
 @Entity
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@Cacheable(true)
 @Table(name = "county")
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.

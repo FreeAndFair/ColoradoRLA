@@ -245,8 +245,8 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
         final CVRExportParser parser =
             new DominionCVRExportParser(cvr_isr, the_county, the_info.my_timestamp);
         if (parser.parse()) {
-          Main.LOGGER.info(parser.parsedIDs().size() + " CVRs parsed from " + 
-              the_county + " county upload file");
+          Main.LOGGER.info(parser.recordCount().getAsInt() + " CVRs parsed from " + 
+                           the_county + " county upload file");
           final OptionalLong count = CastVoteRecordQueries.countMatching(RecordType.UPLOADED);
           if (count.isPresent()) {
             Main.LOGGER.info(count.getAsLong() + " uploaded CVRs in storage");

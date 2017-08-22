@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,9 +39,6 @@ import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.CVRContestInfo.ConsensusValue;
 import us.freeandfair.corla.persistence.Persistence;
@@ -54,10 +52,10 @@ import us.freeandfair.corla.query.CVRAuditInfoQueries;
  * @version 0.0.1
  */
 @Entity
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@Cacheable(true)
 @Table(name = "county_dashboard")
 @SuppressWarnings({"PMD.ImmutableField", "PMD.TooManyMethods", "PMD.TooManyFields",
-    "PMD.GodClass"})
+    "PMD.GodClass", "PMD.ExcessiveImports"})
 public class CountyDashboard implements PersistentEntity, Serializable {
   /**
    * The minimum number of members on an audit board.

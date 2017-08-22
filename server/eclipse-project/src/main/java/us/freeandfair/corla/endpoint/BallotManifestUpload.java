@@ -259,12 +259,12 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
                                              the_info.my_timestamp,
                                              the_county_id);
         if (parser.parse()) {
-          Main.LOGGER.info(parser.parsedIDs().size() + 
-              " ballot manifest records parsed from upload file");
+          Main.LOGGER.info(parser.recordCount().getAsInt() + 
+                           " ballot manifest records parsed from upload file");
           final OptionalLong count = BallotManifestInfoQueries.count();
           if (count.isPresent()) {
             Main.LOGGER.info(count.getAsLong() + 
-                " uploaded ballot manifest records in storage");
+                             " uploaded ballot manifest records in storage");
           }
           updateCountyDashboard(the_response, the_county_id, the_info.my_timestamp);
           attemptFilePersistence(the_response, the_info, the_county_id);   
