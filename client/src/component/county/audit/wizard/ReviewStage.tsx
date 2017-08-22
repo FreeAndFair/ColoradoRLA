@@ -8,7 +8,9 @@ import BackButton from './BackButton';
 const BallotContestReview = ({ contest, marks }: any) => {
     const { comments, noConsensus } = marks;
     const { votesAllowed } = contest;
-    const votesMarked = _.size(marks.choices);
+
+    const markedChoices: any = _.pickBy(marks.choices);
+    const votesMarked = _.size(markedChoices);
 
     const noConsensusDiv = (
         <div>
@@ -22,7 +24,7 @@ const BallotContestReview = ({ contest, marks }: any) => {
         </div>
     );
 
-    const markedChoiceDivs = _.map(marks.choices, (_: any, name: any) => {
+    const markedChoiceDivs = _.map(markedChoices, (_: any, name: any) => {
         return (
             <div key={ name } className='pt-card'>
                 <div>{ name }</div>
@@ -30,7 +32,7 @@ const BallotContestReview = ({ contest, marks }: any) => {
         );
     });
 
-    const markedChoices = () => {
+    const renderMarkedChoices = () => {
         if (votesMarked > votesAllowed) {
             return (
                 <div>
@@ -55,7 +57,7 @@ const BallotContestReview = ({ contest, marks }: any) => {
                 <div>Vote for { contest.votesAllowed }</div>
             </div>
             <div className='pt-card'>
-                { noConsensus ? noConsensusDiv : markedChoices() }
+                { noConsensus ? noConsensusDiv : renderMarkedChoices() }
             </div>
             <div className='pt-card'>
                 Comments: { comments }
