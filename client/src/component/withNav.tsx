@@ -1,6 +1,4 @@
 import * as React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
 
 import { Popover, Position } from '@blueprintjs/core';
 import { Link } from 'react-router-dom';
@@ -49,7 +47,7 @@ export default function withNav(Menu: any, path: any): any {
     class Nav extends React.Component<any, any> {
         public render() {
             const resetSection = path === '/sos'
-                               ? <ResetDatabaseButton reset={ this.props.resetDatabase } />
+                               ? <ResetDatabaseButton reset={ resetDatabase } />
                                : <div />;
 
             return (
@@ -73,9 +71,5 @@ export default function withNav(Menu: any, path: any): any {
         }
     }
 
-    const mapDispatchToProps = (dispatch: Dispatch<any>) => bindActionCreators({
-        resetDatabase,
-    }, dispatch);
-
-    return connect(null, mapDispatchToProps)(Nav);
+    return Nav;
 }
