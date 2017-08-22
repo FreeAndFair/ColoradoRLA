@@ -13,4 +13,5 @@ us.freeandfair.corla.model.CVRContestInfo
 us.freeandfair.corla.model.DoSDashboard
 us.freeandfair.corla.model.Elector
 us.freeandfair.corla.model.IntermediateAuditReportInfo
+us.freeandfair.corla.model.LogEntry
 us.freeandfair.corla.model.UploadedFile

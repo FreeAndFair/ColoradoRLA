@@ -209,14 +209,24 @@ public final class Authentication {
     County result = null;
     
     if (isAuthenticatedAs(the_request, AdministratorType.COUNTY)) {
-      final Administrator admin = 
-          (Administrator) the_request.session().attribute(ADMIN);
+      final Administrator admin = authenticatedAdministrator(the_request);
       if (admin != null) {
         result = CountyQueries.forAdministrator(admin);
       }
     }
     
     return result;
+  }
+  
+  /**
+   * Gets the authenticated administrator for a request.
+   * 
+   * @param the_request The request.
+   * @return the authenticated administrator, or null if this
+   * session is not authenticated.
+   */
+  public static Administrator authenticatedAdministrator(final Request the_request) {
+    return (Administrator) the_request.session().attribute(ADMIN);
   }
   
   /**

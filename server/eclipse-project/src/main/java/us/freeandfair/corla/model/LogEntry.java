@@ -13,12 +13,16 @@ package us.freeandfair.corla.model;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import us.freeandfair.corla.Main;
@@ -49,7 +53,7 @@ public class LogEntry extends AbstractEntity implements Serializable {
   private static final long serialVersionUID = 1L;
   
   /**
-   * The result code of this log entry. In most cases, this will be an HTTP
+   * The result code of this log entry, if any. In most cases, this will be an HTTP
    * result code, as enumerated in HttpStatus.
    */
   @Column(updatable = false)
@@ -62,10 +66,30 @@ public class LogEntry extends AbstractEntity implements Serializable {
   private String my_information;
   
   /**
+   * Information about the authentication status at the time of this log entry,
+   * if any.
+   */
+  @Column(updatable = false)
+  private String my_authentication_data;
+  
+  /**
+   * Information about the client host that generated this log entry, if any.
+   */
+  @Column(updatable = false)
+  private String my_client_host;
+  
+  /**
    * The timestamp of this log entry.
    */
   @Column(updatable = false, nullable = false)
   private Instant my_timestamp;
+  
+  /**
+   * The previous log entry for this log entry.
+   */
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "previous_entry")
+  private LogEntry my_previous_entry;
   
   /**
    * The hash chain entry of this log entry.
@@ -81,21 +105,46 @@ public class LogEntry extends AbstractEntity implements Serializable {
   }
   
   /**
-   * Constructs a new log entry with the specified information, timestamp,
-   * and previous log entry. If the previous entry is null, it is assumed
-   * that this is the beginning of a new log hash chain.
+   * Constructs a new log entry with the specified information. If the previous 
+   * entry is null, it is assumed that this is the beginning of a new log hash 
+   * chain.
    * 
+   * @param the_result_code The result code, if any.
    * @param the_information The information.
+   * @param the_authentication_data The authentication data, if any.
+   * @param the_client_host The client host, if any.
    * @param the_timestamp The timestamp.
    * @param the_previous_entry The previous log entry.
    */
-  public LogEntry(final Integer the_result_code, final String the_information, 
+  public LogEntry(final Integer the_result_code, final String the_information,
+                  final String the_authentication_data, final String the_client_host,
                   final Instant the_timestamp, final LogEntry the_previous_entry) {
     super();
     my_result_code = the_result_code;
     my_information = the_information;
+    my_authentication_data = the_authentication_data;
+    my_client_host = the_client_host;
     my_timestamp = the_timestamp;
+    my_previous_entry = the_previous_entry;
     my_hash = calculateHash(the_previous_entry);
+  }
+  
+  /**
+   * Constructs a new, unhashed log entry with the specified information; 
+   * such a log entry cannot be persisted, and is useful only for subsequently
+   * building persistable log entries (as, for example, at the end of request
+   * processing).
+   * 
+   * @param the_result_code The result code.
+   * @param the_information The information.
+   * @param the_timestamp The timestamp.
+   */
+  public LogEntry(final Integer the_result_code, final String the_information,
+                  final Instant the_timestamp) {
+    super();
+    my_result_code = the_result_code;
+    my_information = the_information;
+    my_timestamp = the_timestamp;
   }
   
   /**
@@ -118,7 +167,8 @@ public class LogEntry extends AbstractEntity implements Serializable {
     try {      
       final MessageDigest md = MessageDigest.getInstance("SHA-256");
       final BigInteger bi = 
-          new BigInteger(1, md.digest(hash_input.toString().getBytes()));
+          new BigInteger(1, md.digest(hash_input.toString().
+                                      getBytes(Charset.forName("UTF-8"))));
       result = String.format("%0" + (md.digest().length << 1) + "X", bi);
     } catch (final NoSuchAlgorithmException e) {
       Main.LOGGER.error("could not use SHA-256");
@@ -141,10 +191,31 @@ public class LogEntry extends AbstractEntity implements Serializable {
   }
   
   /**
+   * @return the authentication data of this log entry.
+   */
+  public String authenticationData() {
+    return my_authentication_data;
+  }
+  
+  /**
+   * @return the client host of this log entry.
+   */
+  public String clientHost() {
+    return my_client_host;
+  }
+  
+  /**
    * @return the timestamp of this log entry.
    */
   public Instant timestamp() {
     return my_timestamp;
+  }
+  
+  /**
+   * @return the previous log entry.
+   */
+  public LogEntry previousEntry() {
+    return my_previous_entry;
   }
   
   /**
