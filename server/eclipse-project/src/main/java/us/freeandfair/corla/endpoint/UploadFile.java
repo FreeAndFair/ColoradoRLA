@@ -103,10 +103,7 @@ public class UploadFile extends AbstractEndpoint {
     UploadedFile result = null;
     
     try (FileInputStream is = new FileInputStream(the_info.my_file)) {
-      // we're already in a transaction
-      final Session session = Persistence.currentSession();
-      final Blob blob = 
-          session.getLobHelper().createBlob(is, the_info.my_file.length());
+      final Blob blob = Persistence.blobFor(is, the_info.my_file.length());
       final HashStatus hash_status;
       if (the_info.my_computed_hash == null) {
         hash_status = HashStatus.NOT_CHECKED;
@@ -120,8 +117,8 @@ public class UploadFile extends AbstractEndpoint {
                                 FileStatus.IMPORTED_AS_CVR_EXPORT, 
                                 the_info.my_uploaded_hash,
                                 hash_status, blob);
-      Persistence.saveOrUpdate(result);
-      session.flush();
+      Persistence.save(result);
+      Persistence.flush();
     } catch (final PersistenceException | IOException e) {
       badDataType(the_response, "could not persist file of size " + 
                                 the_info.my_file.length());

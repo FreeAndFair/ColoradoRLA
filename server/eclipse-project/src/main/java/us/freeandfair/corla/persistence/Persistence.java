@@ -14,6 +14,7 @@ package us.freeandfair.corla.persistence;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -114,7 +115,7 @@ public final class Persistence {
    * @return true if database persistence is enabled, false otherwise.
    */
   public static synchronized boolean hasDB() {
-    return !failed && currentSession() != null;
+    return !failed && (session_info.get() != null || openSession() != null);
   }
   
   /**
@@ -127,12 +128,18 @@ public final class Persistence {
   }
   
   /**
-   * @return the current Session, creating one if there is no current session. 
-   * Note that this method should typically only be called by the Persistence
-   * methods that control transactions.
+   * Creates a new Session. Note that this method should typically only be called 
+   * by the Persistence methods that control transactions.
+   * 
+   * @return the new Session.
+   * @exception IllegalStateException if a Session is already open on this thread.
    */
-  public static synchronized Session currentSession() {
+  public static synchronized Session openSession() {
     Session session = session_info.get();
+    if (session != null && session.isOpen()) {
+      throw new IllegalStateException("session is already open on this thread");
+    }
+    
     if (!failed && session == null) {
       if (session_factory == null) {
         setupSessionFactory();
@@ -151,6 +158,19 @@ public final class Persistence {
       }
     }
     return session;
+  }
+  
+  /**
+   * @return the currently open session.
+   * @exception PersistenceException if there is no currently open session.
+   */
+  public static Session currentSession() {
+    final Session session = session_info.get();
+    if (session == null || !session.isOpen()) {
+      throw new PersistenceException("no open session");
+    } else {
+      return session;
+    }
   }
   
   /**
@@ -294,18 +314,21 @@ public final class Persistence {
 
     final Session session = currentSession();
     Transaction transaction = null;
-    try {
-      transaction = session.getTransaction();
-    } catch (final HibernateException e) {
-      // the session did not have a transaction
+    if (session != null) {
+      try {
+        transaction = session.getTransaction();
+      } catch (final HibernateException e) {
+        // the session did not have a transaction
+      }
     }
     return session != null && transaction != null && transaction.getStatus().canRollback();
   }
   
   /**
    * Begins a long-lived transaction in this thread that will span several 
-   * operations. If an existing transaction is in a non-active state, it is
-   * rolled back (if possible) and a new transaction is started. 
+   * operations, opening a session if necessary. If an existing transaction 
+   * is in a non-active state, it is rolled back (if possible) and a new transaction 
+   * is started. 
    * 
    * @return true if a new transaction is started, false if a transaction was
    * already active.
@@ -318,8 +341,7 @@ public final class Persistence {
     checkForDatabase();
 
     boolean result = true;
-    final Session session = session_info.get();
-    
+    final Session session = currentSession();
     if (isTransactionActive()) {
       result = false;
     } else if (canTransactionRollback()) {
@@ -595,7 +617,7 @@ public final class Persistence {
    * @exception PersistenceException if there is a problem flushing the session.
    */
   public static void flush() throws PersistenceException {
-    final Session session = session_info.get();
+    final Session session = currentSession();
     if (session != null) {
       session.flush();
     }
@@ -609,7 +631,7 @@ public final class Persistence {
    * @exception IllegalArgumentException if the specified object is not an entity.
    */
   public static void evict(final PersistentEntity the_entity) {
-    final Session session = session_info.get();
+    final Session session = currentSession();
     if (session != null) {
       session.evict(the_entity);
     }
@@ -625,11 +647,24 @@ public final class Persistence {
    * the session.
    */
   public static void flushAndClear() {
-    final Session session = session_info.get();
+    final Session session = currentSession();
     if (session != null) {
       session.flush();
       session.clear();
     }
+  }
+  
+  /**
+   * Gets a streaming Blob for the specified input stream and file size. This method
+   * must be called within a running transaction.
+   * 
+   * @param the_stream The input stream.
+   * @param the_size The file size.
+   * @exception IllegalStateException if there is no running transaction.
+   */
+  public static Blob blobFor(final InputStream the_stream, final long the_size) {
+    checkForRunningTransaction();
+    return currentSession().getLobHelper().createBlob(the_stream, the_size);
   }
   
   /**

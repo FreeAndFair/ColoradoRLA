@@ -309,14 +309,14 @@ public class CountyDashboardRefreshResponse {
    * 
    * @param the_id The ID.
    * @param the_timestamp The timestamp.
-   * @param the_type The type.
+   * @param the_status The type.
    * @return the hash.
    */
   private static String hashForFile(final Long the_id, 
                                     final Instant the_timestamp, 
-                                    final FileStatus the_type) {
+                                    final FileStatus the_status) {
     String result = null;
-    final UploadedFile file = UploadedFileQueries.matching(the_id, the_timestamp, the_type);
+    final UploadedFile file = UploadedFileQueries.matching(the_id, the_timestamp, the_status);
     if (file != null) {
       result = file.hash();
     }
