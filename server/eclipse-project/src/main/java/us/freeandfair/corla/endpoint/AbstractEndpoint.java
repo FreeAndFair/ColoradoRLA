@@ -143,13 +143,13 @@ public abstract class AbstractEndpoint implements Endpoint {
   protected void loadAndCheckASM(final Request the_request,
                                  final Response the_response) {
     // get the state of the ASM
-    if (DISABLE_ASM || asmClass() == null || endpointEvent() == null) {
+    if (DISABLE_ASM || asmClass() == null) {
       // there is no ASM event for this endpoint
       return;
     }
     my_asm = ASMUtilities.asmFor(asmClass(), asmIdentity(the_request));
     // check that we are in the right ASM state
-    if (!my_asm.enabledASMEvents().contains(endpointEvent())) {
+    if (endpointEvent() != null && !my_asm.enabledASMEvents().contains(endpointEvent())) {
       illegalTransition(the_response,
                         endpointName() + 
                         " attempted to apply illegal event " + endpointEvent() + 
