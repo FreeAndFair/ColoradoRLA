@@ -43,7 +43,7 @@ public class Root extends AbstractEndpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    ok(the_response, "ColoradoRLA Server, Version 0.8.0 - Please Use a Valid Endpoint!");
+    ok(the_response, "ColoradoRLA Server, Version 0.9.1 - Please Use a Valid Endpoint!");
     return my_endpoint_result;
   }
 }

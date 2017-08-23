@@ -14,6 +14,7 @@ package us.freeandfair.corla.persistence;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,6 +58,16 @@ public final class Persistence {
    */
   public static final String ENTITY_CLASSES = 
       "us/freeandfair/corla/persistence/entity_classes";
+  
+  /**
+   * The "true" constant.
+   */
+  public static final String TRUE = "true";
+  
+  /**
+   * The "false" constant.
+   */
+  public static final String FALSE = "false";
   
   /**
    * The "NO SESSION" constant.
@@ -104,7 +115,7 @@ public final class Persistence {
    * @return true if database persistence is enabled, false otherwise.
    */
   public static synchronized boolean hasDB() {
-    return !failed && currentSession() != null;
+    return !failed && (session_info.get() != null || openSession() != null);
   }
   
   /**
@@ -117,12 +128,18 @@ public final class Persistence {
   }
   
   /**
-   * @return the current Session, creating one if there is no current session. 
-   * Note that this method should typically only be called by the Persistence
-   * methods that control transactions.
+   * Creates a new Session. Note that this method should typically only be called 
+   * by the Persistence methods that control transactions.
+   * 
+   * @return the new Session.
+   * @exception IllegalStateException if a Session is already open on this thread.
    */
-  public static synchronized Session currentSession() {
+  public static synchronized Session openSession() {
     Session session = session_info.get();
+    if (session != null && session.isOpen()) {
+      throw new IllegalStateException("session is already open on this thread");
+    }
+    
     if (!failed && session == null) {
       if (session_factory == null) {
         setupSessionFactory();
@@ -144,9 +161,24 @@ public final class Persistence {
   }
   
   /**
+   * @return the currently open session.
+   * @exception PersistenceException if there is no currently open session.
+   */
+  public static Session currentSession() {
+    final Session session = session_info.get();
+    if (session == null || !session.isOpen()) {
+      throw new PersistenceException("no open session");
+    } else {
+      return session;
+    }
+  }
+  
+  /**
    * Sets up the session factory from the properties in the properties file.
    */
-  @SuppressWarnings("PMD.AvoidCatchingGenericException")
+  @SuppressWarnings({"PMD.AvoidCatchingGenericException", "PMD.ExcessiveMethodLength",
+                     "checkstyle:magicnumber", "checkstyle:executablestatementcount",
+                     "checkstyle:methodlength"})
   private static synchronized void setupSessionFactory() {
     Main.LOGGER.info("attempting to create Hibernate session factory");
     
@@ -174,7 +206,8 @@ public final class Persistence {
                    system_properties.getProperty("hibernate.c3p0.max_statements", ""));
       settings.put(Environment.C3P0_TIMEOUT, 
                    system_properties.getProperty("hibernate.c3p0.timeout", ""));
-
+      settings.put("hibernate.c3p0.privilegeSpawnedThreads", TRUE);
+      settings.put("hibernate.c3p0.contextClassLoaderSource", "library");
       // automatic schema generation
       settings.put(Environment.HBM2DDL_AUTO, 
                    system_properties.getProperty("hibernate.hbm2ddl.auto", ""));
@@ -193,16 +226,18 @@ public final class Persistence {
       
       // concurrency and isolation
       settings.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
-      settings.put(Environment.USE_STREAMS_FOR_BINARY, "true");
-      settings.put(Environment.ISOLATION, "SERIALIZABLE");
+      settings.put(Environment.USE_STREAMS_FOR_BINARY, TRUE);
+      settings.put(Environment.AUTOCOMMIT, FALSE);
+      settings.put(Environment.CONNECTION_PROVIDER_DISABLES_AUTOCOMMIT, TRUE);
+      settings.put(Environment.ISOLATION, "REPEATABLE_READ");
       
       // caching 
       settings.put(Environment.JPA_SHARED_CACHE_MODE, "ENABLE_SELECTIVE");
       settings.put(Environment.CACHE_PROVIDER_CONFIG, "org.hibernate.cache.EhCacheProvider");
       settings.put(Environment.CACHE_REGION_FACTORY, 
                    "org.hibernate.cache.ehcache.EhCacheRegionFactory");
-      settings.put(Environment.USE_SECOND_LEVEL_CACHE, "true");
-      settings.put(Environment.USE_QUERY_CACHE, "false");
+      settings.put(Environment.USE_SECOND_LEVEL_CACHE, TRUE);
+      settings.put(Environment.USE_QUERY_CACHE, FALSE);
       settings.put(Environment.DEFAULT_CACHE_CONCURRENCY_STRATEGY, "read-write"); 
       
       // apply settings
@@ -284,13 +319,14 @@ public final class Persistence {
     } catch (final HibernateException e) {
       // the session did not have a transaction
     }
-    return session != null && transaction != null && transaction.getStatus().canRollback();
+    return transaction != null && transaction.getStatus().canRollback();
   }
   
   /**
    * Begins a long-lived transaction in this thread that will span several 
-   * operations. If an existing transaction is in a non-active state, it is
-   * rolled back (if possible) and a new transaction is started. 
+   * operations, opening a session if necessary. If an existing transaction 
+   * is in a non-active state, it is rolled back (if possible) and a new transaction 
+   * is started. 
    * 
    * @return true if a new transaction is started, false if a transaction was
    * already active.
@@ -303,8 +339,7 @@ public final class Persistence {
     checkForDatabase();
 
     boolean result = true;
-    final Session session = session_info.get();
-    
+    final Session session = currentSession();
     if (isTransactionActive()) {
       result = false;
     } else if (canTransactionRollback()) {
@@ -615,6 +650,19 @@ public final class Persistence {
       session.flush();
       session.clear();
     }
+  }
+  
+  /**
+   * Gets a streaming Blob for the specified input stream and file size. This method
+   * must be called within a running transaction.
+   * 
+   * @param the_stream The input stream.
+   * @param the_size The file size.
+   * @exception IllegalStateException if there is no running transaction.
+   */
+  public static Blob blobFor(final InputStream the_stream, final long the_size) {
+    checkForRunningTransaction();
+    return currentSession().getLobHelper().createBlob(the_stream, the_size);
   }
   
   /**

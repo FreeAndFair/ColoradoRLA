@@ -372,11 +372,6 @@ public abstract class AbstractEndpoint implements Endpoint {
   @SuppressWarnings("PMD.ConfusingTernary")
   @Override
   public void before(final Request the_request, final Response the_response) {
-    // If this is the root endpoint, just return.
-    if ("/".equals(endpointName())) {
-      return;
-    }
-
     // Start a transaction, if the database is functioning; otherwise abort
     if (Persistence.hasDB()) {
       Persistence.beginTransaction(); 

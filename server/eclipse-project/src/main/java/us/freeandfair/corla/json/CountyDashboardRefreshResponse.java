@@ -305,18 +305,18 @@ public class CountyDashboardRefreshResponse {
   }
   
   /**
-   * Gets the recorded hash for the specified county ID, file timestamp and type.
+   * Gets the recorded hash for the specified county ID, file timestamp and status.
    * 
    * @param the_id The ID.
    * @param the_timestamp The timestamp.
-   * @param the_type The type.
+   * @param the_status The status.
    * @return the hash.
    */
   private static String hashForFile(final Long the_id, 
                                     final Instant the_timestamp, 
-                                    final FileStatus the_type) {
+                                    final FileStatus the_status) {
     String result = null;
-    final UploadedFile file = UploadedFileQueries.matching(the_id, the_timestamp, the_type);
+    final UploadedFile file = UploadedFileQueries.matching(the_id, the_timestamp, the_status);
     if (file != null) {
       result = file.hash();
     }

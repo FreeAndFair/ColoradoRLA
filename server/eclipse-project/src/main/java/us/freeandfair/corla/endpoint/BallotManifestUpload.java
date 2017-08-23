@@ -35,7 +35,6 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
-import org.hibernate.Session;
 
 import spark.Request;
 import spark.Response;
@@ -111,10 +110,7 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
     UploadedFile result = null;
     
     try (FileInputStream is = new FileInputStream(the_info.my_file)) {
-      // we're already in a transaction
-      final Session session = Persistence.currentSession();
-      final Blob blob = 
-          session.getLobHelper().createBlob(is, the_info.my_file.length());
+      final Blob blob = Persistence.blobFor(is, the_info.my_file.length());
       final HashStatus hash_status;
       if (the_info.my_computed_hash == null) {
         hash_status = HashStatus.NOT_CHECKED;
@@ -128,11 +124,7 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
                                 FileStatus.IMPORTED_AS_BALLOT_MANIFEST, 
                                 the_info.my_uploaded_hash,
                                 hash_status, blob);
-      Persistence.saveOrUpdate(result);
-      // TODO: currently we have to commit this transaction here, because
-      // streaming a file to the database requires the file and its stream
-      // to actually stay in scope before the transaction commit;
-      // this will be remedied when we refactor uploading
+      Persistence.save(result);
       Persistence.flush();
     } catch (final PersistenceException | IOException e) {
       badDataType(the_response, "could not persist file of size " + 
@@ -243,10 +235,8 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
     } else if (the_info.my_uploaded_hash.equals(the_info.my_computed_hash)) {
       Main.LOGGER.info("hash matched for uploaded file");
     } else {
-      // NOTE: the only reason this works right now and results in us storing
-      // the file anyway is that we're committing our transaction in 
-      // attemptFilePersistence(); otherwise, this failure response would
-      // abort the transaction and leave the server state unchanged.
+      // NOTE: this failure response means that we don't save the bad file; 
+      // this will be remedied by the new upload mechanism
       badDataContents(the_response, "hash mismatch");
       the_info.my_ok = false;
       attemptFilePersistence(the_response, the_info, the_county_id);
