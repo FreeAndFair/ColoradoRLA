@@ -23,7 +23,7 @@ class CVRUploader extends React.Component<any, any> {
                     <div>
                         Cast Vote Record Export file
                     </div>
-                    <label className='pt-file-upload'>
+                    <label className='pt-file-upload truncate'>
                         <input type='file' onChange={ this.onFileChange } />
                         <span className='pt-file-upload-input'>{ fileName }</span>
                     </label>
