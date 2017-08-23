@@ -163,7 +163,7 @@ public final class ComparisonAudit {
    * @param the_s2 the rate of one-vote understatements
    * @param the_round_up1 always round up the number of one-vote
    *          over/understatements
-   * @param the_roud_up2 always round up the number of two-vote
+   * @param the_round_up2 always round up the number of two-vote
    *          over/understatements
    */
   @SuppressWarnings("checkstyle:magicnumber")

@@ -1361,11 +1361,12 @@ BEGIN
 %%% encode all percentages in the natural way as non-negative real
 %%% numbers (where $1$ means $100\%$).
 
-%%% First, one must choose a ``simultaneous risk limit'' ($\alpha$)
-%%% to be applied across all contents under audit. This notion is
-%%% refined in the context of Colorado the \texttt{colorado\_rlas}
-%%% theory that follows this one.  The risk limit must be dictated by
-%%% statute and rules. An typical risk limit is, e.g., $10\%$.
+%%% First, one must choose a ``risk limit for each contest''
+%%% ($\alpha$) to be applied across all contents (ballot cards) under
+%%% audit. This notion is refined in the context of Colorado the
+%%% \texttt{colorado\_rlas} theory that follows this one.  The risk
+%%% limit must be dictated by statute and rules. An typical risk limit
+%%% is, e.g., $10\%$.
 % @trace RDPR-6-Jul-2017 Section 25.1.6
 % @description The largest statistical probability that an incorrect
 % reported tabulation outcome is not detected and corrected in a
@@ -1395,8 +1396,9 @@ BEGIN
 % @note kiniry We must use l since lambda is a reserved word
 % in PVS and using non-ASCII characters such as λ is not supported in
 % PVS.
-%%% The sample size multiplier (called $\rho$) depends upon $\alpha$,
-%%% $\gamma$, and $\lambda$ through the following formula.
+%%% In the simplified model from [Stark10], the sample size multiplier
+%%% (called $\rho$) depends upon $\alpha$, $\gamma$, and $\lambda$
+%%% through the following formula.
   sample_size_multiplier(a: risk_limit,
                          g: error_inflation_factor,
                          l: error_tolerance): real =
@@ -1405,14 +1407,20 @@ BEGIN
 %%% $\lambda$ are set, $\rho$ is determined once and for all. It does
 %%% not depend upon the margins, the number or sizes of the
 %%% individuals contests, or on the audit data.
-
+%%%
 %%% Next, we need the diluted margin, called $\mu$ in the
-%%% literature. The diluted margin is the smallest margin in votes
+%%% literature. In a simultaneous audit, as defined in Stark's
+%%% ``Super-Simple Simultaneous Single-Ballot Risk-Limiting Audits''
+%%% [Stark10], the diluted margin is the smallest margin in votes
 %%% among the contests under audit (which we will call the
-%%% \texttt{minimum\_margin}) divided by the total number of ballots
-%%% cast across all the contests under audit.\todonealmcb{Is this
-%%% true, or is it the smallest margin over all contests under audit?}
-  minimum_margin: TYPE FROM margin
+%%% \texttt{minimum\_spanning\_margin}) divided by the total number of
+%%% ballots cast across all the contests under audit.\todonealmcb{Is
+%%% this true, or is it the smallest margin over all contests under
+%%% audit?}
+%%%
+%%% In the case of Colorado's application of RLAs, the minimum margin
+%%% is computed for each contest under audit.
+  minimum_spanning_margin: TYPE FROM margin
 
 % @trace struck from RDPR-6-Jul-2017 old Section 25.1.5
 
@@ -1426,8 +1434,6 @@ BEGIN
 % fewest votes received 4,000 votes, and the reported losing candidate
 % with the most votes received 3,500 votes, the diluted margin of the
 % contest is 5% [(4,000 – 3,500) / 10,000]
-  diluted_margin: TYPE FROM margin
-
 
 % @trace RDPR-6-Jul-2017 Section 25.1.7
 % @description A post-election audit of votes on paper ballots and
@@ -1448,7 +1454,7 @@ BEGIN
 %%% These are some terms of the art that we will more carefully
 %%% define as the model is refined.
   discrepency: TYPE
-  random: TYPE
+  disagreement: TYPE
   sample_size: TYPE = nat
 
 % @trace RDPR-6-Jul-2017 Section 25.1.2
@@ -1465,6 +1471,13 @@ BEGIN
 % voting system's tabulation as reflected in the corresponding cast
 % vote records.
   comparison_audit: TYPE FROM risk_limiting_audit
+
+%%% In the more complex model from Lindeman and Stark's ``A Gentle
+%%% Introduction to Risk-limiting Audits,'' one and two vote over and
+%%% understatement estimates are used to derive a more precise sample
+%%% size as follows.
+  nmin_from_rates(r1, r2, s1, s2: nonneg_real, ru1, ru2: boolean): nat
+
 END rlas
 
 %%% In order to instantiate the general idea of Risk-Limiting Audits
@@ -1476,50 +1489,73 @@ END rlas
 colorado_rlas: THEORY
 BEGIN
   IMPORTING rlas
-
-%%% The total number of ballot cards uploaded across the entire state.
-  total_ballot_cards: nat
-
-%%% Next, we'll formalize what is stated in the current draft
-%%% rules. First, the risk limit for comparison audits must be below
-%%% $5\%$.
+%%% In order to compute risks, we need to know the total number of
+%%% ballot cards uploaded across the entire state as well as the
+%%% number of ballot cards available in each county.
+  county_ballot_cards: [county -> nat]
+  total_state_ballot_cards: nat
+%%% The total state ballot cards represent the summation of all county
+%%% ballot cards for all counties.
+%%%
+%%% As discusssed above, each contest has its own minimum margin.
+  minimum_margin: TYPE = [contest -> margin]
+%%% Next, we'll formalize what is stated in the final rules
+%%% (1501-1). First, the risk limit for comparison audits of
+%%% single-county contests must be below $10\%$.
 % @trace RDPR-6-Jul-2017 Section 25.2.2(A)
-  RDPR_risk_limit: TYPE = {n : nonneg_real | n <= 0.05}
-
-%%% Also, according to the current draft rules, the Secretary of State
-%%% has an ``escape clause'', and one thing that they can choose to do
-%%% is set any kind of risk limit they like.
-  RDPR_escape_clause_risk_limit: TYPE = {n : nonneg_real | n <= 1.0}
-
-%%% As mentioned above, CDOS wants to be able to run a state-wide
-%%% audit in a number of ``rounds'', or what are known as ``stages''
-%%% in the RLA literature. Thus, rounds need to be enumerated with an
-%%% ordinal, such as ```We are now starting round 3 of the Colorado
+% @trace CCR-1501-1 Section 25.2.2(A)
+  Rules_1501_1_statewide_contest_risk_limit: TYPE =
+    {a : risk_limit | a <= 0.05}
+  Rules_1501_1_countywide_contest_risk_limit: TYPE =
+    {a : risk_limit | a <= 0.1}
+%%% According to Rule 1501-1, the Secretary of State has an ``escape
+%%% clause'', and one thing that they can choose to do is set any kind
+%%% of risk limit they like.
+  Rules_1501_1_escape_clause_risk_limit: TYPE =
+    {n : nonneg_real | n <= 1.0}
+%%% As mentioned above, CDOS wants to be able to run all audits in a
+%%% number of ``rounds'', or what are known as ``stages'' in the RLA
+%%% literature. Thus, rounds need to be enumerated with an ordinal,
+%%% such as ```We are now starting round 3 of the Colorado
 %%% Risk-Limiting Audit.''.
   round_number: TYPE = posnat
 %%% In each round, a specific number of ballots will be audited by
 %%% counties.
-  round_size: TYPE = [round_number -> nat]
-%%% Eventually we run out of ballot cards to audit, as a full hand
-%%% count will count all ballot cards. Thus, for all possible round
-%%% size definitions that CDOS can create, for some round number k,
-%%% and all round numbers past k, the corresponding round size is
-%%% zero. That special 'k' where round size drops to zero is dictated
-%%% by the SoS deciding to trigger a full hand count of one or more
-%%% contests in a county.
+  round_size: TYPE = [contest, round_number -> nat]
+%%% During the course of the audit, after some number of rounds,
+%%% eventually the SoS will decide that any remaining contests need to
+%%% be hand-counted.  Thus, for all possible round size definitions
+%%% that CDOS can create, for some round number k, and all round
+%%% numbers past k, the corresponding round size is zero. That special
+%%% 'k' where round size drops to zero is dictated by the SoS deciding
+%%% to trigger a full hand count of one or more contests in a county.
   rs: round_size
+  c: contest
   round_size_shape: AXIOM
-    (EXISTS (k: round_number): rs(k) = 0 AND
-      FORALL (l: round_number): k < l IMPLIES rs(l) = 0)
-
+    (EXISTS (k: round_number): rs(c, k) = 0 AND
+      FORALL (l: round_number): k < l IMPLIES rs(c, l) = 0)
 %%% We propose that, under normal circumstances, the initial round
-%%% size for any election in Colorado should be conservative enough
-%%% that all counties will meet their risk limits for all contests
-%%% under audit.
+%%% sizes for each county for any election in Colorado should be
+%%% conservative enough that all counties will meet their risk limits
+%%% for all contests under audit.
 %%%
-%%% Neal McBurnett suggested that the appropriate parameters to use
-%%% for the RLA algorithm to make such an estimate are:
-
+%%% In order to achieve this goal, we suggest that the appropriate
+%%% parameters to use for the RLA algorithm to make such an estimate
+%%% are:
+%%% \begin{itemize}
+%%% \item equal estimates for the rate of one and two vote over- and
+%%% understatements (\texttt{r1 = r2 = s1 = s2 = 0.01}) and
+%%% conservatively rounding up the number of one and two vote
+%%% over/understatements.
+%%% \item use a $\gamma$ value of $1.1$
+%%% \end{itemize}
+%%%
+  initial_round_r1: nonneg_real = 0.01
+  initial_round_r2: nonneg_real = 0.01
+  initial_round_s1: nonneg_real = 0.01
+  initial_round_s2: nonneg_real = 0.01
+  round_up1: boolean = true
+  round_up2: boolean = true
 END colorado_rlas
 
 %+END audits
