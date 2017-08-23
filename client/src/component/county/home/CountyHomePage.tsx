@@ -5,8 +5,7 @@ import * as _ from 'lodash';
 
 import CountyNav from '../Nav';
 
-import BallotManifestUploaderContainer from './BallotManifestUploaderContainer';
-import CVRUploaderContainer from './CVRUploaderContainer';
+import FileUploadContainer from './FileUploadContainer';
 
 
 const Main = ({ buttonDisabled, name, startAudit }: any) => {
@@ -17,8 +16,7 @@ const Main = ({ buttonDisabled, name, startAudit }: any) => {
                 <div>
                     Please upload your Ballot Manifest and Cast Vote Records.
                 </div>
-                <BallotManifestUploaderContainer />
-                <CVRUploaderContainer />
+                <FileUploadContainer />
                 <button
                     disabled={ buttonDisabled }
                     className='pt-button pt-intent-primary'
