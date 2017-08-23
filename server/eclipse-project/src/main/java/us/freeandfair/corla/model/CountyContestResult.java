@@ -79,7 +79,7 @@ public class CountyContestResult extends AbstractEntity implements Serializable 
    * The contest.
    */
   @Column(updatable = false, nullable = false)
-  private Long my_contest_id;
+  private Contest my_contest;
 
   /**
    * The votes allowed.
@@ -146,7 +146,7 @@ public class CountyContestResult extends AbstractEntity implements Serializable 
   public CountyContestResult(final Long the_county_id, final Contest the_contest) {
     super();
     my_county_id = the_county_id;
-    my_contest_id = the_contest.id();
+    my_contest = the_contest.id();
     my_votes_allowed = the_contest.votesAllowed();
     for (final Choice c : the_contest.choices()) {
       my_vote_totals.put(c.name(), 0);
@@ -164,7 +164,7 @@ public class CountyContestResult extends AbstractEntity implements Serializable 
    * @return the contest for this CountyContestResult.
    */
   public Long contestID() {
-    return my_contest_id;
+    return my_contest;
   }
   
   /**
@@ -254,7 +254,7 @@ public class CountyContestResult extends AbstractEntity implements Serializable 
    * @param the_cvr The CVR.
    */
   public void addCVR(final CastVoteRecord the_cvr) {
-    final CVRContestInfo ci = the_cvr.contestInfoForContest(my_contest_id);
+    final CVRContestInfo ci = the_cvr.contestInfoForContest(my_contest);
     if (ci != null) {
       for (final String s : ci.choices()) {
         my_vote_totals.put(s, my_vote_totals.get(s) + 1);
