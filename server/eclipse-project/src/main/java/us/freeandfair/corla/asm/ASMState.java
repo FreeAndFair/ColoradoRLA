@@ -60,7 +60,7 @@ public interface ASMState {
    */
   enum AuditBoardDashboardState implements ASMState {
     AUDIT_INITIAL_STATE,
-    AUDIT_IN_PROGRESS_STATE,
-    AUDIT_REPORT_SUBMITTED_STATE
+    AUDIT_IN_PROGRESS,
+    AUDIT_REPORT_SUBMITTED
   }
 }

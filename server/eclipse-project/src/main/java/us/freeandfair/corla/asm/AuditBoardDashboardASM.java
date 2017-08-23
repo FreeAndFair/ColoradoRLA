@@ -40,7 +40,7 @@ public class AuditBoardDashboardASM extends AbstractStateMachine {
    * The final states of this ASM.
    */
   private static final ASMState[] FINAL_STATES = 
-      {AuditBoardDashboardState.AUDIT_REPORT_SUBMITTED_STATE};
+      {AuditBoardDashboardState.AUDIT_REPORT_SUBMITTED};
   
   /**
    * Create the Audit Board Dashboard ASM for the specified county.
