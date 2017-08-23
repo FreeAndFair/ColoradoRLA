@@ -19,25 +19,29 @@ class BallotManifestUploader extends React.Component<any, any> {
 
         return (
             <div className='pt-card'>
-                <div>
-                    Ballot Manifest file:
+                <div className='pt-card'>
+                    <div>
+                        Ballot Manifest file
+                    </div>
                     <label className='pt-file-upload'>
-
                         <input type='file' onChange={ this.onFileChange } />
                         <span className='pt-file-upload-input'>{ fileName }</span>
                     </label>
                 </div>
-                SHA-256 hash for Ballot Manifest file:
-                <label>
-
-                    <EditableText
-                        className='pt-input'
-                        value={ hash }
-                        onChange={ this.onHashChange } />
-                    <button className='pt-button' onClick={ upload }>
-                        Upload
-                    </button>
-                </label>
+                <div className='pt-card'>
+                    <div>
+                        SHA-256 hash for Ballot Manifest file
+                    </div>
+                    <label>
+                        <EditableText
+                            className='pt-input'
+                            value={ hash }
+                            onChange={ this.onHashChange } />
+                        <button className='pt-button' onClick={ upload }>
+                            Upload
+                        </button>
+                    </label>
+                </div>
             </div>
         );
     }
