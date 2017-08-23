@@ -1472,11 +1472,29 @@ BEGIN
 % vote records.
   comparison_audit: TYPE FROM risk_limiting_audit
 
-%%% In the more complex model from Lindeman and Stark's ``A Gentle
-%%% Introduction to Risk-limiting Audits,'' one and two vote over and
-%%% understatement estimates are used to derive a more precise sample
-%%% size as follows.
-  nmin_from_rates(r1, r2, s1, s2: nonneg_real, ru1, ru2: boolean): nat
+%%% In the more complex model related to Lindeman and Stark's ``A
+%%% Gentle Introduction to Risk-limiting Audits,'' (but whose
+%%% scientific source is still unknown to Free \& Fair) one and two
+%%% vote over and understatement estimates are used to derive a more
+%%% precise sample size as follows. This function is found in Stark's
+%%% sample Javascript implementation of RLAs and is implemented in our
+%%% \texttt{ComparisonAudit} class. We will not specify its definition
+%%% here for the moment for the sake of time expediency.
+  nmin_from_rates(a: risk_limit,
+                  m: margin,
+                  r1, r2, s1, s2: nonneg_real,
+                  ru1, ru2: boolean): nat
+
+%%% Computing the estimated number of ballot cards remaining in the
+%%% audit is a straightforward calculation that we can perform each
+%%% and every time a new ballot card is audited. This function is
+%%% called \texttt{nmin} in the literature. The \texttt{o} parameters
+%%% represent the number of observed overstatements (one and two
+%%% vote); the \texttt{u} parameters represent the number of observed
+%%% understatements (one and two vote).
+  nmin(a: risk_limit,
+       m: margin,
+       o1, o2, u1, u2: nonneg_real): nat
 
 END rlas
 
@@ -1498,7 +1516,7 @@ BEGIN
 %%% ballot cards for all counties.
 %%%
 %%% As discusssed above, each contest has its own minimum margin.
-  minimum_margin: TYPE = [contest -> margin]
+  minimum_margin: [contest -> margin]
 %%% Next, we'll formalize what is stated in the final rules
 %%% (1501-1). First, the risk limit for comparison audits of
 %%% single-county contests must be below $10\%$.
@@ -1513,6 +1531,10 @@ BEGIN
 %%% of risk limit they like.
   Rules_1501_1_escape_clause_risk_limit: TYPE =
     {n : nonneg_real | n <= 1.0}
+%%% Furthermore, Colorado wants, for the moment, to be able to define
+%%% a different risk limit for each contest.
+  Rules_1501_1_risk_limits:
+    [contest -> Rules_1501_1_escape_clause_risk_limit]
 %%% As mentioned above, CDOS wants to be able to run all audits in a
 %%% number of ``rounds'', or what are known as ``stages'' in the RLA
 %%% literature. Thus, rounds need to be enumerated with an ordinal,
@@ -1556,6 +1578,17 @@ BEGIN
   initial_round_s2: nonneg_real = 0.01
   round_up1: boolean = true
   round_up2: boolean = true
+
+%%% Thus, in order to put all of the above together, in order to
+%%% compute the sample size for each contest for each county, we us
+%%% the \texttt{nmin\_from\_rates} function with the Colorado
+%%% parameters above.
+  Rules_1501_1_round_1_size(c: contest): nat =
+    nmin_from_rates(Rules_1501_1_risk_limits(c),
+                    minimum_margin(c),
+                    initial_round_r1, initial_round_r2,
+                    initial_round_s1, initial_round_s2,
+                    round_up1, round_up2)
 END colorado_rlas
 
 %+END audits
@@ -1932,6 +1965,39 @@ BEGIN
   indicate_full_hand_count_contest:
     [department_of_state_dashboard, contest ->
       [department_of_state_dashboard, full_hand_count_contest]]
+
+%%% These next two functions represent newly proposed features for the
+%%% Department of State Dashboard during phase-2 development.
+%%%
+%%% First, if a county has audited sufficient ballot cards that they
+%%% have met the risk limit for the contests under audit in that
+%%% county, the Secretary of State can inform them that they are done
+%%% auditing. This can happen, e.g., before they have finished
+%%% auditing the first round/stage of ballots, and will save the
+%%% county work.
+  notify_county_audit_complete:
+    [department_of_state_dashboard, county ->
+      department_of_state_dashboard]
+%%% Second, consider the situation when an audit is not going well and
+%%% the Secretary of State wishes to indicate to a county that they
+%%% have more ballot cards to audit. This may happen in the middle of
+%%% the first round of auditing, or it may happen after the first
+%%% round is complete and the Audit Board and County Administrators
+%%% are waiting to hear if they are done. Effectively, this is the
+%%% means by which the Secretary of State defines a new round of
+%%% auditing. The natural number parameter provided is the new index
+%%% of the final ballot to audit, not the number of additional ballots
+%%% that must be audited.
+  notify_county_more_auditing_is_necessary:
+    [department_of_state_dashboard, county, nat ->
+      department_of_state_dashboard]
+  contest_audit_status: TYPE =
+    { audit_not_started, audit_underway, audit_complete }
+  risk_level: TYPE = risk_limit
+% The final nat is the estimated number of ballot cards remaining to
+% audit given how the audit has been going so far.
+  contest_status: TYPE = [contest ->
+    [county_status, risk_limit, risk_level, nat]]
 %%% Lastly, state administrators can simply get updates on the current
 %%% state of the election under audit and its RLAs.
   refresh: [department_of_state_dashboard ->
@@ -1940,6 +2006,7 @@ BEGIN
               risk_limit,
               set[[audited_contest, audit_reason]],
               set[county_status],
+              set[contest_status],
               boolean, % cvr_uploads_complete?
               boolean, % manifest_uploads_complete?
               seed,
