@@ -19,20 +19,28 @@ class CVRUploader extends React.Component<any, any> {
 
         return (
             <div className='pt-card'>
-                <div>
-                    Cast Vote Record Export file:
-                    <label className='pt-file-upload'>
+                <div className='pt-card'>
+                    <div>
+                        Cast Vote Record Export file
+                    </div>
+                    <label className='pt-file-upload truncate'>
                         <input type='file' onChange={ this.onFileChange } />
                         <span className='pt-file-upload-input'>{ fileName }</span>
                     </label>
                 </div>
-                <label>
-                    SHA-256 hash for Cast Vote Record Export file:
-                    <EditableText
-                        className='pt-input'
-                        value={ hash }
-                        onChange={ this.onHashChange } />
-                </label>
+                <div className='pt-card'>
+                    <div>
+                        SHA-256 hash for Cast Vote Record Export file
+                    </div>
+                    <label>
+                        <EditableText
+                            minWidth={ 500 }
+                            maxLength={ 64 }
+                            className='pt-input'
+                            value={ hash }
+                            onChange={ this.onHashChange } />
+                    </label>
+                </div>
                 <button className='pt-button' onClick={ upload }>
                     Upload
                 </button>
