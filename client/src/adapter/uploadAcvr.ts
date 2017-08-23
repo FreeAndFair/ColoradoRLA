@@ -29,7 +29,8 @@ interface Acvr {
 }
 
 const formatContestInfo = (mark: any, contestId: any): ContestInfo => {
-    const choices = _.map(mark.choices, (_, name: any) => name);
+    const markedChoices: any = _.pickBy(mark.choices);
+    const choices = _.map(markedChoices, (_, name: any) => name);
 
     const consensus = mark.noConsensus ? 'NO' : 'YES';
 
