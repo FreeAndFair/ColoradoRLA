@@ -305,11 +305,11 @@ public class CountyDashboardRefreshResponse {
   }
   
   /**
-   * Gets the recorded hash for the specified county ID, file timestamp and type.
+   * Gets the recorded hash for the specified county ID, file timestamp and status.
    * 
    * @param the_id The ID.
    * @param the_timestamp The timestamp.
-   * @param the_status The type.
+   * @param the_status The status.
    * @return the hash.
    */
   private static String hashForFile(final Long the_id, 
