@@ -494,7 +494,10 @@ BEGIN
     [# name: string,
        description: string,
        choices: choice,
-       votes_allowed: nat #]
+       votes_allowed: nat,
+       margin: nat,
+       observed_r1, observed_r2,
+       observed_s1, observed_s2: nonneg_real #]
 
 % @trace RDPR-6-Jul-2017 Section 25.1.2
 % @description A contest selected by the Secretary of State for a
@@ -1325,8 +1328,8 @@ END audits
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%% \subsection{Colorado RLAs}
-%%% \label{sec:Colorado_RLAs}
+%%% \subsection{Risk-Limiting Audits}
+%%% \label{sec:RLAs}
 
 %%% Audits ideally come after all the votes are tabulated, canvassed
 %%% and reconciled. In Colorado, however, since the certification
@@ -1348,7 +1351,7 @@ END audits
 %%% ballots and tabulations are available; however, that capability is
 %%% not implemented at this time.
 %%%
-%%% In general, CDOS wants the ability to have "rounds" of auditing,
+%%% In general, CDOS wants the ability to have ``rounds'' of auditing,
 %%% where the size of those rounds (i.e., the number of ballot cards
 %%% to audit) is under their control.
 
@@ -1356,13 +1359,13 @@ rlas: THEORY
 BEGIN
   IMPORTING elections,
             audits
-
-%%% The core RLA algorithm has a three basic parameters. Note that we
-%%% encode all percentages in the natural way as non-negative real
-%%% numbers (where $1$ means $100\%$).
-
-%%% First, one must choose a ``risk limit for each contest''
-%%% ($\alpha$) to be applied across all contents (ballot cards) under
+%%% The core RLA algorithm has a three basic parameters.\footnote{Note
+%%% that we encode all percentages in the natural way as non-negative
+%%% real numbers (where $1$ means $100\%$).}
+%%%
+%%% First, one must choose a ``risk limit for each contest'' (call
+%%% $\alpha$, which is often a small percentage between $1\%$ and
+%%% $10\%$) to be applied across all contents (ballot cards) under
 %%% audit. This notion is refined in the context of Colorado the
 %%% \texttt{colorado\_rlas} theory that follows this one.  The risk
 %%% limit must be dictated by statute and rules. An typical risk limit
@@ -1371,11 +1374,10 @@ BEGIN
 % @description The largest statistical probability that an incorrect
 % reported tabulation outcome is not detected and corrected in a
 % risk-limiting audit.
-  risk_limit: TYPE = {a: nonneg_real | a <= 1.0} % α
-
+  risk_limit: TYPE = {a: nonneg_real | a <= 1.0}
 %%% The other two parameters impact the operational efficiency of the
 %%% audit, not its risk.
-
+%%%
 %%% The ``error inflation factor'' (called $\gamma$, whose value is
 %%% always over $100\%$) must be chosen. The larger the error
 %%% inflation factor, the larger the initial sample needs to be, but
@@ -1383,8 +1385,7 @@ BEGIN
 %%% sample finds errors. The specific value chosen for CDOS is
 %%% specified in \texttt{colorado\_rlas}. A typical error inflation
 %%% factor is, e.g., $110\%$.
-  error_inflation_factor: TYPE = {g: nonneg_real | 1.0 <= g} % γ
-
+  error_inflation_factor: TYPE = {g: nonneg_real | 1.0 <= g}
 %%% Finally, an ``error tolerance'' (called %\lambda$, whose value is
 %%% always under $100\%$) must be chosen. The larger the error
 %%% tolerance is, the larger the initial sample size will have to be
@@ -1392,7 +1393,7 @@ BEGIN
 %%% \emph{sample} is relatively large, the error rate for the
 %%% \emph{contests} as a whole will be small. A typical error
 %%% tolerance is, e.g., $50\%$.
-  error_tolerance: TYPE = {l: nonneg_real | l < 1.0 } % λ
+  error_tolerance: TYPE = {l: nonneg_real | l < 1.0 }
 % @note kiniry We must use l since lambda is a reserved word
 % in PVS and using non-ASCII characters such as λ is not supported in
 % PVS.
@@ -1414,27 +1415,24 @@ BEGIN
 %%% [Stark10], the diluted margin is the smallest margin in votes
 %%% among the contests under audit (which we will call the
 %%% \texttt{minimum\_spanning\_margin}) divided by the total number of
-%%% ballots cast across all the contests under audit.\todonealmcb{Is
-%%% this true, or is it the smallest margin over all contests under
-%%% audit?}
+%%% ballots cast across all the contests under audit.
 %%%
 %%% In the case of Colorado's application of RLAs, the minimum margin
-%%% is computed for each contest under audit.
+%%% is computed for each contest under audit. In order to compute the
+%%% number of ballots to audit in a given county, one must use the
+%%% \emph{maximum} minimum margin across all contests in that county
+%%% that are under audit. See below for more details.
   minimum_spanning_margin: TYPE FROM margin
-
 % @trace struck from RDPR-6-Jul-2017 old Section 25.1.5
-
 % @description The smallest reported margin in votes between the
 % reported contest winner with the least votes in the contest, and the
 % reported contest loser with the most votes in the contest, divided
 % by the number of ballots counted in that contest.
-
 % @example For example, if the voting system tabulated 10,000 ballots
 % in an audited contest, and the reported winning candidate with the
 % fewest votes received 4,000 votes, and the reported losing candidate
 % with the most votes received 3,500 votes, the diluted margin of the
 % contest is 5% [(4,000 – 3,500) / 10,000]
-
 % @trace RDPR-6-Jul-2017 Section 25.1.7
 % @description A post-election audit of votes on paper ballots and
 % VVPAT records, conducted in accordance with Section 1-7-515, C.R.S.,
@@ -1443,27 +1441,21 @@ BEGIN
 % from the reported tabulation outcome.
   risk_limiting_audit: TYPE
   RLA: TYPE = risk_limiting_audit
-
 % @trace RDPR-6-Jul-2017 Section 25.1.3
 % @description A type of risk-limiting audit in which the audit board
 % examines and reports to the Secretary of State voter markings on
 % randomly selected ballots seeking strong evidence that the reported
 % tabulation outcome is correct.
   ballot_polling_audit: TYPE FROM risk_limiting_audit
-
 %%% These are some terms of the art that we will more carefully
 %%% define as the model is refined.
-  discrepency: TYPE
+  discrepancy: TYPE
   disagreement: TYPE
   sample_size: TYPE = nat
-
 % @trace RDPR-6-Jul-2017 Section 25.1.2
 % @description The audited contest determines the number of ballots
 % that must be examined and verified during the RLA.
   number_of_ballots_to_audit: [audited_contest -> nat]
-
-%%% \todokiniry{Still need to model core RLA algorithm(s).}
-
 % @trace RDPR-6-Jul-2017 Section 25.1.4
 % @description A type of risk-limiting audit in which the audit board
 % examines and reports to the secretary of state voter markings on
@@ -1471,7 +1463,6 @@ BEGIN
 % voting system's tabulation as reflected in the corresponding cast
 % vote records.
   comparison_audit: TYPE FROM risk_limiting_audit
-
 %%% In the more complex model related to Lindeman and Stark's ``A
 %%% Gentle Introduction to Risk-limiting Audits,'' (but whose
 %%% scientific source is still unknown to Free \& Fair) one and two
@@ -1484,7 +1475,6 @@ BEGIN
                   m: margin,
                   r1, r2, s1, s2: nonneg_real,
                   ru1, ru2: boolean): nat
-
 %%% Computing the estimated number of ballot cards remaining in the
 %%% audit is a straightforward calculation that we can perform each
 %%% and every time a new ballot card is audited. This function is
@@ -1495,8 +1485,11 @@ BEGIN
   nmin(a: risk_limit,
        m: margin,
        o1, o2, u1, u2: nonneg_real): nat
-
 END rlas
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% \subsection{Colorado RLAs}
+%%% \label{sec:Colorado_RLAs}
 
 %%% In order to instantiate the general idea of Risk-Limiting Audits
 %%% into the context of Colorado elections, we must: (1) choose RLA
@@ -1515,7 +1508,7 @@ BEGIN
 %%% The total state ballot cards represent the summation of all county
 %%% ballot cards for all counties.
 %%%
-%%% As discusssed above, each contest has its own minimum margin.
+%%% As discussed above, each contest has its own minimum margin.
   minimum_margin: [contest -> margin]
 %%% Next, we'll formalize what is stated in the final rules
 %%% (1501-1). First, the risk limit for comparison audits of
@@ -1578,17 +1571,33 @@ BEGIN
   initial_round_s2: nonneg_real = 0.01
   round_up1: boolean = true
   round_up2: boolean = true
-
+%%% Computes the maximum minimum margin across a set of contests.
+  maximum_minimum_margin: [set[contest] -> nat]
 %%% Thus, in order to put all of the above together, in order to
 %%% compute the sample size for each contest for each county, we us
 %%% the \texttt{nmin\_from\_rates} function with the Colorado
-%%% parameters above.
-  Rules_1501_1_round_1_size(c: contest): nat =
-    nmin_from_rates(Rules_1501_1_risk_limits(c),
-                    minimum_margin(c),
+%%% parameters above. Note that in this definition we are presuming
+%%% that all contests have the same risk limit, thus we can
+%%% \texttt{choose} any one of them to use its risk limit.
+  Rules_1501_1_round_1_size(c: set[contest]): nat =
+    nmin_from_rates(Rules_1501_1_risk_limits(choose(c)),
+                    maximum_minimum_margin(c),
                     initial_round_r1, initial_round_r2,
                     initial_round_s1, initial_round_s2,
                     round_up1, round_up2)
+%%% The size of later rounds is entirely dependent upon the time at
+%%% which the Secretary of State decides to reveal to counties that
+%%% they have more ballots to audit. We use the observed error rates
+%%% from the county in question to compute new estimates, which amount
+%%% to new round sizes.
+  Rules_1501_1_round_n_size(c: contest): nat =
+    nmin(Rules_1501_1_risk_limits(c),
+         c`margin,
+         c`observed_r1, c`observed_r2,
+         c`observed_s1, c`observed_s2)
+%%% See below, in the definition of the Department of State Dashboard,
+%%% for information about the connection between its UI and the
+%%% \texttt{Rules\_1501\_1\_round\_n\_size} function above.
 END colorado_rlas
 
 %+END audits
@@ -1680,7 +1689,7 @@ BEGIN
   audit_adjudication_interface?:
     make_audit_adjudication_interface: audit_adjudication_interface
 %%% \todokiniry{In the audit adjudication interface, it must be
-%%% possible to classify a ballot as unauditable either due to not
+%%% possible to classify a ballot as un-auditable either due to not
 %%% finding a voter-verifiable paper record or due to it being a
 %%% phantom ballot.}
   public_interface?:
@@ -1798,7 +1807,7 @@ END dashboard
 %%% content issues. The status of data, and results as audits are
 %%% performed, will be provided for each contest to be audited.
 
-% @trace Principly RDPR-6-Jul-2017 Section 25.2.2
+% @trace Principally RDPR-6-Jul-2017 Section 25.2.2
 department_of_state_dashboard: THEORY
 BEGIN
   IMPORTING dashboard,
@@ -1994,8 +2003,12 @@ BEGIN
   contest_audit_status: TYPE =
     { audit_not_started, audit_underway, audit_complete }
   risk_level: TYPE = risk_limit
-% The final nat is the estimated number of ballot cards remaining to
-% audit given how the audit has been going so far.
+%%% In this definition of county state, the final number is the
+%%% estimated number of ballot cards remaining to audit given how the
+%%% audit has been going so far. That number is computed using the
+%%% \texttt{Rules\_1501\_1\_round\_n\_size} function each and every
+%%% time a new ballot card is audited and there is a discrepancy or
+%%% disagreement by the audit board.
   contest_status: TYPE = [contest ->
     [county_status, risk_limit, risk_level, nat]]
 %%% Lastly, state administrators can simply get updates on the current
