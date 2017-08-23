@@ -152,7 +152,7 @@ public abstract class AbstractEndpoint implements Endpoint {
     if (!my_asm.enabledASMEvents().contains(endpointEvent())) {
       illegalTransition(the_response,
                         endpointName() + 
-                        "attempted to apply illegal event " + endpointEvent() + 
+                        " attempted to apply illegal event " + endpointEvent() + 
                         " from state " + my_asm.currentState());
     }
   }
