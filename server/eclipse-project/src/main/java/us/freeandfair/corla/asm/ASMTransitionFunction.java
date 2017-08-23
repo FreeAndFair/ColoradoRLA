@@ -152,10 +152,16 @@ public interface ASMTransitionFunction {
     Q(new ASMTransition(AUDIT_BOARD_AND_CVRS_OK,
                         COUNTY_START_AUDIT_EVENT,
                         DEADLINE_MISSED)),
-    R(new ASMTransition(AUDIT_BOARD_BALLOT_MANIFEST_AND_CVRS_OK, 
+    R(new ASMTransition(BALLOT_MANIFEST_AND_CVRS_OK,
+                        ESTABLISH_AUDIT_BOARD_EVENT,
+                        AUDIT_BOARD_BALLOT_MANIFEST_AND_CVRS_OK)),
+    S(new ASMTransition(BALLOT_MANIFEST_AND_CVRS_OK,
+                        COUNTY_START_AUDIT_EVENT,
+                        DEADLINE_MISSED)),
+    T(new ASMTransition(AUDIT_BOARD_BALLOT_MANIFEST_AND_CVRS_OK, 
                         COUNTY_START_AUDIT_EVENT,
                         COUNTY_AUDIT_UNDERWAY)),
-    S(new ASMTransition(COUNTY_AUDIT_UNDERWAY, 
+    U(new ASMTransition(COUNTY_AUDIT_UNDERWAY, 
                         COUNTY_AUDIT_COMPLETE_EVENT,
                         COUNTY_AUDIT_COMPLETE));
 
