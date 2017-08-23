@@ -105,7 +105,7 @@ public class ResetDatabase extends AbstractEndpoint {
     Persistence.saveOrUpdate(dosdb);
     
     for (final County c : Persistence.getAll(County.class)) {
-      final CountyDashboard cdb = new CountyDashboard(c.id(), CountyStatus.NO_DATA);
+      final CountyDashboard cdb = new CountyDashboard(c, CountyStatus.NO_DATA);
       Persistence.saveOrUpdate(cdb);
     }
     

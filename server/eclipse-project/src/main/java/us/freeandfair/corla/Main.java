@@ -313,7 +313,7 @@ public final class Main {
       
       CountyDashboard cdb = Persistence.getByID(c.id(), CountyDashboard.class);
       if (cdb == null) {
-        cdb = new CountyDashboard(c.id(), CountyStatus.NO_DATA);
+        cdb = new CountyDashboard(c, CountyStatus.NO_DATA);
         Persistence.saveOrUpdate(cdb);
       }
     }

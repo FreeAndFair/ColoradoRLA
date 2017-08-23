@@ -25,6 +25,7 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.Contest;
+import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.ContestQueries;
 import us.freeandfair.corla.util.SparkHelper;
@@ -67,14 +68,12 @@ public class ContestDownloadByCounty extends AbstractEndpoint {
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
     if (validateParameters(the_request)) {
-      final Set<Long> county_set = new HashSet<Long>();
+      final Set<County> county_set = new HashSet<County>();
       for (final String s : the_request.queryParams()) {
-        county_set.add(Long.valueOf(s));
+        county_set.add(Persistence.getByID(Long.valueOf(s), County.class));
       }
-      final Set<Contest> contest_set = 
-          ContestQueries.forCounties(county_set);
-      if (contest_set == null) {
-        serverError(the_response, "Error retrieving records from database");
+      if (county_set.contains(null)) {
+        dataNotFound(the_response, "Nonexistent county ID specified");
       } else {
         try {
           final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();

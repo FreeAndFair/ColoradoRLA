@@ -27,6 +27,8 @@ import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.ASMUtilities;
 import us.freeandfair.corla.asm.AuditBoardDashboardASM;
 import us.freeandfair.corla.asm.CountyDashboardASM;
+import us.freeandfair.corla.controller.ComparisonAuditController;
+import us.freeandfair.corla.model.CountyContestComparisonAudit;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
@@ -86,7 +88,15 @@ public class PublishBallotsToAudit extends AbstractDoSDashboardEndpoint {
           if (cdb.cvrUploadTimestamp() == null) {
             Main.LOGGER.info("county " + cdb.id() + " missed the file upload deadline");
           } else {
-            cdb.setCVRsToAudit(CountyDashboard.computeBallotOrder(cdb, dosdb.randomSeed()));
+            // find the initial window
+            int max_estimated_to_audit = Integer.MIN_VALUE;
+            for (final CountyContestComparisonAudit ca : cdb.comparisonAudits()) {
+              max_estimated_to_audit = Math.max(max_estimated_to_audit, 
+                                                ca.initialBallotsToAudit());
+            }
+            cdb.setCVRsToAudit(ComparisonAuditController.
+                               computeBallotOrder(cdb, dosdb.randomSeed(),
+                                                  0, max_estimated_to_audit));
             Persistence.saveOrUpdate(cdb);
           } 
           // update the ASMs for the county and audit board
@@ -97,6 +107,7 @@ public class PublishBallotsToAudit extends AbstractDoSDashboardEndpoint {
                               String.valueOf(cdb.id()));
           }
         } catch (final IllegalArgumentException e) {
+          e.printStackTrace(System.out);
           serverError(the_response, "could not set ballot list for county " + 
                       cdb.id());
           Main.LOGGER.info("could not set ballot list for county " + cdb.id());

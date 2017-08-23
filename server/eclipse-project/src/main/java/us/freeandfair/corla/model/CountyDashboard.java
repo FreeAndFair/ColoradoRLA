@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.OptionalLong;
 import java.util.Set;
 
 import javax.persistence.Cacheable;
@@ -36,18 +35,16 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.crypto.PseudoRandomNumberGenerator;
 import us.freeandfair.corla.model.CVRContestInfo.ConsensusValue;
-import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.persistence.PersistentEntity;
 import us.freeandfair.corla.query.CVRAuditInfoQueries;
-import us.freeandfair.corla.query.CastVoteRecordQueries;
 import us.freeandfair.corla.query.CountyContestResultQueries;
 
 /**
@@ -88,10 +85,17 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   private static final long serialVersionUID = 1; 
   
   /**
-   * The county ID.
+   * The database ID; this is always the county ID.
    */
   @Id
   private Long my_id;
+  
+  /**
+   * The county.
+   */
+  @OneToOne(optional = false, fetch = FetchType.LAZY)
+  @JoinColumn
+  private County my_county;
   
   /**
    * The version (for optimistic locking).
@@ -222,9 +226,10 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * @param the_county_id The county ID.
    * @param the_status The status.
    */
-  public CountyDashboard(final Long the_county_id, final CountyStatus the_status) {
+  public CountyDashboard(final County the_county, final CountyStatus the_status) {
     super();
-    setID(the_county_id);
+    my_county = the_county;
+    my_id = the_county.id();
     my_status = the_status;
   }
   
@@ -238,13 +243,15 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   }
   
   /**
-   * Sets the database ID for this dashboard. This must be the county ID.
+   * Sets the database ID for this dashboard. This operation is unsupported on
+   * this class.
    * 
    * @param the_id The ID. 
+   * @exception UnsupportedOperationException always.
    */
   @Override
   public final void setID(final Long the_id) {
-    my_id = the_id;
+    throw new UnsupportedOperationException("setID() not supported on county dashboard");
   }
   
   /**
@@ -253,6 +260,13 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   @Override
   public Long version() {
     return my_version;
+  }
+  
+  /**
+   * @return the county for this dashboard.
+   */
+  public County county() {
+    return my_county;
   }
   
   /**
@@ -366,14 +380,17 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * Initializes the audit data for this county dashboard.
    */
   private void initializeAuditData() {
+    int to_audit = Integer.MIN_VALUE;
     my_cvr_under_audit = 0;
     my_discrepancies = 0;
     my_disagreements = 0;
     my_comparison_audits.clear();
-    for (final CountyContestResult ccr : CountyContestResultQueries.forCounty(id())) {
+    for (final CountyContestResult ccr : CountyContestResultQueries.forCounty(my_county)) {
       final CountyContestComparisonAudit audit = new CountyContestComparisonAudit(this, ccr);
       my_comparison_audits.add(audit);
+      to_audit = Math.max(to_audit, audit.initialBallotsToAudit());
     }
+    my_estimated_ballots_to_audit = Math.max(0,  to_audit);
   }
   
   /**
@@ -388,6 +405,13 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    */
   public List<CVRAuditInfo> cvrAuditInfo() {
     return Collections.unmodifiableList(my_cvr_audit_info);
+  }
+  
+  /**
+   * @return the set of comparison audits being performed.
+   */
+  public Set<CountyContestComparisonAudit> comparisonAudits() {
+    return my_comparison_audits;
   }
   
   /**
@@ -564,10 +588,11 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * Updates the estimated number of ballots to audit.
    */
   private void updateEstimatedBallotsToAudit() {
-    int ballots_to_audit = Integer.MIN_VALUE;
+    int to_audit = Integer.MIN_VALUE;
     for (final CountyContestComparisonAudit ccca : my_comparison_audits) {
-      ballots_to_audit = Math.max(ballots_to_audit, ccca.ballotsToAudit());
+      to_audit = Math.max(to_audit, ccca.ballotsToAudit());
     }
+    my_estimated_ballots_to_audit = Math.max(0,  to_audit);
   }
   
   /**
@@ -680,46 +705,6 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   @Override
   public int hashCode() {
     return toString().hashCode();
-  }
-  
-  /**
-   * Compute the order of ballot (cards) for audit.
-   */
-  public static List<CastVoteRecord> computeBallotOrder(final CountyDashboard the_cdb, 
-                                                        final String the_seed) {
-    final OptionalLong count = 
-        CastVoteRecordQueries.countMatching(the_cdb.my_cvr_upload_timestamp, 
-                                            the_cdb.id(), 
-                                            RecordType.UPLOADED);
-    if (!count.isPresent()) {
-      throw new IllegalStateException("unable to count CVRs for county " + the_cdb.id());
-    }
-
-    final boolean with_replacement = true;
-    // assuming that CVRs are indexed from 0
-    final int minimum = 0;
-    // the number of CVRs for the_contest_to_audit - note that the sequence
-    // generator generates a sequence of the numbers minimum ... maximum 
-    // inclusive, so we subtract 1 from the number of CVRs to give it the
-    // correct range for our actual list of CVRs (indexed from 0).
-    final int maximum = (int) count.getAsLong() - 1;
-
-    final PseudoRandomNumberGenerator prng = 
-        new PseudoRandomNumberGenerator(the_seed, with_replacement,
-                                        minimum, maximum);
-    final List<Integer> list_of_cvrs_to_audit = 
-        prng.getRandomNumbers(minimum, maximum);
-    final List<Long> list_of_cvr_ids = 
-        CastVoteRecordQueries.idsForMatching(the_cdb.cvrUploadTimestamp(), 
-                                             the_cdb.id(),
-                                             RecordType.UPLOADED);
-    final List<CastVoteRecord> result = new ArrayList<>();
-    
-    for (final int index : list_of_cvrs_to_audit) {
-      result.add(Persistence.getByID(list_of_cvr_ids.get(index), CastVoteRecord.class));
-    }
-    
-    return result;
   }
   
   /**

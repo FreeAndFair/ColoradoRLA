@@ -35,24 +35,25 @@ import us.freeandfair.corla.persistence.Persistence;
  */
 @Entity
 @Table(name = "county_contest_comparison_audit")
-@SuppressWarnings({"PMD.ImmutableField", "PMD.CyclomaticComplexity"})
+@SuppressWarnings({"PMD.ImmutableField", "PMD.CyclomaticComplexity", "PMD.GodClass"})
 public class CountyContestComparisonAudit extends AbstractEntity implements Serializable {
   /**
    * Gamma, as presented in the literature:
    * https://www.stat.berkeley.edu/~stark/Preprints/gentle12.pdf
    */
-  public static final double GENTLE_GAMMA = 1.03905;
+  public static final BigDecimal GENTLE_GAMMA = BigDecimal.valueOf(1.03905);
 
   /**
    * Gamma, as recommended by Neal McBurnett for use in Colorado.
    */
-  public static final double COLORADO_GAMMA = 1.1;
+  public static final BigDecimal COLORADO_GAMMA = BigDecimal.valueOf(1.1);
 
   /**
-   * The gamma used by this implementation.
+   * The initial estimate of error rates, to calculate conservative 
+   * initial ballots to audit.
    */
-  public static final double GAMMA = COLORADO_GAMMA;
-
+  public static final BigDecimal CONSERVATIVE_RATE = BigDecimal.valueOf(0.01);
+  
   /**
    * The serialVersionUID.
    */
@@ -71,6 +72,11 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn
   private CountyContestResult my_contest_result;
+  
+  /**
+   * The gamma.
+   */
+  private BigDecimal my_gamma = COLORADO_GAMMA;
   
   /**
    * The risk limit.
@@ -138,10 +144,48 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
   }
   
   /**
+   * @return the gamma associated with this audit.
+   */
+  public BigDecimal gamma() {
+    return my_gamma;
+  }
+  
+  /**
    * @return the risk limit associated with this audit.
    */
   public BigDecimal riskLimit() {
     return my_risk_limit;
+  }
+  
+  /**
+   * @return the initial (conservative) expected number of ballots to audit.
+   */
+  @SuppressWarnings({"checkstyle:magicnumber", "PMD.AvoidDuplicateLiterals"})
+  public Integer initialBallotsToAudit() {
+    // compute the conservative numbers of over/understatements based on 
+    // initial estimate of error rate
+    final double gamma_double = my_gamma.doubleValue();
+    final double rate_double = CONSERVATIVE_RATE.doubleValue();
+    double n0 = -2 * gamma_double * Math.log(my_risk_limit.doubleValue()) /
+                (my_contest_result.minMargin().doubleValue() + 2 * gamma_double *
+                    (rate_double * Math.log(1 - 1 / (2 * gamma_double)) +
+                     rate_double * Math.log(1 - 1 / gamma_double) +
+                     rate_double * Math.log(1 + 1 / (2 * gamma_double)) +
+                     rate_double * Math.log(1 + 1 / gamma_double)));
+    double o1;
+    double o2;
+    double u1;
+    double u2;
+
+    final int loop_bound = 3;
+    for (int i = 0; i < loop_bound; i++) {
+      o1 = Math.ceil(rate_double * n0);
+      u1 = Math.ceil(rate_double * n0);
+      o2 = Math.ceil(rate_double * n0);
+      u2 = Math.ceil(rate_double * n0);
+      n0 = computeBallotsToAudit(o1, o2, u1, u2);
+    }
+    return (int) n0;
   }
   
   /**
@@ -159,19 +203,44 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
    * This is the stopping sample size as defined in the literature:
    * https://www.stat.berkeley.edu/~stark/Preprints/gentle12.pdf
    */
-  @SuppressWarnings({"checkstyle:magicnumber", "PMD.AvoidDuplicateLiterals"})
   private void recalculateBallotsToAudit() {
-    my_ballots_to_audit = (int)
+    my_ballots_to_audit = computeBallotsToAudit(my_two_vote_under, 
+                                                my_one_vote_under,
+                                                my_one_vote_over,
+                                                my_two_vote_over);
+  }
+  
+  /**
+   * Computes the expected number of ballots remaining to audit give the
+   * specified numbers of over- and understatements.
+   * 
+   * @param the_two_under The two-vote understatements.
+   * @param the_one_under The one-vote understatements.
+   * @param the_one_over The one-vote overstatements.
+   * @param the_two_over The two-vote overstatements.
+   * 
+   * @return the expected number of ballots remaining to audit.
+   * This is the stopping sample size as defined in the literature:
+   * https://www.stat.berkeley.edu/~stark/Preprints/gentle12.pdf
+   */
+  @SuppressWarnings({"checkstyle:magicnumber", "PMD.AvoidDuplicateLiterals"})
+  private Integer computeBallotsToAudit(final double the_two_under,
+                                        final double the_one_under,
+                                        final double the_one_over,
+                                        final double the_two_over) {
+    final double gamma_double = my_gamma.doubleValue();
+    return (int)
         (Math.max(my_one_vote_over + my_two_vote_over +
                   my_one_vote_under + my_two_vote_under,
-                  Math.ceil(-2 * GAMMA *
+                  Math.ceil(-2 * gamma_double *
                             (Math.log(my_risk_limit.doubleValue()) +
-                                my_one_vote_over * Math.log(1 - 1 / (2 * GAMMA)) +
-                                my_two_vote_over * Math.log(1 - 1 / GAMMA) +
-                                my_one_vote_under * Math.log(1 + 1 / (2 * GAMMA)) +
-                                my_two_vote_under * Math.log(1 + 1 / GAMMA)) /
+                                the_one_over * Math.log(1 - 1 / (2 * gamma_double)) +
+                                the_two_over * Math.log(1 - 1 / gamma_double) +
+                                the_one_under * Math.log(1 + 1 / (2 * gamma_double)) +
+                                the_two_under * Math.log(1 + 1 / gamma_double)) /
                             my_contest_result.minMargin().doubleValue())));
   }
+  
   
   /**
    * Records the specified over/understatement (the valid range is -2 .. 2).
@@ -291,7 +360,7 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
         the_acvr.contestInfoForContest(my_contest_result.contest());
 
     if (cvr_info != null && acvr_info != null) {
-      // this is a very quick calculation, and will likely not work correctly 
+      // this is a very quick calculation, and may not work correctly 
       // for elections with multiple winners, but will err on the side of being
       // pessimistic
 

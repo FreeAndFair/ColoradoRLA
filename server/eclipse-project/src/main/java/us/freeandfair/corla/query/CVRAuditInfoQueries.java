@@ -86,17 +86,21 @@ public final class CVRAuditInfoQueries {
    * @return the list of CVR IDs to audit, or null if it could not be 
    * obtained.
    */
-  // TODO FIX THIS QUERY!
   public static List<Long> cvrsToAudit(final CountyDashboard the_dashboard) {
     List<Long> result = null;
     try {
       final Session s = Persistence.currentSession();
       final CriteriaBuilder cb = s.getCriteriaBuilder();
-      final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+      final CriteriaQuery<CastVoteRecord> cq = cb.createQuery(CastVoteRecord.class);
       final Root<CVRAuditInfo> root = cq.from(CVRAuditInfo.class);
       cq.select(root.get("my_cvr"));
-      final TypedQuery<Long> query = s.createQuery(cq);
-      result = query.getResultList();
+      final TypedQuery<CastVoteRecord> query = s.createQuery(cq);
+      final List<CastVoteRecord> cvrs = query.getResultList();
+      result = new ArrayList<>();
+      for (final CastVoteRecord cvr : cvrs) {
+        result.add(cvr.id());
+        Persistence.evict(cvr);
+      }
     } catch (final PersistenceException e) {
       Main.LOGGER.error("could not query database for cvrs to audit list");
     }

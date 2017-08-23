@@ -106,10 +106,10 @@ public final class CountyContestResultQueries {
   /**
    * Gets CountyContestResults that are in the specified county.
    * 
-   * @param the_county_id The county ID.
+   * @param the_county The county.
    * @return the matching CountyContestResults, or null if the query fails.
    */
-  public static Set<CountyContestResult> forCounty(final Long the_county_id) {
+  public static Set<CountyContestResult> forCounty(final County the_county) {
     Set<CountyContestResult> result = null;
     
     try {
@@ -120,7 +120,7 @@ public final class CountyContestResultQueries {
           cb.createQuery(CountyContestResult.class);
       final Root<CountyContestResult> root = cq.from(CountyContestResult.class);
       cq.select(root);
-      cq.where(cb.equal(root.get("my_county_id"), the_county_id));
+      cq.where(cb.equal(root.get("my_county"), the_county));
       final TypedQuery<CountyContestResult> query = s.createQuery(cq);
       result = new HashSet<CountyContestResult>(query.getResultList());
       if (transaction) {

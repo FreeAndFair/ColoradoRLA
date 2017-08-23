@@ -219,14 +219,15 @@ public class CountyDashboardRefreshResponse {
   @SuppressWarnings({"PMD.NPathComplexity", "PMD.CyclomaticComplexity"})
   public static CountyDashboardRefreshResponse 
       createResponse(final CountyDashboard the_dashboard) {
-    final Long county_id = the_dashboard.id();
-    final County county = Persistence.getByID(county_id, County.class);
     final DoSDashboard dosd = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
 
-    if (county == null || dosd == null) {
+    if (dosd == null) {
       throw new PersistenceException("unable to read county dashboard state");
     }
-    
+
+    final County county = the_dashboard.county();
+    final Long county_id = county.id();
+
     // general information doesn't exist yet
     final Map<String, String> general_information = new HashMap<String, String>();
 
@@ -254,7 +255,7 @@ public class CountyDashboardRefreshResponse {
     
     // contests
     final Set<Long> contests = new HashSet<Long>();
-    for (final Contest c : ContestQueries.forCounty(county_id)) {
+    for (final Contest c : ContestQueries.forCounty(county)) {
       contests.add(c.id());
     }
     
