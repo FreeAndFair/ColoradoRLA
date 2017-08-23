@@ -13,7 +13,7 @@
 package us.freeandfair.corla.endpoint;
 
 import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.SUBMIT_AUDIT_REPORT_EVENT;
-import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.COMPLETE_AUDIT_EVENT;
+import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.COUNTY_AUDIT_COMPLETE_EVENT;
 import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.*;
 
 import spark.Request;
@@ -73,7 +73,8 @@ public class AuditReport extends AbstractAuditBoardDashboardEndpoint {
                          final Response the_response) {
     try {
       if (!DISABLE_ASM) {
-        ASMUtilities.step(COMPLETE_AUDIT_EVENT, CountyDashboardASM.class, my_asm.identity());
+        ASMUtilities.step(COUNTY_AUDIT_COMPLETE_EVENT, 
+                          CountyDashboardASM.class, my_asm.identity());
         // check to see if all counties are complete
         boolean all_complete = true;
         for (final County c : Persistence.getAll(County.class)) {
@@ -82,9 +83,9 @@ public class AuditReport extends AbstractAuditBoardDashboardEndpoint {
           all_complete &= asm.isInFinalState();       
         }
         if (all_complete) {
-          ASMUtilities.step(AUDIT_COMPLETE_EVENT, DoSDashboardASM.class, null);
+          ASMUtilities.step(STATE_AUDIT_COMPLETE_EVENT, DoSDashboardASM.class, null);
         } else {
-          ASMUtilities.step(COUNTY_AUDIT_COMPLETE_EVENT, DoSDashboardASM.class, null);
+          ASMUtilities.step(DOS_COUNTY_AUDIT_COMPLETE_EVENT, DoSDashboardASM.class, null);
         }
       }
       ok(the_response, "Final audit report saved (actual action to be specified by CDOS)");

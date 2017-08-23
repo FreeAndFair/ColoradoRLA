@@ -30,8 +30,8 @@ public interface ASMEvent extends Event {
     PUBLISH_BALLOTS_TO_AUDIT_EVENT, // public inbound event
     AUDIT_EVENT, // private internal event
     INDICATE_FULL_HAND_COUNT_CONTEST_EVENT, // public inbound event
-    COUNTY_AUDIT_COMPLETE_EVENT, // private internal event
-    AUDIT_COMPLETE_EVENT, // private internal event
+    DOS_COUNTY_AUDIT_COMPLETE_EVENT, // private internal event
+    STATE_AUDIT_COMPLETE_EVENT, // private internal event
     PUBLISH_AUDIT_REPORT_EVENT // public inbound event
   }
   
@@ -44,7 +44,7 @@ public interface ASMEvent extends Event {
     UPLOAD_BALLOT_MANIFEST_EVENT, // public inbound event
     UPLOAD_CVRS_EVENT, // public inbound event
     COUNTY_START_AUDIT_EVENT, // private internal event
-    COMPLETE_AUDIT_EVENT // private internal event
+    COUNTY_AUDIT_COMPLETE_EVENT // private internal event
   }
   
   /**
