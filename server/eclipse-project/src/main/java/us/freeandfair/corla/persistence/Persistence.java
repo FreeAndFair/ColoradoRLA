@@ -314,14 +314,12 @@ public final class Persistence {
 
     final Session session = currentSession();
     Transaction transaction = null;
-    if (session != null) {
-      try {
-        transaction = session.getTransaction();
-      } catch (final HibernateException e) {
-        // the session did not have a transaction
-      }
+    try {
+      transaction = session.getTransaction();
+    } catch (final HibernateException e) {
+      // the session did not have a transaction
     }
-    return session != null && transaction != null && transaction.getStatus().canRollback();
+    return transaction != null && transaction.getStatus().canRollback();
   }
   
   /**
@@ -617,7 +615,7 @@ public final class Persistence {
    * @exception PersistenceException if there is a problem flushing the session.
    */
   public static void flush() throws PersistenceException {
-    final Session session = currentSession();
+    final Session session = session_info.get();
     if (session != null) {
       session.flush();
     }
@@ -631,7 +629,7 @@ public final class Persistence {
    * @exception IllegalArgumentException if the specified object is not an entity.
    */
   public static void evict(final PersistentEntity the_entity) {
-    final Session session = currentSession();
+    final Session session = session_info.get();
     if (session != null) {
       session.evict(the_entity);
     }
@@ -647,7 +645,7 @@ public final class Persistence {
    * the session.
    */
   public static void flushAndClear() {
-    final Session session = currentSession();
+    final Session session = session_info.get();
     if (session != null) {
       session.flush();
       session.clear();
