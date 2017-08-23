@@ -136,8 +136,10 @@ const CountyHomePage = (props: any) => {
 
     const info = { auditDate: startTimestamp };
 
-    const bothFilesUploaded = ballotManifestHash && cvrExportHash;
-    const buttonDisabled = !bothFilesUploaded;
+    const canStartAudit =
+        county.asm.auditBoard.currentState === 'AUDIT_IN_PROGRESS';
+
+    const buttonDisabled = !canStartAudit;
 
     return (
         <div className='county-root'>
