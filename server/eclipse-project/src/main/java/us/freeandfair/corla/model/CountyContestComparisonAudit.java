@@ -265,19 +265,10 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
    * @return the over/understatement; valid values are -2 .. 2.
    */
   public Integer computeDiscrepancy(final CVRAuditInfo the_info) {
-    if (the_info.acvrID() == null || the_info.cvrID() == null) {
+    if (the_info.acvr() == null || the_info.cvr() == null) {
       throw new IllegalArgumentException("null CVR or ACVR in pair " + the_info);
     } else {
-      final CastVoteRecord cvr = 
-          Persistence.getByID(the_info.cvrID(), CastVoteRecord.class);
-      final CastVoteRecord acvr = 
-          Persistence.getByID(the_info.acvrID(), CastVoteRecord.class);
-      
-      if (cvr == null || acvr == null) {
-        throw new IllegalArgumentException("nonexisting CVR or ACVR in pair " + the_info);
-      }
-      
-      return computeDiscrepancy(cvr, acvr);
+      return computeDiscrepancy(the_info.cvr(), the_info.acvr());
     }
   }
 

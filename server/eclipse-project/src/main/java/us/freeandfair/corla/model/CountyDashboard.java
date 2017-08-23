@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.OptionalLong;
 import java.util.Set;
 
 import javax.persistence.Cacheable;
@@ -430,9 +431,9 @@ public class CountyDashboard implements PersistentEntity, Serializable {
       // if the record is the current CVR under audit, or if it hasn't been
       // audited yet, we can just process it
       final CVRAuditInfo ai = info.get(0);
-      if (ai.acvrID() == null) {
+      if (ai.acvr() == null) {
         for (final CVRAuditInfo c : info) {
-          c.setACVRID(the_audit_cvr.id());
+          c.setACVR(the_audit_cvr);
           Persistence.saveOrUpdate(c);
         }
         // this just updates the counters; the actual "audit" happens later
@@ -448,11 +449,9 @@ public class CountyDashboard implements PersistentEntity, Serializable {
             undo_count = undo_count + 1;
           }
         }
-        unaudit(the_cvr_under_audit, 
-                Persistence.getByID(ai.acvrID(), CastVoteRecord.class), 
-                undo_count);
+        unaudit(the_cvr_under_audit, ai.acvr(), undo_count);
         for (final CVRAuditInfo c : info) {
-          c.setACVRID(the_audit_cvr.id());
+          c.setACVR(the_audit_cvr);
           Persistence.saveOrUpdate(c);
         }
         audit(the_cvr_under_audit, the_audit_cvr, undo_count, true);
@@ -686,8 +685,16 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   /**
    * Compute the order of ballot (cards) for audit.
    */
-  public static List<Long> computeBallotOrder(final CountyDashboard the_cdb, 
-                                              final String the_seed) {
+  public static List<CastVoteRecord> computeBallotOrder(final CountyDashboard the_cdb, 
+                                                        final String the_seed) {
+    final OptionalLong count = 
+        CastVoteRecordQueries.countMatching(the_cdb.my_cvr_upload_timestamp, 
+                                            the_cdb.id(), 
+                                            RecordType.UPLOADED);
+    if (!count.isPresent()) {
+      throw new IllegalStateException("unable to count CVRs for county " + the_cdb.id());
+    }
+
     final boolean with_replacement = true;
     // assuming that CVRs are indexed from 0
     final int minimum = 0;
@@ -695,12 +702,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
     // generator generates a sequence of the numbers minimum ... maximum 
     // inclusive, so we subtract 1 from the number of CVRs to give it the
     // correct range for our actual list of CVRs (indexed from 0).
-    final Long max_long = 
-        CastVoteRecordQueries.countMatching(the_cdb.cvrUploadTimestamp(), 
-                                            the_cdb.id(),
-                                            RecordType.UPLOADED) - 1;
-
-    final int maximum = max_long.intValue();
+    final int maximum = (int) count.getAsLong() - 1;
 
     final PseudoRandomNumberGenerator prng = 
         new PseudoRandomNumberGenerator(the_seed, with_replacement,
@@ -711,10 +713,12 @@ public class CountyDashboard implements PersistentEntity, Serializable {
         CastVoteRecordQueries.idsForMatching(the_cdb.cvrUploadTimestamp(), 
                                              the_cdb.id(),
                                              RecordType.UPLOADED);
-    final List<Long> result = new ArrayList<>();
+    final List<CastVoteRecord> result = new ArrayList<>();
+    
     for (final int index : list_of_cvrs_to_audit) {
-      result.add(list_of_cvr_ids.get(index));
+      result.add(Persistence.getByID(list_of_cvr_ids.get(index), CastVoteRecord.class));
     }
+    
     return result;
   }
   

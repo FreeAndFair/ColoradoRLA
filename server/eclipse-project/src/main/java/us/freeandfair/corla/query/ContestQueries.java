@@ -107,7 +107,7 @@ public final class ContestQueries {
       final CriteriaQuery<Contest> cq = cb.createQuery(Contest.class);
       final Root<CountyContestResult> root = cq.from(CountyContestResult.class);
       final List<Predicate> disjuncts = new ArrayList<Predicate>();
-      for (final Integer id : the_county_ids) {
+      for (final Long id : the_county_ids) {
         disjuncts.add(cb.equal(root.get("my_county_id"), id));
       }
       cq.select(root.get("my_contest"));
