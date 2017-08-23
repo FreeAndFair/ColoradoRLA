@@ -8,6 +8,8 @@ import {
 
 import countyDashboardRefresh from '../action/countyDashboardRefresh';
 import countyFetchContests from '../action/countyFetchContests';
+import fetchAuditBoardAsmState from '../action/fetchAuditBoardAsmState';
+import fetchCountyAsmState from '../action/fetchCountyAsmState';
 
 
 function* countyPoll() {
@@ -21,6 +23,8 @@ function* countyPoll() {
     yield delay(COUNTY_POLL_DELAY);
 
     countyDashboardRefresh();
+    fetchAuditBoardAsmState();
+    fetchCountyAsmState();
 
     if (county && county.id) {
         countyFetchContests(county.id);
