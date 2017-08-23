@@ -1,6 +1,13 @@
 export default (state: any) => ({
     ...state,
-    county: { auditBoard: [], contests: {} },
+    county: {
+        asm: {
+            auditBoard: {},
+            county: {},
+        },
+        auditBoard: [],
+        contests: {},
+    },
     dashboard: 'county',
     loggedIn: true,
 });
