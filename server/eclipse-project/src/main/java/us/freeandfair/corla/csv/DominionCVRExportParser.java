@@ -241,10 +241,10 @@ public class DominionCVRExportParser implements CVRExportParser {
       final Contest c = ContestQueries.matching(new Contest(cn, "", choices, 
                                                             the_votes_allowed.get(cn)));
       CountyContestResult r = 
-          CountyContestResultQueries.matching(my_county.id(), c);
+          CountyContestResultQueries.matching(my_county, c);
       // in case the contests were defined wrong, we just drop the results object
       Persistence.delete(r);
-      r = CountyContestResultQueries.matching(my_county.id(), c);
+      r = CountyContestResultQueries.matching(my_county, c);
       my_contests.add(c);
       my_results.add(r);
     }

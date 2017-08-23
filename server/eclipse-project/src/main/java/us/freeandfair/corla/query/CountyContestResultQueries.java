@@ -28,6 +28,7 @@ import org.hibernate.Session;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.Contest;
+import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyContestResult;
 import us.freeandfair.corla.persistence.Persistence;
 
@@ -50,14 +51,14 @@ public final class CountyContestResultQueries {
    * county ID and contest. If there is not already a matching persistent 
    * object, one is created and returned.
    *
-   * @param the_county_id The county ID.
+   * @param the_county The county.
    * @param the_contest The contest.
    * @return the matched CountyContestResult object, if one exists.
    */
   // we are checking to see if exactly one result is in a list, and
   // PMD doesn't like it
   @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
-  public static CountyContestResult matching(final Long the_county_id,
+  public static CountyContestResult matching(final County the_county,
                                              final Contest the_contest) {
     CountyContestResult result = null;
     
@@ -70,8 +71,8 @@ public final class CountyContestResultQueries {
           cb.createQuery(CountyContestResult.class);
       final Root<CountyContestResult> root = cq.from(CountyContestResult.class);
       final List<Predicate> conjuncts = new ArrayList<>();
-      conjuncts.add(cb.equal(root.get("my_county_id"), the_county_id));
-      conjuncts.add(cb.equal(root.get("my_contest_id"), the_contest.id()));
+      conjuncts.add(cb.equal(root.get("my_county"), the_county));
+      conjuncts.add(cb.equal(root.get("my_contest"), the_contest));
       cq.select(root).where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
       final TypedQuery<CountyContestResult> query = s.createQuery(cq);
       final List<CountyContestResult> query_results = query.getResultList();
@@ -79,7 +80,7 @@ public final class CountyContestResultQueries {
       if (query_results.size() == 1) {
         result = query_results.get(0);
       } else if (query_results.isEmpty()) {
-        result = new CountyContestResult(the_county_id, the_contest);
+        result = new CountyContestResult(the_county, the_contest);
         Persistence.saveOrUpdate(result);
       } else {
         throw new IllegalStateException("unique constraint violated on CountyContestResult");

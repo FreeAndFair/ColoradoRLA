@@ -30,7 +30,9 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -47,7 +49,7 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
 @Entity
 @Table(name = "county_contest_result",
        uniqueConstraints = {
-         @UniqueConstraint(columnNames = {"my_county_id", "my_contest_id"})
+         @UniqueConstraint(columnNames = {"county_id", "contest_id"})
        })
 
 //this class has many fields that would normally be declared final, but
@@ -70,15 +72,17 @@ public class CountyContestResult extends AbstractEntity implements Serializable 
   private static final long serialVersionUID = 1L;
   
   /**
-   * The county ID to which this contest result set belongs. 
+   * The county to which this contest result set belongs. 
    */
-  @Column(updatable = false, nullable = false)
-  private Long my_county_id;
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
+  @JoinColumn
+  private County my_county;
 
   /**
    * The contest.
    */
-  @Column(updatable = false, nullable = false)
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
+  @JoinColumn
   private Contest my_contest;
 
   /**
@@ -140,13 +144,13 @@ public class CountyContestResult extends AbstractEntity implements Serializable 
    * Constructs a new CountyContestResult for the specified county ID and
    * contest.
    * 
-   * @param the_county_id The county.
+   * @param the_county The county.
    * @param the_contest The contest.
    */
-  public CountyContestResult(final Long the_county_id, final Contest the_contest) {
+  public CountyContestResult(final County the_county, final Contest the_contest) {
     super();
-    my_county_id = the_county_id;
-    my_contest = the_contest.id();
+    my_county = the_county;
+    my_contest = the_contest;
     my_votes_allowed = the_contest.votesAllowed();
     for (final Choice c : the_contest.choices()) {
       my_vote_totals.put(c.name(), 0);
@@ -156,14 +160,14 @@ public class CountyContestResult extends AbstractEntity implements Serializable 
   /**
    * @return the county for this CountyContestResult.
    */
-  public Long countyID() {
-    return my_county_id;
+  public County county() {
+    return my_county;
   }
   
   /**
    * @return the contest for this CountyContestResult.
    */
-  public Long contestID() {
+  public Contest contest() {
     return my_contest;
   }
   

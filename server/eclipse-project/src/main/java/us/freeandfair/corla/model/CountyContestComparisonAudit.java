@@ -61,13 +61,15 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
   /**
    * The county dashboard to which this audit state belongs. 
    */
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn
   private CountyDashboard my_dashboard;
 
   /**
    * The contest result for this audit state.
    */
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
+  @JoinColumn
   private CountyContestResult my_contest_result;
   
   /**
@@ -284,9 +286,9 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
                                     final CastVoteRecord the_acvr) {
     int result = 0;
     final CVRContestInfo cvr_info = 
-        the_cvr.contestInfoForContest(my_contest_result.contestID());
+        the_cvr.contestInfoForContest(my_contest_result.contest());
     final CVRContestInfo acvr_info =
-        the_acvr.contestInfoForContest(my_contest_result.contestID());
+        the_acvr.contestInfoForContest(my_contest_result.contest());
 
     if (cvr_info != null && acvr_info != null) {
       // this is a very quick calculation, and will likely not work correctly 

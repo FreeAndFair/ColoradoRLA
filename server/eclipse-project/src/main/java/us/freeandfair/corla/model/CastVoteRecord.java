@@ -221,13 +221,13 @@ public class CastVoteRecord extends AbstractEntity implements Serializable {
   /**
    * Gets the choices for the specified contest.
    * 
-   * @param the_contest_id The contest ID.
+   * @param the_contest The contest.
    * @return the choices made in this cast vote record for the specified contest,
    * or null if none were made for the specified contest.
    */
-  public CVRContestInfo contestInfoForContest(final Long the_contest_id) {
+  public CVRContestInfo contestInfoForContest(final Contest the_contest) {
     for (final CVRContestInfo info : my_contest_info) {
-      if (info.contest().id().equals(the_contest_id)) {
+      if (info.contest().equals(the_contest)) {
         return info;
       }
     }
