@@ -1,5 +1,5 @@
 const formatBoardMember = (elector: any) => {
-    const [firstName, lastName] = elector.name.split(' ');
+    const { firstName, lastName } = elector;
 
     return {
         first_name: firstName,
