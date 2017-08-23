@@ -40,10 +40,10 @@ class CVRUploader extends React.Component<any, any> {
                             value={ hash }
                             onChange={ this.onHashChange } />
                     </label>
-                    <button className='pt-button' onClick={ upload }>
-                        Upload
-                    </button>
                 </div>
+                <button className='pt-button' onClick={ upload }>
+                    Upload
+                </button>
             </div>
         );
     }

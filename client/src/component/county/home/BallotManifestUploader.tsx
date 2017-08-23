@@ -39,11 +39,11 @@ class BallotManifestUploader extends React.Component<any, any> {
                             maxLength={ 64 }
                             value={ hash }
                             onChange={ this.onHashChange } />
-                        <button className='pt-button' onClick={ upload }>
-                            Upload
-                        </button>
                     </label>
                 </div>
+                <button className='pt-button' onClick={ upload }>
+                    Upload
+                </button>
             </div>
         );
     }
