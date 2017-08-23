@@ -9,21 +9,26 @@ import BallotManifestUploaderContainer from './BallotManifestUploaderContainer';
 import CVRUploaderContainer from './CVRUploaderContainer';
 
 
-const Main = ({ buttonEnabled, name, startAudit }: any) => (
-    <div className='county-main pt-card'>
-        <h1>Hello, { name } County!</h1>
-        <div>
+const Main = ({ buttonDisabled, name, startAudit }: any) => {
+    return (
+        <div className='county-main pt-card'>
+            <h1>Hello, { name } County!</h1>
             <div>
-                Please upload your Ballot Manifest and Cast Vote Records.
+                <div>
+                    Please upload your Ballot Manifest and Cast Vote Records.
+                </div>
+                <BallotManifestUploaderContainer />
+                <CVRUploaderContainer />
+                <button
+                    disabled={ buttonDisabled }
+                    className='pt-button pt-intent-primary'
+                    onClick={ startAudit }>
+                    Start Audit
+                </button>
             </div>
-            <BallotManifestUploaderContainer />
-            <CVRUploaderContainer />
-            <button disabled={ false } className='pt-button pt-intent-primary' onClick={ startAudit }>
-                Start Audit
-            </button>
         </div>
-    </div>
-);
+    );
+};
 
 const ContestInfoTableRow = ({ choice }: any) => (
     <tr>
@@ -121,16 +126,29 @@ const CountyHomePage = (props: any) => {
         countyDashboardRefresh,
         startAudit,
     } = props;
-    const { ballots, startTimestamp, status } = county;
+    const {
+        ballots,
+        ballotManifestHash,
+        cvrExportHash,
+        startTimestamp,
+        status,
+    } = county;
 
     const info = { auditDate: startTimestamp };
+
+    const bothFilesUploaded = ballotManifestHash && cvrExportHash;
+    const buttonDisabled = !bothFilesUploaded;
 
     return (
         <div className='county-root'>
             <CountyNav />
             <div>
-                <Main name={ countyInfo.name } startAudit={ startAudit } />
-                <Info info={ countyInfo } contests={ contests } county={ county } />
+                <Main buttonDisabled={ buttonDisabled }
+                      name={ countyInfo.name }
+                      startAudit={ startAudit } />
+                <Info info={ countyInfo }
+                      contests={ contests }
+                      county={ county } />
             </div>
         </div>
     );
