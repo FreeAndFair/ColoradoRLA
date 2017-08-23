@@ -13,6 +13,10 @@ function cleanup {
 }
 trap cleanup EXIT
 
+echo Smoketest at `date`
+git log -1
+git status -uno
+
 # Put these somewhere else before running via travis
 export TRAVIS_BUILD_DIR=`git rev-parse --show-toplevel`
 export CLIENT_DIR="${TRAVIS_BUILD_DIR}/client"
