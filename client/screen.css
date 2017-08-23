@@ -44,3 +44,10 @@ body {
 .sos-home .sos-info .county-info {
     flex: 1;
 }
+
+.truncate {
+  width: 500px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
