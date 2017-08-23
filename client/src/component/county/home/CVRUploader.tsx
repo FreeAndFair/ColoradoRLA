@@ -34,6 +34,8 @@ class CVRUploader extends React.Component<any, any> {
                     </div>
                     <label>
                         <EditableText
+                            minWidth={ 500 }
+                            maxLength={ 64 }
                             className='pt-input'
                             value={ hash }
                             onChange={ this.onHashChange } />

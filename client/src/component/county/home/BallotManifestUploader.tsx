@@ -35,6 +35,8 @@ class BallotManifestUploader extends React.Component<any, any> {
                     <label>
                         <EditableText
                             className='pt-input'
+                            minWidth={ 500 }
+                            maxLength={ 64 }
                             value={ hash }
                             onChange={ this.onHashChange } />
                         <button className='pt-button' onClick={ upload }>
