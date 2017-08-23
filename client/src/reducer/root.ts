@@ -10,6 +10,7 @@ import dosDashboardRefreshOk from './dosDashboardRefreshOk';
 import dosLoginOk from './dosLoginOk';
 import establishAuditBoardOk from './establishAuditBoardOk';
 import fetchAuditBoardAsmStateOk from './fetchAuditBoardAsmStateOk';
+import fetchCountyAsmStateOk from './fetchCountyAsmStateOk';
 import selectContestsForAuditOk from './selectContestsForAuditOk';
 import setRiskLimitOk from './setRiskLimitOk';
 import updateAcvrForm from './updateAcvrForm';
@@ -72,6 +73,10 @@ export default function root(state: AppState = defaultState, action: any) {
 
     case 'FETCH_AUDIT_BOARD_ASM_STATE_OK': {
         return fetchAuditBoardAsmStateOk(state, action);
+    }
+
+    case 'FETCH_COUNTY_ASM_STATE_OK': {
+        return fetchCountyAsmStateOk(state, action);
     }
 
     case 'SELECT_CONTESTS_FOR_AUDIT_OK': {
