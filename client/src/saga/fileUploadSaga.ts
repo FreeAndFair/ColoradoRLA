@@ -43,12 +43,21 @@ function* uploadCvrExportOk(action: any): any {
 }
 
 function* uploadCvrExportFail(action: any): any {
-    const { status } = action.data.received;
+    const { body, status } = action.data.received;
 
-    switch (status) {
-    default: {
+    switch (body.result) {
+    case 'hash mismatch': {
         notice.danger('Failed to upload CVR export: hash mismatch.');
-        notice.warning('Please double-check that the entered hash matches the file.');
+        notice.warning('Please verify that the entered hash matches the file.');
+        return;
+    }
+    case 'malformed CVR export file': {
+        notice.danger('Failed to upload CVR export: malformed file.');
+        notice.warning('Please verify that the uploaded file is a valid CVR export.');
+        return;
+    }
+    default: {
+        notice.danger('Failed to upload CVR export.');
         return;
     }
     }
