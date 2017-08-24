@@ -9,12 +9,12 @@ const parseCountyStatus = (countyStatus: any) => {
             auditedBallotCount: c.audited_ballot_count,
             ballotManifestHash: c.ballot_manifest_hash,
             cvrExportHash: c.cvr_export_hash,
-            cvrTimestamp: c.cvr_timestamp,
+            cvrTimestamp: c.cvr_export_timestamp,
             disagreementCount: c.disagreement_count,
             discrepancyCount: c.discrepancy_count,
             estimatedBallotsToAudit: c.estimated_ballots_to_audit,
             id: c.id,
-            manifestTimestamp: c.manifest_timestamp,
+            manifestTimestamp: c.ballot_manifest_timestamp,
             status: c.status,
         };
     });
