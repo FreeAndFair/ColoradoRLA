@@ -57,7 +57,6 @@ const CountyUpdates = ({ countyStatus }: any) => {
 
         return (
             <tr key={ c.id }>
-                <td>{ c.id }</td>
                 <td>{ county.name }</td>
                 <td>{ started }</td>
                 <td>{ c.auditedBallotCount }</td>
@@ -75,7 +74,6 @@ const CountyUpdates = ({ countyStatus }: any) => {
                 <table className='pt-table pt-bordered pt-condensed '>
                     <thead>
                         <tr>
-                            <td>ID</td>
                             <td>Name</td>
                             <td>Started</td>
                             <td>Submitted</td>
