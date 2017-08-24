@@ -226,8 +226,6 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
     if (the_info.my_uploaded_hash == null || the_info.my_file == null) {
       invariantViolation(the_response, "bad request");
       the_info.my_ok = false;
-    } else {
-      attemptFilePersistence(the_response, the_info, the_county.id());
     }
 
     if (the_info.my_ok) {
