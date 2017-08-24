@@ -11,15 +11,15 @@ function* uploadBallotManifestOk(action: any): any {
 }
 
 function* uploadBallotManifestFail(action: any): any {
-    const { result } = action.data.received;
+    const { status } = action.data.received;
 
-    if (result === 'hash mismatch') {
+    switch (status) {
+    default: {
         notice.danger('Failed to upload ballot manifest: hash mismatch.');
-        notice.danger('Please double-check that the entered hash matches the file.');
+        notice.warning('Please verify that the entered hash matches the file.');
         return;
     }
-
-    notice.danger('Failed to upload ballot manifest');
+    }
 }
 
 function* uploadBallotManifestNetworkFail(): any {
@@ -34,14 +34,15 @@ function* uploadCvrExportOk(action: any): any {
 }
 
 function* uploadCvrExportFail(action: any): any {
-    const { result } = action.data.received;
+    const { status } = action.data.received;
 
-    if (result === 'hash mismatch') {
+    switch (status) {
+    default: {
         notice.danger('Failed to upload CVR export: hash mismatch.');
-        notice.danger('Please double-check that the entered hash matches the file.');
+        notice.warning('Please double-check that the entered hash matches the file.');
         return;
     }
-    notice.danger('Failed to upload CVR export.');
+    }
 }
 
 function* uploadCvrExportNetworkFail(): any {
