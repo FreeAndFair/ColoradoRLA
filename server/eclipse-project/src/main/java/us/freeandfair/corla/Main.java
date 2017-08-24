@@ -53,7 +53,6 @@ import us.freeandfair.corla.json.InstantTypeAdapter;
 import us.freeandfair.corla.model.Administrator;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
-import us.freeandfair.corla.model.CountyDashboard.CountyStatus;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.PersistentASMStateQueries;
@@ -313,7 +312,7 @@ public final class Main {
       
       CountyDashboard cdb = Persistence.getByID(c.id(), CountyDashboard.class);
       if (cdb == null) {
-        cdb = new CountyDashboard(c, CountyStatus.NO_DATA);
+        cdb = new CountyDashboard(c);
         Persistence.saveOrUpdate(cdb);
       }
     }

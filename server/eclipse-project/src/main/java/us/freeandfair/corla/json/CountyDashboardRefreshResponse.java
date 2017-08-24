@@ -21,12 +21,14 @@ import java.util.Set;
 
 import javax.persistence.PersistenceException;
 
+import us.freeandfair.corla.asm.ASMState;
+import us.freeandfair.corla.asm.ASMUtilities;
+import us.freeandfair.corla.asm.CountyDashboardASM;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.ContestToAudit;
 import us.freeandfair.corla.model.ContestToAudit.AuditType;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
-import us.freeandfair.corla.model.CountyDashboard.CountyStatus;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.model.Elector;
 import us.freeandfair.corla.model.UploadedFile;
@@ -55,9 +57,9 @@ public class CountyDashboardRefreshResponse {
   private final Long my_id;
   
   /**
-   * The county status.
+   * The ASM state.
    */
-  private final CountyStatus my_status;
+  private final ASMState my_asm_state;
   
   /**
    * The general information.
@@ -151,7 +153,7 @@ public class CountyDashboardRefreshResponse {
    * Constructs a new CountyDashboardRefreshResponse.
    * 
    * @param the_id The ID.
-   * @param the_status The status.
+   * @param the_asm_state The ASM state.
    * @param the_general_information The general information.
    * @param the_audit_board_members The audit board members.
    * @param the_ballot_manifest_hash The ballot manifest hash.
@@ -168,7 +170,7 @@ public class CountyDashboardRefreshResponse {
    */
   @SuppressWarnings("PMD.ExcessiveParameterList")
   protected CountyDashboardRefreshResponse(final Long the_id,
-                                           final CountyStatus the_status,
+                                           final ASMState the_asm_state,
                                            final Map<String, String> the_general_information,
                                            final Set<Elector> the_audit_board_members, 
                                            final String the_ballot_manifest_hash,
@@ -187,7 +189,7 @@ public class CountyDashboardRefreshResponse {
                                            final List<Long> the_ballots_to_audit,
                                            final Long the_ballot_under_audit) {
     my_id = the_id;
-    my_status = the_status;
+    my_asm_state = the_asm_state;
     my_general_information = the_general_information;
     my_audit_board_members = the_audit_board_members;
     my_ballot_manifest_hash = the_ballot_manifest_hash;
@@ -269,8 +271,12 @@ public class CountyDashboardRefreshResponse {
       }
     }
     
+    // status
+    final CountyDashboardASM asm = ASMUtilities.asmFor(CountyDashboardASM.class, 
+                                                       county_id.toString());
+    
     return new CountyDashboardRefreshResponse(county_id, 
-                                              the_dashboard.status(),
+                                              asm.currentState(),
                                               general_information,
                                               the_dashboard.auditBoardMembers(),
                                               manifest_digest,
@@ -334,8 +340,12 @@ public class CountyDashboardRefreshResponse {
       cvr_export_filename = cvr_export.filename();
     }
     
+    // status
+    final CountyDashboardASM asm = ASMUtilities.asmFor(CountyDashboardASM.class, 
+                                                       county_id.toString());
+
     return new CountyDashboardRefreshResponse(county_id, 
-                                              the_dashboard.status(),
+                                              asm.currentState(),
                                               null,
                                               null,
                                               manifest_digest,

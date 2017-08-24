@@ -11,7 +11,6 @@
 
 package us.freeandfair.corla.query;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,7 +20,6 @@ import javax.persistence.RollbackException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.hibernate.Session;
@@ -29,61 +27,43 @@ import org.hibernate.Session;
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.County;
+import us.freeandfair.corla.model.CountyContestComparisonAudit;
 import us.freeandfair.corla.model.CountyContestResult;
 import us.freeandfair.corla.persistence.Persistence;
 
 /**
- * Queries having to do with CountyContestResult entities.
+ * Queries having to do with CountyContestComparisonAudit entities.
  * 
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-public final class CountyContestResultQueries {
+public final class CountyContestComparisonAuditQueries {
   /**
    * Private constructor to prevent instantiation.
    */
-  private CountyContestResultQueries() {
+  private CountyContestComparisonAuditQueries() {
     // do nothing
   }
   
   /**
-   * Obtain a persistent CountyContestResult object for the specified
-   * county ID and contest. If there is not already a matching persistent 
-   * object, one is created and returned.
+   * Obtain all CountyContestComparisonAudit objects for the specified Contest.
    *
-   * @param the_county The county.
    * @param the_contest The contest.
-   * @return the matched CountyContestResult object, if one exists.
+   * @return the matched objects.
    */
-  // we are checking to see if exactly one result is in a list, and
-  // PMD doesn't like it
-  @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
-  public static CountyContestResult matching(final County the_county,
-                                             final Contest the_contest) {
-    CountyContestResult result = null;
+  public static List<CountyContestComparisonAudit> matching(final Contest the_contest) {
+    List<CountyContestComparisonAudit> result = null;
     
     try {
-      @SuppressWarnings("PMD.PrematureDeclaration")
       final Session s = Persistence.currentSession();
       final CriteriaBuilder cb = s.getCriteriaBuilder();
-      final CriteriaQuery<CountyContestResult> cq = 
-          cb.createQuery(CountyContestResult.class);
-      final Root<CountyContestResult> root = cq.from(CountyContestResult.class);
-      final List<Predicate> conjuncts = new ArrayList<>();
-      conjuncts.add(cb.equal(root.get("my_county"), the_county));
-      conjuncts.add(cb.equal(root.get("my_contest"), the_contest));
-      cq.select(root).where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
-      final TypedQuery<CountyContestResult> query = s.createQuery(cq);
-      final List<CountyContestResult> query_results = query.getResultList();
-      // there should only be one, if one exists
-      if (query_results.size() == 1) {
-        result = query_results.get(0);
-      } else if (query_results.isEmpty()) {
-        result = new CountyContestResult(the_county, the_contest);
-        Persistence.saveOrUpdate(result);
-      } else {
-        throw new IllegalStateException("unique constraint violated on CountyContestResult");
-      }
+      final CriteriaQuery<CountyContestComparisonAudit> cq = 
+          cb.createQuery(CountyContestComparisonAudit.class);
+      final Root<CountyContestComparisonAudit> root = 
+          cq.from(CountyContestComparisonAudit.class);
+      cq.select(root).where(cb.equal(root.get("my_contest"), the_contest));
+      final TypedQuery<CountyContestComparisonAudit> query = s.createQuery(cq);
+      result = query.getResultList();
     } catch (final PersistenceException e) {
       Main.LOGGER.error("could not query database for contest");
     }

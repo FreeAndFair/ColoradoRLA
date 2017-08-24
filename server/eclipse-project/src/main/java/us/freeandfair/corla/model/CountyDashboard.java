@@ -27,8 +27,6 @@ import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -97,14 +95,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    */
   @Version
   private Long my_version;
-  
-  /**
-   * The county status of this dashboard.
-   */
-  @Column(nullable = false)
-  @Enumerated(EnumType.STRING)
-  private CountyStatus my_status = CountyStatus.NO_DATA;
-  
+
   /**
    * The timestamp of the most recent set of uploaded CVRs.
    * 
@@ -228,16 +219,14 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   }
   
   /**
-   * Constructs a new county dashboard with the specified parameters.
+   * Constructs a new county dashboard for the specified county.
    * 
-   * @param the_county_id The county ID.
-   * @param the_status The status.
+   * @param the_county The county.
    */
-  public CountyDashboard(final County the_county, final CountyStatus the_status) {
+  public CountyDashboard(final County the_county) {
     super();
     my_county = the_county;
     my_id = the_county.id();
-    my_status = the_status;
   }
   
   /**
@@ -274,22 +263,6 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    */
   public County county() {
     return my_county;
-  }
-  
-  /**
-   * @return the status for this dashboard.
-   */
-  public CountyStatus status() {
-    return my_status;
-  }
-
-  /**
-   * Sets the dashboard status.
-   * 
-   * @param the_status The new status.
-   */
-  public void setStatus(final CountyStatus the_status) {
-    my_status = the_status;
   }
   
   /**
@@ -605,14 +578,5 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   @Override
   public int hashCode() {
     return toString().hashCode();
-  }
-  
-  /**
-   * The possible statuses for a county in an audit.
-   */
-  public enum CountyStatus {
-    NO_DATA,
-    CVRS_UPLOADED_SUCCESSFULLY,
-    ERROR_IN_UPLOADED_DATA;
   }
 }

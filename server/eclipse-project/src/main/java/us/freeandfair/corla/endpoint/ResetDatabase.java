@@ -27,7 +27,6 @@ import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyContestComparisonAudit;
 import us.freeandfair.corla.model.CountyContestResult;
 import us.freeandfair.corla.model.CountyDashboard;
-import us.freeandfair.corla.model.CountyDashboard.CountyStatus;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.model.Elector;
 import us.freeandfair.corla.model.UploadedFile;
@@ -105,7 +104,7 @@ public class ResetDatabase extends AbstractEndpoint {
     Persistence.saveOrUpdate(dosdb);
     
     for (final County c : Persistence.getAll(County.class)) {
-      final CountyDashboard cdb = new CountyDashboard(c, CountyStatus.NO_DATA);
+      final CountyDashboard cdb = new CountyDashboard(c);
       Persistence.saveOrUpdate(cdb);
     }
     

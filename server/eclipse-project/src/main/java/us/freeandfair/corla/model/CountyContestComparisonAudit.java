@@ -249,20 +249,6 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
                                            final int the_one_under,
                                            final int the_one_over,
                                            final int the_two_over) {
-    /* old calculation 
-    final double gamma_double = my_gamma.doubleValue();
-    return (int)
-        (Math.max(my_one_vote_over + my_two_vote_over +
-                  my_one_vote_under + my_two_vote_under,
-                  Math.ceil(-2 * gamma_double *
-                            (Math.log(my_risk_limit.doubleValue()) +
-                                the_two_under * Math.log(1 + 1 / gamma_double) +
-                                the_one_under * Math.log(1 + 1 / (2 * gamma_double)) +
-                                the_one_over * Math.log(1 - 1 / (2 * gamma_double)) +
-                                the_two_over * Math.log(1 - 1 / gamma_double)) /
-                            my_contest_result.dilutedMarginCounty().doubleValue())));
-    */
-    
     final BigDecimal invgamma = BigDecimal.ONE.divide(my_gamma, MathContext.DECIMAL128);
     final BigDecimal twogamma = BigDecimal.valueOf(2).multiply(my_gamma);
     final BigDecimal invtwogamma = 
@@ -321,39 +307,6 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
                                                     final BigDecimal the_two_over_rate,
                                                     final boolean the_round_ones_up,
                                                     final boolean the_round_twos_up) {
-    /* old calculation
-    final double gamma_double = my_gamma.doubleValue();
-    double bta = -2 * gamma_double * Math.log(my_risk_limit.doubleValue()) /
-                (my_contest_result.dilutedMarginCounty().doubleValue() + 2 * gamma_double *
-                    (the_two_under_rate * Math.log(1 + 1 / gamma_double) +
-                     the_one_under_rate * Math.log(1 + 1 / (2 * gamma_double)) +
-                     the_one_over_rate * Math.log(1 - 1 / (2 * gamma_double)) +
-                     the_two_over_rate * Math.log(1 - 1 / gamma_double)));
-
-    double two_under;
-    double one_under;
-    double one_over;
-    double two_over;
-    final int loop_bound = 3;
-    for (int i = 0; i < loop_bound; i++) {
-      if (the_round_ones_up) {
-        one_under = Math.ceil(the_one_under_rate * bta);
-        one_over = Math.ceil(the_one_over_rate * bta);
-      } else {
-        one_under = Math.round(the_one_under_rate * bta);
-        one_over = Math.round(the_one_over_rate * bta);
-      }
-      if (the_round_twos_up) {
-        two_under = Math.ceil(the_two_under_rate * bta);
-        two_over = Math.ceil(the_two_over_rate * bta);
-      } else {
-        two_under = Math.round(the_two_under_rate * bta);
-        two_over = Math.round(the_two_over_rate * bta);
-      }
-      bta = computeBallotsToAudit(two_under, one_under, one_over, two_over);
-    }
-    return (int) bta;
-    */
     final BigDecimal invgamma = BigDecimal.ONE.divide(my_gamma, MathContext.DECIMAL128);
     final BigDecimal twogamma = 
         BigDecimal.valueOf(2).multiply(my_gamma);
