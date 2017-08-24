@@ -17,6 +17,7 @@ interface CountyDashboard {
     ballot_manifest_hash: string;
     ballot_under_audit_id: number;
     ballots_to_audit: number[];
+    cvr_export_filename: string;
     cvr_export_hash: string;
     contests: number[];
     contests_under_audit: number[];
@@ -92,6 +93,7 @@ export const parse = (data: CountyDashboard, state: any): any => {
         ballotsToAudit: data.ballots_to_audit,
         contests: parseContests(data.contests, state),
         contestsUnderAudit: parseContestsUnderAudit(data.contests_under_audit, state),
+        cvrExportFilename: data.cvr_export_filename,
         cvrExportHash: data.cvr_export_hash,
         disagreementCount: data.disagreement_count,
         discrepancyCount: data.discrepancy_count,

@@ -6,16 +6,17 @@ import CVRUploader from './CVRUploader';
 import uploadCvrExport from '../../../action/uploadCvrExport';
 
 
-const UploadedCvrExport = ({ hash }: any) => (
+const UploadedCvrExport = ({ filename, hash }: any) => (
     <div className='pt-card'>
         <div>CVR export <strong>uploaded</strong>.</div>
+        <div>File name: "{ filename }"</div>
         <div>SHA-256 hash: { hash }</div>
     </div>
 );
 
 class CVRUploaderContainer extends React.Component<any, any> {
     public render() {
-        const { auditStarted, county } = this.props;
+        const { auditStarted, county, fileUploaded } = this.props;
         const forms: any = {};
 
         const upload = () => {
@@ -24,8 +25,12 @@ class CVRUploaderContainer extends React.Component<any, any> {
             uploadCvrExport(county.id, file, hash);
         };
 
-        if (auditStarted) {
-            return <UploadedCvrExport hash={ county.cvrExportHash } />;
+        if (fileUploaded) {
+            return (
+                <UploadedCvrExport
+                    filename={ county.cvrExportFilename }
+                    hash={ county.cvrExportHash } />
+            );
         }
 
         return <CVRUploader upload={ upload } forms={ forms } />;
@@ -35,6 +40,7 @@ class CVRUploaderContainer extends React.Component<any, any> {
 const mapStateToProps = ({ county }: any) => ({
     auditStarted: !!county.ballotUnderAuditId,
     county,
+    fileUploaded: !!county.cvrExportHash,
 });
 
 
