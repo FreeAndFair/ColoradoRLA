@@ -118,20 +118,31 @@ class SelectContestsForm extends React.Component<any, any> {
         });
 
         return (
-            <table className='pt-table pt-bordered pt-condensed'>
-                <thead>
-                    <tr>
-                        <th>Contest ID</th>
-                        <th>Contest Name</th>
-                        <th>Full hand count</th>
-                        <th>Audit?</th>
-                        <th>Reason</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    { contestRows }
-                </tbody>
-            </table>
+            <div>
+                <div className='pt-card'>
+                    According to Colorado statute, at least one statewide conteset and
+                    one countywide contest must be chosen for audit. The Secretary of State
+                    will select other ballot contests for audit if in any particular election
+                    there is no statewide contest or a countywide contest in any county. Once
+                    these contests for audit have been selected and published, they cannot be
+                    changed. The Secretary of State can decide that a contest must witness a
+                    full hand count at any time.
+                </div>
+                <table className='pt-table pt-bordered pt-condensed'>
+                    <thead>
+                        <tr>
+                            <th>Contest ID</th>
+                            <th>Contest Name</th>
+                            <th>Full hand count</th>
+                            <th>Audit?</th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        { contestRows }
+                    </tbody>
+                </table>
+            </div>
         );
     }
 

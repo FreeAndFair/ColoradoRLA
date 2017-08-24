@@ -2,6 +2,8 @@ import * as React from 'react';
 
 import * as _ from 'lodash';
 
+import { Tooltip } from '@blueprintjs/core';
+
 import SoSNav from './Nav';
 
 import counties from '../../data/counties';
@@ -67,6 +69,9 @@ const CountyUpdates = ({ countyStatus }: any) => {
         );
     });
 
+    const remainingToAuditTooltipContent =
+        'Estimated number of ballots to audit to meet risk limit.';
+
     return (
         <div className='pt-card'>
             <h3>County Updates</h3>
@@ -79,7 +84,16 @@ const CountyUpdates = ({ countyStatus }: any) => {
                             <td>Submitted</td>
                             <td>Discrepancies</td>
                             <td>Disagreements</td>
-                            <td>To Audit</td>
+                            <td>
+                                <Tooltip
+                                    className='pt-tooltip-indicator'
+                                    content={ remainingToAuditTooltipContent }>
+                                    <div>
+                                        <span>Remaining to Audit </span>
+                                        <span className='pt-icon-standard pt-icon-help' />
+                                    </div>
+                                </Tooltip>
+                            </td>
                         </tr>
                     </thead>
                     <tbody>
