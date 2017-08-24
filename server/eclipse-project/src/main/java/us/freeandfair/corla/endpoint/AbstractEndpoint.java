@@ -412,7 +412,11 @@ public abstract class AbstractEndpoint implements Endpoint {
    * and the authentication data for the log).
    */
   private void sendToLogger(final LogEntry the_log_entry) {
-    if (the_log_entry.resultCode() == HttpStatus.OK_200) {
+    if (the_log_entry.resultCode() == null) {
+      Main.LOGGER.info(the_log_entry.information() + " by " + 
+          the_log_entry.authenticationData() + " from " + 
+          the_log_entry.clientHost());
+    } else if (HttpStatus.isSuccess(the_log_entry.resultCode())) {
       Main.LOGGER.info("successful " + the_log_entry.information() + " by " + 
                        the_log_entry.authenticationData() + " from " + 
                        the_log_entry.clientHost());
@@ -426,16 +430,16 @@ public abstract class AbstractEndpoint implements Endpoint {
 
   private void persistLogEntries(final Request the_request) {
     LogEntry previous_entry = LogEntryQueries.last();
+    final Administrator admin = Authentication.authenticatedAdministrator(the_request);
+    final String admin_data;
+    if (admin == null) {
+      admin_data = "(unauthenticated)";
+    } else {
+      admin_data = admin.username();
+    }
     
     for (final LogEntry entry : my_log_entries) {
       // create and persist a new hash-chained log entry for each log entry
-      final Administrator admin = Authentication.authenticatedAdministrator(the_request);
-      final String admin_data;
-      if (admin == null) {
-        admin_data = "(unauthenticated)";
-      } else {
-        admin_data = admin.username();
-      }
       final LogEntry real_entry =
           new LogEntry(entry.resultCode(), entry.information(), 
                        admin_data, the_request.host(),
