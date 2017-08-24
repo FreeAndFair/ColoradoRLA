@@ -33,6 +33,7 @@ import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.query.CVRAuditInfoQueries;
 
 /**
  * The endpoint for reporting ballots that could not be found by auditors.
@@ -98,7 +99,7 @@ public class BallotNotFound extends AbstractAuditBoardDashboardEndpoint {
       if (sbnf.id() == null) {
         throw new JsonSyntaxException("invalid ballot ID");
       }
-      final int index = cdb.cvrsToAudit().indexOf(sbnf.id());
+      final int index = CVRAuditInfoQueries.cvrsToAudit(cdb).indexOf(sbnf.id());
       if (index >= 0) {
         final CastVoteRecord cvr = Persistence.getByID(sbnf.id(), CastVoteRecord.class);
         if (cvr == null) {

@@ -260,7 +260,7 @@ public class CountyContestResult extends AbstractEntity implements Serializable 
    * @exception IllegalStateException if no ballots have been counted.
    */
   public BigDecimal dilutedMargin() {
-    BigDecimal result = BigDecimal.ZERO;
+    BigDecimal result;
     if (my_ballot_count > 0) {
       result = BigDecimal.valueOf(my_min_margin).divide(BigDecimal.valueOf(my_ballot_count), 
                                                         MathContext.DECIMAL128);

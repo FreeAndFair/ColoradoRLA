@@ -187,7 +187,7 @@ public class DoSDashboard implements PersistentEntity, Serializable {
   /**
    * @return the risk limit for comparison audits, or null if none has been set.
    */
-  public BigDecimal getRiskLimitForComparisonAudits() {
+  public BigDecimal riskLimitForComparisonAudits() {
     return my_risk_limit_for_comparison_audits;
   }
   

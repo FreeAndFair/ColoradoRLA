@@ -113,7 +113,7 @@ public class DoSDashboardRefreshResponse {
         contestInfo(the_dashboard.contestsToAudit());
     
     return new DoSDashboardRefreshResponse(the_dashboard.auditStage(),
-                                           the_dashboard.getRiskLimitForComparisonAudits(),
+                                           the_dashboard.riskLimitForComparisonAudits(),
                                            info.getFirst(),
                                            countyStatusMap(),
                                            the_dashboard.randomSeed(),

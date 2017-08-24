@@ -41,8 +41,6 @@ import javax.persistence.Table;
 import javax.persistence.Version;
 
 import us.freeandfair.corla.persistence.PersistentEntity;
-import us.freeandfair.corla.query.CVRAuditInfoQueries;
-import us.freeandfair.corla.query.CountyContestResultQueries;
 
 /**
  * The county dashboard.
@@ -389,30 +387,6 @@ public class CountyDashboard implements PersistentEntity, Serializable {
       my_cvr_audit_info.add(cvrai);
     }
   }
-  
-  /**
-   * Initializes the audit data for this county dashboard.
-   */
-  public void initializeAuditData() {
-    int to_audit = Integer.MIN_VALUE;
-    my_audited_prefix_length = 0;
-    my_discrepancies = 0;
-    my_disagreements = 0;
-    my_comparison_audits.clear();
-    for (final CountyContestResult ccr : CountyContestResultQueries.forCounty(my_county)) {
-      final CountyContestComparisonAudit audit = new CountyContestComparisonAudit(this, ccr);
-      my_comparison_audits.add(audit);
-      to_audit = Math.max(to_audit, audit.initialBallotsToAudit());
-    }
-    my_estimated_ballots_to_audit = Math.max(0,  to_audit);
-  }
-  
-  /**
-   * @return the list of CVR IDs to audit.
-   */
-  public List<Long> cvrsToAudit() {
-    return CVRAuditInfoQueries.cvrsToAudit(this);
-  }
 
   /**
    * @return the list of CVR audit info (for legacy RLA algorithm).
@@ -425,7 +399,18 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * @return the set of comparison audits being performed.
    */
   public Set<CountyContestComparisonAudit> comparisonAudits() {
-    return my_comparison_audits;
+    return Collections.unmodifiableSet(my_comparison_audits);
+  }
+  
+  /**
+   * Sets the comparison audits being performed. 
+   * 
+   * @param the_comparison_audits The comparison audits.
+   */
+  public void 
+      setComparisonAudits(final Set<CountyContestComparisonAudit> the_comparison_audits) {
+    my_comparison_audits.clear();
+    my_comparison_audits.addAll(the_comparison_audits);
   }
   
   /**

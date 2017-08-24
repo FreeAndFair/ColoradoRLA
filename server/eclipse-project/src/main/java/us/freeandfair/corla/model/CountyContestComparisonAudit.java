@@ -24,7 +24,6 @@ import javax.persistence.Table;
 
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.persistence.AbstractEntity;
-import us.freeandfair.corla.persistence.Persistence;
 
 /**
  * A class representing the state of a single audited contest for
@@ -116,17 +115,20 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
   }
   
   /**
-   * Constructs a CountyContestAudit for the specified dashboard and
-   * contest result.
+   * Constructs a CountyContestAudit for the specified dashboard, contest result,
+   * and risk limit.
+   * 
+   * @param the_dashboard The dashboard.
+   * @param the_contest_result The contest result.
+   * @param the_risk_limit The risk limit.
    */
   public CountyContestComparisonAudit(final CountyDashboard the_dashboard,
-                                      final CountyContestResult the_contest_result) {
+                                      final CountyContestResult the_contest_result,
+                                      final BigDecimal the_risk_limit) {
     super();
     my_dashboard = the_dashboard;
     my_contest_result = the_contest_result;
-    final DoSDashboard dosdb = 
-        Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
-    my_risk_limit = dosdb.getRiskLimitForComparisonAudits();
+    my_risk_limit = the_risk_limit;
   }
   
   /**

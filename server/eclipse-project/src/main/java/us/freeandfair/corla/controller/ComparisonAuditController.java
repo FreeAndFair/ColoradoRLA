@@ -11,9 +11,12 @@
 
 package us.freeandfair.corla.controller;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.OptionalLong;
+import java.util.Set;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.crypto.PseudoRandomNumberGenerator;
@@ -23,11 +26,13 @@ import us.freeandfair.corla.model.CVRContestInfo.ConsensusValue;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.CountyContestComparisonAudit;
+import us.freeandfair.corla.model.CountyContestResult;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CVRAuditInfoQueries;
 import us.freeandfair.corla.query.CastVoteRecordQueries;
+import us.freeandfair.corla.query.CountyContestResultQueries;
 
 /**
  * Controller methods relevant to comparison audits.
@@ -93,6 +98,31 @@ public final class ComparisonAuditController {
     }
     
     return result;
+  }
+  
+  /**
+   * Initializes the audit data for the specified county dashboard.
+   * 
+   * @param the_dashboard The dashboard.
+   */
+  public static void initializeAuditData(final CountyDashboard the_dashboard) {
+    final BigDecimal risk_limit = 
+        Persistence.getByID(DoSDashboard.ID, 
+                            DoSDashboard.class).riskLimitForComparisonAudits();
+    final Set<CountyContestComparisonAudit> comparison_audits = new HashSet<>();
+    int to_audit = Integer.MIN_VALUE;
+    the_dashboard.setAuditedPrefixLength(0);
+    the_dashboard.setDiscrepancies(0);
+    the_dashboard.setDisagreements(0);
+    for (final CountyContestResult ccr : 
+         CountyContestResultQueries.forCounty(the_dashboard.county())) {
+      final CountyContestComparisonAudit audit = 
+          new CountyContestComparisonAudit(the_dashboard, ccr, risk_limit);
+      comparison_audits.add(audit);
+      to_audit = Math.max(to_audit, audit.initialBallotsToAudit());
+    }
+    the_dashboard.setComparisonAudits(comparison_audits);
+    the_dashboard.setEstimatedBallotsToAudit(Math.max(0,  to_audit));
   }
   
   /**
