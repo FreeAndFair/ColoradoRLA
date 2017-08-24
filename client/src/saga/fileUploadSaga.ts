@@ -11,15 +11,24 @@ function* uploadBallotManifestOk(action: any): any {
 }
 
 function* uploadBallotManifestFail(action: any): any {
-    const { result } = action.data.received;
+    const { body, status } = action.data.received;
 
-    if (result === 'hash mismatch') {
+    switch (body.result) {
+    case 'hash mismatch': {
         notice.danger('Failed to upload ballot manifest: hash mismatch.');
-        notice.danger('Please double-check that the entered hash matches the file.');
+        notice.warning('Please verify that the entered hash matches the file.');
         return;
     }
-
-    notice.danger('Failed to upload ballot manifest');
+    case 'malformed ballot manifest file': {
+        notice.danger('Failed to upload ballot manifest: malformed file.');
+        notice.warning('Please verify that the uploaded file is valid ballot manifest.');
+        return;
+    }
+    default: {
+        notice.danger('Failed to upload ballot manifest.');
+        return;
+    }
+    }
 }
 
 function* uploadBallotManifestNetworkFail(): any {
@@ -34,14 +43,24 @@ function* uploadCvrExportOk(action: any): any {
 }
 
 function* uploadCvrExportFail(action: any): any {
-    const { result } = action.data.received;
+    const { body, status } = action.data.received;
 
-    if (result === 'hash mismatch') {
+    switch (body.result) {
+    case 'hash mismatch': {
         notice.danger('Failed to upload CVR export: hash mismatch.');
-        notice.danger('Please double-check that the entered hash matches the file.');
+        notice.warning('Please verify that the entered hash matches the file.');
         return;
     }
-    notice.danger('Failed to upload CVR export.');
+    case 'malformed CVR export file': {
+        notice.danger('Failed to upload CVR export: malformed file.');
+        notice.warning('Please verify that the uploaded file is a valid CVR export.');
+        return;
+    }
+    default: {
+        notice.danger('Failed to upload CVR export.');
+        return;
+    }
+    }
 }
 
 function* uploadCvrExportNetworkFail(): any {

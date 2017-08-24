@@ -37,7 +37,8 @@ function createFileUploadAction(config: FileUploadActionConfig) {
         try {
             const r = await fetch(url, init);
 
-            const received = await r.json();
+            const body = await r.json();
+            const received = { body, status: r.status };
             const sent = createSent(...args);
             const data = { received, sent };
 
