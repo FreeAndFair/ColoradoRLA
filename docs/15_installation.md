@@ -46,15 +46,21 @@ For the server, follow the directions
 in [`server/README-ECLIPSE`](../server/README-ECLIPSE.md) to install
 Eclipse, and use Eclipse's Run menu.
 
+Building and packaging the server is accomplished by running `mvn
+package` from the `../server/eclipse-project` directory, as in
+```
+cd server/eclipse-project
+mvn package
+```
+
 Running the system can be accomplished by running the application
 directly (as in `java -jar
-../server/eclipse-project/target/colorado_rla-0.7.0-shaded.jar`) or
+../server/eclipse-project/target/colorado_rla-0.9.1-shaded.jar`) or
 installing the system in a webserver with a Java container.
 
 To test the client in a standalone manner (rather than from the
 server), you'll need to
 get [Node.js and npm](https://www.npmjs.com/get-npm). Next, run:
-
 ```
 cd client
 npm install
