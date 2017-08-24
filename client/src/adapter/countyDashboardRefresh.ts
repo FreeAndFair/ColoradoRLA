@@ -13,6 +13,7 @@ interface CountyDashboard {
     audit_board_members: Elector[];
     audit_time: string;
     audited_ballot_count: number;
+    ballot_manifest_filename: string;
     ballot_manifest_hash: string;
     ballot_under_audit_id: number;
     ballots_to_audit: number[];
@@ -85,6 +86,7 @@ export const parse = (data: CountyDashboard, state: any): any => {
         auditBoardMembers: data.audit_board_members.map(parseBoardMember),
         auditTime: data.audit_time ? parseTimestamp(data.audit_time) : null,
         auditedBallotCount: data.audited_ballot_count,
+        ballotManifestFilename: data.ballot_manifest_filename,
         ballotManifestHash: data.ballot_manifest_hash,
         ballotUnderAuditId: data.ballot_under_audit_id,
         ballotsToAudit: data.ballots_to_audit,
