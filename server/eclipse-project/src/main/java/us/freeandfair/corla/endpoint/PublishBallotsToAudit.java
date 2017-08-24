@@ -28,7 +28,6 @@ import us.freeandfair.corla.asm.ASMUtilities;
 import us.freeandfair.corla.asm.AuditBoardDashboardASM;
 import us.freeandfair.corla.asm.CountyDashboardASM;
 import us.freeandfair.corla.controller.ComparisonAuditController;
-import us.freeandfair.corla.model.CountyContestComparisonAudit;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 
@@ -88,15 +87,8 @@ public class PublishBallotsToAudit extends AbstractDoSDashboardEndpoint {
           } else {
             // find the initial window
             ComparisonAuditController.initializeAuditData(cdb);
-            int max_estimated_to_audit = Integer.MIN_VALUE;
-            for (final CountyContestComparisonAudit ca : cdb.comparisonAudits()) {
-              max_estimated_to_audit = Math.max(max_estimated_to_audit, 
-                                                ca.initialBallotsToAudit());
-            }
             Main.LOGGER.info("county " + cdb.id() + " initially estimated to audit " + 
-                             max_estimated_to_audit + " ballots");
-            cdb.setCVRsToAudit(ComparisonAuditController.
-                               computeBallotOrder(cdb, 0, max_estimated_to_audit));
+                             cdb.estimatedBallotsToAudit() + " ballots");
             Persistence.saveOrUpdate(cdb);
           } 
           // update the ASMs for the county and audit board
