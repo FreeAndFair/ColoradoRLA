@@ -52,7 +52,7 @@ class AuditBoardSignInStage extends React.Component<any, any> {
                         <div className='pt-card'>
                             Enter the full names and party affiliations of each member of
                             the Acme County Audit Board who will be conducting this audit
-                            today:
+                            today.
                         </div>
                     </div>
                     <div className='pt-card'>
