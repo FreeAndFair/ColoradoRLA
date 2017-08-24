@@ -163,7 +163,10 @@ public class DoSDashboardRefreshResponse {
     int to_audit = Integer.MIN_VALUE;
     for (final CountyContestComparisonAudit ccca : 
          CountyContestComparisonAuditQueries.matching(the_contest)) {
-      to_audit = Math.max(to_audit, ccca.ballotsToAudit());
+      to_audit = 
+          Math.max(to_audit, 
+                   Math.max(0, ccca.ballotsToAudit() - 
+                               ccca.dashboard().ballotsAudited()));
     }
     return to_audit;
   }
