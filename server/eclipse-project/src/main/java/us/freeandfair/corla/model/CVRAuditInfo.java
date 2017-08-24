@@ -15,6 +15,7 @@ import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -61,6 +62,13 @@ public class CVRAuditInfo extends AbstractEntity implements Serializable {
   @JoinColumn
   private CastVoteRecord my_acvr;
 
+  /**
+   * A flag indicating whether this CVRAuditInfo has been considered
+   * in the audit calculations.
+   */
+  @Column(nullable = false)
+  private Boolean my_counted = false;
+  
   /**
    * Constructs an empty CVRAuditInfo, solely for persistence.
    */
@@ -110,6 +118,24 @@ public class CVRAuditInfo extends AbstractEntity implements Serializable {
    */
   public void setACVR(final CastVoteRecord the_acvr) {
     my_acvr = the_acvr;
+  }
+  
+  /**
+   * @return true if this record has been counted in its audits,
+   * false otherwise.
+   */
+  public boolean counted() { 
+    return my_counted;
+  }
+  
+  /**
+   * Sets the flag that indicates whether this record has been
+   * counted in its audits.
+   * 
+   * @param the_counted The new flag value.
+   */
+  public void setCounted(final boolean the_counted) {
+    my_counted = the_counted;
   }
   
   /**

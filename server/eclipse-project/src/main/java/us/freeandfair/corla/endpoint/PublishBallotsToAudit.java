@@ -30,7 +30,6 @@ import us.freeandfair.corla.asm.CountyDashboardASM;
 import us.freeandfair.corla.controller.ComparisonAuditController;
 import us.freeandfair.corla.model.CountyContestComparisonAudit;
 import us.freeandfair.corla.model.CountyDashboard;
-import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 
 /**
@@ -80,7 +79,6 @@ public class PublishBallotsToAudit extends AbstractDoSDashboardEndpoint {
                          final Response the_response) {
     // update every county dashboard with a list of ballots to audit
     try {
-      final DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
       final List<CountyDashboard> cdbs = Persistence.getAll(CountyDashboard.class);
       
       for (final CountyDashboard cdb : cdbs) {
@@ -98,8 +96,7 @@ public class PublishBallotsToAudit extends AbstractDoSDashboardEndpoint {
             Main.LOGGER.info("county " + cdb.id() + " initially estimated to audit " + 
                              max_estimated_to_audit + " ballots");
             cdb.setCVRsToAudit(ComparisonAuditController.
-                               computeBallotOrder(cdb, dosdb.randomSeed(),
-                                                  0, max_estimated_to_audit));
+                               computeBallotOrder(cdb, 0, max_estimated_to_audit));
             Persistence.saveOrUpdate(cdb);
           } 
           // update the ASMs for the county and audit board

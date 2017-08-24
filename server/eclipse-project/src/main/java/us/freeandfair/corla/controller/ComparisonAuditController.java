@@ -15,11 +15,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalLong;
 
+import us.freeandfair.corla.Main;
 import us.freeandfair.corla.crypto.PseudoRandomNumberGenerator;
+import us.freeandfair.corla.model.CVRAuditInfo;
+import us.freeandfair.corla.model.CVRContestInfo;
+import us.freeandfair.corla.model.CVRContestInfo.ConsensusValue;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
+import us.freeandfair.corla.model.CountyContestComparisonAudit;
 import us.freeandfair.corla.model.CountyDashboard;
+import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.query.CVRAuditInfoQueries;
 import us.freeandfair.corla.query.CastVoteRecordQueries;
 
 /**
@@ -48,18 +55,19 @@ public final class ComparisonAuditController {
    * the first element of this list will be the "min_index"th ballot card to audit, 
    * and the last will be the "max_index"th. 
    */
-  public static List<CastVoteRecord> computeBallotOrder(final CountyDashboard the_cdb, 
-                                                        final String the_seed, 
+  public static List<CastVoteRecord> computeBallotOrder(final CountyDashboard the_cdb,
                                                         final int the_min_index,
                                                         final int the_max_index) {
     final OptionalLong count = 
         CastVoteRecordQueries.countMatching(the_cdb.cvrUploadTimestamp(), 
                                             the_cdb.id(), 
                                             RecordType.UPLOADED);
+    
     if (!count.isPresent()) {
       throw new IllegalStateException("unable to count CVRs for county " + the_cdb.id());
     }
 
+    final String seed = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class).randomSeed();
     final boolean with_replacement = true;
     // assuming that CVRs are indexed from 0
     final int minimum = 0;
@@ -70,7 +78,7 @@ public final class ComparisonAuditController {
     final int maximum = (int) count.getAsLong() - 1;
 
     final PseudoRandomNumberGenerator prng = 
-        new PseudoRandomNumberGenerator(the_seed, with_replacement,
+        new PseudoRandomNumberGenerator(seed, with_replacement,
                                         minimum, maximum);
     final List<Integer> list_of_cvrs_to_audit = 
         prng.getRandomNumbers(the_min_index, the_max_index);
@@ -85,5 +93,212 @@ public final class ComparisonAuditController {
     }
     
     return result;
+  }
+  
+  /**
+   * Submit an audit CVR for a CVR under audit to the specified county dashboard.
+   * 
+   * @param the_dashboard The dashboard.
+   * @param the_cvr_under_audit The CVR under audit.
+   * @param the_audit_cvr The corresponding audit CVR.
+   * @return true if the audit CVR is submitted successfully, false if it doesn't
+   * correspond to the CVR under audit, or the specified CVR under audit was
+   * not in fact under audit.
+   */
+  //@ require the_cvr_under_audit != null;
+  //@ require the_acvr != null;
+  @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.AvoidDeeplyNestedIfStmts"})
+  public static boolean submitAuditCVR(final CountyDashboard the_dashboard,
+                                       final CastVoteRecord the_cvr_under_audit, 
+                                       final CastVoteRecord the_audit_cvr) {
+    // performs a sanity check to make sure the CVR under audit and the ACVR
+    // are the same card
+    boolean result = false;
+    
+    final List<CVRAuditInfo> info = 
+        CVRAuditInfoQueries.matching(the_dashboard, the_cvr_under_audit);
+    
+    if (info == null || info.isEmpty()) {
+      Main.LOGGER.info("attempt to submit ACVR for county " + 
+                       the_dashboard.id() + ", cvr " +
+                       the_cvr_under_audit.id() + " not under audit");
+    } else if (checkACVRSanity(the_cvr_under_audit, the_audit_cvr)) {
+      // if the record is the current CVR under audit, or if it hasn't been
+      // audited yet, we can just process it
+      final CastVoteRecord old_audit_cvr = info.get(0).acvr();
+      if (old_audit_cvr == null) {
+        for (final CVRAuditInfo c : info) {
+          c.setACVR(the_audit_cvr);
+        }
+        // this just updates the counters; the actual "audit" happens later
+        audit(the_dashboard, the_cvr_under_audit, the_audit_cvr, 0, true);
+      } else {
+        // the record has been audited before, so we need to "unaudit" it 
+        // this requires a linear search over the matching records to see
+        // how many have been counted, since we don't know what order our
+        // query returned them in and we can't order them by list index
+        int undo_count = 0;
+        for (final CVRAuditInfo c : info) {
+          if (c.counted()) {
+            undo_count = undo_count + 1;
+          }
+          c.setACVR(the_audit_cvr);
+        }
+        unaudit(the_dashboard, the_cvr_under_audit, old_audit_cvr, undo_count);
+        audit(the_dashboard, the_cvr_under_audit, the_audit_cvr, undo_count, true);
+      }
+      result = true;
+    }  else {
+      Main.LOGGER.info("attempt to submit non-corresponding ACVR " +
+                       the_audit_cvr.id() + " for county " + the_dashboard.id() + 
+                       ", cvr " + the_cvr_under_audit.id());
+    }
+
+    updateCVRUnderAudit(the_dashboard);
+    the_dashboard.setEstimatedBallotsToAudit(computeEstimatedBallotsToAudit(the_dashboard));
+    
+    return result;
+  }
+  
+  /**
+   * Audits a CVR/ACVR pair by adding it to all the audits in progress.
+   * This also updates the local audit counters, as appropriate.
+   * 
+   * @param the_cvr_under_audit The CVR under audit.
+   * @param the_audit_cvr The audit CVR.
+   * @param the_count The number of times to count this ballot in the
+   * audit.
+   * @param the_update_counters true to update the county dashboard 
+   * counters, false otherwise; false is used when this ballot has
+   * already been audited once.
+   */
+  private static void audit(final CountyDashboard the_dashboard,
+                            final CastVoteRecord the_cvr_under_audit,
+                            final CastVoteRecord the_audit_cvr, 
+                            final int the_count,
+                            final boolean the_update_counters) {
+    boolean discrepancy_found = false;
+    for (final CountyContestComparisonAudit ca : the_dashboard.comparisonAudits()) {
+      final int discrepancy = ca.computeDiscrepancy(the_cvr_under_audit, the_audit_cvr);
+      for (int i = 0; i < the_count; i++) {
+        ca.recordDiscrepancy(discrepancy);
+      }
+      discrepancy_found |= discrepancy != 0;
+    }
+    if (the_update_counters) {
+      the_dashboard.setBallotsAudited(the_dashboard.ballotsAudited() + 1); 
+      if (discrepancy_found) {
+        the_dashboard.setDiscrepancies(the_dashboard.discrepancies() + 1);
+      }
+      boolean disagree = false;
+      for (final CVRContestInfo ci : the_audit_cvr.contestInfo()) {
+        disagree |= ci.consensus() == ConsensusValue.NO;
+      }
+      if (disagree) {
+        the_dashboard.setDisagreements(the_dashboard.disagreements() + 1);
+      }
+    }
+  }
+  
+  /**
+   * "Unaudits" a CVR/ACVR pair by removing it from all the audits in 
+   * progress in the specified county dashboard. This also updates the
+   * dashboard's counters as appropriate.
+   *
+   * @param the_dashboard The county dashboard.
+   * @param the_cvr_under_audit The CVR under audit.
+   * @param the_audit_cvr The audit CVR.
+   * @param the_count The number of times to remove this ballot from the audit.
+   */
+  private static void unaudit(final CountyDashboard the_dashboard,
+                              final CastVoteRecord the_cvr_under_audit,
+                              final CastVoteRecord the_audit_cvr,
+                              final int the_count) {
+    boolean discrepancy_found = false;
+    for (final CountyContestComparisonAudit ca : the_dashboard.comparisonAudits()) {
+      final int discrepancy = ca.computeDiscrepancy(the_cvr_under_audit, the_audit_cvr);
+      for (int i = 0; i < the_count; i++) {
+        ca.removeDiscrepancy(discrepancy);
+      }
+      discrepancy_found |= discrepancy != 0;
+    }
+    the_dashboard.setBallotsAudited(the_dashboard.ballotsAudited() - 1); 
+    if (discrepancy_found) {
+      the_dashboard.setDiscrepancies(the_dashboard.discrepancies() - 1);
+    }
+    boolean disagree = false;
+    for (final CVRContestInfo ci : the_audit_cvr.contestInfo()) {
+      disagree |= ci.consensus() == ConsensusValue.NO;
+    }
+    if (disagree) {
+      the_dashboard.setDisagreements(the_dashboard.disagreements() - 1);
+    }
+  }
+  
+  /**
+   * Updates the current CVR to audit index of the specified county
+   * dashboard to the first CVR after the current CVR under audit that
+   * lacks an ACVR. This "audits" all the CVR/ACVR pairs it finds 
+   * in between, and extends the sequence of ballots to audit if it
+   * reaches the end and the audit is not concluded.
+   * 
+   * @param the_dashboard The dashboard.
+   */
+  // TODO consider interaction between this method and rounds
+  private static void 
+      updateCVRUnderAudit(final CountyDashboard the_dashboard) {
+    final List<CVRAuditInfo> cvr_audit_info = the_dashboard.cvrAuditInfo();
+    int index = the_dashboard.auditedPrefixLength();
+    int new_prefix_length = -1;
+    while (index < cvr_audit_info.size()) {
+      final CVRAuditInfo cai = cvr_audit_info.get(index);
+      if (cai.acvr() == null) {
+        break;
+      } else {
+        audit(the_dashboard, cai.cvr(), cai.acvr(), 1, false);
+        cai.setCounted(true);
+      }
+      index = index + 1;
+    }
+    new_prefix_length = index;
+    final int to_audit = computeEstimatedBallotsToAudit(the_dashboard);
+    if (new_prefix_length == cvr_audit_info.size() && 
+        0 < to_audit - new_prefix_length) {
+      // we're out of ballots and the audit isn't done, so we need more
+      // TODO for now we get just enough to match the estimated ballots to
+      // audit
+      final List<CastVoteRecord> new_cvrs = 
+          computeBallotOrder(the_dashboard, cvr_audit_info.size(), to_audit);
+      the_dashboard.addCVRsToAudit(new_cvrs);
+    }
+    the_dashboard.setAuditedPrefixLength(new_prefix_length);
+  }
+  
+  /**
+   * Updates the estimated number of ballots to audit on the specified
+   * county dashboard.
+   * 
+   * @param the_dashboard The dashboard.
+   */
+  private static int 
+      computeEstimatedBallotsToAudit(final CountyDashboard the_dashboard) {
+    int to_audit = Integer.MIN_VALUE;
+    for (final CountyContestComparisonAudit ccca : the_dashboard.comparisonAudits()) {
+      to_audit = Math.max(to_audit, ccca.ballotsToAudit());
+    }
+    return Math.max(0,  to_audit - the_dashboard.auditedPrefixLength());
+  }
+  
+  /**
+   * Checks that the specified CVR and ACVR are an audit pair, and that
+   * the specified ACVR is auditor generated.
+   * 
+   * @param the_cvr The CVR.
+   * @param the_acvr The ACVR.
+   */
+  private static boolean checkACVRSanity(final CastVoteRecord the_cvr,
+                                         final CastVoteRecord the_acvr) {
+    return the_cvr.isAuditPairWith(the_acvr) &&
+           the_acvr.recordType().isAuditorGenerated();
   }
 }

@@ -40,9 +40,6 @@ import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
-import us.freeandfair.corla.Main;
-import us.freeandfair.corla.model.CVRContestInfo.ConsensusValue;
-import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.persistence.PersistentEntity;
 import us.freeandfair.corla.query.CVRAuditInfoQueries;
 import us.freeandfair.corla.query.CountyContestResultQueries;
@@ -197,9 +194,10 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   private Integer my_estimated_ballots_to_audit = 0;
   
   /**
-   * The index of the current CVR under audit.
+   * The length of the audited prefix of the list of ballots to audit;
+   * equivalent to the index of the CVR currently under audit.
    */
-  private Integer my_cvr_under_audit;
+  private Integer my_audited_prefix_length;
   
   /**
    * The number of discrepancies found in the audit so far.
@@ -355,12 +353,13 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   }
   
   /**
-   * Define the CVRs to audit. This also clears the list of submitted
-   * audit CVRs.
+   * Define the CVRs to audit. This clears any existing list of CVRs to 
+   * audit, as well as the ACVRs associated with them.
    * 
-   * @param the_cvrs_to_audit A list of the IDs of the CVRs to audit,
-   * in the order they should be examined. It may contain duplicates, which
-   * are dealt with appropriately when submitting audit CVRs.
+   * @param the_cvrs_to_audit A list of the CVRs to audit, in the order 
+   * they should be examined. It may contain duplicates, which are dealt with 
+   * appropriately when submitting audit CVRs.
+   * @exception IllegalArgumentException if any null CVRs are in the list.
    */
   public void setCVRsToAudit(final List<CastVoteRecord> the_cvrs_to_audit) 
       throws IllegalArgumentException {
@@ -368,19 +367,35 @@ public class CountyDashboard implements PersistentEntity, Serializable {
       throw new IllegalArgumentException("null elements in audit cvr list");
     }
     my_cvr_audit_info.clear();
-    for (final CastVoteRecord cvr : the_cvrs_to_audit) {
+    addCVRsToAudit(the_cvrs_to_audit);
+  }
+
+  /**
+   * Adds more CVRs to audit, appending them to the existing list. This
+   * does not modify any already submitted ACVRs or county audit counters.
+   * 
+   * @param the_cvrs_to_add A list of the CVRs to append, in the order they
+   * should be added.
+   * @exception IllegalArgumentException if any null CVRs are in the list.
+   */
+  // TODO consider how this method interacts with "rounds"
+  public void addCVRsToAudit(final List<CastVoteRecord> the_cvrs_to_add) {
+    if (the_cvrs_to_add.contains(null)) {
+      throw new IllegalArgumentException("null elements in audit cvr list");
+    }
+    for (final CastVoteRecord cvr : the_cvrs_to_add) {
       // create a persistent record
       final CVRAuditInfo cvrai = new CVRAuditInfo(this, cvr);
       my_cvr_audit_info.add(cvrai);
     }
   }
-
+  
   /**
    * Initializes the audit data for this county dashboard.
    */
   public void initializeAuditData() {
     int to_audit = Integer.MIN_VALUE;
-    my_cvr_under_audit = 0;
+    my_audited_prefix_length = 0;
     my_discrepancies = 0;
     my_disagreements = 0;
     my_comparison_audits.clear();
@@ -411,190 +426,6 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    */
   public Set<CountyContestComparisonAudit> comparisonAudits() {
     return my_comparison_audits;
-  }
-  
-  /**
-   * Checks that the specified CVR and ACVR are an audit pair, and that
-   * the specified ACVR is auditor generated.
-   * 
-   * @param the_cvr The CVR.
-   * @param the_acvr The ACVR.
-   */
-  private boolean checkACVRSanity(final CastVoteRecord the_cvr,
-                                  final CastVoteRecord the_acvr) {
-    return the_cvr.isAuditPairWith(the_acvr) &&
-           the_acvr.recordType().isAuditorGenerated();
-  }
-  
-  /**
-   * Submit an audit CVR for a CVR under audit.
-   * 
-   * @param the_cvr_under_audit The CVR under audit.
-   * @param the_audit_cvr The corresponding audit CVR.
-   * @return true if the audit CVR is submitted successfully, false if it doesn't
-   * correspond to the CVR under audit, or the specified CVR under audit was
-   * not in fact under audit.
-   */
-  //@ require the_cvr_under_audit != null;
-  //@ require the_acvr != null;
-  @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.AvoidDeeplyNestedIfStmts"})
-  public boolean submitAuditCVR(final CastVoteRecord the_cvr_under_audit, 
-                                final CastVoteRecord the_audit_cvr) {
-    // performs a sanity check to make sure the CVR under audit and the ACVR
-    // are the same card
-    boolean result = false;
-    
-    final List<CVRAuditInfo> info = 
-        CVRAuditInfoQueries.matching(this, the_cvr_under_audit);
-    
-    if (info == null || info.isEmpty()) {
-      Main.LOGGER.info("attempt to submit ACVR for county " + id() + ", cvr " +
-                       the_cvr_under_audit.id() + " not under audit");
-    } else if (checkACVRSanity(the_cvr_under_audit, the_audit_cvr)) {
-      // if the record is the current CVR under audit, or if it hasn't been
-      // audited yet, we can just process it
-      final CVRAuditInfo ai = info.get(0);
-      if (ai.acvr() == null) {
-        for (final CVRAuditInfo c : info) {
-          c.setACVR(the_audit_cvr);
-          Persistence.saveOrUpdate(c);
-        }
-        // this just updates the counters; the actual "audit" happens later
-        audit(the_cvr_under_audit, the_audit_cvr, 0, true);
-      } else {
-        // the record has been audited before, so we need to "unaudit" it 
-        // this, unfortunately, requires a linear time search to count
-        // the occurrences of this ballot before my_cvr_under_audit
-        int undo_count = 0;
-        for (int i = 0; i < my_cvr_under_audit; i++) {
-          if (ai.equals(my_cvr_audit_info.get(i))) {
-            undo_count = undo_count + 1;
-          }
-        }
-        unaudit(the_cvr_under_audit, ai.acvr(), undo_count);
-        for (final CVRAuditInfo c : info) {
-          c.setACVR(the_audit_cvr);
-          Persistence.saveOrUpdate(c);
-        }
-        audit(the_cvr_under_audit, the_audit_cvr, undo_count, true);
-      }
-      result = true;
-    }  else {
-      Main.LOGGER.info("attempt to submit non-corresponding ACVR " +
-                       the_audit_cvr.id() + " for county " + id() + 
-                       ", cvr " + the_cvr_under_audit.id());
-    }
-
-    updateCVRUnderAudit();
-    updateEstimatedBallotsToAudit();
-    
-    return result;
-  }
-  
-  /**
-   * Audits a CVR/ACVR pair by adding it to all the audits in progress.
-   * This also updates the local audit counters, as appropriate.
-   * 
-   * @param the_cvr_under_audit The CVR under audit.
-   * @param the_audit_cvr The audit CVR.
-   * @param the_count The number of times to count this ballot in the
-   * audit.
-   * @param the_update_counters true to update the county dashboard 
-   * counters, false otherwise; false is used when this ballot has
-   * already been audited once.
-   */
-  private void audit(final CastVoteRecord the_cvr_under_audit,
-                     final CastVoteRecord the_audit_cvr, 
-                     final int the_count,
-                     final boolean the_update_counters) {
-    boolean discrepancy_found = false;
-    for (final CountyContestComparisonAudit ca : my_comparison_audits) {
-      final int discrepancy = ca.computeDiscrepancy(the_cvr_under_audit, the_audit_cvr);
-      for (int i = 0; i < the_count; i++) {
-        ca.recordDiscrepancy(discrepancy);
-      }
-      discrepancy_found |= discrepancy != 0;
-    }
-    if (the_update_counters) {
-      my_ballots_audited = my_ballots_audited + 1;
-      if (discrepancy_found) {
-        my_discrepancies = my_discrepancies + 1;
-      }
-      boolean disagree = false;
-      for (final CVRContestInfo ci : the_audit_cvr.contestInfo()) {
-        disagree |= ci.consensus() == ConsensusValue.NO;
-      }
-      if (disagree) {
-        my_disagreements = my_disagreements + 1;
-      }
-    }
-  }
-  
-  /**
-   * "Unaudits" a CVR/ACVR pair by removing it from all the audits in 
-   * progress. This also updates the local audit counters, as appropriate.
-   *
-   * @param the_cvr_under_audit The CVR under audit.
-   * @param the_audit_cvr The audit CVR.
-   * @param the_count The number of times to remove this ballot from the audit.
-   */
-  private void unaudit(final CastVoteRecord the_cvr_under_audit,
-                       final CastVoteRecord the_audit_cvr,
-                       final int the_count) {
-    boolean discrepancy_found = false;
-    for (final CountyContestComparisonAudit ca : my_comparison_audits) {
-      final int discrepancy = ca.computeDiscrepancy(the_cvr_under_audit, the_audit_cvr);
-      for (int i = 0; i < the_count; i++) {
-        ca.removeDiscrepancy(discrepancy);
-      }
-      discrepancy_found |= discrepancy != 0;
-    }
-    my_ballots_audited = my_ballots_audited - 1;
-    if (discrepancy_found) {
-      my_discrepancies = my_discrepancies - 1;
-    }
-    boolean disagree = false;
-    for (final CVRContestInfo ci : the_audit_cvr.contestInfo()) {
-      disagree |= ci.consensus() == ConsensusValue.NO;
-    }
-    if (disagree) {
-      my_disagreements = my_disagreements - 1;
-    }
-  }
-  
-  /**
-   * Updates the current CVR to audit index to the first non-audited CVR
-   * after the current CVR to audit index.
-   * 
-   * @param the_index The index.
-   */
-  private void updateCVRUnderAudit() {
-    int index = my_cvr_under_audit;
-    my_cvr_under_audit = -1;
-    while (index < my_cvr_audit_info.size()) {
-      final CVRAuditInfo cai = my_cvr_audit_info.get(index);
-      if (cai.acvr() == null) {
-        my_cvr_under_audit = index;
-        break;
-      } else {
-        audit(cai.cvr(), cai.acvr(), 1, false);
-      }
-      index = index + 1;
-    }
-    if (my_cvr_under_audit == -1) {
-      // we need to extend the list of ballots under audit
-    }
-  }
-  
-  /**
-   * Updates the estimated number of ballots to audit.
-   */
-  private void updateEstimatedBallotsToAudit() {
-    int to_audit = Integer.MIN_VALUE;
-    for (final CountyContestComparisonAudit ccca : my_comparison_audits) {
-      to_audit = Math.max(to_audit, ccca.ballotsToAudit());
-    }
-    my_estimated_ballots_to_audit = Math.max(0,  to_audit);
   }
   
   /**
@@ -637,11 +468,11 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * no next CVR to audit.
    */
   public Long cvrUnderAudit() {
-    if (my_cvr_audit_info == null || my_cvr_under_audit == null ||
-        my_cvr_audit_info.size() <= my_cvr_under_audit) {
+    if (my_cvr_audit_info == null || my_audited_prefix_length == null ||
+        my_cvr_audit_info.size() <= my_audited_prefix_length) {
       return null;
     } else {
-      return my_cvr_audit_info.get(my_cvr_under_audit).cvr().id();
+      return my_cvr_audit_info.get(my_audited_prefix_length).cvr().id();
     }
   }
   
@@ -653,10 +484,28 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   }
   
   /**
+   * Sets the number of ballots audited.
+   * 
+   * @param the_ballots_audited The number of ballots audited.
+   */
+  public void setBallotsAudited(final int the_ballots_audited) {
+    my_ballots_audited = the_ballots_audited;
+  }
+  
+  /**
    * @return the number of discrepancies found in the audit so far.
    */
   public Integer discrepancies() {
     return my_discrepancies;
+  }
+  
+  /**
+   * Sets the number of discrepancies.
+   * 
+   * @param the_discrepancies The number of discrepancies.
+   */
+  public void setDiscrepancies(final int the_discrepancies) {
+    my_discrepancies = the_discrepancies;
   }
   
   /**
@@ -667,12 +516,48 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   }
   
   /**
+   * Sets the number of disagreements.
+   * 
+   * @param the_disagreements The number of disagreements.
+   */
+  public void setDisagreements(final int the_disagreements) {
+    my_disagreements = the_disagreements;
+  }
+  
+  /**
    * @return the estimated number of ballots to audit.
    */
   public Integer estimatedBallotsToAudit() {
     return my_estimated_ballots_to_audit;
   }
   
+  /**
+   * Sets the estimated number of ballots to audit. 
+   * 
+   * @param the_estimated_ballots_to_audit The estimated number of ballots to audit.
+   */
+  public void setEstimatedBallotsToAudit(final int the_estimated_ballots_to_audit) {
+    my_estimated_ballots_to_audit = the_estimated_ballots_to_audit;
+  }
+  
+  /**
+   * @return the length of the audited prefix of the sequence of
+   * ballots to audit (i.e., the number of audited ballots that 
+   * "count").
+   */
+  public Integer auditedPrefixLength() {
+    return my_audited_prefix_length;
+  }
+  
+  /**
+   * Sets the length of the audited prefix of the sequence of
+   * ballots to audit.
+   * 
+   * @param the_audited_prefix_length The audited prefix length.
+   */
+  public void setAuditedPrefixLength(final int the_audited_prefix_length) {
+    my_audited_prefix_length = the_audited_prefix_length;
+  }
   /**
    * @return a String representation of this contest.
    */

@@ -25,6 +25,7 @@ import spark.Response;
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent;
+import us.freeandfair.corla.controller.ComparisonAuditController;
 import us.freeandfair.corla.json.SubmittedBallotNotFound;
 import us.freeandfair.corla.model.CVRContestInfo;
 import us.freeandfair.corla.model.CastVoteRecord;
@@ -115,7 +116,7 @@ public class BallotNotFound extends AbstractAuditBoardDashboardEndpoint {
                                  cvr.imprintedID(), cvr.ballotType(),
                                  contest_info);
           Persistence.saveOrUpdate(acvr);
-          if (cdb.submitAuditCVR(cvr, acvr)) {
+          if (ComparisonAuditController.submitAuditCVR(cdb, cvr, acvr)) {
             ok(the_response, "audit CVR submitted");
           }
         }

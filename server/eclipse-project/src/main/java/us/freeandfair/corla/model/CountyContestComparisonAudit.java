@@ -208,9 +208,7 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
                                         final double the_one_over,
                                         final double the_two_over) {
     final double gamma_double = my_gamma.doubleValue();
-    System.out.println("gamma = " + gamma_double + ", ballots = " + my_contest_result.ballotCount() + ", margin = " + my_contest_result.minMargin() + ", diluted margin = " + my_contest_result.dilutedMargin().doubleValue() + 
-                       ", discrepancies = " + the_two_under + "/" + the_one_under + "/" + the_one_over + "/" + the_two_over);
-    int result = (int)
+    return (int)
         (Math.max(my_one_vote_over + my_two_vote_over +
                   my_one_vote_under + my_two_vote_under,
                   Math.ceil(-2 * gamma_double *
@@ -220,8 +218,6 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
                                 the_one_over * Math.log(1 - 1 / (2 * gamma_double)) +
                                 the_two_over * Math.log(1 - 1 / gamma_double)) /
                             my_contest_result.dilutedMargin().doubleValue())));
-    System.out.println("estimate: " + result);
-    return result;
   }
   
   /**
@@ -352,6 +348,7 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
    */
   public void addCVRAuditPair(final CVRAuditInfo the_info) {
     recordDiscrepancy(computeDiscrepancy(the_info));
+    recalculateBallotsToAudit();
   }
   
   /**
@@ -362,6 +359,7 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
    */
   public void removeCVRAuditPair(final CVRAuditInfo the_info) {
     removeDiscrepancy(computeDiscrepancy(the_info));
+    recalculateBallotsToAudit();
   }
   
   /**
