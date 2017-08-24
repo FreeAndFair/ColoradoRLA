@@ -37,14 +37,16 @@ function createFileUploadAction(config: FileUploadActionConfig) {
         try {
             const r = await fetch(url, init);
 
+            const received = await r.json();
+            const sent = createSent(...args);
+            const data = { received, sent };
+
             if (!r.ok) {
-                action(failType);
+                action(failType, data);
                 return;
             }
 
-            const sent = createSent(...args);
-
-            action(okType, { sent });
+            action(okType, data);
         } catch (e) {
             if (e.message === 'Failed to fetch') {
                 action(networkFailType);
