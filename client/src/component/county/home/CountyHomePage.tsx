@@ -83,7 +83,6 @@ const CountyInfo = ({ county, info }: any) => {
 
     const rows = [
         ['County:', info.name],
-        ['County ID:', county.id],
         ['Status:', county.status],
         ['# Ballots to audit:', unauditedBallotCount],
         ['# Ballots audited:', county.auditedBallotCount],

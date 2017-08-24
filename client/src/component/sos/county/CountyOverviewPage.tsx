@@ -27,7 +27,6 @@ const CountyTableRow = ({ county, status }: any) => {
 
     return (
         <tr>
-            <td>{ county.id }</td>
             <td>
                 <a href={ `/sos/county/${county.id}` }>
                     { county.name }
@@ -51,7 +50,6 @@ const CountyTable = ({ counties, countyStatus }: any) => {
         <table className='pt-table pt-bordered pt-condensed'>
             <thead>
                 <tr>
-                    <td>ID</td>
                     <td>Name</td>
                     <td>Audit Started</td>
                     <td># Ballots Submitted</td>

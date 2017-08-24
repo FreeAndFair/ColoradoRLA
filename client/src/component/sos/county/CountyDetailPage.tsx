@@ -33,10 +33,6 @@ const CountyDetails = ({ county, status }: any) => {
             <table className='pt-table pt-bordered pt-condensed'>
                 <tbody>
                     <tr>
-                        <td>ID:</td>
-                        <td>{ county.id }</td>
-                    </tr>
-                    <tr>
                         <td>Name:</td>
                         <td>{ county.name }</td>
                     </tr>
