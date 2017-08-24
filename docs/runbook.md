@@ -3,37 +3,35 @@
 
 ## Introduction
 
-This Run Book is written for election administrators who will be 
-implementing a Risk Limiting Audit (RLA) using the RLA Tool. 
-The Run Book will assist these election administrators 
-in using to tool to carry out the actions required
-for a RLA.
+This Run Book is written for election administrators who will be
+implementing a Risk Limiting Audit (RLA) using the RLA Tool.  The Run
+Book will assist these election administrators in using to tool to
+carry out the actions required for a RLA.
 
-The Risk-Limiting Audit (RLA) Tool, developed by Free & Fair 
-for the Colorado Department of
-State for use in elections from November 2017 forward, supports
-running a 
-Risk-Limiting Audit as required by Colorado statute and 
-as described in the [Colorado Secretary of State's Rule 25](http://www.sos.state.co.us/pubs/rule_making/CurrentRules/8CCR1505-1/ElectionRules.pdf) for
-elections. The RLA Tool supports a variety of 
-requirements of Rule 25.2.2 and Rule 25.2.3, as described
-in detail below.
+The Risk-Limiting Audit (RLA) Tool, developed by Free & Fair for the
+Colorado Department of State for use in elections from November 2017
+forward, supports running a Risk-Limiting Audit as required by
+Colorado statute and as described in
+the
+[Colorado Secretary of State's Rule 25](http://www.sos.state.co.us/pubs/rule_making/CurrentRules/8CCR1505-1/ElectionRules.pdf) for
+elections. The RLA Tool supports a variety of requirements of Rule
+25.2.2 and Rule 25.2.3, as described in detail below.
 
-The RLA Tool enables the Secretary of State and each individual 
-County to carry out a Risk-Limiting Audit. Using the RLA Tool, Secretary of State 
-enter the risk limit, the publicly-generated random seed, and the contests that drive
-the audit process. The Secretary of State can also identify, at any time, 
-contests that should go to a full hand count. Counties upload
-verified ballot manifests and cast vote record (CVR) files. The
-RLA Tool performs the necessary calculations to run the RLA, such as 
-choosing random samples of ballots for audit and determining 
-actual risk levels. County Audit Boards then
-enter interpretations of ballots into the Tool. While audits are
-ongoing, the Secretary of
-State can monitor the progress of the individual Counties.
+The RLA Tool enables the Secretary of State and each individual County
+to carry out a Risk-Limiting Audit. Using the RLA Tool, Secretary of
+State enter the risk limit, the publicly-generated random seed, and
+the contests that drive the audit process. The Secretary of State can
+also identify, at any time, contests that should go to a full hand
+count. Counties upload verified ballot manifests and cast vote record
+(CVR) files. The RLA Tool performs the necessary calculations to run
+the RLA, such as choosing random samples of ballots for audit and
+determining actual risk levels. County Audit Boards then enter
+interpretations of ballots into the Tool. While audits are ongoing,
+the Secretary of State can monitor the progress of the individual
+Counties.
 
-The RLA Tool also creates export files for use in the Audit
-Center, a website required by Rule 25 to disseminate audit-related information
+The RLA Tool also creates export files for use in the Audit Center, a
+website required by Rule 25 to disseminate audit-related information
 to the public.
  
 ### Logging In

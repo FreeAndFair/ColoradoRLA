@@ -6,14 +6,14 @@ final decision about which variant it will be licensed under is still
 under discussion.
 
 In particular, should it be licensed under
-[AGPLv3](https://www.gnu.org/licenses/agpl-3.0.en.html), or
+[AGPLv3](https://www.gnu.org/licenses/agpl-3.0.en.html) or
 [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html)? Please see the
 FSF document, ["Why the Affero
 GPL"](https://www.gnu.org/licenses/why-affero-gpl.en.html), for a
 relevant discussion.
 
 If you, the reader, have input on this decision, please add a comment
-to Issue #315.
+to [Issue #452](https://github.com/FreeAndFair/ColoradoRLA/issues/452).
 
 Thus, as of now, this system is not licensed for any use whatsoever
 beyond its owner, the Colorado Department of State.
