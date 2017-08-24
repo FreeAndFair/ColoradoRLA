@@ -414,8 +414,8 @@ public abstract class AbstractEndpoint implements Endpoint {
   private void sendToLogger(final LogEntry the_log_entry) {
     if (the_log_entry.resultCode() == null) {
       Main.LOGGER.info(the_log_entry.information() + " by " + 
-          the_log_entry.authenticationData() + " from " + 
-          the_log_entry.clientHost());
+                       the_log_entry.authenticationData() + " from " + 
+                       the_log_entry.clientHost());
     } else if (HttpStatus.isSuccess(the_log_entry.resultCode())) {
       Main.LOGGER.info("successful " + the_log_entry.information() + " by " + 
                        the_log_entry.authenticationData() + " from " + 
