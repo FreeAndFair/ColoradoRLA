@@ -128,7 +128,7 @@ public final class ComparisonAuditController {
       final Contest contest = audit.contest();
       comparison_audits.add(audit);
       if (all_driving_contests.contains(contest)) {
-        to_audit = Math.max(to_audit, audit.initialBallotsToAudit());
+        to_audit = Math.max(to_audit, audit.ballotsToAudit());
         county_driving_contests.add(contest);
       }
     }

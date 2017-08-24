@@ -183,5 +183,10 @@
 			<artifactId>hibernate-ehcache</artifactId>
 			<version>5.2.10.Final</version>
 		</dependency>
+		<dependency>
+			<groupId>ch.obermuhlner</groupId>
+			<artifactId>big-math</artifactId>
+			<version>1.2.1</version>
+		</dependency>
 	</dependencies>
 </project>

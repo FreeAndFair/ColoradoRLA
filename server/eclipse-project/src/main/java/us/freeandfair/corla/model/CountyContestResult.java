@@ -271,7 +271,7 @@ public class CountyContestResult extends AbstractEntity implements Serializable 
    * minimum margin divided by the number of ballots cast in the county.
    * @exception IllegalStateException if no ballots have been counted.
    */
-  public BigDecimal dilutedMarginCounty() {
+  public BigDecimal countyDilutedMargin() {
     BigDecimal result;
     if (my_county_ballot_count > 0) {
       result = BigDecimal.valueOf(my_min_margin).

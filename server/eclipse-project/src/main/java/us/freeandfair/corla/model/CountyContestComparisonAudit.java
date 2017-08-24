@@ -13,6 +13,8 @@ package us.freeandfair.corla.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,6 +24,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import ch.obermuhlner.math.big.BigDecimalMath;
+import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.persistence.AbstractEntity;
 
@@ -197,12 +201,12 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
   public Integer initialBallotsToAudit() {
     // compute the conservative numbers of over/understatements based on 
     // initial estimate of error rate
-    return computeBallotsToAuditFromRates(CONSERVATIVE_TWOS_RATE.doubleValue(),
-                                          CONSERVATIVE_ONES_RATE.doubleValue(),
-                                          CONSERVATIVE_ONES_RATE.doubleValue(),
-                                          CONSERVATIVE_TWOS_RATE.doubleValue(), 
+    return computeBallotsToAuditFromRates(CONSERVATIVE_TWOS_RATE,
+                                          CONSERVATIVE_ONES_RATE,
+                                          CONSERVATIVE_ONES_RATE,
+                                          CONSERVATIVE_TWOS_RATE, 
                                           CONSERVATIVE_ROUND_ONES_UP,
-                                          CONSERVATIVE_ROUND_TWOS_UP);
+                                          CONSERVATIVE_ROUND_TWOS_UP).intValue();
   }
   
   /**
@@ -210,7 +214,7 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
    */
   public Integer ballotsToAudit() {
     if (my_ballots_to_audit == null && my_contest_result != null) {
-      recalculateBallotsToAudit();
+      my_ballots_to_audit = initialBallotsToAudit();
     }
     return my_ballots_to_audit;
   }
@@ -224,7 +228,7 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
     my_ballots_to_audit = computeBallotsToAudit(my_two_vote_under, 
                                                 my_one_vote_under,
                                                 my_one_vote_over,
-                                                my_two_vote_over);
+                                                my_two_vote_over).intValue();
   }
   
   /**
@@ -241,10 +245,11 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
    * https://www.stat.berkeley.edu/~stark/Preprints/gentle12.pdf
    */
   @SuppressWarnings({"checkstyle:magicnumber", "PMD.AvoidDuplicateLiterals"})
-  private Integer computeBallotsToAudit(final double the_two_under,
-                                        final double the_one_under,
-                                        final double the_one_over,
-                                        final double the_two_over) {
+  private BigDecimal computeBallotsToAudit(final int the_two_under,
+                                           final int the_one_under,
+                                           final int the_one_over,
+                                           final int the_two_over) {
+    /* old calculation 
     final double gamma_double = my_gamma.doubleValue();
     return (int)
         (Math.max(my_one_vote_over + my_two_vote_over +
@@ -256,6 +261,44 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
                                 the_one_over * Math.log(1 - 1 / (2 * gamma_double)) +
                                 the_two_over * Math.log(1 - 1 / gamma_double)) /
                             my_contest_result.dilutedMarginCounty().doubleValue())));
+    */
+    
+    final BigDecimal invgamma = BigDecimal.ONE.divide(my_gamma, MathContext.DECIMAL128);
+    final BigDecimal twogamma = BigDecimal.valueOf(2).multiply(my_gamma);
+    final BigDecimal invtwogamma = 
+        BigDecimal.ONE.divide(twogamma, MathContext.DECIMAL128);
+    final BigDecimal two_under_bd = BigDecimal.valueOf(the_two_under);
+    final BigDecimal one_under_bd = BigDecimal.valueOf(the_one_under);
+    final BigDecimal one_over_bd = BigDecimal.valueOf(the_one_over);
+    final BigDecimal two_over_bd = BigDecimal.valueOf(the_two_over);
+    
+    final BigDecimal over_under_sum = 
+        two_under_bd.add(one_under_bd).add(one_over_bd).add(two_over_bd);
+    final BigDecimal two_under = 
+        two_under_bd.multiply(BigDecimalMath.log(BigDecimal.ONE.add(invgamma), 
+                                                 MathContext.DECIMAL128));
+    final BigDecimal one_under =
+        one_under_bd.multiply(BigDecimalMath.log(BigDecimal.ONE.add(invtwogamma), 
+                                                 MathContext.DECIMAL128));
+    final BigDecimal one_over = 
+        one_over_bd.multiply(BigDecimalMath.log(BigDecimal.ONE.subtract(invtwogamma), 
+                                                MathContext.DECIMAL128));
+    final BigDecimal two_over =
+        two_over_bd.multiply(BigDecimalMath.log(BigDecimal.ONE.subtract(invgamma),
+                                                MathContext.DECIMAL128));
+    final BigDecimal numerator =
+        twogamma.negate().
+        multiply(BigDecimalMath.log(my_risk_limit, MathContext.DECIMAL128).
+                 add(two_under.add(one_under).add(one_over).add(two_over)));
+    final BigDecimal ceil =
+        numerator.divide(my_contest_result.countyDilutedMargin(),
+                         MathContext.DECIMAL128).setScale(0, RoundingMode.CEILING);
+    final BigDecimal result = ceil.max(over_under_sum);
+
+    Main.LOGGER.info("estimate for contest " + contest().name() + 
+                     ", diluted margin " + contestResult().countyDilutedMargin() + 
+                     ": " + result);
+    return result;
   }
   
   /**
@@ -272,12 +315,13 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
    * vote over- and understatements up, false otherwise
    */
   @SuppressWarnings("checkstyle:magicnumber")
-  private Integer computeBallotsToAuditFromRates(final double the_two_under_rate,
-                                                 final double the_one_under_rate,
-                                                 final double the_one_over_rate,
-                                                 final double the_two_over_rate,
-                                                 final boolean the_round_ones_up,
-                                                 final boolean the_round_twos_up) {
+  private BigDecimal computeBallotsToAuditFromRates(final BigDecimal the_two_under_rate,
+                                                    final BigDecimal the_one_under_rate,
+                                                    final BigDecimal the_one_over_rate,
+                                                    final BigDecimal the_two_over_rate,
+                                                    final boolean the_round_ones_up,
+                                                    final boolean the_round_twos_up) {
+    /* old calculation
     final double gamma_double = my_gamma.doubleValue();
     double bta = -2 * gamma_double * Math.log(my_risk_limit.doubleValue()) /
                 (my_contest_result.dilutedMarginCounty().doubleValue() + 2 * gamma_double *
@@ -290,7 +334,6 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
     double one_under;
     double one_over;
     double two_over;
- 
     final int loop_bound = 3;
     for (int i = 0; i < loop_bound; i++) {
       if (the_round_ones_up) {
@@ -310,6 +353,67 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
       bta = computeBallotsToAudit(two_under, one_under, one_over, two_over);
     }
     return (int) bta;
+    */
+    final BigDecimal invgamma = BigDecimal.ONE.divide(my_gamma, MathContext.DECIMAL128);
+    final BigDecimal twogamma = 
+        BigDecimal.valueOf(2).multiply(my_gamma);
+    final BigDecimal invtwogamma = BigDecimal.ONE.divide(twogamma, MathContext.DECIMAL128);
+    
+    final BigDecimal two_under_initial = 
+        the_two_under_rate.multiply(BigDecimalMath.log(BigDecimal.ONE.add(invgamma), 
+                                                       MathContext.DECIMAL128));
+    final BigDecimal one_under_initial =
+        the_one_under_rate.multiply(BigDecimalMath.log(BigDecimal.ONE.add(invtwogamma), 
+                                                       MathContext.DECIMAL128));
+    final BigDecimal one_over_initial = 
+        the_one_over_rate.multiply(BigDecimalMath.log(BigDecimal.ONE.subtract(invtwogamma), 
+                                                      MathContext.DECIMAL128));
+    final BigDecimal two_over_initial =
+        the_two_over_rate.multiply(BigDecimalMath.log(BigDecimal.ONE.subtract(invgamma),
+                                                      MathContext.DECIMAL128));
+    final BigDecimal sum = 
+        two_under_initial.add(one_under_initial).add(one_over_initial).add(two_over_initial);
+    final BigDecimal denominator =
+        my_contest_result.countyDilutedMargin().
+        add(twogamma.multiply(sum));
+    final BigDecimal numerator = 
+        twogamma.negate().
+        multiply(BigDecimalMath.log(my_risk_limit, MathContext.DECIMAL128));
+    BigDecimal result = numerator.divide(denominator, MathContext.DECIMAL128);
+    
+    BigDecimal two_under;
+    BigDecimal one_under;
+    BigDecimal one_over;
+    BigDecimal two_over;
+ 
+    final int loop_bound = 3;
+    for (int i = 0; i < loop_bound; i++) {
+      if (the_round_ones_up) {
+        one_under = 
+            the_one_under_rate.multiply(result).setScale(0, RoundingMode.CEILING);
+        one_over = 
+            the_one_over_rate.multiply(result).setScale(0, RoundingMode.CEILING);
+      } else {
+        one_under = the_one_under_rate.multiply(result).round(MathContext.DECIMAL128);
+        one_over = the_one_over_rate.multiply(result).round(MathContext.DECIMAL128);
+      }
+      if (the_round_twos_up) {
+        two_under = 
+            the_two_under_rate.multiply(result).setScale(0, RoundingMode.CEILING);
+        two_over = 
+            the_two_over_rate.multiply(result).setScale(0, RoundingMode.CEILING);
+      } else {
+        two_under = the_two_under_rate.multiply(result).round(MathContext.DECIMAL128);
+        two_over = the_two_over_rate.multiply(result).round(MathContext.DECIMAL128);  
+      }
+      result = computeBallotsToAudit(two_under.intValue(), one_under.intValue(), 
+                                  one_over.intValue(), two_over.intValue());
+    }
+    
+    Main.LOGGER.info("initial estimate for contest " + contest().name() + 
+                     ", diluted margin " + contestResult().countyDilutedMargin() + 
+                     ": " + result);
+    return result;
   }
   
   /**
@@ -342,6 +446,7 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
       default:
         throw new IllegalArgumentException("invalid over or understatement: " + the_statement);
     }
+    recalculateBallotsToAudit();
   }
     
   /**
@@ -376,27 +481,6 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
       default:
         throw new IllegalArgumentException("invalid over or understatement: " + the_statement);
     }
-  }
-  
-  /**
-   * Adds the over/understatement represented by the CVR/ACVR pair stored in the
-   * specified CVRAuditInfo.
-   * 
-   * @param the_info The CVRAuditInfo.
-   */
-  public void addCVRAuditPair(final CVRAuditInfo the_info) {
-    recordDiscrepancy(computeDiscrepancy(the_info));
-    recalculateBallotsToAudit();
-  }
-  
-  /**
-   * Removes the over/understatement represented by the CVR/ACVR pair stored in 
-   * the specified CVRAuditInfo.
-   * 
-   * @param the_info The CVRAuditInfo.
-   */
-  public void removeCVRAuditPair(final CVRAuditInfo the_info) {
-    removeDiscrepancy(computeDiscrepancy(the_info));
     recalculateBallotsToAudit();
   }
   
