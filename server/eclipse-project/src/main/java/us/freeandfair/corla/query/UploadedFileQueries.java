@@ -52,7 +52,7 @@ public final class UploadedFileQueries {
   // we are checking to see if exactly one result is in a list, and
   // PMD doesn't like it
   @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
-  public static UploadedFile matching(final Integer the_county_id, 
+  public static UploadedFile matching(final Long the_county_id, 
                                       final Long the_database_id) {
     UploadedFile result = null;
     

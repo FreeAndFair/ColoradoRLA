@@ -24,8 +24,6 @@ import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -84,12 +82,6 @@ public class DoSDashboard implements PersistentEntity, Serializable {
              fetch = FetchType.LAZY, orphanRemoval = true)
   @Column(name = "contest_to_audit")
   private Set<ContestToAudit> my_contests_to_audit = new HashSet<>();
-
-  /**
-   * The audit stage of the election.
-   */
-  @Enumerated(EnumType.STRING)
-  private AuditStage my_audit_stage = AuditStage.PRE_AUDIT;
   
   /**
    * The risk limit for comparison audits.
@@ -169,25 +161,9 @@ public class DoSDashboard implements PersistentEntity, Serializable {
   }
   
   /**
-   * @return the current stage of the audit.
-   */
-  public AuditStage auditStage() {
-    return my_audit_stage;
-  }
-  
-  /**
-   * Sets the audit stage.
-   * 
-   * @param the_audit_stage The new audit stage.
-   */ 
-  public void setAuditStage(final AuditStage the_audit_stage) {
-    my_audit_stage = the_audit_stage;
-  }
-  
-  /**
    * @return the risk limit for comparison audits, or null if none has been set.
    */
-  public BigDecimal getRiskLimitForComparisonAudits() {
+  public BigDecimal riskLimitForComparisonAudits() {
     return my_risk_limit_for_comparison_audits;
   }
   

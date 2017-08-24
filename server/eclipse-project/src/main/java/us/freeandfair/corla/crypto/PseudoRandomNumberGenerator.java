@@ -126,22 +126,22 @@ public class PseudoRandomNumberGenerator {
   /**
    * Generate the specified list of random numbers.
    * 
-   * @param the_from the "index" of the first random number generator to give
+   * @param the_from the "index" of the first random number to give
    * @param the_to the "index" of the final random number to give
    * 
-   * @return A list containing the_from - the_to + 1 random numbers
+   * @return A list containing the_to - the_from + 1 random numbers
    */
   //@ requires the_from <= the_to;
   // @todo kiniry Refine this specification to include public model fields.
-  // requires my_with_replacement;
-  // requires the_to <= my_maximum_index;
+  // requires my_with_replacement || the_to <= my_maximum_index;
   public List<Integer> getRandomNumbers(final int the_from, final int the_to) {
     assert the_from <= the_to;
     assert my_with_replacement || the_to <= my_maximum_index;
-    if (the_to > my_random_numbers.size()) {
-      extendList(the_to);
+    if (the_to + 1 > my_random_numbers.size()) {
+      extendList(the_to + 1);
     }
-    return my_random_numbers.subList(the_from, the_to);
+    // subList has an exclusive upper bound, but we have an inclusive one
+    return my_random_numbers.subList(the_from, the_to + 1);
   }
 
   /**

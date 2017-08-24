@@ -20,14 +20,18 @@ import java.util.Set;
 
 import javax.persistence.PersistenceException;
 
-import us.freeandfair.corla.model.AuditStage;
+import us.freeandfair.corla.asm.ASMState;
+import us.freeandfair.corla.asm.ASMUtilities;
+import us.freeandfair.corla.asm.DoSDashboardASM;
+import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.ContestToAudit;
 import us.freeandfair.corla.model.ContestToAudit.AuditReason;
 import us.freeandfair.corla.model.County;
+import us.freeandfair.corla.model.CountyContestComparisonAudit;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.util.Pair;
+import us.freeandfair.corla.query.CountyContestComparisonAuditQueries;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
@@ -44,9 +48,9 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
 
 public class DoSDashboardRefreshResponse {
   /**
-   * The audit stage.
+   * The ASM state.
    */
-  private final AuditStage my_audit_stage;
+  private final ASMState my_asm_state;
   
   /**
    * The risk limit.
@@ -57,6 +61,11 @@ public class DoSDashboardRefreshResponse {
    * A map from audited contests to audit reasons.
    */
   private final Map<Long, AuditReason> my_audited_contests;
+  
+  /**
+   * A map from audited contests to estimated ballots left to audit.
+   */
+  private final Map<Long, Integer> my_estimated_ballots_to_audit;
   
   /**
    * A map from county IDs to county status.
@@ -76,23 +85,26 @@ public class DoSDashboardRefreshResponse {
   /**
    * Constructs a new DosDashboardRefreshResponse.
    * 
-   * @param the_audit_stage The audit stage.
+   * @param the_asm_state The ASM state.
    * @param the_risk_limit The risk limit.
    * @param the_audited_contests The audited contests.
    * @param the_county_status The county statuses.
    * @param the_random_seed The random seed.
    * @param the_hand_count_contests The hand count contests.
    */
-  protected DoSDashboardRefreshResponse(final AuditStage the_audit_stage,
+  protected DoSDashboardRefreshResponse(final ASMState the_asm_state,
                                         final BigDecimal the_risk_limit,
                                         final Map<Long, AuditReason> the_audited_contests,
+                                        final Map<Long, Integer> 
+                                           the_estimated_ballots_to_audit,
                                         final Map<Long, CountyDashboardRefreshResponse> 
                                            the_county_status,
                                         final String the_random_seed,
                                         final Set<Long> the_hand_count_contests) {
-    my_audit_stage = the_audit_stage;
+    my_asm_state = the_asm_state;
     my_risk_limit = the_risk_limit;
     my_audited_contests = the_audited_contests;
+    my_estimated_ballots_to_audit = the_estimated_ballots_to_audit;
     my_county_status = the_county_status;
     my_random_seed = the_random_seed;
     my_hand_count_contests = the_hand_count_contests;
@@ -108,36 +120,17 @@ public class DoSDashboardRefreshResponse {
    */
   public static DoSDashboardRefreshResponse 
       createResponse(final DoSDashboard the_dashboard) {
-    // construct the audit/hand count info from the contests to audit in the dashboard
-    final Pair<Map<Long, AuditReason>, Set<Long>> info =
-        contestInfo(the_dashboard.contestsToAudit());
-    
-    return new DoSDashboardRefreshResponse(the_dashboard.auditStage(),
-                                           the_dashboard.getRiskLimitForComparisonAudits(),
-                                           info.getFirst(),
-                                           countyStatusMap(),
-                                           the_dashboard.randomSeed(),
-                                           info.getSecond());
-  }
-  
-  /**
-   * Converts the dashboard's contests to audit into collections suitable for the
-   * response. 
-   * 
-   * @param the_set The set of contests to audit.
-   * @return the audit/hand count info from a set of contests to audit as a pair
-   * of collections.
-   */
-  private static Pair<Map<Long, AuditReason>, Set<Long>> 
-      contestInfo(final Set<ContestToAudit> the_set) {
+    // construct the various audit info from the contests to audit in the dashboard
     final Map<Long, AuditReason> audited_contests = 
         new HashMap<Long, AuditReason>();
+    final Map<Long, Integer> ballots_to_audit = new HashMap<Long, Integer>();
     final Set<Long> hand_count_contests = new HashSet<Long>();
     
-    for (final ContestToAudit cta : the_set) {
+    for (final ContestToAudit cta : the_dashboard.contestsToAudit()) {
       switch (cta.audit()) {
         case COMPARISON:
           audited_contests.put(cta.contest().id(), cta.reason());
+          ballots_to_audit.put(cta.contest().id(), ballotsToAudit(cta.contest()));
           break;
           
         case HAND_COUNT:
@@ -147,8 +140,35 @@ public class DoSDashboardRefreshResponse {
         default:
       }
     }
-    return new Pair<Map<Long, AuditReason>, Set<Long>>
-    (audited_contests, hand_count_contests);
+    // status
+    final DoSDashboardASM asm = ASMUtilities.asmFor(DoSDashboardASM.class, null);
+
+    
+    return new DoSDashboardRefreshResponse(asm.currentState(),
+                                           the_dashboard.riskLimitForComparisonAudits(),
+                                           audited_contests,
+                                           ballots_to_audit,
+                                           countyStatusMap(),
+                                           the_dashboard.randomSeed(),
+                                           hand_count_contests);
+  }
+  
+  /**
+   * Gets the estimated ballots to audit for a contest under audit.
+   * 
+   * @param the_contest The contest
+   * @return the estimated ballots to audit.
+   */
+  private static Integer ballotsToAudit(final Contest the_contest) {
+    int to_audit = Integer.MIN_VALUE;
+    for (final CountyContestComparisonAudit ccca : 
+         CountyContestComparisonAuditQueries.matching(the_contest)) {
+      to_audit = 
+          Math.max(to_audit, 
+                   Math.max(0, ccca.ballotsToAudit() - 
+                               ccca.dashboard().ballotsAudited()));
+    }
+    return to_audit;
   }
   
   /**

@@ -28,6 +28,7 @@ import org.hibernate.Session;
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.County;
+import us.freeandfair.corla.model.CountyContestResult;
 import us.freeandfair.corla.persistence.Persistence;
 
 /**
@@ -95,21 +96,52 @@ public final class ContestQueries {
   /**
    * Gets contests that are in the specified set of counties.
    * 
-   * @param the_county_ids The counties.
+   * @param the_counties The counties.
    * @return the matching contests, or null if the query fails.
    */
-  public static Set<Contest> forCounties(final Set<Long> the_county_ids) {
+  public static Set<Contest> forCounties(final Set<County> the_counties) {
     Set<Contest> result = null;
     
     try {
-      final Set<Contest> query_results = new HashSet<Contest>();
-      for (final Long county_id : the_county_ids) {
-        final County c = Persistence.getByID(county_id, County.class);
-        if (c != null) {
-          query_results.addAll(c.contests());
-        }
+      final Session s = Persistence.currentSession();
+      final CriteriaBuilder cb = s.getCriteriaBuilder();
+      final CriteriaQuery<Contest> cq = cb.createQuery(Contest.class);
+      final Root<CountyContestResult> root = cq.from(CountyContestResult.class);
+      final List<Predicate> disjuncts = new ArrayList<Predicate>();
+      for (final County county : the_counties) {
+        disjuncts.add(cb.equal(root.get("my_county"), county));
       }
-      result = query_results;
+      cq.select(root.get("my_contest"));
+      cq.where(cb.or(disjuncts.toArray(new Predicate[disjuncts.size()])));
+      cq.distinct(true);
+      final TypedQuery<Contest> query = s.createQuery(cq);
+      result = new HashSet<Contest>(query.getResultList());  
+    } catch (final PersistenceException e) {
+      Main.LOGGER.error("Exception when reading contests from database: " + e);
+    }
+
+    return result;
+  }
+  
+  /**
+   * Gets contests that are in the specified county.
+   * 
+   * @param the_county The county.
+   * @return the matching contests, or null if the query fails.
+   */
+  public static Set<Contest> forCounty(final County the_county) {
+    Set<Contest> result = null;
+    
+    try {
+      final Session s = Persistence.currentSession();
+      final CriteriaBuilder cb = s.getCriteriaBuilder();
+      final CriteriaQuery<Contest> cq = cb.createQuery(Contest.class);
+      final Root<CountyContestResult> root = cq.from(CountyContestResult.class);
+      cq.select(root.get("my_contest"));
+      cq.where(cb.equal(root.get("my_county"), the_county));
+      cq.distinct(true);
+      final TypedQuery<Contest> query = s.createQuery(cq);
+      result = new HashSet<Contest>(query.getResultList());
     } catch (final PersistenceException e) {
       Main.LOGGER.error("Exception when reading contests from database: " + e);
     }

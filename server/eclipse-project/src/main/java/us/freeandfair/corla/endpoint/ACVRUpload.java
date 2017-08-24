@@ -25,6 +25,7 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
+import us.freeandfair.corla.controller.ComparisonAuditController;
 import us.freeandfair.corla.json.SubmittedAuditCVR;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
@@ -105,7 +106,7 @@ public class ACVRUpload extends AbstractAuditBoardDashboardEndpoint {
             Main.LOGGER.error("could not find original CVR");
             this.badDataContents(the_response, "could not find original CVR");
           } else {
-            if (cdb.submitAuditCVR(cvr, real_acvr)) {
+            if (ComparisonAuditController.submitAuditCVR(cdb, cvr, real_acvr)) {
               Persistence.saveOrUpdate(cdb);
               ok(the_response, "ACVR submitted");
             } else {

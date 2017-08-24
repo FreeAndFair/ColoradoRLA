@@ -25,6 +25,7 @@ import org.hibernate.Session;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.CVRAuditInfo;
+import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 
@@ -48,11 +49,11 @@ public final class CVRAuditInfoQueries {
    * and persisted.
    *
    * @param the_dashboard The dashboard to match.
-   * @param the_cvr_id The CVR ID to match.
+   * @param the_cvr The CVR to match.
    * @return the matched CVRAuditInfo object, if one exists.
    */
   public static List<CVRAuditInfo> matching(final CountyDashboard the_dashboard,
-                                            final Long the_cvr_id) {
+                                            final CastVoteRecord the_cvr) {
     List<CVRAuditInfo> result = null;
     
     try {
@@ -62,7 +63,7 @@ public final class CVRAuditInfoQueries {
       final Root<CVRAuditInfo> root = cq.from(CVRAuditInfo.class);
       final List<Predicate> conjuncts = new ArrayList<>();
       conjuncts.add(cb.equal(root.get("my_dashboard"), the_dashboard));
-      conjuncts.add(cb.equal(root.get("my_cvr_id"), the_cvr_id));
+      conjuncts.add(cb.equal(root.get("my_cvr"), the_cvr));
       cq.select(root).where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
       final TypedQuery<CVRAuditInfo> query = s.createQuery(cq);
       result = query.getResultList();
@@ -71,7 +72,7 @@ public final class CVRAuditInfoQueries {
     }
     if (result == null) {
       Main.LOGGER.debug("found no cvr audit infos matching county " +
-                        the_dashboard.id() + ", CVR " + the_cvr_id);
+                        the_dashboard.id() + ", CVR " + the_cvr.id());
     } else {
       Main.LOGGER.debug("found cvr audit infos " + result);
     }
@@ -90,11 +91,16 @@ public final class CVRAuditInfoQueries {
     try {
       final Session s = Persistence.currentSession();
       final CriteriaBuilder cb = s.getCriteriaBuilder();
-      final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+      final CriteriaQuery<CastVoteRecord> cq = cb.createQuery(CastVoteRecord.class);
       final Root<CVRAuditInfo> root = cq.from(CVRAuditInfo.class);
-      cq.select(root.get("my_cvr_id"));
-      final TypedQuery<Long> query = s.createQuery(cq);
-      result = query.getResultList();
+      cq.select(root.get("my_cvr"));
+      final TypedQuery<CastVoteRecord> query = s.createQuery(cq);
+      final List<CastVoteRecord> cvrs = query.getResultList();
+      result = new ArrayList<>();
+      for (final CastVoteRecord cvr : cvrs) {
+        result.add(cvr.id());
+        Persistence.evict(cvr);
+      }
     } catch (final PersistenceException e) {
       Main.LOGGER.error("could not query database for cvrs to audit list");
     }
@@ -105,6 +111,5 @@ public final class CVRAuditInfoQueries {
       Main.LOGGER.debug("found list of cvrs to audit " + result);
     }
     return result;
-
   }
 }

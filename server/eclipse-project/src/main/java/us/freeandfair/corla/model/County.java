@@ -70,17 +70,6 @@ public class County implements PersistentEntity, Serializable {
    */
   @Column(nullable = false, updatable = false, unique = true)
   private String my_name;
-
-  /**
-   * The contests in this county.
-   */
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(name = "county_contest",
-            joinColumns = @JoinColumn(name = "county_id", 
-                                      referencedColumnName = MY_ID),
-            inverseJoinColumns = @JoinColumn(name = "contest_id", 
-                                             referencedColumnName = MY_ID))
-  private Set<Contest> my_contests;
   
   /**
    * The administrators for this county.
@@ -105,16 +94,13 @@ public class County implements PersistentEntity, Serializable {
    * 
    * @param the_name The county name.
    * @param the_identifier The county ID.
-   * @param the_contests The contests.
    * @param the_administrators The administrators.
    */
   public County(final String the_name, final Long the_identifier,
-                final Set<Contest> the_contests, 
                 final Set<Administrator> the_administrators) {
     super();
     my_name = the_name;
     my_id = the_identifier;
-    my_contests = the_contests;
     my_administrators = the_administrators;
   }
 
@@ -152,14 +138,6 @@ public class County implements PersistentEntity, Serializable {
   }
   
   /**
-   * @return the contests in this county. The result set is mutable,
-   * and can be used to change the persistent county record.
-   */
-  public Set<Contest> contests() {
-    return my_contests;
-  }
-  
-  /**
    * @return the administrators for this county. The result set is
    * mutable, and can be used to change the persistent county record.
    */
@@ -189,7 +167,6 @@ public class County implements PersistentEntity, Serializable {
       final County other_county = (County) the_other;
       result &= nullableEquals(other_county.name(), name());
       result &= nullableEquals(other_county.id(), id());
-      result &= nullableEquals(other_county.contests(), contests());
     } else {
       result = false;
     }

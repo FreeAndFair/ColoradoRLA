@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>us.freeandfair.production</groupId>
 	<artifactId>colorado_rla</artifactId>
-	<version>0.9.1</version>
+	<version>0.10.0</version>
 	<name>ColoradoRLA</name>
 	<description>A risk-limiting audit system for the State of Colorado</description>
 	<properties>
@@ -182,6 +182,11 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-ehcache</artifactId>
 			<version>5.2.10.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.obermuhlner</groupId>
+			<artifactId>big-math</artifactId>
+			<version>1.2.1</version>
 		</dependency>
 	</dependencies>
 </project>

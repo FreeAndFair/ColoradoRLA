@@ -66,7 +66,7 @@ public abstract class AbstractEndpoint implements Endpoint {
    * The "Retry-After" value for a transaction failure response, in seconds.
    */
   public static final String RETRY_AFTER_DELAY = "10";
-  
+
   /**
    * The ASM for this endpoint.
    */
