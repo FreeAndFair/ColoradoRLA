@@ -75,6 +75,7 @@ public class ContestDownloadByCounty extends AbstractEndpoint {
       if (county_set.contains(null)) {
         dataNotFound(the_response, "Nonexistent county ID specified");
       } else {
+        final Set<Contest> contest_set = ContestQueries.forCounties(county_set);
         try {
           final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
           final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
