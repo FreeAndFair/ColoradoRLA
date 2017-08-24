@@ -118,6 +118,8 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
         hash_status = HashStatus.VERIFIED;
       } else {
         hash_status = HashStatus.MISMATCH;
+        badDataContents(the_response, "hash mismatch");
+        the_info.my_ok = false;
       }
       result = new UploadedFile(the_info.my_timestamp, the_county_id,
                                 the_info.my_filename,
@@ -222,17 +224,10 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
                                    final County the_county,
                                    final UploadInformation the_info) {
     if (the_info.my_uploaded_hash == null || the_info.my_file == null) {
-      invariantViolation(the_response, "Bad Request");
+      invariantViolation(the_response, "bad request");
       the_info.my_ok = false;
-    } else if (the_info.my_uploaded_hash.equals(the_info.my_computed_hash)) {
-      Main.LOGGER.info("hash matched for uploaded file");
     } else {
-      // NOTE: this failure response means that we don't save the bad file; 
-      // this will be remedied by the new upload mechanism
-      badDataContents(the_response, "hash mismatch");
-      the_info.my_ok = false;
       attemptFilePersistence(the_response, the_info, the_county.id());
-      Main.LOGGER.info("hash did not match for uploaded file");
     }
 
     if (the_info.my_ok) {
@@ -253,12 +248,12 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
           ok(the_response, "file successfully uploaded and hash matched");
         } else {
           Main.LOGGER.info("could not parse malformed CVR export file");
-          badDataContents(the_response, "Malformed CVR Export File");
+          badDataContents(the_response, "malformed CVR export file");
           the_info.my_ok = false;
         }
       } catch (final RuntimeException | IOException e) {
         Main.LOGGER.info("could not parse malformed CVR export file: " + e);
-        badDataContents(the_response, "Malformed CVR Export File");
+        badDataContents(the_response, "malformed CVR export file");
         the_info.my_ok = false;
       }
     }
