@@ -58,6 +58,18 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
   public static final BigDecimal CONSERVATIVE_TWO_RATE = BigDecimal.valueOf(0.01);
   
   /**
+   * Rounding up of 1-vote over/understatements for the initial estimate of 
+   * error rates.
+   */
+  public static final boolean CONSERVATIVE_ROUND_UP_ONES = false;
+  
+  /**
+   * Rounding up of 2-vote over/understatements for the initial estimate of 
+   * error rates.
+   */
+  public static final boolean CONSERVATIVE_ROUND_UP_TWOS = true;
+  
+  /**
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1L;
@@ -189,7 +201,8 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
                                           CONSERVATIVE_ONE_RATE.doubleValue(),
                                           CONSERVATIVE_ONE_RATE.doubleValue(),
                                           CONSERVATIVE_TWO_RATE.doubleValue(), 
-                                          true, false);
+                                          CONSERVATIVE_ROUND_UP_ONES,
+                                          CONSERVATIVE_ROUND_UP_TWOS);
   }
   
   /**
