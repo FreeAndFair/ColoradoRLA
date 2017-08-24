@@ -7,11 +7,6 @@ interface ContestInfo {
     consensus: string;
 }
 
-interface Timestamp {
-    nanos: number;
-    seconds: number;
-}
-
 interface Acvr {
     audit_cvr: {
         ballot_type: string;
@@ -23,7 +18,7 @@ interface Acvr {
         record_id: string;
         record_type: string;
         scanner_id: string;
-        timestamp: Timestamp;
+        timestamp: Date;
     };
     cvr_id: number;
 }
@@ -35,20 +30,6 @@ const formatContestInfo = (mark: any, contestId: any): ContestInfo => {
     const consensus = mark.noConsensus ? 'NO' : 'YES';
 
     return { choices, consensus, contest: contestId };
-};
-
-const formatDate = (d: Date): Timestamp => {
-    // Date as ms since epoch.
-    const t = d.getTime();
-
-    // Truncate nanos.
-    const seconds = Math.floor(t / 1000);
-
-    // Take our ms since epoch, convert it to ns since epoch.
-    // Then, remove the ns accounted for in `seconds`.
-    const nanos = (t * 1000 * 1000) - (seconds * 1000 * 1000 * 1000);
-
-    return { nanos, seconds };
 };
 
 
@@ -63,7 +44,7 @@ export const format = (marks: any, cvr: any): Acvr => ({
         record_id: cvr.recordId,
         record_type: cvr.recordType,
         scanner_id: cvr.scannerId,
-        timestamp: formatDate(new Date()),
+        timestamp: new Date(),
     },
     cvr_id: cvr.id,
 });

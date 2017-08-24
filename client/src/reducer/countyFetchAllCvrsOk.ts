@@ -1,14 +1,7 @@
 import { merge } from 'lodash';
 
 
-const parseTimestamp = (ts: any): Date => {
-    const t = (ts.seconds * 1000) + (ts.nanos / 1000 / 1000);
-
-    const d = new Date();
-    d.setTime(t);
-
-    return d;
-};
+const parseTimestamp = (ts: any): Date => new Date(ts);
 
 const parseContestInfo = (state: any) => (data: any) => {
     const { contest: contestId, choices } = data;

@@ -7,16 +7,11 @@ interface Elector {
     political_party: string;
 }
 
-interface Timestamp {
-    nanos: number;
-    seconds: number;
-}
-
 type Status = 'NO_DATA' | 'CVRS_UPLOADED_SUCCESSFULLY' | 'ERROR_IN_UPLOADED_DATA';
 
 interface CountyDashboard {
     audit_board_members: Elector[];
-    audit_time: Timestamp;
+    audit_time: string;
     audited_ballot_count: number;
     ballot_manifest_hash: string;
     ballot_under_audit_id: number;
@@ -39,14 +34,7 @@ const parseBoardMember = (e: Elector): any => ({
     party: e.political_party,
 });
 
-const parseTimestamp = (ts: Timestamp): Date => {
-    const t = (ts.seconds * 1000) + (ts.nanos / 1000 / 1000);
-
-    const d = new Date();
-    d.setTime(t);
-
-    return d;
-};
+const parseTimestamp = (ts: string): Date => new Date(ts);
 
 const pivot = (a: any) => {
     const o: any = {};
