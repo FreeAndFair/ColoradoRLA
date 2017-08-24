@@ -137,8 +137,8 @@ public class PseudoRandomNumberGenerator {
   public List<Integer> getRandomNumbers(final int the_from, final int the_to) {
     assert the_from <= the_to;
     assert my_with_replacement || the_to <= my_maximum_index;
-    if (the_to > my_random_numbers.size() + 1) {
-      extendList(the_to);
+    if (the_to + 1 > my_random_numbers.size()) {
+      extendList(the_to + 1);
     }
     // subList has an exclusive upper bound, but we have an inclusive one
     return my_random_numbers.subList(the_from, the_to + 1);

@@ -373,13 +373,12 @@ public class CountyDashboard implements PersistentEntity, Serializable {
       final CVRAuditInfo cvrai = new CVRAuditInfo(this, cvr);
       my_cvr_audit_info.add(cvrai);
     }
-    initializeAuditData();
   }
 
   /**
    * Initializes the audit data for this county dashboard.
    */
-  private void initializeAuditData() {
+  public void initializeAuditData() {
     int to_audit = Integer.MIN_VALUE;
     my_cvr_under_audit = 0;
     my_discrepancies = 0;
@@ -462,7 +461,6 @@ public class CountyDashboard implements PersistentEntity, Serializable {
         }
         // this just updates the counters; the actual "audit" happens later
         audit(the_cvr_under_audit, the_audit_cvr, 0, true);
-        result = true;
       } else {
         // the record has been audited before, so we need to "unaudit" it 
         // this, unfortunately, requires a linear time search to count
@@ -480,6 +478,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
         }
         audit(the_cvr_under_audit, the_audit_cvr, undo_count, true);
       }
+      result = true;
     }  else {
       Main.LOGGER.info("attempt to submit non-corresponding ACVR " +
                        the_audit_cvr.id() + " for county " + id() + 
@@ -581,6 +580,9 @@ public class CountyDashboard implements PersistentEntity, Serializable {
         audit(cai.cvr(), cai.acvr(), 1, false);
       }
       index = index + 1;
+    }
+    if (my_cvr_under_audit == -1) {
+      // we need to extend the list of ballots under audit
     }
   }
   

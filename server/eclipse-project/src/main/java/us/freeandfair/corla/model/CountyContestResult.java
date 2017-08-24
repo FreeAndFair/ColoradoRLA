@@ -14,6 +14,8 @@ package us.freeandfair.corla.model;
 import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -134,6 +136,11 @@ public class CountyContestResult extends AbstractEntity implements Serializable 
   private Integer my_max_margin;
   
   /**
+   * The total number of ballots cast in this contest.
+   */
+  private Integer my_ballot_count = 0;
+  
+  /**
    * Constructs a new empty CountyContestResult (solely for persistence).
    */
   public CountyContestResult() {
@@ -227,6 +234,13 @@ public class CountyContestResult extends AbstractEntity implements Serializable 
   }
   
   /**
+   * @return the number of ballots cast in this contest.
+   */
+  public Integer ballotCount() {
+    return my_ballot_count;
+  }
+  
+  /**
    * @return the maximum margin between a winner and a loser.
    */
   public Integer maxMargin() {
@@ -238,6 +252,29 @@ public class CountyContestResult extends AbstractEntity implements Serializable 
    */
   public Integer minMargin() {
     return my_min_margin;
+  }
+  
+  /**
+   * @return the diluted margin for this contest, defined as the
+   * minimum margin divided by the number of ballots.
+   * @exception IllegalStateException if no ballots have been counted.
+   */
+  public BigDecimal dilutedMargin() {
+    BigDecimal result = BigDecimal.ZERO;
+    if (my_ballot_count > 0) {
+      result = BigDecimal.valueOf(my_min_margin).divide(BigDecimal.valueOf(my_ballot_count), 
+                                                        MathContext.DECIMAL128);
+      if (my_losers.isEmpty()) {
+        // if we only have winners, there is no margin
+        result = BigDecimal.ONE;
+      }
+      
+      // TODO: how do we handle a tie?
+    } else {
+      throw new IllegalStateException("attempted to calculate diluted margin with no ballots");
+    }
+    
+    return result;
   }
   
   /**
@@ -263,6 +300,7 @@ public class CountyContestResult extends AbstractEntity implements Serializable 
       for (final String s : ci.choices()) {
         my_vote_totals.put(s, my_vote_totals.get(s) + 1);
       }
+      my_ballot_count = Integer.valueOf(my_ballot_count + 1);
     }
   }
   

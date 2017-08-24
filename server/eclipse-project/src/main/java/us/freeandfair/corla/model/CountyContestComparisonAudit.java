@@ -164,28 +164,7 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
   public Integer initialBallotsToAudit() {
     // compute the conservative numbers of over/understatements based on 
     // initial estimate of error rate
-    final double gamma_double = my_gamma.doubleValue();
-    final double rate_double = CONSERVATIVE_RATE.doubleValue();
-    double n0 = -2 * gamma_double * Math.log(my_risk_limit.doubleValue()) /
-                (my_contest_result.minMargin().doubleValue() + 2 * gamma_double *
-                    (rate_double * Math.log(1 - 1 / (2 * gamma_double)) +
-                     rate_double * Math.log(1 - 1 / gamma_double) +
-                     rate_double * Math.log(1 + 1 / (2 * gamma_double)) +
-                     rate_double * Math.log(1 + 1 / gamma_double)));
-    double o1;
-    double o2;
-    double u1;
-    double u2;
-
-    final int loop_bound = 3;
-    for (int i = 0; i < loop_bound; i++) {
-      o1 = Math.ceil(rate_double * n0);
-      u1 = Math.ceil(rate_double * n0);
-      o2 = Math.ceil(rate_double * n0);
-      u2 = Math.ceil(rate_double * n0);
-      n0 = computeBallotsToAudit(o1, o2, u1, u2);
-    }
-    return (int) n0;
+    return computeBallotsToAuditFromRates(0.0001, 0.001, 0.001, 0.0001, true, false);
   }
   
   /**
@@ -211,7 +190,7 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
   }
   
   /**
-   * Computes the expected number of ballots remaining to audit give the
+   * Computes the expected number of ballots remaining to audit given the
    * specified numbers of over- and understatements.
    * 
    * @param the_two_under The two-vote understatements.
@@ -229,18 +208,75 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
                                         final double the_one_over,
                                         final double the_two_over) {
     final double gamma_double = my_gamma.doubleValue();
-    return (int)
+    System.out.println("gamma = " + gamma_double + ", ballots = " + my_contest_result.ballotCount() + ", margin = " + my_contest_result.minMargin() + ", diluted margin = " + my_contest_result.dilutedMargin().doubleValue() + 
+                       ", discrepancies = " + the_two_under + "/" + the_one_under + "/" + the_one_over + "/" + the_two_over);
+    int result = (int)
         (Math.max(my_one_vote_over + my_two_vote_over +
                   my_one_vote_under + my_two_vote_under,
                   Math.ceil(-2 * gamma_double *
                             (Math.log(my_risk_limit.doubleValue()) +
-                                the_one_over * Math.log(1 - 1 / (2 * gamma_double)) +
-                                the_two_over * Math.log(1 - 1 / gamma_double) +
+                                the_two_under * Math.log(1 + 1 / gamma_double) +
                                 the_one_under * Math.log(1 + 1 / (2 * gamma_double)) +
-                                the_two_under * Math.log(1 + 1 / gamma_double)) /
-                            my_contest_result.minMargin().doubleValue())));
+                                the_one_over * Math.log(1 - 1 / (2 * gamma_double)) +
+                                the_two_over * Math.log(1 - 1 / gamma_double)) /
+                            my_contest_result.dilutedMargin().doubleValue())));
+    System.out.println("estimate: " + result);
+    return result;
   }
   
+  /**
+   * Computes the expected number of ballots remaining to audit given the
+   * specified rates of over- and understatements.
+   * 
+   * @param the_two_under_rate The rate of two-vote understatements.
+   * @param the_one_under_rate The rate of one-vote understatements.
+   * @param the_one_over_rate The rate of one-vote overstatements.
+   * @param the_two_over_rate The rate of two-vote overstatements.
+   * @param the_round_ones true to always round the number of one-
+   * vote over- and understatements up, false otherwise
+   * @param the_round_twos true to always round the number of twox-
+   * vote over- and understatements up, false otherwise
+   */
+  @SuppressWarnings("checkstyle:magicnumber")
+  private Integer computeBallotsToAuditFromRates(final double the_two_under_rate,
+                                                 final double the_one_under_rate,
+                                                 final double the_one_over_rate,
+                                                 final double the_two_over_rate,
+                                                 final boolean the_round_ones,
+                                                 final boolean the_round_twos) {
+    final double gamma_double = my_gamma.doubleValue();
+    double bta = -2 * gamma_double * Math.log(my_risk_limit.doubleValue()) /
+                (my_contest_result.dilutedMargin().doubleValue() + 2 * gamma_double *
+                    (the_two_under_rate * Math.log(1 + 1 / gamma_double) +
+                     the_one_under_rate * Math.log(1 + 1 / (2 * gamma_double)) +
+                     the_one_over_rate * Math.log(1 - 1 / (2 * gamma_double)) +
+                     the_two_over_rate * Math.log(1 - 1 / gamma_double)));
+
+    double two_under;
+    double one_under;
+    double one_over;
+    double two_over;
+ 
+    final int loop_bound = 3;
+    for (int i = 0; i < loop_bound; i++) {
+      if (the_round_ones) {
+        one_under = Math.ceil(the_one_under_rate * bta);
+        one_over = Math.ceil(the_one_over_rate * bta);
+      } else {
+        one_under = Math.round(the_one_under_rate * bta);
+        one_over = Math.round(the_one_over_rate * bta);
+      }
+      if (the_round_twos) {
+        two_under = Math.ceil(the_two_under_rate * bta);
+        two_over = Math.ceil(the_two_over_rate * bta);
+      } else {
+        two_under = Math.round(the_two_under_rate * bta);
+        two_over = Math.round(the_two_over_rate * bta);
+      }
+      bta = computeBallotsToAudit(two_under, one_under, one_over, two_over);
+    }
+    return (int) bta;
+  }
   
   /**
    * Records the specified over/understatement (the valid range is -2 .. 2).

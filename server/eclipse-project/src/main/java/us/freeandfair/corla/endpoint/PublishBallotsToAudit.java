@@ -89,11 +89,14 @@ public class PublishBallotsToAudit extends AbstractDoSDashboardEndpoint {
             Main.LOGGER.info("county " + cdb.id() + " missed the file upload deadline");
           } else {
             // find the initial window
+            cdb.initializeAuditData();
             int max_estimated_to_audit = Integer.MIN_VALUE;
             for (final CountyContestComparisonAudit ca : cdb.comparisonAudits()) {
               max_estimated_to_audit = Math.max(max_estimated_to_audit, 
                                                 ca.initialBallotsToAudit());
             }
+            Main.LOGGER.info("county " + cdb.id() + " initially estimated to audit " + 
+                             max_estimated_to_audit + " ballots");
             cdb.setCVRsToAudit(ComparisonAuditController.
                                computeBallotOrder(cdb, dosdb.randomSeed(),
                                                   0, max_estimated_to_audit));
