@@ -50,12 +50,12 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
   /**
    * The initial estimate of error rates for one-vote over- and understatements.
    */
-  public static final BigDecimal CONSERVATIVE_ONE_RATE = BigDecimal.valueOf(0.01);
+  public static final BigDecimal CONSERVATIVE_ONES_RATE = BigDecimal.valueOf(0.01);
   
   /**
    * The initial estimate of error rates for two-vote over- and understatements.
    */
-  public static final BigDecimal CONSERVATIVE_TWO_RATE = BigDecimal.valueOf(0.01);
+  public static final BigDecimal CONSERVATIVE_TWOS_RATE = BigDecimal.valueOf(0.01);
   
   /**
    * Rounding up of 1-vote over/understatements for the initial estimate of 
@@ -197,10 +197,10 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
   public Integer initialBallotsToAudit() {
     // compute the conservative numbers of over/understatements based on 
     // initial estimate of error rate
-    return computeBallotsToAuditFromRates(CONSERVATIVE_TWO_RATE.doubleValue(),
-                                          CONSERVATIVE_ONE_RATE.doubleValue(),
-                                          CONSERVATIVE_ONE_RATE.doubleValue(),
-                                          CONSERVATIVE_TWO_RATE.doubleValue(), 
+    return computeBallotsToAuditFromRates(CONSERVATIVE_TWOS_RATE.doubleValue(),
+                                          CONSERVATIVE_ONES_RATE.doubleValue(),
+                                          CONSERVATIVE_ONES_RATE.doubleValue(),
+                                          CONSERVATIVE_TWOS_RATE.doubleValue(), 
                                           CONSERVATIVE_ROUND_UP_ONES,
                                           CONSERVATIVE_ROUND_UP_TWOS);
   }
@@ -266,9 +266,9 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
    * @param the_one_under_rate The rate of one-vote understatements.
    * @param the_one_over_rate The rate of one-vote overstatements.
    * @param the_two_over_rate The rate of two-vote overstatements.
-   * @param the_round_ones true to always round the number of one-
+   * @param the_round_ones_up true to always round the number of one-
    * vote over- and understatements up, false otherwise
-   * @param the_round_twos true to always round the number of twox-
+   * @param the_round_twos_up true to always round the number of twox-
    * vote over- and understatements up, false otherwise
    */
   @SuppressWarnings("checkstyle:magicnumber")
@@ -276,8 +276,8 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
                                                  final double the_one_under_rate,
                                                  final double the_one_over_rate,
                                                  final double the_two_over_rate,
-                                                 final boolean the_round_ones,
-                                                 final boolean the_round_twos) {
+                                                 final boolean the_round_ones_up,
+                                                 final boolean the_round_twos_up) {
     final double gamma_double = my_gamma.doubleValue();
     double bta = -2 * gamma_double * Math.log(my_risk_limit.doubleValue()) /
                 (my_contest_result.dilutedMarginCounty().doubleValue() + 2 * gamma_double *
@@ -293,14 +293,14 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
  
     final int loop_bound = 3;
     for (int i = 0; i < loop_bound; i++) {
-      if (the_round_ones) {
+      if (the_round_ones_up) {
         one_under = Math.ceil(the_one_under_rate * bta);
         one_over = Math.ceil(the_one_over_rate * bta);
       } else {
         one_under = Math.round(the_one_under_rate * bta);
         one_over = Math.round(the_one_over_rate * bta);
       }
-      if (the_round_twos) {
+      if (the_round_twos_up) {
         two_under = Math.ceil(the_two_under_rate * bta);
         two_over = Math.ceil(the_two_over_rate * bta);
       } else {
