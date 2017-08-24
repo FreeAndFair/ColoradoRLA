@@ -11,6 +11,13 @@ function danger(message: string) {
     });
 }
 
+function warning(message: string) {
+    Toast.show({
+        intent: Intent.WARNING,
+        message,
+    });
+}
+
 function ok(message: string) {
     Toast.show({
         intent: Intent.SUCCESS,
@@ -19,4 +26,4 @@ function ok(message: string) {
 }
 
 
-export default { danger, ok };
+export default { danger, ok, warning };
