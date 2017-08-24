@@ -52,7 +52,6 @@ public class UploadedFile implements PersistentEntity {
    * The version (for optimistic locking).
    */
   @Version
-  @SuppressWarnings("PMD.UnusedPrivateField")
   private Long my_version;
 
   /**

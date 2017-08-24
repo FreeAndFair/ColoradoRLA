@@ -15,6 +15,10 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UncheckedIOException;
+import java.util.stream.Stream;
+
+import com.google.gson.stream.JsonWriter;
 
 import spark.Request;
 import spark.Response;
@@ -64,9 +68,20 @@ public class ContestDownload extends AbstractEndpoint {
     try {
       final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
       final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-      
-      Main.GSON.toJson(Persistence.getAll(Contest.class), bw);
-      bw.flush();
+      final JsonWriter jw = new JsonWriter(bw);
+      jw.beginArray();
+      final Stream<Contest> contest_stream = Persistence.getAllAsStream(Contest.class);
+      contest_stream.forEach((the_contest) -> {
+        try {
+          jw.jsonValue(Main.GSON.toJson(Persistence.unproxy(the_contest)));
+          Persistence.evict(the_contest);
+        } catch (final IOException e) {
+          throw new UncheckedIOException(e);
+        } 
+      });
+      jw.endArray();
+      jw.flush();
+      jw.close();
       ok(the_response);
     } catch (final IOException e) {
       serverError(the_response, "Unable to stream response");

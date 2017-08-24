@@ -87,7 +87,7 @@ public class CVRDownloadByCounty extends AbstractEndpoint {
             CastVoteRecordQueries.getMatching(county, RecordType.UPLOADED);
         matches.forEach((the_cvr) -> {
           try {
-            jw.jsonValue(Main.GSON.toJson(the_cvr));
+            jw.jsonValue(Main.GSON.toJson(Persistence.unproxy(the_cvr)));
             Persistence.evict(the_cvr);
           } catch (final IOException e) {
             throw new UncheckedIOException(e);

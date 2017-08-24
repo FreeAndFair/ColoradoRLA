@@ -80,7 +80,7 @@ public class CVRDownload extends AbstractEndpoint {
           CastVoteRecordQueries.getMatching(RecordType.UPLOADED);
       matches.forEach((the_cvr) -> {
         try {
-          jw.jsonValue(Main.GSON.toJson(the_cvr));
+          jw.jsonValue(Main.GSON.toJson(Persistence.unproxy(the_cvr)));
           Persistence.evict(the_cvr);
         } catch (final IOException e) {
           throw new UncheckedIOException(e);

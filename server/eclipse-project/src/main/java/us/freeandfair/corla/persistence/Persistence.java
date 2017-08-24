@@ -30,6 +30,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.Session;
@@ -663,6 +664,18 @@ public final class Persistence {
   public static Blob blobFor(final InputStream the_stream, final long the_size) {
     checkForRunningTransaction();
     return currentSession().getLobHelper().createBlob(the_stream, the_size);
+  }
+  
+  /**
+   * Unwraps an object from its proxy object, if any; typically used before 
+   * converting the entity to JSON for wire transmission.
+   * 
+   * @param the_object The object.
+   * @return the unwrapped object; if the object is not a proxy, it is returned
+   * unchanged.
+   */
+  public static Object unproxy(final Object the_object) {
+    return Hibernate.unproxy(the_object);
   }
   
   /**

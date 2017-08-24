@@ -15,6 +15,10 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UncheckedIOException;
+import java.util.stream.Stream;
+
+import com.google.gson.stream.JsonWriter;
 
 import spark.Request;
 import spark.Response;
@@ -56,13 +60,25 @@ public class BallotManifestDownload extends AbstractCountyDashboardEndpoint {
     try {
       final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
       final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-      
-      Main.GSON.toJson(Persistence.getAll(BallotManifestInfo.class), bw);
-      bw.flush();
+      final JsonWriter jw = new JsonWriter(bw);
+      jw.beginArray();
+      final Stream<BallotManifestInfo> bmi_stream = 
+          Persistence.getAllAsStream(BallotManifestInfo.class);
+      bmi_stream.forEach((the_bmi) -> {
+        try {
+          jw.jsonValue(Main.GSON.toJson(Persistence.unproxy(the_bmi)));
+          Persistence.evict(the_bmi);
+        } catch (final IOException e) {
+          throw new UncheckedIOException(e);
+        } 
+      });
+      jw.endArray();
+      jw.flush();
+      jw.close();
+      ok(the_response);
     } catch (final IOException e) {
       serverError(the_response, "Unable to stream response");
     }
-    ok(the_response);
     return my_endpoint_result;
   }
 }
