@@ -56,7 +56,6 @@ public final class ComparisonAuditController {
    * random seed, and index range.
    * 
    * @param the_cdb The county dashboard.
-   * @param the_seed The random seed.
    * @param the_min_index The minimum index to return.
    * @param the_max_index The maximum index to return.
    * @return the list of ballot cards, of size the_max_index - the_min_index + 1; 
@@ -207,6 +206,7 @@ public final class ComparisonAuditController {
    * Audits a CVR/ACVR pair by adding it to all the audits in progress.
    * This also updates the local audit counters, as appropriate.
    * 
+   * @param the_dashboard The dashboard.
    * @param the_cvr_under_audit The CVR under audit.
    * @param the_audit_cvr The audit CVR.
    * @param the_count The number of times to count this ballot in the
