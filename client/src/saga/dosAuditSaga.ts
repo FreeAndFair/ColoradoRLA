@@ -41,6 +41,11 @@ function* uploadRandomSeedOk(): IterableIterator<void> {
     notice.ok('Random number generator seed is now set.');
 }
 
+function* publishBallotsToAuditOk(): IterableIterator<void> {
+    notice.ok('Ballots to audit are now published.');
+    notice.ok('The audit has started!');
+}
+
 
 export default function* dosLoginSaga() {
     yield takeLatest('SELECT_CONTESTS_FOR_AUDIT_FAIL', selectContestsForAuditFail);
@@ -54,4 +59,6 @@ export default function* dosLoginSaga() {
     yield takeLatest('UPLOAD_RANDOM_SEED_FAIL', uploadRandomSeedFail);
     yield takeLatest('UPLOAD_RANDOM_SEED_NETWORK_FAIL', uploadRandomSeedNetworkFail);
     yield takeLatest('UPLOAD_RANDOM_SEED_OK', uploadRandomSeedOk);
+
+    yield takeLatest('PUBLISH_BALLOTS_TO_AUDIT_OK', publishBallotsToAuditOk);
 }
