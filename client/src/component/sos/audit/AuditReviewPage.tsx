@@ -40,6 +40,7 @@ const AuditReview = ({ back, publishBallotsToAudit, saveAndDone, sos }: any) => 
                 This is the set of audit data which will be used to define the list of
                 ballots to audit for each county. Once this is submitted, it will be released
                 to the counties and the previous pages will not be editable.
+                In particular, you will not be able to change which contests are under audit.
             </div>
             <div className='pt-card'>
                 <table className='pt-table'>
