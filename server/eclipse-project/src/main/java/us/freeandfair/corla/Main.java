@@ -21,6 +21,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -48,6 +49,7 @@ import us.freeandfair.corla.asm.PersistentASMState;
 import us.freeandfair.corla.endpoint.CORSFilter;
 import us.freeandfair.corla.endpoint.Endpoint;
 import us.freeandfair.corla.json.FreeAndFairNamingStrategy;
+import us.freeandfair.corla.json.InstantTypeAdapter;
 import us.freeandfair.corla.model.Administrator;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.County;
@@ -129,6 +131,7 @@ public final class Main {
   // setPrettyPrinting()?
   public static final Gson GSON = 
       new GsonBuilder().
+      registerTypeAdapter(Instant.class, new InstantTypeAdapter()).
       setFieldNamingStrategy(new FreeAndFairNamingStrategy()).
       setPrettyPrinting().create();
   
