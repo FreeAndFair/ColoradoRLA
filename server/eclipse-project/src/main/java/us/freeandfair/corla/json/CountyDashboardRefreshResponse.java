@@ -76,7 +76,12 @@ public class CountyDashboardRefreshResponse {
   /**
    * The ballot manifest timestamp.
    */
-  private final Instant my_manifest_timestamp;
+  private final Instant my_ballot_manifest_timestamp;
+  
+  /**
+   * The ballot manifest filename.
+   */
+  private final String my_ballot_manifest_filename;
   
   /**
    * The CVR export hash.
@@ -86,7 +91,12 @@ public class CountyDashboardRefreshResponse {
   /**
    * The CVR export timestamp.
    */
-  private final Instant my_cvr_timestamp;
+  private final Instant my_cvr_export_timestamp;
+  
+  /**
+   * The CVR export filename.
+   */
+  private final String my_cvr_export_filename;
   
   /**
    * The contests on the ballot (by ID).
@@ -160,9 +170,11 @@ public class CountyDashboardRefreshResponse {
                                            final Map<String, String> the_general_information,
                                            final Set<Elector> the_audit_board_members, 
                                            final String the_ballot_manifest_hash,
-                                           final Instant the_manifest_timestamp,
+                                           final Instant the_ballot_manifest_timestamp,
+                                           final String the_ballot_manifest_filename,
                                            final String the_cvr_export_hash,
-                                           final Instant the_cvr_timestamp,
+                                           final Instant the_cvr_export_timestamp,
+                                           final String the_cvr_export_filename,
                                            final Set<Long> the_contests,
                                            final Map<Long, String> the_contests_under_audit,
                                            final Instant the_audit_time,
@@ -177,9 +189,11 @@ public class CountyDashboardRefreshResponse {
     my_general_information = the_general_information;
     my_audit_board_members = the_audit_board_members;
     my_ballot_manifest_hash = the_ballot_manifest_hash;
-    my_manifest_timestamp = the_manifest_timestamp;
+    my_ballot_manifest_timestamp = the_ballot_manifest_timestamp;
+    my_ballot_manifest_filename = the_ballot_manifest_filename;
     my_cvr_export_hash = the_cvr_export_hash;
-    my_cvr_timestamp = the_cvr_timestamp;
+    my_cvr_export_timestamp = the_cvr_export_timestamp;
+    my_cvr_export_filename = the_cvr_export_filename;
     my_contests = the_contests;
     my_contests_under_audit = the_contests_under_audit;
     my_audit_time = the_audit_time;
@@ -215,12 +229,27 @@ public class CountyDashboardRefreshResponse {
     // general information doesn't exist yet
     final Map<String, String> general_information = new HashMap<String, String>();
 
-    final String manifest_digest = hashForFile(county_id, 
-                                               the_dashboard.manifestUploadTimestamp(),
-                                               FileStatus.IMPORTED_AS_BALLOT_MANIFEST);
-    final String cvr_digest = hashForFile(county_id, 
-                                          the_dashboard.cvrUploadTimestamp(), 
-                                          FileStatus.IMPORTED_AS_CVR_EXPORT);
+    final UploadedFile manifest = 
+        UploadedFileQueries.matching(county_id, 
+                                     the_dashboard.manifestUploadTimestamp(),
+                                     FileStatus.IMPORTED_AS_BALLOT_MANIFEST);
+    String manifest_digest = null;
+    String manifest_filename = null;
+    if (manifest != null) {
+      manifest_digest = manifest.hash();
+      manifest_filename = manifest.filename();
+    }
+    
+    final UploadedFile cvr_export =
+        UploadedFileQueries.matching(county_id, 
+                                     the_dashboard.cvrUploadTimestamp(),
+                                     FileStatus.IMPORTED_AS_CVR_EXPORT);
+    String cvr_export_digest = null;
+    String cvr_export_filename = null;
+    if (cvr_export != null) {
+      cvr_export_digest = cvr_export.hash();
+      cvr_export_filename = cvr_export.filename();
+    }
     
     // contests
     final Set<Long> contests = new HashSet<Long>();
@@ -243,8 +272,10 @@ public class CountyDashboardRefreshResponse {
                                               the_dashboard.auditBoardMembers(),
                                               manifest_digest,
                                               the_dashboard.manifestUploadTimestamp(),
-                                              cvr_digest,
+                                              manifest_filename,
+                                              cvr_export_digest,
                                               the_dashboard.cvrUploadTimestamp(),
+                                              cvr_export_filename,
                                               contests,
                                               contests_under_audit,
                                               the_dashboard.auditTimestamp(),
@@ -278,21 +309,38 @@ public class CountyDashboardRefreshResponse {
       throw new PersistenceException("unable to read county dashboard state");
     }
 
-    final String manifest_digest = hashForFile(county_id, 
-                                               the_dashboard.manifestUploadTimestamp(),
-                                               FileStatus.IMPORTED_AS_BALLOT_MANIFEST);
-    final String cvr_digest = hashForFile(county_id, 
-                                          the_dashboard.cvrUploadTimestamp(), 
-                                          FileStatus.IMPORTED_AS_CVR_EXPORT);
-
+    final UploadedFile manifest = 
+        UploadedFileQueries.matching(county_id, 
+                                     the_dashboard.manifestUploadTimestamp(),
+                                     FileStatus.IMPORTED_AS_BALLOT_MANIFEST);
+    String manifest_digest = null;
+    String manifest_filename = null;
+    if (manifest != null) {
+      manifest_digest = manifest.hash();
+      manifest_filename = manifest.filename();
+    }
+    
+    final UploadedFile cvr_export =
+        UploadedFileQueries.matching(county_id, 
+                                     the_dashboard.cvrUploadTimestamp(),
+                                     FileStatus.IMPORTED_AS_CVR_EXPORT);
+    String cvr_export_digest = null;
+    String cvr_export_filename = null;
+    if (cvr_export != null) {
+      cvr_export_digest = cvr_export.hash();
+      cvr_export_filename = cvr_export.filename();
+    }
+    
     return new CountyDashboardRefreshResponse(county_id, 
                                               the_dashboard.status(),
                                               null,
                                               null,
                                               manifest_digest,
                                               the_dashboard.manifestUploadTimestamp(),
-                                              cvr_digest,
+                                              manifest_filename,
+                                              cvr_export_digest,
                                               the_dashboard.cvrUploadTimestamp(),
+                                              cvr_export_filename,
                                               null,
                                               null,
                                               the_dashboard.auditTimestamp(),
@@ -302,24 +350,5 @@ public class CountyDashboardRefreshResponse {
                                               the_dashboard.disagreements(),
                                               null,
                                               null);
-  }
-  
-  /**
-   * Gets the recorded hash for the specified county ID, file timestamp and status.
-   * 
-   * @param the_id The ID.
-   * @param the_timestamp The timestamp.
-   * @param the_status The status.
-   * @return the hash.
-   */
-  private static String hashForFile(final Long the_id, 
-                                    final Instant the_timestamp, 
-                                    final FileStatus the_status) {
-    String result = null;
-    final UploadedFile file = UploadedFileQueries.matching(the_id, the_timestamp, the_status);
-    if (file != null) {
-      result = file.hash();
-    }
-    return result;
   }
 }
