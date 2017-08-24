@@ -4,6 +4,7 @@ import {
 } from 'redux-saga/effects';
 
 import dosDashboardRefresh from '../action/dosDashboardRefresh';
+import dosFetchAsmState from '../action/dosFetchAsmState';
 import dosFetchContests from '../action/dosFetchContests';
 
 import notice from '../notice';
@@ -11,6 +12,7 @@ import notice from '../notice';
 
 function* dosLoginOk() {
     dosDashboardRefresh();
+    dosFetchAsmState();
     dosFetchContests();
 
     yield put({ type: 'DOS_POLL' });
