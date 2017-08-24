@@ -11,12 +11,21 @@ function* uploadBallotManifestOk(action: any): any {
 }
 
 function* uploadBallotManifestFail(action: any): any {
-    const { status } = action.data.received;
+    const { body, status } = action.data.received;
 
-    switch (status) {
-    default: {
+    switch (body.result) {
+    case 'hash mismatch': {
         notice.danger('Failed to upload ballot manifest: hash mismatch.');
         notice.warning('Please verify that the entered hash matches the file.');
+        return;
+    }
+    case 'malformed ballot manifest file': {
+        notice.danger('Failed to upload ballot manifest: malformed file.');
+        notice.warning('Please verify that the uploaded file is valid ballot manifest.');
+        return;
+    }
+    default: {
+        notice.danger('Failed to upload ballot manifest.');
         return;
     }
     }
