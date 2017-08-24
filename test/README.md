@@ -2,17 +2,23 @@
 
 Contents:
 
-* dominion-2017-CVR_Export_20170310104116.csv: Dominion CVR_Export in csv format of Arapahoe County data, sample of 165 ballots. From CDOS
+* dominion-2017-CVR_Export_20170310104116.csv: Dominion CVR_Export in csv format
+ of Arapahoe County data, sample of 165 ballots. From CDOS
 
 * e-1: directory with one county, 2 or 3 contests
 
-    * Regent contest has a very wide margin of 123-14 out of 165 ballots = 66.1% and appears on all CVRs
+    * Regent contest has a very wide margin of 123-14 out of 165 ballots = 66.1%
+ and appears on all CVRs
 
-        `Sample size = 8 for margin 66.1%, risk 10%, gamma 1.1, o1 0, o2 0, u1 0, u2 0`
+        `Sample size = 15 for margin 66.1%, risk 10%, gamma 1.1, or1 0.01, or2 0.01, ur1 0.01, ur2 0.01, roundUp1 1, roundUp2 1`
 
-    * COUNTY COMMISSIONER DISTRICT 3 has a wide margin of (27-12)/46 = 32.6% and does not appear on all the CVRs
+    * COUNTY COMMISSIONER DISTRICT 3 has a wide margin of (27-12)/46 = 32.6% 
+    and does not appear on all the CVRs.
+    Without independent evidence of which ballots it is on or how many there
+    are, however, we base the diluted margin on all the ballot cards and sample
+    uniformly from them all.  That gives a margin of (27-12)/165 = 9.0909% and a sample size of 152:
 
-        `Sample size = 16 for margin 32.6087%, risk 10%, gamma 1.1, o1 0, o2 0, u1 0, u2 0`
+	`Sample size = 152 for margin 9.09091%, risk 10%, gamma 1.1, or1 0.01, or2 0.01, ur1 0.01, ur2 0.01, roundUp1 1, roundUp2 1`
 
     * Amendment 107 has a tiny margin of 1 out of 95 = 1.052631%, and does not appear on all the CVRs
 

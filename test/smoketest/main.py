@@ -1,6 +1,16 @@
 #!/usr/bin/env python
 """corla_test: drive testing of ColoradoRLA
 
+Example:
+
+crtest -R dos_init
+crtest -c 3 -v 1 county_setup
+crtest -c 5 -v 2 county_setup
+crtest dos_start
+crtest -c 5 &
+crtest -c 3 &
+
+
 Later:
 
 TODO: enable examples like these.
@@ -65,6 +75,7 @@ TODO: to help human testers using web client, display CVRs corresponding to sele
 
 from __future__ import print_function
 import sys
+import os 
 import argparse
 from argparse import Namespace
 import json
@@ -80,23 +91,23 @@ __license__ = "TODO GPL"
 
 parser = argparse.ArgumentParser(description='Drive testing for ColoradoRLA auditing.')
 
-parser.add_argument('--reset', dest='reset', action='store_true',
+parser.add_argument('-R, --reset', dest='reset', action='store_true',
                     default=False,
                     help='reset the database before other actions')
 parser.add_argument('-c, --county', dest='counties', metavar='COUNTY', action='append',
-                    type=int, required=True,
+                    type=int,
                     help='numeric county_id for the given command, e.g. 1 '
                     'for Adams. May be specified multiple times.')
 parser.add_argument('-m, --manifest', dest='manifest',
                     default=1,
                     help='manifest filename and hash: integer index to pre-defined array, default 0')
-parser.add_argument('-v, --cvr', dest='cvr',
+parser.add_argument('-v, --cvr', dest='cvr', type=int,
                     default=0,
                     help='cvr filename and hash: integer index to pre-defined array, default 0')
 
 # TODO: allow a way to specify CVRs and contests per county.
 parser.add_argument('-C, --contest', dest='contests', metavar='CONTEST', action='append',
-                    type=int, default=[0],
+                    type=int,
                     help='numeric contest_index for the given command, e.g. 0 '
                     'for first one from the CVRs. May be specified multiple times.')
 parser.add_argument('-r, --risk-limit', type=float, dest='risk_limit', default=0.1,
@@ -111,9 +122,9 @@ parser.add_argument('-u, --url', dest='url',
 parser.add_argument('-d, --debuglevel', type=int, default=logging.WARNING, dest='debuglevel',
   help='Set logging level to debuglevel: DEBUG=10, INFO=20,\n WARNING=30 (the default), ERROR=40, CRITICAL=50')
 
-parser.add_argument('command', nargs='*',
-                    help='audit commands to run. May be specified multiple times.')
-
+parser.add_argument('commands', metavar="COMMAND", nargs='*',
+                    help='audit commands to run. May be specified multiple times. '
+                    'Possibilities: dos_init, county_setup, dos_start, county_audit, dos_wrapup')
 
 
 def state_login(ac, s):
@@ -134,14 +145,18 @@ def county_login(ac, s, county_id):
     print(r, path)
 
 
-def test_endpoint_json(ac, s, path, data):
+def test_endpoint_json(ac, s, path, data, show=True):
     "Do a generic test of an endpoint that posts the given data to the given path"
 
     r = s.post(ac.base + path, json=data)
     if r.status_code == 200:
-         print(r, path)
+        if show:
+            print(r, path)
     else:
-         print(r, path, r.text)
+        if show:
+            print(r, path, r.text)
+        else:
+            print(r, path)
     return r
 
 
@@ -149,7 +164,10 @@ def test_endpoint_get(ac, s, path, show=True):
     "Do a generic test of an endpoint that gets the given path"
 
     r = s.get(ac.base + path)
-    if r.status_code != 200:
+    if r.status_code == 200:
+        if show:
+            print(r, path)
+    else:
         if show:
             print(r, path, r.text)
         else:
@@ -256,9 +274,16 @@ def upload_files(ac, s):
      https://github.com/jjyr/zerotest/issues/12
     """
 
+    # Obtain test directory, i.e. where this script is.
+    # Default filenames are relative to this directory.
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+
+    # TODO: predefine more manifests
+    manifestfile = "../e-1/arapahoe-manifest.csv"
+    hash = "42d409d3394243046cf92e3ce569b7078cba0815d626602d15d0da3e5e844a94"
+
     manifest = ac.args.manifest # TODO finish when we have more manifests and they make a difference
-    upload_manifest(ac, s, "../e-1/arapahoe-manifest.csv",
-                "42d409d3394243046cf92e3ce569b7078cba0815d626602d15d0da3e5e844a94")
+    upload_manifest(ac, s, os.path.join(dir_path, manifestfile), hash)
 
     predefined_cvrs = (
         ("../e-1/arapahoe-regent-3-clear-CVR_Export.csv",
@@ -270,7 +295,7 @@ def upload_files(ac, s):
     )
 
     cvrfile, hash = predefined_cvrs[ac.args.cvr]
-    upload_cvrs(ac, s, cvrfile, hash)
+    upload_cvrs(ac, s, os.path.join(dir_path, cvrfile), hash)
 
 
 def server_sequence():
@@ -318,6 +343,18 @@ def county_setup(ac, county_id):
     # r = test_endpoint_post(base, county_s1, "/upload-ballot-manifest", ...)
     # r = test_endpoint_post(base, county_s1, "/upload-cvr-export", ...)
 
+    #FIXME  r = test_endpoint_get("/cvr/%d" % county_id)
+    cvrs = get_cvrs(ac, county_s)
+    cvrtable = {}
+    for cvr in cvrs:
+        cvrtable[cvr['id']] = cvr
+
+    r = test_endpoint_get(ac, county_s, "/contest")
+    contests = r.json()
+
+    print("Uploaded table of %d CVRs with %d contests" % (len(cvrtable), len(contests)))
+    # logging.debug(json.dumps(cvrs))
+
     # TODO perhaps cleanup - but is this realistic usage? county_s.close()
 
 
@@ -353,10 +390,12 @@ def dos_start(ac):
     r = test_endpoint_get(ac, ac.state_s, "/dos-dashboard")
     if r.status_code == 200:
         dos_dashboard = r.json()
-        print("Auditing %s" % dos_dashboard['audited_contests'])
+        for contest_id, reason in dos_dashboard['audited_contests'].items():
+            r = test_endpoint_get(ac, ac.state_s, "/contest/id/%s" % contest_id)
+            print("Audited contest: vote for {votes_allowed} in {name}".format(**r.json()))
         for county_id, status in dos_dashboard['county_status'].items():
             if status['estimated_ballots_to_audit'] != 0:
-                print("County %d has initial sample size of %d ballot cards" % 
+                print("County %s has initial sample size of %s ballot cards" % 
                       (county_id, status['estimated_ballots_to_audit']))
     logging.debug("dos-dashboard: %s" % r.text)
 
@@ -366,17 +405,10 @@ def county_audit(ac, county_id):
     county_s = requests.Session()
     county_login(ac, county_s, county_id)
 
-    #FIXME  r = test_endpoint_get("/cvr/%d" % county_id)
     cvrs = get_cvrs(ac, county_s)
     cvrtable = {}
     for cvr in cvrs:
         cvrtable[cvr['id']] = cvr
-
-    r = test_endpoint_get(ac, county_s, "/contest")
-    contests = r.json()
-
-    print("Received table of %d CVRs with %d contests" % (len(cvrtable), len(contests)))
-    # logging.debug(json.dumps(cvrs))
 
     # Print this tool's notion of what should be audited, based on seed etc.
     # for auditing the audit.
@@ -400,7 +432,7 @@ def county_audit(ac, county_id):
 
     for i in range(len(selected)):
         if i % 10 == 0:
-            r = test_endpoint_get(ac, ac.state_s, "/dos-dashboard")
+            r = test_endpoint_get(ac, ac.state_s, "/dos-dashboard", show=False)
 
         acvr = cvrtable[selected[i]].copy()
         logging.debug("Original CVR: %s" % json.dumps(acvr))
@@ -422,9 +454,9 @@ def county_audit(ac, county_id):
             if len(acvr['contest_info']) > 0:
                 del acvr['contest_info'][0]
 
-        # logging.debug("Submitting aCVR: %s" % json.dumps(acvr))
-        # test_endpoint_json(ac, county_s, "/upload-audit-cvr",
-        #                   {'cvr_id': selected[i], 'audit_cvr': acvr})
+        logging.debug("Submitting aCVR: %s" % json.dumps(acvr))
+        test_endpoint_json(ac, county_s, "/upload-audit-cvr",
+                           {'cvr_id': selected[i], 'audit_cvr': acvr}, show=False)
 
         r = test_endpoint_get(ac, county_s, "/county-dashboard", show=False)
         resp = r.json()
@@ -465,6 +497,17 @@ if __name__ == "__main__":
     ac.args = parser.parse_args()
     logging.basicConfig(level=ac.args.debuglevel)   # or level=5 for everything
 
+    # Add a default county here to work around https://bugs.python.org/issue16399
+    if ac.args.counties is None:
+        ac.args.counties = [3]
+    # Add a default contest
+    if ac.args.contests is None:
+        ac.args.contests = [0]
+
+    # If no commands are listed, enter all of them
+    if len(ac.args.commands) == 0:
+        ac.args.commands = ["dos_init", "county_setup", "dos_start", "county_audit", "dos_wrapup"]
+
     logging.debug("Arguments: %s" % ac.args)
 
     ac.base = ac.args.url
@@ -472,10 +515,19 @@ if __name__ == "__main__":
     ac.state_s = requests.Session()
     state_login(ac, ac.state_s)
 
-    dos_init(ac)
-    for county_id in ac.args.counties:
-        county_setup(ac, county_id)
+    if "dos_init" in ac.args.commands:
+        dos_init(ac)
 
-    dos_start(ac)
-    for county_id in ac.args.counties:
-        county_audit(ac, county_id)
+    if "county_setup" in ac.args.commands:
+        for county_id in ac.args.counties:
+            county_setup(ac, county_id)
+
+    if "dos_start" in ac.args.commands:
+        dos_start(ac)
+
+    if "county_audit" in ac.args.commands:
+        for county_id in ac.args.counties:
+            county_audit(ac, county_id)
+
+    if "dos_wrapup" in ac.args.commands:
+        dos_wrapup(ac)
