@@ -29,7 +29,7 @@ function* setRiskLimitNetworkFail(): IterableIterator<void> {
 }
 
 function* uploadRandomSeedOk(): IterableIterator<void> {
-    notice.danger('Random number generator seed is now set.');
+    notice.ok('Random number generator seed is now set.');
 }
 
 
