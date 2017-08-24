@@ -48,10 +48,14 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
   public static final BigDecimal COLORADO_GAMMA = BigDecimal.valueOf(1.1);
 
   /**
-   * The initial estimate of error rates, to calculate conservative 
-   * initial ballots to audit.
+   * The initial estimate of error rates for one-vote over- and understatements.
    */
-  public static final BigDecimal CONSERVATIVE_RATE = BigDecimal.valueOf(0.01);
+  public static final BigDecimal CONSERVATIVE_ONE_RATE = BigDecimal.valueOf(0.01);
+  
+  /**
+   * The initial estimate of error rates for two-vote over- and understatements.
+   */
+  public static final BigDecimal CONSERVATIVE_TWO_RATE = BigDecimal.valueOf(0.01);
   
   /**
    * The serialVersionUID.
@@ -65,6 +69,13 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
   @JoinColumn
   private CountyDashboard my_dashboard;
 
+  /**
+   * The contest to which this audit state belongs.
+   */
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
+  @JoinColumn
+  private Contest my_contest;
+  
   /**
    * The contest result for this audit state.
    */
@@ -128,6 +139,7 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
     super();
     my_dashboard = the_dashboard;
     my_contest_result = the_contest_result;
+    my_contest = my_contest_result.contest();
     my_risk_limit = the_risk_limit;
   }
   
@@ -136,6 +148,13 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
    */
   public CountyDashboard dashboard() {
     return my_dashboard;
+  }
+  
+  /**
+   * @return the contest associated with this audit.
+   */
+  public Contest contest() {
+    return my_contest;
   }
   
   /**
@@ -166,7 +185,11 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
   public Integer initialBallotsToAudit() {
     // compute the conservative numbers of over/understatements based on 
     // initial estimate of error rate
-    return computeBallotsToAuditFromRates(0.0001, 0.001, 0.001, 0.0001, true, false);
+    return computeBallotsToAuditFromRates(CONSERVATIVE_TWO_RATE.doubleValue(),
+                                          CONSERVATIVE_ONE_RATE.doubleValue(),
+                                          CONSERVATIVE_ONE_RATE.doubleValue(),
+                                          CONSERVATIVE_TWO_RATE.doubleValue(), 
+                                          true, false);
   }
   
   /**
@@ -219,7 +242,7 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
                                 the_one_under * Math.log(1 + 1 / (2 * gamma_double)) +
                                 the_one_over * Math.log(1 - 1 / (2 * gamma_double)) +
                                 the_two_over * Math.log(1 - 1 / gamma_double)) /
-                            my_contest_result.dilutedMargin().doubleValue())));
+                            my_contest_result.dilutedMarginCounty().doubleValue())));
   }
   
   /**
@@ -244,7 +267,7 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
                                                  final boolean the_round_twos) {
     final double gamma_double = my_gamma.doubleValue();
     double bta = -2 * gamma_double * Math.log(my_risk_limit.doubleValue()) /
-                (my_contest_result.dilutedMargin().doubleValue() + 2 * gamma_double *
+                (my_contest_result.dilutedMarginCounty().doubleValue() + 2 * gamma_double *
                     (the_two_under_rate * Math.log(1 + 1 / gamma_double) +
                      the_one_under_rate * Math.log(1 + 1 / (2 * gamma_double)) +
                      the_one_over_rate * Math.log(1 - 1 / (2 * gamma_double)) +

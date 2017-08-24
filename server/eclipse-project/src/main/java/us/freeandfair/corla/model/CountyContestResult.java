@@ -136,9 +136,14 @@ public class CountyContestResult extends AbstractEntity implements Serializable 
   private Integer my_max_margin;
   
   /**
-   * The total number of ballots cast in this contest.
+   * The total number of ballots cast in this county.
    */
-  private Integer my_ballot_count = 0;
+  private Integer my_county_ballot_count = 0;
+  
+  /**
+   * The total number of ballots cast in this county that contain this contest.
+   */
+  private Integer my_contest_ballot_count = 0;
   
   /**
    * Constructs a new empty CountyContestResult (solely for persistence).
@@ -234,10 +239,17 @@ public class CountyContestResult extends AbstractEntity implements Serializable 
   }
   
   /**
-   * @return the number of ballots cast in this contest.
+   * @return the number of ballots cast in this county that include this contest.
    */
-  public Integer ballotCount() {
-    return my_ballot_count;
+  public Integer contestBallotCount() {
+    return my_contest_ballot_count;
+  }
+  
+  /**
+   * @return the number of ballots cast in this county.
+   */
+  public Integer countyBallotCount() {
+    return my_county_ballot_count;
   }
   
   /**
@@ -255,15 +267,41 @@ public class CountyContestResult extends AbstractEntity implements Serializable 
   }
   
   /**
-   * @return the diluted margin for this contest, defined as the
-   * minimum margin divided by the number of ballots.
+   * @return the county diluted margin for this contest, defined as the
+   * minimum margin divided by the number of ballots cast in the county.
    * @exception IllegalStateException if no ballots have been counted.
    */
-  public BigDecimal dilutedMargin() {
+  public BigDecimal dilutedMarginCounty() {
     BigDecimal result;
-    if (my_ballot_count > 0) {
-      result = BigDecimal.valueOf(my_min_margin).divide(BigDecimal.valueOf(my_ballot_count), 
-                                                        MathContext.DECIMAL128);
+    if (my_county_ballot_count > 0) {
+      result = BigDecimal.valueOf(my_min_margin).
+               divide(BigDecimal.valueOf(my_county_ballot_count), 
+                      MathContext.DECIMAL128);
+      if (my_losers.isEmpty()) {
+        // if we only have winners, there is no margin
+        result = BigDecimal.ONE;
+      }
+      
+      // TODO: how do we handle a tie?
+    } else {
+      throw new IllegalStateException("attempted to calculate diluted margin with no ballots");
+    }
+    
+    return result;
+  }
+  
+  /**
+   * @return the diluted margin for this contest, defined as the
+   * minimum margin divided by the number of ballots cast in this county
+   * that contain this contest.
+   * @exception IllegalStateException if no ballots have been counted.
+   */
+  public BigDecimal contestDilutedMargin() {
+    BigDecimal result;
+    if (my_contest_ballot_count > 0) {
+      result = BigDecimal.valueOf(my_min_margin).
+               divide(BigDecimal.valueOf(my_contest_ballot_count), 
+                      MathContext.DECIMAL128);
       if (my_losers.isEmpty()) {
         // if we only have winners, there is no margin
         result = BigDecimal.ONE;
@@ -300,8 +338,9 @@ public class CountyContestResult extends AbstractEntity implements Serializable 
       for (final String s : ci.choices()) {
         my_vote_totals.put(s, my_vote_totals.get(s) + 1);
       }
-      my_ballot_count = Integer.valueOf(my_ballot_count + 1);
+      my_contest_ballot_count = Integer.valueOf(my_contest_ballot_count + 1);
     }
+    my_county_ballot_count = Integer.valueOf(my_county_ballot_count + 1);
   }
   
   /**

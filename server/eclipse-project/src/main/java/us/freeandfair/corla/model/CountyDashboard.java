@@ -155,6 +155,17 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   private List<CVRAuditInfo> my_cvr_audit_info = new ArrayList<>();
   
   /**
+   * The set of contests driving the audit.
+   */
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(name = "driving_contest",
+             joinColumns = @JoinColumn(name = "county_dashboard_id",
+                                       referencedColumnName = MY_ID),
+             inverseJoinColumns = @JoinColumn(name = "contest_id", 
+                                              referencedColumnName = MY_ID))
+  private Set<Contest> my_driving_contests = new HashSet<>();
+  
+  /**
    * The audit data.
    */
   @OneToMany(cascade = CascadeType.ALL, mappedBy = MY_DASHBOARD, 
@@ -411,6 +422,23 @@ public class CountyDashboard implements PersistentEntity, Serializable {
       setComparisonAudits(final Set<CountyContestComparisonAudit> the_comparison_audits) {
     my_comparison_audits.clear();
     my_comparison_audits.addAll(the_comparison_audits);
+  }
+  
+  /** 
+   * @return the set of contests driving the audit.
+   */
+  public Set<Contest> drivingContests() {
+    return Collections.unmodifiableSet(my_driving_contests);
+  }
+  
+  /**
+   * Sets the contests driving the audit.
+   * 
+   * @param the_driving_contests The contests.
+   */
+  public void setDrivingContests(final Set<Contest> the_driving_contests) {
+    my_driving_contests.clear();
+    my_driving_contests.addAll(the_driving_contests);
   }
   
   /**

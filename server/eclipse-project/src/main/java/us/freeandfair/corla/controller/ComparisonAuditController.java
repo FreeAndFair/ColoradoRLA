@@ -25,6 +25,8 @@ import us.freeandfair.corla.model.CVRContestInfo;
 import us.freeandfair.corla.model.CVRContestInfo.ConsensusValue;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
+import us.freeandfair.corla.model.Contest;
+import us.freeandfair.corla.model.ContestToAudit.AuditType;
 import us.freeandfair.corla.model.CountyContestComparisonAudit;
 import us.freeandfair.corla.model.CountyContestResult;
 import us.freeandfair.corla.model.CountyDashboard;
@@ -32,6 +34,7 @@ import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CVRAuditInfoQueries;
 import us.freeandfair.corla.query.CastVoteRecordQueries;
+import us.freeandfair.corla.query.ContestToAuditQueries;
 import us.freeandfair.corla.query.CountyContestResultQueries;
 
 /**
@@ -106,11 +109,15 @@ public final class ComparisonAuditController {
    * @param the_dashboard The dashboard.
    */
   public static void initializeAuditData(final CountyDashboard the_dashboard) {
-    final BigDecimal risk_limit = 
-        Persistence.getByID(DoSDashboard.ID, 
-                            DoSDashboard.class).riskLimitForComparisonAudits();
+    final DoSDashboard dosdb =
+        Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
+    final BigDecimal risk_limit = dosdb.riskLimitForComparisonAudits();
+    final Set<Contest> all_driving_contests = 
+        ContestToAuditQueries.contestsMatching(AuditType.COMPARISON);
+    final Set<Contest> county_driving_contests = new HashSet<>();
     final Set<CountyContestComparisonAudit> comparison_audits = new HashSet<>();
     int to_audit = Integer.MIN_VALUE;
+    
     the_dashboard.setAuditedPrefixLength(0);
     the_dashboard.setDiscrepancies(0);
     the_dashboard.setDisagreements(0);
@@ -118,9 +125,14 @@ public final class ComparisonAuditController {
          CountyContestResultQueries.forCounty(the_dashboard.county())) {
       final CountyContestComparisonAudit audit = 
           new CountyContestComparisonAudit(the_dashboard, ccr, risk_limit);
+      final Contest contest = audit.contest();
       comparison_audits.add(audit);
-      to_audit = Math.max(to_audit, audit.initialBallotsToAudit());
+      if (all_driving_contests.contains(contest)) {
+        to_audit = Math.max(to_audit, audit.initialBallotsToAudit());
+        county_driving_contests.add(contest);
+      }
     }
+    the_dashboard.setDrivingContests(county_driving_contests);
     the_dashboard.setComparisonAudits(comparison_audits);
     the_dashboard.setEstimatedBallotsToAudit(Math.max(0,  to_audit));
   }
@@ -313,8 +325,11 @@ public final class ComparisonAuditController {
   private static int 
       computeEstimatedBallotsToAudit(final CountyDashboard the_dashboard) {
     int to_audit = Integer.MIN_VALUE;
+    final Set<Contest> driving_contests = the_dashboard.drivingContests();
     for (final CountyContestComparisonAudit ccca : the_dashboard.comparisonAudits()) {
-      to_audit = Math.max(to_audit, ccca.ballotsToAudit());
+      if (driving_contests.contains(ccca.contest())) {
+        to_audit = Math.max(to_audit, ccca.ballotsToAudit());
+      }
     }
     return Math.max(0,  to_audit - the_dashboard.auditedPrefixLength());
   }
