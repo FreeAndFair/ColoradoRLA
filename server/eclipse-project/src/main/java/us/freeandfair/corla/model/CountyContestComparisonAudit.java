@@ -65,7 +65,7 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
    * Rounding up of 1-vote over/understatements for the initial estimate of 
    * error rates.
    */
-  public static final boolean CONSERVATIVE_ROUND_ONES_UP = false;
+  public static final boolean CONSERVATIVE_ROUND_ONES_UP = true;
   
   /**
    * Rounding up of 2-vote over/understatements for the initial estimate of 
@@ -214,7 +214,7 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
    */
   public Integer ballotsToAudit() {
     if (my_ballots_to_audit == null && my_contest_result != null) {
-      my_ballots_to_audit = initialBallotsToAudit();
+      recalculateBallotsToAudit();
     }
     return my_ballots_to_audit;
   }
@@ -374,8 +374,7 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
     final BigDecimal sum = 
         two_under_initial.add(one_under_initial).add(one_over_initial).add(two_over_initial);
     final BigDecimal denominator =
-        my_contest_result.countyDilutedMargin().
-        add(twogamma.multiply(sum));
+        my_contest_result.countyDilutedMargin().add(twogamma.multiply(sum));
     final BigDecimal numerator = 
         twogamma.negate().
         multiply(BigDecimalMath.log(my_risk_limit, MathContext.DECIMAL128));
@@ -406,8 +405,12 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
         two_under = the_two_under_rate.multiply(result).round(MathContext.DECIMAL128);
         two_over = the_two_over_rate.multiply(result).round(MathContext.DECIMAL128);  
       }
+      Main.LOGGER.info("expected numbers u1=" + one_under + "/" + one_under.intValue() + 
+                       ", u2=" + two_under + "/" + two_under.intValue() + 
+                       ", o1=" + one_over + "/" + one_over.intValue() + 
+                       ", o2=" + two_over + "/" + two_over.intValue());
       result = computeBallotsToAudit(two_under.intValue(), one_under.intValue(), 
-                                  one_over.intValue(), two_over.intValue());
+                                     one_over.intValue(), two_over.intValue());
     }
     
     Main.LOGGER.info("initial estimate for contest " + contest().name() + 

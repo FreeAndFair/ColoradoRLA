@@ -128,15 +128,14 @@ public final class ComparisonAuditController {
       final Contest contest = audit.contest();
       comparison_audits.add(audit);
       if (all_driving_contests.contains(contest)) {
-        to_audit = Math.max(to_audit, audit.ballotsToAudit());
+        to_audit = Math.max(to_audit, audit.initialBallotsToAudit());
         county_driving_contests.add(contest);
       }
     }
     the_dashboard.setDrivingContests(county_driving_contests);
     the_dashboard.setComparisonAudits(comparison_audits);
     the_dashboard.setEstimatedBallotsToAudit(Math.max(0,  to_audit));
-    the_dashboard.setCVRsToAudit(computeBallotOrder(the_dashboard, 0, 
-                                                    the_dashboard.estimatedBallotsToAudit()));
+    the_dashboard.setCVRsToAudit(computeBallotOrder(the_dashboard, 0, to_audit));
   }
   
   /**
