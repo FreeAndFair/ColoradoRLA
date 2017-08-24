@@ -88,7 +88,10 @@ const CountyUpdates = ({ countyStatus }: any) => {
                                 <Tooltip
                                     className='pt-tooltip-indicator'
                                     content={ remainingToAuditTooltipContent }>
-                                    Remaining to Audit
+                                    <div>
+                                        <span>Remaining to Audit </span>
+                                        <span className='pt-icon-standard pt-icon-help' />
+                                    </div>
                                 </Tooltip>
                             </td>
                         </tr>
