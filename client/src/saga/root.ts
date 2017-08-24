@@ -7,6 +7,7 @@ import countyDashboardRefreshOkSaga from './countyDashboardRefreshOkSaga';
 import countyLoginSaga from './countyLoginSaga';
 import countyPollSaga from './countyPollSaga';
 import debugSaga from './debugSaga';
+import dosAuditSaga from './dosAuditSaga';
 import dosLoginSaga from './dosLoginSaga';
 import dosPollSaga from './dosPollSaga';
 import fileUploadSaga from './fileUploadSaga';
@@ -20,6 +21,7 @@ export default function* rootSaga() {
         countyLoginSaga(),
         countyPollSaga(),
         countyDashboardRefreshOkSaga(),
+        dosAuditSaga(),
         dosLoginSaga(),
         dosPollSaga(),
         fileUploadSaga(),
