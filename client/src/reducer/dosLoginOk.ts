@@ -11,6 +11,7 @@ type AuditStage
     | 'AUDIT_RESULTS_PUBLISHED';
 
 const sosInitialState = (): any => ({
+    asm: {},
     auditStage: 'PRE_AUDIT',
     auditedContests: {},
     countyStatus: {},
