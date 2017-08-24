@@ -62,7 +62,7 @@ public class ContestDownloadByID extends AbstractEndpoint {
       if (c == null) {
         dataNotFound(the_response, "Contest not found");
       } else {
-        okJSON(the_response, Main.GSON.toJson(c));
+        okJSON(the_response, Main.GSON.toJson(Persistence.unproxy(c)));
       }
     } catch (final NumberFormatException e) {
       invariantViolation(the_response, "Bad contest ID");

@@ -75,7 +75,6 @@ public class DoSDashboard implements PersistentEntity, Serializable {
    * The version (for optimistic locking).
    */
   @Version
-  @SuppressWarnings("PMD.UnusedPrivateField")
   private Long my_version;
   
   /**

@@ -90,7 +90,7 @@ public class ACVRDownloadByCounty extends AbstractEndpoint {
                                                             RecordType.PHANTOM_BALLOT));
         matches.forEach((the_cvr) -> {
           try {
-            jw.jsonValue(Main.GSON.toJson(the_cvr));
+            jw.jsonValue(Main.GSON.toJson(Persistence.unproxy(the_cvr)));
             Persistence.evict(the_cvr);
           } catch (final IOException e) {
             throw new UncheckedIOException(e);
@@ -100,10 +100,10 @@ public class ACVRDownloadByCounty extends AbstractEndpoint {
       jw.endArray();
       jw.flush();
       jw.close();
+      ok(the_response);
     } catch (final UncheckedIOException | IOException | PersistenceException e) {
       serverError(the_response, "Unable to stream response");
     }
-    ok(the_response);
     return my_endpoint_result;
   }
   

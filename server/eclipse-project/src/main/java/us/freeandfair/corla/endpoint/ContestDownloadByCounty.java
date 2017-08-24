@@ -18,11 +18,14 @@ import java.io.OutputStreamWriter;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.google.gson.stream.JsonWriter;
+
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.Contest;
+import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.ContestQueries;
 import us.freeandfair.corla.util.SparkHelper;
 
@@ -76,9 +79,15 @@ public class ContestDownloadByCounty extends AbstractEndpoint {
         try {
           final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
           final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-
-          Main.GSON.toJson(contest_set, bw);
-          bw.flush();
+          final JsonWriter jw = new JsonWriter(bw);
+          jw.beginArray();
+          for (final Contest contest : contest_set) {
+            jw.jsonValue(Main.GSON.toJson(Persistence.unproxy(contest)));
+            Persistence.evict(contest);
+          } 
+          jw.endArray();
+          jw.flush();
+          jw.close();
           ok(the_response);
         } catch (final IOException e) {
           serverError(the_response, "Unable to stream response");

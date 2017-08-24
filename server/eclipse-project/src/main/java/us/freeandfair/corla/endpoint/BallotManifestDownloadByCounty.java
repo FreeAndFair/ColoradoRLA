@@ -18,11 +18,14 @@ import java.io.OutputStreamWriter;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.google.gson.stream.JsonWriter;
+
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.BallotManifestInfo;
+import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.BallotManifestInfoQueries;
 import us.freeandfair.corla.util.SparkHelper;
 
@@ -68,17 +71,23 @@ public class BallotManifestDownloadByCounty extends AbstractCountyDashboardEndpo
         try {
           final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
           final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-
-          Main.GSON.toJson(matches, bw);
-          bw.flush();
+          final JsonWriter jw = new JsonWriter(bw);
+          jw.beginArray();
+          for (final BallotManifestInfo bmi : matches) {
+            jw.jsonValue(Main.GSON.toJson(Persistence.unproxy(bmi)));
+            Persistence.evict(bmi);
+          } 
+          jw.endArray();
+          jw.flush();
+          jw.close();
         } catch (final IOException e) {
           serverError(the_response, "Unable to stream response");
         }
       }
+      ok(the_response);
     } else {
       dataNotFound(the_response, "Invalid county ID specified");
     }
-    ok(the_response);
     return my_endpoint_result;
   }
   
