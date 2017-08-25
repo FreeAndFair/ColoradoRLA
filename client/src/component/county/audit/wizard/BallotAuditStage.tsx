@@ -26,12 +26,12 @@ const BallotNotFoundForm = ({ ballotNotFound, currentBallot }: any) => {
     );
 };
 
-const AuditInstructions = ({ ballotNotFound, ballotsToAudit, currentBallot }: any) => (
+const AuditInstructions = ({ ballotNotFound, ballotsToAudit, county, currentBallot }: any) => (
     <div className='pt-card'>
         <div>
             Use this page to report the voter markings on the ballot with ID
-            #{ currentBallot.id }, out of { ballotsToAudit.length } ballots that you
-            must audit.
+            #{ currentBallot.id }, out of { county.estimatedBallotsToAudit } ballots
+            that you must audit.
         </div>
         <div>
             The current ballot is:
@@ -201,6 +201,7 @@ const BallotAuditStage = (props: any) => {
             <AuditInstructions
                 ballotNotFound={ notFound }
                 ballotsToAudit={ ballotsToAudit }
+                county={ county }
                 currentBallot={ currentBallot }
             />
             <BallotAuditForm
