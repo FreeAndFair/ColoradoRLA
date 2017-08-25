@@ -1,11 +1,10 @@
 import * as React from 'react';
 
-import AuditBoardSignInStageContainer from './AuditBoardSignInStageContainer';
 import BallotAuditStageContainer from './BallotAuditStageContainer';
 import ReviewStageContainer from './ReviewStageContainer';
 
 
-type WizardStage = 'sign-in' | 'ballot-audit' | 'review';
+type WizardStage = 'ballot-audit' | 'review';
 
 interface CountyAuditWizardState {
     stage: WizardStage;
@@ -15,7 +14,7 @@ class CountyAuditWizard extends React.Component<any, CountyAuditWizardState> {
     constructor(props: any) {
         super(props);
 
-        this.state = { stage: 'sign-in' };
+        this.state = { stage: 'ballot-audit' };
     }
 
     public render() {
@@ -28,8 +27,6 @@ class CountyAuditWizard extends React.Component<any, CountyAuditWizardState> {
         };
 
         switch (this.state.stage) {
-            case 'sign-in':
-                return  <AuditBoardSignInStageContainer { ...props } />;
             case 'ballot-audit':
                 return <BallotAuditStageContainer { ...props } />;
             case 'review':
@@ -40,7 +37,6 @@ class CountyAuditWizard extends React.Component<any, CountyAuditWizardState> {
     private nextStage = () => {
         // tslint:disable
         const t: any = {
-            'sign-in': 'ballot-audit',
             'ballot-audit': 'review',
             'review': 'ballot-audit',
         };
@@ -54,7 +50,7 @@ class CountyAuditWizard extends React.Component<any, CountyAuditWizardState> {
     private prevStage = () => {
         // tslint:disable
         const t: any = {
-            'ballot-audit': 'sign-in',
+            'ballot-audit': 'ballot-audit',
             'review': 'ballot-audit',
         };
         // tslint:enable

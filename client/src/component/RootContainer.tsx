@@ -12,6 +12,8 @@ import RootRedirectContainer from './RootRedirectContainer';
 import CountyContestDetailContainer from './county/ContestDetailContainer';
 import CountyContestOverviewContainer from './county/ContestOverviewContainer';
 
+import AuditBoardSignInContainer from './county/AuditBoardSignInContainer';
+
 import CountyAuditContainer from './county/audit/CountyAuditContainer';
 import CountyHomeContainer from './county/home/CountyHomeContainer';
 
@@ -77,6 +79,7 @@ const makeRoute = (store: any) => (def: RouteDef) => {
 const routes: RouteDef[] = [
     ['/', RootRedirectContainer],
     ['/county', CountyHomeContainer],
+    ['/county/sign-in', AuditBoardSignInContainer],
     ['/county/audit', CountyAuditContainer],
     ['/county/contest', CountyContestOverviewContainer],
     ['/county/contest/:contestId', CountyContestDetailContainer],
