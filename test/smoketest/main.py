@@ -81,6 +81,7 @@ from argparse import Namespace
 import json
 import logging
 import requests
+import hashlib
 
 import sampler
 
@@ -103,7 +104,10 @@ parser.add_argument('-m, --manifest', dest='manifest',
                     help='manifest filename and hash: integer index to pre-defined array, default 0')
 parser.add_argument('-v, --cvr', dest='cvr', type=int,
                     default=0,
-                    help='cvr filename and hash: integer index to pre-defined array, default 0')
+                    help='predefined cvr filename and hash: integer index to pre-defined array, default 0')
+parser.add_argument('-f, --cvrfile', dest='cvrfile',
+                    help='cvr filename, for arbitrary cvrs. Takes precedence over -v. '
+                    'Proper hash will be computed.')
 
 # TODO: allow a way to specify CVRs and contests per county.
 parser.add_argument('-C, --contest', dest='contests', metavar='CONTEST', action='append',
@@ -119,6 +123,10 @@ parser.add_argument('-s, --seed', dest='seed',
 parser.add_argument('-u, --url', dest='url',
                     default='http://localhost:8888',
                     help='base url of corla server. Defaults to http://localhost:8888')
+# TODO: get rid of this and associated old code when /upload-cvr-export and /upload-cvr-export go away
+parser.add_argument('-Y, --ye-olde-upload', type=bool, dest='ye_olde_upload',
+                    help='use old file upload protocol')
+
 parser.add_argument('-d, --debuglevel', type=int, default=logging.WARNING, dest='debuglevel',
   help='Set logging level to debuglevel: DEBUG=10, INFO=20,\n WARNING=30 (the default), ERROR=40, CRITICAL=50')
 
@@ -190,6 +198,36 @@ def test_endpoint_post(ac, s, path, data):
     print(r, path, r.text)
     return r
 
+
+def upload_file(ac, s, import_path, filename, sha256):
+    "Upload a file and confirm its sha256 hash"
+
+    # Obtain test directory, i.e. where this script is.
+    # Filenames can be absolute or relative to this directory.
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+
+    with open(os.path.join(dir_path, filename), 'rb') as f:
+        path = "/upload-file"
+        payload = {'hash': sha256}
+        r = s.post(ac.base + path,
+                          files={'file': f}, data=payload)
+    print(r, path, r.text)
+
+    import_handle = r.json()
+
+    # This could be done later, after importing another file.
+    r = test_endpoint_json(ac, s, import_path, import_handle)
+
+"""
+TODO: clean this out when ready.
+
+Alternate approaches that have worked:
+    r = test_endpoint_bytes(ac, s, import_path, r.text)
+    r = test_endpoint_json(ac, s, import_path, { "file_id": import_handle['file_id']})
+
+    print("import_handle: %s" % import_handle)
+    print("response text: %s" % r.text)
+"""
 
 def upload_cvrs(ac, s, filename, sha256):
     "Upload cvrs"
@@ -274,16 +312,17 @@ def upload_files(ac, s):
      https://github.com/jjyr/zerotest/issues/12
     """
 
-    # Obtain test directory, i.e. where this script is.
-    # Default filenames are relative to this directory.
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-
     # TODO: predefine more manifests
     manifestfile = "../e-1/arapahoe-manifest.csv"
     hash = "42d409d3394243046cf92e3ce569b7078cba0815d626602d15d0da3e5e844a94"
 
     manifest = ac.args.manifest # TODO finish when we have more manifests and they make a difference
-    upload_manifest(ac, s, os.path.join(dir_path, manifestfile), hash)
+
+    if ac.args.ye_olde_upload:
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        upload_manifest(ac, s, os.path.join(dir_path, manifestfile), hash)
+    else:
+        upload_file(ac, s, '/import-ballot-manifest', manifestfile, hash)
 
     predefined_cvrs = (
         ("../e-1/arapahoe-regent-3-clear-CVR_Export.csv",
@@ -291,12 +330,34 @@ def upload_files(ac, s):
         ("../dominion-2017-CVR_Export_20170310104116.csv",
                     "4e3844b0dabfcea64a499d65bc1cdc00d139cd5cdcaf502f20dd2beaa3d518d2"),
         ("../Denver2016Test/CVR_Export_20170804111144.csv",
-                    "1def4aa4c0e1421b4e5adcd4cc18a8d275f709bc07820a37e76e11a038195d02")
+                    "1def4aa4c0e1421b4e5adcd4cc18a8d275f709bc07820a37e76e11a038195d02"),
+        ("../e-1/arapahoe-regent-3-clear-CVR_Export.csv",
+                    "invalid hash"),
+        ("../e-1/arapahoe-regent-3-clear-CVR_Export.csv",
+                    "00000111111111122222222234444444444456789999999abbbbbbbbbcccddef"),
     )
 
-    cvrfile, hash = predefined_cvrs[ac.args.cvr]
-    upload_cvrs(ac, s, os.path.join(dir_path, cvrfile), hash)
+    if ac.args.cvrfile is None:
+        cvrfile, hash = predefined_cvrs[ac.args.cvr]
+    else:
+        cvrfile = ac.args.cvrfile
+        BUF_SIZE = 2 ** 18
 
+        sha256 = hashlib.sha256()
+
+        with open(cvrfile, 'rb') as f:
+            while True:
+                data = f.read(BUF_SIZE)
+                if not data:
+                    break
+                sha256.update(data)
+
+        hash = sha256.hexdigest()
+
+    if ac.args.ye_olde_upload:
+        upload_cvrs(ac, s, os.path.join(dir_path, cvrfile), hash)
+    else:
+        upload_file(ac, s, '/import-cvr-export', cvrfile, hash)
 
 def server_sequence():
     '''Run thru a given test sequence to explore server ASM transitions.
