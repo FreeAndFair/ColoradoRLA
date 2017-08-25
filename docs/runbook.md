@@ -104,7 +104,7 @@ The RLA Tool uses the random seed in the required pseudo-random number
 generator. The RLA Tool also exports the random seed in a standard
 format, which the Secretary of State can post to the Audit Center
 hosted on the Secretary of State website. *(Ed. note: This feature is
-not included in the stage-1 deliverable.)*
+not included in the stage-2 deliverable.)*
 <!-- comment: is this implemented? -->
 
 ### 25.2.2 (I) Selecting Contests
@@ -115,7 +115,7 @@ Rule 25 calls these "contests to be audited", the RLA Tool effectively
 audits all contests, while using the contests selected by the
 Secretary of State to calculate the risk levels. *(Ed. note: The
 notion of "rounds" is still under discussion and not included in the
-stage-1 deliverable.)*
+stage-2 deliverable.)*
 
 ![State Contest Selection Screenshot](./screenshots/ContestSelection.png)
 
@@ -209,14 +209,14 @@ voting computer system. The results of this comparison are exported
 for the Secretary of State to post on the Audit (outside the RLA
 Tool).  The RLA Tool will allow the Secretary of State to see if the
 required Risk Limit has been met for the selected
-contests. *(Ed. note: This UI does not yet update in the phase-1
+contests. *(Ed. note: This UI does not yet update in the phase-2
 deliverable.)*
 
 ![Risk Limit Met Query Screen](./screenshots/LimitMetQuery.png)
 
 The RLA Tool also allows the Secretary of State to designate a contest
 for hand counting at any time. *(Ed. note: Handling this asynchronous
-notification is not supported in the stage-1 deliverable.)*
+notification is not supported in the stage-2 deliverable.)*
 
 ![Full Hand Count Screen](./screenshots/FullHandCount.png)
 
