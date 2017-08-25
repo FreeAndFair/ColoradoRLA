@@ -17,16 +17,32 @@ const SeedInfo = ({ seed }: any) => {
     );
 };
 
-const ContestUpdates = ({ contests, seed }: any) => {
-    const contestStatuses = _.map(contests, (c: any) => (
-        <tr key={ c.id}>
-            <td>{ c.id }</td>
-            <td>{ c.name }</td>
-            <td>{ c.status }</td>
-            <td>{ c.riskLimit }</td>
-            <td>{ c.riskLevel }</td>
-        </tr>
-    ));
+const ContestUpdates = ({ contests, seed, sos }: any) => {
+    const contestStatuses = _.map(contests, (c: any) => {
+        if (!sos.auditedContests) {
+            return <tr key={ c.id }><td /><td /><td /><td /><td /></tr>;
+        }
+
+        if (!sos.estimatedBallotsToAudit) {
+            return <tr key={ c.id }><td /><td /><td /><td /><td /></tr>;
+        }
+
+        const status = sos.auditedContests[c.id] ? 'Under audit' : 'Not selected for audit';
+        const toAudit = sos.estimatedBallotsToAudit[c.id];
+
+        return (
+            <tr key={ c.id}>
+                <td>{ c.id }</td>
+                <td>{ c.name }</td>
+                <td>{ status }</td>
+                <td>{ sos.riskLimit }</td>
+                <td>{ toAudit || '—' }</td>
+            </tr>
+        );
+    });
+
+    const remainingToAuditTooltipContent =
+        'Estimated number of ballots to audit to meet risk limit.';
 
     return (
         <div className='pt-card'>
@@ -37,9 +53,18 @@ const ContestUpdates = ({ contests, seed }: any) => {
                         <tr>
                             <td>ID</td>
                             <td>Name</td>
-                            <td>Status</td>
+                            <td>Audit Status</td>
                             <td>Target Risk Limit</td>
-                            <td>Risk Level</td>
+                            <td>
+                                <Tooltip
+                                    className='pt-tooltip-indicator'
+                                    content={ remainingToAuditTooltipContent }>
+                                    <div>
+                                        <span>Remaining to Audit </span>
+                                        <span className='pt-icon-standard pt-icon-help' />
+                                    </div>
+                                </Tooltip>
+                            </td>
                         </tr>
                     </thead>
                     <tbody>
@@ -138,7 +163,7 @@ const CountyUpdates = ({ countyStatus }: any) => {
 
 
 const SoSHomePage = (props: any) => {
-    const { contests, countyStatus, seed } = props;
+    const { contests, countyStatus, seed, sos } = props;
 
     return (
         <div className='sos-home'>
@@ -148,7 +173,7 @@ const SoSHomePage = (props: any) => {
             </div>
             <div className='sos-info pt-card'>
                 <CountyUpdates countyStatus={ countyStatus } />
-                <ContestUpdates contests={ contests } seed={ seed } />
+                <ContestUpdates contests={ contests } seed={ seed } sos={ sos } />
             </div>
             <div>
                 <button disabled className='pt-button pt-intent-primary'>
