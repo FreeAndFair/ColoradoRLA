@@ -50,6 +50,11 @@ public class DominionCVRExportParser implements CVRExportParser {
    * The size of a batch of CVRs to be flushed to the database.
    */
   private static final int BATCH_SIZE = 50;
+
+  /**
+   * The column containing the CVR number in a Dominion export file.
+   */
+  private static final int CVR_NUMBER_COLUMN = 0;
   
   /**
    * The column containing the tabulator number in a Dominion export file.
@@ -274,12 +279,14 @@ public class DominionCVRExportParser implements CVRExportParser {
   private CastVoteRecord extractCVR(final CSVRecord the_line, 
                                     final Instant the_timestamp) {
     try {
-      final String tabulator_id = 
-          stripEqualQuotes(the_line.get(TABULATOR_NUMBER_COLUMN));
-      final String batch_id = 
-          stripEqualQuotes(the_line.get(BATCH_ID_COLUMN));
-      final String record_id = 
-          stripEqualQuotes(the_line.get(RECORD_ID_COLUMN));
+      final int cvr_id =
+          Integer.parseInt(stripEqualQuotes(the_line.get(CVR_NUMBER_COLUMN)));
+      final int tabulator_id = 
+          Integer.parseInt(stripEqualQuotes(the_line.get(TABULATOR_NUMBER_COLUMN)));
+      final int batch_id = 
+          Integer.parseInt(stripEqualQuotes(the_line.get(BATCH_ID_COLUMN)));
+      final int record_id = 
+          Integer.parseInt(stripEqualQuotes(the_line.get(RECORD_ID_COLUMN)));
       final String imprinted_id = 
           stripEqualQuotes(the_line.get(IMPRINTED_ID_COLUMN));
       final String ballot_type = 
@@ -313,10 +320,10 @@ public class DominionCVRExportParser implements CVRExportParser {
       // twice in the CVR export file... and if it does, we need it to
       // appear twice here too. 
       final CastVoteRecord new_cvr = 
-          new CastVoteRecord(RecordType.UPLOADED, 
-                             the_timestamp, my_county.id(), 
-                             tabulator_id, batch_id, record_id, 
-                             imprinted_id, ballot_type, 
+          new CastVoteRecord(RecordType.UPLOADED,
+                             the_timestamp, my_county.id(),
+                             cvr_id, tabulator_id, batch_id, record_id,
+                             imprinted_id, ballot_type,
                              contest_info);
       Persistence.saveOrUpdate(new_cvr);
       my_parsed_cvrs.add(new_cvr);

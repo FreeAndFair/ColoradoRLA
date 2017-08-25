@@ -45,9 +45,9 @@ public final class CastVoteRecordQueries {
   private static final String COUNTY_ID = "my_county_id";
   
   /**
-   * The "imprinted ID" field.
+   * The "cvr number" field.
    */
-  private static final String IMPRINTED_ID = "my_imprinted_id";
+  private static final String CVR_NUMBER = "my_cvr_number";
   
   /**
    * The "record type" field.
@@ -98,7 +98,7 @@ public final class CastVoteRecordQueries {
       final CriteriaQuery<CastVoteRecord> cq = cb.createQuery(CastVoteRecord.class);
       final Root<CastVoteRecord> root = cq.from(CastVoteRecord.class);
       cq.select(root).where(cb.equal(root.get(RECORD_TYPE), the_type));
-      cq.orderBy(cb.asc(root.get(IMPRINTED_ID)));
+      cq.orderBy(cb.asc(root.get(CVR_NUMBER)));
       final Query<CastVoteRecord> query = s.createQuery(cq);
       result = ((Query<CastVoteRecord>) query).stream();
     } catch (final PersistenceException e) {
@@ -173,7 +173,7 @@ public final class CastVoteRecordQueries {
       conjuncts.add(cb.equal(root.get(COUNTY_ID), the_county));
       conjuncts.add(cb.equal(root.get(RECORD_TYPE), the_type));
       cq.select(root).where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
-      cq.orderBy(cb.asc(root.get(IMPRINTED_ID)));
+      cq.orderBy(cb.asc(root.get(CVR_NUMBER)));
       final Query<CastVoteRecord> query = s.createQuery(cq);
       result = query.stream();
     } catch (final PersistenceException e) {
@@ -211,7 +211,7 @@ public final class CastVoteRecordQueries {
       conjuncts.add(cb.equal(root.get(RECORD_TYPE), the_type));
       cq.select(cb.count(root));
       cq.where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
-      cq.orderBy(cb.asc(root.get(IMPRINTED_ID)));
+      cq.orderBy(cb.asc(root.get(CVR_NUMBER)));
       final Query<Long> query = s.createQuery(cq);
       result = OptionalLong.of(query.getSingleResult());
     } catch (final PersistenceException e) {
@@ -256,7 +256,7 @@ public final class CastVoteRecordQueries {
       conjuncts.add(cb.equal(root.get(COUNTY_ID), the_county_id));
       conjuncts.add(cb.equal(root.get(RECORD_TYPE), the_type));
       cq.select(root).where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
-      cq.orderBy(cb.asc(root.get(IMPRINTED_ID)));
+      cq.orderBy(cb.asc(root.get(CVR_NUMBER)));
       final Query<CastVoteRecord> query = s.createQuery(cq);
       result = query.stream();
     } catch (final PersistenceException e) {
@@ -344,7 +344,7 @@ public final class CastVoteRecordQueries {
       conjuncts.add(cb.equal(root.get(RECORD_TYPE), the_type));
       cq.select(root.get("my_id"));
       cq.where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
-      cq.orderBy(cb.asc(root.get(IMPRINTED_ID)));
+      cq.orderBy(cb.asc(root.get(CVR_NUMBER)));
       final Query<Long> query = s.createQuery(cq);
       result = query.getResultList();
     } catch (final PersistenceException e) {
@@ -362,7 +362,7 @@ public final class CastVoteRecordQueries {
   
   /**
    * Obtain the CastVoteRecord object with the specified timestamp,
-   * county, type, and imprinted ID. 
+   * county, type, and cvr number. 
    *
    * @param the_timestamp The timestamp.
    * @param the_county_id The county.
@@ -377,7 +377,7 @@ public final class CastVoteRecordQueries {
   public static CastVoteRecord get(final Instant the_timestamp,
                                    final Long the_county_id,
                                    final RecordType the_type,
-                                   final String the_imprinted_id) {
+                                   final Integer the_cvr_number) {
     CastVoteRecord result = null;
    
     try {
@@ -389,7 +389,7 @@ public final class CastVoteRecordQueries {
       conjuncts.add(cb.equal(root.get(TIMESTAMP), the_timestamp));
       conjuncts.add(cb.equal(root.get(COUNTY_ID), the_county_id));
       conjuncts.add(cb.equal(root.get(RECORD_TYPE), the_type));
-      conjuncts.add(cb.equal(root.get(IMPRINTED_ID), the_imprinted_id));
+      conjuncts.add(cb.equal(root.get(CVR_NUMBER), the_cvr_number));
       cq.select(root).where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
       final TypedQuery<CastVoteRecord> query = s.createQuery(cq);
       final List<CastVoteRecord> query_results = query.getResultList();
