@@ -108,6 +108,7 @@ public class CastVoteRecord extends AbstractEntity implements Serializable {
   /**
    * The contest information in this cast vote record.
    */
+  // EAGER rationale: we do linear searches in this list frequently
   @OneToMany(cascade = CascadeType.ALL, mappedBy = "my_cvr", 
              fetch = FetchType.EAGER, orphanRemoval = true)
   @OrderColumn(name = "index")
