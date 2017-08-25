@@ -13,7 +13,10 @@ function validateElector(elector: any) {
         && elector.party;
 }
 
-function validateForm(auditBoard: any) {
+function validateAuditBoard(auditBoard: any) {
+    if (!auditBoard[0]) { return false; }
+    if (!auditBoard[1]) { return false; }
+
     return validateElector(auditBoard[0])
         && validateElector(auditBoard[1]) ;
 }
@@ -44,6 +47,8 @@ class AuditBoardSignInStage extends React.Component<any, any> {
         const submit = () => {
             establishAuditBoard(this.state.form);
         };
+
+        const boardEstablished = validateAuditBoard(auditBoard);
 
         if (auditBoard.length === 2) {
             return (
@@ -77,14 +82,17 @@ class AuditBoardSignInStage extends React.Component<any, any> {
                     </div>
                     <div>
                     </div>
-                    <button className='pt-button pt-intent-primary' onClick={ submit }>
+                    <button
+                        disabled={ boardEstablished }
+                        className='pt-button pt-intent-primary'
+                        onClick={ submit }>
                         Submit
                     </button>
                 </div>
             );
         }
 
-        const disableButton = !validateForm(this.state.form);
+        const disableButton = !validateAuditBoard(this.state.form);
 
         return (
             <div>
