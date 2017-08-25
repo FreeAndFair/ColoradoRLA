@@ -19,6 +19,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 import us.freeandfair.corla.model.UploadedFile;
+import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.UploadedFileQueries;
 
 /**
@@ -103,7 +104,6 @@ public final class UploadedFileJsonAdapter
       throws IOException {
     boolean error = false;
     Long file_id = null;
-    Long county_id = null;
     
     the_reader.beginObject();
     while (the_reader.hasNext()) {
@@ -112,11 +112,8 @@ public final class UploadedFileJsonAdapter
         case FILE_ID:
           file_id = the_reader.nextLong();
           break;
-        
-        case COUNTY_ID:
-          county_id = the_reader.nextLong();
-          break;
           
+        case COUNTY_ID:
         case FILENAME:
         case SIZE:
         case TIMESTAMP:
@@ -133,10 +130,10 @@ public final class UploadedFileJsonAdapter
     
     // check the sanity of the contest
     
-    if (error || file_id == null || county_id == null) {
+    if (error || file_id == null) {
       throw new JsonSyntaxException("invalid data detected in uploaded file");
     }
     
-    return UploadedFileQueries.matching(county_id, file_id);
+    return Persistence.getByID(file_id, UploadedFile.class);
   }
 }
