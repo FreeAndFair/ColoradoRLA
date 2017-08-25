@@ -36,7 +36,6 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.crypto.HashChecker;
-import us.freeandfair.corla.json.UploadedFileInfo;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.model.UploadedFile.FileStatus;
@@ -214,10 +213,8 @@ public class UploadFile extends AbstractEndpoint {
 
     // delete the temp file, if it exists
 
-    long file_size = 0;
     if (info.my_file != null) {
       try {
-        file_size = info.my_file.length();
         if (!info.my_file.delete()) {
           Main.LOGGER.error("Unable to delete temp file " + info.my_file);
         }
@@ -227,8 +224,7 @@ public class UploadFile extends AbstractEndpoint {
     }
     
     if (uploaded_file != null) {
-      okJSON(the_response, 
-             Main.GSON.toJson(new UploadedFileInfo(uploaded_file, file_size)));
+      okJSON(the_response, Main.GSON.toJson(uploaded_file));
     } // else another result code has already been set
     return my_endpoint_result.get();
   }
