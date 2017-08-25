@@ -33,8 +33,9 @@ to `/sos` or `/county`, as appropriate.
 
 #### `/login`
 
-Authenticate as a user of either type. Should include a link to the
-public audit dashboard, which is not part of the CORLA browser client.
+Authenticate as a user of either type. Eventually, this will include a
+link to the public audit dashboard, which is not part of the CORLA
+browser client.
 
 
 ### SoS Official
@@ -56,6 +57,7 @@ public audit dashboard, which is not part of the CORLA browser client.
 | Path | Page |
 | ---- | ---- |
 | `/county` | County Home
+| `/county/sign-in` | County Audit Board Sign-In Page
 | `/county/contest` | Contest Overview |
 | `/county/contest/{contestId}` | Contest Detail |
 | `/county/audit` | Run Audit |
