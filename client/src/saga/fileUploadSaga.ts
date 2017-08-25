@@ -14,18 +14,19 @@ function* uploadBallotManifestFail(action: any): any {
     const { body, status } = action.data.received;
 
     switch (body.result) {
-    case 'hash mismatch': {
-        notice.danger('Failed to upload ballot manifest: hash mismatch.');
-        notice.warning('Please verify that the entered hash matches the file.');
-        return;
-    }
-    case 'malformed ballot manifest file': {
-        notice.danger('Failed to upload ballot manifest: malformed file.');
-        notice.warning('Please verify that the uploaded file is valid ballot manifest.');
-        return;
-    }
+    // case 'hash mismatch': {
+    //     notice.danger('Failed to upload ballot manifest: hash mismatch.');
+    //     notice.warning('Please verify that the entered hash matches the file.');
+    //     return;
+    // }
+    // case 'malformed ballot manifest file': {
+    //     notice.danger('Failed to upload ballot manifest: malformed file.');
+    //     notice.warning('Please verify that the uploaded file is valid ballot manifest.');
+    //     return;
+    // }
     default: {
         notice.danger('Failed to upload ballot manifest.');
+        notice.warning('Please verify that the uploaded file is a valid ballot manifest with a matching hash.');
         return;
     }
     }
@@ -46,18 +47,19 @@ function* uploadCvrExportFail(action: any): any {
     const { body, status } = action.data.received;
 
     switch (body.result) {
-    case 'hash mismatch': {
-        notice.danger('Failed to upload CVR export: hash mismatch.');
-        notice.warning('Please verify that the entered hash matches the file.');
-        return;
-    }
-    case 'malformed CVR export file': {
-        notice.danger('Failed to upload CVR export: malformed file.');
-        notice.warning('Please verify that the uploaded file is a valid CVR export.');
-        return;
-    }
+    // case 'hash mismatch': {
+    //     notice.danger('Failed to upload CVR export: hash mismatch.');
+    //     notice.warning('Please verify that the entered hash matches the file.');
+    //     return;
+    // }
+    // case 'malformed CVR export file': {
+    //     notice.danger('Failed to upload CVR export: malformed file.');
+    //     notice.warning('Please verify that the uploaded file is a valid CVR export.');
+    //     return;
+    // }
     default: {
         notice.danger('Failed to upload CVR export.');
+        notice.warning('Please verify that the uploaded file is a valid CVR export with a matching hash.');
         return;
     }
     }
