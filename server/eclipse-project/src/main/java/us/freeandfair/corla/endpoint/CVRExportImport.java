@@ -162,7 +162,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
         badDataContents(the_response, "attempt to import a file without a verified hash");
       }
     } catch (final JsonSyntaxException e) {
-      badDataContents(the_response, "malformed request");
+      badDataContents(the_response, "malformed request: " + e.getMessage());
     }
     
     return my_endpoint_result.get();
