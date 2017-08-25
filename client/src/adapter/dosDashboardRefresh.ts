@@ -6,6 +6,7 @@ const parseCountyStatus = (countyStatus: any) => {
 
     _.forEach(countyStatus, c => {
         result[c.id] = {
+            asmState: c.asm_state,
             auditedBallotCount: c.audited_ballot_count,
             ballotManifestHash: c.ballot_manifest_hash,
             cvrExportHash: c.cvr_export_hash,
@@ -35,9 +36,11 @@ const parseAuditedContests = (data: any) => {
 
 
 export const parse = (data: any) => ({
+    asmState: data.asm_state,
     auditStage: data.audit_stage,
     auditedContests: parseAuditedContests(data.audited_contests),
     countyStatus: parseCountyStatus(data.county_status),
+    estimatedBallotsToAudit: data.estimated_ballots_to_audit,
     handCountContests: data.hand_count_contests,
     riskLimit: data.risk_limit,
     seed: data.random_seed,
