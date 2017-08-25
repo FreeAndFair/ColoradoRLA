@@ -24,6 +24,7 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
+import us.freeandfair.corla.asm.ASMState.CountyDashboardState;
 import us.freeandfair.corla.asm.ASMUtilities;
 import us.freeandfair.corla.asm.AuditBoardDashboardASM;
 import us.freeandfair.corla.asm.CountyDashboardASM;
@@ -93,10 +94,13 @@ public class PublishBallotsToAudit extends AbstractDoSDashboardEndpoint {
           } 
           // update the ASMs for the county and audit board
           if (!DISABLE_ASM) {
-            ASMUtilities.step(COUNTY_START_AUDIT_EVENT, CountyDashboardASM.class, 
-                              String.valueOf(cdb.id()));
-            ASMUtilities.step(AUDIT_BOARD_START_AUDIT_EVENT, AuditBoardDashboardASM.class, 
-                              String.valueOf(cdb.id()));
+            final CountyDashboardASM asm = 
+                ASMUtilities.asmFor(CountyDashboardASM.class, String.valueOf(cdb.id()));
+            asm.stepEvent(COUNTY_START_AUDIT_EVENT);
+            if (asm.currentState().equals(CountyDashboardState.COUNTY_AUDIT_UNDERWAY)) {
+              ASMUtilities.step(AUDIT_BOARD_START_AUDIT_EVENT, AuditBoardDashboardASM.class, 
+                                String.valueOf(cdb.id()));
+            }
           }
         } catch (final IllegalArgumentException e) {
           e.printStackTrace(System.out);
