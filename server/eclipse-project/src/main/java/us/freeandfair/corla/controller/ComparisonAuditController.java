@@ -131,10 +131,12 @@ public final class ComparisonAuditController {
         county_driving_contests.add(contest);
       }
     }
-    the_dashboard.setDrivingContests(county_driving_contests);
-    the_dashboard.setComparisonAudits(comparison_audits);
-    the_dashboard.setEstimatedBallotsToAudit(Math.max(0,  to_audit));
-    the_dashboard.setCVRsToAudit(computeBallotOrder(the_dashboard, 0, to_audit));
+    if (!county_driving_contests.isEmpty()) {
+      the_dashboard.setComparisonAudits(comparison_audits);
+      the_dashboard.setDrivingContests(county_driving_contests);
+      the_dashboard.setEstimatedBallotsToAudit(Math.max(0,  to_audit));
+      the_dashboard.setCVRsToAudit(computeBallotOrder(the_dashboard, 0, to_audit));
+    }
   }
   
   /**
