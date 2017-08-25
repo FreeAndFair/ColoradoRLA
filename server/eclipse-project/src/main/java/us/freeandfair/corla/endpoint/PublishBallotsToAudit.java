@@ -111,6 +111,6 @@ public class PublishBallotsToAudit extends AbstractDoSDashboardEndpoint {
       serverError(the_response, "could not publish list of ballots to audit");
     }
     
-    return my_endpoint_result;
+    return my_endpoint_result.get();
   }
 }

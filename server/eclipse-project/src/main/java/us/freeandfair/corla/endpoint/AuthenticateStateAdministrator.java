@@ -112,6 +112,6 @@ public class AuthenticateStateAdministrator extends AbstractEndpoint {
         unauthorized(the_response, "Authentication failed");
       }
     }
-    return my_endpoint_result;
+    return my_endpoint_result.get();
   }
 }

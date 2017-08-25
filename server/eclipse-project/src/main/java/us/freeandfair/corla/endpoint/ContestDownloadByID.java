@@ -67,6 +67,6 @@ public class ContestDownloadByID extends AbstractEndpoint {
     } catch (final NumberFormatException e) {
       invariantViolation(the_response, "Bad contest ID");
     }
-    return my_endpoint_result;
+    return my_endpoint_result.get();
   }
 }

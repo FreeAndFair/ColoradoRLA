@@ -86,6 +86,6 @@ public class ContestDownload extends AbstractEndpoint {
     } catch (final IOException e) {
       serverError(the_response, "Unable to stream response");
     }
-    return my_endpoint_result;
+    return my_endpoint_result.get();
   }
 }

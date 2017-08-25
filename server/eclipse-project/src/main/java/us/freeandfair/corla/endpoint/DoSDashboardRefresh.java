@@ -61,7 +61,7 @@ public class DoSDashboardRefresh extends AbstractDoSDashboardEndpoint {
     } catch (final PersistenceException e) {
       serverError(the_response, "could not obtain dashboard state");
     }
-    return my_endpoint_result;
+    return my_endpoint_result.get();
   }
 
   /**

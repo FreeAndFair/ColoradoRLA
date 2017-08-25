@@ -123,6 +123,6 @@ public class ACVRUpload extends AbstractAuditBoardDashboardEndpoint {
       Main.LOGGER.error("could not save audit CVR");
       serverError(the_response, "Unable to save audit CVR");
     }
-    return my_endpoint_result;
+    return my_endpoint_result.get();
   }
 }

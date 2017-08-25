@@ -88,7 +88,7 @@ public class BallotManifestDownloadByCounty extends AbstractCountyDashboardEndpo
     } else {
       dataNotFound(the_response, "Invalid county ID specified");
     }
-    return my_endpoint_result;
+    return my_endpoint_result.get();
   }
   
   /**

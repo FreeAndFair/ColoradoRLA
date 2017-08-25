@@ -99,7 +99,7 @@ public class RiskLimitForComparisonAudits extends AbstractDoSDashboardEndpoint {
     } catch (final JsonSyntaxException e) {
       invariantViolation(the_response, "Invalid risk limit specified");
     }
-    return my_endpoint_result;
+    return my_endpoint_result.get();
   }
   
   /**

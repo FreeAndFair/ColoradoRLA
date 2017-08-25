@@ -283,7 +283,7 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
 
     if (county == null) {
       unauthorized(the_response, "unauthorized administrator for ballot manifest upload");
-      return my_endpoint_result;
+      return my_endpoint_result.get();
     }
     
     handleUpload(the_request, the_response, info);
@@ -309,7 +309,7 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
       }
     }
 
-    return my_endpoint_result;
+    return my_endpoint_result.get();
   }
   
   /**

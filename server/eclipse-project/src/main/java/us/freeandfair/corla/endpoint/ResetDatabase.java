@@ -166,6 +166,6 @@ public class ResetDatabase extends AbstractEndpoint {
     
     ok(the_response, "database reset; run vacuumlo on the database to " + 
                      "recover space from large object storage");
-    return my_endpoint_result;
+    return my_endpoint_result.get();
   }
 }
