@@ -8,7 +8,7 @@ import CountyNav from '../Nav';
 import FileUploadContainer from './FileUploadContainer';
 
 
-const Main = ({ buttonDisabled, name, startAudit }: any) => {
+const Main = ({ boardSignIn, buttonDisabled, name, startAudit }: any) => {
     return (
         <div className='county-main pt-card'>
             <h1>Hello, { name } County!</h1>
@@ -18,9 +18,18 @@ const Main = ({ buttonDisabled, name, startAudit }: any) => {
                 </div>
                 <FileUploadContainer />
                 <button
+                    className='pt-button pt-intent-primary'
+                    onClick={ boardSignIn }>
+                    <span className='pt-icon-standard pt-icon-people' />
+                    <span> </span>
+                    Audit Board Sign-In
+                </button>
+                <button
                     disabled={ buttonDisabled }
                     className='pt-button pt-intent-primary'
                     onClick={ startAudit }>
+                    <span className='pt-icon-standard pt-icon-eye-open' />
+                    <span> </span>
                     Start Audit
                 </button>
             </div>
@@ -117,6 +126,7 @@ const Info = ({ info, contests, county }: any) => (
 
 const CountyHomePage = (props: any) => {
     const {
+        boardSignIn,
         contests,
         county,
         countyInfo,
@@ -142,7 +152,8 @@ const CountyHomePage = (props: any) => {
         <div className='county-root'>
             <CountyNav />
             <div>
-                <Main buttonDisabled={ buttonDisabled }
+                <Main boardSignIn={ boardSignIn }
+                      buttonDisabled={ buttonDisabled }
                       name={ countyInfo.name }
                       startAudit={ startAudit } />
                 <Info info={ countyInfo }
