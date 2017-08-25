@@ -117,6 +117,7 @@ public final class UploadedFileJsonAdapter
         case TIMESTAMP:
         case HASH_STATUS:
         case STATUS:
+          the_reader.skipValue();
           break;
           
         default:
