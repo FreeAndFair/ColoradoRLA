@@ -115,7 +115,7 @@ real time.  It shows County level and Contest level details, and will
 indicate when: 1) the audit is complete, 2) another round of ballots
 must be counted, and 3) if a Full Hand Count is required. *(Ed. note:
 The notion of rounds is still under discussion and not included in the
-stage-1 release.)*
+stage-2 release.)*
 
 ![Audit Ongoing Screenshot](./screenshots/AuditOngoing.png)
 
