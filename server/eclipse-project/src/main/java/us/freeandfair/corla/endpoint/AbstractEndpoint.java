@@ -146,7 +146,8 @@ public abstract class AbstractEndpoint implements Endpoint {
                                  final Response the_response) {
     // get the state of the ASM
     if (DISABLE_ASM || asmClass() == null) {
-      // there is no ASM event for this endpoint
+      // there is no ASM for this endpoint
+      my_asm.set(null);
       return;
     }
     my_asm.set(ASMUtilities.asmFor(asmClass(), asmIdentity(the_request)));
