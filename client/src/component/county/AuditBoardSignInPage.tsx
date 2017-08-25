@@ -1,8 +1,10 @@
 import * as React from 'react';
 
+import CountyNav from './Nav';
+
 import AuditBoardSignInForm from './AuditBoardSignInForm';
 
-import establishAuditBoard from '../../../../action/establishAuditBoard';
+import establishAuditBoard from '../../action/establishAuditBoard';
 
 
 function validateElector(elector: any) {
@@ -33,7 +35,7 @@ class AuditBoardSignInStage extends React.Component<any, any> {
     };
 
     public render() {
-        const { auditBoard, county, nextStage } = this.props;
+        const { auditBoard, county } = this.props;
 
         if (!auditBoard) {
             return <div />;
@@ -41,12 +43,12 @@ class AuditBoardSignInStage extends React.Component<any, any> {
 
         const submit = () => {
             establishAuditBoard(this.state.form);
-            nextStage();
         };
 
         if (auditBoard.length === 2) {
             return (
                 <div>
+                    <CountyNav />
                     <div>
                         <h2>Audit Board Sign-in</h2>
                         <div className='pt-card'>
@@ -75,8 +77,8 @@ class AuditBoardSignInStage extends React.Component<any, any> {
                     </div>
                     <div>
                     </div>
-                    <button className='pt-button pt-intent-primary' onClick={ nextStage }>
-                        Submit & Next
+                    <button className='pt-button pt-intent-primary' onClick={ submit }>
+                        Submit
                     </button>
                 </div>
             );
@@ -86,6 +88,7 @@ class AuditBoardSignInStage extends React.Component<any, any> {
 
         return (
             <div>
+                <CountyNav />
                 <div>
                     <h2>Audit Board Sign-in</h2>
                     <div className='pt-card'>
@@ -110,7 +113,7 @@ class AuditBoardSignInStage extends React.Component<any, any> {
                     className='pt-button pt-intent-primary'
                     disabled={ disableButton }
                     onClick={ submit }>
-                    Submit & Next
+                    Submit
                 </button>
             </div>
         );
