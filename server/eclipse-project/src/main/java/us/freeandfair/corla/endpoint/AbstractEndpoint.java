@@ -364,7 +364,6 @@ public abstract class AbstractEndpoint implements Endpoint {
     my_status.set(HttpStatus.SERVICE_UNAVAILABLE_503);
     the_response.header("Retry-After", RETRY_AFTER_DELAY);
     my_endpoint_result.set(Main.GSON.toJson(new Result(the_body)));
-    halt(the_response);
   }
 
   /**
