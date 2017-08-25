@@ -187,13 +187,13 @@ the build system.*
 
 In order to use the Postgres database in development, one must:
 
-1. Install PostgreSQL (`brew install postgres` on OS X, `apt-get
+1. Install PostgreSQL (`brew install postgres` on MacOS, `apt-get
    install postgresql` on many Linux distributions, or whatever is
    appropriate) and start it running.
 2. Create a database called "`corla`", and grant all privileges on it
    to a user called "`corla`" with password "`corla`".
 3. Initialize the "`corla`" database with test administrator data.
-   For example, to accomplish the above on OS X using Homebrew, one
+   For example, to accomplish the above on MacOS using Homebrew, one
    issues the following commands:
 ```
 brew install postgres
@@ -210,7 +210,7 @@ at this stage, create all its tables and such automatically.
    the Run button or running it from a command line using a command
    akin to `java -jar colorado_rla-VERSION-shaded.jar`.
 5. Load test authentication credentials into the database, by
-   executing the SQL in `corla-test-credentials.sql` (found in the
+   executing the SQL in `corla-test-credentials.psql` (found in the
    `test` directory of the repository). This can be done with the
    following command on OS X:
 ```

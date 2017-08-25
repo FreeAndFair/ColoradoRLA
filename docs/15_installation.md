@@ -60,7 +60,8 @@ Running the server can also be accomplished by running the application
 directly (as in `java -jar
 ../server/eclipse-project/target/colorado_rla-VERSION-shaded.jar`, for
 some specific *VERSION* number) or installing the system in a
-webserver with a Java container.
+webserver, as documented in the `INSTALL.html` documentation delivered
+with the system to CDOS.
 
 To run the client in a standalone manner (rather than from a deployed
 server), you will need to
