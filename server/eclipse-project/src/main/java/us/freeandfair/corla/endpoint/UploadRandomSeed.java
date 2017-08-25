@@ -102,6 +102,6 @@ public class UploadRandomSeed extends AbstractDoSDashboardEndpoint {
     } catch (final JsonSyntaxException e) {
       badDataContents(the_response, "Invalid random seed request");
     }
-    return my_endpoint_result;
+    return my_endpoint_result.get();
   }
 }

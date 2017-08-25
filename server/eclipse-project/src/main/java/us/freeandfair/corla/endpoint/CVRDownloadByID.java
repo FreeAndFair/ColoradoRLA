@@ -68,6 +68,6 @@ public class CVRDownloadByID extends AbstractEndpoint {
       invariantViolation(the_response, "Bad CVR ID");
     }
     
-    return my_endpoint_result;
+    return my_endpoint_result.get();
   }
 }

@@ -64,6 +64,6 @@ public class PublishAuditReport extends AbstractDoSDashboardEndpoint {
   public String endpoint(final Request the_request,
                          final Response the_response) {
     ok(the_response, "Publish the audit report for the entire state-wide RLA.");
-    return my_endpoint_result;
+    return my_endpoint_result.get();
   }
 }

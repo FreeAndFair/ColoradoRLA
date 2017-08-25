@@ -74,7 +74,7 @@ public class AuditReport extends AbstractAuditBoardDashboardEndpoint {
     try {
       if (!DISABLE_ASM) {
         ASMUtilities.step(COUNTY_AUDIT_COMPLETE_EVENT, 
-                          CountyDashboardASM.class, my_asm.identity());
+                          CountyDashboardASM.class, my_asm.get().identity());
         // check to see if all counties are complete
         boolean all_complete = true;
         for (final County c : Persistence.getAll(County.class)) {
@@ -92,6 +92,6 @@ public class AuditReport extends AbstractAuditBoardDashboardEndpoint {
     } catch (final IllegalStateException e) {
       illegalTransition(the_response, e.getMessage());
     }
-    return my_endpoint_result;
+    return my_endpoint_result.get();
   }
 }

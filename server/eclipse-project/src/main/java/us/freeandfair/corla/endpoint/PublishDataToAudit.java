@@ -66,6 +66,6 @@ public class PublishDataToAudit extends AbstractDoSDashboardEndpoint {
                          final Response the_response) {
     ok(the_response, "When defined, the full set of data relevant to permitting the" +
                      "public to audit an RLA will be downloaded here.");
-    return my_endpoint_result;
+    return my_endpoint_result.get();
   }
 }

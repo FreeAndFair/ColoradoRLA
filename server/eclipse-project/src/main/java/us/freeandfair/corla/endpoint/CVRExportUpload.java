@@ -271,7 +271,7 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
 
     if (county == null) {
       unauthorized(the_response, "unauthorized administrator for CVR export upload");
-      return my_endpoint_result;
+      return my_endpoint_result.get();
     } 
 
     handleUpload(the_request, the_response, info);
@@ -299,7 +299,7 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
         // ignored - should never happen
       }
     }
-    return my_endpoint_result;
+    return my_endpoint_result.get();
   }
 
   /**

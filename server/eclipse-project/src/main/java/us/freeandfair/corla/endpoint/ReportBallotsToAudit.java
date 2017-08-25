@@ -54,6 +54,6 @@ public class ReportBallotsToAudit extends AbstractDoSDashboardEndpoint {
                          final Response the_response) {
     ok(the_response, "the report of ballots to audit is not yet implemented, but " + 
                      "the information can be obtained from county dashboard states");
-    return my_endpoint_result;
+    return my_endpoint_result.get();
   }
 }

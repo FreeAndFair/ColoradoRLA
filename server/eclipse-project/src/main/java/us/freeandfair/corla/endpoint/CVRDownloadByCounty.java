@@ -101,7 +101,7 @@ public class CVRDownloadByCounty extends AbstractEndpoint {
     } catch (final UncheckedIOException | IOException | PersistenceException e) {
       serverError(the_response, "Unable to stream response");
     }
-    return my_endpoint_result;
+    return my_endpoint_result.get();
   }
   
   /**

@@ -94,6 +94,6 @@ public class AuditInvestigationReport extends AbstractAuditBoardDashboardEndpoin
       serverError(the_response, "Unable to save audit investigation report");
     }
     ok(the_response, "Report submitted");
-    return my_endpoint_result;
+    return my_endpoint_result.get();
   }
 }

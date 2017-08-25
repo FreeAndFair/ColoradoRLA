@@ -123,6 +123,6 @@ public class EstablishAuditBoard extends AbstractCountyDashboardEndpoint {
     } catch (final JsonSyntaxException e) {
       badDataContents(the_response, "Invalid audit board data");
     }
-    return my_endpoint_result;
+    return my_endpoint_result.get();
   }
 }

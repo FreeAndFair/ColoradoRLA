@@ -83,13 +83,13 @@ public class BallotNotFound extends AbstractAuditBoardDashboardEndpoint {
     final County county = Authentication.authenticatedCounty(the_request);
     if (county == null) {
       unauthorized(the_response, "not authorized for audit board operations");
-      return my_endpoint_result;
+      return my_endpoint_result.get();
     }
     
     final CountyDashboard cdb = Persistence.getByID(county.id(), CountyDashboard.class);
     if (cdb == null) {
       serverError(the_response, "could not load audit board information");
-      return my_endpoint_result;
+      return my_endpoint_result.get();
     }
     
     // attempt to read the CVR ID from the request
@@ -129,7 +129,7 @@ public class BallotNotFound extends AbstractAuditBoardDashboardEndpoint {
     } catch (final PersistenceException e) {
       this.serverError(the_response, "unable to save audit CVR");
     }
-    return my_endpoint_result;
+    return my_endpoint_result.get();
   }
 
 }

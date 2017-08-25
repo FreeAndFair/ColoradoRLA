@@ -89,6 +89,6 @@ public class SelectContestsForAudit extends AbstractDoSDashboardEndpoint {
       Main.LOGGER.error("could not save contest selection");
       serverError(the_response, "Unable to save contest selection");
     }
-    return my_endpoint_result;
+    return my_endpoint_result.get();
   }
 }

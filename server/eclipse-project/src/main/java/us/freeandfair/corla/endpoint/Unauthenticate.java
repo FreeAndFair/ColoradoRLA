@@ -90,6 +90,6 @@ public class Unauthenticate extends AbstractEndpoint {
   public String endpoint(final Request the_request, final Response the_response) {
     Authentication.unauthenticate(the_request);
     ok(the_response, "Unauthenticated");
-    return my_endpoint_result;
+    return my_endpoint_result.get();
   }
 }

@@ -50,8 +50,8 @@ public class AuditBoardDashboardASMState extends AbstractAuditBoardDashboardEndp
     // conveniently have locally already
     
     okJSON(the_response, 
-           Main.GSON.toJson(new ServerASMResponse(my_asm.currentState(), 
-                                                  my_asm.enabledUIEvents())));
-    return my_endpoint_result;
+           Main.GSON.toJson(new ServerASMResponse(my_asm.get().currentState(), 
+                                                  my_asm.get().enabledUIEvents())));
+    return my_endpoint_result.get();
   }
 }

@@ -94,6 +94,6 @@ public class IntermediateAuditReport extends AbstractAuditBoardDashboardEndpoint
     }
     ok(the_response, "Report submitted");
     // de-authenticate user?
-    return my_endpoint_result;    
+    return my_endpoint_result.get();    
   }
 }
