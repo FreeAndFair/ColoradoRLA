@@ -125,7 +125,7 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
                                 the_info.my_filename,
                                 FileStatus.IMPORTED_AS_BALLOT_MANIFEST, 
                                 the_info.my_uploaded_hash,
-                                hash_status, blob);
+                                hash_status, blob, the_info.my_file.length());
       Persistence.save(result);
       Persistence.flush();
     } catch (final PersistenceException | IOException e) {

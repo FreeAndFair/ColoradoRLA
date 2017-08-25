@@ -36,6 +36,7 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.crypto.HashChecker;
+import us.freeandfair.corla.json.UploadedFileInfo;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.model.UploadedFile.FileStatus;
@@ -113,14 +114,15 @@ public class UploadFile extends AbstractEndpoint {
       }
       result = new UploadedFile(the_info.my_timestamp, the_county_id,
                                 the_info.my_filename,
-                                FileStatus.IMPORTED_AS_CVR_EXPORT, 
+                                FileStatus.NOT_IMPORTED, 
                                 the_info.my_uploaded_hash,
-                                hash_status, blob);
+                                hash_status, blob, the_info.my_file.length());
       Persistence.save(result);
       Persistence.flush();
     } catch (final PersistenceException | IOException e) {
       badDataType(the_response, "could not persist file of size " + 
                                 the_info.my_file.length());
+      the_info.my_ok = false;
     }
     return result;
   }
@@ -201,17 +203,21 @@ public class UploadFile extends AbstractEndpoint {
     // now process the temp file, putting it in the database if persistence is
     // enabled
 
+    UploadedFile uploaded_file = null;
+    
     if (info.my_ok) {
       info.my_computed_hash = HashChecker.hashFile(info.my_file);
       info.my_uploaded_hash = 
           info.my_form_fields.get("hash").toUpperCase(Locale.US).trim();
-      attemptFilePersistence(the_response, info, county.id());
+      uploaded_file = attemptFilePersistence(the_response, info, county.id());
     }
 
     // delete the temp file, if it exists
 
+    long file_size = 0;
     if (info.my_file != null) {
       try {
+        file_size = info.my_file.length();
         if (!info.my_file.delete()) {
           Main.LOGGER.error("Unable to delete temp file " + info.my_file);
         }
@@ -219,6 +225,11 @@ public class UploadFile extends AbstractEndpoint {
         // ignored - should never happen
       }
     }
+    
+    if (uploaded_file != null) {
+      okJSON(the_response, 
+             Main.GSON.toJson(new UploadedFileInfo(uploaded_file, file_size)));
+    } // else another result code has already been set
     return my_endpoint_result.get();
   }
   
