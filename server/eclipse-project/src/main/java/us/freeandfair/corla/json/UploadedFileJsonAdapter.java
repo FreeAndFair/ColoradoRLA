@@ -20,7 +20,6 @@ import com.google.gson.stream.JsonWriter;
 
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.UploadedFileQueries;
 
 /**
  * JSON adapter for uploaded files. This enapsulates in JSON all the information
