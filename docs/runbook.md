@@ -36,14 +36,15 @@ to the public.
  
 ### Logging In
 
-Persons from the Secretary of State's office as well as persons from the 
-County first must log in to the RLA Tool.
+Persons from the Secretary of State's office as well as persons from
+the County first must log in to the RLA Tool.
 
 ![State Login Screenshot](./screenshots/StateLogin.png)
 
 The RLA Tool will direct each user to the appropriate home page. A
 user from the Department of State will see the (initially empty)
-Department of State home page.
+Department of State home page. Note the logout button, circled in the
+upper right of this (and every) page.
 
 ![Secretary of State Home Screenshot](./screenshots/StateDashboardEmpty.png)
 
@@ -62,14 +63,16 @@ menu in the upper left corner.
 
 ### 25.2.2 (A), Entering the Risk Limit
 
-The Secretary of State will enter the Risk Limit for comparison audits.
+The Secretary of State will enter the Risk Limit for comparison
+audits. *(Ed. note: Note that risk limits are currently entered as a
+floating point number. E.g., 0.1 means 10%. In the phase-3 release
+they will be entered as a proper percentage. E.g., 5.5%)*
 
 ![State Risk Limit Entry Screenshot](./screenshots/RiskLimitEntry.png)
 
 ### 25.2.2 (B) - (E)
 
 These parts of Rule 25 must be completed outside of the RLA Tool.
-
 
 ### 25.2.2 (F) or (G), <a name="comparison-audit-upload">Audit Uploads</a>
 
@@ -86,7 +89,9 @@ to resume interrupted uploads.
 
 After successfully uploading both the Ballot Manifest and the CVR
 files, the County Dashboard shows the current audit status, including
-all contests on all CVRs.
+all contests on all CVRs, the estimated number of ballot cards
+remaining to be audited to meet the risk limit, the number of 
+discrepancies and disagreements witnessed during the audit, etc.
 
 ![All County Files Successfully Uploaded](./screenshots/CountyInfoAfterUploadsSuccessful.png)
 
@@ -101,11 +106,7 @@ The Secretary of State will enter the random seed.
 ![State Random Seed Entry Screenshot](./screenshots/RandomSeedEntry.png)
 
 The RLA Tool uses the random seed in the required pseudo-random number
-generator. The RLA Tool also exports the random seed in a standard
-format, which the Secretary of State can post to the Audit Center
-hosted on the Secretary of State website. *(Ed. note: This feature is
-not included in the stage-2 deliverable.)*
-<!-- comment: is this implemented? -->
+generator.
 
 ### 25.2.2 (I) Selecting Contests
 
@@ -124,7 +125,11 @@ stage-2 deliverable.)*
 The number of ballot cards to audit changes during the course of the
 audit depending on the risk level, which in turn depends on the number
 of overstatements (i.e., ballots whose correction by the Audit Board
-decreases a margin of victory in one of the selected contests) so far.
+decreases a margin of victory in one of the selected contests) so
+far. If the Audit Board's interpretations match that of the tabulation
+software that created the CVRs, then the audit can sometimes complete
+early. If there are discrepancies or disagreements, then the number of
+ballot cards to audit can grow.
 
 <!-- ![Number to Audit View](./screenshots/NumberToAudit.png) -->
 
@@ -135,6 +140,12 @@ Based on the pseudo-random number generator and random seed from
 selection of ballot cards for audit.
 
 <!-- ![Ballots to Audit View](./screenshots/BallotsToAudit.png) -->
+
+The RLA Tool exports all of this information (general election
+information, random seed, contests selected to guide the audit, etc.)
+in a standard format, which the Secretary of State can post to the
+Audit Center hosted on the Secretary of State website. *(Ed. note:
+This feature is not included in the stage-2 deliverable.)*
 
 ### 25.2.3 (A) Ballot Retrieval, Chain of Custody and Examination
 
@@ -152,7 +163,7 @@ authenticated County Audit Administrator formally logs in, there is a
 screen where the identity and party affiliation of Audit Board Members
 can be entered or changed.
 
-![Audit Board Signin Screenshot](./screenshots/AuditBoardSignin.png)
+![Audit Board Sign In Screenshot](./screenshots/AuditBoardSignin.png)
 
 The RLA Tool allows Audit Boards to report the markings on each
 individual ballot.
@@ -167,7 +178,7 @@ consensus, mark the "No Consensus" box on the screen.  Audit Board
 members can make notes in the comment field.
 <!-- Review CDOS -->
 
-Click "Review"![Report Marks Screenshot](./screenshots/ReportMarks.png)
+![Report Marks Screenshot](./screenshots/ReportMarks.png)
 
 After entering the interpretation of the markings from any one ballot,
 the Audit Board can review what was entered.
@@ -186,8 +197,8 @@ Review Screen.
 Note: do *not* use your browser's "back" arrow during the audit
 process.  If the review screen does not match the Audit Board's
 interpretation, click the "Back" button. *(Ed. note: We intend to
-ensure that pressing the brower's back button is not harmful in a
-later delivery.)*
+ensure that pressing the brower's back button is not harmful in 
+the phase-3 deliverable.)*
 
 ### 25.2.3 (A)(2) Ballot Polling Audits
 
@@ -205,14 +216,14 @@ particular contest on any particular ballot.
 
 The RLA Tool performs the comparison of the Audit Board's
 interpretations with the corresponding cast vote record from the
-voting computer system. The results of this comparison are exported
-for the Secretary of State to post on the Audit (outside the RLA
-Tool).  The RLA Tool will allow the Secretary of State to see if the
-required Risk Limit has been met for the selected
-contests. *(Ed. note: This UI does not yet update in the phase-2
-deliverable.)*
+voting computer system. RLA Tool permits the Secretary of State and
+County Administrators to see the progress of audit for selected
+contests and the estimated number of ballot cards remaining to be
+audited to meet the risk limit.
 
-![Risk Limit Met Query Screen](./screenshots/LimitMetQuery.png)
+![County Mid-Audit Screen](./screenshots/CountyMidAudit.png)
+
+![Secretary of State Mid-Audit Screen](./screenshots/SoSMidAudit.png)
 
 The RLA Tool also allows the Secretary of State to designate a contest
 for hand counting at any time. *(Ed. note: Handling this asynchronous
@@ -222,3 +233,18 @@ notification is not supported in the stage-2 deliverable.)*
 
 The RLA Tool automatically randomly selects additional ballots for
 audit as necessary.
+
+### Audit Board Intermediate Audit Report Page
+
+If the Audit Board needs to take a break, go to lunch, head home for
+the night, or change, then the Audit Board must file an "Intermediate
+Audit Report" on their auditing. *(Ed. note: A button for filing such
+a report will be available on the **Audit Board Interpretation Page**
+in the phase-3 release.)*
+
+### Audit Board Final Audit Report Page
+
+After the RLA Tool deems that a County's audit is complete, the Audit
+Board must file an "Final Audit Report" on their audit. *(Ed. note: A
+button for filing such a report will be available on the **Audit Board
+Interpretation Page** in the phase-3 release.)*
