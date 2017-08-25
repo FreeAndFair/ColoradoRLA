@@ -61,6 +61,7 @@ public interface ASMState {
   enum AuditBoardDashboardState implements ASMState {
     AUDIT_INITIAL_STATE,
     AUDIT_IN_PROGRESS,
-    AUDIT_REPORT_SUBMITTED
+    AUDIT_REPORT_SUBMITTED,
+    UNABLE_TO_AUDIT
   }
 }

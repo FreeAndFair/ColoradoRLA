@@ -11,8 +11,8 @@
  */
 
 package us.freeandfair.corla.endpoint;
-import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.AUDIT_BOARD_START_AUDIT_EVENT;
-import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.COUNTY_START_AUDIT_EVENT;
+import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.*;
+import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.*;
 import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.PUBLISH_BALLOTS_TO_AUDIT_EVENT;
 
 import java.util.List;
@@ -97,10 +97,21 @@ public class PublishBallotsToAudit extends AbstractDoSDashboardEndpoint {
             final CountyDashboardASM asm = 
                 ASMUtilities.asmFor(CountyDashboardASM.class, String.valueOf(cdb.id()));
             asm.stepEvent(COUNTY_START_AUDIT_EVENT);
-            if (asm.currentState().equals(CountyDashboardState.COUNTY_AUDIT_UNDERWAY)) {
-              ASMUtilities.step(AUDIT_BOARD_START_AUDIT_EVENT, AuditBoardDashboardASM.class, 
-                                String.valueOf(cdb.id()));
+            final ASMEvent audit_event;
+            if (asm.currentState().equals(CountyDashboardState.COUNTY_AUDIT_UNDERWAY) &&
+                cdb.comparisonAudits().isEmpty()) {
+              // the county made its deadline but was assigned no contests to audit
+              audit_event = NO_CONTESTS_TO_AUDIT_EVENT;
+              asm.stepEvent(COUNTY_AUDIT_COMPLETE_EVENT);
+            } else if (asm.currentState().equals(CountyDashboardState.COUNTY_AUDIT_UNDERWAY)) {
+              // the audit started normally
+              audit_event = AUDIT_BOARD_START_AUDIT_EVENT;
+            } else {
+              // the county missed its deadline
+              audit_event = COUNTY_DEADLINE_MISSED_EVENT;
             }
+            ASMUtilities.step(audit_event, AuditBoardDashboardASM.class,
+                              String.valueOf(cdb.id()));
           }
         } catch (final IllegalArgumentException e) {
           e.printStackTrace(System.out);
