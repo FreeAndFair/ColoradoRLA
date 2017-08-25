@@ -58,14 +58,14 @@ public class CVRContestInfo extends AbstractEntity implements Serializable {
   /**
    * The CVR to which this record belongs. 
    */
-  @ManyToOne(optional = false, fetch = FetchType.LAZY)
+  @ManyToOne(optional = false, fetch = FetchType.EAGER)
   @JoinColumn
   private CastVoteRecord my_cvr;
   
   /**
    * The contest in this record.
    */
-  @ManyToOne(optional = false, fetch = FetchType.LAZY)
+  @ManyToOne(optional = false, fetch = FetchType.EAGER)
   private Contest my_contest;
   
   /** 

@@ -96,7 +96,7 @@ public class CountyContestResult extends AbstractEntity implements Serializable 
   /**
    * The set of contest winners.
    */
-  @ElementCollection
+  @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name = "county_contest_winners",
                    joinColumns = @JoinColumn(name = RESULT_ID, 
                                              referencedColumnName = MY_ID))
@@ -106,7 +106,7 @@ public class CountyContestResult extends AbstractEntity implements Serializable 
   /**
    * The set of contest losers.
    */
-  @ElementCollection
+  @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name = "county_contest_losers",
                    joinColumns = @JoinColumn(name = RESULT_ID,
                                              referencedColumnName = MY_ID))
@@ -116,7 +116,7 @@ public class CountyContestResult extends AbstractEntity implements Serializable 
   /**
    * A map from choices to vote totals.
    */
-  @ElementCollection
+  @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name = "county_contest_vote_total",
                    joinColumns = @JoinColumn(name = RESULT_ID,
                                              referencedColumnName = MY_ID))

@@ -86,7 +86,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   /**
    * The county.
    */
-  @OneToOne(optional = false, fetch = FetchType.LAZY)
+  @OneToOne(optional = false, fetch = FetchType.EAGER)
   @JoinColumn
   private County my_county;
   
@@ -129,7 +129,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   /**
    * The members of the audit board.
    */
-  @ManyToMany(fetch = FetchType.LAZY)
+  @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(name = "audit_board_member",
              joinColumns = @JoinColumn(name = "county_dashboard_id", 
                                        referencedColumnName = MY_ID),
@@ -148,7 +148,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   /**
    * The set of contests driving the audit.
    */
-  @ManyToMany(fetch = FetchType.LAZY)
+  @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(name = "driving_contest",
              joinColumns = @JoinColumn(name = "county_dashboard_id",
                                        referencedColumnName = MY_ID),
@@ -160,7 +160,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * The audit data.
    */
   @OneToMany(cascade = CascadeType.ALL, mappedBy = MY_DASHBOARD, 
-             fetch = FetchType.LAZY, orphanRemoval = true)
+             fetch = FetchType.EAGER, orphanRemoval = true)
   private Set<CountyContestComparisonAudit> my_comparison_audits = 
       new HashSet<>(); 
   
@@ -168,7 +168,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * The audit investigation reports.
    */
   @OneToMany(cascade = CascadeType.ALL, mappedBy = MY_DASHBOARD, 
-             fetch = FetchType.LAZY, orphanRemoval = true)
+             fetch = FetchType.EAGER, orphanRemoval = true)
   @OrderColumn(name = INDEX)
   private List<AuditInvestigationReportInfo> my_investigation_reports = 
       new ArrayList<>();
@@ -177,7 +177,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * The audit interim reports.
    */
   @OneToMany(cascade = CascadeType.ALL, mappedBy = MY_DASHBOARD, 
-             fetch = FetchType.LAZY, orphanRemoval = true)
+             fetch = FetchType.EAGER, orphanRemoval = true)
   @OrderColumn(name = INDEX)
   private List<IntermediateAuditReportInfo> my_intermediate_reports = 
       new ArrayList<>();

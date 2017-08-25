@@ -44,14 +44,14 @@ public class CVRAuditInfo extends AbstractEntity implements Serializable {
   /**
    * The county dashboard to which this record belongs. 
    */
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn
   private CountyDashboard my_dashboard;
 
   /**
    * The CVR to audit.
    */
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn
   private CastVoteRecord my_cvr;
   

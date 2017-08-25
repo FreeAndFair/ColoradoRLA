@@ -66,7 +66,7 @@ public class Contest extends AbstractEntity implements Serializable {
   /**
    * The contest choices.
    */
-  @ElementCollection(fetch = FetchType.LAZY)
+  @ElementCollection(fetch = FetchType.EAGER)
   @OrderColumn(name = "index")
   @CollectionTable(name = "contest_choice",
                    joinColumns = @JoinColumn(name = "contest_id", 
@@ -77,7 +77,7 @@ public class Contest extends AbstractEntity implements Serializable {
   /**
    * The contest choice descriptions.
    */
-  @ElementCollection(fetch = FetchType.LAZY)
+  @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name = "contest_choice_description",
                    joinColumns = @JoinColumn(name = "contest_id", 
                                              referencedColumnName = "my_id"))

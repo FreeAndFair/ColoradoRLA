@@ -89,7 +89,7 @@ public class DoSDashboard implements PersistentEntity, Serializable {
    * The contests to be audited and the reasons for auditing.
    */
   @OneToMany(cascade = CascadeType.ALL, mappedBy = "my_dashboard", 
-             fetch = FetchType.LAZY, orphanRemoval = true)
+             fetch = FetchType.EAGER, orphanRemoval = true)
   @Column(name = "contest_to_audit")
   private Set<ContestToAudit> my_contests_to_audit = new HashSet<>();
   
