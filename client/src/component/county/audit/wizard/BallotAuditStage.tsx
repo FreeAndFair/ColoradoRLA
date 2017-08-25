@@ -37,11 +37,13 @@ const AuditInstructions = ({ ballotNotFound, ballotsToAudit, currentBallot }: an
             The current ballot is:
             <ul>
                 <li>Ballot Type: { currentBallot.ballotType }</li>
-                <li>Imprinted ID: { currentBallot.imprintedId }</li>
+                <li>Scanner ID: { currentBallot.scannerId }</li>
+                <li>Batch ID: { currentBallot.batchId }</li>
+                <li>Record ID: { currentBallot.recordId }</li>
             </ul>
             <div>
                 Please ensure that the paper ballot you are examining is the
-                same ballot style/ID.
+                same ballot type/ID.
             </div>
             <div className='pt-card'>
                 <div>
