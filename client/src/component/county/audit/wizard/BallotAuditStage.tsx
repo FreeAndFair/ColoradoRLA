@@ -37,7 +37,7 @@ const AuditInstructions = ({ ballotNotFound, ballotsToAudit, currentBallot }: an
             The current ballot is:
             <ul>
                 <li>Ballot ID: { currentBallot.id }</li>
-                <li>Ballot Style: { currentBallot.ballotType }</li>
+                <li>Ballot Type: { currentBallot.ballotType }</li>
                 <li>Imprinted ID: { currentBallot.imprintedId }</li>
             </ul>
             <div>
