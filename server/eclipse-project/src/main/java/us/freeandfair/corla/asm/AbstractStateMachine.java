@@ -203,8 +203,10 @@ public abstract class AbstractStateMachine implements Serializable {
     } else {
       Main.LOGGER.error("ASM transition " + the_transition + 
                         " failed from state " + my_current_state); 
-      throw new IllegalStateException("Attempted to transition from " +
-                                      my_current_state + " using transition " + 
+      throw new IllegalStateException("Attempted to transition ASM " + 
+                                      getClass().getName() + "/" + my_identity + 
+                                      " from " + my_current_state + 
+                                      " using transition " + 
                                       the_transition);
     }
     return my_current_state;
@@ -231,8 +233,10 @@ public abstract class AbstractStateMachine implements Serializable {
     if (result == null) {
       Main.LOGGER.error("ASM event " + the_event + 
                         " failed from state " + my_current_state); 
-      throw new IllegalStateException("Illegal transition on ASM: (" + 
-                                      my_current_state + ", " + the_event + ")");
+      throw new IllegalStateException("Illegal transition on ASM " + 
+                                      getClass().getName() + "/" + my_identity + 
+                                      ": (" + my_current_state + ", " + 
+                                      the_event + ")");
     } else {
       my_current_state = result;
       Main.LOGGER.info("ASM event " + the_event + " caused transition to " + 

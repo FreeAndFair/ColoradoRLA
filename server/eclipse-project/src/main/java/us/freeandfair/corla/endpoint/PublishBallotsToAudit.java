@@ -112,6 +112,7 @@ public class PublishBallotsToAudit extends AbstractDoSDashboardEndpoint {
             }
             ASMUtilities.step(audit_event, AuditBoardDashboardASM.class,
                               String.valueOf(cdb.id()));
+            ASMUtilities.save(asm);
           }
         } catch (final IllegalArgumentException e) {
           e.printStackTrace(System.out);
