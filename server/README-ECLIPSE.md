@@ -51,3 +51,19 @@ tools and get the project ready for development, do the following:
   view (by selecting it from the set presented by "Window -> Show View ->
   Other..." or searching Eclipse for "AutoGrader") to get continuous
   feedback on the project's code quality.
+
+Maven Installation and Use
+--------------------------
+
+The server can be built and packaged
+using [Maven](https://maven.apache.org/).
+
+To use Maven, one must install it and
+an [OpenJDK 8 Java Developers Kit](http://openjdk.java.net/).
+
+From the `server/eclipse-project` directory, run the command `mvn
+package` to compile the server, run the various static checkers we
+have configured on the system, and package a distribution Java
+archive.  You will find the latter in `server/eclipse-project/target`
+with a filename akin to `colorado_rla-VERSION-shared.jar`.
+

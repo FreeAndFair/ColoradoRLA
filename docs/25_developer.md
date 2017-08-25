@@ -28,6 +28,8 @@ History
   Kiniry.
 * Third draft with updates for phase-1 delivery, 17 August 2017 by Joe
   Kiniry.
+* Fourth draft with updates for phase-2 delivery, 24 August 2017 by
+  Joe Kiniry.
 
 Platform and Programming Languages
 ----------------------------------
@@ -51,12 +53,12 @@ deployment story, thus we use Java 8 on the server-side.
 We are using [PostgreSQL](https://www.postgresql.org/), via
 the [Hibernate ORM](http://hibernate.org/orm/), for data persistence.
 
-The user interface (UI) is browser-based. The client is written in
-TypeScript, a mainstream, Microsoft-supported variant of JavaScript
-that offers opt-in, Java-like type safety. TypeScript compiles to
-plain, human-readable JavaScript, so this choice supports
-client-side correctness without requiring any special web browser
-support.
+The user interface (UI) is browser-based. The client is written
+in [TypeScript](https://www.typescriptlang.org/), a mainstream,
+Microsoft-supported variant of JavaScript that offers opt-in,
+Java-like type safety. TypeScript compiles to plain, human-readable
+JavaScript, so this choice supports client-side correctness without
+requiring any special web browser support.
 
 Developer Tools
 ---------------
@@ -70,8 +72,9 @@ virtualization platform. We provide these resources in order to both
 decrease new developers' ramp-up time as well as to standardize on
 specific versions of tools for development.
 
-Instructions for installing Eclipse and the plugins we use
-are at [README-ECLIPSE.md](../server/README-ECLIPSE.md).
+Instructions for installing Eclipse and automatically installing and
+configuring the plugins we use are found
+in [README-ECLIPSE.md](../server/README-ECLIPSE.md).
 
 * [GitHub](https://github.com/FreeAndFair/ColoradoRLA) for distributed
   version control, issue tracking, and development documentation
@@ -184,32 +187,43 @@ the build system.*
 
 In order to use the Postgres database in development, one must:
 
-1. Install PostgreSQL (brew install postgres, apt-get install
-   postgres, or whatever is appropriate) and start it running.
-2. Create a database called "corla", and grant all privileges on it to
-   a user called "corla" with password "corla".
-3. Initialize the "corla" database with test administrator data.
-For example, to accomplish the above on OS X using brew, one issues
-the following commands:
+1. Install PostgreSQL (`brew install postgres` on MacOS, `apt-get
+   install postgresql` on many Linux distributions, or whatever is
+   appropriate) and start it running.
+2. Create a database called "`corla`", and grant all privileges on it
+   to a user called "`corla`" with password "`corla`".
+3. Initialize the "`corla`" database with test administrator data.
+   For example, to accomplish the above on MacOS using Homebrew, one
+   issues the following commands:
 ```
 brew install postgres
 createuser -P corla
 createdb -O corla corla
 ```
-4. Run the server (to create all the database tables).
-5. Load test authentication credentials into the database, by executing
-the SQL in `corla-test-credentials.sql` (found in the `test` directory
-of the repository). This can be done with the following command on OS X:
-```
-psql -U corla -d corla -a -f corla-test-credentials.psql
-```
+On Linux, one would replace the first command with something akin to
+`sudo apt-get install postgresql`.
 
 That's it. If the database is there the server will use it and will,
 at this stage, create all its tables and such automatically.
+4. Run the server (to create all the database tables). Recall that
+   this is accomplished by either running the server in Eclipse using
+   the Run button or running it from a command line using a command
+   akin to `java -jar colorado_rla-VERSION-shaded.jar`.
+5. Load test authentication credentials into the database, by
+   executing the SQL in `corla-test-credentials.psql` (found in the
+   `test` directory of the repository). This can be done with the
+   following command on OS X:
+```
+psql -U corla -d corla -a -f corla-test-credentials.psql
+```
+   or the following command on Linux:
+```
+psql -U corla -h localhost -d corla -a -f corla-test-credentials.psql
+```
 
 If you need to delete the database---perhaps because due to a recent
 merge the DB schema has evolved---use the `dropdb corla` command and
-then recreate the DB.
+then recreate the DB following the steps above.
 
 There are helpful scripts for automating these actions located in the
 `server/eclipse_project/script` directory.
@@ -268,7 +282,6 @@ code review. The development worfklow is as follows:
    the PR submitter, not the reviewer, should delete the merged
    branch.
 
-
 **Guidelines:**
 
 - Do not commit directly to `master`.
@@ -316,39 +329,15 @@ our workspace, as specified in `server/eclipse.setup`.
 The Make-based system is rooted in our
 top-level [Makefile](../Makefile). That build system not only compiles
 the RLA tool, but also generates documentation, analyzes the system
-for quality and correctness, and more.
+for quality and correctness, and more. *(Ed. note: The make-based
+build system has not yet been written.)*
 
-But the Make-based system is not implemented yet, and the server and
-client are not integrated yet. In the meantime, you can build the client
-via:
+See the instructions in the **Installation and Use** chapter on
+running the development system.
 
-```
-cd client
-npm install
-npm run dist
-```
-Run it via:
-```
-cd dist
-python3 -m http.server
-```
-
-The production client build configuration expects server endpoints to
-have an `/api` path prefix. To support user testing, we currently enable
-browser console logging in all builds.
-
-For the server, package it by running `mvn package` in the
-`server/eclipse-project` directory. This will create
-`colorado_rla-0.0.1-shaded.jar` (potentially with a more
-recent version number) in the `target` directory.
-
-Run it via:
-```
-java -jar target/colorado_rla-0.7.0-shaded.jar
-```
-
-You can test it by opening this simple html page in a browser:
-[`test/corla-server-test.html`](../test/corla-server-test.html)
+Note that the production client build configuration expects server
+endpoints to have an `/api` path prefix. To support user testing, we
+currently enable browser console logging in all builds.
 
 Quality Assurance
 -----------------

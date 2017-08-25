@@ -1,6 +1,7 @@
+
 <h1 id="the-colorado-rla-tool-book">The Colorado RLA Tool Book</h1>
 <h3 id="free-fair">Free &amp; Fair</h3>
-<h4 id="july-2017">July 2017</h4>
+<h4 id="phase-2-release---august-2017">Phase 2 Release---August 2017</h4>
 
 <h1 id="license">License</h1>
 <p>This project will be licensed under an OSI-approved license. Discussions are ongoing with the Colorado Department of State about which Open Source license is most appropriate for this system.</p>
@@ -8,211 +9,27 @@
 <li>TBD: justification for license choice</li>
 </ul>
 
-<h1 id="project-members">Project Members</h1>
-<p><strong>Dr. Joseph Kiniry</strong> is Chief Scientist and CEO of Free &amp; Fair. Prior to working for Free &amp; Fair, Dr. Kiniry provided commercial and public consultancy services to several governments on matters relating to elections, their technology, security, processes, and verifiability. He has worked on election systems for fifteen years; has audited the security, correctness, and reliability of numerous physical and Internet-based voting systems; and has developed high-assurance prototypes and products of several election technologies (including, but not limited to, tallying, auditing, voting, ballot marking, and e-poll book (EPB) systems).</p>
-<p>Dr. Kiniry has formally advised four national governments (the USA, The Netherlands, the Republic of Ireland, and Denmark) on matters relating to digital elections and has testified before two parliaments. He has also provided informal input and advice to the governments of Norway, Estonia, and the United States. He co-founded and co-ran a multi-year research project on digital elections (the DemTech project) and has supervised numerous B.S., M.S., and Ph.D. theses focusing on election technologies. His research group developed several high-assurance peer-reviewed election software systems, including a tally system used in binding European elections for The Netherlands in 2004 and an EPB system used in Danish national elections in 2012. Dr. Kiniry has served as a Principal Investigator on research projects for the European Union Council, various Department of Defense branches, the National Science Foundation, and several national funding agencies in Ireland, The Netherlands, and Denmark. He has also started and run a half dozen technology firms and has held tenured positions at four university in three countries. He holds five advanced degrees, including a Ph.D. from the California Institute of Technology.</p>
-<p><strong>Joe Ranweiler</strong> is a software engineering consultant for Free &amp; Fair. He has over 5 years of professional experience building software, spanning research and development, data engineering, and commercially-deployed web applications. Joe helped write Free &amp; Fair’s end-to-end verifiable voting system demonstrator, including its core cryptographic components. He is a regular open-source software contributor and was recently the technical lead on Free &amp; Fair’s OpenRLA risk-limiting audit system prototype, which was built using modern web application technologies. Joe has a B.S. in Mathematics from Arizona State University.</p>
-<p><strong>Neal McBurnett</strong> has been developing open source software related to election audits for over a decade, and worked as a software developer for tools and the Internet as a Distinguished Member of Technical Staff at Bell Labs for two decades before that. He consulted with the Colorado Secretary of State on the Colorado Risk-Limiting Audit project, and is a member of the team that worked with County Clerk Dana DeBeauvoir in Travis County, TX on the design and RFP for STAR-Vote, a novel voting system supporting end-to-end and risk-limiting audits. He served as vice-chair of the IEEE P1622 standards committee on a common data format for elections, and continues to participate in the U.S. Election Assistance Commission’s VVSG-Interoperability Working Group, developing standards for Cast Vote Records and related formats. Using his open source web-based ElectionAudits software, Boulder County, CO performed nationally-recognized audits in 2008 and 2010. He also audited the groundbreaking open source Scantegrity end-to-end election in Takoma Park, MD in 2011. Mr. McBurnett was a major contributor to &quot;Principles and Best Practices for Post-Election Audits&quot; (September 2008) and the 2010 American Statistical Association statement on Risk-Limiting Small Batch Audits. He has participated actively in election processes since 2002 as an observer, election official, auditor and public witness. He is an active participant in the Election Verification Network. He holds an M.S. in Computer Science from the University of California at Berkeley, and a B.S. in Computer Science from Brown University.</p>
-<p><strong>Dr. Daniel Zimmerman</strong>, the Technology Lead at Free &amp; Fair, has extensive experience in formal methods, high-assurance software engineering, concurrent and distributed systems, and foundations of computer science. He taught computer science at multiple universities for over a decade. In industry, he has worked primarily in the areas of rigorous software engineering and verifiable election technology. He holds three advanced degrees, including a Ph.D., all from the California Institute of Technology.</p>
-<p><strong>Dr. Joey Dodds</strong> has focused mainly on research and development facilitating correctness proofs for a variety of programs, including cryptographic algorithms. At Free &amp; Fair, Dodds has implemented both a tabulator and a risk-limiting audit system and written formal specifications for both. He also fully proved the correctness of the tabulator. He is a key participant in the verification of Amazon’s s2n library, responsible for both the verification of the library and implementing a system to automatically report metrics about the progress of the project to Amazon’s upper management. He holds a Ph.D. from Princeton University and holds two other advanced degrees.</p>
-<p><strong>Dr. Stephanie Singer</strong> has developed web-based applications querying relational databases to make customized reports of election results available to the general public. As a member of the Philadelphia County Board of Elections in Pennsylvania, she oversaw the creation and deployment of a modern voter-facing election website. She also held a tenured position in mathematics at Haverford College for over a decade and earned several degrees, including a Ph.D. in mathematics from NYU.</p>
-<p><strong>Mike Kiniry</strong> is a communication expert, with backgrounds in radio, print, and photojournalism, who specializes in clearly communicating complicated concepts. He spent nearly a decade as a public radio reporter, producer, and host and has been a freelance writer and photographer for the past 15 years. Mike is also a videographer and editor, and is the Election Verification Network’s dedicated videographer/media producer.</p>
-<p><strong>Morgan Miller</strong> is an experienced User Experience (UX) professional with a deep background in scientific research. She is currently a User Experience Architect for Morgan Miller UX, LLC, where she leads teams through a UX discovery, architecture, and research process; designs and executes research studies; synthesizes research data to create actionable recommendations; and builds information architecture including taxonomy, sitemaps, and wireframes. She has done work for Overseas Vote Foundation, Intel, Mozilla Foundation, BMC Software, Esri, World Wildlife Fund, Nike, Moda, Providence Health, and Cambia Health. She earned a B.A. in Mathematics from Reed College and an M.S. in Computer Science from the University of Lugano, Switzerland, where she was a cryptography researcher.</p>
-
 <h1 id="installation-and-use">Installation and Use</h1>
 <h2 id="downloading">Downloading</h2>
-<p>This system is open source and freely available via GitHub. One can download the entire project, including all development artifacts and source code, via the  webpage, either by cloning its git repository or as an archive file.</p>
+<p>The Colorado Risk-Limiting Audit (CORLA, for short) system is open source and freely available via <a href="http://github.com">GitHub</a>. One can download the entire project, including all development artifacts and source code, via the <a href="https://github.com/FreeAndFair/ColoradoRLA">GitHub Colorado RLA project</a> webpage, either by cloning its git repository or as an archive file.</p>
 <p>We also automatically build a distribution archive using the Node package manager (for the front-end) and an Maven-based Java archive file compilation (for the back-end). See the <a href="client%20README%20file">client/README.md</a> for more information about the former, particularly the <code>npm run pack</code> command. See the [server/README-ECLIPSE.md] file for more information about the latter.</p>
 <h2 id="installation">Installation</h2>
-<p>This system is installed at the moment by installing a Postgres database and running the server in a Java 8 Virtual Machine (VM).</p>
-<p>Database installation and setup is documented in the <em>Data Persistence</em> section of the <em>Developer Instructions</em> chapter of this book.</p>
+<p>This system is installed at the moment by installing a Postgres database and running the server in a Java 8 Virtual Machine (JVM).</p>
+<p>Database installation and setup, which is a one-time operation, is documented in the <em>Data Persistence</em> section of the <em>Developer Instructions</em> chapter of this book.</p>
 <h2 id="example-of-use">Example of Use</h2>
 <p>See the <a href="user_manual.docx">User Manual</a> and <a href="runbook.docx">Run Book</a>.</p>
 <h2 id="running-the-latest-development-version">Running the latest development version</h2>
-<p>For testing purposes, you can run the latest versions of the client and server directly from a clone of the <a href="https://github.com/FreeAndFair/ColoradoRLA">git repository</a>.</p>
+<p>For testing purposes, you can run the latest versions of the client and server directly from a clone of the <a href="https://github.com/FreeAndFair/ColoradoRLA">git repository</a>. One must configure the database as discussed previously and run both the client and the server to test the CORLA system.</p>
 <p>For the server, follow the directions in <a href="../server/README-ECLIPSE.md"><code>server/README-ECLIPSE</code></a> to install Eclipse, and use Eclipse's Run menu.</p>
-<p>Running the system can be accomplished by running the application directly (as in <code>java -jar ../server/eclipse-project/target/colorado_rla-0.7.0-shaded.jar</code>) or installing the system in a webserver with a Java container.</p>
-<p>To test the client in a standalone manner (rather than from the server), you'll need to get <a href="https://www.npmjs.com/get-npm">Node.js and npm</a>. Next, run:</p>
+<p>Building and packaging the server is accomplished by running <code>mvn package</code> from the <code>../server/eclipse-project</code> directory, as in</p>
+<pre><code>cd server/eclipse-project
+mvn package</code></pre>
+<p>Running the server can also be accomplished by running the application directly (as in <code>java -jar ../server/eclipse-project/target/colorado_rla-VERSION-shaded.jar</code>, for some specific <em>VERSION</em> number) or installing the system in a webserver with a Java container.</p>
+<p>To run the client in a standalone manner (rather than from a deployed server), you will need to get <a href="https://www.npmjs.com/get-npm">Node.js and npm</a>. Next, run:</p>
 <pre><code>cd client
 npm install
 npm start</code></pre>
-<p>Then visit <a href="http://localhost:3000/"><code>http://localhost:3000/</code></a> in a supported web browser.</p>
-<h1 id="colorado-risk-limiting-audit">Colorado Risk Limiting Audit</h1>
-<h1 id="run-book">Run Book</h1>
-<h2 id="introduction">Introduction</h2>
-<p>This Run Book is written for election administrators who will be implementing a Risk Limiting Audit (RLA) using the RLA Tool. The Run Book will assist these election administrators in using to tool to carry out the actions required for a RLA.</p>
-<p>The Risk-Limiting Audit (RLA) Tool, developed by Free &amp; Fair for the Colorado Department of State for use in elections from November 2017 forward, supports running a Risk-Limiting Audit as required by Colorado statute and as described in the <a href="http://www.sos.state.co.us/pubs/rule_making/CurrentRules/8CCR1505-1/ElectionRules.pdf">Colorado Secretary of State's Rule 25</a> for elections. The RLA Tool supports a variety of requirements of Rule 25.2.2 and Rule 25.2.3, as described in detail below.</p>
-<p>The RLA Tool enables the Secretary of State and each individual County to carry out a Risk-Limiting Audit. Using the RLA Tool, Secretary of State enter the risk limit, the publicly-generated random seed, and the contests that drive the audit process. The Secretary of State can also identify, at any time, contests that should go to a full hand count. Counties upload verified ballot manifests and cast vote record (CVR) files. The RLA Tool performs the necessary calculations to run the RLA, such as choosing random samples of ballots for audit and determining actual risk levels. County Audit Boards then enter interpretations of ballots into the Tool. While audits are ongoing, the Secretary of State can monitor the progress of the individual Counties.</p>
-<p>The RLA Tool also creates export files for use in the Audit Center, a website required by Rule 25 to disseminate audit-related information to the public.</p>
-<h3 id="logging-in">Logging In</h3>
-<p>Persons from the Secretary of State's office as well as persons from the County first must log in to the RLA Tool.</p>
-<figure>
-<img src="./screenshots/StateLogin.png" alt="State Login Screenshot" /><figcaption>State Login Screenshot</figcaption>
-</figure>
-<p>The RLA Tool will direct each user to the appropriate home page. A user from the Department of State will see the (initially empty) Department of State home page.</p>
-<figure>
-<img src="./screenshots/StateDashboardEmpty.png" alt="Secretary of State Home Screenshot" /><figcaption>Secretary of State Home Screenshot</figcaption>
-</figure>
-<p>A County user will see a home page tailored to that County.</p>
-<figure>
-<img src="./screenshots/CountyHome.png" alt="County Home Screenshot" /><figcaption>County Home Screenshot</figcaption>
-</figure>
-<h3 id="navigation">Navigation</h3>
-<p>Both the Secretary of State site and each County site has a navigation menu in the upper left corner.</p>
-<figure>
-<img src="./screenshots/SoSNav.png" alt="Secretary of State Navigation Screenshot" /><figcaption>Secretary of State Navigation Screenshot</figcaption>
-</figure>
-<figure>
-<img src="./screenshots/CountyNav.png" alt="County Navigation Screenshot" /><figcaption>County Navigation Screenshot</figcaption>
-</figure>
-<h3 id="a-entering-the-risk-limit">25.2.2 (A), Entering the Risk Limit</h3>
-<p>The Secretary of State will enter the Risk Limit for comparison audits.</p>
-<figure>
-<img src="./screenshots/RiskLimitEntry.png" alt="State Risk Limit Entry Screenshot" /><figcaption>State Risk Limit Entry Screenshot</figcaption>
-</figure>
-<h3 id="b---e">25.2.2 (B) - (E)</h3>
-<p>These parts of Rule 25 must be completed outside of the RLA Tool.</p>
-<h3 id="f-or-g-audit-uploads">25.2.2 (F) or (G), <a name="comparison-audit-upload">Audit Uploads</a></h3>
-<p>To prepare for upload, the ballot manifest and the CVR file must be first verified and hashed using any SHA-256 hash utility. The RLA Tool itself does not provide a utility for verification or hashing.</p>
-<p>Once the ballot manifest and CVR files are verified and hashed, they can be uploaded into the RLA Tool. If the upload process is interrupted the process will have to be repeated. It is not possible to resume interrupted uploads.</p>
-<figure>
-<img src="./screenshots/CountyBallotManifestUpload.png" alt="Audit Upload Screenshot" /><figcaption>Audit Upload Screenshot</figcaption>
-</figure>
-<p>After successfully uploading both the Ballot Manifest and the CVR files, the County Dashboard shows the current audit status, including all contests on all CVRs.</p>
-<figure>
-<img src="./screenshots/CountyInfoAfterUploadsSuccessful.png" alt="All County Files Successfully Uploaded" /><figcaption>All County Files Successfully Uploaded</figcaption>
-</figure>
-<p>The upload of RLA Tabulation Results Export to the State's Election Night Reporting System required by 25.2.2 (F)(3) must be completed outside of the RLA Tool.</p>
-<h3 id="h-entering-the-random-seed">25.2.2 (H), Entering the Random Seed</h3>
-<p>The Secretary of State will enter the random seed.</p>
-<figure>
-<img src="./screenshots/RandomSeedEntry.png" alt="State Random Seed Entry Screenshot" /><figcaption>State Random Seed Entry Screenshot</figcaption>
-</figure>
-<p>The RLA Tool uses the random seed in the required pseudo-random number generator. The RLA Tool also exports the random seed in a standard format, which the Secretary of State can post to the Audit Center hosted on the Secretary of State website. <em>(Ed. note: This feature is not included in the stage-1 deliverable.)</em> <!-- comment: is this implemented? --></p>
-<h3 id="i-selecting-contests">25.2.2 (I) Selecting Contests</h3>
-<p>The Secretary of State will select the contests that will drive the sample size and stop/go decisions for each round. Note that while Rule 25 calls these &quot;contests to be audited&quot;, the RLA Tool effectively audits all contests, while using the contests selected by the Secretary of State to calculate the risk levels. <em>(Ed. note: The notion of &quot;rounds&quot; is still under discussion and not included in the stage-1 deliverable.)</em></p>
-<figure>
-<img src="./screenshots/ContestSelection.png" alt="State Contest Selection Screenshot" /><figcaption>State Contest Selection Screenshot</figcaption>
-</figure>
-<h3 id="j-number-of-ballot-cards-to-audit">25.2.2 (J) Number of Ballot Cards to Audit</h3>
-<p>The number of ballot cards to audit changes during the course of the audit depending on the risk level, which in turn depends on the number of overstatements (i.e., ballots whose correction by the Audit Board decreases a margin of victory in one of the selected contests) so far.</p>
-<!-- ![Number to Audit View](./screenshots/NumberToAudit.png) -->
-<h3 id="k-random-selection-of-ballot-cards-for-audit">25.2.2 (K) Random Selection of Ballot Cards for Audit</h3>
-<p>Based on the pseudo-random number generator and random seed from 25.2.2 (H) and the current risk levels, the RLA Tool determines the selection of ballot cards for audit.</p>
-<!-- ![Ballots to Audit View](./screenshots/BallotsToAudit.png) -->
-<h3 id="a-ballot-retrieval-chain-of-custody-and-examination">25.2.3 (A) Ballot Retrieval, Chain of Custody and Examination</h3>
-<p>Ballot retrieval from storage container and verification of seals relative to the chain-of-custody logs must be done outside the RLA Tool.</p>
-<h4 id="a1-comparison-audits">25.2.3 (A)(1) Comparison Audits</h4>
-<p>The Audit Board does not log directly into the RLA Tool with usernames and passwords. However, whenever the Audit Board begins to interact with the RLA Tool, either at the beginning of an audit round or after taking a break, there is an informal sign-in process. After the authenticated County Audit Administrator formally logs in, there is a screen where the identity and party affiliation of Audit Board Members can be entered or changed.</p>
-<figure>
-<img src="./screenshots/AuditBoardSignin.png" alt="Audit Board Signin Screenshot" /><figcaption>Audit Board Signin Screenshot</figcaption>
-</figure>
-<p>The RLA Tool allows Audit Boards to report the markings on each individual ballot.</p>
-<p>Before recording voter intent, please double-check that the paper ballot ID and Ballot Style match the ID and ballot style listed on the screen. Then record on the screen all final voter intent marked on the paper ballot. In case of an overvote, mark each of the (too many or too few) choices the voter intended; the RLA tool will recognize overvotes and undervotes. In case the Audit Board cannot reach consensus, mark the &quot;No Consensus&quot; box on the screen. Audit Board members can make notes in the comment field. <!-- Review CDOS --></p>
-<p>Click &quot;Review&quot;<img src="./screenshots/ReportMarks.png" alt="Report Marks Screenshot" /></p>
-<p>After entering the interpretation of the markings from any one ballot, the Audit Board can review what was entered.</p>
-<figure>
-<img src="./screenshots/ReviewMarks.png" alt="Review Marks Screenshot" /><figcaption>Review Marks Screenshot</figcaption>
-</figure>
-<p>Check that the information on the review screen reflects the Audit Board's interpretation of the ballot. Note that in case of an overvote, the review screen will say, simply, &quot;overvote&quot;.</p>
-<p>If the review screen matches the Audit Board's interpretation, click &quot;Submit and Next Ballot&quot;. This submission is final. There is no way to revise a ballot interpretation once it has been submitted from the Review Screen.</p>
-<p>Note: do <em>not</em> use your browser's &quot;back&quot; arrow during the audit process. If the review screen does not match the Audit Board's interpretation, click the &quot;Back&quot; button. <em>(Ed. note: We intend to ensure that pressing the brower's back button is not harmful in a later delivery.)</em></p>
-<h3 id="a2-ballot-polling-audits">25.2.3 (A)(2) Ballot Polling Audits</h3>
-<p>The conduct and reporting of the Audit Board for a Ballot Polling Audit must be completed outside the RLA Tool.</p>
-<h3 id="b-non-unanimous-audit-board">25.2.3 (B) Non-Unanimous Audit Board</h3>
-<p>An Audit Board can use the RLA Tool to report lack of consensus on any particular contest on any particular ballot.</p>
-<figure>
-<img src="./screenshots/NoConsensus.png" alt="No Consensus Screenshot" /><figcaption>No Consensus Screenshot</figcaption>
-</figure>
-<h3 id="c-comparisons-termination-additional-ballots">25.2.3 (C) Comparisons, Termination, Additional Ballots</h3>
-<p>The RLA Tool performs the comparison of the Audit Board's interpretations with the corresponding cast vote record from the voting computer system. The results of this comparison are exported for the Secretary of State to post on the Audit (outside the RLA Tool). The RLA Tool will allow the Secretary of State to see if the required Risk Limit has been met for the selected contests. <em>(Ed. note: This UI does not yet update in the phase-1 deliverable.)</em></p>
-<figure>
-<img src="./screenshots/LimitMetQuery.png" alt="Risk Limit Met Query Screen" /><figcaption>Risk Limit Met Query Screen</figcaption>
-</figure>
-<p>The RLA Tool also allows the Secretary of State to designate a contest for hand counting at any time. <em>(Ed. note: Handling this asynchronous notification is not supported in the stage-1 deliverable.)</em></p>
-<figure>
-<img src="./screenshots/FullHandCount.png" alt="Full Hand Count Screen" /><figcaption>Full Hand Count Screen</figcaption>
-</figure>
-<p>The RLA Tool automatically randomly selects additional ballots for audit as necessary.</p>
-<h1 id="colorado-risk-limiting-audit-1">Colorado Risk Limiting Audit</h1>
-<h1 id="user-manual">User Manual</h1>
-<p>This User Manual provides an overview of the components that comprise the Colorado Department of State’s (CDOS) Risk Limiting Audit Tool (RLA Tool). It contains annotated screenshots with detailed descriptions of what is contained on every page users will experience. It also contains a glossary of relevant terms. This RLA Tool represents the cutting edge in efforts to provide verifiable evidence that election results are accurate, and November 2017 is the first time any state or jurisdiction has implemented them on a wide scale basis.</p>
-<h2 id="basic-structure-of-risk-limiting-audits">Basic Structure of Risk Limiting Audits</h2>
-<p>Once the Secretary of State uses the RLA Tool to establish a risk limit and selects contests to guide the audit, counties will then use the RLA Tool to upload ballot manifests, cast vote records (CVRs), and summary results to a central server. The RLA Tool will use this data to determine the ballot cards to be checked for each contest based on the risk limit and the margins of victory in the selected contests. The RLA Tool will report this information to each county, where the Audit Board, consisting of representatives of different political parties, will physically retrieve the appropriate ballots and record their interpretations of voter intent in the RLA Tool. Randomly selected ballots will be presented to County Audit Boards until either the risk limit is satisfied or the Secretary of State indicates that a full hand count is required. Complete audit results and artifacts allowing the public to check, independently, that the audit was carried out correctly are exported from the RLA Tool for import to a Public Audit Center hosted on the official CDOS website. <em>(Ed note: Report export is not included in the stage-1 deliverable, as we need clarity on the exact contents of said report.)</em></p>
-<h2 id="dashboards">Dashboards</h2>
-<p>The RLA Tool facilitates running a risk limiting audit across all counties in Colorado simultaneously. The RLA Tool has a dashboard for the statewide election adminstrators who work for the Secretary of State. Each of the 64 Counties has a customized dashboard. All of these dashboards require authentication to login.</p>
-<h3 id="logging-in-1">Logging In</h3>
-<p>On this page authorized users from the Secretary of State's office, as well as persons from the County, can enter their login credentials to access the RLA Tool’s Dashboards. <em>(Ed. note: Two-factor authentication to CDOS's authentication servers will be included in a later release.)</em></p>
-<figure>
-<img src="./screenshots/StateLogin.png" alt="State Login Screenshot" /><figcaption>State Login Screenshot</figcaption>
-</figure>
-<hr />
-<p>Once logged in, users from the Department of State will see the (initially empty) Department of State home page.</p>
-<figure>
-<img src="./screenshots/StateDashboardEmpty.png" alt="Secretary of State Home Screenshot" /><figcaption>Secretary of State Home Screenshot</figcaption>
-</figure>
-<hr />
-<p>Logged in County users will see a home page tailored to that County.</p>
-<figure>
-<img src="./screenshots/CountyHome.png" alt="County Home Screenshot" /><figcaption>County Home Screenshot</figcaption>
-</figure>
-<hr />
-<h3 id="navigation-1">Navigation</h3>
-<p>Both the Secretary of State site and each County site has a navigation menu in the upper left corner.</p>
-<figure>
-<img src="./screenshots/SoSNav.png" alt="Secretary of State Navigation Screenshot" /><figcaption>Secretary of State Navigation Screenshot</figcaption>
-</figure>
-<hr />
-<figure>
-<img src="./screenshots/CountyNav.png" alt="County Navigation Screenshot" /><figcaption>County Navigation Screenshot</figcaption>
-</figure>
-<hr />
-<h3 id="entering-the-risk-limit">Entering the Risk Limit</h3>
-<p>On this page the Sectretary of State will enter the Risk Limit for comparison audits.</p>
-<figure>
-<img src="./screenshots/RiskLimitEntry.png" alt="State Risk Limit Entry Screenshot" /><figcaption>State Risk Limit Entry Screenshot</figcaption>
-</figure>
-<hr />
-<h3 id="county-home-page">County Home Page</h3>
-<p>On this page county officials can upload their hashed Ballot Manifest and CVR files.</p>
-<figure>
-<img src="./screenshots/CountyBallotManifestUpload.png" alt="Audit Upload Screenshot" /><figcaption>Audit Upload Screenshot</figcaption>
-</figure>
-<hr />
-<h3 id="entering-the-random-seed">Entering the Random Seed</h3>
-<p>This page allows the Secretary of State Once to enter the random seed, which is a 20 digit number chosen during a public ceremony. Once entered, this will trigger the random selection of which ballots to audit, which will be listed on the following page, and will be published to the County and Public Dashboards.</p>
-<figure>
-<img src="./screenshots/RandomSeedEntry.png" alt="State Random Seed Entry Screenshot" /><figcaption>State Random Seed Entry Screenshot</figcaption>
-</figure>
-<hr />
-<h3 id="audit-ongoing-page">Audit Ongoing Page</h3>
-<p>This page provides an overview of the audit in progress, updated in real time. It shows County level and Contest level details, and will indicate when: 1) the audit is complete, 2) another round of ballots must be counted, and 3) if a Full Hand Count is required. <em>(Ed. note: The notion of rounds is still under discussion and not included in the stage-1 release.)</em></p>
-<figure>
-<img src="./screenshots/AuditOngoing.png" alt="Audit Ongoing Screenshot" /><figcaption>Audit Ongoing Screenshot</figcaption>
-</figure>
-<h3 id="selecting-contests">Selecting Contests</h3>
-<p>This page allows the Secretary of State to select which statewide contest, and which countywide contests to audit. This information will be published to the County Dashboard when the selections have been made. On this same page the Secretary of State may select contests for full hand counts.</p>
-<figure>
-<img src="./screenshots/ContestSelection.png" alt="State Contest Selection Screenshot" /><figcaption>State Contest Selection Screenshot</figcaption>
-</figure>
-<hr />
-<h3 id="audit-board-sign-in">Audit Board Sign In</h3>
-<p>On this page authorized Audit Board members can sign into the system to conduct the audit.</p>
-<figure>
-<img src="./screenshots/AuditBoardSignin.png" alt="Audit Board Signin Screenshot" /><figcaption>Audit Board Signin Screenshot</figcaption>
-</figure>
-<hr />
-<h3 id="audit-board-interpretation-page">Audit Board Interpretation Page</h3>
-<p>The RLA Tool allows Audit Boards to report the markings on each individual ballot.</p>
-<p>This page allows Audit Board members to enter their collective interpretation of choices marked on the ballot. Once they have entered their interpretations, Audit Board members click the &quot;Review&quot; button to be taken to the Audit Board Interpretation Review Screen.</p>
-<p>Click &quot;Review&quot;<img src="./screenshots/ReportMarks.png" alt="Report Marks Screenshot" /></p>
-<hr />
-<h3 id="audit-board-interpretation-review-page">Audit Board Interpretation Review Page</h3>
-<p>This page allows Audit Board members to review their choices, and then press &quot;Submit and Next Ballot&quot; when ready to proceed to the next ballot. This process continues until all of the ballots are entered. This submission is final. There is no way to revise a ballot interpretation once it has been submitted from the Review Screen.</p>
-<p>Note: do <em>not</em> use your browser's &quot;back&quot; arrow during the audit process. If the review screen does not match the Audit Board's interpretation, click the &quot;Back&quot; button on the user interface. <em>(Ed. note: We intend to ensure that pressing the brower's back button is not harmful in a later delivery.)</em></p>
-<figure>
-<img src="./screenshots/ReviewMarks.png" alt="Review Marks Screenshot" /><figcaption>Review Marks Screenshot</figcaption>
-</figure>
+<p>Then visit <a href="http://localhost:3000/"><code>http://localhost:3000/</code></a> in a supported web browser and you will be able to authenticate to the CORLA system.</p>
 
 <h1 id="developer-instructions">Developer Instructions</h1>
 <p>This document is for developers interested in contributing to this project. It describes the technologies used, the modules and libraries on which we depend, and how to build the system. It also covers how to perform quality assurance, validation, verification, and deployment of the system.</p>
@@ -223,16 +40,17 @@ npm start</code></pre>
 <li>Outline and first draft, 5 July 2017 by Joe Kiniry.</li>
 <li>Second draft that is mostly textually complete, 6 July 2017 by Joe Kiniry.</li>
 <li>Third draft with updates for phase-1 delivery, 17 August 2017 by Joe Kiniry.</li>
+<li>Fourth draft with updates for phase-2 delivery, 24 August 2017 by Joe Kiniry.</li>
 </ul>
 <h2 id="platform-and-programming-languages">Platform and Programming Languages</h2>
 <p>To fulfill Colorado’s requirements, we use a modular system design and standard, well-understood web application technologies.</p>
 <p>We are using a Java-based web application running on a Linux server, hosted in the CDOS data center. Deployment is targeted for a JVM version that supports Java 8.</p>
 <p>The choice of deployment on JVM is made due to IT constraints on the part of CDOS. (See page 11, &quot;Hosting Environment&quot;, of the DQ.) While we could have developed on .Net, and there are very good tools for rigorous engineering on such (which we have used in, e.g., our electronic poll book demonstrator), there are still significant challenges in multi-platform development and deployment. We would rather have a straightforward cross-platform system development and deployment story, thus we use Java 8 on the server-side.</p>
 <p>We are using <a href="https://www.postgresql.org/">PostgreSQL</a>, via the <a href="http://hibernate.org/orm/">Hibernate ORM</a>, for data persistence.</p>
-<p>The user interface (UI) is browser-based. The client is written in TypeScript, a mainstream, Microsoft-supported variant of JavaScript that offers opt-in, Java-like type safety. TypeScript compiles to plain, human-readable JavaScript, so this choice supports client-side correctness without requiring any special web browser support.</p>
+<p>The user interface (UI) is browser-based. The client is written in <a href="https://www.typescriptlang.org/">TypeScript</a>, a mainstream, Microsoft-supported variant of JavaScript that offers opt-in, Java-like type safety. TypeScript compiles to plain, human-readable JavaScript, so this choice supports client-side correctness without requiring any special web browser support.</p>
 <h2 id="developer-tools">Developer Tools</h2>
 <p>We are using many of the following tools. Developers need not download and install this long list of technologies. We have provided developers with a pre-configured <a href="https://eclipse.org/">Eclipse</a> install, a bootstrapping Eclipse workspace, and a VM image which can be loaded into VirtualBox or other comparable virtualization platform. We provide these resources in order to both decrease new developers' ramp-up time as well as to standardize on specific versions of tools for development.</p>
-<p>Instructions for installing Eclipse and the plugins we use are at <a href="../server/README-ECLIPSE.md">README-ECLIPSE.md</a>.</p>
+<p>Instructions for installing Eclipse and automatically installing and configuring the plugins we use are found in <a href="../server/README-ECLIPSE.md">README-ECLIPSE.md</a>.</p>
 <ul>
 <li><a href="https://github.com/FreeAndFair/ColoradoRLA">GitHub</a> for distributed version control, issue tracking, and development documentation</li>
 <li>the <a href="http://pvs.csl.sri.com/">PVS specification and verification system</a> or the <a href="http://alloy.mit.edu/alloy/">Alloy tool</a> for specifying and reasoning about formal domain models and automatically synthesizing system tests</li>
@@ -270,18 +88,19 @@ npm start</code></pre>
 <h3 id="data-persistence">Data Persistence</h3>
 <p>In order to use the Postgres database in development, one must:</p>
 <ol type="1">
-<li>Install PostgreSQL (brew install postgres, apt-get install postgres, or whatever is appropriate) and start it running.</li>
-<li>Create a database called &quot;corla&quot;, and grant all privileges on it to a user called &quot;corla&quot; with password &quot;corla&quot;.</li>
-<li><p>Initialize the &quot;corla&quot; database with test administrator data. For example, to accomplish the above on OS X using brew, one issues the following commands:</p>
+<li>Install PostgreSQL (<code>brew install postgres</code> on OS X, <code>apt-get    install postgresql</code> on many Linux distributions, or whatever is appropriate) and start it running.</li>
+<li>Create a database called &quot;<code>corla</code>&quot;, and grant all privileges on it to a user called &quot;<code>corla</code>&quot; with password &quot;<code>corla</code>&quot;.</li>
+<li><p>Initialize the &quot;<code>corla</code>&quot; database with test administrator data. For example, to accomplish the above on OS X using Homebrew, one issues the following commands:</p>
 <pre><code>brew install postgres
 createuser -P corla
-createdb -O corla corla</code></pre></li>
-<li>Run the server (to create all the database tables).</li>
-<li><p>Load test authentication credentials into the database, by executing the SQL in <code>corla-test-credentials.sql</code> (found in the <code>test</code> directory of the repository). This can be done with the following command on OS X:</p>
-<pre><code>psql -U corla -d corla -a -f corla-test-credentials.psql</code></pre></li>
+createdb -O corla corla</code></pre>
+<p>On Linux, one would replace the first command with something akin to <code>sudo apt-get install postgresql</code>.</p></li>
 </ol>
-<p>That's it. If the database is there the server will use it and will, at this stage, create all its tables and such automatically.</p>
-<p>If you need to delete the database---perhaps because due to a recent merge the DB schema has evolved---use the <code>dropdb corla</code> command and then recreate the DB.</p>
+<p>That's it. If the database is there the server will use it and will, at this stage, create all its tables and such automatically. 4. Run the server (to create all the database tables). Recall that this is accomplished by either running the server in Eclipse using the Run button or running it from a command line using a command akin to <code>java -jar colorado_rla-VERSION-shaded.jar</code>. 5. Load test authentication credentials into the database, by executing the SQL in <code>corla-test-credentials.sql</code> (found in the <code>test</code> directory of the repository). This can be done with the following command on OS X:</p>
+<pre><code>psql -U corla -d corla -a -f corla-test-credentials.psql</code></pre>
+<p>or the following command on Linux:</p>
+<pre><code>psql -U corla -h localhost -d corla -a -f corla-test-credentials.psql</code></pre>
+<p>If you need to delete the database---perhaps because due to a recent merge the DB schema has evolved---use the <code>dropdb corla</code> command and then recreate the DB following the steps above.</p>
 <p>There are helpful scripts for automating these actions located in the <code>server/eclipse_project/script</code> directory.</p>
 <p><em>TBD: Describe the <a href="http://hibernate.org/orm/">Hibernate ORM</a> and its use.</em></p>
 <h3 id="communication-formats">Communication Formats</h3>
@@ -316,17 +135,9 @@ createdb -O corla corla</code></pre></li>
 <p><em>TBD discussion of which build systems we use and why.</em></p>
 <p>We provide both an integrated Eclipse-based build system and a traditional Make-based build system. The former permits us to support a rich and interactive design, development, validation, and verification experience in an IDE. The latter facilitates cross-platform, IDE-independent builds and continuous integration with Travis CI.</p>
 <p>The Eclipse-based build system is built into our Eclipse IDE image and our workspace, as specified in <code>server/eclipse.setup</code>.</p>
-<p>The Make-based system is rooted in our top-level <a href="../Makefile">Makefile</a>. That build system not only compiles the RLA tool, but also generates documentation, analyzes the system for quality and correctness, and more.</p>
-<p>But the Make-based system is not implemented yet, and the server and client are not integrated yet. In the meantime, you can build the client via:</p>
-<pre><code>cd client
-script/dist</code></pre>
-<p>Run it via:</p>
-<pre><code>cd dist
-python3 -m http.server</code></pre>
-<p>For the server, package it by running <code>mvn package</code> in the <code>server/eclipse-project</code> directory. This will create <code>colorado_rla-0.0.1-shaded.jar</code> (potentially with a more recent version number) in the <code>target</code> directory.</p>
-<p>Run it via:</p>
-<pre><code>java -jar target/colorado_rla-0.7.0-shaded.jar</code></pre>
-<p>You can test it by opening this simple html page in a browser: <a href="../test/corla-server-test.html"><code>test/corla-server-test.html</code></a></p>
+<p>The Make-based system is rooted in our top-level <a href="../Makefile">Makefile</a>. That build system not only compiles the RLA tool, but also generates documentation, analyzes the system for quality and correctness, and more. <em>(Ed. note: The make-based build system has not yet been written.)</em></p>
+<p>See the instructions in the <strong>Installation and Use</strong> chapter on running the development system.</p>
+<p>Note that the production client build configuration expects server endpoints to have an <code>/api</code> path prefix. To support user testing, we currently enable browser console logging in all builds.</p>
 <h2 id="quality-assurance">Quality Assurance</h2>
 <p><em>TBD discussion of the various facets of quality and how these ideas are concretized into metrics and measures that are automatically assessed and reported upon, both within the IDE and during continuous V&amp;V.</em></p>
 <p>We measure quality of systems by using a variety of <em>dynamic</em> and <em>static</em> techniques.</p>
@@ -510,6 +321,17 @@ python3 -m http.server</code></pre>
 <h2 id="high-availability">High Availability</h2>
 <p>The ColoradoRLA system deployment for the Colorado Department of State has a high availability requirement. Achieving high availability for the client-side and server-side applications through the use of multiple servers is straightforward. For the database, high availability requires some form of replication that ensures data consistency.</p>
 <p>We are using the Postgres DBMS for the database layer. Postgres supports several different types of replication. For the CDOS deployment, our initial recommendation is to deploy two Postgres servers (one primary server and one replica) and use Postgres's integrated streaming replication functionality, with synchronous commits enabled to achieve group-safe and 1-safe replication. In this configuration, the only possibility for data loss is if both the primary server and the replica crash simultaneously, <em>and</em> the database on the primary server is corrupted at the same time. We could opt for a stronger durability guarantee, achieving 2-safe replication (the only possibility for data loss is if both servers crash simultaneously in a way that corrupts both databases), but that would cause longer transaction times. See https://www.postgresql.org/docs/current/static/warm-standby.html#SYNCHRONOUS-REPLICATION and http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.10.140 for more information.</p>
+
+<h1 id="project-members">Project Members</h1>
+<p><strong>Dr. Joseph Kiniry</strong> is Chief Scientist and CEO of Free &amp; Fair. Prior to working for Free &amp; Fair, Dr. Kiniry provided commercial and public consultancy services to several governments on matters relating to elections, their technology, security, processes, and verifiability. He has worked on election systems for fifteen years; has audited the security, correctness, and reliability of numerous physical and Internet-based voting systems; and has developed high-assurance prototypes and products of several election technologies (including, but not limited to, tallying, auditing, voting, ballot marking, and e-poll book (EPB) systems).</p>
+<p>Dr. Kiniry has formally advised four national governments (the USA, The Netherlands, the Republic of Ireland, and Denmark) on matters relating to digital elections and has testified before two parliaments. He has also provided informal input and advice to the governments of Norway, Estonia, and the United States. He co-founded and co-ran a multi-year research project on digital elections (the DemTech project) and has supervised numerous B.S., M.S., and Ph.D. theses focusing on election technologies. His research group developed several high-assurance peer-reviewed election software systems, including a tally system used in binding European elections for The Netherlands in 2004 and an EPB system used in Danish national elections in 2012. Dr. Kiniry has served as a Principal Investigator on research projects for the European Union Council, various Department of Defense branches, the National Science Foundation, and several national funding agencies in Ireland, The Netherlands, and Denmark. He has also started and run a half dozen technology firms and has held tenured positions at four university in three countries. He holds five advanced degrees, including a Ph.D. from the California Institute of Technology.</p>
+<p><strong>Joe Ranweiler</strong> is a software engineering consultant for Free &amp; Fair. He has over 5 years of professional experience building software, spanning research and development, data engineering, and commercially-deployed web applications. Joe helped write Free &amp; Fair’s end-to-end verifiable voting system demonstrator, including its core cryptographic components. He is a regular open-source software contributor and was recently the technical lead on Free &amp; Fair’s OpenRLA risk-limiting audit system prototype, which was built using modern web application technologies. Joe has a B.S. in Mathematics from Arizona State University.</p>
+<p><strong>Neal McBurnett</strong> has been developing open source software related to election audits for over a decade, and worked as a software developer for tools and the Internet as a Distinguished Member of Technical Staff at Bell Labs for two decades before that. He consulted with the Colorado Secretary of State on the Colorado Risk-Limiting Audit project, and is a member of the team that worked with County Clerk Dana DeBeauvoir in Travis County, TX on the design and RFP for STAR-Vote, a novel voting system supporting end-to-end and risk-limiting audits. He served as vice-chair of the IEEE P1622 standards committee on a common data format for elections, and continues to participate in the U.S. Election Assistance Commission’s VVSG-Interoperability Working Group, developing standards for Cast Vote Records and related formats. Using his open source web-based ElectionAudits software, Boulder County, CO performed nationally-recognized audits in 2008 and 2010. He also audited the groundbreaking open source Scantegrity end-to-end election in Takoma Park, MD in 2011. Mr. McBurnett was a major contributor to &quot;Principles and Best Practices for Post-Election Audits&quot; (September 2008) and the 2010 American Statistical Association statement on Risk-Limiting Small Batch Audits. He has participated actively in election processes since 2002 as an observer, election official, auditor and public witness. He is an active participant in the Election Verification Network. He holds an M.S. in Computer Science from the University of California at Berkeley, and a B.S. in Computer Science from Brown University.</p>
+<p><strong>Dr. Daniel Zimmerman</strong>, the Technology Lead at Free &amp; Fair, has extensive experience in formal methods, high-assurance software engineering, concurrent and distributed systems, and foundations of computer science. He taught computer science at multiple universities for over a decade. In industry, he has worked primarily in the areas of rigorous software engineering and verifiable election technology. He holds three advanced degrees, including a Ph.D., all from the California Institute of Technology.</p>
+<p><strong>Dr. Joey Dodds</strong> has focused mainly on research and development facilitating correctness proofs for a variety of programs, including cryptographic algorithms. At Free &amp; Fair, Dodds has implemented both a tabulator and a risk-limiting audit system and written formal specifications for both. He also fully proved the correctness of the tabulator. He is a key participant in the verification of Amazon’s s2n library, responsible for both the verification of the library and implementing a system to automatically report metrics about the progress of the project to Amazon’s upper management. He holds a Ph.D. from Princeton University and holds two other advanced degrees.</p>
+<p><strong>Dr. Stephanie Singer</strong> has developed web-based applications querying relational databases to make customized reports of election results available to the general public. As a member of the Philadelphia County Board of Elections in Pennsylvania, she oversaw the creation and deployment of a modern voter-facing election website. She also held a tenured position in mathematics at Haverford College for over a decade and earned several degrees, including a Ph.D. in mathematics from NYU.</p>
+<p><strong>Mike Kiniry</strong> is a communication expert, with backgrounds in radio, print, and photojournalism, who specializes in clearly communicating complicated concepts. He spent nearly a decade as a public radio reporter, producer, and host and has been a freelance writer and photographer for the past 15 years. Mike is also a videographer and editor, and is the Election Verification Network’s dedicated videographer/media producer.</p>
+<p><strong>Morgan Miller</strong> is an experienced User Experience (UX) professional with a deep background in scientific research. She is currently a User Experience Architect for Morgan Miller UX, LLC, where she leads teams through a UX discovery, architecture, and research process; designs and executes research studies; synthesizes research data to create actionable recommendations; and builds information architecture including taxonomy, sitemaps, and wireframes. She has done work for Overseas Vote Foundation, Intel, Mozilla Foundation, BMC Software, Esri, World Wildlife Fund, Nike, Moda, Providence Health, and Cambia Health. She earned a B.A. in Mathematics from Reed College and an M.S. in Computer Science from the University of Lugano, Switzerland, where she was a cryptography researcher.</p>
 
 <h1 id="glossary">Glossary</h1>
 <p>See also the working documents at <a href="http://collaborate.nist.gov/voting/bin/view/Voting/Glossary">VVSG-Interoperability Voting Glossary</a> and the glossary in: <a href="https://www.stat.berkeley.edu/~stark/Preprints/RLAwhitepaper12.pdf">&quot;Risk-Limiting Post-Election Audits: Why and How&quot;</a></p>

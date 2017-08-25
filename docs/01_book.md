@@ -1,5 +1,7 @@
+\newpage
+
 # The Colorado RLA Tool Book
 
 ### Free & Fair
 
-#### July 2017
+#### Phase 2 Release---August 2017
