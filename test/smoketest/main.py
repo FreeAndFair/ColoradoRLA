@@ -3,17 +3,17 @@
 
 Example:
 
-crtest -R dos_init
-crtest -c 3 -v 1 county_setup
-crtest -c 5 -v 2 county_setup
-crtest dos_start
-crtest -c 5 &
-crtest -c 3 &
+./main.py -R dos_init
+./main.py -c 3 -v 1 county_setup
+./main.py -c 5 -v 2 county_setup
+./main.py dos_start
+./main.py -c 5 county_audit &
+./main.py -c 3 county_audit &
+./main.py dos_wrapup
 
+TODO later:
 
-Later:
-
-TODO: enable examples like these.
+enable examples like these.
 
 Examples:
 
