@@ -109,7 +109,7 @@ public class CastVoteRecord extends AbstractEntity implements Serializable {
    * The contest information in this cast vote record.
    */
   @OneToMany(cascade = CascadeType.ALL, mappedBy = "my_cvr", 
-             fetch = FetchType.LAZY, orphanRemoval = true)
+             fetch = FetchType.EAGER, orphanRemoval = true)
   @OrderColumn(name = "index")
   private List<CVRContestInfo> my_contest_info;
   
