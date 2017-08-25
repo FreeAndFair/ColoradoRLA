@@ -53,6 +53,8 @@ public interface ASMEvent extends Event {
    */
   enum AuditBoardDashboardEvent implements ASMEvent {
     AUDIT_BOARD_START_AUDIT_EVENT, // private internal event
+    COUNTY_DEADLINE_MISSED_EVENT, // private internal event
+    NO_CONTESTS_TO_AUDIT_EVENT, // private internal event
     REPORT_MARKINGS_EVENT, // public inbound event
     REPORT_BALLOT_NOT_FOUND_EVENT, // public inbound event
     SUBMIT_AUDIT_INVESTIGATION_REPORT_EVENT, // public inbound event

@@ -168,7 +168,7 @@ public class DoSDashboardRefreshResponse {
                    Math.max(0, ccca.ballotsToAudit() - 
                                ccca.dashboard().auditedPrefixLength()));
     }
-    return to_audit;
+    return Math.max(0, to_audit);
   }
   
   /**
