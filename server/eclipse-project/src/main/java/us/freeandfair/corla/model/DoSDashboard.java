@@ -12,7 +12,7 @@
 
 package us.freeandfair.corla.model;
 
-import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
+import static us.freeandfair.corla.util.EqualsHashcodeHelper.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -254,7 +254,10 @@ public class DoSDashboard implements PersistentEntity, Serializable {
       final DoSDashboard other_ddb = (DoSDashboard) the_other;
       // there can only be one DoS dashboard in the system for each
       // ID, so we check their equivalence by ID
-      result &= nullableEquals(other_ddb.id(), id());
+      result &= nullableEquals(other_ddb.contestsToAudit(), contestsToAudit());
+      result &= nullableEquals(other_ddb.riskLimitForComparisonAudits(), 
+                               riskLimitForComparisonAudits());
+      result &= nullableEquals(other_ddb.randomSeed(), randomSeed());
     } else {
       result = false;
     }
@@ -266,6 +269,6 @@ public class DoSDashboard implements PersistentEntity, Serializable {
    */
   @Override
   public int hashCode() {
-    return id().hashCode();
+    return nullableHashCode(randomSeed());
   }
 }

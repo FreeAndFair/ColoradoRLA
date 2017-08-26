@@ -12,6 +12,8 @@
 
 package us.freeandfair.corla.model;
 
+import static us.freeandfair.corla.util.EqualsHashcodeHelper.*;
+
 import java.io.Serializable;
 
 import javax.persistence.Cacheable;
@@ -23,8 +25,9 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import org.hibernate.annotations.Immutable;
+
 import us.freeandfair.corla.persistence.PersistentEntity;
-import us.freeandfair.corla.util.EqualsHashcodeHelper;
 
 /**
  * An elector; has a first name, a last name, and a political party.
@@ -33,6 +36,7 @@ import us.freeandfair.corla.util.EqualsHashcodeHelper;
  * @version 0.0.1
  */
 @Entity
+@Immutable // this is a Hibernate-specific annotation, but there is no JPA alternative
 @Cacheable(true)
 @Table(name = "elector")
 // this class has many fields that would normally be declared final, but
@@ -163,8 +167,10 @@ public class Elector implements PersistentEntity, Serializable {
   public boolean equals(final Object the_other) {
     boolean result = true;
     if (the_other instanceof Elector) {
-      final Elector other_choice = (Elector) the_other;
-      result &= EqualsHashcodeHelper.nullableEquals(other_choice.id(), id());
+      final Elector other_elector = (Elector) the_other;
+      result &= nullableEquals(other_elector.firstName(), firstName());
+      result &= nullableEquals(other_elector.lastName(), lastName());
+      result &= nullableEquals(other_elector.politicalParty(), politicalParty());
     } else {
       result = false;
     }
@@ -176,6 +182,6 @@ public class Elector implements PersistentEntity, Serializable {
    */
   @Override
   public int hashCode() {
-    return id().hashCode();
+    return nullableHashCode(lastName());
   }
 }

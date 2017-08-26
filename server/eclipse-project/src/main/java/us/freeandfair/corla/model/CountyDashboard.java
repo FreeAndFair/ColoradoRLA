@@ -75,6 +75,11 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   private static final String MY_ID = "my_id";
   
   /**
+   * The "dashboard_id" string.
+   */
+  private static final String DASHBOARD_ID = "dashboard_id";
+  
+  /**
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1; 
@@ -131,12 +136,10 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   /**
    * The members of the audit board.
    */
-  @ManyToMany(fetch = FetchType.EAGER)
-  @JoinTable(name = "audit_board_member",
-             joinColumns = @JoinColumn(name = "county_dashboard_id", 
-                                       referencedColumnName = MY_ID),
-             inverseJoinColumns = @JoinColumn(name = "elector_id", 
-                                              referencedColumnName = MY_ID))
+  @ElementCollection(fetch = FetchType.EAGER)
+  @CollectionTable(name = "audit_board",
+                   joinColumns = @JoinColumn(name = DASHBOARD_ID, 
+                                             referencedColumnName = MY_ID))
   private Set<Elector> my_members = new HashSet<>();
   
   /**
@@ -152,7 +155,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    */
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(name = "driving_contest",
-             joinColumns = @JoinColumn(name = "county_dashboard_id",
+             joinColumns = @JoinColumn(name = DASHBOARD_ID,
                                        referencedColumnName = MY_ID),
              inverseJoinColumns = @JoinColumn(name = "contest_id", 
                                               referencedColumnName = MY_ID))
@@ -172,8 +175,8 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   @ElementCollection(fetch = FetchType.EAGER)
   @OrderColumn(name = INDEX)
   @CollectionTable(name = "audit_investigation_report",
-                   joinColumns = @JoinColumn(name = "dashboard_id", 
-                                             referencedColumnName = "my_id"))
+                   joinColumns = @JoinColumn(name = DASHBOARD_ID, 
+                                             referencedColumnName = MY_ID))
   private List<AuditInvestigationReportInfo> my_investigation_reports = 
       new ArrayList<>();
   
@@ -183,8 +186,8 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   @ElementCollection(fetch = FetchType.EAGER)
   @OrderColumn(name = INDEX)
   @CollectionTable(name = "audit_intermediate_report",
-                   joinColumns = @JoinColumn(name = "dashboard_id", 
-                                             referencedColumnName = "my_id"))
+                   joinColumns = @JoinColumn(name = DASHBOARD_ID, 
+                                             referencedColumnName = MY_ID))
   private List<IntermediateAuditReportInfo> my_intermediate_reports = 
       new ArrayList<>();
   

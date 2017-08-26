@@ -11,6 +11,8 @@
 
 package us.freeandfair.corla.model;
 
+import static us.freeandfair.corla.util.EqualsHashcodeHelper.*;
+
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.nio.charset.Charset;
@@ -32,7 +34,6 @@ import javax.persistence.Version;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.persistence.PersistentEntity;
-import us.freeandfair.corla.util.EqualsHashcodeHelper;
 
 /**
  * A log entry that is stored in the database.
@@ -303,7 +304,14 @@ public class LogEntry implements PersistentEntity, Serializable {
     boolean result = true;
     if (the_other instanceof LogEntry) {
       final LogEntry other_entry = (LogEntry) the_other;
-      result &= EqualsHashcodeHelper.nullableEquals(other_entry.id(), id());
+      result &= nullableEquals(other_entry.resultCode(), resultCode());
+      result &= nullableEquals(other_entry.information(), information());
+      result &= nullableEquals(other_entry.authenticationData(), 
+                               authenticationData());
+      result &= nullableEquals(other_entry.clientHost(), clientHost());
+      result &= nullableEquals(other_entry.timestamp(), timestamp());
+      // we don't include the previous entry because it would be very recursive
+      result &= nullableEquals(other_entry.hash(), hash());
     } else {
       result = false;
     }
@@ -315,6 +323,6 @@ public class LogEntry implements PersistentEntity, Serializable {
    */
   @Override
   public int hashCode() {
-    return id().hashCode();
+    return nullableHashCode(hash());
   }
 }

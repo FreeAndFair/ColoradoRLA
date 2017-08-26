@@ -11,7 +11,7 @@
 
 package us.freeandfair.corla.model;
 
-import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
+import static us.freeandfair.corla.util.EqualsHashcodeHelper.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -36,6 +36,8 @@ import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import org.hibernate.annotations.Immutable;
+
 import com.google.gson.annotations.JsonAdapter;
 
 import us.freeandfair.corla.json.CVRContestInfoJsonAdapter;
@@ -49,6 +51,7 @@ import us.freeandfair.corla.persistence.PersistentEntity;
  * @version 0.0.1
  */
 @Entity
+@Immutable // this is a Hibernate-specific annotation, but there is no JPA alternative
 @Cacheable(true)
 @Table(name = "cvr_contest_info",
        indexes = { @Index(name = "idx_cvrci_cvr", columnList = "cvr_id"),
@@ -239,7 +242,10 @@ public class CVRContestInfo implements PersistentEntity, Serializable {
     boolean result = true;
     if (the_other instanceof CVRContestInfo) {
       final CVRContestInfo other_info = (CVRContestInfo) the_other;
-      result &= nullableEquals(other_info.id(), id());
+      result &= nullableEquals(other_info.contest(), contest());
+      result &= nullableEquals(other_info.comment(), comment());
+      result &= nullableEquals(other_info.consensus(), consensus());
+      result &= nullableEquals(other_info.choices(), choices());
     } else {
       result = false;
     }
@@ -251,7 +257,7 @@ public class CVRContestInfo implements PersistentEntity, Serializable {
    */
   @Override
   public int hashCode() {
-    return id().hashCode();
+    return nullableHashCode(choices());
   }
 
   /**

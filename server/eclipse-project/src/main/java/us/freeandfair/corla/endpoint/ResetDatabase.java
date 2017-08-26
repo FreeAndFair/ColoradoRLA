@@ -28,7 +28,6 @@ import us.freeandfair.corla.model.CountyContestComparisonAudit;
 import us.freeandfair.corla.model.CountyContestResult;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
-import us.freeandfair.corla.model.Elector;
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.PersistentASMStateQueries;
@@ -116,11 +115,6 @@ public class ResetDatabase extends AbstractEndpoint {
     // delete all the ballot manifests
     for (final BallotManifestInfo bmi : Persistence.getAll(BallotManifestInfo.class)) {
       Persistence.delete(bmi);
-    }
-    
-    // delete all the Electors
-    for (final Elector e : Persistence.getAll(Elector.class)) {
-      Persistence.delete(e);
     }
 
     // delete all the contest results

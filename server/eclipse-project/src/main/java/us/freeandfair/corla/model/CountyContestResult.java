@@ -66,7 +66,7 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
                    @Index(name = "idx_ccr_contest", columnList = "contest_id") })
 //this class has many fields that would normally be declared final, but
 //cannot be for compatibility with Hibernate and JPA.
-@SuppressWarnings("PMD.ImmutableField")
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.ImmutableField", "PMD.ExcessiveImports"})
 public class CountyContestResult implements PersistentEntity, Serializable {
   /**
    * The "my_id" string.
