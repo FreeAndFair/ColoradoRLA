@@ -18,6 +18,15 @@ interface FormState {
 
 
 const DEFAULT_RISK_LIMIT = 0.05;
+const MIN_RISK_LIMIT = 0.0001;
+const MAX_RISK_LIMIT = 1 - MIN_RISK_LIMIT;
+
+
+function isValidRiskLimit(limit: number) {
+    return isFinite(limit)
+        && MIN_RISK_LIMIT <= limit
+        && limit <= MAX_RISK_LIMIT;
+}
 
 
 class RiskLimitForm extends React.Component<FormProps & any, FormState> {
@@ -37,9 +46,6 @@ class RiskLimitForm extends React.Component<FormProps & any, FormState> {
         } = this.state;
 
         this.props.forms.riskLimit = this.state;
-
-        const MIN_RISK_LIMIT = 0.0001;
-        const MAX_RISK_LIMIT = 1 - MIN_RISK_LIMIT;
 
         return (
             <div>
@@ -79,14 +85,14 @@ class RiskLimitForm extends React.Component<FormProps & any, FormState> {
         const s = { ...this.state };
 
         const parsedBallotPollingField = parseFloat(s.ballotPollingField);
-        if (isFinite(parsedBallotPollingField)) {
+        if (isValidRiskLimit(parsedBallotPollingField)) {
             s.ballotPollingLimit = parsedBallotPollingField;
         } else {
             s.ballotPollingField = `${s.ballotPollingLimit}`;
         }
 
         const parsedComparisonField = parseFloat(s.comparisonField);
-        if (isFinite(parsedComparisonField)) {
+        if (isValidRiskLimit(parsedComparisonField)) {
             s.comparisonLimit = parsedComparisonField;
         } else {
             s.comparisonField = `${s.comparisonLimit}`;
