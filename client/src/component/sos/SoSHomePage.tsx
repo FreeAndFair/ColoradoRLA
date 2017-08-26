@@ -9,14 +9,6 @@ import SoSNav from './Nav';
 import counties from '../../data/counties';
 
 
-const SeedInfo = ({ seed }: any) => {
-    return (
-        <div className='pt-card'>
-            <strong>Seed: </strong> { seed }
-        </div>
-    );
-};
-
 const ContestUpdates = ({ contests, seed, sos }: any) => {
     const contestStatuses = _.map(contests, (c: any) => {
         if (!sos.auditedContests) {
@@ -72,7 +64,6 @@ const ContestUpdates = ({ contests, seed, sos }: any) => {
                     </tbody>
                 </table>
             </div>
-            <SeedInfo seed={ seed } />
         </div>
     );
 };
@@ -161,15 +152,57 @@ const CountyUpdates = ({ countyStatus }: any) => {
     );
 };
 
+const RiskLimitInfo = ({ riskLimit }: any) => {
+    return (
+        <div className='pt-card'>
+            <strong>Target Risk Limit: </strong> { riskLimit * 100 } %
+        </div>
+    );
+};
+
+const SeedInfo = ({ seed }: any) => {
+    return (
+        <div className='pt-card'>
+            <strong>Seed: </strong> { seed }
+        </div>
+    );
+};
+
+const AuditParams = ({ sos }: any) => {
+    return (
+        <div>
+            <RiskLimitInfo riskLimit={ sos.riskLimit } />
+            <SeedInfo seed={ sos.seed } />
+        </div>
+    );
+};
+
+const AuditNotDefined = () => {
+    return (
+        <div><em>The audit has not yet been defined.</em></div>
+    );
+};
 
 const SoSHomePage = (props: any) => {
-    const { contests, countyStatus, seed, sos } = props;
+    const { contests, countyStatus, currentAsmState, seed, sos } = props;
+
+    const ongoingStates = [
+        'AUDIT_READY_TO_START',
+        'DOS_AUDIT_ONGOING',
+        'DOS_AUDIT_COMPLETE',
+        'AUDIT_RESULTS_PUBLISHED',
+    ];
+    const showAuditParams = _.includes(ongoingStates, currentAsmState);
+
+    const auditParams = showAuditParams
+                      ? <AuditParams sos={ sos } />
+                      : <AuditNotDefined />;
 
     return (
         <div className='sos-home'>
             <SoSNav />
             <div className='sos-notifications pt-card'>
-                <em>No notifications.</em>
+                { auditParams }
             </div>
             <div className='sos-info pt-card'>
                 <CountyUpdates countyStatus={ countyStatus } />
