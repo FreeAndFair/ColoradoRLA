@@ -73,7 +73,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
 
   /**
    * Updates the appropriate county dashboard to reflect a new 
-   * ballot manifest upload.
+   * CVR export upload.
    * @param the_response The response object (for error reporting).
    * @param the_county_id The county ID.
    * @param the_timestamp The timestamp.
@@ -95,7 +95,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
   }
   
   /**
-   * Parses an uploaded ballot manifest and attempts to persist it to the database.
+   * Parses an uploaded CVR export and attempts to persist it to the database.
    * 
    * @param the_response The response (for error reporting).
    * @param the_file The uploaded file.
@@ -144,7 +144,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
     final County county = Authentication.authenticatedCounty(the_request);
 
     if (county == null) {
-      unauthorized(the_response, "unauthorized administrator for CVR epxort upload");
+      unauthorized(the_response, "unauthorized administrator for CVR export upload");
       return my_endpoint_result.get();
     }
     

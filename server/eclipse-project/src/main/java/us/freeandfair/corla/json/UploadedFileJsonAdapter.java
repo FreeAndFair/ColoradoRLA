@@ -25,7 +25,7 @@ import us.freeandfair.corla.persistence.Persistence;
  * JSON adapter for uploaded files. This enapsulates in JSON all the information
  * about the file except for its actual contents, and retrieves from the database
  * the uploaded file corresponding to the specified county and database ID 
- * ignoring other fields; note that "null" can be retrieved if there is no
+ * ignoring other fields; note that "null" can be returned if there is no
  * matching uploaded file in the database.
  * 
  * @author Daniel M. Zimmerman
