@@ -19,6 +19,8 @@ import java.time.Instant;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
+import org.hibernate.annotations.Immutable;
+
 import com.google.gson.annotations.JsonAdapter;
 
 import us.freeandfair.corla.json.AuditInvestigationReportInfoJsonAdapter;
@@ -30,6 +32,7 @@ import us.freeandfair.corla.json.AuditInvestigationReportInfoJsonAdapter;
  * @version 0.0.1
  */
 @Embeddable
+@Immutable // this is a Hibernate-specific annotation, but there is no JPA alternative
 //this class has many fields that would normally be declared final, but
 //cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")

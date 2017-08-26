@@ -18,9 +18,6 @@ import java.time.Instant;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
 import com.google.gson.annotations.JsonAdapter;
 
@@ -42,13 +39,6 @@ public class IntermediateAuditReportInfo implements Serializable {
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1L;
-  
-  /**
-   * The audit board dashboard to which this report belongs. 
-   */
-  @ManyToOne(optional = false, fetch = FetchType.LAZY)
-  @JoinColumn
-  private CountyDashboard my_dashboard;
   
   /**
    * The timestamp of this report.
@@ -82,23 +72,6 @@ public class IntermediateAuditReportInfo implements Serializable {
     super();
     my_timestamp = the_timestamp;
     my_report = the_report;
-  }
-  
-  /**
-   * Sets the dashboard that owns this record; this should only be called by
-   * the AuditBoardDashboard class.
-   * 
-   * @param the_dashboard The dashboard.
-   */
-  protected void setDashboard(final CountyDashboard the_dashboard) {
-    my_dashboard = the_dashboard;
-  }
-  
-  /**
-   * @return the dashboard.
-   */
-  public CountyDashboard dashboard() {
-    return my_dashboard;
   }
   
   /**

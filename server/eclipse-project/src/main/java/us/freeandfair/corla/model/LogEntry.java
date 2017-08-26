@@ -32,6 +32,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import org.hibernate.annotations.Immutable;
+
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.persistence.PersistentEntity;
 
@@ -42,6 +44,7 @@ import us.freeandfair.corla.persistence.PersistentEntity;
  * @version 0.0.1
  */
 @Entity
+@Immutable // this is a Hibernate-specific annotation, but there is no JPA alternative
 @Cacheable(true)
 @Table(name = "log")
 //this class has many fields that would normally be declared final, but

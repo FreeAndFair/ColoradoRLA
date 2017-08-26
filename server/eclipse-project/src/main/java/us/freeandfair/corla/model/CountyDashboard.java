@@ -445,7 +445,6 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * @param the_report The audit investigation report.
    */
   public void submitIntermediateReport(final IntermediateAuditReportInfo the_report) {
-    the_report.setDashboard(this);
     my_intermediate_reports.add(the_report);
   }
   
