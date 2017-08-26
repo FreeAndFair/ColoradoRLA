@@ -112,12 +112,14 @@ class AuditBoardSignInStage extends React.Component<any, any> {
                     onFirstNameChange={ this.onFirstNameChange(0) }
                     onLastNameChange={ this.onLastNameChange(0) }
                     onPartyChange={ this.onPartyChange(0) }
+                    onTextConfirm={ this.onTextConfirm }
                 />
                 <AuditBoardSignInForm
                     elector={ this.state.form[1] }
                     onFirstNameChange={ this.onFirstNameChange(1) }
                     onLastNameChange={ this.onLastNameChange(1) }
                     onPartyChange={ this.onPartyChange(1) }
+                    onTextConfirm={ this.onTextConfirm }
                 />
                 <button
                     className='pt-button pt-intent-primary'
@@ -127,6 +129,18 @@ class AuditBoardSignInStage extends React.Component<any, any> {
                 </button>
             </div>
         );
+    }
+
+    private onTextConfirm = () => {
+        const s = { ...this.state };
+
+        s.form[0].firstName = s.form[0].firstName.trim();
+        s.form[0].lastName = s.form[0].lastName.trim();
+
+        s.form[1].firstName = s.form[1].firstName.trim();
+        s.form[1].lastName = s.form[1].lastName.trim();
+
+        this.setState(s);
     }
 
     private onFirstNameChange = (index: number) => (name: string) => {
