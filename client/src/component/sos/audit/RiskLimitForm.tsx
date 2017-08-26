@@ -27,12 +27,17 @@ class RiskLimitForm extends React.Component<FormProps & any, FormState> {
 
         this.props.forms.riskLimit = this.state;
 
+        const MIN_RISK_LIMIT = 0.0001;
+        const MAX_RISK_LIMIT = 1 - MIN_RISK_LIMIT;
+
         return (
             <div>
                 <div>
                     <label>
                         Ballot Polling Audits
                         <NumericInput
+                            min={ MIN_RISK_LIMIT }
+                            max={ MAX_RISK_LIMIT }
                             minorStepSize={ 0.001 }
                             stepSize={ 0.01 }
                             value={ ballotPollingLimit }
@@ -43,6 +48,8 @@ class RiskLimitForm extends React.Component<FormProps & any, FormState> {
                     <label>
                         Comparison Audits
                         <NumericInput
+                            min={ MIN_RISK_LIMIT }
+                            max={ MAX_RISK_LIMIT }
                             minorStepSize={ 0.001 }
                             stepSize={ 0.01 }
                             value={ comparisonLimit }
