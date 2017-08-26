@@ -9,7 +9,9 @@ import establishAuditBoard from '../../action/establishAuditBoard';
 
 function validateElector(elector: any) {
     return elector.firstName
+        && elector.firstName.trim()
         && elector.lastName
+        && elector.lastName.trim()
         && elector.party;
 }
 
