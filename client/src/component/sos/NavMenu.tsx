@@ -1,54 +1,61 @@
 import * as React from 'react';
+import { connect } from 'react-redux';
+import { Link, Redirect } from 'react-router-dom';
 
-import { Link } from 'react-router-dom';
+import * as _ from 'lodash';
+
+import { Menu, MenuDivider, MenuItem } from '@blueprintjs/core';
 
 
-interface MenuItemDef {
-    icon: string;
-    path: string;
-    text: string;
-}
-
-const MenuItem = (def: MenuItemDef): any => {
-    const className = `pt-menu-item ${def.icon}`;
-
-    return (
-        <Link to={ def.path }>
-            <li>
-                <span className={ className }>
-                    { def.text }
-                </span>
-            </li>
-        </Link>
-    );
-};
-
-export default class SoSNavMenu extends React.Component<any, any> {
+class SoSNavMenu extends React.Component<any, any> {
     public render() {
+        const { currentAsmState, sos } = this.props;
+
+        const disableStates = [
+            'AUDIT_READY_TO_START',
+            'DOS_AUDIT_ONGOING',
+            'DOS_AUDIT_COMPLETE',
+            'AUDIT_RESULTS_PUBLISHED',
+        ];
+        const disableAuditButton = _.includes(disableStates, currentAsmState);
+
         return (
-            <ul className='pt-menu pt-election-1'>
-                <MenuItem
-                    text='Home'
-                    path='/sos'
-                    icon='pt-icon-home'
-                />
-                <li className='pt-menu-divider' />
-                <MenuItem
-                    text='Counties'
-                    path='/sos/county'
-                    icon='pt-icon-map'
-                />
-                <MenuItem
-                    text='Contests'
-                    path='/sos/contest'
-                    icon='pt-icon-numbered-list'
-                />
-                <MenuItem
-                    text='Audit'
-                    path='/sos/audit'
-                    icon='pt-icon-eye-open'
-                />
-            </ul>
+            <Menu>
+                <Link to='/sos'>
+                    <MenuItem
+                        text='Home'
+                        iconName='home'
+                    />
+                </Link>
+                <MenuDivider />
+                <Link to='/sos/county'>
+                    <MenuItem
+                        text='Counties'
+                        iconName='map'
+                    />
+                </Link>
+                <Link to='/sos/contest'>
+                    <MenuItem
+                        text='Contests'
+                        iconName='numbered-list'
+                    />
+                </Link>
+                <Link to='/sos/audit'>
+                    <MenuItem
+                        text='Define Audit'
+                        iconName='eye-open'
+                        disabled={ disableAuditButton }
+                    />
+                </Link>
+            </Menu>
         );
     }
 }
+
+const mapStateToProps = (state: any) => ({
+    currentAsmState: state.sos.asm.currentState,
+    sos: state.sos,
+});
+
+
+export default connect(mapStateToProps)(SoSNavMenu);
