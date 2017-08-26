@@ -14,6 +14,7 @@ package us.freeandfair.corla.model;
 import java.sql.Blob;
 import java.time.Instant;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -39,6 +40,7 @@ import us.freeandfair.corla.persistence.PersistentEntity;
  */
 // note that unlike our other entities, uploaded files are not Serializable
 @Entity
+@Cacheable(false) // uploaded files are explicitly not cacheable
 @Table(name = "uploaded_file",
        indexes = { @Index(name = "idx_uploaded_file_county", columnList = "county_id") })
 // this class has many fields that would normally be declared final, but

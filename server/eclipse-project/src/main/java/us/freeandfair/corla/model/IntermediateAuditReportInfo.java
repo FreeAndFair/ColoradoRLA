@@ -17,17 +17,14 @@ import java.io.Serializable;
 import java.time.Instant;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
+import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
-import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 
 import com.google.gson.annotations.JsonAdapter;
 
 import us.freeandfair.corla.json.IntermediateAuditReportJsonAdapter;
-import us.freeandfair.corla.persistence.AbstractEntity;
 
 /**
  * An audit investigation report.
@@ -35,15 +32,12 @@ import us.freeandfair.corla.persistence.AbstractEntity;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-@Entity
-@Table(name = "intermediate_audit_report",
-       indexes = { @Index(name = "idx_iari_dashboard", columnList = "dashboard_id") })
-
+@Embeddable
 //this class has many fields that would normally be declared final, but
 //cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
 @JsonAdapter(IntermediateAuditReportJsonAdapter.class)
-public class IntermediateAuditReportInfo extends AbstractEntity implements Serializable {
+public class IntermediateAuditReportInfo implements Serializable {
   /**
    * The serialVersionUID.
    */
@@ -142,7 +136,8 @@ public class IntermediateAuditReportInfo extends AbstractEntity implements Seria
     if (the_other instanceof IntermediateAuditReportInfo) {
       final IntermediateAuditReportInfo other_report = 
           (IntermediateAuditReportInfo) the_other;
-      result &= nullableEquals(other_report.id(), id());
+      result &= nullableEquals(other_report.timestamp(), timestamp());
+      result &= nullableEquals(other_report.report(), report());
     } else {
       result = false;
     }
@@ -154,6 +149,6 @@ public class IntermediateAuditReportInfo extends AbstractEntity implements Seria
    */
   @Override
   public int hashCode() {
-    return id().hashCode();
+    return timestamp().hashCode();
   }
 }

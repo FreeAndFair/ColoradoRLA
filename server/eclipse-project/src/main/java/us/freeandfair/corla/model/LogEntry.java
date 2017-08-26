@@ -18,15 +18,20 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.persistence.AbstractEntity;
+import us.freeandfair.corla.persistence.PersistentEntity;
 import us.freeandfair.corla.util.EqualsHashcodeHelper;
 
 /**
@@ -36,11 +41,12 @@ import us.freeandfair.corla.util.EqualsHashcodeHelper;
  * @version 0.0.1
  */
 @Entity
+@Cacheable(true)
 @Table(name = "log")
 //this class has many fields that would normally be declared final, but
 //cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
-public class LogEntry extends AbstractEntity implements Serializable {
+public class LogEntry implements PersistentEntity, Serializable {
   /**
    * The root hash for the hash chain (a 256-bit block of zeros).
    */
@@ -51,6 +57,20 @@ public class LogEntry extends AbstractEntity implements Serializable {
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1L;
+  
+  /**
+   * The ID number.
+   */
+  @Id
+  @Column(updatable = false, nullable = false)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  private Long my_id;
+  
+  /**
+   * The version (for optimistic locking).
+   */
+  @Version
+  private Long my_version;
   
   /**
    * The result code of this log entry, if any. In most cases, this will be an HTTP
@@ -145,6 +165,30 @@ public class LogEntry extends AbstractEntity implements Serializable {
     my_result_code = the_result_code;
     my_information = the_information;
     my_timestamp = the_timestamp;
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Long id() {
+    return my_id;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void setID(final Long the_id) {
+    my_id = the_id;
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Long version() {
+    return my_version;
   }
   
   /**

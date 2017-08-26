@@ -20,12 +20,16 @@ import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Version;
 
 import com.google.gson.annotations.JsonAdapter;
 
 import us.freeandfair.corla.json.ContestToAuditJsonAdapter;
-import us.freeandfair.corla.persistence.AbstractEntity;
+import us.freeandfair.corla.persistence.PersistentEntity;
 
 /**
  * A class representing a contest to audit or hand count.
@@ -38,12 +42,26 @@ import us.freeandfair.corla.persistence.AbstractEntity;
 //cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
 @JsonAdapter(ContestToAuditJsonAdapter.class)
-public class ContestToAudit extends AbstractEntity implements Serializable {
+public class ContestToAudit implements PersistentEntity, Serializable {
   /**
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1L;
 
+  /**
+   * The ID number.
+   */
+  @Id
+  @Column(updatable = false, nullable = false)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  private Long my_id;
+  
+  /**
+   * The version (for optimistic locking).
+   */
+  @Version
+  private Long my_version;
+  
   /**
    * The contest to audit.
    */
@@ -86,6 +104,30 @@ public class ContestToAudit extends AbstractEntity implements Serializable {
     my_audit = the_audit;
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Long id() {
+    return my_id;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void setID(final Long the_id) {
+    my_id = the_id;
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Long version() {
+    return my_version;
+  }
+  
   /**
    * @return the contest.
    */

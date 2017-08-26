@@ -18,18 +18,23 @@ import java.math.RoundingMode;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 import ch.obermuhlner.math.big.BigDecimalMath;
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
-import us.freeandfair.corla.persistence.AbstractEntity;
+import us.freeandfair.corla.persistence.PersistentEntity;
 
 /**
  * A class representing the state of a single audited contest for
@@ -39,11 +44,12 @@ import us.freeandfair.corla.persistence.AbstractEntity;
  * @version 0.0.1
  */
 @Entity
+@Cacheable(true)
 @Table(name = "county_contest_comparison_audit",
        indexes = { @Index(name = "idx_ccca_dashboard", columnList = "dashboard_id") })
 
 @SuppressWarnings({"PMD.ImmutableField", "PMD.CyclomaticComplexity", "PMD.GodClass"})
-public class CountyContestComparisonAudit extends AbstractEntity implements Serializable {
+public class CountyContestComparisonAudit implements PersistentEntity, Serializable {
   /**
    * The database stored precision for decimal types.
    */
@@ -91,6 +97,20 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1L;
+  
+  /**
+   * The ID number.
+   */
+  @Id
+  @Column(updatable = false, nullable = false)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  private Long my_id;
+  
+  /**
+   * The version (for optimistic locking).
+   */
+  @Version
+  private Long my_version;
   
   /**
    * The county dashboard to which this audit state belongs. 
@@ -173,6 +193,30 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
     my_contest_result = the_contest_result;
     my_contest = my_contest_result.contest();
     my_risk_limit = the_risk_limit;
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Long id() {
+    return my_id;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void setID(final Long the_id) {
+    my_id = the_id;
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Long version() {
+    return my_version;
   }
   
   /**
@@ -392,13 +436,16 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
    */
   @SuppressWarnings("checkstyle:magicnumber")
   public void recordDiscrepancy(final int the_statement) {
+    boolean changed = false;
     switch (the_statement) {
       case -2: 
         my_two_vote_under = my_two_vote_under + 1;
+        changed = true;
         break;
        
       case -1:
         my_one_vote_under = my_one_vote_under + 1;
+        changed = true;
         break;
         
       case 0:
@@ -406,16 +453,20 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
         
       case 1: 
         my_one_vote_over = my_one_vote_over + 1;
+        changed = true;
         break;
         
       case 2:
         my_two_vote_over = my_two_vote_over + 1;
+        changed = true;
         break;
         
       default:
         throw new IllegalArgumentException("invalid over or understatement: " + the_statement);
     }
-    recalculateBallotsToAudit();
+    if (changed) {
+      recalculateBallotsToAudit();
+    }
   }
     
   /**
@@ -427,13 +478,16 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
    */
   @SuppressWarnings("checkstyle:magicnumber")
   public void removeDiscrepancy(final int the_statement) {
+    boolean changed = false;
     switch (the_statement) {
       case -2: 
         my_two_vote_under = my_two_vote_under - 1;
+        changed = true;
         break;
 
       case -1:
         my_one_vote_under = my_one_vote_under - 1;
+        changed = true;
         break;
 
       case 0:
@@ -441,16 +495,20 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
 
       case 1: 
         my_one_vote_over = my_one_vote_over - 1;
+        changed = true;
         break;
 
       case 2:
         my_two_vote_over = my_two_vote_over - 1;
+        changed = true;
         break;
 
       default:
         throw new IllegalArgumentException("invalid over or understatement: " + the_statement);
     }
-    recalculateBallotsToAudit();
+    if (changed) {
+      recalculateBallotsToAudit();
+    }  
   }
   
   /**

@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -25,16 +26,20 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 import com.google.gson.annotations.JsonAdapter;
 
 import us.freeandfair.corla.json.CVRContestInfoJsonAdapter;
-import us.freeandfair.corla.persistence.AbstractEntity;
+import us.freeandfair.corla.persistence.PersistentEntity;
 
 /**
  * A cast vote record contains information about a single ballot, either 
@@ -44,6 +49,7 @@ import us.freeandfair.corla.persistence.AbstractEntity;
  * @version 0.0.1
  */
 @Entity
+@Cacheable(true)
 @Table(name = "cvr_contest_info",
        indexes = { @Index(name = "idx_cvrci_cvr", columnList = "cvr_id"),
                    @Index(name = "idx_cvrci_cvr_contest", 
@@ -52,11 +58,25 @@ import us.freeandfair.corla.persistence.AbstractEntity;
 //cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
 @JsonAdapter(CVRContestInfoJsonAdapter.class)
-public class CVRContestInfo extends AbstractEntity implements Serializable {
+public class CVRContestInfo implements PersistentEntity, Serializable {
   /**
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1L;
+  
+  /**
+   * The ID number.
+   */
+  @Id
+  @Column(updatable = false, nullable = false)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  private Long my_id;
+  
+  /**
+   * The version (for optimistic locking).
+   */
+  @Version
+  private Long my_version;
   
   /**
    * The CVR to which this record belongs. 
@@ -127,6 +147,30 @@ public class CVRContestInfo extends AbstractEntity implements Serializable {
                                            " for contest " + my_contest);
       }
     }
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Long id() {
+    return my_id;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void setID(final Long the_id) {
+    my_id = the_id;
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Long version() {
+    return my_version;
   }
   
   /**

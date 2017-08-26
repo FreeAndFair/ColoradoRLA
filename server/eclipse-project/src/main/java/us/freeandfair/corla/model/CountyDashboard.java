@@ -25,7 +25,9 @@ import java.util.Set;
 
 import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -167,18 +169,22 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   /**
    * The audit investigation reports.
    */
-  @OneToMany(cascade = CascadeType.ALL, mappedBy = MY_DASHBOARD, 
-             fetch = FetchType.EAGER, orphanRemoval = true)
+  @ElementCollection(fetch = FetchType.EAGER)
   @OrderColumn(name = INDEX)
+  @CollectionTable(name = "audit_investigation_report",
+                   joinColumns = @JoinColumn(name = "dashboard_id", 
+                                             referencedColumnName = "my_id"))
   private List<AuditInvestigationReportInfo> my_investigation_reports = 
       new ArrayList<>();
   
   /**
    * The audit interim reports.
    */
-  @OneToMany(cascade = CascadeType.ALL, mappedBy = MY_DASHBOARD, 
-             fetch = FetchType.EAGER, orphanRemoval = true)
+  @ElementCollection(fetch = FetchType.EAGER)
   @OrderColumn(name = INDEX)
+  @CollectionTable(name = "audit_intermediate_report",
+                   joinColumns = @JoinColumn(name = "dashboard_id", 
+                                             referencedColumnName = "my_id"))
   private List<IntermediateAuditReportInfo> my_intermediate_reports = 
       new ArrayList<>();
   
@@ -420,7 +426,6 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * @param the_report The audit investigation report.
    */
   public void submitInvestigationReport(final AuditInvestigationReportInfo the_report) {
-    the_report.setDashboard(this);
     my_investigation_reports.add(the_report);
   }
   

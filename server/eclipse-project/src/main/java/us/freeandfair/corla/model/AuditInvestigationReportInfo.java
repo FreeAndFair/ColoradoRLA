@@ -11,23 +11,17 @@
 
 package us.freeandfair.corla.model;
 
-import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
+import static us.freeandfair.corla.util.EqualsHashcodeHelper.*;
 
 import java.io.Serializable;
 import java.time.Instant;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.Embeddable;
 
 import com.google.gson.annotations.JsonAdapter;
 
 import us.freeandfair.corla.json.AuditInvestigationReportInfoJsonAdapter;
-import us.freeandfair.corla.persistence.AbstractEntity;
 
 /**
  * An audit investigation report.
@@ -35,26 +29,16 @@ import us.freeandfair.corla.persistence.AbstractEntity;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-@Entity
-@Table(name = "audit_investigation_report",
-       indexes = { @Index(name = "idx_airi_dashboard", columnList = "dashboard_id,index", 
-                          unique = true) })
+@Embeddable
 //this class has many fields that would normally be declared final, but
 //cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
 @JsonAdapter(AuditInvestigationReportInfoJsonAdapter.class)
-public class AuditInvestigationReportInfo extends AbstractEntity implements Serializable {
+public class AuditInvestigationReportInfo implements Serializable {
   /**
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1L;
-  
-  /**
-   * The audit board dashboard to which this report belongs. 
-   */
-  @ManyToOne(optional = false, fetch = FetchType.LAZY)
-  @JoinColumn(name = "dashboard_id")
-  private CountyDashboard my_dashboard;
   
   /**
    * The timestamp of this report.
@@ -99,23 +83,6 @@ public class AuditInvestigationReportInfo extends AbstractEntity implements Seri
   }
   
   /**
-   * Sets the dashboard that owns this record; this should only be called by
-   * the AuditBoardDashboard class.
-   * 
-   * @param the_dashboard The dashboard.
-   */
-  protected void setDashboard(final CountyDashboard the_dashboard) {
-    my_dashboard = the_dashboard;
-  }
-  
-  /**
-   * @return the dashboard.
-   */
-  public CountyDashboard dashboard() {
-    return my_dashboard;
-  }
-  
-  /**
    * @return the timestamp.
    */
   public Instant timestamp() {
@@ -157,7 +124,9 @@ public class AuditInvestigationReportInfo extends AbstractEntity implements Seri
     if (the_other instanceof AuditInvestigationReportInfo) {
       final AuditInvestigationReportInfo other_report = 
           (AuditInvestigationReportInfo) the_other;
-      result &= nullableEquals(other_report.id(), id());
+      result &= nullableEquals(other_report.timestamp(), timestamp());
+      result &= nullableEquals(other_report.name(), name());
+      result &= nullableEquals(other_report.report(), report());
     } else {
       result = false;
     }
@@ -169,6 +138,6 @@ public class AuditInvestigationReportInfo extends AbstractEntity implements Seri
    */
   @Override
   public int hashCode() {
-    return id().hashCode();
+    return nullableHashCode(timestamp());
   }
 }

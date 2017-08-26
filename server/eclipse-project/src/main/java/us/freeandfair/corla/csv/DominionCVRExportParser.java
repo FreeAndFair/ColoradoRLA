@@ -46,9 +46,14 @@ import us.freeandfair.corla.query.CountyContestResultQueries;
  */
 public class DominionCVRExportParser implements CVRExportParser {
   /**
+   * The interval at which to report progress.
+   */
+  private static final int PROGRESS_INTERVAL = 500;
+  
+  /**
    * The size of a batch of CVRs to be flushed to the database.
    */
-  private static final int BATCH_SIZE = 50;
+  private static final int BATCH_SIZE = 80;
 
   /**
    * The column containing the CVR number in a Dominion export file.
@@ -235,11 +240,8 @@ public class DominionCVRExportParser implements CVRExportParser {
       // as that's not in the CVR files and may not actually be used)
       final Contest c = ContestQueries.matching(new Contest(cn, "", choices, 
                                                             the_votes_allowed.get(cn)));
-      CountyContestResult r = 
+      final CountyContestResult r = 
           CountyContestResultQueries.matching(my_county, c);
-      // in case the contests were defined wrong, we just drop the results object
-      Persistence.delete(r);
-      r = CountyContestResultQueries.matching(my_county, c);
       my_contests.add(c);
       my_results.add(r);
     }
@@ -381,6 +383,9 @@ public class DominionCVRExportParser implements CVRExportParser {
           break;
         } else {
           my_record_count = OptionalInt.of(my_record_count.getAsInt() + 1);
+          if (my_record_count.getAsInt() % PROGRESS_INTERVAL == 0) {
+            Main.LOGGER.info("parsed " + my_record_count.getAsInt() + " CVRs");
+          }
         }
       }
     } catch (final NoSuchElementException | StringIndexOutOfBoundsException |

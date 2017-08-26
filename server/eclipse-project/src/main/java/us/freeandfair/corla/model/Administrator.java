@@ -11,19 +11,25 @@
 
 package us.freeandfair.corla.model;
 
-import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
+import static us.freeandfair.corla.util.EqualsHashcodeHelper.*;
 
 import java.io.Serializable;
 import java.time.Instant;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.persistence.Version;
 
-import us.freeandfair.corla.persistence.AbstractEntity;
+import us.freeandfair.corla.persistence.PersistentEntity;
 
 /**
  * An administrator in the system. 
@@ -32,17 +38,34 @@ import us.freeandfair.corla.persistence.AbstractEntity;
  * @version 0.0.1
  */
 @Entity
+@Cacheable(true)
 @Table(name = "administrator",
+       uniqueConstraints = {
+           @UniqueConstraint(columnNames = {"username"}) },
        indexes = { @Index(name = "idx_admin_username", 
                           columnList = "username", unique = true) })
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
-public class Administrator extends AbstractEntity implements Serializable {
+public class Administrator implements PersistentEntity, Serializable {
   /**
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1; 
+  
+  /**
+   * The ID number.
+   */
+  @Id
+  @Column(updatable = false, nullable = false)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  private Long my_id;
+  
+  /**
+   * The version (for optimistic locking).
+   */
+  @Version
+  private Long my_version;
   
   /**
    * The username.
@@ -99,6 +122,30 @@ public class Administrator extends AbstractEntity implements Serializable {
     my_full_name = the_full_name;
     my_two_factor_auth_info = the_two_factor_auth_info;
     my_last_login_time = the_last_login_time;
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Long id() {
+    return my_id;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void setID(final Long the_id) {
+    my_id = the_id;
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Long version() {
+    return my_version;
   }
   
   /**
@@ -164,7 +211,7 @@ public class Administrator extends AbstractEntity implements Serializable {
     boolean result = true;
     if (the_other instanceof Administrator) {
       final Administrator other_admin = (Administrator) the_other;
-      result &= nullableEquals(other_admin.id(), id());
+      result &= nullableEquals(other_admin.username(), username());
     } else {
       result = false;
     }
@@ -176,7 +223,7 @@ public class Administrator extends AbstractEntity implements Serializable {
    */
   @Override
   public int hashCode() {
-    return id().hashCode();
+    return nullableHashCode(username());
   }
 
   /**
