@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import { isFinite } from 'lodash';
+
 import { NumericInput } from '@blueprintjs/core';
 
 
@@ -8,7 +10,9 @@ interface FormProps {
 }
 
 interface FormState {
+    ballotPollingField: string;
     ballotPollingLimit: number;
+    comparisonField: string;
     comparisonLimit: number;
 }
 
@@ -18,12 +22,19 @@ const DEFAULT_RISK_LIMIT = 0.05;
 
 class RiskLimitForm extends React.Component<FormProps & any, FormState> {
     public state: FormState = {
+        ballotPollingField: `${DEFAULT_RISK_LIMIT}`,
         ballotPollingLimit: DEFAULT_RISK_LIMIT,
+        comparisonField: `${DEFAULT_RISK_LIMIT}`,
         comparisonLimit: DEFAULT_RISK_LIMIT,
     };
 
     public render() {
-        const { ballotPollingLimit, comparisonLimit } = this.state;
+        const {
+            ballotPollingField,
+            ballotPollingLimit,
+            comparisonField,
+            comparisonLimit,
+        } = this.state;
 
         this.props.forms.riskLimit = this.state;
 
@@ -36,11 +47,13 @@ class RiskLimitForm extends React.Component<FormProps & any, FormState> {
                     <label>
                         Ballot Polling Audits
                         <NumericInput
+                            allowNumericCharactersOnly={ true }
                             min={ MIN_RISK_LIMIT }
                             max={ MAX_RISK_LIMIT }
                             minorStepSize={ 0.001 }
+                            onBlur={ this.onBlur }
                             stepSize={ 0.01 }
-                            value={ ballotPollingLimit }
+                            value={ ballotPollingField }
                             onValueChange={ this.onBallotPollingValueChange } />
                     </label>
                 </div>
@@ -48,11 +61,13 @@ class RiskLimitForm extends React.Component<FormProps & any, FormState> {
                     <label>
                         Comparison Audits
                         <NumericInput
+                            allowNumericCharactersOnly={ true }
                             min={ MIN_RISK_LIMIT }
                             max={ MAX_RISK_LIMIT }
                             minorStepSize={ 0.001 }
+                            onBlur={ this.onBlur }
                             stepSize={ 0.01 }
-                            value={ comparisonLimit }
+                            value={ comparisonField }
                             onValueChange={ this.onComparisonValueChange } />
                     </label>
                 </div>
@@ -60,18 +75,38 @@ class RiskLimitForm extends React.Component<FormProps & any, FormState> {
         );
     }
 
-    private onBallotPollingValueChange = (limit: number) => {
+    private onBlur = () => {
         const s = { ...this.state };
 
-        s.ballotPollingLimit = limit;
+        const parsedBallotPollingField = parseFloat(s.ballotPollingField);
+        if (isFinite(parsedBallotPollingField)) {
+            s.ballotPollingLimit = parsedBallotPollingField;
+        } else {
+            s.ballotPollingField = `${s.ballotPollingLimit}`;
+        }
+
+        const parsedComparisonField = parseFloat(s.comparisonField);
+        if (isFinite(parsedComparisonField)) {
+            s.comparisonLimit = parsedComparisonField;
+        } else {
+            s.comparisonField = `${s.comparisonLimit}`;
+        }
 
         this.setState(s);
     }
 
-    private onComparisonValueChange = (limit: number) => {
+    private onBallotPollingValueChange = (_: number, field: string) => {
         const s = { ...this.state };
 
-        s.comparisonLimit = limit;
+        s.ballotPollingField = field;
+
+        this.setState(s);
+    }
+
+    private onComparisonValueChange = (_: number, field: string) => {
+        const s = { ...this.state };
+
+        s.comparisonField = field;
 
         this.setState(s);
     }
