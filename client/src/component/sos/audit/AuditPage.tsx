@@ -53,6 +53,8 @@ const AuditPage = ({ nextPage, riskLimit, setRiskLimit }: any) => {
                         ? <ReadonlyRiskLimit riskLimit={ riskLimit } />
                         : <RiskLimitForm forms={ forms } riskLimit={ riskLimit } />;
 
+    const buttonText = riskLimit ? 'Next' : 'Save & Next';
+
     return (
         <div>
             <Nav />
@@ -76,7 +78,7 @@ const AuditPage = ({ nextPage, riskLimit, setRiskLimit }: any) => {
             </div>
 
             <button onClick={ buttonClick } className='pt-button pt-intent-primary'>
-                Save
+                { buttonText }
             </button>
         </div>
     );
