@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 """
 Script to sort the glossary entries.
 
@@ -17,7 +20,7 @@ def main():
 
     # Keep the intro at the beginning.
     first_part = parts[0]
-    parts = sorted(parts[1:])
+    parts = sorted(parts[1:], key=str.lower)
 
     parts = [first_part] + parts
     text = sep.join(parts)
