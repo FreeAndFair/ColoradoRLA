@@ -25,6 +25,9 @@ import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import com.google.gson.annotations.JsonAdapter;
+
+import us.freeandfair.corla.json.UploadedFileJsonAdapter;
 import us.freeandfair.corla.persistence.PersistentEntity;
 
 /**
@@ -39,6 +42,7 @@ import us.freeandfair.corla.persistence.PersistentEntity;
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
+@JsonAdapter(UploadedFileJsonAdapter.class)
 public class UploadedFile implements PersistentEntity {
   /**
    * The database ID.
@@ -100,6 +104,12 @@ public class UploadedFile implements PersistentEntity {
   private Blob my_file;
   
   /**
+   * The file size.
+   */
+  @Column(updatable = false, nullable = false)
+  private Long my_size;
+  
+  /**
    * Constructs an empty uploaded file, solely for persistence.
    */
   public UploadedFile() {
@@ -111,12 +121,13 @@ public class UploadedFile implements PersistentEntity {
    * 
    * @param the_timestamp The timestamp.
    * @param the_county_id The county that uploaded the file.
-   * @param the_name The original filename.
+   * @param the_filename The original filename.
    * @param the_status The file status.
    * @param the_hash The hash entered at upload time.
    * @param the_hash_status A flag indicating whether the file matches
    * the hash.
    * @param the_file The file (as a Blob).
+   * @param the_size The file size (in bytes).
    */
   public UploadedFile(final Instant the_timestamp,
                       final Long the_county_id,
@@ -124,7 +135,8 @@ public class UploadedFile implements PersistentEntity {
                       final FileStatus the_status,
                       final String the_hash,
                       final HashStatus the_hash_status,
-                      final Blob the_file) {
+                      final Blob the_file,
+                      final Long the_size) {
     super();
     my_timestamp = the_timestamp;
     my_county_id = the_county_id;
@@ -133,6 +145,7 @@ public class UploadedFile implements PersistentEntity {
     my_hash = the_hash;
     my_hash_status = the_hash_status;
     my_file = the_file;
+    my_size = the_size;
   }
   
   /**
@@ -181,10 +194,19 @@ public class UploadedFile implements PersistentEntity {
   }
   
   /**
-   * @return the type of this file.
+   * @return the status of this file.
    */
-  public FileStatus type() {
+  public FileStatus status() {
     return my_status;
+  }
+  
+  /**
+   * Sets the file status.
+   * 
+   * @param the_status The new status.
+   */
+  public void setStatus(final FileStatus the_status) {
+    my_status = the_status;
   }
   
   /**
@@ -206,6 +228,13 @@ public class UploadedFile implements PersistentEntity {
    */
   public Blob file() {
     return my_file;
+  }
+  
+  /**
+   * @return the file size (in bytes).
+   */
+  public Long size() {
+    return my_size;
   }
   
   /**

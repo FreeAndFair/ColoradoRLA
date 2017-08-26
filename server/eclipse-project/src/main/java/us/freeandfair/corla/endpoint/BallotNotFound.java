@@ -112,8 +112,8 @@ public class BallotNotFound extends AbstractAuditBoardDashboardEndpoint {
           }
           final CastVoteRecord acvr =
               new CastVoteRecord(RecordType.PHANTOM_BALLOT,
-                                 Instant.now(), cvr.countyID(), cvr.scannerID(),
-                                 cvr.batchID(), cvr.recordID(),
+                                 Instant.now(), cvr.countyID(), cvr.cvrNumber(),
+                                 cvr.scannerID(), cvr.batchID(), cvr.recordID(),
                                  cvr.imprintedID(), cvr.ballotType(),
                                  contest_info);
           Persistence.saveOrUpdate(acvr);

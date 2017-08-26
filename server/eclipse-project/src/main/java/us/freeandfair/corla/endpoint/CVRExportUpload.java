@@ -125,7 +125,7 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
                                 the_info.my_filename,
                                 FileStatus.IMPORTED_AS_CVR_EXPORT, 
                                 the_info.my_uploaded_hash,
-                                hash_status, blob);
+                                hash_status, blob, the_info.my_file.length());
       Persistence.save(result);
       Persistence.flush();
     } catch (final PersistenceException | IOException e) {
@@ -232,7 +232,7 @@ public class CVRExportUpload extends AbstractCountyDashboardEndpoint {
       try (InputStream cvr_is = new FileInputStream(the_info.my_file)) {
         final InputStreamReader cvr_isr = new InputStreamReader(cvr_is, "UTF-8");
         final CVRExportParser parser =
-            new DominionCVRExportParser(cvr_isr, the_county, the_info.my_timestamp);
+            new DominionCVRExportParser(cvr_isr, the_info.my_timestamp, the_county);
         if (parser.parse()) {
           Main.LOGGER.info(parser.recordCount().getAsInt() + " CVRs parsed from " + 
                            the_county + " county upload file");

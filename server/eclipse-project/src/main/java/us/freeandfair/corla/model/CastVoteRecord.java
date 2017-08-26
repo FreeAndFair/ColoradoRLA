@@ -12,13 +12,11 @@
 package us.freeandfair.corla.model;
 
 import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
-import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableHashCode;
 
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -72,22 +70,28 @@ public class CastVoteRecord extends AbstractEntity implements Serializable {
   private Long my_county_id;
   
   /**
+   * The CVR number of this cast vote record.
+   */
+  @Column(updatable = false, nullable = false)
+  private Integer my_cvr_number;
+  
+  /**
    * The scanner ID of this cast vote record.
    */
   @Column(updatable = false, nullable = false)
-  private String my_scanner_id;
+  private Integer my_scanner_id;
   
   /**
    * The batch ID of this cast vote record.
    */  
   @Column(updatable = false, nullable = false)
-  private String my_batch_id;
+  private Integer my_batch_id;
   
   /**
    * The record ID of this cast vote record.
    */
   @Column(updatable = false, nullable = false)
-  private String my_record_id;
+  private Integer my_record_id;
   
   /**
    * The imprinted ID of this cast vote record.
@@ -104,8 +108,9 @@ public class CastVoteRecord extends AbstractEntity implements Serializable {
   /**
    * The contest information in this cast vote record.
    */
+  // EAGER rationale: we do linear searches in this list frequently
   @OneToMany(cascade = CascadeType.ALL, mappedBy = "my_cvr", 
-             fetch = FetchType.LAZY, orphanRemoval = true)
+             fetch = FetchType.EAGER, orphanRemoval = true)
   @OrderColumn(name = "index")
   private List<CVRContestInfo> my_contest_info;
   
@@ -132,8 +137,11 @@ public class CastVoteRecord extends AbstractEntity implements Serializable {
   @SuppressWarnings("PMD.ExcessiveParameterList")
   public CastVoteRecord(final RecordType the_record_type,
                         final Instant the_timestamp,
-                        final Long the_county_id, final String the_scanner_id,
-                        final String the_batch_id, final String the_record_id,
+                        final Long the_county_id, 
+                        final Integer the_cvr_number,
+                        final Integer the_scanner_id, 
+                        final Integer the_batch_id, 
+                        final Integer the_record_id,
                         final String the_imprinted_id,
                         final String the_ballot_type,
                         final List<CVRContestInfo> the_contest_info) {
@@ -141,6 +149,7 @@ public class CastVoteRecord extends AbstractEntity implements Serializable {
     my_record_type = the_record_type;
     my_timestamp = the_timestamp;
     my_county_id = the_county_id;
+    my_cvr_number = the_cvr_number;
     my_scanner_id = the_scanner_id;
     my_batch_id = the_batch_id;
     my_record_id = the_record_id;
@@ -167,7 +176,7 @@ public class CastVoteRecord extends AbstractEntity implements Serializable {
   public Instant timestamp() {
     return my_timestamp;
   }
-  
+
   /**
    * @return the county ID.
    */
@@ -176,23 +185,30 @@ public class CastVoteRecord extends AbstractEntity implements Serializable {
   }
   
   /**
+   * @return the CVR number (as imported).
+   */
+  public Integer cvrNumber() {
+    return my_cvr_number;
+  }
+  
+  /**
    * @return the scanner ID.
    */
-  public String scannerID() {
+  public Integer scannerID() {
     return my_scanner_id;
   }
   
   /**
    * @return the batch ID.
    */
-  public String batchID() {
+  public Integer batchID() {
     return my_batch_id;
   }
   
   /**
    * @return the record ID.
    */
-  public String recordID() {
+  public Integer recordID() {
     return my_record_id;
   }
   
@@ -240,8 +256,8 @@ public class CastVoteRecord extends AbstractEntity implements Serializable {
   @Override
   public String toString() {
     return "CastVoteRecord [record_type=" + my_record_type + ", timestamp=" + 
-           my_timestamp + ", county_id=" + my_county_id + ", scanner_id=" +
-           my_scanner_id + ", batch_id=" + my_batch_id + ", record_id=" + 
+           my_timestamp + ", county_id=" + my_county_id + ", cvr_id=" + my_cvr_number +
+           ", scanner_id=" + my_scanner_id + ", batch_id=" + my_batch_id + ", record_id=" + 
            my_record_id + ", imprinted_id=" + my_imprinted_id + ", ballot_type=" +
            my_ballot_type + ", contest_info=" + my_contest_info + "]";
   }
@@ -260,6 +276,7 @@ public class CastVoteRecord extends AbstractEntity implements Serializable {
       result &= nullableEquals(other_cvr.recordType(), recordType());
       result &= nullableEquals(other_cvr.timestamp(), timestamp());
       result &= nullableEquals(other_cvr.countyID(), countyID());
+      result &= nullableEquals(other_cvr.cvrNumber(), cvrNumber());
       result &= nullableEquals(other_cvr.scannerID(), scannerID());
       result &= nullableEquals(other_cvr.batchID(), batchID());
       result &= nullableEquals(other_cvr.recordID(), recordID());
@@ -290,6 +307,7 @@ public class CastVoteRecord extends AbstractEntity implements Serializable {
       result = false;
     } else {
       result &= nullableEquals(the_other.countyID(), countyID());
+      result &= nullableEquals(the_other.cvrNumber(), cvrNumber());
       result &= nullableEquals(the_other.scannerID(), scannerID());
       result &= nullableEquals(the_other.batchID(), batchID());
       result &= nullableEquals(the_other.recordID(), recordID());
@@ -307,51 +325,7 @@ public class CastVoteRecord extends AbstractEntity implements Serializable {
    */
   @Override
   public int hashCode() {
-    // can't just use toString() because order of choices may differ
-    return (countyID() + scannerID() + batchID() + recordID() + 
-            nullableHashCode(ballotType()) + 
-            nullableHashCode(contestInfo())).hashCode();
-  }
-  
-  /** 
-   * A comparator that compares CastVoteRecords based on their county id
-   * and imprinted id.
-   */
-  public static class IDComparator 
-      implements Serializable, Comparator<CastVoteRecord> {
-    /**
-     * The serialVersionUID.
-     */
-    private static final long serialVersionUID = 1L;
-    
-    /**
-     * Compare this record to another, using the county id and imprinted id.
-     * 
-     * @param the_other The other record.
-     * @return a negative integer, zero, or a positive integer as the first 
-     * argument is less than, equal to, or greater than the second.
-     */
-    // we are explicitly trying to shortcut in case of object identity, 
-    // so we suppress the "compare objects with equals" warning
-    @SuppressWarnings("PMD.CompareObjectsWithEquals")
-    @Override
-    public int compare(final CastVoteRecord record_1, final CastVoteRecord record_2) {
-      final int result;
-      
-      if (record_1 == record_2) {
-        result = 0;
-      } else if (record_1 == null) {
-        result = 1;
-      } else if (record_2 == null) {
-        result = -1;
-      } else {
-        final String id_1 = record_1.countyID() + record_1.imprintedID();
-        final String id_2 = record_2.countyID() + record_2.imprintedID();
-        result = id_1.compareTo(id_2);
-      }
-      
-      return result;
-    }
+    return my_cvr_number;
   }
   
   /**
