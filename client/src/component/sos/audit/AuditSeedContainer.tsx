@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 
 import AuditSeedPage from './AuditSeedPage';
 
@@ -8,7 +9,11 @@ import uploadRandomSeed from '../../../action/uploadRandomSeed';
 
 class AuditSeedContainer extends React.Component<any, any> {
     public render() {
-        const { history, seed } = this.props;
+        const { history, seed, sos } = this.props;
+
+        if (sos.asm.currentState === 'DOS_AUDIT_ONGOING') {
+            return <Redirect to='/sos' />;
+        }
 
         const props = {
             back: () => history.push('/sos/audit/select-contests'),

@@ -9,6 +9,7 @@ const AuditBoardSignInForm = (props: any) => {
         onFirstNameChange,
         onLastNameChange,
         onPartyChange,
+        onTextConfirm,
     } = props;
 
     const { firstName, lastName, party } = elector;
@@ -22,12 +23,16 @@ const AuditBoardSignInForm = (props: any) => {
                     <EditableText
                         className='pt-input'
                         value={ firstName }
-                        onChange={ onFirstNameChange } />
+                        onChange={ onFirstNameChange }
+                        onConfirm={ onTextConfirm }
+                    />
                     Last Name:
                     <EditableText
                         className='pt-input'
                         value={ lastName }
-                        onChange={ onLastNameChange } />
+                        onChange={ onLastNameChange }
+                        onConfirm={ onTextConfirm }
+                    />
                 </label>
             </div>
             <div className='pt-card'>

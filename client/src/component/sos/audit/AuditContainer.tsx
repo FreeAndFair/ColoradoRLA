@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 
 import AuditPage from './AuditPage';
 
@@ -8,7 +9,11 @@ import setRiskLimit from '../../../action/setRiskLimit';
 
 class AuditContainer extends React.Component<any, any> {
     public render() {
-        const { history, riskLimit } = this.props;
+        const { history, riskLimit, sos } = this.props;
+
+        if (sos.asm.currentState === 'DOS_AUDIT_ONGOING') {
+            return <Redirect to='/sos' />;
+        }
 
         const props = {
             nextPage: () => history.push('/sos/audit/select-contests'),
