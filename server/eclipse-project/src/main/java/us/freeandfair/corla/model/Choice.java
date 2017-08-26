@@ -13,7 +13,7 @@
 
 package us.freeandfair.corla.model;
 
-import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
+import static us.freeandfair.corla.util.EqualsHashcodeHelper.*;
 
 import java.io.Serializable;
 
@@ -107,6 +107,6 @@ public class Choice implements Serializable {
    */
   @Override
   public int hashCode() {
-    return toString().hashCode();
+    return nullableHashCode(name());
   }
 }

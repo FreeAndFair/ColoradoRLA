@@ -12,7 +12,7 @@
 
 package us.freeandfair.corla.model;
 
-import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
+import static us.freeandfair.corla.util.EqualsHashcodeHelper.*;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -29,6 +29,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import org.hibernate.annotations.Immutable;
+
 import us.freeandfair.corla.persistence.PersistentEntity;
 
 /**
@@ -38,6 +40,7 @@ import us.freeandfair.corla.persistence.PersistentEntity;
  * @version 0.0.1
  */
 @Entity
+@Immutable // this is a Hibernate-specific annotation, but there is no JPA alternative
 @Cacheable(true)
 @Table(name = "county")
 // this class has many fields that would normally be declared final, but
@@ -166,7 +169,8 @@ public class County implements PersistentEntity, Serializable {
     boolean result = true;
     if (the_other instanceof County) {
       final County other_county = (County) the_other;
-      result &= nullableEquals(other_county.id(), id());
+      result &= nullableEquals(other_county.name(), name());
+      result &= nullableEquals(other_county.administrators(), administrators());
     } else {
       result = false;
     }
@@ -178,6 +182,6 @@ public class County implements PersistentEntity, Serializable {
    */
   @Override
   public int hashCode() {
-    return id().hashCode();
+    return nullableHashCode(name());
   }
 }

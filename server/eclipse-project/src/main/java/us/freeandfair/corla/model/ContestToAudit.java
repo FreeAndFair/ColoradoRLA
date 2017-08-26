@@ -11,7 +11,7 @@
 
 package us.freeandfair.corla.model;
 
-import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
+import static us.freeandfair.corla.util.EqualsHashcodeHelper.*;
 
 import java.io.Serializable;
 
@@ -187,7 +187,7 @@ public class ContestToAudit implements PersistentEntity, Serializable {
    */
   @Override
   public int hashCode() {
-    return toString().hashCode();
+    return nullableHashCode(contest());
   }
 
   /**
