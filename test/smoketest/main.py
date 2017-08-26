@@ -1,26 +1,43 @@
 #!/usr/bin/env python
 """corla_test: drive testing of ColoradoRLA
 
-Example:
+Examples. Note that 'crtest' and/or corla_test should be defined
+as an alias for main.py.
 
-./main.py -R dos_init
-./main.py -c 3 -v 1 county_setup
+Smoketest:
+
+./main.py
+
+Simple loading of some data, for audit by the web client:
+
+crtest reset
+crtest dos_init
+crtest county_setup
+
+(
+./main.py reset
+./main.py dos_init
+./main.py -c 3 -v 0 county_setup
 ./main.py -c 5 -v 2 county_setup
-./main.py dos_start
+./main.py dos_start -C 3
 ./main.py -c 5 county_audit &
 ./main.py -c 3 county_audit &
+wait
 ./main.py dos_wrapup
+) > multi.out
+
+crtest -e /contest
+crtest -e /contest/id/52253
+crtest -e /contest/county?3
+crtest -E /contest/county?3 -c 3
+
+Not working:
+crtest -e /acvr/county/3
 
 TODO later:
 
-enable examples like these.
+Perhaps finer grained control, via custom POST commands:
 
-Examples:
-
-corla_test reset_database
-
-corla_test reset-database {}
-corla_test risk-limit-comp-audits 0.1
 corla_test audit-board
 corla_test -c 2 -m arapahoe-manifest.csv upload-ballot-manifest
 corla_test -c 2 -v arapahoe-regent-3-clear-CVR_Export.csv upload-cvr-export
@@ -120,6 +137,11 @@ parser.add_argument('-s, --seed', dest='seed',
 parser.add_argument('-u, --url', dest='url',
                     default='http://localhost:8888',
                     help='base url of corla server. Defaults to http://localhost:8888')
+parser.add_argument('-e, --endpoint', dest='endpoint',
+                    help='do an HTTP GET from the given endpoint, authenticated as state admin.')
+parser.add_argument('-E, --county-endpoint', dest='county_endpoint',
+                    help='do an HTTP GET from the given endpoint, authenticated as a county.')
+
 # TODO: get rid of this and associated old code when /upload-cvr-export and /upload-cvr-export go away
 parser.add_argument('-Y, --ye-olde-upload', type=bool, dest='ye_olde_upload',
                     help='use old file upload protocol')
@@ -208,12 +230,19 @@ def upload_file(ac, s, import_path, filename, sha256):
         payload = {'hash': sha256}
         r = s.post(ac.base + path,
                           files={'file': f}, data=payload)
-    print(r, path, r.text)
+
+    if r.status_code != 200:
+        print(r, path, r.text)
+
+    logging.debug(r, path, r.text)
 
     import_handle = r.json()
 
     # This could be done later, after importing another file.
     r = test_endpoint_json(ac, s, import_path, import_handle)
+    if r.status_code != 200:
+        print(r, path, r.text)
+    logging.debug(r, path, r.text)
 
 """
 TODO: clean this out when ready.
@@ -376,6 +405,7 @@ def reset(ac):
 
     r = test_endpoint_json(ac, ac.state_s, "/reset-database", {})
 
+
 def dos_init(ac):
     'Run initial Dept of State steps: reset, risk_limit etc.'
 
@@ -403,19 +433,14 @@ def county_setup(ac, county_id):
     # r = test_endpoint_post(base, county_s1, "/upload-ballot-manifest", ...)
     # r = test_endpoint_post(base, county_s1, "/upload-cvr-export", ...)
 
-    #FIXME  r = test_endpoint_get("/cvr/%d" % county_id)
-    cvrs = get_cvrs(ac, county_s)
-    cvrtable = {}
-    for cvr in cvrs:
-        cvrtable[cvr['id']] = cvr
-
-    r = test_endpoint_get(ac, county_s, "/contest")
+    r = test_endpoint_get(ac, county_s, "/contest/county?%d" % county_id)
     contests = r.json()
 
-    print("Uploaded table of %d CVRs with %d contests" % (len(cvrtable), len(contests)))
-    # logging.debug(json.dumps(cvrs))
+    # TODO: get count again: print("Uploaded table of %d CVRs with %d contests" % (, len(contests)))
+    print("Uploaded CVR table with %d contests" % (len(contests),))
 
-    # TODO perhaps cleanup - but is this realistic usage? county_s.close()
+    # TODO perhaps cleanup - but is it more realistic to just leave sessions open?
+    # county_s.close()
 
 
 def dos_start(ac):
@@ -426,6 +451,9 @@ def dos_start(ac):
     if len(contests) <= 0:
         print("No contests to audit, status_code = %d" % r.status_code)
         return
+
+    for i, contest in enumerate(contests):
+        print("Contest {}: vote for {votes_allowed} in {name}".format(i, **contest))
 
     logging.log(5, "Contests: %s" % contests)
 
@@ -465,15 +493,10 @@ def county_audit(ac, county_id):
     county_s = requests.Session()
     county_login(ac, county_s, county_id)
 
-    cvrs = get_cvrs(ac, county_s)
-    cvrtable = {}
-    for cvr in cvrs:
-        cvrtable[cvr['id']] = cvr
-
     # Print this tool's notion of what should be audited, based on seed etc.
     # for auditing the audit.
     # TODO or FIXME - doesn't yet match "ballots_to_audit" from the dashboard
-    logging.log(5, json.dumps(publish_ballots_to_audit(ac.args.seed, cvrs), indent=2))
+    # logging.log(5, json.dumps(publish_ballots_to_audit(ac.args.seed, cvrs), indent=2))
 
     r = test_endpoint_get(ac, ac.state_s, "/dos-dashboard")
 
@@ -494,7 +517,8 @@ def county_audit(ac, county_id):
         if i % 10 == 0:
             r = test_endpoint_get(ac, ac.state_s, "/dos-dashboard", show=False)
 
-        acvr = cvrtable[selected[i]].copy()
+        r = test_endpoint_get(ac, county_s, "/cvr/id/%d" % selected[i], show=False)
+        acvr = r.json()
         logging.debug("Original CVR: %s" % json.dumps(acvr))
         acvr['record_type'] = 'AUDITOR_ENTERED'
 
@@ -528,7 +552,7 @@ def county_audit(ac, county_id):
         else:
             # TODO test getting just contests from current county
             # TODO print other interesting info
-            print("Uploaded aCVR %d; estimated_ballots_to_audit: %s" % (acvr['id'], resp['estimated_ballots_to_audit']))
+            print("County %d upload %d: aCVR %d; estimated_ballots_to_audit: %s" % (county_id, i, acvr['id'], resp['estimated_ballots_to_audit']))
 
         if resp['estimated_ballots_to_audit'] <= 0:
             print("\nAudit completed after %d ballots" % (i + 1))
@@ -551,6 +575,10 @@ def dos_wrapup(ac):
 
 
 if __name__ == "__main__":
+
+    # Get unbuffered output
+    sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
+
     # Establist an "audit context", abbreviated ac, for passing state around.
     ac = Namespace()
 
@@ -575,6 +603,21 @@ if __name__ == "__main__":
 
     ac.state_s = requests.Session()
     state_login(ac, ac.state_s)
+
+    if not ac.args.endpoint is None:
+        r = test_endpoint_get(ac, ac.state_s, ac.args.endpoint)
+        print(r, ac.args.endpoint, r.text)
+        sys.exit(0)
+
+    if not ac.args.county_endpoint is None:
+        for county_id in ac.args.counties:
+            county_s = requests.Session()
+            county_login(ac, county_s, county_id)
+
+            r = test_endpoint_get(ac, county_s, ac.args.county_endpoint)
+            print(r, ac.args.endpoint, r.text)
+
+        sys.exit(0)
 
     if "reset" in ac.args.commands:
         reset(ac)
