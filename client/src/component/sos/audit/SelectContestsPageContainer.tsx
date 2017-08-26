@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 
 import SelectContestsPage from './SelectContestsPage';
 
@@ -14,6 +15,10 @@ class SelectContestsPageContainer extends React.Component<any, any> {
             history,
             sos,
         } = this.props;
+
+        if (sos.asm.currentState === 'DOS_AUDIT_ONGOING') {
+            return <Redirect to='/sos' />;
+        }
 
         const props = {
             auditedContests,
