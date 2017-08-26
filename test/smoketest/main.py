@@ -92,9 +92,6 @@ __license__ = "TODO GPL"
 
 parser = argparse.ArgumentParser(description='Drive testing for ColoradoRLA auditing.')
 
-parser.add_argument('-R, --reset', dest='reset', action='store_true',
-                    default=False,
-                    help='reset the database before other actions')
 parser.add_argument('-c, --county', dest='counties', metavar='COUNTY', action='append',
                     type=int,
                     help='numeric county_id for the given command, e.g. 1 '
@@ -374,11 +371,13 @@ def server_sequence():
     test_get_contest_county_Arapahoe()
 
 
+def reset(ac):
+    'Reset the database, leaving only authentication info'
+
+    r = test_endpoint_json(ac, ac.state_s, "/reset-database", {})
+
 def dos_init(ac):
     'Run initial Dept of State steps: reset, risk_limit etc.'
-
-    if ac.args.reset:
-        r = test_endpoint_json(ac, ac.state_s, "/reset-database", {})
 
     r = test_endpoint_json(ac, ac.state_s, "/risk-limit-comp-audits",
                            {"risk_limit": ac.args.risk_limit})
@@ -567,14 +566,18 @@ if __name__ == "__main__":
 
     # If no commands are listed, enter all of them
     if len(ac.args.commands) == 0:
-        ac.args.commands = ["dos_init", "county_setup", "dos_start", "county_audit", "dos_wrapup"]
+        ac.args.commands = ["reset", "dos_init", "county_setup",
+                            "dos_start", "county_audit", "dos_wrapup"]
 
-    logging.debug("Arguments: %s" % ac.args)
+    logging.debug("Processed arguments: %s" % ac.args)
 
     ac.base = ac.args.url
 
     ac.state_s = requests.Session()
     state_login(ac, ac.state_s)
+
+    if "reset" in ac.args.commands:
+        reset(ac)
 
     if "dos_init" in ac.args.commands:
         dos_init(ac)
