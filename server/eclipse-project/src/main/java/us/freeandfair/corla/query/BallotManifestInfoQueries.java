@@ -20,6 +20,7 @@ import java.util.Set;
 import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -74,6 +75,21 @@ public final class BallotManifestInfoQueries {
     return result;
   }
   
+  /**
+   * Deletes the set of ballot manifests for the specified county ID.
+   * 
+   * @param the_county_id The county ID.
+   * @exception PersistenceException if the ballot manifests cannot be deleted.
+   */
+  public static void deleteMatching(final Long the_county_id) {
+    final Session s = Persistence.currentSession();
+    final CriteriaBuilder cb = s.getCriteriaBuilder();
+    final CriteriaDelete<BallotManifestInfo> cd = 
+        cb.createCriteriaDelete(BallotManifestInfo.class);
+    final Root<BallotManifestInfo> root = cd.from(BallotManifestInfo.class);
+    cd.where(cb.equal(root.get("my_county_id"), the_county_id));
+    s.createQuery(cd).executeUpdate();
+  }
   
   /**
    * Count the uploaded ballot manifest info records in storage.

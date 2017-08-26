@@ -65,12 +65,12 @@ public final class CountyContestComparisonAuditQueries {
       final TypedQuery<CountyContestComparisonAudit> query = s.createQuery(cq);
       result = query.getResultList();
     } catch (final PersistenceException e) {
-      Main.LOGGER.error("could not query database for contest");
+      Main.LOGGER.error("could not query database for county comparison audit");
     }
     if (result == null) {
-      Main.LOGGER.debug("found no contest matching + " + the_contest);
+      Main.LOGGER.debug("found no county comparison audit matching + " + the_contest);
     } else {
-      Main.LOGGER.debug("found contest " + result);
+      Main.LOGGER.debug("found county comparison audits " + result);
     }
     return result;
   }

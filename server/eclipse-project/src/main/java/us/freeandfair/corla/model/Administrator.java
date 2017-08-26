@@ -20,6 +20,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Index;
 import javax.persistence.Table;
 
 import us.freeandfair.corla.persistence.AbstractEntity;
@@ -31,7 +32,9 @@ import us.freeandfair.corla.persistence.AbstractEntity;
  * @version 0.0.1
  */
 @Entity
-@Table(name = "administrator")
+@Table(name = "administrator",
+       indexes = { @Index(name = "idx_admin_username", 
+                          columnList = "username", unique = true) })
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
@@ -44,7 +47,7 @@ public class Administrator extends AbstractEntity implements Serializable {
   /**
    * The username.
    */
-  @Column(unique = true, nullable = false, updatable = false)
+  @Column(name = "username", unique = true, nullable = false, updatable = false)
   private String my_username;
   
   /**
@@ -161,11 +164,7 @@ public class Administrator extends AbstractEntity implements Serializable {
     boolean result = true;
     if (the_other instanceof Administrator) {
       final Administrator other_admin = (Administrator) the_other;
-      result &= nullableEquals(other_admin.username(), username());
-      result &= nullableEquals(other_admin.type(), type());
-      result &= nullableEquals(other_admin.fullName(), fullName());
-      result &= nullableEquals(other_admin.twoFactorAuthInfo(), twoFactorAuthInfo());
-      result &= nullableEquals(other_admin.lastLoginTime(), lastLoginTime());
+      result &= nullableEquals(other_admin.id(), id());
     } else {
       result = false;
     }
@@ -177,7 +176,7 @@ public class Administrator extends AbstractEntity implements Serializable {
    */
   @Override
   public int hashCode() {
-    return toString().hashCode();
+    return id().hashCode();
   }
 
   /**

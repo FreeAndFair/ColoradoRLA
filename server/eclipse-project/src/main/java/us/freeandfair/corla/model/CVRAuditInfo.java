@@ -18,6 +18,7 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -31,7 +32,10 @@ import us.freeandfair.corla.persistence.AbstractEntity;
  * @version 0.0.1
  */
 @Entity
-@Table(name = "cvr_audit_info")
+@Table(name = "cvr_audit_info",
+       indexes = { @Index(name = "idx_cvrai_cvr", columnList = "cvr_id"),
+                   @Index(name = "idx_cvrai_dashboard_cvr", 
+                          columnList = "dashboard_id, cvr_id") })
 //this class has many fields that would normally be declared final, but
 //cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
@@ -186,7 +190,7 @@ public class CVRAuditInfo extends AbstractEntity implements Serializable {
     if (id() == null) {
       return 0;
     } else {
-      return id().intValue();
+      return id().hashCode();
     } 
   }
 }

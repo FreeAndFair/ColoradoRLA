@@ -85,12 +85,13 @@ public final class CountyContestResultQueries {
         throw new IllegalStateException("unique constraint violated on CountyContestResult");
       }
     } catch (final PersistenceException e) {
-      Main.LOGGER.error("could not query database for contest");
+      e.printStackTrace(System.out);
+      Main.LOGGER.error("could not query database for contest results");
     }
     if (result == null) {
-      Main.LOGGER.debug("found no contest matching + " + the_contest);
+      Main.LOGGER.debug("found no contest results matching + " + the_contest);
     } else {
-      Main.LOGGER.debug("found contest " + result);
+      Main.LOGGER.debug("found contest results " + result);
     }
     return result;
   }

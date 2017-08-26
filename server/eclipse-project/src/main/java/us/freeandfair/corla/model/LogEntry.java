@@ -259,9 +259,7 @@ public class LogEntry extends AbstractEntity implements Serializable {
     boolean result = true;
     if (the_other instanceof LogEntry) {
       final LogEntry other_entry = (LogEntry) the_other;
-      result &= EqualsHashcodeHelper.nullableEquals(other_entry.information(), information());
-      result &= EqualsHashcodeHelper.nullableEquals(other_entry.timestamp(), timestamp());
-      result &= EqualsHashcodeHelper.nullableEquals(other_entry.hash(), hash());
+      result &= EqualsHashcodeHelper.nullableEquals(other_entry.id(), id());
     } else {
       result = false;
     }
@@ -273,6 +271,6 @@ public class LogEntry extends AbstractEntity implements Serializable {
    */
   @Override
   public int hashCode() {
-    return toString().hashCode();
+    return id().hashCode();
   }
 }

@@ -107,8 +107,8 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
       final InputStreamReader bmi_isr = new InputStreamReader(bmi_is, "UTF-8");
       final DominionCVRExportParser parser = 
           new DominionCVRExportParser(bmi_isr, 
-                                      the_file.timestamp(),
                                       Persistence.getByID(the_file.countyID(), County.class));
+      CastVoteRecordQueries.deleteMatching(the_file.countyID(), RecordType.UPLOADED);
       if (parser.parse()) {
         Main.LOGGER.info(parser.recordCount().getAsInt() + " CVRs parsed from file " + 
                          the_file.id());

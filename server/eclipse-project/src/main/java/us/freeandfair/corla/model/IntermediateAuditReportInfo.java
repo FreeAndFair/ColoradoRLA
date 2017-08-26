@@ -19,6 +19,7 @@ import java.time.Instant;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -35,7 +36,9 @@ import us.freeandfair.corla.persistence.AbstractEntity;
  * @version 0.0.1
  */
 @Entity
-@Table(name = "intermediate_audit_report")
+@Table(name = "intermediate_audit_report",
+       indexes = { @Index(name = "idx_iari_dashboard", columnList = "dashboard_id") })
+
 //this class has many fields that would normally be declared final, but
 //cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
@@ -139,8 +142,7 @@ public class IntermediateAuditReportInfo extends AbstractEntity implements Seria
     if (the_other instanceof IntermediateAuditReportInfo) {
       final IntermediateAuditReportInfo other_report = 
           (IntermediateAuditReportInfo) the_other;
-      result &= nullableEquals(other_report.timestamp(), timestamp());
-      result &= nullableEquals(other_report.report(), report());
+      result &= nullableEquals(other_report.id(), id());
     } else {
       result = false;
     }
@@ -152,6 +154,6 @@ public class IntermediateAuditReportInfo extends AbstractEntity implements Seria
    */
   @Override
   public int hashCode() {
-    return toString().hashCode();
+    return id().hashCode();
   }
 }

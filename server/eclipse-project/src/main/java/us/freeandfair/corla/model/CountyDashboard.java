@@ -577,6 +577,6 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    */
   @Override
   public int hashCode() {
-    return toString().hashCode();
+    return id().hashCode();
   }
 }

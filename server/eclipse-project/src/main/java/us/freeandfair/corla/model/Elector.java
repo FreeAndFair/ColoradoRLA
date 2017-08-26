@@ -120,10 +120,7 @@ public class Elector extends AbstractEntity implements Serializable {
     boolean result = true;
     if (the_other instanceof Elector) {
       final Elector other_choice = (Elector) the_other;
-      result &= EqualsHashcodeHelper.nullableEquals(other_choice.firstName(), firstName());
-      result &= EqualsHashcodeHelper.nullableEquals(other_choice.lastName(), lastName());
-      result &= EqualsHashcodeHelper.nullableEquals(other_choice.politicalParty(), 
-                                                    politicalParty());
+      result &= EqualsHashcodeHelper.nullableEquals(other_choice.id(), id());
     } else {
       result = false;
     }
@@ -135,6 +132,6 @@ public class Elector extends AbstractEntity implements Serializable {
    */
   @Override
   public int hashCode() {
-    return toString().hashCode();
+    return id().hashCode();
   }
 }

@@ -15,6 +15,7 @@ package us.freeandfair.corla.model;
 import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Cacheable;
@@ -80,7 +81,7 @@ public class County implements PersistentEntity, Serializable {
                                        referencedColumnName = MY_ID),
              inverseJoinColumns = @JoinColumn(name = "administrator_id", 
                                               referencedColumnName = MY_ID))
-  private Set<Administrator> my_administrators;
+  private Set<Administrator> my_administrators = new HashSet<>();
 
   /**
    * Constructs an empty county, solely for persistence. 
@@ -101,7 +102,7 @@ public class County implements PersistentEntity, Serializable {
     super();
     my_name = the_name;
     my_id = the_identifier;
-    my_administrators = the_administrators;
+    my_administrators.addAll(the_administrators);
   }
 
   /**
@@ -165,7 +166,6 @@ public class County implements PersistentEntity, Serializable {
     boolean result = true;
     if (the_other instanceof County) {
       final County other_county = (County) the_other;
-      result &= nullableEquals(other_county.name(), name());
       result &= nullableEquals(other_county.id(), id());
     } else {
       result = false;
@@ -178,6 +178,6 @@ public class County implements PersistentEntity, Serializable {
    */
   @Override
   public int hashCode() {
-    return toString().hashCode();
+    return id().hashCode();
   }
 }

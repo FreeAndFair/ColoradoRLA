@@ -21,6 +21,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Version;
@@ -38,7 +39,8 @@ import us.freeandfair.corla.persistence.PersistentEntity;
  */
 // note that unlike our other entities, uploaded files are not Serializable
 @Entity
-@Table(name = "uploaded_file")
+@Table(name = "uploaded_file",
+       indexes = { @Index(name = "idx_uploaded_file_county", columnList = "county_id") })
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
@@ -67,7 +69,7 @@ public class UploadedFile implements PersistentEntity {
   /**
    * The county that uploaded the file.
    */
-  @Column(updatable = false, nullable = false)
+  @Column(name = "county_id", updatable = false, nullable = false)
   private Long my_county_id;
   
   /**

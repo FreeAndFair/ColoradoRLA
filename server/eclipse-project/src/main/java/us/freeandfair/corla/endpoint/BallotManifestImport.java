@@ -107,8 +107,8 @@ public class BallotManifestImport extends AbstractCountyDashboardEndpoint {
       final InputStreamReader bmi_isr = new InputStreamReader(bmi_is, "UTF-8");
       final BallotManifestParser parser = 
           new ColoradoBallotManifestParser(bmi_isr, 
-                                           the_file.timestamp(),
                                            the_file.countyID());
+      BallotManifestInfoQueries.deleteMatching(the_file.countyID());
       if (parser.parse()) {
         Main.LOGGER.info(parser.recordCount().getAsInt() + 
                          " ballot manifest records parsed from file " + 

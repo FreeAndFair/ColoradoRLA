@@ -21,6 +21,7 @@ import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -38,7 +39,9 @@ import us.freeandfair.corla.persistence.AbstractEntity;
  * @version 0.0.1
  */
 @Entity
-@Table(name = "county_contest_comparison_audit")
+@Table(name = "county_contest_comparison_audit",
+       indexes = { @Index(name = "idx_ccca_dashboard", columnList = "dashboard_id") })
+
 @SuppressWarnings({"PMD.ImmutableField", "PMD.CyclomaticComplexity", "PMD.GodClass"})
 public class CountyContestComparisonAudit extends AbstractEntity implements Serializable {
   /**

@@ -53,6 +53,9 @@ public final class ContestQueries {
    * @param the_contest The contest object to match.
    * @return the matched contest object, if one exists.
    */
+  // we are checking to see if exactly one result is in a list, and
+  // PMD doesn't like it
+  @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
   public static Contest matching(final Contest the_contest) {
     Contest result = null;
     
@@ -68,18 +71,17 @@ public final class ContestQueries {
       cq.select(root).where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
       final TypedQuery<Contest> query = s.createQuery(cq);
       final List<Contest> query_results = query.getResultList();
-      // check to see if the results are really equivalent
-      for (final Contest c : query_results) {
-        if (c.equals(the_contest)) {
-          // we found a match
-          result = c;
-          break;
-        }
-      }
-      if (result == null) {
+      // if there's exactly one result, return that
+      if (query_results.size() == 1) {
+        result = query_results.get(0);
+      } else if (query_results.isEmpty()) {
         // we need to persist a new object
         Persistence.saveOrUpdate(the_contest);
         result = the_contest;
+      } else {
+        Main.LOGGER.error("multiple matching contests found");
+        throw new PersistenceException("multiple matching contests found for " + 
+                                       the_contest);
       }
     } catch (final PersistenceException e) {
       Main.LOGGER.error("could not query database for contest");

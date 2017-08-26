@@ -26,6 +26,7 @@ import us.freeandfair.corla.model.CVRContestInfo.ConsensusValue;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.Contest;
+import us.freeandfair.corla.model.ContestToAudit;
 import us.freeandfair.corla.model.ContestToAudit.AuditType;
 import us.freeandfair.corla.model.CountyContestComparisonAudit;
 import us.freeandfair.corla.model.CountyContestResult;
@@ -34,7 +35,6 @@ import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CVRAuditInfoQueries;
 import us.freeandfair.corla.query.CastVoteRecordQueries;
-import us.freeandfair.corla.query.ContestToAuditQueries;
 import us.freeandfair.corla.query.CountyContestResultQueries;
 
 /**
@@ -66,8 +66,7 @@ public final class ComparisonAuditController {
                                                         final int the_min_index,
                                                         final int the_max_index) {
     final OptionalLong count = 
-        CastVoteRecordQueries.countMatching(the_cdb.cvrUploadTimestamp(), 
-                                            the_cdb.id(), 
+        CastVoteRecordQueries.countMatching(the_cdb.id(), 
                                             RecordType.UPLOADED);
     
     if (!count.isPresent()) {
@@ -90,8 +89,7 @@ public final class ComparisonAuditController {
     final List<Integer> list_of_cvrs_to_audit = 
         prng.getRandomNumbers(the_min_index, the_max_index);
     final List<Long> list_of_cvr_ids = 
-        CastVoteRecordQueries.idsForMatching(the_cdb.cvrUploadTimestamp(), 
-                                             the_cdb.id(),
+        CastVoteRecordQueries.idsForMatching(the_cdb.id(),
                                              RecordType.UPLOADED);
     final List<CastVoteRecord> result = new ArrayList<>();
     
@@ -111,11 +109,16 @@ public final class ComparisonAuditController {
     final DoSDashboard dosdb =
         Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
     final BigDecimal risk_limit = dosdb.riskLimitForComparisonAudits();
-    final Set<Contest> all_driving_contests = 
-        ContestToAuditQueries.contestsMatching(AuditType.COMPARISON);
+    final Set<Contest> all_driving_contests = new HashSet<>();
     final Set<Contest> county_driving_contests = new HashSet<>();
     final Set<CountyContestComparisonAudit> comparison_audits = new HashSet<>();
     int to_audit = Integer.MIN_VALUE;
+    
+    for (final ContestToAudit cta : dosdb.contestsToAudit()) {
+      if (cta.audit() == AuditType.COMPARISON) {
+        all_driving_contests.add(cta.contest());
+      }
+    }
     
     the_dashboard.setAuditedPrefixLength(0);
     the_dashboard.setDiscrepancies(0);

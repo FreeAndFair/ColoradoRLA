@@ -21,12 +21,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Cacheable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
+import javax.persistence.CollectionTable;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
@@ -88,9 +88,10 @@ public class DoSDashboard implements PersistentEntity, Serializable {
   /**
    * The contests to be audited and the reasons for auditing.
    */
-  @OneToMany(cascade = CascadeType.ALL, mappedBy = "my_dashboard", 
-             fetch = FetchType.EAGER, orphanRemoval = true)
-  @Column(name = "contest_to_audit")
+  @ElementCollection(fetch = FetchType.EAGER)
+  @CollectionTable(name = "contest_to_audit",
+                   joinColumns = @JoinColumn(name = "dashboard_id", 
+                                             referencedColumnName = "my_id"))
   private Set<ContestToAudit> my_contests_to_audit = new HashSet<>();
   
   /**
@@ -200,12 +201,10 @@ public class DoSDashboard implements PersistentEntity, Serializable {
       if (c.contest().equals(the_contest_to_audit.contest())) {
         // flag the entry for removal
         contests_to_remove.add(c);
-        c.setDashboard(null);
       }
     }
     my_contests_to_audit.removeAll(contests_to_remove);
     if (the_contest_to_audit.audit() != AuditType.NONE) {
-      the_contest_to_audit.setDashboard(this);
       my_contests_to_audit.add(the_contest_to_audit);
     }
   }
@@ -267,6 +266,6 @@ public class DoSDashboard implements PersistentEntity, Serializable {
    */
   @Override
   public int hashCode() {
-    return toString().hashCode();
+    return id().hashCode();
   }
 }

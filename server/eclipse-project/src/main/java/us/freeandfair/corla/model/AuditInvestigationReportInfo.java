@@ -19,6 +19,7 @@ import java.time.Instant;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -35,7 +36,9 @@ import us.freeandfair.corla.persistence.AbstractEntity;
  * @version 0.0.1
  */
 @Entity
-@Table(name = "audit_investigation_report")
+@Table(name = "audit_investigation_report",
+       indexes = { @Index(name = "idx_airi_dashboard", columnList = "dashboard_id,index", 
+                          unique = true) })
 //this class has many fields that would normally be declared final, but
 //cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
@@ -50,7 +53,7 @@ public class AuditInvestigationReportInfo extends AbstractEntity implements Seri
    * The audit board dashboard to which this report belongs. 
    */
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
-  @JoinColumn
+  @JoinColumn(name = "dashboard_id")
   private CountyDashboard my_dashboard;
   
   /**
@@ -154,9 +157,7 @@ public class AuditInvestigationReportInfo extends AbstractEntity implements Seri
     if (the_other instanceof AuditInvestigationReportInfo) {
       final AuditInvestigationReportInfo other_report = 
           (AuditInvestigationReportInfo) the_other;
-      result &= nullableEquals(other_report.timestamp(), timestamp());
-      result &= nullableEquals(other_report.name(), name());
-      result &= nullableEquals(other_report.report(), report());
+      result &= nullableEquals(other_report.id(), id());
     } else {
       result = false;
     }
@@ -168,6 +169,6 @@ public class AuditInvestigationReportInfo extends AbstractEntity implements Seri
    */
   @Override
   public int hashCode() {
-    return toString().hashCode();
+    return id().hashCode();
   }
 }

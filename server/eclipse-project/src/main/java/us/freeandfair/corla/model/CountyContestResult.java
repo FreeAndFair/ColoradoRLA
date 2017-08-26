@@ -33,6 +33,7 @@ import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
@@ -51,9 +52,12 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
 @Entity
 @Table(name = "county_contest_result",
        uniqueConstraints = {
-         @UniqueConstraint(columnNames = {"county_id", "contest_id"})
-       })
-
+         @UniqueConstraint(columnNames = {"county_id", "contest_id"}) },
+       indexes = { @Index(name = "idx_ccr_county_contest", 
+                          columnList = "county_id, contest_id",
+                          unique = true),
+                   @Index(name = "idx_ccr_county", columnList = "county_id"),
+                   @Index(name = "idx_ccr_contest", columnList = "contest_id") })
 //this class has many fields that would normally be declared final, but
 //cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
@@ -101,7 +105,7 @@ public class CountyContestResult extends AbstractEntity implements Serializable 
                    joinColumns = @JoinColumn(name = RESULT_ID, 
                                              referencedColumnName = MY_ID))
   @Column(name = "winner")
-  private Set<String> my_winners = new HashSet<String>();
+  private Set<String> my_winners = new HashSet<>();
   
   /**
    * The set of contest losers.
@@ -111,7 +115,7 @@ public class CountyContestResult extends AbstractEntity implements Serializable 
                    joinColumns = @JoinColumn(name = RESULT_ID,
                                              referencedColumnName = MY_ID))
   @Column(name = "loser")
-  private Set<String> my_losers = new HashSet<String>();
+  private Set<String> my_losers = new HashSet<>();
   
   /**
    * A map from choices to vote totals.
@@ -122,8 +126,7 @@ public class CountyContestResult extends AbstractEntity implements Serializable 
                                              referencedColumnName = MY_ID))
   @MapKeyColumn(name = "choice")
   @Column(name = "vote_total")
-  private Map<String, Integer> my_vote_totals = 
-      new HashMap<String, Integer>();
+  private Map<String, Integer> my_vote_totals = new HashMap<>();
   
   /**
    * The minimum pairwise margin between a winner and a loser.
@@ -429,7 +432,7 @@ public class CountyContestResult extends AbstractEntity implements Serializable 
    */
   @Override
   public int hashCode() {
-    return toString().hashCode();
+    return id().hashCode();
   }
   
   /**

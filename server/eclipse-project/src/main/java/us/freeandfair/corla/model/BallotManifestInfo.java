@@ -14,10 +14,10 @@ package us.freeandfair.corla.model;
 import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 
 import java.io.Serializable;
-import java.time.Instant;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.Table;
 
 import us.freeandfair.corla.persistence.AbstractEntity;
@@ -29,7 +29,8 @@ import us.freeandfair.corla.persistence.AbstractEntity;
  * @version 0.0.1
  */
 @Entity
-@Table(name = "ballot_manifest_info")
+@Table(name = "ballot_manifest_info",
+       indexes = { @Index(name = "idx_bmi_county", columnList = "county_id") })
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
@@ -40,16 +41,9 @@ public class BallotManifestInfo extends AbstractEntity implements Serializable {
   private static final long serialVersionUID = 1; 
   
   /**
-   * The timestamp for this ballot manifest info, in milliseconds
-   * since the epoch.
-   */
-  @Column(updatable = false, nullable = false)
-  private Instant my_timestamp;
-  
-  /**
    * The ID number of the county in which the batch was scanned.
    */
-  @Column(updatable = false, nullable = false)
+  @Column(name = "county_id", updatable = false, nullable = false)
   private Long my_county_id;
   //@ private invariant my_county_id >= 0;
   
@@ -88,33 +82,23 @@ public class BallotManifestInfo extends AbstractEntity implements Serializable {
   /**
    * Constructs a ballot manifest information record.
    * 
-   * @param the_timestamp The timestamp.
    * @param the_county_id The county ID.
    * @param the_scanner_id The scanner ID.
    * @param the_batch_id The batch ID.
    * @param the_batch_size The batch size.
    * @param the_storage_location The storage location.
    */
-  public BallotManifestInfo(final Instant the_timestamp,
-                            final Long the_county_id,
+  public BallotManifestInfo(final Long the_county_id,
                             final String the_scanner_id, 
                             final String the_batch_id,
                             final int the_batch_size, 
                             final String the_storage_location) {
     super();
-    my_timestamp = the_timestamp;
     my_county_id = the_county_id;
     my_scanner_id = the_scanner_id;
     my_batch_id = the_batch_id;
     my_batch_size = the_batch_size;
     my_storage_location = the_storage_location;
-  }
-  
-  /**
-   * @return the timestamp.
-   */
-  public Instant timestamp() {
-    return my_timestamp;
   }
   
   /**
@@ -157,10 +141,9 @@ public class BallotManifestInfo extends AbstractEntity implements Serializable {
    */
   @Override
   public String toString() {
-    return "BallotManifestInfo [timestamp=" + my_timestamp + 
-        ", county_id=" + my_county_id + ", scanner_id=" + my_scanner_id + 
-        ", batch_size=" + my_batch_size +
-        ", storage_container=" + my_storage_location + "]";
+    return "BallotManifestInfo [" + ", county_id=" + my_county_id + 
+           ", scanner_id=" + my_scanner_id + ", batch_size=" + 
+           my_batch_size + ", storage_container=" + my_storage_location + "]";
   }
   
   /**
@@ -174,12 +157,7 @@ public class BallotManifestInfo extends AbstractEntity implements Serializable {
     boolean result = true;
     if (the_other instanceof BallotManifestInfo) {
       final BallotManifestInfo other_bmi = (BallotManifestInfo) the_other;
-      result &= nullableEquals(other_bmi.timestamp(), timestamp());
-      result &= nullableEquals(other_bmi.countyID(), countyID());
-      result &= nullableEquals(other_bmi.scannerID(), scannerID());
-      result &= nullableEquals(other_bmi.batchID(), batchID());
-      result &= nullableEquals(other_bmi.batchSize(), batchSize());
-      result &= nullableEquals(other_bmi.storageLocation(), storageLocation());
+      result &= nullableEquals(other_bmi.id(), id());
     } else {
       result = false;
     }
@@ -191,6 +169,6 @@ public class BallotManifestInfo extends AbstractEntity implements Serializable {
    */
   @Override
   public int hashCode() {
-    return toString().hashCode();
+    return id().hashCode();
   }
 }

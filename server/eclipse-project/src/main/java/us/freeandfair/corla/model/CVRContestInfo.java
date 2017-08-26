@@ -12,7 +12,6 @@
 package us.freeandfair.corla.model;
 
 import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
-import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableHashCode;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -26,6 +25,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OrderColumn;
@@ -44,7 +44,10 @@ import us.freeandfair.corla.persistence.AbstractEntity;
  * @version 0.0.1
  */
 @Entity
-@Table(name = "cvr_contest_info")
+@Table(name = "cvr_contest_info",
+       indexes = { @Index(name = "idx_cvrci_cvr", columnList = "cvr_id"),
+                   @Index(name = "idx_cvrci_cvr_contest", 
+                          columnList = "cvr_id, contest_id")})
 //this class has many fields that would normally be declared final, but
 //cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
@@ -84,16 +87,13 @@ public class CVRContestInfo extends AbstractEntity implements Serializable {
   /**
    * The choices for this contest.
    */
-  // this is a list of choice names to make persistence more straightforward; if it
-  // were a list of Choice, then the mapping between contests and choices would
-  // need to be more complex
-  @ElementCollection(fetch = FetchType.LAZY)
+  @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name = "cvr_contest_info_choice",
                    joinColumns = @JoinColumn(name = "cvr_contest_info_id", 
                                              referencedColumnName = "my_id"))
   @OrderColumn(name = "index")
   @Column(name = "choice")
-  private List<String> my_choices;
+  private List<String> my_choices = new ArrayList<>();
 
   /**
    * Constructs an empty CVRContestInfo, solely for persistence.
@@ -120,7 +120,7 @@ public class CVRContestInfo extends AbstractEntity implements Serializable {
     my_contest = the_contest;
     my_comment = the_comment;
     my_consensus = the_consensus;
-    my_choices = new ArrayList<String>(the_choices);
+    my_choices.addAll(the_choices);
     for (final String s : my_choices) {
       if (!my_contest.isValidChoice(s)) {
         throw new IllegalArgumentException("invalid choice " + s + 
@@ -195,10 +195,7 @@ public class CVRContestInfo extends AbstractEntity implements Serializable {
     boolean result = true;
     if (the_other instanceof CVRContestInfo) {
       final CVRContestInfo other_info = (CVRContestInfo) the_other;
-      result &= nullableEquals(other_info.contest(), contest());
-      result &= nullableEquals(other_info.comment(), comment());
-      result &= nullableEquals(other_info.consensus(), consensus());
-      result &= nullableEquals(other_info.choices(), choices());
+      result &= nullableEquals(other_info.id(), id());
     } else {
       result = false;
     }
@@ -210,9 +207,7 @@ public class CVRContestInfo extends AbstractEntity implements Serializable {
    */
   @Override
   public int hashCode() {
-    // can't just use toString() because order of choices may differ
-    return (contest() + comment() + nullableHashCode(consensus()) + 
-            nullableHashCode(choices())).hashCode();
+    return id().hashCode();
   }
 
   /**

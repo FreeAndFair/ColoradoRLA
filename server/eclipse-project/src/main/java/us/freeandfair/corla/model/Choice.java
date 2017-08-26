@@ -17,12 +17,15 @@ import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 
 import java.io.Serializable;
 
+import javax.persistence.Embeddable;
+
 /**
  * A contest choice; has a name and a description.
  * 
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
+@Embeddable
 public class Choice implements Serializable {
   /**
    * The serialVersionUID.
@@ -32,12 +35,19 @@ public class Choice implements Serializable {
   /**
    * The choice name.
    */
-  private final String my_name;
+  private String my_name;
 
   /**
    * The choice description.
    */
-  private final String my_description;
+  private String my_description;
+  
+  /**
+   * Constructs a choice with default values, solely for persistence.
+   */
+  public Choice() {
+    // defaults
+  }
   
   /**
    * Constructs a choice with the specified parameters.
