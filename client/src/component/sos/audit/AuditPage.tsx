@@ -22,13 +22,18 @@ const Breadcrumb = () => (
     </ul>
 );
 
+function round(val: number, digits: number) {
+    const factor = Math.pow(10, digits);
+    return Math.round(val * factor) / factor;
+}
+
 const ReadonlyRiskLimit = ({ riskLimit }: any) => {
-    const riskLimitPercent = Math.round(riskLimit * 100);
+    const riskLimitPercent = round(riskLimit * 100, 2);
 
     return (
         <div>
             <h4>Risk limit set.</h4>
-            <div>The risk limit is set at: { riskLimit } ({ riskLimitPercent }%)</div>
+            <div>The risk limit is set at: { riskLimitPercent }%</div>
         </div>
     );
 };

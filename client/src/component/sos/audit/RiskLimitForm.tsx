@@ -24,16 +24,24 @@ const MAX_RISK_LIMIT = 1 - MIN_RISK_LIMIT;
 
 function isValidRiskLimit(limit: number) {
     return isFinite(limit)
-        && MIN_RISK_LIMIT <= limit
-        && limit <= MAX_RISK_LIMIT;
+        && MIN_RISK_LIMIT <= fromPercent(limit)
+        && fromPercent(limit) <= MAX_RISK_LIMIT;
+}
+
+function fromPercent(val: number) {
+    return val / 100;
+}
+
+function toPercent(val: number) {
+    return val * 100;
 }
 
 
 class RiskLimitForm extends React.Component<FormProps & any, FormState> {
     public state: FormState = {
-        ballotPollingField: `${DEFAULT_RISK_LIMIT}`,
+        ballotPollingField: `${toPercent(DEFAULT_RISK_LIMIT)}`,
         ballotPollingLimit: DEFAULT_RISK_LIMIT,
-        comparisonField: `${DEFAULT_RISK_LIMIT}`,
+        comparisonField: `${toPercent(DEFAULT_RISK_LIMIT)}`,
         comparisonLimit: DEFAULT_RISK_LIMIT,
     };
 
@@ -51,28 +59,28 @@ class RiskLimitForm extends React.Component<FormProps & any, FormState> {
             <div>
                 <div>
                     <label>
-                        Ballot Polling Audits
+                        Ballot Polling Audits (%)
                         <NumericInput
                             allowNumericCharactersOnly={ true }
-                            min={ MIN_RISK_LIMIT }
-                            max={ MAX_RISK_LIMIT }
-                            minorStepSize={ 0.001 }
+                            min={ toPercent(MIN_RISK_LIMIT) }
+                            max={ toPercent(MAX_RISK_LIMIT) }
+                            minorStepSize={ toPercent(0.001) }
                             onBlur={ this.onBlur }
-                            stepSize={ 0.01 }
+                            stepSize={ toPercent(0.01) }
                             value={ ballotPollingField }
                             onValueChange={ this.onBallotPollingValueChange } />
                     </label>
                 </div>
                 <div>
                     <label>
-                        Comparison Audits
+                        Comparison Audits (%)
                         <NumericInput
                             allowNumericCharactersOnly={ true }
-                            min={ MIN_RISK_LIMIT }
-                            max={ MAX_RISK_LIMIT }
-                            minorStepSize={ 0.001 }
+                            min={ toPercent(MIN_RISK_LIMIT) }
+                            max={ toPercent(MAX_RISK_LIMIT) }
+                            minorStepSize={ toPercent(0.001) }
                             onBlur={ this.onBlur }
-                            stepSize={ 0.01 }
+                            stepSize={ toPercent(0.01) }
                             value={ comparisonField }
                             onValueChange={ this.onComparisonValueChange } />
                     </label>
@@ -86,16 +94,16 @@ class RiskLimitForm extends React.Component<FormProps & any, FormState> {
 
         const parsedBallotPollingField = parseFloat(s.ballotPollingField);
         if (isValidRiskLimit(parsedBallotPollingField)) {
-            s.ballotPollingLimit = parsedBallotPollingField;
+            s.ballotPollingLimit = fromPercent(parsedBallotPollingField);
         } else {
-            s.ballotPollingField = `${s.ballotPollingLimit}`;
+            s.ballotPollingField = `${toPercent(s.ballotPollingLimit)}`;
         }
 
         const parsedComparisonField = parseFloat(s.comparisonField);
         if (isValidRiskLimit(parsedComparisonField)) {
-            s.comparisonLimit = parsedComparisonField;
+            s.comparisonLimit = fromPercent(parsedComparisonField);
         } else {
-            s.comparisonField = `${s.comparisonLimit}`;
+            s.comparisonField = `${toPercent(s.comparisonLimit)}`;
         }
 
         this.setState(s);
