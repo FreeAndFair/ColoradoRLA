@@ -18,6 +18,7 @@ import java.math.RoundingMode;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -40,6 +41,16 @@ import us.freeandfair.corla.persistence.AbstractEntity;
 @Table(name = "county_contest_comparison_audit")
 @SuppressWarnings({"PMD.ImmutableField", "PMD.CyclomaticComplexity", "PMD.GodClass"})
 public class CountyContestComparisonAudit extends AbstractEntity implements Serializable {
+  /**
+   * The database stored precision for decimal types.
+   */
+  public static final int PRECISION = 6;
+  
+  /**
+   * The database stored scale for decimal types.
+   */
+  public static final int SCALE = 4;
+  
   /**
    * Gamma, as presented in the literature:
    * https://www.stat.berkeley.edu/~stark/Preprints/gentle12.pdf
@@ -102,11 +113,13 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
   /**
    * The gamma.
    */
+  @Column(precision = PRECISION, scale = SCALE)
   private BigDecimal my_gamma = COLORADO_GAMMA;
   
   /**
    * The risk limit.
    */
+  @Column(precision = PRECISION, scale = SCALE)
   private BigDecimal my_risk_limit = BigDecimal.ONE;
   
   /**

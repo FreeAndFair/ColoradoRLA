@@ -59,6 +59,16 @@ public class DoSDashboard implements PersistentEntity, Serializable {
   public static final int MIN_SEED_LENGTH = 20;
   
   /**
+   * The database stored precision for decimal types.
+   */
+  public static final int PRECISION = 6;
+  
+  /**
+   * The database stored scale for decimal types.
+   */
+  public static final int SCALE = 4;
+  
+  /**
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1; 
@@ -86,6 +96,7 @@ public class DoSDashboard implements PersistentEntity, Serializable {
   /**
    * The risk limit for comparison audits.
    */
+  @Column(precision = PRECISION, scale = SCALE)
   private BigDecimal my_risk_limit_for_comparison_audits;
   
   /**
