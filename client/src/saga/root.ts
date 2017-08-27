@@ -12,7 +12,7 @@ import dosLoginSaga from './dosLoginSaga';
 import dosPollSaga from './dosPollSaga';
 import fileUploadSaga from './fileUploadSaga';
 import logoutSaga from './logoutSaga';
-import nextFileUploadSaga from './next/fileUploadSaga';
+import uploadBallotManifestSaga from './next/uploadBallotManifestSaga';
 import uploadCvrExportSaga from './next/uploadCvrExportSaga';
 import refreshSaga from './refreshSaga';
 import uploadAcvrOkSaga from './uploadAcvrOkSaga';
@@ -29,9 +29,9 @@ export default function* rootSaga() {
         dosPollSaga(),
         fileUploadSaga(),
         logoutSaga(),
-        nextFileUploadSaga(),
         refreshSaga(),
         uploadAcvrOkSaga(),
+        uploadBallotManifestSaga(),
         uploadCvrExportSaga(),
     ];
 
