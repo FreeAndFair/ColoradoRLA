@@ -23,7 +23,7 @@ async function importCvrExport(body: any) {
     };
 
     try {
-        action('NEXT_IMPORT_CVR_EXPORT_SEND');
+        action('IMPORT_CVR_EXPORT_SEND');
 
         const r = await fetch(importUrl, init);
 
@@ -32,14 +32,14 @@ async function importCvrExport(body: any) {
         const data = { received, sent };
 
         if (!r.ok) {
-            action('NEXT_IMPORT_CVR_EXPORT_FAIL', data);
+            action('IMPORT_CVR_EXPORT_FAIL', data);
             return;
         }
 
-        action('NEXT_IMPORT_CVR_EXPORT_OK', data);
+        action('IMPORT_CVR_EXPORT_OK', data);
     } catch (e) {
         if (e.message === 'Failed to fetch') {
-            action('NEXT_IMPORT_CVR_EXPORT_NETWORK_FAIL');
+            action('IMPORT_CVR_EXPORT_NETWORK_FAIL');
         }
 
         action('INTERNAL_ERROR');
@@ -58,7 +58,7 @@ async function uploadCvrExport(countyId: number, file: Blob, hash: string) {
     };
 
     try {
-        action('NEXT_UPLOAD_CVR_EXPORT_SEND');
+        action('UPLOAD_CVR_EXPORT_SEND');
 
         const r = await fetch(uploadUrl, init);
 
@@ -67,16 +67,16 @@ async function uploadCvrExport(countyId: number, file: Blob, hash: string) {
         const data = { received, sent };
 
         if (!r.ok) {
-            action('NEXT_UPLOAD_CVR_EXPORT_FAIL', data);
+            action('UPLOAD_CVR_EXPORT_FAIL', data);
             return;
         }
 
-        action('NEXT_UPLOAD_CVR_EXPORT_OK', data);
+        action('UPLOAD_CVR_EXPORT_OK', data);
 
         importCvrExport(received);
     } catch (e) {
         if (e.message === 'Failed to fetch') {
-            action('NEXT_UPLOAD_CVR_EXPORT_NETWORK_FAIL');
+            action('UPLOAD_CVR_EXPORT_NETWORK_FAIL');
         }
 
         action('INTERNAL_ERROR');

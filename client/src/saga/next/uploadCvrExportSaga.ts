@@ -49,11 +49,11 @@ function* uploadCvrExportNetworkFail(): IterableIterator<any> {
 
 
 export default function* uploadCvrExportSaga() {
-    yield takeEvery('NEXT_IMPORT_CVR_EXPORT_OK', importCvrExportOk);
-    yield takeEvery('NEXT_IMPORT_CVR_EXPORT_FAIL', importCvrExportFail);
-    yield takeEvery('NEXT_IMPORT_CVR_EXPORT_NETWORK_FAIL', importCvrExportNetworkFail);
+    yield takeEvery('IMPORT_CVR_EXPORT_OK', importCvrExportOk);
+    yield takeEvery('IMPORT_CVR_EXPORT_FAIL', importCvrExportFail);
+    yield takeEvery('IMPORT_CVR_EXPORT_NETWORK_FAIL', importCvrExportNetworkFail);
 
-    yield takeEvery('NEXT_UPLOAD_CVR_EXPORT_OK', uploadCvrExportOk);
-    yield takeEvery('NEXT_UPLOAD_CVR_EXPORT_FAIL', uploadCvrExportFail);
-    yield takeEvery('NEXT_UPLOAD_CVR_EXPORT_NETWORK_FAIL', uploadCvrExportNetworkFail);
+    yield takeEvery('UPLOAD_CVR_EXPORT_OK', uploadCvrExportOk);
+    yield takeEvery('UPLOAD_CVR_EXPORT_FAIL', uploadCvrExportFail);
+    yield takeEvery('UPLOAD_CVR_EXPORT_NETWORK_FAIL', uploadCvrExportNetworkFail);
 }
