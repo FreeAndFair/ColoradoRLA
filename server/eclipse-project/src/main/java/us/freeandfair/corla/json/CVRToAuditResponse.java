@@ -11,6 +11,7 @@
 
 package us.freeandfair.corla.json;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import us.freeandfair.corla.util.SuppressFBWarnings;
@@ -108,7 +109,13 @@ public class CVRToAuditResponse {
    * then record ID.
    */
   @SuppressWarnings("PMD.AtLeastOneConstructor")
-  public static class BallotOrderComparator implements Comparator<CVRToAuditResponse> {
+  public static class BallotOrderComparator 
+      implements Serializable, Comparator<CVRToAuditResponse> {
+    /**
+     * The serialVersionUID.
+     */
+    private static final long serialVersionUID = 1;
+    
     /**
      * Orders two CVRToAuditResponses lexicographically by the triple
      * (scanner_id, batch_id, record_id).

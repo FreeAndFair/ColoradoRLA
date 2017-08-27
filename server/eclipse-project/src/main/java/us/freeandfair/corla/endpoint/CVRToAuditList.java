@@ -152,7 +152,10 @@ public class CVRToAuditList extends AbstractEndpoint {
       int start = index;
       int end = start + ballot_count - 1; // end is inclusive
       
-      while (cvr_set.size() < ballot_count && cvr_set.size() < county_ballots) {
+      // if duplicates is set we go until the list has the right number; if not,
+      // we go until we hit the end of our CVR pool
+      while (duplicates && cvr_to_audit_list.size() < ballot_count || 
+             !duplicates && cvr_set.size() < ballot_count && cvr_set.size() < county_ballots) {
         final List<CastVoteRecord> new_cvrs = 
             ComparisonAuditController.computeBallotOrder(cdb, start, end);
         for (int i = 0; i < new_cvrs.size(); i++) {
