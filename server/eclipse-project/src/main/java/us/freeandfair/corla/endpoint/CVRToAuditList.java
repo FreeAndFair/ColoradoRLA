@@ -14,6 +14,7 @@ package us.freeandfair.corla.endpoint;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.OptionalLong;
 import java.util.Set;
 
 import javax.persistence.PersistenceException;
@@ -25,11 +26,15 @@ import us.freeandfair.corla.Main;
 import us.freeandfair.corla.controller.ComparisonAuditController;
 import us.freeandfair.corla.json.CVRToAuditResponse;
 import us.freeandfair.corla.json.CVRToAuditResponse.BallotOrderComparator;
+import us.freeandfair.corla.model.CVRAuditInfo;
 import us.freeandfair.corla.model.CastVoteRecord;
+import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.BallotManifestInfoQueries;
+import us.freeandfair.corla.query.CVRAuditInfoQueries;
+import us.freeandfair.corla.query.CastVoteRecordQueries;
 
 /**
  * The CVR to audit list endpoint.
@@ -48,6 +53,11 @@ public class CVRToAuditList extends AbstractEndpoint {
    * The "ballot_count" parameter.
    */
   public static final String BALLOT_COUNT = "ballot_count";
+  
+  /**
+   * The "include duplicates" parameter.
+   */
+  public static final String INCLUDE_DUPLICATES = "include_duplicates";
   
   /**
    * {@inheritDoc}
@@ -83,6 +93,7 @@ public class CVRToAuditList extends AbstractEndpoint {
   protected boolean validateParameters(final Request the_request) {
     final String start = the_request.queryParams(START);
     final String ballot_count = the_request.queryParams(BALLOT_COUNT);
+    final String duplicates = the_request.queryParams(INCLUDE_DUPLICATES);
     
     boolean result = start != null && ballot_count != null;
     
@@ -92,6 +103,9 @@ public class CVRToAuditList extends AbstractEndpoint {
         result = s >= 0;
         final int b = Integer.parseInt(ballot_count);
         result &= b >= 0;
+        if (duplicates != null) {
+          Boolean.parseBoolean(duplicates);
+        }
       } catch (final NumberFormatException e) {
         result = false;
       }
@@ -109,10 +123,25 @@ public class CVRToAuditList extends AbstractEndpoint {
       // get the request parameters
       final int index = Integer.parseInt(the_request.queryParams(START));
       final int ballot_count = Integer.parseInt(the_request.queryParams(BALLOT_COUNT));
+      final String duplicates_param = the_request.queryParams(INCLUDE_DUPLICATES);
+      final boolean duplicates;
+      if (duplicates_param == null) {
+        duplicates = false;
+      } else {
+        duplicates = Boolean.parseBoolean(the_request.queryParams(INCLUDE_DUPLICATES));
+      }
       
       // get other things we need
       final County county = Authentication.authenticatedCounty(the_request);
       final CountyDashboard cdb = Persistence.getByID(county.id(), CountyDashboard.class);
+      final OptionalLong county_ballots_found = 
+          CastVoteRecordQueries.countMatching(county.id(), RecordType.UPLOADED);
+      final long county_ballots;
+      if (county_ballots_found.isPresent()) {
+        county_ballots = county_ballots_found.getAsLong();
+      } else {
+        county_ballots = 0;
+      }
       final Set<CastVoteRecord> cvr_set = new HashSet<>();
       final List<CVRToAuditResponse> cvr_to_audit_list = new ArrayList<>();
       
@@ -123,13 +152,13 @@ public class CVRToAuditList extends AbstractEndpoint {
       int start = index;
       int end = start + ballot_count - 1; // end is inclusive
       
-      while (cvr_set.size() < ballot_count) {
+      while (cvr_set.size() < ballot_count && cvr_set.size() < county_ballots) {
         final List<CastVoteRecord> new_cvrs = 
             ComparisonAuditController.computeBallotOrder(cdb, start, end);
         for (int i = 0; i < new_cvrs.size(); i++) {
           final CastVoteRecord cvr = new_cvrs.get(i);
-          if (!cvr_set.contains(cvr)) {
-            // this is legitimately a new CVR
+          if ((duplicates || !cvr_set.contains(cvr)) && notAudited(cdb, cvr)) {
+            // get the CVR location
             final String location = BallotManifestInfoQueries.locationFor(cvr);
             cvr_to_audit_list.add(new CVRToAuditResponse(start + i, cvr.scannerID(), 
                                                          cvr.batchID(), cvr.recordID(), 
@@ -150,5 +179,27 @@ public class CVRToAuditList extends AbstractEndpoint {
       serverError(the_response, "could not generate cvr list");
     }
     return my_endpoint_result.get();
+  }
+  
+  
+  /**
+   * Checks to see if the specified CVR has been audited on the specified county
+   * dashboard.
+   * 
+   * @param the_dashboard The county dashboard.
+   * @param the_cvr The CVR.
+   * @return true if the specified CVR has not been audited yet, false otherwise.
+   */
+  private boolean notAudited(final CountyDashboard the_dashboard, 
+                             final CastVoteRecord the_cvr) {
+    final List<CVRAuditInfo> info = 
+        CVRAuditInfoQueries.matching(the_dashboard, the_cvr);
+    final boolean result;
+    if (info.isEmpty() || info.get(0).acvr() == null) {
+      result = true;
+    } else {
+      result = false;
+    }
+    return result;
   }
 }
