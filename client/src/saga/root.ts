@@ -14,6 +14,8 @@ import fileUploadSaga from './fileUploadSaga';
 import logoutSaga from './logoutSaga';
 import refreshSaga from './refreshSaga';
 import uploadAcvrOkSaga from './uploadAcvrOkSaga';
+import uploadBallotManifestSaga from './uploadBallotManifestSaga';
+import uploadCvrExportSaga from './uploadCvrExportSaga';
 
 
 export default function* rootSaga() {
@@ -29,6 +31,8 @@ export default function* rootSaga() {
         logoutSaga(),
         refreshSaga(),
         uploadAcvrOkSaga(),
+        uploadBallotManifestSaga(),
+        uploadCvrExportSaga(),
     ];
 
     if (config.debug) {

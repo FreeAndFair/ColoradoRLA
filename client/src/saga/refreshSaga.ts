@@ -31,6 +31,8 @@ export default function* dosLoginSaga() {
         'UPDATE_ACVR_FORM',
         'UPLOAD_BALLOT_MANIFEST_OK',
         'UPLOAD_CVR_EXPORT_OK',
+        'IMPORT_BALLOT_MANIFEST_OK',
+        'IMPORT_CVR_EXPORT_OK',
     ];
     yield takeLatest(countyRefreshActions, countyRefresh);
 
