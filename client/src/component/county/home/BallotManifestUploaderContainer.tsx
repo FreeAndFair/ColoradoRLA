@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import BallotManifestUploader from './BallotManifestUploader';
 
-import uploadBallotManifest from '../../../action/uploadBallotManifest';
+import uploadBallotManifest from '../../../action/next/uploadBallotManifest';
 
 
 const UploadedBallotManifest = ({ filename, hash }: any) => (
