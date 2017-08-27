@@ -92,7 +92,7 @@ public final class BallotManifestInfoQueries {
       final CriteriaBuilder cb = s.getCriteriaBuilder();
       final CriteriaQuery<String> cq = cb.createQuery(String.class);
       final Root<BallotManifestInfo> root = cq.from(BallotManifestInfo.class);
-      cq.select(root.get("my_location"));
+      cq.select(root.get("my_storage_location"));
       cq.where(cb.and(cb.equal(root.get("my_county_id"), the_cvr.countyID()),
                       cb.equal(root.get("my_scanner_id"), the_cvr.scannerID()),
                       cb.equal(root.get("my_batch_id"), the_cvr.batchID())));

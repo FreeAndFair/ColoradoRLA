@@ -22,7 +22,8 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
  * @version 0.0.1
  */
 @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-@SuppressFBWarnings(value = {"URF_UNREAD_FIELD"}, justification = "Field is read by Gson.")
+@SuppressFBWarnings(value = {"URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"}, 
+                    justification = "Field is read by Gson.")
 public class CVRToAuditResponse {
   /**
    * The (first) audit sequence number.
