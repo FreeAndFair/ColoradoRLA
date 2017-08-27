@@ -31,6 +31,7 @@ import java.util.TreeMap;
 import javax.persistence.Cacheable;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -46,6 +47,7 @@ import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
 import us.freeandfair.corla.persistence.PersistentEntity;
+import us.freeandfair.corla.persistence.StringSetConverter;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
@@ -120,21 +122,15 @@ public class CountyContestResult implements PersistentEntity, Serializable {
   /**
    * The set of contest winners.
    */
-  @ElementCollection(fetch = FetchType.EAGER)
-  @CollectionTable(name = "county_contest_winners",
-                   joinColumns = @JoinColumn(name = RESULT_ID, 
-                                             referencedColumnName = MY_ID))
-  @Column(name = "winner")
+  @Column(name = "winners", columnDefinition = "text")
+  @Convert(converter = StringSetConverter.class)
   private Set<String> my_winners = new HashSet<>();
   
   /**
    * The set of contest losers.
    */
-  @ElementCollection(fetch = FetchType.EAGER)
-  @CollectionTable(name = "county_contest_losers",
-                   joinColumns = @JoinColumn(name = RESULT_ID,
-                                             referencedColumnName = MY_ID))
-  @Column(name = "loser")
+  @Column(name = "losers", columnDefinition = "text")
+  @Convert(converter = StringSetConverter.class)
   private Set<String> my_losers = new HashSet<>();
   
   /**

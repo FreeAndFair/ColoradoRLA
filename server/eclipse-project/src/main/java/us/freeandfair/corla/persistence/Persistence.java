@@ -236,7 +236,7 @@ public final class Persistence {
       settings.put(Environment.CACHE_PROVIDER_CONFIG, "org.hibernate.cache.EhCacheProvider");
       settings.put(Environment.CACHE_REGION_FACTORY, 
                    "org.hibernate.cache.ehcache.EhCacheRegionFactory");
-      settings.put(Environment.USE_SECOND_LEVEL_CACHE, TRUE);
+      settings.put(Environment.USE_SECOND_LEVEL_CACHE, FALSE);
       settings.put(Environment.USE_QUERY_CACHE, FALSE);
       settings.put(Environment.USE_DIRECT_REFERENCE_CACHE_ENTRIES, TRUE);
       settings.put(Environment.DEFAULT_CACHE_CONCURRENCY_STRATEGY, "read-write"); 
@@ -252,7 +252,7 @@ public final class Persistence {
       settings.put(Environment.MAX_FETCH_DEPTH, "3");
       
       // statistics
-      settings.put(Environment.GENERATE_STATISTICS, FALSE);
+      settings.put(Environment.GENERATE_STATISTICS, TRUE);
       
       // apply settings
       rb.applySettings(settings);

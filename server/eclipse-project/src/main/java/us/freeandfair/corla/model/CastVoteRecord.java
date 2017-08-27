@@ -20,8 +20,9 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.Cacheable;
-import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -30,7 +31,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.persistence.Version;
@@ -139,10 +140,11 @@ public class CastVoteRecord implements PersistentEntity, Serializable {
   /**
    * The contest information in this cast vote record.
    */
-  // EAGER rationale: we do linear searches in this list frequently
-  @OneToMany(cascade = CascadeType.ALL, mappedBy = "my_cvr", 
-             fetch = FetchType.EAGER, orphanRemoval = true)
+  @ElementCollection(fetch = FetchType.EAGER)
   @OrderColumn(name = "index")
+  @CollectionTable(name = "cvr_contest_info",
+                   joinColumns = @JoinColumn(name = "cvr_id", 
+                                             referencedColumnName = "my_id"))
   private List<CVRContestInfo> my_contest_info = new ArrayList<>();
   
   /**
@@ -188,9 +190,6 @@ public class CastVoteRecord implements PersistentEntity, Serializable {
     my_ballot_type = the_ballot_type;
     if (the_contest_info != null) {
       my_contest_info.addAll(the_contest_info);
-      for (final CVRContestInfo ci : my_contest_info) {
-        ci.setCVR(this);
-      }
     }
   }
 

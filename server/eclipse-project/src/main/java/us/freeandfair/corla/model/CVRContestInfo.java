@@ -18,30 +18,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.persistence.Cacheable;
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
+import javax.persistence.Convert;
+import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OrderColumn;
-import javax.persistence.Table;
-import javax.persistence.Version;
-
-import org.hibernate.annotations.Immutable;
 
 import com.google.gson.annotations.JsonAdapter;
 
 import us.freeandfair.corla.json.CVRContestInfoJsonAdapter;
-import us.freeandfair.corla.persistence.PersistentEntity;
+import us.freeandfair.corla.persistence.StringListConverter;
 
 /**
  * A cast vote record contains information about a single ballot, either 
@@ -50,44 +38,17 @@ import us.freeandfair.corla.persistence.PersistentEntity;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-@Entity
-@Immutable // this is a Hibernate-specific annotation, but there is no JPA alternative
-@Cacheable(false) // since CVRs aren't cached, there is little point to caching these
-@Table(name = "cvr_contest_info",
-       indexes = { @Index(name = "idx_cvrci_cvr", columnList = "cvr_id"),
-                   @Index(name = "idx_cvrci_cvr_contest", 
-                          columnList = "cvr_id, contest_id")})
+@Embeddable
 //this class has many fields that would normally be declared final, but
 //cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
 @JsonAdapter(CVRContestInfoJsonAdapter.class)
-public class CVRContestInfo implements PersistentEntity, Serializable {
+public class CVRContestInfo implements Serializable {
   /**
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1L;
-  
-  /**
-   * The ID number.
-   */
-  @Id
-  @Column(updatable = false, nullable = false)
-  @GeneratedValue(strategy = GenerationType.SEQUENCE)
-  private Long my_id;
-  
-  /**
-   * The version (for optimistic locking).
-   */
-  @Version
-  private Long my_version;
-  
-  /**
-   * The CVR to which this record belongs. 
-   */
-  @ManyToOne(optional = false, fetch = FetchType.EAGER)
-  @JoinColumn
-  private CastVoteRecord my_cvr;
-  
+
   /**
    * The contest in this record.
    */
@@ -110,12 +71,8 @@ public class CVRContestInfo implements PersistentEntity, Serializable {
   /**
    * The choices for this contest.
    */
-  @ElementCollection(fetch = FetchType.EAGER)
-  @CollectionTable(name = "cvr_contest_info_choice",
-                   joinColumns = @JoinColumn(name = "cvr_contest_info_id", 
-                                             referencedColumnName = "my_id"))
-  @OrderColumn(name = "index")
-  @Column(name = "choice")
+  @Column(name = "choices", columnDefinition = "text")
+  @Convert(converter = StringListConverter.class)
   private List<String> my_choices = new ArrayList<>();
 
   /**
@@ -150,47 +107,6 @@ public class CVRContestInfo implements PersistentEntity, Serializable {
                                            " for contest " + my_contest);
       }
     }
-  }
-  
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Long id() {
-    return my_id;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void setID(final Long the_id) {
-    my_id = the_id;
-  }
-  
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Long version() {
-    return my_version;
-  }
-  
-  /**
-   * Sets the CVR that owns this record; this should only be called by
-   * the CastVoteRecord class.
-   * 
-   * @param the_cvr The CVR.
-   */
-  protected void setCVR(final CastVoteRecord the_cvr) {
-    my_cvr = the_cvr;
-  }
-
-  /**
-   * @return the CVR that owns this record.
-   */
-  public CastVoteRecord cvr() {
-    return my_cvr;
   }
   
   /**
