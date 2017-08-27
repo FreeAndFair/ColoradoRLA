@@ -61,16 +61,22 @@ public final class DatabaseResetQueries {
     final CriteriaBuilder cb = s.getCriteriaBuilder();
     final CriteriaDelete<BallotManifestInfo> bmi = 
         cb.createCriteriaDelete(BallotManifestInfo.class);
+    bmi.from(BallotManifestInfo.class);
     final CriteriaDelete<CastVoteRecord> cvr =
         cb.createCriteriaDelete(CastVoteRecord.class);
+    cvr.from(CastVoteRecord.class);
     final CriteriaDelete<CountyContestResult> ccr = 
         cb.createCriteriaDelete(CountyContestResult.class);
+    ccr.from(CountyContestResult.class);
     final CriteriaDelete<CountyContestComparisonAudit> ccca =
         cb.createCriteriaDelete(CountyContestComparisonAudit.class);
+    ccca.from(CountyContestComparisonAudit.class);
     final CriteriaDelete<Contest> contest =
         cb.createCriteriaDelete(Contest.class);
+    contest.from(Contest.class);
     final CriteriaDelete<UploadedFile> files =
         cb.createCriteriaDelete(UploadedFile.class);
+    files.from(UploadedFile.class);
     
     s.createQuery(bmi).executeUpdate();
     s.createQuery(cvr).executeUpdate();
