@@ -13,6 +13,7 @@ import dosPollSaga from './dosPollSaga';
 import fileUploadSaga from './fileUploadSaga';
 import logoutSaga from './logoutSaga';
 import nextFileUploadSaga from './next/fileUploadSaga';
+import uploadCvrExportSaga from './next/uploadCvrExportSaga';
 import refreshSaga from './refreshSaga';
 import uploadAcvrOkSaga from './uploadAcvrOkSaga';
 
@@ -31,6 +32,7 @@ export default function* rootSaga() {
         nextFileUploadSaga(),
         refreshSaga(),
         uploadAcvrOkSaga(),
+        uploadCvrExportSaga(),
     ];
 
     if (config.debug) {
