@@ -157,7 +157,7 @@ public class CVRToAuditList extends AbstractEndpoint {
             ComparisonAuditController.computeBallotOrder(cdb, start, end);
         for (int i = 0; i < new_cvrs.size(); i++) {
           final CastVoteRecord cvr = new_cvrs.get(i);
-          if ((duplicates || !cvr_set.contains(cvr)) && notAudited(cvr)) {
+          if ((duplicates || !cvr_set.contains(cvr)) && notAudited(cdb, cvr)) {
             // get the CVR location
             final String location = BallotManifestInfoQueries.locationFor(cvr);
             cvr_to_audit_list.add(new CVRToAuditResponse(start + i, cvr.scannerID(), 
