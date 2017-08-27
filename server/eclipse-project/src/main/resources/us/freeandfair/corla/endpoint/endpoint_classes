@@ -21,6 +21,7 @@ us.freeandfair.corla.endpoint.CVRDownloadByCounty
 us.freeandfair.corla.endpoint.CVRDownloadByID
 us.freeandfair.corla.endpoint.CVRExportImport
 us.freeandfair.corla.endpoint.CVRExportUpload
+us.freeandfair.corla.endpoint.CVRToAuditList
 us.freeandfair.corla.endpoint.DoSDashboardASMState
 us.freeandfair.corla.endpoint.DoSDashboardRefresh
 us.freeandfair.corla.endpoint.EstablishAuditBoard
