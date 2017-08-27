@@ -61,6 +61,26 @@ const SelectedContests = (props: any) => {
     );
 };
 
+const WaitingForContestsPage = ({ back }: any) => {
+    return (
+        <div>
+            <Nav />
+            <Breadcrumb />
+            <div className='pt-card'>
+                Waiting for counties to upload contest data.
+            </div>
+            <div>
+                <button onClick={ back } className='pt-button'>
+                    Back
+                </button>
+                <button disabled className='pt-button pt-intent-primary'>
+                    Save & Next
+                </button>
+            </div>
+        </div>
+    );
+};
+
 const SelectContestsPage = (props: any) => {
     const {
         auditedContests,
@@ -69,6 +89,10 @@ const SelectContestsPage = (props: any) => {
         nextPage,
         selectContestsForAudit,
     } = props;
+
+    if (_.isEmpty(contests)) {
+        return <WaitingForContestsPage back={ back } />;
+    }
 
     const forms: any = {};
 
