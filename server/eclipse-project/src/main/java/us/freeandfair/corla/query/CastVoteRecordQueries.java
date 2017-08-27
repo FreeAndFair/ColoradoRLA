@@ -14,12 +14,12 @@ package us.freeandfair.corla.query;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalLong;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -47,7 +47,7 @@ public final class CastVoteRecordQueries {
   /**
    * The "cvr number" field.
    */
-  private static final String CVR_NUMBER = "my_cvr_number";
+  private static final String SEQUENCE_NUMBER = "my_sequence_number";
   
   /**
    * The "record type" field.
@@ -68,10 +68,7 @@ public final class CastVoteRecordQueries {
   }
   
   /**
-   * Obtain a stream of CastVoteRecord objects with the specified type, 
-   * ordered by their imprinted ID. This method <em>must</em>
-   * be called from within a transaction, and the result stream must be
-   * used within the same transaction.
+   * Obtain a stream of CastVoteRecord objects with the specified type. 
    *
    * @param the_type The type.
    * @return the stream of CastVoteRecord objects, or null if one could
@@ -93,9 +90,8 @@ public final class CastVoteRecordQueries {
       final CriteriaQuery<CastVoteRecord> cq = cb.createQuery(CastVoteRecord.class);
       final Root<CastVoteRecord> root = cq.from(CastVoteRecord.class);
       cq.select(root).where(cb.equal(root.get(RECORD_TYPE), the_type));
-      cq.orderBy(cb.asc(root.get(CVR_NUMBER)));
       final Query<CastVoteRecord> query = s.createQuery(cq);
-      result = ((Query<CastVoteRecord>) query).stream();
+      result = query.stream();
     } catch (final PersistenceException e) {
       Main.LOGGER.error(COULD_NOT_QUERY_DATABASE);
     }
@@ -143,9 +139,7 @@ public final class CastVoteRecordQueries {
   
   /**
    * Obtain a stream of CastVoteRecord objects with the specified county 
-   * and type, ordered by their CVR number. This method <em>must</em>
-   * be called from within a transaction, and the result stream must be
-   * used within the same transaction.
+   * and type, ordered by their sequence number. 
    *
    * @param the_county The county.
    * @param the_type The type.
@@ -168,7 +162,7 @@ public final class CastVoteRecordQueries {
       conjuncts.add(cb.equal(root.get(COUNTY_ID), the_county));
       conjuncts.add(cb.equal(root.get(RECORD_TYPE), the_type));
       cq.select(root).where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
-      cq.orderBy(cb.asc(root.get(CVR_NUMBER)));
+      cq.orderBy(cb.asc(root.get(SEQUENCE_NUMBER)));
       final Query<CastVoteRecord> query = s.createQuery(cq);
       result = query.stream();
     } catch (final PersistenceException e) {
@@ -219,49 +213,6 @@ public final class CastVoteRecordQueries {
     }
     return result;
   }
-
-  /**
-   * Obtain the list of CastVoteRecord database IDs with the specified county
-   * county and type, ordered by CVR number.
-   *
-   * @param the_county_id The county.
-   * @param the_type The type.
-   * @return the list of IDs.
-   * @exception IllegalStateException if this method is called outside a 
-   * transaction.
-   */
-  public static List<Long> idsForMatching(final Long the_county_id,
-                                          final RecordType the_type) {
-    if (!Persistence.isTransactionActive()) {
-      throw new IllegalStateException("no running transaction");
-    }
-    
-    List<Long> result = null;
-   
-    try {
-      final Session s = Persistence.currentSession();
-      final CriteriaBuilder cb = s.getCriteriaBuilder();
-      final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-      final Root<CastVoteRecord> root = cq.from(CastVoteRecord.class);
-      final List<Predicate> conjuncts = new ArrayList<Predicate>();
-      conjuncts.add(cb.equal(root.get(COUNTY_ID), the_county_id));
-      conjuncts.add(cb.equal(root.get(RECORD_TYPE), the_type));
-      cq.select(root.get("my_id"));
-      cq.where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
-      cq.orderBy(cb.asc(root.get(CVR_NUMBER)));
-      final Query<Long> query = s.createQuery(cq);
-      result = query.getResultList();
-    } catch (final PersistenceException e) {
-      Main.LOGGER.error(COULD_NOT_QUERY_DATABASE);
-    }
-    if (result == null) {
-      Main.LOGGER.debug("found no CVRs for county " + the_county_id + 
-                        ", type " + the_type);
-    } else {
-      Main.LOGGER.debug("query succeeded, returning CVR IDs");
-    }
-    return result;
-  }
   
   /**
    * Deletes the set of cast vote records for the specified county ID and 
@@ -269,27 +220,34 @@ public final class CastVoteRecordQueries {
    * 
    * @param the_county_id The county ID.
    * @param the_type The record type.
+   * @return the number of records deleted.
    * @exception PersistenceException if the cast vote records cannot be deleted.
    */
-  public static void deleteMatching(final Long the_county_id,
+  public static int deleteMatching(final Long the_county_id,
                                     final RecordType the_type) {
+    final AtomicInteger count = new AtomicInteger();
     final Session s = Persistence.currentSession();
     final CriteriaBuilder cb = s.getCriteriaBuilder();
-    final CriteriaDelete<CastVoteRecord> cd = 
-        cb.createCriteriaDelete(CastVoteRecord.class);
-    final Root<CastVoteRecord> root = cd.from(CastVoteRecord.class);
-    cd.where(cb.and(cb.equal(root.get(COUNTY_ID), the_county_id),
+    final CriteriaQuery<CastVoteRecord> cq = cb.createQuery(CastVoteRecord.class);
+    final Root<CastVoteRecord> root = cq.from(CastVoteRecord.class);
+    cq.where(cb.and(cb.equal(root.get(COUNTY_ID), the_county_id),
                     cb.equal(root.get(RECORD_TYPE), the_type)));
-    s.createQuery(cd).executeUpdate();
+    final Query<CastVoteRecord> query = s.createQuery(cq);
+    final Stream<CastVoteRecord> to_delete = query.stream();
+    to_delete.forEach((the_cvr) -> {
+      Persistence.delete(the_cvr);
+      count.incrementAndGet();
+    });
+    return count.get();
   }
   
   /**
    * Obtain the CastVoteRecord object with the specified timestamp,
-   * county, type, and cvr number. 
+   * county, type, and sequence number. 
    *
    * @param the_county_id The county.
    * @param the_type The type.
-   * @param the_cvr_number The CVR number.
+   * @param the_sequence_number.
    * @return the matching CastVoteRecord object, or null if no objects match
    * or the query fails.
    */
@@ -298,7 +256,7 @@ public final class CastVoteRecordQueries {
   @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
   public static CastVoteRecord get(final Long the_county_id,
                                    final RecordType the_type,
-                                   final Integer the_cvr_number) {
+                                   final Integer the_sequence_number) {
     CastVoteRecord result = null;
    
     try {
@@ -309,7 +267,7 @@ public final class CastVoteRecordQueries {
       final List<Predicate> conjuncts = new ArrayList<Predicate>();
       conjuncts.add(cb.equal(root.get(COUNTY_ID), the_county_id));
       conjuncts.add(cb.equal(root.get(RECORD_TYPE), the_type));
-      conjuncts.add(cb.equal(root.get(CVR_NUMBER), the_cvr_number));
+      conjuncts.add(cb.equal(root.get(SEQUENCE_NUMBER), the_sequence_number));
       cq.select(root).where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
       final TypedQuery<CastVoteRecord> query = s.createQuery(cq);
       final List<CastVoteRecord> query_results = query.getResultList();

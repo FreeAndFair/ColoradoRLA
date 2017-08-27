@@ -252,7 +252,7 @@ public final class Persistence {
       settings.put(Environment.MAX_FETCH_DEPTH, "3");
       
       // statistics
-      settings.put(Environment.GENERATE_STATISTICS, TRUE);
+      settings.put(Environment.GENERATE_STATISTICS, FALSE);
       
       // apply settings
       rb.applySettings(settings);

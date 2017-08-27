@@ -55,6 +55,8 @@ import us.freeandfair.corla.persistence.PersistentEntity;
                    @Index(name = "idx_cvr_county_cvr_number", 
                           columnList = "county_id, cvr_number"),
                    @Index(name = "idx_cvr_county_cvr_number_type", 
+                          columnList = "county_id, sequence_number, record_type"),
+                   @Index(name = "idx_cvr_county_sequence_number_type", 
                           columnList = "county_id, cvr_number, record_type"),
                    @Index(name = "idx_cvr_county_imprinted_id_type",
                           columnList = "county_id, imprinted_id, record_type")})
@@ -108,6 +110,13 @@ public class CastVoteRecord implements PersistentEntity, Serializable {
   private Integer my_cvr_number;
   
   /**
+   * The sequence number of this cast vote record. Only applicable
+   * to imported CVRs.
+   */
+  @Column(name = "sequence_number", updatable = false)
+  private Integer my_sequence_number;
+  
+  /**
    * The scanner ID of this cast vote record.
    */
   @Column(updatable = false, nullable = false)
@@ -157,9 +166,11 @@ public class CastVoteRecord implements PersistentEntity, Serializable {
   /**
    * Constructs a new cast vote record.
    * 
-   * @param the_record_type The type of this record.
-   * @param the_timestamp The timestamp of this record.
+   * @param the_record_type The type.
+   * @param the_timestamp The timestamp.
    * @param the_county_id The county ID.
+   * @param the_cvr_number The CVR number (as imported).
+   * @param the_sequence_number The sequence number, if applicable.
    * @param the_scanner_id The scanner ID.
    * @param the_batch_id The batch ID.
    * @param the_record_id The record ID.
@@ -172,6 +183,7 @@ public class CastVoteRecord implements PersistentEntity, Serializable {
                         final Instant the_timestamp,
                         final Long the_county_id, 
                         final Integer the_cvr_number,
+                        final Integer the_sequence_number,
                         final Integer the_scanner_id, 
                         final Integer the_batch_id, 
                         final Integer the_record_id,
@@ -183,6 +195,7 @@ public class CastVoteRecord implements PersistentEntity, Serializable {
     my_timestamp = the_timestamp;
     my_county_id = the_county_id;
     my_cvr_number = the_cvr_number;
+    my_sequence_number = the_sequence_number;
     my_scanner_id = the_scanner_id;
     my_batch_id = the_batch_id;
     my_record_id = the_record_id;
@@ -243,6 +256,13 @@ public class CastVoteRecord implements PersistentEntity, Serializable {
    */
   public Integer cvrNumber() {
     return my_cvr_number;
+  }
+  
+  /**
+   * @return the CVR sequence number.
+   */
+  public Integer sequenceNumber() {
+    return my_sequence_number;
   }
   
   /**
@@ -329,6 +349,7 @@ public class CastVoteRecord implements PersistentEntity, Serializable {
       final CastVoteRecord other_cvr = (CastVoteRecord) the_other;
       result &= nullableEquals(other_cvr.countyID(), countyID());
       result &= nullableEquals(other_cvr.cvrNumber(), cvrNumber());
+      result &= nullableEquals(other_cvr.sequenceNumber(), sequenceNumber());
       result &= nullableEquals(other_cvr.scannerID(), scannerID());
       result &= nullableEquals(other_cvr.batchID(), batchID());
       result &= nullableEquals(other_cvr.recordID(), recordID());

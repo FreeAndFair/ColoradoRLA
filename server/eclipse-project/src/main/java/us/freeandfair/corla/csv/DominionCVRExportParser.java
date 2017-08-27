@@ -125,7 +125,7 @@ public class DominionCVRExportParser implements CVRExportParser {
   /**
    * The number of parsed CVRs.
    */
-  private OptionalInt my_record_count = OptionalInt.empty();
+  private int my_record_count = -1;
   
   /**
    * The set of parsed CVRs that haven't yet been flushed to the database.
@@ -312,9 +312,9 @@ public class DominionCVRExportParser implements CVRExportParser {
       // appear twice here too. 
       final CastVoteRecord new_cvr = 
           new CastVoteRecord(RecordType.UPLOADED, null, my_county.id(),
-                             cvr_id, tabulator_id, batch_id, record_id,
-                             imprinted_id, ballot_type,
-                             contest_info);
+                             cvr_id, my_record_count, tabulator_id, 
+                             batch_id, record_id, imprinted_id, 
+                             ballot_type, contest_info);
       Persistence.saveOrUpdate(new_cvr);
       my_parsed_cvrs.add(new_cvr);
       checkForFlush();
@@ -348,7 +348,7 @@ public class DominionCVRExportParser implements CVRExportParser {
     boolean result = true; // presume the parse will succeed
     final Iterator<CSVRecord> records = my_parser.iterator();
     
-    my_record_count = OptionalInt.of(0);
+    my_record_count = 0;
     
     try {
       // we expect the first line to be the election name, which we currently discard
@@ -382,9 +382,9 @@ public class DominionCVRExportParser implements CVRExportParser {
           result = false;   
           break;
         } else {
-          my_record_count = OptionalInt.of(my_record_count.getAsInt() + 1);
-          if (my_record_count.getAsInt() % PROGRESS_INTERVAL == 0) {
-            Main.LOGGER.info("parsed " + my_record_count.getAsInt() + " CVRs");
+          my_record_count = my_record_count + 1;
+          if (my_record_count % PROGRESS_INTERVAL == 0) {
+            Main.LOGGER.info("parsed " + my_record_count + " CVRs");
           }
         }
       }
@@ -412,6 +412,10 @@ public class DominionCVRExportParser implements CVRExportParser {
    */
   @Override
   public synchronized OptionalInt recordCount() {
-    return my_record_count;
+    if (my_record_count < 0) {
+      return OptionalInt.empty();
+    } else {
+      return OptionalInt.of(my_record_count);
+    }
   }
 }

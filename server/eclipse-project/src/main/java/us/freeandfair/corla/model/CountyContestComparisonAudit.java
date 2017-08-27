@@ -136,39 +136,53 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
   /**
    * The gamma.
    */
-  @Column(precision = PRECISION, scale = SCALE)
+  @Column(updatable = false, nullable = false, 
+          precision = PRECISION, scale = SCALE)
   private BigDecimal my_gamma = COLORADO_GAMMA;
   
   /**
    * The risk limit.
    */
-  @Column(precision = PRECISION, scale = SCALE)
+  @Column(updatable = false, nullable = false, 
+          precision = PRECISION, scale = SCALE)
   private BigDecimal my_risk_limit = BigDecimal.ONE;
   
   /**
    * The expected number of ballots remaining to audit.
    */
-  private Integer my_ballots_to_audit;
+  @Column(nullable = false)
+  private Integer my_ballots_to_audit = 0;
   
   /**
    * The number of two-vote understatements recorded so far.
    */
+  @Column(nullable = false)
   private Integer my_two_vote_under = 0;
   
   /**
    * The number of one-vote understatements recorded so far.
    */
+  @Column(nullable = false)
   private Integer my_one_vote_under = 0;
   
   /**
    * The number of one-vote overstatements recorded so far.
    */
+  @Column(nullable = false)
   private Integer my_one_vote_over = 0;
   
   /**
    * The number of two-vote overstatements recorded so far.
    */
+  @Column(nullable = false)
   private Integer my_two_vote_over = 0;
+  
+  /**
+   * A flag that indicates whether the ballots to audit need to be 
+   * recalculated.
+   */
+  @Column(nullable = false)
+  private Boolean my_recalculate_needed = true;
   
   /**
    * Constructs a new, empty CountyContestAudit (solely for persistence).
@@ -273,8 +287,9 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
    * @return the expected number of ballots to audit.
    */
   public Integer ballotsToAudit() {
-    if (my_ballots_to_audit == null && my_contest_result != null) {
+    if (my_recalculate_needed) {
       recalculateBallotsToAudit();
+      my_recalculate_needed = false;
     }
     return my_ballots_to_audit;
   }
@@ -436,16 +451,15 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
    */
   @SuppressWarnings("checkstyle:magicnumber")
   public void recordDiscrepancy(final int the_statement) {
-    boolean changed = false;
     switch (the_statement) {
       case -2: 
         my_two_vote_under = my_two_vote_under + 1;
-        changed = true;
+        my_recalculate_needed = true;
         break;
        
       case -1:
         my_one_vote_under = my_one_vote_under + 1;
-        changed = true;
+        my_recalculate_needed = true;
         break;
         
       case 0:
@@ -453,19 +467,16 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
         
       case 1: 
         my_one_vote_over = my_one_vote_over + 1;
-        changed = true;
+        my_recalculate_needed = true;
         break;
         
       case 2:
         my_two_vote_over = my_two_vote_over + 1;
-        changed = true;
+        my_recalculate_needed = true;
         break;
         
       default:
         throw new IllegalArgumentException("invalid over or understatement: " + the_statement);
-    }
-    if (changed) {
-      recalculateBallotsToAudit();
     }
   }
     
@@ -478,16 +489,15 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
    */
   @SuppressWarnings("checkstyle:magicnumber")
   public void removeDiscrepancy(final int the_statement) {
-    boolean changed = false;
     switch (the_statement) {
       case -2: 
         my_two_vote_under = my_two_vote_under - 1;
-        changed = true;
+        my_recalculate_needed = true;
         break;
 
       case -1:
         my_one_vote_under = my_one_vote_under - 1;
-        changed = true;
+        my_recalculate_needed = true;
         break;
 
       case 0:
@@ -495,20 +505,17 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
 
       case 1: 
         my_one_vote_over = my_one_vote_over - 1;
-        changed = true;
+        my_recalculate_needed = true;
         break;
 
       case 2:
         my_two_vote_over = my_two_vote_over - 1;
-        changed = true;
+        my_recalculate_needed = true;
         break;
 
       default:
         throw new IllegalArgumentException("invalid over or understatement: " + the_statement);
     }
-    if (changed) {
-      recalculateBallotsToAudit();
-    }  
   }
   
   /**

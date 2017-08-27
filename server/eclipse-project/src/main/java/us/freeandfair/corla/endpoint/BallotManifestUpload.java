@@ -60,6 +60,7 @@ import us.freeandfair.corla.util.SparkHelper;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
+@Deprecated
 @SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.ExcessiveImports"})
 public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
   /**

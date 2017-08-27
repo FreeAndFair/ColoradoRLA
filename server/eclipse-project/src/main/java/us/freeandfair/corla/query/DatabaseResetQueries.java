@@ -12,7 +12,6 @@
 package us.freeandfair.corla.query;
 
 import javax.persistence.Cache;
-import javax.persistence.PersistenceException;
 
 import org.hibernate.Session;
 

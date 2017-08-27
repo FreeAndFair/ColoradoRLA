@@ -53,10 +53,10 @@ public final class EqualsHashcodeHelper {
    * @return the hash code.
    */
   public static int nullableHashCode(final Object the_object) {
-    if (the_object != null) {
-      return  the_object.hashCode();
-    } else {
+    if (the_object == null) {
       return 0;
+    } else {
+      return the_object.hashCode();
     }
   }
 }

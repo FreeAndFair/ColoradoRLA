@@ -16,16 +16,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.OptionalLong;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.BallotManifestInfo;
@@ -81,14 +83,20 @@ public final class BallotManifestInfoQueries {
    * @param the_county_id The county ID.
    * @exception PersistenceException if the ballot manifests cannot be deleted.
    */
-  public static void deleteMatching(final Long the_county_id) {
+  public static int deleteMatching(final Long the_county_id) {
+    final AtomicInteger count = new AtomicInteger();
     final Session s = Persistence.currentSession();
     final CriteriaBuilder cb = s.getCriteriaBuilder();
-    final CriteriaDelete<BallotManifestInfo> cd = 
-        cb.createCriteriaDelete(BallotManifestInfo.class);
-    final Root<BallotManifestInfo> root = cd.from(BallotManifestInfo.class);
-    cd.where(cb.equal(root.get("my_county_id"), the_county_id));
-    s.createQuery(cd).executeUpdate();
+    final CriteriaQuery<BallotManifestInfo> cq = cb.createQuery(BallotManifestInfo.class);
+    final Root<BallotManifestInfo> root = cq.from(BallotManifestInfo.class);
+    cq.where(cb.equal(root.get("my_county_id"), the_county_id));
+    final Query<BallotManifestInfo> query = s.createQuery(cq);
+    final Stream<BallotManifestInfo> to_delete = query.stream();
+    to_delete.forEach((the_bmi) -> {
+      Persistence.delete(the_bmi);
+      count.incrementAndGet();
+    });
+    return count.get();
   }
   
   /**

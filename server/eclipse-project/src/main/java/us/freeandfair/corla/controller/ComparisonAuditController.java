@@ -66,8 +66,7 @@ public final class ComparisonAuditController {
                                                         final int the_min_index,
                                                         final int the_max_index) {
     final OptionalLong count = 
-        CastVoteRecordQueries.countMatching(the_cdb.id(), 
-                                            RecordType.UPLOADED);
+        CastVoteRecordQueries.countMatching(the_cdb.id(), RecordType.UPLOADED);
     
     if (!count.isPresent()) {
       throw new IllegalStateException("unable to count CVRs for county " + the_cdb.id());
@@ -88,13 +87,10 @@ public final class ComparisonAuditController {
                                         minimum, maximum);
     final List<Integer> list_of_cvrs_to_audit = 
         prng.getRandomNumbers(the_min_index, the_max_index);
-    final List<Long> list_of_cvr_ids = 
-        CastVoteRecordQueries.idsForMatching(the_cdb.id(),
-                                             RecordType.UPLOADED);
     final List<CastVoteRecord> result = new ArrayList<>();
     
     for (final int index : list_of_cvrs_to_audit) {
-      result.add(Persistence.getByID(list_of_cvr_ids.get(index), CastVoteRecord.class));
+      result.add(CastVoteRecordQueries.get(the_cdb.id(), RecordType.UPLOADED, index));
     }
     
     return result;
