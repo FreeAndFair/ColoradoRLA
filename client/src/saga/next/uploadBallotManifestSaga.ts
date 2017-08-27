@@ -49,11 +49,11 @@ function* uploadBallotManifestNetworkFail(): IterableIterator<any> {
 
 
 export default function* fileUploadSaga() {
-    yield takeEvery('NEXT_IMPORT_BALLOT_MANIFEST_OK', importBallotManifestOk);
-    yield takeEvery('NEXT_IMPORT_BALLOT_MANIFEST_FAIL', importBallotManifestFail);
-    yield takeEvery('NEXT_IMPORT_BALLOT_MANIFEST_NETWORK_FAIL', importBallotManifestNetworkFail);
+    yield takeEvery('IMPORT_BALLOT_MANIFEST_OK', importBallotManifestOk);
+    yield takeEvery('IMPORT_BALLOT_MANIFEST_FAIL', importBallotManifestFail);
+    yield takeEvery('IMPORT_BALLOT_MANIFEST_NETWORK_FAIL', importBallotManifestNetworkFail);
 
-    yield takeEvery('NEXT_UPLOAD_BALLOT_MANIFEST_OK', uploadBallotManifestOk);
-    yield takeEvery('NEXT_UPLOAD_BALLOT_MANIFEST_FAIL', uploadBallotManifestFail);
-    yield takeEvery('NEXT_UPLOAD_BALLOT_MANIFEST_NETWORK_FAIL', uploadBallotManifestNetworkFail);
+    yield takeEvery('UPLOAD_BALLOT_MANIFEST_OK', uploadBallotManifestOk);
+    yield takeEvery('UPLOAD_BALLOT_MANIFEST_FAIL', uploadBallotManifestFail);
+    yield takeEvery('UPLOAD_BALLOT_MANIFEST_NETWORK_FAIL', uploadBallotManifestNetworkFail);
 }

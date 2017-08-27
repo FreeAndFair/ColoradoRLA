@@ -23,7 +23,7 @@ async function importBallotManifest(body: any) {
     };
 
     try {
-        action('NEXT_IMPORT_BALLOT_MANIFEST_SEND');
+        action('IMPORT_BALLOT_MANIFEST_SEND');
 
         const r = await fetch(importUrl, init);
 
@@ -32,14 +32,14 @@ async function importBallotManifest(body: any) {
         const data = { received, sent };
 
         if (!r.ok) {
-            action('NEXT_IMPORT_BALLOT_MANIFEST_FAIL', data);
+            action('IMPORT_BALLOT_MANIFEST_FAIL', data);
             return;
         }
 
-        action('NEXT_IMPORT_BALLOT_MANIFEST_OK', data);
+        action('IMPORT_BALLOT_MANIFEST_OK', data);
     } catch (e) {
         if (e.message === 'Failed to fetch') {
-            action('NEXT_IMPORT_BALLOT_MANIFEST_NETWORK_FAIL');
+            action('IMPORT_BALLOT_MANIFEST_NETWORK_FAIL');
         }
 
         action('INTERNAL_ERROR');
@@ -58,7 +58,7 @@ async function uploadBallotManifest(countyId: number, file: Blob, hash: string) 
     };
 
     try {
-        action('NEXT_UPLOAD_BALLOT_MANIFEST_SEND');
+        action('UPLOAD_BALLOT_MANIFEST_SEND');
 
         const r = await fetch(uploadUrl, init);
 
@@ -67,16 +67,16 @@ async function uploadBallotManifest(countyId: number, file: Blob, hash: string) 
         const data = { received, sent };
 
         if (!r.ok) {
-            action('NEXT_UPLOAD_BALLOT_MANIFEST_FAIL', data);
+            action('UPLOAD_BALLOT_MANIFEST_FAIL', data);
             return;
         }
 
-        action('NEXT_UPLOAD_BALLOT_MANIFEST_OK', data);
+        action('UPLOAD_BALLOT_MANIFEST_OK', data);
 
         importBallotManifest(received);
     } catch (e) {
         if (e.message === 'Failed to fetch') {
-            action('NEXT_UPLOAD_BALLOT_MANIFEST_NETWORK_FAIL');
+            action('UPLOAD_BALLOT_MANIFEST_NETWORK_FAIL');
         }
 
         action('INTERNAL_ERROR');
