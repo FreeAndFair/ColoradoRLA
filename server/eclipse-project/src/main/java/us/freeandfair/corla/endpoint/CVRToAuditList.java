@@ -107,8 +107,8 @@ public class CVRToAuditList extends AbstractEndpoint {
   public String endpoint(final Request the_request, final Response the_response) {
     try {
       // get the request parameters
-      final int index = Integer.parseInt(the_request.params(START));
-      final int ballot_count = Integer.parseInt(the_request.params(BALLOT_COUNT));
+      final int index = Integer.parseInt(the_request.queryParams(START));
+      final int ballot_count = Integer.parseInt(the_request.queryParams(BALLOT_COUNT));
       
       // get other things we need
       final County county = Authentication.authenticatedCounty(the_request);
