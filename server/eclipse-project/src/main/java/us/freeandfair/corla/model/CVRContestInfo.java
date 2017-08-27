@@ -52,7 +52,7 @@ import us.freeandfair.corla.persistence.PersistentEntity;
  */
 @Entity
 @Immutable // this is a Hibernate-specific annotation, but there is no JPA alternative
-@Cacheable(true)
+@Cacheable(false) // since CVRs aren't cached, there is little point to caching these
 @Table(name = "cvr_contest_info",
        indexes = { @Index(name = "idx_cvrci_cvr", columnList = "cvr_id"),
                    @Index(name = "idx_cvrci_cvr_contest", 
