@@ -96,6 +96,7 @@ public class DoSDashboard implements PersistentEntity, Serializable {
   /**
    * The risk limit for comparison audits.
    */
+  @Column(precision = PRECISION, scale = SCALE)
   private BigDecimal my_risk_limit_for_comparison_audits;
   
   /**
