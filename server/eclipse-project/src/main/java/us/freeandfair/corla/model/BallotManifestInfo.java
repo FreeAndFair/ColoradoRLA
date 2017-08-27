@@ -74,13 +74,13 @@ public class BallotManifestInfo implements PersistentEntity, Serializable {
    * The ID number of the scanner that scanned the batch.
    */
   @Column(updatable = false, nullable = false)
-  private String my_scanner_id;
+  private Integer my_scanner_id;
 
   /**
    * The batch number.
    */
   @Column(updatable = false, nullable = false)
-  private String my_batch_id;
+  private Integer my_batch_id;
   
   /**
    * The size of the batch.
@@ -112,8 +112,8 @@ public class BallotManifestInfo implements PersistentEntity, Serializable {
    * @param the_storage_location The storage location.
    */
   public BallotManifestInfo(final Long the_county_id,
-                            final String the_scanner_id, 
-                            final String the_batch_id,
+                            final Integer the_scanner_id, 
+                            final Integer the_batch_id,
                             final int the_batch_size, 
                             final String the_storage_location) {
     super();
@@ -158,14 +158,14 @@ public class BallotManifestInfo implements PersistentEntity, Serializable {
   /**
    * @return the scanner ID.
    */
-  public String scannerID() {
+  public Integer scannerID() {
     return my_scanner_id;
   }
   
   /**
    * @return the batch number.
    */
-  public String batchID() {
+  public Integer batchID() {
     return my_batch_id;
   }
   
