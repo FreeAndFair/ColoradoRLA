@@ -32,6 +32,10 @@ const ContestRow = (props: any) => {
         onReasonChange,
     } = props;
 
+    if (!auditStatus) {
+        return <div />;
+    }
+
     const renderItem = ({ handleClick, item, isActive }: any) => {
         return (
             <MenuItem
