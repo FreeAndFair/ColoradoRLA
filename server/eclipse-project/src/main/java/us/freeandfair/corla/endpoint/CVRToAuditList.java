@@ -42,7 +42,7 @@ import us.freeandfair.corla.query.CastVoteRecordQueries;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-@SuppressWarnings("PMD.AtLeastOneConstructor")
+@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.CyclomaticComplexity"})
 public class CVRToAuditList extends AbstractEndpoint {
   /**
    * The "start" parameter.
@@ -157,7 +157,7 @@ public class CVRToAuditList extends AbstractEndpoint {
             ComparisonAuditController.computeBallotOrder(cdb, start, end);
         for (int i = 0; i < new_cvrs.size(); i++) {
           final CastVoteRecord cvr = new_cvrs.get(i);
-          if ((duplicates || !cvr_set.contains(cvr)) && notAudited(cdb, cvr)) {
+          if ((duplicates || !cvr_set.contains(cvr)) && notAudited(cvr)) {
             // get the CVR location
             final String location = BallotManifestInfoQueries.locationFor(cvr);
             cvr_to_audit_list.add(new CVRToAuditResponse(start + i, cvr.scannerID(), 
@@ -165,8 +165,8 @@ public class CVRToAuditList extends AbstractEndpoint {
                                                          cvr.imprintedID(), 
                                                          cvr.cvrNumber(), cvr.id(),
                                                          cvr.ballotType(), location));
-            cvr_set.add(cvr);
           }
+          cvr_set.add(cvr);
         }
         start = end + 1; // end is inclusive
         end = start + (ballot_count - cvr_set.size()) - 1; // end is inclusive
