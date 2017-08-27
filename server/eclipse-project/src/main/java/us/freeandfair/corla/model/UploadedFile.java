@@ -11,9 +11,12 @@
 
 package us.freeandfair.corla.model;
 
+import static us.freeandfair.corla.util.EqualsHashcodeHelper.*;
+
 import java.sql.Blob;
 import java.time.Instant;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -21,6 +24,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Version;
@@ -38,7 +42,9 @@ import us.freeandfair.corla.persistence.PersistentEntity;
  */
 // note that unlike our other entities, uploaded files are not Serializable
 @Entity
-@Table(name = "uploaded_file")
+@Cacheable(false) // uploaded files are explicitly not cacheable
+@Table(name = "uploaded_file",
+       indexes = { @Index(name = "idx_uploaded_file_county", columnList = "county_id") })
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
@@ -67,7 +73,7 @@ public class UploadedFile implements PersistentEntity {
   /**
    * The county that uploaded the file.
    */
-  @Column(updatable = false, nullable = false)
+  @Column(name = "county_id", updatable = false, nullable = false)
   private Long my_county_id;
   
   /**
@@ -235,6 +241,49 @@ public class UploadedFile implements PersistentEntity {
    */
   public Long size() {
     return my_size;
+  }
+  
+  /**
+   * @return a String representation of this elector.
+   */
+  @Override
+  public String toString() {
+    return "UploadedFile [id=" + my_id + ", timestamp=" +
+           my_timestamp + ", county_id=" + my_county_id + 
+           ", status=" + my_status + ", filename=" +
+           my_filename + ", hash=" + my_hash + ", hash_status=" + 
+           my_hash_status + ", size=" + my_size + "]";
+  }
+
+  /**
+   * Compare this object with another for equivalence.
+   * 
+   * @param the_other The other object.
+   * @return true if the objects are equivalent, false otherwise.
+   */
+  @Override
+  public boolean equals(final Object the_other) {
+    boolean result = true;
+    if (the_other instanceof UploadedFile) {
+      final UploadedFile other_file = (UploadedFile) the_other;
+      result &= nullableEquals(other_file.timestamp(), timestamp());
+      result &= nullableEquals(other_file.countyID(), countyID());
+      result &= nullableEquals(other_file.filename(), filename());
+      result &= nullableEquals(other_file.status(), status());
+      result &= nullableEquals(other_file.hash(), hash());
+      result &= nullableEquals(other_file.hashStatus(), hash());
+    } else {
+      result = false;
+    }
+    return result;
+  }
+  
+  /**
+   * @return a hash code for this object.
+   */
+  @Override
+  public int hashCode() {
+    return nullableHashCode(hash());
   }
   
   /**

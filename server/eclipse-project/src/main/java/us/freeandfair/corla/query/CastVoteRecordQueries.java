@@ -11,10 +11,10 @@
 
 package us.freeandfair.corla.query;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalLong;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import javax.persistence.PersistenceException;
@@ -47,17 +47,12 @@ public final class CastVoteRecordQueries {
   /**
    * The "cvr number" field.
    */
-  private static final String CVR_NUMBER = "my_cvr_number";
+  private static final String SEQUENCE_NUMBER = "my_sequence_number";
   
   /**
    * The "record type" field.
    */
   private static final String RECORD_TYPE = "my_record_type";
-  
-  /**
-   * The "timestamp" field.
-   */
-  private static final String TIMESTAMP = "my_timestamp";
   
   /**
    * The "could not query database for CVRs error message.
@@ -73,10 +68,7 @@ public final class CastVoteRecordQueries {
   }
   
   /**
-   * Obtain a stream of CastVoteRecord objects with the specified type, 
-   * ordered by their imprinted ID. This method <em>must</em>
-   * be called from within a transaction, and the result stream must be
-   * used within the same transaction.
+   * Obtain a stream of CastVoteRecord objects with the specified type. 
    *
    * @param the_type The type.
    * @return the stream of CastVoteRecord objects, or null if one could
@@ -98,9 +90,8 @@ public final class CastVoteRecordQueries {
       final CriteriaQuery<CastVoteRecord> cq = cb.createQuery(CastVoteRecord.class);
       final Root<CastVoteRecord> root = cq.from(CastVoteRecord.class);
       cq.select(root).where(cb.equal(root.get(RECORD_TYPE), the_type));
-      cq.orderBy(cb.asc(root.get(CVR_NUMBER)));
       final Query<CastVoteRecord> query = s.createQuery(cq);
-      result = ((Query<CastVoteRecord>) query).stream();
+      result = query.stream();
     } catch (final PersistenceException e) {
       Main.LOGGER.error(COULD_NOT_QUERY_DATABASE);
     }
@@ -148,9 +139,7 @@ public final class CastVoteRecordQueries {
   
   /**
    * Obtain a stream of CastVoteRecord objects with the specified county 
-   * and type, ordered by their imprinted ID. This method <em>must</em>
-   * be called from within a transaction, and the result stream must be
-   * used within the same transaction.
+   * and type, ordered by their sequence number. 
    *
    * @param the_county The county.
    * @param the_type The type.
@@ -173,7 +162,7 @@ public final class CastVoteRecordQueries {
       conjuncts.add(cb.equal(root.get(COUNTY_ID), the_county));
       conjuncts.add(cb.equal(root.get(RECORD_TYPE), the_type));
       cq.select(root).where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
-      cq.orderBy(cb.asc(root.get(CVR_NUMBER)));
+      cq.orderBy(cb.asc(root.get(SEQUENCE_NUMBER)));
       final Query<CastVoteRecord> query = s.createQuery(cq);
       result = query.stream();
     } catch (final PersistenceException e) {
@@ -211,7 +200,6 @@ public final class CastVoteRecordQueries {
       conjuncts.add(cb.equal(root.get(RECORD_TYPE), the_type));
       cq.select(cb.count(root));
       cq.where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
-      cq.orderBy(cb.asc(root.get(CVR_NUMBER)));
       final Query<Long> query = s.createQuery(cq);
       result = OptionalLong.of(query.getSingleResult());
     } catch (final PersistenceException e) {
@@ -225,159 +213,50 @@ public final class CastVoteRecordQueries {
     }
     return result;
   }
-
-  /**
-   * Obtain a stream of CastVoteRecord objects with the specified timestamp, 
-   * county, and type, ordered by their imprinted ID. This method <em>must</em>
-   * be called from within a transaction, and the result stream must be
-   * used within the same transaction.
-   *
-   * @param the_timestamp The timestamp.
-   * @param the_county The county.
-   * @param the_type The type.
-   * @return the stream of CastVoteRecord objects, or null if one could
-   * not be acquired.
-   * @exception IllegalStateException if this method is called outside a 
-   * transaction.
-   */
-  @SuppressWarnings("PMD.AvoidDuplicateLiterals")
-  public static Stream<CastVoteRecord> getMatching(final Instant the_timestamp,
-                                                   final Long the_county_id,
-                                                   final RecordType the_type) {
-    Stream<CastVoteRecord> result = null;
-   
-    try {
-      final Session s = Persistence.currentSession();
-      final CriteriaBuilder cb = s.getCriteriaBuilder();
-      final CriteriaQuery<CastVoteRecord> cq = cb.createQuery(CastVoteRecord.class);
-      final Root<CastVoteRecord> root = cq.from(CastVoteRecord.class);
-      final List<Predicate> conjuncts = new ArrayList<Predicate>();
-      conjuncts.add(cb.equal(root.get(TIMESTAMP), the_timestamp));
-      conjuncts.add(cb.equal(root.get(COUNTY_ID), the_county_id));
-      conjuncts.add(cb.equal(root.get(RECORD_TYPE), the_type));
-      cq.select(root).where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
-      cq.orderBy(cb.asc(root.get(CVR_NUMBER)));
-      final Query<CastVoteRecord> query = s.createQuery(cq);
-      result = query.stream();
-    } catch (final PersistenceException e) {
-      Main.LOGGER.error(COULD_NOT_QUERY_DATABASE);
-    }
-    if (result == null) {
-      Main.LOGGER.debug("found no CVRs for timestamp " + the_timestamp + 
-                        ", county " + the_county_id + ", type " + 
-                        the_type);
-    } else {
-      Main.LOGGER.debug("query succeeded, returning CVR stream");
-    }
-    return result;
-  }
   
   /**
-   * Counts the CastVoteRecord objects with the specified timestamp,
-   * county, and type. 
-   *
-   * @param the_timestamp The timestamp.
-   * @param the_county_id The county.
-   * @param the_type The type.
-   * @return the count, empty if the query could not be completed 
-   * successfully.
+   * Deletes the set of cast vote records for the specified county ID and 
+   * record type.
+   * 
+   * @param the_county_id The county ID.
+   * @param the_type The record type.
+   * @return the number of records deleted.
+   * @exception PersistenceException if the cast vote records cannot be deleted.
    */
-  public static OptionalLong countMatching(final Instant the_timestamp,
-                                           final Long the_county_id,
-                                           final RecordType the_type) {
-    OptionalLong result = OptionalLong.empty();
-    
-    try {
-      final Session s = Persistence.currentSession();
-      final CriteriaBuilder cb = s.getCriteriaBuilder();
-      final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-      final Root<CastVoteRecord> root = cq.from(CastVoteRecord.class);
-      final List<Predicate> conjuncts = new ArrayList<Predicate>();
-      conjuncts.add(cb.equal(root.get(TIMESTAMP), the_timestamp));
-      conjuncts.add(cb.equal(root.get(COUNTY_ID), the_county_id));
-      conjuncts.add(cb.equal(root.get(RECORD_TYPE), the_type));
-      cq.select(cb.count(root));
-      cq.where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
-      final Query<Long> query = s.createQuery(cq);
-      result = OptionalLong.of(query.getSingleResult());
-    } catch (final PersistenceException e) {
-      Main.LOGGER.error(COULD_NOT_QUERY_DATABASE);
-    }
-    if (result == null) {
-      Main.LOGGER.debug("found no CVRs for timestamp " + the_timestamp + 
-                        ", county " + the_county_id + ", type " + 
-                        the_type);
-    } else {
-      Main.LOGGER.debug("query succeeded, returning CVR count");
-    }
-    return result;
-  }
-  
-  /**
-   * Obtain the list of CastVoteRecord database IDs with the specified timestamp,
-   * county, and type, ordered by their imprinted ID. 
-   *
-   * @param the_timestamp The timestamp.
-   * @param the_county_id The county.
-   * @param the_type The type.
-   * @return the list of IDs.
-   * @exception IllegalStateException if this method is called outside a 
-   * transaction.
-   */
-  public static List<Long> idsForMatching(final Instant the_timestamp,
-                                          final Long the_county_id,
-                                          final RecordType the_type) {
-    if (!Persistence.isTransactionActive()) {
-      throw new IllegalStateException("no running transaction");
-    }
-    
-    List<Long> result = null;
-   
-    try {
-      final Session s = Persistence.currentSession();
-      final CriteriaBuilder cb = s.getCriteriaBuilder();
-      final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-      final Root<CastVoteRecord> root = cq.from(CastVoteRecord.class);
-      final List<Predicate> conjuncts = new ArrayList<Predicate>();
-      conjuncts.add(cb.equal(root.get(TIMESTAMP), the_timestamp));
-      conjuncts.add(cb.equal(root.get(COUNTY_ID), the_county_id));
-      conjuncts.add(cb.equal(root.get(RECORD_TYPE), the_type));
-      cq.select(root.get("my_id"));
-      cq.where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
-      cq.orderBy(cb.asc(root.get(CVR_NUMBER)));
-      final Query<Long> query = s.createQuery(cq);
-      result = query.getResultList();
-    } catch (final PersistenceException e) {
-      Main.LOGGER.error(COULD_NOT_QUERY_DATABASE);
-    }
-    if (result == null) {
-      Main.LOGGER.debug("found no CVRs for timestamp " + the_timestamp + 
-                        ", county " + the_county_id + ", type " + 
-                        the_type);
-    } else {
-      Main.LOGGER.debug("query succeeded, returning CVR IDs");
-    }
-    return result;
+  public static int deleteMatching(final Long the_county_id,
+                                    final RecordType the_type) {
+    final AtomicInteger count = new AtomicInteger();
+    final Session s = Persistence.currentSession();
+    final CriteriaBuilder cb = s.getCriteriaBuilder();
+    final CriteriaQuery<CastVoteRecord> cq = cb.createQuery(CastVoteRecord.class);
+    final Root<CastVoteRecord> root = cq.from(CastVoteRecord.class);
+    cq.where(cb.and(cb.equal(root.get(COUNTY_ID), the_county_id),
+                    cb.equal(root.get(RECORD_TYPE), the_type)));
+    final Query<CastVoteRecord> query = s.createQuery(cq);
+    final Stream<CastVoteRecord> to_delete = query.stream();
+    to_delete.forEach((the_cvr) -> {
+      Persistence.delete(the_cvr);
+      count.incrementAndGet();
+    });
+    return count.get();
   }
   
   /**
    * Obtain the CastVoteRecord object with the specified timestamp,
-   * county, type, and cvr number. 
+   * county, type, and sequence number. 
    *
-   * @param the_timestamp The timestamp.
    * @param the_county_id The county.
    * @param the_type The type.
-   * @param the_imprinted_id The imprinted ID.
+   * @param the_sequence_number.
    * @return the matching CastVoteRecord object, or null if no objects match
    * or the query fails.
    */
   // we are checking to see if exactly one result is in a list, and
   // PMD doesn't like it
   @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
-  public static CastVoteRecord get(final Instant the_timestamp,
-                                   final Long the_county_id,
+  public static CastVoteRecord get(final Long the_county_id,
                                    final RecordType the_type,
-                                   final Integer the_cvr_number) {
+                                   final Integer the_sequence_number) {
     CastVoteRecord result = null;
    
     try {
@@ -386,10 +265,9 @@ public final class CastVoteRecordQueries {
       final CriteriaQuery<CastVoteRecord> cq = cb.createQuery(CastVoteRecord.class);
       final Root<CastVoteRecord> root = cq.from(CastVoteRecord.class);
       final List<Predicate> conjuncts = new ArrayList<Predicate>();
-      conjuncts.add(cb.equal(root.get(TIMESTAMP), the_timestamp));
       conjuncts.add(cb.equal(root.get(COUNTY_ID), the_county_id));
       conjuncts.add(cb.equal(root.get(RECORD_TYPE), the_type));
-      conjuncts.add(cb.equal(root.get(CVR_NUMBER), the_cvr_number));
+      conjuncts.add(cb.equal(root.get(SEQUENCE_NUMBER), the_sequence_number));
       cq.select(root).where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
       final TypedQuery<CastVoteRecord> query = s.createQuery(cq);
       final List<CastVoteRecord> query_results = query.getResultList();
@@ -401,9 +279,8 @@ public final class CastVoteRecordQueries {
       Main.LOGGER.error(COULD_NOT_QUERY_DATABASE);
     }
     if (result == null) {
-      Main.LOGGER.debug("found no CVR for timestamp " + the_timestamp + 
-                        ", county " + the_county_id + ", type " + 
-                        the_type);
+      Main.LOGGER.debug("found no CVR for county " + the_county_id +
+                        ", type " + the_type);
     } else {
       Main.LOGGER.debug("found CVR " + result);
     }

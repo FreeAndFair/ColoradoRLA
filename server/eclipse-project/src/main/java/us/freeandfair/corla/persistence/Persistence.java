@@ -194,7 +194,6 @@ public final class Persistence {
       settings.put(Environment.PASS, system_properties.getProperty("hibernate.pass", ""));
       settings.put(Environment.DIALECT, 
                    system_properties.getProperty("hibernate.dialect", ""));
-      settings.put(Environment.STATEMENT_BATCH_SIZE, "10");
       
       // C3P0 connection pooling
       settings.put(Environment.C3P0_MIN_SIZE, 
@@ -237,9 +236,23 @@ public final class Persistence {
       settings.put(Environment.CACHE_PROVIDER_CONFIG, "org.hibernate.cache.EhCacheProvider");
       settings.put(Environment.CACHE_REGION_FACTORY, 
                    "org.hibernate.cache.ehcache.EhCacheRegionFactory");
-      settings.put(Environment.USE_SECOND_LEVEL_CACHE, TRUE);
+      settings.put(Environment.USE_SECOND_LEVEL_CACHE, FALSE);
       settings.put(Environment.USE_QUERY_CACHE, FALSE);
+      settings.put(Environment.USE_DIRECT_REFERENCE_CACHE_ENTRIES, TRUE);
       settings.put(Environment.DEFAULT_CACHE_CONCURRENCY_STRATEGY, "read-write"); 
+      
+      // other performance
+      settings.put(Environment.ORDER_INSERTS, TRUE);
+      settings.put(Environment.ORDER_UPDATES, TRUE);
+      settings.put(Environment.BATCH_VERSIONED_DATA, TRUE);
+      settings.put(Environment.STATEMENT_BATCH_SIZE, "100");
+      settings.put(Environment.BATCH_FETCH_STYLE, "DYNAMIC");
+      settings.put(Environment.VALIDATE_QUERY_PARAMETERS, FALSE);
+      settings.put(Environment.DEFAULT_BATCH_FETCH_SIZE, "16");
+      settings.put(Environment.MAX_FETCH_DEPTH, "3");
+      
+      // statistics
+      settings.put(Environment.GENERATE_STATISTICS, FALSE);
       
       // apply settings
       rb.applySettings(settings);

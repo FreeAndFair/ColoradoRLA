@@ -13,7 +13,6 @@ package us.freeandfair.corla.csv;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -47,9 +46,14 @@ import us.freeandfair.corla.query.CountyContestResultQueries;
  */
 public class DominionCVRExportParser implements CVRExportParser {
   /**
+   * The interval at which to report progress.
+   */
+  private static final int PROGRESS_INTERVAL = 500;
+  
+  /**
    * The size of a batch of CVRs to be flushed to the database.
    */
-  private static final int BATCH_SIZE = 50;
+  private static final int BATCH_SIZE = 80;
 
   /**
    * The column containing the CVR number in a Dominion export file.
@@ -119,14 +123,9 @@ public class DominionCVRExportParser implements CVRExportParser {
   private final County my_county;
   
   /**
-   * The timestamp to apply to the parsed CVRs.
-   */
-  private final Instant my_timestamp;
-  
-  /**
    * The number of parsed CVRs.
    */
-  private OptionalInt my_record_count = OptionalInt.empty();
+  private int my_record_count = -1;
   
   /**
    * The set of parsed CVRs that haven't yet been flushed to the database.
@@ -141,12 +140,10 @@ public class DominionCVRExportParser implements CVRExportParser {
    * @param the_county The county whose CVRs are to be parsed.
    * @exception IOException if an error occurs while constructing the parser.
    */
-  public DominionCVRExportParser(final Reader the_reader, final Instant the_timestamp,
-                                 final County the_county) 
+  public DominionCVRExportParser(final Reader the_reader, final County the_county) 
       throws IOException {
     my_parser = new CSVParser(the_reader, CSVFormat.DEFAULT);
     my_county = the_county;
-    my_timestamp = the_timestamp;
   }
   
   /**
@@ -157,12 +154,10 @@ public class DominionCVRExportParser implements CVRExportParser {
    * @param the_county The county whose CVRs are to be parsed.
    * @exception IOException if an error occurs while constructing the parser.
    */
-  public DominionCVRExportParser(final String the_string, final Instant the_timestamp,
-                                 final County the_county)
+  public DominionCVRExportParser(final String the_string, final County the_county)
       throws IOException {
     my_parser = CSVParser.parse(the_string, CSVFormat.DEFAULT);
     my_county = the_county;
-    my_timestamp = the_timestamp;
   }
   
   /**
@@ -245,11 +240,8 @@ public class DominionCVRExportParser implements CVRExportParser {
       // as that's not in the CVR files and may not actually be used)
       final Contest c = ContestQueries.matching(new Contest(cn, "", choices, 
                                                             the_votes_allowed.get(cn)));
-      CountyContestResult r = 
+      final CountyContestResult r = 
           CountyContestResultQueries.matching(my_county, c);
-      // in case the contests were defined wrong, we just drop the results object
-      Persistence.delete(r);
-      r = CountyContestResultQueries.matching(my_county, c);
       my_contests.add(c);
       my_results.add(r);
     }
@@ -276,8 +268,7 @@ public class DominionCVRExportParser implements CVRExportParser {
    * @param the_timestamp The import timestamp.
    * @return the resulting CVR.
    */
-  private CastVoteRecord extractCVR(final CSVRecord the_line, 
-                                    final Instant the_timestamp) {
+  private CastVoteRecord extractCVR(final CSVRecord the_line) {
     try {
       final int cvr_id =
           Integer.parseInt(stripEqualQuotes(the_line.get(CVR_NUMBER_COLUMN)));
@@ -320,11 +311,10 @@ public class DominionCVRExportParser implements CVRExportParser {
       // twice in the CVR export file... and if it does, we need it to
       // appear twice here too. 
       final CastVoteRecord new_cvr = 
-          new CastVoteRecord(RecordType.UPLOADED,
-                             the_timestamp, my_county.id(),
-                             cvr_id, tabulator_id, batch_id, record_id,
-                             imprinted_id, ballot_type,
-                             contest_info);
+          new CastVoteRecord(RecordType.UPLOADED, null, my_county.id(),
+                             cvr_id, my_record_count, tabulator_id, 
+                             batch_id, record_id, imprinted_id, 
+                             ballot_type, contest_info);
       Persistence.saveOrUpdate(new_cvr);
       my_parsed_cvrs.add(new_cvr);
       checkForFlush();
@@ -358,7 +348,7 @@ public class DominionCVRExportParser implements CVRExportParser {
     boolean result = true; // presume the parse will succeed
     final Iterator<CSVRecord> records = my_parser.iterator();
     
-    my_record_count = OptionalInt.of(0);
+    my_record_count = 0;
     
     try {
       // we expect the first line to be the election name, which we currently discard
@@ -385,14 +375,17 @@ public class DominionCVRExportParser implements CVRExportParser {
       // subsequent lines contain cast vote records
       while (records.hasNext()) {
         final CSVRecord cvr_line = records.next();
-        final CastVoteRecord cvr = extractCVR(cvr_line, my_timestamp);
+        final CastVoteRecord cvr = extractCVR(cvr_line);
         if (cvr == null) {
           // we don't record the CVR since it didn't parse
           Main.LOGGER.error("Could not parse malformed CVR record (" + cvr_line + ")");
           result = false;   
           break;
         } else {
-          my_record_count = OptionalInt.of(my_record_count.getAsInt() + 1);
+          my_record_count = my_record_count + 1;
+          if (my_record_count % PROGRESS_INTERVAL == 0) {
+            Main.LOGGER.info("parsed " + my_record_count + " CVRs");
+          }
         }
       }
     } catch (final NoSuchElementException | StringIndexOutOfBoundsException |
@@ -419,6 +412,10 @@ public class DominionCVRExportParser implements CVRExportParser {
    */
   @Override
   public synchronized OptionalInt recordCount() {
-    return my_record_count;
+    if (my_record_count < 0) {
+      return OptionalInt.empty();
+    } else {
+      return OptionalInt.of(my_record_count);
+    }
   }
 }

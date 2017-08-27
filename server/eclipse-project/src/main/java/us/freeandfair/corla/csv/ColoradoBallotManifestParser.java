@@ -13,7 +13,6 @@ package us.freeandfair.corla.csv;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.time.Instant;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -82,11 +81,6 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
   private final CSVParser my_parser;
   
   /**
-   * The timestamp to apply to the parsed manifest lines.
-   */
-  private final Instant my_timestamp;
-  
-  /**
    * The county ID to apply to the parsed manifest lines.
    */
   private final Long my_county_id;
@@ -111,11 +105,9 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
    * @exception IOException if an error occurs while constructing the parser.
    */
   public ColoradoBallotManifestParser(final Reader the_reader, 
-                                      final Instant the_timestamp,
                                       final Long the_county_id) 
       throws IOException {
     my_parser = new CSVParser(the_reader, CSVFormat.DEFAULT);
-    my_timestamp = the_timestamp;
     my_county_id = the_county_id;
   }
   
@@ -128,11 +120,9 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
    * @exception IOException if an error occurs while constructing the parser.
    */
   public ColoradoBallotManifestParser(final String the_string, 
-                                      final Instant the_timestamp,
                                       final Long the_county_id)
       throws IOException {
     my_parser = CSVParser.parse(the_string, CSVFormat.DEFAULT);
-    my_timestamp = the_timestamp;
     my_county_id = the_county_id;
   }
   
@@ -157,16 +147,14 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
    * @param the_timestamp The timestamp to apply to the result.
    * @return the extracted information.
    */
-  private BallotManifestInfo extractBMI(final CSVRecord the_line,
-                                        final Instant the_timestamp) {
+  private BallotManifestInfo extractBMI(final CSVRecord the_line) {
     BallotManifestInfo result = null;
     
     try {
       // TODO: should we check for mismatched county IDs between the
       // one we were passed at construction and the county name string 
       // in the file?
-      result = new BallotManifestInfo(the_timestamp, 
-                                      my_county_id,
+      result = new BallotManifestInfo(my_county_id,
                                       the_line.get(SCANNER_ID_COLUMN),
                                       the_line.get(BATCH_NUMBER_COLUMN),
                                       Integer.parseInt(the_line.
@@ -208,7 +196,7 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
       // subsequent lines contain ballot manifest info
       while (records.hasNext()) {
         final CSVRecord bmi_line = records.next();
-        final BallotManifestInfo bmi = extractBMI(bmi_line, my_timestamp);
+        final BallotManifestInfo bmi = extractBMI(bmi_line);
         if (bmi == null) {
           // we don't record the ballot manifest record since it didn't parse
           Main.LOGGER.error("Could not parse malformed ballot manifest record (" + 

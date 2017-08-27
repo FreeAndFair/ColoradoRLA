@@ -28,18 +28,26 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.persistence.Version;
 
-import us.freeandfair.corla.persistence.AbstractEntity;
+import us.freeandfair.corla.persistence.PersistentEntity;
+import us.freeandfair.corla.persistence.StringSetConverter;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
@@ -49,15 +57,19 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
  * @version 0.0.1
  */
 @Entity
+@Cacheable(true)
 @Table(name = "county_contest_result",
        uniqueConstraints = {
-         @UniqueConstraint(columnNames = {"county_id", "contest_id"})
-       })
-
+         @UniqueConstraint(columnNames = {"county_id", "contest_id"}) },
+       indexes = { @Index(name = "idx_ccr_county_contest", 
+                          columnList = "county_id, contest_id",
+                          unique = true),
+                   @Index(name = "idx_ccr_county", columnList = "county_id"),
+                   @Index(name = "idx_ccr_contest", columnList = "contest_id") })
 //this class has many fields that would normally be declared final, but
 //cannot be for compatibility with Hibernate and JPA.
-@SuppressWarnings("PMD.ImmutableField")
-public class CountyContestResult extends AbstractEntity implements Serializable {
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.ImmutableField", "PMD.ExcessiveImports"})
+public class CountyContestResult implements PersistentEntity, Serializable {
   /**
    * The "my_id" string.
    */
@@ -72,6 +84,20 @@ public class CountyContestResult extends AbstractEntity implements Serializable 
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1L;
+  
+  /**
+   * The ID number.
+   */
+  @Id
+  @Column(updatable = false, nullable = false)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  private Long my_id;
+  
+  /**
+   * The version (for optimistic locking).
+   */
+  @Version
+  private Long my_version;
   
   /**
    * The county to which this contest result set belongs. 
@@ -96,34 +122,27 @@ public class CountyContestResult extends AbstractEntity implements Serializable 
   /**
    * The set of contest winners.
    */
-  @ElementCollection
-  @CollectionTable(name = "county_contest_winners",
-                   joinColumns = @JoinColumn(name = RESULT_ID, 
-                                             referencedColumnName = MY_ID))
-  @Column(name = "winner")
-  private Set<String> my_winners = new HashSet<String>();
+  @Column(name = "winners", columnDefinition = "text")
+  @Convert(converter = StringSetConverter.class)
+  private Set<String> my_winners = new HashSet<>();
   
   /**
    * The set of contest losers.
    */
-  @ElementCollection
-  @CollectionTable(name = "county_contest_losers",
-                   joinColumns = @JoinColumn(name = RESULT_ID,
-                                             referencedColumnName = MY_ID))
-  @Column(name = "loser")
-  private Set<String> my_losers = new HashSet<String>();
+  @Column(name = "losers", columnDefinition = "text")
+  @Convert(converter = StringSetConverter.class)
+  private Set<String> my_losers = new HashSet<>();
   
   /**
    * A map from choices to vote totals.
    */
-  @ElementCollection
+  @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name = "county_contest_vote_total",
                    joinColumns = @JoinColumn(name = RESULT_ID,
                                              referencedColumnName = MY_ID))
   @MapKeyColumn(name = "choice")
   @Column(name = "vote_total")
-  private Map<String, Integer> my_vote_totals = 
-      new HashMap<String, Integer>();
+  private Map<String, Integer> my_vote_totals = new HashMap<>();
   
   /**
    * The minimum pairwise margin between a winner and a loser.
@@ -169,6 +188,30 @@ public class CountyContestResult extends AbstractEntity implements Serializable 
     }
   }
  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Long id() {
+    return my_id;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void setID(final Long the_id) {
+    my_id = the_id;
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Long version() {
+    return my_version;
+  }
+  
   /**
    * @return the county for this CountyContestResult.
    */
@@ -429,7 +472,7 @@ public class CountyContestResult extends AbstractEntity implements Serializable 
    */
   @Override
   public int hashCode() {
-    return toString().hashCode();
+    return id().hashCode();
   }
   
   /**

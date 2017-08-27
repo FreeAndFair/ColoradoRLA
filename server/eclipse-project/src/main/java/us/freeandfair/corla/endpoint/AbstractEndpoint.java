@@ -141,7 +141,6 @@ public abstract class AbstractEndpoint implements Endpoint {
    * @param the_request The request.
    * @param the_response The response.
    */
-  @SuppressWarnings("unused")
   protected void loadAndCheckASM(final Request the_request,
                                  final Response the_response) {
     // get the state of the ASM
@@ -167,7 +166,6 @@ public abstract class AbstractEndpoint implements Endpoint {
    * @param the_response The response.
    * @return true if the ASM transitioned successfully
    */
-  @SuppressWarnings("unused")
   protected boolean transitionAndSaveASM(final Response the_response)  {
     if (DISABLE_ASM || my_asm.get() == null || endpointEvent() == null) {
       // there is no ASM event for this endpoint
@@ -376,6 +374,7 @@ public abstract class AbstractEndpoint implements Endpoint {
   @Override
   public void before(final Request the_request, final Response the_response) {
     my_log_entries.set(new ArrayList<LogEntry>());
+    Main.LOGGER.info("endpoint " + endpointName() + " hit by " + the_request.host());
     // Start a transaction, if the database is functioning; otherwise abort
     if (Persistence.hasDB()) {
       Persistence.beginTransaction(); 
@@ -525,8 +524,14 @@ public abstract class AbstractEndpoint implements Endpoint {
     }
     // if there are still log entries left, we need to persist them and print them
     finalizeLogs(the_request);
-    the_response.body(my_endpoint_result.get());
-    the_response.status(my_status.get());
+    Integer status = my_status.get();
+    String endpoint_result = my_endpoint_result.get();
+    if (status == null) {
+      status = HttpStatus.INTERNAL_SERVER_ERROR_500;
+      endpoint_result = "runtime error, no status recorded by endpoint";
+    }
+    the_response.body(endpoint_result);
+    the_response.status(status);
   }
   
   /**

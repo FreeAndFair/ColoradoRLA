@@ -11,23 +11,20 @@
 
 package us.freeandfair.corla.model;
 
-import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
+import static us.freeandfair.corla.util.EqualsHashcodeHelper.*;
 
 import java.io.Serializable;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
+import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 
 import com.google.gson.annotations.JsonAdapter;
 
 import us.freeandfair.corla.json.ContestToAuditJsonAdapter;
-import us.freeandfair.corla.persistence.AbstractEntity;
 
 /**
  * A class representing a contest to audit or hand count.
@@ -35,24 +32,16 @@ import us.freeandfair.corla.persistence.AbstractEntity;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-@Entity
-@Table(name = "contest_to_audit")
+@Embeddable
 //this class has many fields that would normally be declared final, but
 //cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
 @JsonAdapter(ContestToAuditJsonAdapter.class)
-public class ContestToAudit extends AbstractEntity implements Serializable {
+public class ContestToAudit implements Serializable {
   /**
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1L;
-  
-  /**
-   * The Department of State dashboard to which this record belongs. 
-   */
-  @ManyToOne
-  @JoinColumn
-  private DoSDashboard my_dashboard;
 
   /**
    * The contest to audit.
@@ -96,23 +85,6 @@ public class ContestToAudit extends AbstractEntity implements Serializable {
     my_audit = the_audit;
   }
 
-  /**
-   * Sets the Department of State dashboard that owns this record; this should only 
-   * be called by the Department of State dashboard class.
-   * 
-   * @param the_dashboard The dashboard.
-   */
-  protected void setDashboard(final DoSDashboard the_dashboard) {
-    my_dashboard = the_dashboard;
-  }
-
-  /**
-   * @return the Department of State dashboard that owns this record.
-   */
-  public DoSDashboard dashboard() {
-    return my_dashboard;
-  }
-  
   /**
    * @return the contest.
    */
@@ -172,7 +144,7 @@ public class ContestToAudit extends AbstractEntity implements Serializable {
    */
   @Override
   public int hashCode() {
-    return toString().hashCode();
+    return nullableHashCode(contest());
   }
 
   /**

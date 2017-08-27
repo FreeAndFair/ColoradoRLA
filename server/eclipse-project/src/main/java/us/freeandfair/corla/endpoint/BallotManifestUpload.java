@@ -60,6 +60,7 @@ import us.freeandfair.corla.util.SparkHelper;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
+@Deprecated
 @SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.ExcessiveImports"})
 public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
   /**
@@ -241,8 +242,8 @@ public class BallotManifestUpload extends AbstractCountyDashboardEndpoint {
         final InputStreamReader bmi_isr = new InputStreamReader(bmi_is, "UTF-8");
         final BallotManifestParser parser = 
             new ColoradoBallotManifestParser(bmi_isr, 
-                                             the_info.my_timestamp,
                                              the_county_id);
+        BallotManifestInfoQueries.deleteMatching(the_county_id);
         if (parser.parse()) {
           Main.LOGGER.info(parser.recordCount().getAsInt() + 
                            " ballot manifest records parsed from upload file");

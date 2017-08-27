@@ -12,14 +12,14 @@
 
 package us.freeandfair.corla.model;
 
+import static us.freeandfair.corla.util.EqualsHashcodeHelper.*;
+
 import java.io.Serializable;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.Embeddable;
 
-import us.freeandfair.corla.persistence.AbstractEntity;
-import us.freeandfair.corla.util.EqualsHashcodeHelper;
+import org.hibernate.annotations.Immutable;
 
 /**
  * An elector; has a first name, a last name, and a political party.
@@ -27,12 +27,12 @@ import us.freeandfair.corla.util.EqualsHashcodeHelper;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-@Entity
-@Table(name = "elector")
+@Embeddable
+@Immutable // this is a Hibernate-specific annotation, but there is no JPA alternative
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
-public class Elector extends AbstractEntity implements Serializable {
+public class Elector implements Serializable {
   /**
    * The serialVersionUID.
    */
@@ -119,11 +119,10 @@ public class Elector extends AbstractEntity implements Serializable {
   public boolean equals(final Object the_other) {
     boolean result = true;
     if (the_other instanceof Elector) {
-      final Elector other_choice = (Elector) the_other;
-      result &= EqualsHashcodeHelper.nullableEquals(other_choice.firstName(), firstName());
-      result &= EqualsHashcodeHelper.nullableEquals(other_choice.lastName(), lastName());
-      result &= EqualsHashcodeHelper.nullableEquals(other_choice.politicalParty(), 
-                                                    politicalParty());
+      final Elector other_elector = (Elector) the_other;
+      result &= nullableEquals(other_elector.firstName(), firstName());
+      result &= nullableEquals(other_elector.lastName(), lastName());
+      result &= nullableEquals(other_elector.politicalParty(), politicalParty());
     } else {
       result = false;
     }
@@ -135,6 +134,6 @@ public class Elector extends AbstractEntity implements Serializable {
    */
   @Override
   public int hashCode() {
-    return toString().hashCode();
+    return nullableHashCode(lastName());
   }
 }

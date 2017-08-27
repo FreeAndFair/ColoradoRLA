@@ -18,7 +18,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.util.OptionalLong;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.persistence.PersistenceException;
 
@@ -107,19 +108,26 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
       final InputStreamReader bmi_isr = new InputStreamReader(bmi_is, "UTF-8");
       final DominionCVRExportParser parser = 
           new DominionCVRExportParser(bmi_isr, 
-                                      the_file.timestamp(),
                                       Persistence.getByID(the_file.countyID(), County.class));
+      final int deleted = 
+          CastVoteRecordQueries.deleteMatching(the_file.countyID(), RecordType.UPLOADED);
       if (parser.parse()) {
-        Main.LOGGER.info(parser.recordCount().getAsInt() + " CVRs parsed from file " + 
-                         the_file.id());
-        final OptionalLong count = CastVoteRecordQueries.countMatching(RecordType.UPLOADED);
-        if (count.isPresent()) {
-          Main.LOGGER.info(count.getAsLong() + " uploaded CVRs in storage");
-        }
+        final int imported = parser.recordCount().getAsInt();
+        Main.LOGGER.info(imported + " CVRs parsed from file " + the_file.id());
+//        final OptionalLong count = 
+//            CastVoteRecordQueries.countMatching(RecordType.UPLOADED);
+//        if (count.isPresent()) {
+//          Main.LOGGER.info(count.getAsLong() + " uploaded CVRs in storage");
+//        }
         updateCountyDashboard(the_response, the_file.countyID(), the_file.timestamp());
         the_file.setStatus(FileStatus.IMPORTED_AS_CVR_EXPORT);
         Persistence.saveOrUpdate(the_file);
-        okJSON(the_response, Main.GSON.toJson(the_file));
+        final Map<String, Integer> response = new HashMap<String, Integer>();
+        response.put("records_imported", imported);
+        if (deleted > 0) {
+          response.put("records_deleted", deleted);
+        }
+        okJSON(the_response, Main.GSON.toJson(response));
       } else {
         Main.LOGGER.info("could not parse malformed CVR export file " + the_file.id());
         badDataContents(the_response, "malformed CVR export file " + the_file.id());
