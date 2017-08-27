@@ -12,10 +12,10 @@ import dosLoginSaga from './dosLoginSaga';
 import dosPollSaga from './dosPollSaga';
 import fileUploadSaga from './fileUploadSaga';
 import logoutSaga from './logoutSaga';
-import uploadBallotManifestSaga from './next/uploadBallotManifestSaga';
-import uploadCvrExportSaga from './next/uploadCvrExportSaga';
 import refreshSaga from './refreshSaga';
 import uploadAcvrOkSaga from './uploadAcvrOkSaga';
+import uploadBallotManifestSaga from './uploadBallotManifestSaga';
+import uploadCvrExportSaga from './uploadCvrExportSaga';
 
 
 export default function* rootSaga() {

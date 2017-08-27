@@ -1,6 +1,6 @@
 import { takeEvery } from 'redux-saga/effects';
 
-import notice from '../../notice';
+import notice from '../notice';
 
 
 function* importCvrExportOk(action: any): IterableIterator<any> {
