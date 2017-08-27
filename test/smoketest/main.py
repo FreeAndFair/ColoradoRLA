@@ -1,14 +1,43 @@
 #!/usr/bin/env python
 """corla_test: drive testing of ColoradoRLA
 
-TODO: enable examples like these.
+Examples. Note that 'crtest' and/or corla_test should be defined
+as an alias for main.py.
 
-Examples:
+Smoketest:
 
-corla_test reset_database
+./main.py
 
-corla_test reset-database {}
-corla_test risk-limit-comp-audits 0.1
+Simple loading of some data, for audit by the web client:
+
+crtest reset
+crtest dos_init
+crtest county_setup
+
+(
+./main.py reset
+./main.py dos_init
+./main.py -c 3 -v 0 county_setup
+./main.py -c 5 -v 2 county_setup
+./main.py dos_start -C 3
+./main.py -c 5 county_audit &
+./main.py -c 3 county_audit &
+wait
+./main.py dos_wrapup
+) > multi.out
+
+crtest -e /contest
+crtest -e /contest/id/52253
+crtest -e /contest/county?3
+crtest -E /contest/county?3 -c 3
+
+Not working:
+crtest -e /acvr/county/3
+
+TODO later:
+
+Perhaps finer grained control, via custom POST commands:
+
 corla_test audit-board
 corla_test -c 2 -m arapahoe-manifest.csv upload-ballot-manifest
 corla_test -c 2 -v arapahoe-regent-3-clear-CVR_Export.csv upload-cvr-export
@@ -33,6 +62,8 @@ corla_test audit-report
 corla_test publish-report
 
 TODO:
+/hand-count  IndicateHandCount
+
 corla_test contest_county
 
 corla_test upload-audit-cvr
@@ -41,16 +72,33 @@ corla_test ballot-not-found {'id': cvr['id']}
 Perhaps mix multiple actions in a single command line
 Perhaps mix multiple roles in a single command line
 
+ GET /ballot-manifest (BallotManifestDownload)
+ GET /acvr/county (ACVRDownloadByCounty)
+ GET /cvr (CVRDownload)
+ GET /cvr/id/:id (CVRDownloadByID)
+ GET /ballot-manifest/county (BallotManifestDownloadByCounty)
+ GET /cvr/county (CVRDownloadByCounty)
+ GET /acvr (ACVRDownload)
+ GET /contest (ContestDownload)
+ GET /contest/id/:id (ContestDownloadByID)
+ GET /contest/county (ContestDownloadByCounty)
+
 Note: zerotest doesn't support POST operations (yet?)
 See "File upload via POST request not working: Issue #12"
 https://github.com/jjyr/zerotest/issues/12
+
+TODO: to help human testers using web client, display CVRs corresponding to selected ACVRs for a given county
 """
 
 from __future__ import print_function
 import sys
+import os 
+import argparse
+from argparse import Namespace
 import json
 import logging
 import requests
+import hashlib
 
 import sampler
 
@@ -59,52 +107,79 @@ __author__ = "Neal McBurnett <http://neal.mcburnett.org/>"
 __license__ = "TODO GPL"
 
 
-"""
 parser = argparse.ArgumentParser(description='Drive testing for ColoradoRLA auditing.')
-parser.add_argument('cvr_file', nargs='+',
-                    help='zip archive containing Cast Vote Record files in json format')
-parser.add_argument('--name', default="test",
-                    help='short name to use as a prefix for the generated files')
 
-parser.add_argument('--sum', dest='accumulate', action='store_const',
-                    const=sum, default=max,
-                    help='sum the integers (default: find the max)')
-"""
+parser.add_argument('-c, --county', dest='counties', metavar='COUNTY', action='append',
+                    type=int,
+                    help='numeric county_id for the given command, e.g. 1 '
+                    'for Adams. May be specified multiple times.')
+parser.add_argument('-m, --manifest', dest='manifest',
+                    default=1,
+                    help='manifest filename and hash: integer index to pre-defined array, default 0')
+parser.add_argument('-v, --cvr', dest='cvr', type=int,
+                    default=0,
+                    help='predefined cvr filename and hash: integer index to pre-defined array, default 0')
+parser.add_argument('-f, --cvrfile', dest='cvrfile',
+                    help='cvr filename, for arbitrary cvrs. Takes precedence over -v. '
+                    'Proper hash will be computed.')
 
-# Table of county names: server/eclipse-project/src/main/resources/us/freeandfair/corla/county_ids.properties
+# TODO: allow a way to specify CVRs and contests per county.
+parser.add_argument('-C, --contest', dest='contests', metavar='CONTEST', action='append',
+                    type=int,
+                    help='numeric contest_index for the given command, e.g. 0 '
+                    'for first one from the CVRs. May be specified multiple times.')
+parser.add_argument('-r, --risk-limit', type=float, dest='risk_limit', default=0.1,
+                    help='risk limit, e.g. 0.1')
+parser.add_argument('-s, --seed', dest='seed',
+                    default='01234567890123456789',
+                    help='numeric contest_index for the given command, e.g. 0 '
+                    'for first one from the CVRs. May be specified multiple times.')
+parser.add_argument('-u, --url', dest='url',
+                    default='http://localhost:8888',
+                    help='base url of corla server. Defaults to http://localhost:8888')
+parser.add_argument('-e, --endpoint', dest='endpoint',
+                    help='do an HTTP GET from the given endpoint, authenticated as state admin.')
+parser.add_argument('-E, --county-endpoint', dest='county_endpoint',
+                    help='do an HTTP GET from the given endpoint, authenticated as a county.')
 
-def state_login(baseurl, s):
+# TODO: get rid of this and associated old code when /upload-cvr-export and /upload-cvr-export go away
+parser.add_argument('-Y, --ye-olde-upload', type=bool, dest='ye_olde_upload',
+                    help='use old file upload protocol')
+
+parser.add_argument('-d, --debuglevel', type=int, default=logging.WARNING, dest='debuglevel',
+  help='Set logging level to debuglevel: DEBUG=10, INFO=20,\n WARNING=30 (the default), ERROR=40, CRITICAL=50')
+
+parser.add_argument('commands', metavar="COMMAND", nargs='*',
+                    help='audit commands to run. May be specified multiple times. '
+                    'Possibilities: dos_init, county_setup, dos_start, county_audit, dos_wrapup')
+
+
+def state_login(ac, s):
     "Login as state admin in given requests session"
 
     path = "/auth-state-admin"
-    r = s.post(baseurl + path,
+    r = s.post(ac.base + path,
                data={'username': 'stateadmin1', 'password': '', 'second_factor': ''})
     print(r, path)
 
 
-def county_login(baseurl, s, county_id):
+def county_login(ac, s, county_id):
     "Login as county admin in given requests session"
 
     path = "/auth-county-admin"
-    r = s.post(baseurl + path,
+    r = s.post(ac.base + path,
                data={'username': 'countyadmin%d' % county_id, 'password': '', 'second_factor': ''})
     print(r, path)
 
 
-def test_endpoint_json(baseurl, s, path, data):
+def test_endpoint_json(ac, s, path, data, show=True):
     "Do a generic test of an endpoint that posts the given data to the given path"
 
-    r = s.post(baseurl + path, json=data)
-    if r.status_code != 200:
-         print(r, path, r.text)
-    return r
-
-
-def test_endpoint_get(baseurl, s, path, show=True):
-    "Do a generic test of an endpoint that gets the given path"
-
-    r = s.get(baseurl + path)
-    if r.status_code != 200:
+    r = s.post(ac.base + path, json=data)
+    if r.status_code == 200:
+        if show:
+            print(r, path)
+    else:
         if show:
             print(r, path, r.text)
         else:
@@ -112,49 +187,113 @@ def test_endpoint_get(baseurl, s, path, show=True):
     return r
 
 
-def test_endpoint_bytes(baseurl, s, path, data):
+def test_endpoint_get(ac, s, path, show=True):
+    "Do a generic test of an endpoint that gets the given path"
+
+    r = s.get(ac.base + path)
+    if r.status_code == 200:
+        if show:
+            print(r, path)
+    else:
+        if show:
+            print(r, path, r.text)
+        else:
+            print(r, path)
+    return r
+
+
+def test_endpoint_bytes(ac, s, path, data):
     "Do a generic test of an endpoint that posts the given data to the given path"
 
-    r = s.post(baseurl + path, data)
+    r = s.post(ac.base + path, data)
     print(r, path, r.text)
     return r
 
 
-def test_endpoint_post(baseurl, s, path, data):
+def test_endpoint_post(ac, s, path, data):
     "Do a generic test of an endpoint that posts the given data to the given path"
 
-    r = s.post(baseurl + path, data)
+    r = s.post(ac.base + path, data)
     print(r, path, r.text)
     return r
 
 
-def upload_cvrs(baseurl, s, filename, sha256):
+def upload_file(ac, s, import_path, filename, sha256):
+    "Upload a file and confirm its sha256 hash"
+
+    # Obtain test directory, i.e. where this script is.
+    # Filenames can be absolute or relative to this directory.
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+
+    with open(os.path.join(dir_path, filename), 'rb') as f:
+        path = "/upload-file"
+        payload = {'hash': sha256}
+        r = s.post(ac.base + path,
+                          files={'file': f}, data=payload)
+
+    if r.status_code != 200:
+        print(r, path, r.text)
+
+    logging.debug(r, path, r.text)
+
+    import_handle = r.json()
+
+    # This could be done later, after importing another file.
+    r = test_endpoint_json(ac, s, import_path, import_handle)
+    if r.status_code != 200:
+        print(r, path, r.text)
+    logging.debug(r, path, r.text)
+
+"""
+TODO: clean this out when ready.
+
+Alternate approaches that have worked:
+    r = test_endpoint_bytes(ac, s, import_path, r.text)
+    r = test_endpoint_json(ac, s, import_path, { "file_id": import_handle['file_id']})
+
+    print("import_handle: %s" % import_handle)
+    print("response text: %s" % r.text)
+"""
+
+def upload_cvrs(ac, s, filename, sha256):
     "Upload cvrs"
 
     with open(filename, 'rb') as f:
         path = "/upload-cvr-export"
         # TODO: make this generic for any county
         payload = {'county': '3', 'hash': sha256}
-        r = s.post(baseurl + path,
+        r = s.post(ac.base + path,
                           files={'cvr_file': f}, data=payload)
     print(r, path, r.text)
 
 
-def upload_manifest(baseurl, s, filename, sha256):
+def upload_manifest(ac, s, filename, sha256):
     "Upload manifest"
 
     with open(filename, 'rb') as f:
         path = "/upload-ballot-manifest"
         payload = {'county': 'Arapahoe', 'hash': sha256}
-        r = s.post(baseurl + path,
+        r = s.post(ac.base + path,
                           files={'bmi_file': f}, data=payload)
     print(r, path)
 
 
-def get_cvrs(baseurl, s):
+def get_county_cvrs(ac, county_id, s):
+    "Return all cvrs uploaded by a given county"
+
+    path = x
+    r = s.get("%s/cvr/%d" % (ac.base, county_id))
+    if r.status_code != 200:
+         print(r, path, r.text)
+    cvrs = r.json()
+
+    return cvrs
+
+
+def get_cvrs(ac, s):
     "Return all cvrs uploaded by any county"
 
-    r = s.get("%s/cvr" % baseurl)
+    r = s.get("%s/cvr" % ac.base)
     cvrs = r.json()
 
     return cvrs
@@ -186,35 +325,65 @@ def publish_ballots_to_audit(seed, cvrs):
             if i in new_list:
                 cvr['record_type'] = 'AUDITOR_ENTERED'
                 selected.append(cvr)
-                print("Selected cvr %d: id: %d RecordID: %s" % (i, cvr['id'], cvr['imprinted_id']))
+                logging.info("Selected cvr %d: id: %d RecordID: %s" % (i, cvr['id'], cvr['imprinted_id']))
 
         ballots_to_audit.append([county_id, selected])
 
     return ballots_to_audit
 
 
-def upload_files(baseurl, s):
+def upload_files(ac, s):
     """Directly upload files, which zerotest doesn't support.
     See "File upload via POST request not working: Issue #12"
      https://github.com/jjyr/zerotest/issues/12
     """
 
-    upload_manifest(baseurl, s, "../e-1/arapahoe-manifest.csv",
-                "42d409d3394243046cf92e3ce569b7078cba0815d626602d15d0da3e5e844a94")
+    # TODO: predefine more manifests
+    manifestfile = "../e-1/arapahoe-manifest.csv"
+    hash = "42d409d3394243046cf92e3ce569b7078cba0815d626602d15d0da3e5e844a94"
 
-    v = 1
-    if v == 1:
-        upload_cvrs(baseurl, s, "../e-1/arapahoe-regent-3-clear-CVR_Export.csv",
-                    "413befb5bc3e577e637bd789a92da425d0309310c51cfe796e57c01a1987f4bf")
-    if v == 2:
-        upload_cvrs(baseurl, s, "../dominion-2017-CVR_Export_20170310104116.csv",
-                    "4e3844b0dabfcea64a499d65bc1cdc00d139cd5cdcaf502f20dd2beaa3d518d2")
+    manifest = ac.args.manifest # TODO finish when we have more manifests and they make a difference
 
-    if v == 3:
-        upload_cvrs(baseurl, s, "../Denver2016Test/CVR_Export_20170804111144.csv",
-                    "1def4aa4c0e1421b4e5adcd4cc18a8d275f709bc07820a37e76e11a038195d02")
+    if ac.args.ye_olde_upload:
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        upload_manifest(ac, s, os.path.join(dir_path, manifestfile), hash)
+    else:
+        upload_file(ac, s, '/import-ballot-manifest', manifestfile, hash)
 
+    predefined_cvrs = (
+        ("../e-1/arapahoe-regent-3-clear-CVR_Export.csv",
+                    "413befb5bc3e577e637bd789a92da425d0309310c51cfe796e57c01a1987f4bf"),
+        ("../dominion-2017-CVR_Export_20170310104116.csv",
+                    "4e3844b0dabfcea64a499d65bc1cdc00d139cd5cdcaf502f20dd2beaa3d518d2"),
+        ("../Denver2016Test/CVR_Export_20170804111144.csv",
+                    "1def4aa4c0e1421b4e5adcd4cc18a8d275f709bc07820a37e76e11a038195d02"),
+        ("../e-1/arapahoe-regent-3-clear-CVR_Export.csv",
+                    "invalid hash"),
+        ("../e-1/arapahoe-regent-3-clear-CVR_Export.csv",
+                    "00000111111111122222222234444444444456789999999abbbbbbbbbcccddef"),
+    )
 
+    if ac.args.cvrfile is None:
+        cvrfile, hash = predefined_cvrs[ac.args.cvr]
+    else:
+        cvrfile = ac.args.cvrfile
+        BUF_SIZE = 2 ** 18
+
+        sha256 = hashlib.sha256()
+
+        with open(cvrfile, 'rb') as f:
+            while True:
+                data = f.read(BUF_SIZE)
+                if not data:
+                    break
+                sha256.update(data)
+
+        hash = sha256.hexdigest()
+
+    if ac.args.ye_olde_upload:
+        upload_cvrs(ac, s, os.path.join(dir_path, cvrfile), hash)
+    else:
+        upload_file(ac, s, '/import-cvr-export', cvrfile, hash)
 
 def server_sequence():
     '''Run thru a given test sequence to explore server ASM transitions.
@@ -230,29 +399,28 @@ def server_sequence():
     test_get_contest_id_2()
     test_get_contest_county_Arapahoe()
 
-if __name__ == "__main__":
-    # Uncomment for debugging output
-    # logging.basicConfig(level=logging.DEBUG)   # or level=5 for everything
 
-    # When we're updating the tests themselves, the server is running
-    # on port 8887.
+def reset(ac):
+    'Reset the database, leaving only authentication info'
 
-    if len(sys.argv) > 1  and  sys.argv[1] == "--update":
-        base = "http://localhost:8887"
-    else:
-        base = "http://localhost:8888"
+    r = test_endpoint_json(ac, ac.state_s, "/reset-database", {})
 
-    state_s = requests.Session()
-    state_login(base, state_s)
 
-    county_s1 = requests.Session()
-    county_login(base, county_s1, 3)
+def dos_init(ac):
+    'Run initial Dept of State steps: reset, risk_limit etc.'
 
-    r = test_endpoint_json(base, state_s, "/reset-database", {})
+    r = test_endpoint_json(ac, ac.state_s, "/risk-limit-comp-audits",
+                           {"risk_limit": ac.args.risk_limit})
 
-    r = test_endpoint_json(base, state_s, "/risk-limit-comp-audits", {"risk_limit": 0.1})
 
-    r = test_endpoint_json(base, county_s1, "/audit-board",
+def county_setup(ac, county_id):
+
+    logging.debug("county setup for county_id %d" % county_id)
+
+    county_s = requests.Session()
+    county_login(ac, county_s, county_id)
+
+    r = test_endpoint_json(ac, county_s, "/audit-board",
                            [{"first_name": "Mary",
                              "last_name": "Doe",
                              "political_party": "Democrat"},
@@ -260,61 +428,81 @@ if __name__ == "__main__":
                              "last_name": "Doe",
                              "political_party": "Republican"}])
 
-    upload_files(base, county_s1)
-
+    upload_files(ac, county_s)
     # Replace that with this later - or make test_endpoint_file method?
     # r = test_endpoint_post(base, county_s1, "/upload-ballot-manifest", ...)
     # r = test_endpoint_post(base, county_s1, "/upload-cvr-export", ...)
 
-    # We need a valid contest to audit. Pick the first one.
-    r = test_endpoint_get(base, county_s1, "/contest")
+    r = test_endpoint_get(ac, county_s, "/contest/county?%d" % county_id)
     contests = r.json()
-    if len(contests) > 0:
-        logging.log(5, "Contests: %s" % contests)
-        contest_to_audit = contests[0]['id']
 
-        r = test_endpoint_json(base, state_s, "/select-contests",
-                               [{"contest": contest_to_audit,
+    # TODO: get count again: print("Uploaded table of %d CVRs with %d contests" % (, len(contests)))
+    print("Uploaded CVR table with %d contests" % (len(contests),))
+
+    # TODO perhaps cleanup - but is it more realistic to just leave sessions open?
+    # county_s.close()
+
+
+def dos_start(ac):
+    'Run DOS steps to start the audit, enabling county auditing to begin: contest selection, seed, etc.'
+
+    r = test_endpoint_get(ac, ac.state_s, "/contest")
+    contests = r.json()
+    if len(contests) <= 0:
+        print("No contests to audit, status_code = %d" % r.status_code)
+        return
+
+    for i, contest in enumerate(contests):
+        print("Contest {}: vote for {votes_allowed} in {name}".format(i, **contest))
+
+    logging.log(5, "Contests: %s" % contests)
+
+    for contest_index in ac.args.contests:
+        if contest_index > len(contests):
+            logging.error("Contest_index %d out of range: only %d contests in election" %
+                          (contest_index, len(contests)))
+
+        r = test_endpoint_json(ac, ac.state_s, "/select-contests",
+                               [{"contest": contests[contest_index]['id'],
                                  "reason": "COUNTY_WIDE_CONTEST",
                                  "audit": "COMPARISON"}])
-        # Each contest is selected separately, despite the endpoint name
-        if True:  # TODO: add a command-line option for contest selection
-            r = test_endpoint_json(base, state_s, "/select-contests",
-                                   [{"contest": contests[1]['id'],
-                                     "reason": "COUNTY_WIDE_CONTEST",
-                                     "audit": "COMPARISON"}])
-
-    else:
-        print("No contests to audit, status_code = %d" % r.status_code)
 
     # TODO shouldn't this be a POST ala this?
-    # r = test_endpoint_post(base, state_s, "/publish-data-to-audit", {})
-    r = test_endpoint_get(base, state_s, "/publish-data-to-audit")
+    # r = test_endpoint_post(ac, ac.state_s, "/publish-data-to-audit", {})
+    r = test_endpoint_get(ac, ac.state_s, "/publish-data-to-audit")
 
-    seed = "01234567890123456789"
+    r = test_endpoint_json(ac, ac.state_s, "/random-seed",
+                           {'seed': ac.args.seed})
+    r = test_endpoint_post(ac, ac.state_s, "/ballots-to-audit/publish", {})
 
-    r = test_endpoint_json(base, state_s, "/random-seed",
-                           {'seed': seed})
-    r = test_endpoint_post(base, state_s, "/ballots-to-audit/publish", {})
+    r = test_endpoint_get(ac, ac.state_s, "/dos-dashboard")
+    if r.status_code == 200:
+        dos_dashboard = r.json()
+        for contest_id, reason in dos_dashboard['audited_contests'].items():
+            r = test_endpoint_get(ac, ac.state_s, "/contest/id/%s" % contest_id)
+            print("Audited contest: vote for {votes_allowed} in {name}".format(**r.json()))
+        for county_id, status in dos_dashboard['county_status'].items():
+            if status['estimated_ballots_to_audit'] != 0:
+                print("County %s has initial sample size of %s ballot cards" % 
+                      (county_id, status['estimated_ballots_to_audit']))
+    logging.debug("dos-dashboard: %s" % r.text)
 
-    cvrs = get_cvrs(base, county_s1)
-    cvrtable = {}
-    for cvr in cvrs:
-        cvrtable[cvr['id']] = cvr
+def county_audit(ac, county_id):
+    'Audit board uploads ACVRs from a county'
 
-    print("Received table of %d CVRs with %d contests" % (len(cvrtable), len(contests)))
-    # logging.debug(json.dumps(cvrs))
+    county_s = requests.Session()
+    county_login(ac, county_s, county_id)
 
     # Print this tool's notion of what should be audited, based on seed etc.
     # for auditing the audit.
     # TODO or FIXME - doesn't yet match "ballots_to_audit" from the dashboard
-    logging.log(5, json.dumps(publish_ballots_to_audit(seed, cvrs), indent=2))
+    # logging.log(5, json.dumps(publish_ballots_to_audit(ac.args.seed, cvrs), indent=2))
 
-    r = test_endpoint_get(base, state_s, "/dos-dashboard")
+    r = test_endpoint_get(ac, ac.state_s, "/dos-dashboard")
 
-    r = test_endpoint_get(base, county_s1, "/county-dashboard")
-    # r = test_endpoint_get(base, county_s1, "/audit-board-asm-state")
-    # r = test_endpoint_json(base, county_s1, "/audit-board-dashboard", {})
+    r = test_endpoint_get(ac, county_s, "/county-dashboard")
+    # r = test_endpoint_get(ac, county_s, "/audit-board-asm-state")
+    # r = test_endpoint_json(ac, county_s, "/audit-board-dashboard", {})
 
     selected = r.json()["ballots_to_audit"]
 
@@ -327,14 +515,15 @@ if __name__ == "__main__":
 
     for i in range(len(selected)):
         if i % 10 == 0:
-            r = test_endpoint_get(base, state_s, "/dos-dashboard")
+            r = test_endpoint_get(ac, ac.state_s, "/dos-dashboard", show=False)
 
-        acvr = cvrtable[selected[i]].copy()
+        r = test_endpoint_get(ac, county_s, "/cvr/id/%d" % selected[i], show=False)
+        acvr = r.json()
         logging.debug("Original CVR: %s" % json.dumps(acvr))
         acvr['record_type'] = 'AUDITOR_ENTERED'
 
         if False:
-            r = test_endpoint_json(base, county_s1, "/ballot-not-found", {'id': acvr['id']})
+            r = test_endpoint_json(ac, county_s, "/ballot-not-found", {'id': acvr['id']})
 
         # Modify the aCVR sometimes.
         # TODO: provide command-line parameters for discrepancy rates?
@@ -350,10 +539,10 @@ if __name__ == "__main__":
                 del acvr['contest_info'][0]
 
         logging.debug("Submitting aCVR: %s" % json.dumps(acvr))
-        test_endpoint_json(base, county_s1, "/upload-audit-cvr",
-                           {'cvr_id': selected[i], 'audit_cvr': acvr})
+        test_endpoint_json(ac, county_s, "/upload-audit-cvr",
+                           {'cvr_id': selected[i], 'audit_cvr': acvr}, show=False)
 
-        r = test_endpoint_get(base, county_s1, "/county-dashboard", show=False)
+        r = test_endpoint_get(ac, county_s, "/county-dashboard", show=False)
         resp = r.json()
         # The list of ballots_to_audit takes up way too much space in the output....
         if False:
@@ -363,21 +552,89 @@ if __name__ == "__main__":
         else:
             # TODO test getting just contests from current county
             # TODO print other interesting info
-            print("Uploaded aCVR %d; estimated_ballots_to_audit: %s" % (acvr['id'], resp['estimated_ballots_to_audit']))
+            print("County %d upload %d: aCVR %d; estimated_ballots_to_audit: %s" % (county_id, i, acvr['id'], resp['estimated_ballots_to_audit']))
 
         if resp['estimated_ballots_to_audit'] <= 0:
             print("\nAudit completed after %d ballots" % (i + 1))
             break
 
-    r = test_endpoint_get(base, state_s, "/dos-dashboard")
+    r = test_endpoint_get(ac, ac.state_s, "/dos-dashboard")
 
-    r = test_endpoint_json(base, county_s1, "/intermediate-audit-report", {})
-    r = test_endpoint_json(base, county_s1, "/audit-report", {})
+    r = test_endpoint_json(ac, county_s, "/intermediate-audit-report", {})
+    r = test_endpoint_json(ac, county_s, "/audit-report", {})
 
-    r = test_endpoint_get(base, state_s, "/dos-dashboard")
+def dos_wrapup(ac):
 
-    r = test_endpoint_json(base, state_s, "/publish-report", {})
+    r = test_endpoint_get(ac, ac.state_s, "/dos-dashboard")
+
+    r = test_endpoint_json(ac, ac.state_s, "/publish-report", {})
 
     # server_sequence()
 
     sys.exit(0)
+
+
+if __name__ == "__main__":
+
+    # Get unbuffered output
+    sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
+
+    # Establist an "audit context", abbreviated ac, for passing state around.
+    ac = Namespace()
+
+    ac.args = parser.parse_args()
+    logging.basicConfig(level=ac.args.debuglevel)   # or level=5 for everything
+
+    # Add a default county here to work around https://bugs.python.org/issue16399
+    if ac.args.counties is None:
+        ac.args.counties = [3]
+    # Add a default contest
+    if ac.args.contests is None:
+        ac.args.contests = [0]
+
+    # If no commands are listed, enter all of them
+    if len(ac.args.commands) == 0:
+        ac.args.commands = ["reset", "dos_init", "county_setup",
+                            "dos_start", "county_audit", "dos_wrapup"]
+
+    logging.debug("Processed arguments: %s" % ac.args)
+
+    ac.base = ac.args.url
+
+    ac.state_s = requests.Session()
+    state_login(ac, ac.state_s)
+
+    if not ac.args.endpoint is None:
+        r = test_endpoint_get(ac, ac.state_s, ac.args.endpoint)
+        print(r, ac.args.endpoint, r.text)
+        sys.exit(0)
+
+    if not ac.args.county_endpoint is None:
+        for county_id in ac.args.counties:
+            county_s = requests.Session()
+            county_login(ac, county_s, county_id)
+
+            r = test_endpoint_get(ac, county_s, ac.args.county_endpoint)
+            print(r, ac.args.endpoint, r.text)
+
+        sys.exit(0)
+
+    if "reset" in ac.args.commands:
+        reset(ac)
+
+    if "dos_init" in ac.args.commands:
+        dos_init(ac)
+
+    if "county_setup" in ac.args.commands:
+        for county_id in ac.args.counties:
+            county_setup(ac, county_id)
+
+    if "dos_start" in ac.args.commands:
+        dos_start(ac)
+
+    if "county_audit" in ac.args.commands:
+        for county_id in ac.args.counties:
+            county_audit(ac, county_id)
+
+    if "dos_wrapup" in ac.args.commands:
+        dos_wrapup(ac)
