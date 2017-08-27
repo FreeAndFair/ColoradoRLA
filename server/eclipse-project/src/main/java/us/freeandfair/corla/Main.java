@@ -50,6 +50,7 @@ import us.freeandfair.corla.endpoint.CORSFilter;
 import us.freeandfair.corla.endpoint.Endpoint;
 import us.freeandfair.corla.json.FreeAndFairNamingStrategy;
 import us.freeandfair.corla.json.InstantTypeAdapter;
+import us.freeandfair.corla.json.VersionExclusionStrategy;
 import us.freeandfair.corla.model.Administrator;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
@@ -131,6 +132,7 @@ public final class Main {
       new GsonBuilder().
       registerTypeAdapter(Instant.class, new InstantTypeAdapter()).
       setFieldNamingStrategy(new FreeAndFairNamingStrategy()).
+      setExclusionStrategies(new VersionExclusionStrategy()).
       setPrettyPrinting().create();
   
   /**
