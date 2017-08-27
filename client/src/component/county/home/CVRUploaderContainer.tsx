@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import CVRUploader from './CVRUploader';
 
-import uploadCvrExport from '../../../action/uploadCvrExport';
+import uploadCvrExport from '../../../action/next/uploadCvrExport';
 
 
 const UploadedCvrExport = ({ filename, hash }: any) => (
