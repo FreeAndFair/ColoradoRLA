@@ -48,7 +48,7 @@ import us.freeandfair.corla.persistence.PersistentEntity;
  */
 @Entity
 @Immutable // this is a Hibernate-specific annotation, but there is no JPA alternative
-@Cacheable(true) // TODO: evaluate whether this should be cacheable
+@Cacheable(false) // TODO: evaluate whether this should be cacheable
 @Table(name = "cast_vote_record",
        indexes = { @Index(name = "idx_cvr_county_type", columnList = "county_id, record_type"),
                    @Index(name = "idx_cvr_county_cvr_number", 

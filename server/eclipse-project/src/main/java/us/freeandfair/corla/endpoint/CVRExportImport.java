@@ -18,7 +18,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.util.OptionalLong;
 
 import javax.persistence.PersistenceException;
 
@@ -112,10 +111,11 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
       if (parser.parse()) {
         Main.LOGGER.info(parser.recordCount().getAsInt() + " CVRs parsed from file " + 
                          the_file.id());
-        final OptionalLong count = CastVoteRecordQueries.countMatching(RecordType.UPLOADED);
-        if (count.isPresent()) {
-          Main.LOGGER.info(count.getAsLong() + " uploaded CVRs in storage");
-        }
+//        final OptionalLong count = 
+//            CastVoteRecordQueries.countMatching(RecordType.UPLOADED);
+//        if (count.isPresent()) {
+//          Main.LOGGER.info(count.getAsLong() + " uploaded CVRs in storage");
+//        }
         updateCountyDashboard(the_response, the_file.countyID(), the_file.timestamp());
         the_file.setStatus(FileStatus.IMPORTED_AS_CVR_EXPORT);
         Persistence.saveOrUpdate(the_file);

@@ -20,16 +20,11 @@ import us.freeandfair.corla.asm.AuditBoardDashboardASM;
 import us.freeandfair.corla.asm.CountyDashboardASM;
 import us.freeandfair.corla.asm.DoSDashboardASM;
 import us.freeandfair.corla.asm.PersistentASMState;
-import us.freeandfair.corla.model.BallotManifestInfo;
-import us.freeandfair.corla.model.CastVoteRecord;
-import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.County;
-import us.freeandfair.corla.model.CountyContestComparisonAudit;
-import us.freeandfair.corla.model.CountyContestResult;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
-import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.query.DatabaseResetQueries;
 import us.freeandfair.corla.query.PersistentASMStateQueries;
 
 /**
@@ -90,13 +85,9 @@ public class ResetDatabase extends AbstractEndpoint {
   @Override
   public String endpoint(final Request the_request,
                          final Response the_response) {
-    // delete all the dashboards
-    for (final DoSDashboard db : Persistence.getAll(DoSDashboard.class)) {
-      Persistence.delete(db);
-    }
-    for (final CountyDashboard db : Persistence.getAll(CountyDashboard.class)) {
-      Persistence.delete(db);
-    }
+    // delete everything
+    
+    DatabaseResetQueries.resetDatabase();
     
     // create new dashboards
     final DoSDashboard dosdb = new DoSDashboard();
@@ -105,27 +96,6 @@ public class ResetDatabase extends AbstractEndpoint {
     for (final County c : Persistence.getAll(County.class)) {
       final CountyDashboard cdb = new CountyDashboard(c);
       Persistence.saveOrUpdate(cdb);
-    }
-    
-    // delete all the CVRs 
-    for (final CastVoteRecord cvr : Persistence.getAll(CastVoteRecord.class)) {
-      Persistence.delete(cvr);
-    }
-    
-    // delete all the ballot manifests
-    for (final BallotManifestInfo bmi : Persistence.getAll(BallotManifestInfo.class)) {
-      Persistence.delete(bmi);
-    }
-
-    // delete all the contest results
-    for (final CountyContestResult c : Persistence.getAll(CountyContestResult.class)) {
-      Persistence.delete(c);
-    }
-    
-    // delete all the contest audit information
-    for (final CountyContestComparisonAudit c : 
-             Persistence.getAll(CountyContestComparisonAudit.class)) {
-      Persistence.delete(c);
     }
     
     // reset the DoS dashboard ASM state
@@ -147,19 +117,8 @@ public class ResetDatabase extends AbstractEndpoint {
         audit_asm.updateFrom(new AuditBoardDashboardASM(id));
       }
     }
-    
-    // delete all the Contests
-    for (final Contest c : Persistence.getAll(Contest.class)) {
-      Persistence.delete(c);
-    }
-    
-    // delete all the uploaded files
-    for (final UploadedFile uf : Persistence.getAll(UploadedFile.class)) {
-      Persistence.delete(uf);
-    }
-    
-    ok(the_response, "database reset; run vacuumlo on the database to " + 
-                     "recover space from large object storage");
+
+    ok(the_response, "database reset");
     return my_endpoint_result.get();
   }
 }
