@@ -13,6 +13,7 @@ interface Acvr {
         batch_id: string;
         contest_info: ContestInfo[];
         county_id: number;
+        cvr_number: number;
         id: number;
         imprinted_id: string;
         record_id: string;
@@ -39,6 +40,7 @@ export const format = (marks: any, cvr: any): Acvr => ({
         batch_id: cvr.batchId,
         contest_info: _.map(marks, formatContestInfo),
         county_id: cvr.countyId,
+        cvr_number: cvr.cvrNumber,
         id: cvr.id,
         imprinted_id: cvr.imprintedId,
         record_id: cvr.recordId,
