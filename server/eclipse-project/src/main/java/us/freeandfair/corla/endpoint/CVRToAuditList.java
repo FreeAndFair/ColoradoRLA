@@ -133,7 +133,8 @@ public class CVRToAuditList extends AbstractEndpoint {
             final String location = BallotManifestInfoQueries.locationFor(cvr);
             cvr_to_audit_list.add(new CVRToAuditResponse(start + i, cvr.scannerID(), 
                                                          cvr.batchID(), cvr.recordID(), 
-                                                         cvr.imprintedID(),
+                                                         cvr.imprintedID(), 
+                                                         cvr.cvrNumber(), cvr.id(),
                                                          cvr.ballotType(), location));
             cvr_set.add(cvr);
           }

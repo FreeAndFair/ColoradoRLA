@@ -51,6 +51,16 @@ public class CVRToAuditResponse {
   protected final String my_imprinted_id;
   
   /**
+   * The CVR number (from the CSV file).
+   */
+  protected final int my_cvr_number;
+  
+  /**
+   * The CVR database ID.
+   */
+  protected final long my_db_id;
+  
+  /**
    * The CVR ballot type.
    */
   protected final String my_ballot_type;
@@ -68,6 +78,8 @@ public class CVRToAuditResponse {
    * @param the_batch_id The batch ID.
    * @param the_record_id The record ID.
    * @param the_imprinted_id The imprinted ID.
+   * @param the_cvr_number The CVR number (from the CSV file).
+   * @param the_db_id The database ID.
    * @param the_ballot_type The ballot type.
    * @param the_storage_location The storage location.
    */
@@ -76,6 +88,8 @@ public class CVRToAuditResponse {
                             final int the_batch_id,
                             final int the_record_id,
                             final String the_imprinted_id,
+                            final int the_cvr_number,
+                            final long the_db_id,
                             final String the_ballot_type,
                             final String the_storage_location) {
     my_audit_sequence_number = the_audit_sequence_number;
@@ -83,6 +97,8 @@ public class CVRToAuditResponse {
     my_batch_id = the_batch_id;
     my_record_id = the_record_id;
     my_imprinted_id = the_imprinted_id;
+    my_cvr_number = the_cvr_number;
+    my_db_id = the_db_id;
     my_ballot_type = the_ballot_type;
     my_storage_location = the_storage_location;
   }
