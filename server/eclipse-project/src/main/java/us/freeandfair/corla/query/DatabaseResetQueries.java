@@ -13,24 +13,9 @@ package us.freeandfair.corla.query;
 
 import javax.persistence.Cache;
 import javax.persistence.PersistenceException;
-import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.Root;
 
 import org.hibernate.Session;
 
-import us.freeandfair.corla.asm.AuditBoardDashboardASM;
-import us.freeandfair.corla.asm.CountyDashboardASM;
-import us.freeandfair.corla.asm.DoSDashboardASM;
-import us.freeandfair.corla.asm.PersistentASMState;
-import us.freeandfair.corla.model.BallotManifestInfo;
-import us.freeandfair.corla.model.CastVoteRecord;
-import us.freeandfair.corla.model.Contest;
-import us.freeandfair.corla.model.County;
-import us.freeandfair.corla.model.CountyContestComparisonAudit;
-import us.freeandfair.corla.model.CountyContestResult;
-import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.persistence.Persistence;
 
 /**
@@ -56,39 +41,29 @@ public final class DatabaseResetQueries {
   public static void resetDatabase() {
     final Session s = Persistence.currentSession();
     
-    // CriteriaDelete is excellent
+    // NOTE: this is done with native queries, because otherwise it would be
+    // interminably slow (deleting one entity at a time)
     
-    final CriteriaBuilder cb = s.getCriteriaBuilder();
-    final CriteriaDelete<BallotManifestInfo> bmi = 
-        cb.createCriteriaDelete(BallotManifestInfo.class);
-    bmi.from(BallotManifestInfo.class);
-    final CriteriaDelete<CastVoteRecord> cvr =
-        cb.createCriteriaDelete(CastVoteRecord.class);
-    cvr.from(CastVoteRecord.class);
-    final CriteriaDelete<CountyContestResult> ccr = 
-        cb.createCriteriaDelete(CountyContestResult.class);
-    ccr.from(CountyContestResult.class);
-    final CriteriaDelete<CountyContestComparisonAudit> ccca =
-        cb.createCriteriaDelete(CountyContestComparisonAudit.class);
-    ccca.from(CountyContestComparisonAudit.class);
-    final CriteriaDelete<Contest> contest =
-        cb.createCriteriaDelete(Contest.class);
-    contest.from(Contest.class);
-    final CriteriaDelete<UploadedFile> files =
-        cb.createCriteriaDelete(UploadedFile.class);
-    files.from(UploadedFile.class);
+    // the records in the following list of tables will be deleted, in order:
     
-    s.createQuery(bmi).executeUpdate();
-    s.createQuery(cvr).executeUpdate();
-    s.createQuery(ccr).executeUpdate();
-    s.createQuery(ccca).executeUpdate();
-    s.createQuery(contest).executeUpdate();
-    s.createQuery(files).executeUpdate();
+    final String[] tables = {
+        "log", "audit_board", "audit_intermediate_report", 
+        "audit_investigation_report", "ballot_manifest_info",
+        "contest_choice", "contest_to_audit", 
+        "county_contest_vote_total", "county_contest_comparison_audit", 
+        "county_contest_result", "cvr_contest_info", 
+        "driving_contest", "contest", "cvr_audit_info", "cast_vote_record", 
+        "uploaded_file", "dos_dashboard", "county_dashboard"
+    };
+    
+    for (final String t : tables) {
+      s.createNativeQuery("delete from " + t).executeUpdate();
+    }
     
     // delete all the no-longer-referenced LOBs
     
     s.createNativeQuery("select lo_unlink(l.oid) " +
-                        "from pg_largeobject_metadata l").executeUpdate();
+                        "from pg_largeobject_metadata l").getResultList();
     
     // empty all the Hibernate caches
     final Cache cache = s.getSessionFactory().getCache();
