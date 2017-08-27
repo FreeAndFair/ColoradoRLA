@@ -37,13 +37,11 @@ public final class EqualsHashcodeHelper {
    */
   public static boolean nullableEquals(final Object the_first, 
                                        final Object the_second) {
-    boolean result = false;
     if (the_first == null) {
-      result = the_second == null;
+      return the_second == null;
     } else {
-      result = the_first.equals(the_second);
+      return the_first.equals(the_second);
     }
-    return result;
   }
   
   /**
@@ -55,10 +53,10 @@ public final class EqualsHashcodeHelper {
    * @return the hash code.
    */
   public static int nullableHashCode(final Object the_object) {
-    int result = 0;
     if (the_object != null) {
-      result = the_object.hashCode();
+      return  the_object.hashCode();
+    } else {
+      return 0;
     }
-    return result;
   }
 }
