@@ -135,6 +135,7 @@ public class CVRToAuditList extends AbstractEndpoint {
                                                          cvr.batchID(), cvr.recordID(), 
                                                          cvr.imprintedID(),
                                                          cvr.ballotType(), location));
+            cvr_set.add(cvr);
           }
         }
         start = end + 1; // end is inclusive
