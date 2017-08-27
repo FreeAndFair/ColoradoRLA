@@ -81,8 +81,8 @@ public class CVRToAuditList extends AbstractEndpoint {
    */
   @Override
   protected boolean validateParameters(final Request the_request) {
-    final String start = the_request.params(START);
-    final String ballot_count = the_request.params(BALLOT_COUNT);
+    final String start = the_request.queryParams(START);
+    final String ballot_count = the_request.queryParams(BALLOT_COUNT);
     
     boolean result = start != null && ballot_count != null;
     
