@@ -15,7 +15,7 @@ package us.freeandfair.corla.endpoint;
 import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.SIGN_IN_AUDIT_BOARD_EVENT;
 
 import java.lang.reflect.Type;
-import java.util.Set;
+import java.util.List;
 
 import javax.persistence.PersistenceException;
 
@@ -81,9 +81,9 @@ public class EstablishAuditBoard extends AbstractAuditBoardDashboardEndpoint {
   public String endpoint(final Request the_request,
                          final Response the_response) {
     try {
-      final Type set_type = new TypeToken<Set<Elector>>() { }.getType();
-      final Set<Elector> parsed_audit_board = 
-          Main.GSON.fromJson(the_request.body(), set_type);
+      final Type list_type = new TypeToken<List<Elector>>() { }.getType();
+      final List<Elector> parsed_audit_board = 
+          Main.GSON.fromJson(the_request.body(), list_type);
       if (parsed_audit_board.size() >= CountyDashboard.MIN_AUDIT_BOARD_MEMBERS) {
         final County county = Authentication.authenticatedCounty(the_request); 
         if (county == null) {

@@ -12,7 +12,7 @@
 package us.freeandfair.corla.persistence;
 
 import java.lang.reflect.Type;
-import java.util.Set;
+import java.util.List;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
@@ -33,12 +33,12 @@ import us.freeandfair.corla.model.Elector;
  */
 @Converter
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class ElectorSetConverter implements AttributeConverter<Set<Elector>, String> {
+public class ElectorListConverter implements AttributeConverter<List<Elector>, String> {
   /**
    * The type information for a set of String.
    */
-  private static final Type ELECTOR_SET = 
-      new TypeToken<Set<Elector>>() { }.getType();
+  private static final Type ELECTOR_LIST = 
+      new TypeToken<List<Elector>>() { }.getType();
   
   /**
    * Our Gson instance, which does not do pretty-printing (unlike the global
@@ -57,7 +57,7 @@ public class ElectorSetConverter implements AttributeConverter<Set<Elector>, Str
    * @param the_set The list of Strings.
    */
   @Override
-  public String convertToDatabaseColumn(final Set<Elector> the_set) {
+  public String convertToDatabaseColumn(final List<Elector> the_set) {
     return GSON.toJson(the_set); 
   }
 
@@ -67,7 +67,7 @@ public class ElectorSetConverter implements AttributeConverter<Set<Elector>, Str
    * @param the_column The column entry.
    */
   @Override
-  public Set<Elector> convertToEntityAttribute(final String the_column) {
-    return GSON.fromJson(the_column, ELECTOR_SET);
+  public List<Elector> convertToEntityAttribute(final String the_column) {
+    return GSON.fromJson(the_column, ELECTOR_LIST);
   }
 }
