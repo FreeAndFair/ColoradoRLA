@@ -272,7 +272,7 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
    * @return the initial (conservative) expected number of ballots to audit.
    */
   @SuppressWarnings({"checkstyle:magicnumber", "PMD.AvoidDuplicateLiterals"})
-  public Integer initialBallotsToAudit() {
+  public int initialBallotsToAudit() {
     // compute the conservative numbers of over/understatements based on 
     // initial estimate of error rate
     return computeBallotsToAuditFromRates(CONSERVATIVE_TWOS_RATE,
@@ -284,7 +284,8 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
   }
   
   /**
-   * @return the expected number of ballots to audit.
+   * @return the expected overall number of ballots to audit, assuming no 
+   * further discrepancies occur.
    */
   public Integer ballotsToAudit() {
     if (my_recalculate_needed) {
@@ -295,9 +296,17 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
   }
   
   /**
-   * @return the expected number of ballots remaining to audit.
-   * This is the stopping sample size as defined in the literature:
-   * https://www.stat.berkeley.edu/~stark/Preprints/gentle12.pdf
+   * @return the expected number of ballots remaining to audit, assuming 
+   * over- and understatement rates continue as they currently are.
+   */
+  public int expectedBallotsRemainingToAudit() {
+    return computeBallotsToAuditFromProgress(my_two_vote_under, my_one_vote_under,
+                                             my_one_vote_over, my_two_vote_over,
+                                             my_dashboard.auditedPrefixLength());
+  }
+  
+  /**
+   * Recalculates the overall number of ballots to audit.
    */
   private void recalculateBallotsToAudit() {
     my_ballots_to_audit = computeBallotsToAudit(my_two_vote_under, 
@@ -307,7 +316,7 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
   }
   
   /**
-   * Computes the expected number of ballots remaining to audit given the
+   * Computes the expected number of ballots to audit overall given the
    * specified numbers of over- and understatements.
    * 
    * @param the_two_under The two-vote understatements.
@@ -363,7 +372,46 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
   }
   
   /**
-   * Computes the expected number of ballots remaining to audit given the
+   * Computes the expected number of ballots remaining to audit given the specified
+   * number of over- and understatements and the number of ballots audited so far, 
+   * assuming that the over- and understatement rate remains the same.
+   * 
+   * @param the_two_under The number of two-vote understatements.
+   * @param the_one_under The one-vote understatements.
+   * @param the_one_over The one-vote overstatements.
+   * @param the_two_over The two-vote overstatements.
+   * @param the_number_audited The number of ballots audited so far.
+   * 
+   * @return the expected number of ballots remaining to audit.
+   * This is calculated from the stopping sample size as defined in the literature:
+   * https://www.stat.berkeley.edu/~stark/Preprints/gentle12.pdf
+   */
+  private int computeBallotsToAuditFromProgress(final int the_two_under,
+                                                final int the_one_under,
+                                                final int the_one_over,
+                                                final int the_two_over,
+                                                final int the_number_audited) {
+    // compute the current over- and understatement rates
+    final BigDecimal number_audited = BigDecimal.valueOf(the_number_audited);
+    final BigDecimal two_under_rate = 
+        BigDecimal.valueOf(the_two_under).divide(number_audited, MathContext.DECIMAL128);
+    final BigDecimal one_under_rate =
+        BigDecimal.valueOf(the_one_under).divide(number_audited, MathContext.DECIMAL128);
+    final BigDecimal one_over_rate =
+        BigDecimal.valueOf(the_one_over).divide(number_audited, MathContext.DECIMAL128);
+    final BigDecimal two_over_rate =
+        BigDecimal.valueOf(the_two_over).divide(number_audited, MathContext.DECIMAL128);
+    
+    final BigDecimal bta = 
+        computeBallotsToAuditFromRates(two_under_rate, one_under_rate, 
+                                       one_over_rate, two_over_rate,
+                                       CONSERVATIVE_ROUND_ONES_UP, CONSERVATIVE_ROUND_TWOS_UP);
+    final BigDecimal remaining = bta.subtract(BigDecimal.valueOf(the_number_audited));
+    return remaining.setScale(0, RoundingMode.CEILING).intValue();
+  }
+  
+  /**
+   * Computes the expected number of ballots to audit overall given the
    * specified rates of over- and understatements.
    * 
    * @param the_two_under_rate The rate of two-vote understatements.
