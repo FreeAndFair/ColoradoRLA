@@ -52,7 +52,8 @@ public final class DatabaseResetQueries {
         "county_contest_vote_total", "county_contest_comparison_audit", 
         "county_contest_result", "cvr_contest_info", 
         "driving_contest", "contest", "cvr_audit_info", "cast_vote_record", 
-        "uploaded_file", "dos_dashboard", "county_dashboard"
+        "uploaded_file", "dos_dashboard", 
+        "round", "audit_board", "county_dashboard"
     };
     
     for (final String t : tables) {

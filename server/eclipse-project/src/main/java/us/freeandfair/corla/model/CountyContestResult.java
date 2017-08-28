@@ -431,10 +431,15 @@ public class CountyContestResult implements PersistentEntity, Serializable {
     my_min_margin = Integer.MAX_VALUE;
     my_max_margin = Integer.MIN_VALUE;
     for (final String w : my_winners) {
-      for (final String l : my_losers) {
-        final int margin = my_vote_totals.get(w) - my_vote_totals.get(l);
-        my_min_margin = Math.min(my_min_margin, margin);
-        my_max_margin = Math.max(my_max_margin, margin);
+      if (my_losers.isEmpty()) {
+        my_min_margin = 0;
+        my_max_margin = 0;
+      } else {
+        for (final String l : my_losers) {
+          final int margin = my_vote_totals.get(w) - my_vote_totals.get(l);
+          my_min_margin = Math.min(my_min_margin, margin);
+          my_max_margin = Math.max(my_max_margin, margin);
+        }
       }
     }
   }

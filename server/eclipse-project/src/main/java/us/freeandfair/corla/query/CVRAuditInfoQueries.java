@@ -28,6 +28,7 @@ import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.CVRAuditInfo;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CountyDashboard;
+import us.freeandfair.corla.model.Round;
 import us.freeandfair.corla.persistence.Persistence;
 
 /**
@@ -80,7 +81,8 @@ public final class CVRAuditInfoQueries {
   }
   
   /**
-   * Gets the list of CVR IDs to audit for the specified county dashboard.
+   * Gets the list of CVR IDs to audit for the specified county dashboard
+   * in the current round.
    * 
    * @param the_dashboard The dashboard.
    * @return the list of CVR IDs to audit, or null if it could not be 
@@ -88,30 +90,34 @@ public final class CVRAuditInfoQueries {
    */
   public static List<Long> cvrsToAudit(final CountyDashboard the_dashboard) {
     List<Long> result = null;
-    try {
-      final Session s = Persistence.currentSession();
-      // bypassing Hibernate here is a much more effective way of getting
-      // this particular set of information
-      final Query query = 
-          s.createNativeQuery("select cvr_id from cvr_audit_info where " + 
-                              "dashboard_id=" + the_dashboard.id().toString() + 
-                              " order by index");
-      @SuppressWarnings("unchecked") // we know this gives us a list of numbers
-      final List<Number> generic_results = (List<Number>) query.getResultList();
-      result = new ArrayList<>();
-      for (final Number n : generic_results) {
-        result.add(n.longValue());
+    final Round current = the_dashboard.currentRound();
+    if (current != null) {
+      try {
+        final Session s = Persistence.currentSession();
+        // bypassing Hibernate here is a much more effective way of getting
+        // this particular set of information
+        final Query query = 
+            s.createNativeQuery("select cvr_id from cvr_audit_info where " + 
+                "dashboard_id=" + the_dashboard.id().toString() + 
+                " order by index limit " + current.numberOfBallots() +
+                " offset " + current.startIndex());
+        @SuppressWarnings("unchecked") // we know this gives us a list of numbers
+        final List<Number> generic_results = (List<Number>) query.getResultList();
+        result = new ArrayList<>();
+        for (final Number n : generic_results) {
+          result.add(n.longValue());
+        }
+      } catch (final PersistenceException e) {
+        e.printStackTrace(System.out);
+        Main.LOGGER.error("could not query database for cvrs to audit list");
       }
-    } catch (final PersistenceException e) {
-      e.printStackTrace(System.out);
-      Main.LOGGER.error("could not query database for cvrs to audit list");
-    }
-    if (result == null) {
-      Main.LOGGER.debug("found no cvrs to audit for county " +
-                        the_dashboard.id());
-    } else {
-      Main.LOGGER.debug("found list of cvrs to audit " + result);
-    }
+      if (result == null) {
+        Main.LOGGER.debug("found no cvrs to audit for county " +
+            the_dashboard.id());
+      } else {
+        Main.LOGGER.debug("found list of cvrs to audit " + result);
+      }
+    } // else there is no active round, so nothing to audit
     return result;
   }
 }

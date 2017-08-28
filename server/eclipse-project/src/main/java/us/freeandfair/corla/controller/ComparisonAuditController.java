@@ -32,6 +32,7 @@ import us.freeandfair.corla.model.CountyContestComparisonAudit;
 import us.freeandfair.corla.model.CountyContestResult;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
+import us.freeandfair.corla.model.Round;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CVRAuditInfoQueries;
 import us.freeandfair.corla.query.CastVoteRecordQueries;
@@ -189,6 +190,7 @@ public final class ComparisonAuditController {
     }
     the_dashboard.setComparisonAudits(comparison_audits);
     the_dashboard.setDrivingContests(county_driving_contests);
+    the_dashboard.startRound(to_audit, 0);
     the_dashboard.setEstimatedBallotsToAudit(Math.max(0,  to_audit));
     if (!county_driving_contests.isEmpty()) {
       the_dashboard.setCVRsToAudit(computeBallotOrder(the_dashboard, 0, to_audit));
@@ -394,6 +396,10 @@ public final class ComparisonAuditController {
       the_dashboard.addCVRsToAudit(new_cvrs);
     }
     the_dashboard.setAuditedPrefixLength(new_prefix_length);
+    final Round current_round = the_dashboard.currentRound();
+    if (current_round.startIndex() + current_round.numberOfBallots() <= new_prefix_length) {
+      the_dashboard.endRound();
+    }
   }
   
   /**

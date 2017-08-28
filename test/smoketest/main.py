@@ -420,14 +420,6 @@ def county_setup(ac, county_id):
     county_s = requests.Session()
     county_login(ac, county_s, county_id)
 
-    r = test_endpoint_json(ac, county_s, "/audit-board",
-                           [{"first_name": "Mary",
-                             "last_name": "Doe",
-                             "political_party": "Democrat"},
-                            {"first_name": "John",
-                             "last_name": "Doe",
-                             "political_party": "Republican"}])
-
     upload_files(ac, county_s)
     # Replace that with this later - or make test_endpoint_file method?
     # r = test_endpoint_post(base, county_s1, "/upload-ballot-manifest", ...)
@@ -493,6 +485,14 @@ def county_audit(ac, county_id):
     county_s = requests.Session()
     county_login(ac, county_s, county_id)
 
+    r = test_endpoint_json(ac, county_s, "/audit-board-sign-in",
+                           [{"first_name": "Mary",
+                             "last_name": "Doe",
+                             "political_party": "Democrat"},
+                            {"first_name": "John",
+                             "last_name": "Doe",
+                             "political_party": "Republican"}])
+
     # Print this tool's notion of what should be audited, based on seed etc.
     # for auditing the audit.
     # TODO or FIXME - doesn't yet match "ballots_to_audit" from the dashboard
@@ -516,6 +516,16 @@ def county_audit(ac, county_id):
     for i in range(len(selected)):
         if i % 10 == 0:
             r = test_endpoint_get(ac, ac.state_s, "/dos-dashboard", show=False)
+            
+        if i % 40 == 0:
+            r = test_endpoint_json(ac, county_s, "/audit-board-sign-out", {});
+            r = test_endpoint_json(ac, county_s, "/audit-board-sign-in",
+                           [{"first_name": "Mary",
+                             "last_name": "Doe",
+                             "political_party": "Democrat"},
+                            {"first_name": "John",
+                             "last_name": "Doe",
+                             "political_party": "Republican"}])
 
         r = test_endpoint_get(ac, county_s, "/cvr/id/%d" % selected[i], show=False)
         acvr = r.json()
@@ -560,7 +570,7 @@ def county_audit(ac, county_id):
 
     r = test_endpoint_get(ac, ac.state_s, "/dos-dashboard")
 
-    r = test_endpoint_json(ac, county_s, "/intermediate-audit-report", {})
+#    r = test_endpoint_json(ac, county_s, "/intermediate-audit-report", {})
     r = test_endpoint_json(ac, county_s, "/audit-report", {})
 
 def dos_wrapup(ac):

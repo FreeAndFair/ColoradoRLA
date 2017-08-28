@@ -550,14 +550,6 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
         the_acvr.contestInfoForContest(my_contest_result.contest());
 
     if (cvr_info != null && acvr_info != null) {
-      // this is a very quick calculation, and may not work correctly 
-      // for elections with multiple winners, but will err on the side of being
-      // pessimistic
-
-      // if the ACVR is a phantom ballot, we need to assume that it was a vote
-      // for all the losers; so if any winners had votes on the original CVR 
-      // it's a 2-vote overstatement, otherwise a 1-vote overstatement
-      
       if (the_acvr.recordType() == RecordType.PHANTOM_BALLOT) {
         result = computePhantomBallotDiscrepancy(cvr_info);
       } else {
@@ -579,6 +571,10 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
   private Integer computeAuditedBallotDiscrepancy(final CVRContestInfo the_cvr_info,
                                                   final CVRContestInfo the_acvr_info) {
     int result = 0;
+    
+    // this is a very quick calculation, and may not work correctly 
+    // for elections with multiple winners, but will err on the side of being
+    // pessimistic
     
     // check for overvotes
     final Set<String> acvr_choices = new HashSet<>();
@@ -603,8 +599,12 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
     loser_losses.removeAll(my_contest_result.winners());
 
     // now, we have several cases:
-
-    if (!winner_gains.isEmpty() && loser_losses.isEmpty()) {
+    
+    if (gained_votes.isEmpty() && lost_votes.isEmpty()) {
+      // the CVR and ACVR have identical choices and we
+      // can skip the rest of this
+      result = 0;
+    } else if (!winner_gains.isEmpty() && loser_losses.isEmpty()) {
       // if only winners gained votes and no losers lost votes, 
       // it's a 1-vote understatement       
       result = -1;
@@ -646,6 +646,10 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
   private Integer computePhantomBallotDiscrepancy(final CVRContestInfo the_info) {
     final int result;    
     final Set<String> winner_votes = new HashSet<>(the_info.choices());
+
+    // if the ACVR is a phantom ballot, we need to assume that it was a vote
+    // for all the losers; so if any winners had votes on the original CVR 
+    // it's a 2-vote overstatement, otherwise a 1-vote overstatement
     
     winner_votes.removeAll(my_contest_result.losers());
     if (winner_votes.isEmpty()) {
