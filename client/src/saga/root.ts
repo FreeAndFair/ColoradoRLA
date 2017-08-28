@@ -2,6 +2,7 @@ import { all } from 'redux-saga/effects';
 
 import * as config from '../config';
 
+import auditBoardSignInSaga from './auditBoardSignInSaga';
 import ballotNotFoundOkSaga from './ballotNotFoundOkSaga';
 import countyDashboardRefreshOkSaga from './countyDashboardRefreshOkSaga';
 import countyLoginSaga from './countyLoginSaga';
@@ -20,6 +21,7 @@ import uploadCvrExportSaga from './uploadCvrExportSaga';
 
 export default function* rootSaga() {
     const sagas = [
+        auditBoardSignInSaga(),
         ballotNotFoundOkSaga(),
         countyLoginSaga(),
         countyPollSaga(),
