@@ -59,6 +59,11 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   public static final int MIN_AUDIT_BOARD_MEMBERS = 2;
   
   /**
+   * The "no audit board" constant.
+   */
+  private static final Integer NO_AUDIT_BOARD = null;
+  
+  /**
    * The "my_dashboard" string.
    */
   private static final String MY_DASHBOARD = "my_dashboard";
@@ -142,6 +147,11 @@ public class CountyDashboard implements PersistentEntity, Serializable {
                                              referencedColumnName = MY_ID))
   private List<AuditBoard> my_audit_boards = new ArrayList<>();
  
+  /**
+   * The current audit board.
+   */
+  private Integer my_current_audit_board;
+  
   /**
    * The sequence of CVRs to audit, stored as CVRAuditInfo records.
    */
@@ -332,7 +342,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
     if (my_audit_boards.isEmpty()) {
       return null; 
     } else {
-      return my_audit_boards.get(my_audit_boards.size() - 1);
+      return my_audit_boards.get(my_current_audit_board);
     }
   }
   
@@ -352,11 +362,12 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * @param the_members The members.
    */
   public void signInAuditBoard(final Set<Elector> the_members) {
-    if (!my_audit_boards.isEmpty()) {
-      final AuditBoard current = my_audit_boards.get(my_audit_boards.size() - 1);
-      if (current.signOutTime() == null) {
-        current.setSignOutTime(Instant.now());
-      }
+    if (my_current_audit_board == null) {
+      my_current_audit_board = my_audit_boards.size();
+    } else {
+      final AuditBoard current = my_audit_boards.get(my_current_audit_board);
+      current.setSignOutTime(Instant.now());
+      my_current_audit_board = my_current_audit_board + 1;
     }
     my_audit_boards.add(new AuditBoard(the_members, Instant.now()));
   }
@@ -367,15 +378,12 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * @exception IllegalStateException if no audit board is signed in.
    */
   public void signOutAuditBoard() {
-    if (my_audit_boards.isEmpty()) {
-      throw new IllegalArgumentException("no audit board established");
+    if (my_current_audit_board == null) {
+      throw new IllegalArgumentException("no audit board signed in");
     } else {
-      final AuditBoard current = my_audit_boards.get(my_audit_boards.size() - 1);
-      if (current.signOutTime() == null) {
-        current.setSignOutTime(Instant.now());
-      } else {
-        throw new IllegalArgumentException("audit board was already signed out");
-      }
+      final AuditBoard current = my_audit_boards.get(my_current_audit_board);
+      current.setSignOutTime(Instant.now());
+      my_current_audit_board = NO_AUDIT_BOARD;
     }
   }
   

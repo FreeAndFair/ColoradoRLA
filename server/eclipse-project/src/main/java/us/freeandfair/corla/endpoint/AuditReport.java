@@ -24,6 +24,7 @@ import us.freeandfair.corla.asm.ASMUtilities;
 import us.freeandfair.corla.asm.CountyDashboardASM;
 import us.freeandfair.corla.asm.DoSDashboardASM;
 import us.freeandfair.corla.model.County;
+import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 
 /**
@@ -88,6 +89,11 @@ public class AuditReport extends AbstractAuditBoardDashboardEndpoint {
           ASMUtilities.step(DOS_COUNTY_AUDIT_COMPLETE_EVENT, DoSDashboardASM.class, null);
         }
       }
+      // sign the audit board out
+      final CountyDashboard cdb = 
+          Persistence.getByID(Authentication.authenticatedCounty(the_request).id(), 
+                              CountyDashboard.class);
+      cdb.signOutAuditBoard();
       ok(the_response, "Final audit report saved (actual action to be specified by CDOS)");
     } catch (final IllegalStateException e) {
       illegalTransition(the_response, e.getMessage());
