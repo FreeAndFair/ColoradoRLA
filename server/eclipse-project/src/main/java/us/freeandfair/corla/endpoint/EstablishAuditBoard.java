@@ -12,10 +12,10 @@
 
 package us.freeandfair.corla.endpoint;
 
-import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.ESTABLISH_AUDIT_BOARD_EVENT;
+import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.SIGN_IN_AUDIT_BOARD_EVENT;
 
 import java.lang.reflect.Type;
-import java.util.List;
+import java.util.Set;
 
 import javax.persistence.PersistenceException;
 
@@ -40,7 +40,7 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
  * @version 0.0.1
  */
 @SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.ExcessiveImports"})
-public class EstablishAuditBoard extends AbstractCountyDashboardEndpoint {
+public class EstablishAuditBoard extends AbstractAuditBoardDashboardEndpoint {
   /**
    * {@inheritDoc}
    */
@@ -69,7 +69,7 @@ public class EstablishAuditBoard extends AbstractCountyDashboardEndpoint {
    */
   @Override
   protected ASMEvent endpointEvent() {
-    return ESTABLISH_AUDIT_BOARD_EVENT;
+    return SIGN_IN_AUDIT_BOARD_EVENT;
   }
   
   /**
@@ -81,9 +81,9 @@ public class EstablishAuditBoard extends AbstractCountyDashboardEndpoint {
   public String endpoint(final Request the_request,
                          final Response the_response) {
     try {
-      final Type list_type = new TypeToken<List<Elector>>() { }.getType();
-      final List<Elector> parsed_audit_board = 
-          Main.GSON.fromJson(the_request.body(), list_type);
+      final Type set_type = new TypeToken<Set<Elector>>() { }.getType();
+      final Set<Elector> parsed_audit_board = 
+          Main.GSON.fromJson(the_request.body(), set_type);
       if (parsed_audit_board.size() >= CountyDashboard.MIN_AUDIT_BOARD_MEMBERS) {
         final County county = Authentication.authenticatedCounty(the_request); 
         if (county == null) {
@@ -95,7 +95,7 @@ public class EstablishAuditBoard extends AbstractCountyDashboardEndpoint {
             Main.LOGGER.error("could not get county dashboard");
             serverError(the_response, "could not set audit board");
           } else {
-            cdb.setAuditBoardMembers(parsed_audit_board);
+            cdb.signInAuditBoard(parsed_audit_board);
             Persistence.saveOrUpdate(cdb);
             ok(the_response, "audit board for county " + county +  
                              " set to " + parsed_audit_board);

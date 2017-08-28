@@ -24,13 +24,13 @@ import javax.persistence.PersistenceException;
 import us.freeandfair.corla.asm.ASMState;
 import us.freeandfair.corla.asm.ASMUtilities;
 import us.freeandfair.corla.asm.CountyDashboardASM;
+import us.freeandfair.corla.model.AuditBoard;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.ContestToAudit;
 import us.freeandfair.corla.model.ContestToAudit.AuditType;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
-import us.freeandfair.corla.model.Elector;
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.model.UploadedFile.FileStatus;
 import us.freeandfair.corla.persistence.Persistence;
@@ -70,7 +70,7 @@ public class CountyDashboardRefreshResponse {
   /**
    * The audit board members.
    */
-  private final Set<Elector> my_audit_board_members;
+  private final AuditBoard my_audit_board;
   
   /**
    * The ballot manifest hash.
@@ -150,12 +150,17 @@ public class CountyDashboardRefreshResponse {
   private final Long my_ballot_under_audit_id;
   
   /**
+   * The audited prefix length.
+   */
+  private final Integer my_audited_prefix_length;
+  
+  /**
    * Constructs a new CountyDashboardRefreshResponse.
    * 
    * @param the_id The ID.
    * @param the_asm_state The ASM state.
    * @param the_general_information The general information.
-   * @param the_audit_board_members The audit board members.
+   * @param the_audit_board The current audit board.
    * @param the_ballot_manifest_hash The ballot manifest hash.
    * @param the_cvr_export_hash The CVR export hash.
    * @param the_contests The contests.
@@ -166,13 +171,15 @@ public class CountyDashboardRefreshResponse {
    * @param the_discrepancy_count The number of discrepencies.
    * @param the_disagreement_count The number of disagreements.
    * @param the_ballots_to_audit The list of CVRs to audit.
-   * @param the_ballot_under_audit The index of the CVR under audit.
+   * @param the_ballot_under_audit_id The ID of the CVR under audit.
+   * @param the_audited_prefix_length The length of the audited prefix of the
+   * ballots to audit list.
    */
   @SuppressWarnings("PMD.ExcessiveParameterList")
   protected CountyDashboardRefreshResponse(final Long the_id,
                                            final ASMState the_asm_state,
                                            final Map<String, String> the_general_information,
-                                           final Set<Elector> the_audit_board_members, 
+                                           final AuditBoard the_audit_board, 
                                            final String the_ballot_manifest_hash,
                                            final Instant the_ballot_manifest_timestamp,
                                            final String the_ballot_manifest_filename,
@@ -187,11 +194,12 @@ public class CountyDashboardRefreshResponse {
                                            final Integer the_discrepancy_count, 
                                            final Integer the_disagreement_count,
                                            final List<Long> the_ballots_to_audit,
-                                           final Long the_ballot_under_audit) {
+                                           final Long the_ballot_under_audit_id,
+                                           final Integer the_audited_prefix_length) {
     my_id = the_id;
     my_asm_state = the_asm_state;
     my_general_information = the_general_information;
-    my_audit_board_members = the_audit_board_members;
+    my_audit_board = the_audit_board;
     my_ballot_manifest_hash = the_ballot_manifest_hash;
     my_ballot_manifest_timestamp = the_ballot_manifest_timestamp;
     my_ballot_manifest_filename = the_ballot_manifest_filename;
@@ -206,7 +214,8 @@ public class CountyDashboardRefreshResponse {
     my_discrepancy_count = the_discrepancy_count;
     my_disagreement_count = the_disagreement_count;
     my_ballots_to_audit = the_ballots_to_audit;
-    my_ballot_under_audit_id = the_ballot_under_audit;
+    my_ballot_under_audit_id = the_ballot_under_audit_id;
+    my_audited_prefix_length = the_audited_prefix_length;
   }
   
   /**
@@ -278,7 +287,7 @@ public class CountyDashboardRefreshResponse {
     return new CountyDashboardRefreshResponse(county_id, 
                                               asm.currentState(),
                                               general_information,
-                                              the_dashboard.auditBoardMembers(),
+                                              the_dashboard.currentAuditBoard(),
                                               manifest_digest,
                                               the_dashboard.manifestUploadTimestamp(),
                                               manifest_filename,
@@ -293,7 +302,8 @@ public class CountyDashboardRefreshResponse {
                                               the_dashboard.discrepancies(),
                                               the_dashboard.disagreements(),
                                               CVRAuditInfoQueries.cvrsToAudit(the_dashboard),
-                                              the_dashboard.cvrUnderAudit());
+                                              the_dashboard.cvrUnderAudit(),
+                                              the_dashboard.auditedPrefixLength());
   }
   
   /**
@@ -361,6 +371,7 @@ public class CountyDashboardRefreshResponse {
                                               the_dashboard.ballotsAudited(),
                                               the_dashboard.discrepancies(),
                                               the_dashboard.disagreements(),
+                                              null,
                                               null,
                                               null);
   }

@@ -17,7 +17,6 @@ import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -137,11 +136,12 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * The members of the audit board.
    */
   @ElementCollection(fetch = FetchType.EAGER)
+  @OrderColumn(name = INDEX)
   @CollectionTable(name = "audit_board",
                    joinColumns = @JoinColumn(name = DASHBOARD_ID, 
                                              referencedColumnName = MY_ID))
-  private Set<Elector> my_members = new HashSet<>();
-  
+  private List<AuditBoard> my_audit_boards = new ArrayList<>();
+ 
   /**
    * The sequence of CVRs to audit, stored as CVRAuditInfo records.
    */
@@ -326,21 +326,57 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   }  
 
   /**
-   * @return the set of audit board members.
+   * @return the current audit board.
    */
-  public Set<Elector> auditBoardMembers() {
-    return Collections.unmodifiableSet(my_members);
+  public AuditBoard currentAuditBoard() {
+    if (my_audit_boards.isEmpty()) {
+      return null; 
+    } else {
+      return my_audit_boards.get(my_audit_boards.size() - 1);
+    }
   }
   
   /**
-   * Sets the membership of the audit board; this must be the full set
-   * of electors on the board, and replaces any other set.
+   * @return the entire list of audit boards.
+   */
+  public List<AuditBoard> auditBoards() {
+    return Collections.unmodifiableList(my_audit_boards);
+  }
+  
+  /**
+   * Signs in the specified audit board as of the present time; 
+   * the supplied set of electors must be the full set of electors on
+   * the board. The previous audit board, if any, is signed out if it
+   * had not yet been signed out.
    * 
    * @param the_members The members.
    */
-  public void setAuditBoardMembers(final Collection<Elector> the_members) {
-    my_members.clear();
-    my_members.addAll(the_members);
+  public void signInAuditBoard(final Set<Elector> the_members) {
+    if (!my_audit_boards.isEmpty()) {
+      final AuditBoard current = my_audit_boards.get(my_audit_boards.size() - 1);
+      if (current.signOutTime() == null) {
+        current.setSignOutTime(Instant.now());
+      }
+    }
+    my_audit_boards.add(new AuditBoard(the_members, Instant.now()));
+  }
+  
+  /**
+   * Signs out the current audit board.
+   * 
+   * @exception IllegalStateException if no audit board is signed in.
+   */
+  public void signOutAuditBoard() {
+    if (my_audit_boards.isEmpty()) {
+      throw new IllegalArgumentException("no audit board established");
+    } else {
+      final AuditBoard current = my_audit_boards.get(my_audit_boards.size() - 1);
+      if (current.signOutTime() == null) {
+        current.setSignOutTime(Instant.now());
+      } else {
+        throw new IllegalArgumentException("audit board was already signed out");
+      }
+    }
   }
   
   /**
