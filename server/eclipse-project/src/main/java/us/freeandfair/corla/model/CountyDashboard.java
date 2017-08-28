@@ -339,7 +339,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * @return the current audit board.
    */
   public AuditBoard currentAuditBoard() {
-    if (my_audit_boards.isEmpty()) {
+    if (my_current_audit_board == null) {
       return null; 
     } else {
       return my_audit_boards.get(my_current_audit_board);
