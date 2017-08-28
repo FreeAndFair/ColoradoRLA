@@ -92,7 +92,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   /**
    * The county.
    */
-  @OneToOne(optional = false, fetch = FetchType.EAGER)
+  @OneToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn
   private County my_county;
   
@@ -153,7 +153,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   /**
    * The set of contests driving the audit.
    */
-  @ManyToMany(fetch = FetchType.EAGER)
+  @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "driving_contest",
              joinColumns = @JoinColumn(name = DASHBOARD_ID,
                                        referencedColumnName = MY_ID),
@@ -165,14 +165,14 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * The audit data.
    */
   @OneToMany(cascade = CascadeType.ALL, mappedBy = MY_DASHBOARD, 
-             fetch = FetchType.EAGER, orphanRemoval = true)
+             fetch = FetchType.LAZY, orphanRemoval = true)
   private Set<CountyContestComparisonAudit> my_comparison_audits = 
       new HashSet<>(); 
   
   /**
    * The audit investigation reports.
    */
-  @ElementCollection(fetch = FetchType.EAGER)
+  @ElementCollection(fetch = FetchType.LAZY)
   @OrderColumn(name = INDEX)
   @CollectionTable(name = "audit_investigation_report",
                    joinColumns = @JoinColumn(name = DASHBOARD_ID, 
@@ -183,7 +183,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   /**
    * The audit interim reports.
    */
-  @ElementCollection(fetch = FetchType.EAGER)
+  @ElementCollection(fetch = FetchType.LAZY)
   @OrderColumn(name = INDEX)
   @CollectionTable(name = "audit_intermediate_report",
                    joinColumns = @JoinColumn(name = DASHBOARD_ID, 
