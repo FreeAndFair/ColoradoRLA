@@ -135,7 +135,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   /**
    * The members of the audit board.
    */
-  @ElementCollection(fetch = FetchType.EAGER)
+  @ElementCollection(fetch = FetchType.LAZY)
   @OrderColumn(name = INDEX)
   @CollectionTable(name = "audit_board",
                    joinColumns = @JoinColumn(name = DASHBOARD_ID, 
