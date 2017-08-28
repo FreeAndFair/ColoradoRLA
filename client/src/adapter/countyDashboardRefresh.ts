@@ -10,8 +10,8 @@ interface Elector {
 type Status = 'NO_DATA' | 'CVRS_UPLOADED_SUCCESSFULLY' | 'ERROR_IN_UPLOADED_DATA';
 
 interface CountyDashboard {
-    audit_board_members: Elector[];
     audit_time: string;
+    audit_board: any;
     audited_ballot_count: number;
     ballot_manifest_filename: string;
     ballot_manifest_hash: string;
@@ -35,6 +35,14 @@ const parseBoardMember = (e: Elector): any => ({
     lastName: e.last_name,
     party: e.political_party,
 });
+
+const parseAuditBoard = (board: any) => {
+    if (!board) {
+        return [];
+    }
+
+    return board.members.map(parseBoardMember);
+};
 
 const parseTimestamp = (ts: string): Date => new Date(ts);
 
@@ -84,7 +92,7 @@ export const parse = (data: CountyDashboard, state: any): any => {
     const findContest = (id: any) => state.county.contestDefs[id];
 
     return {
-        auditBoardMembers: data.audit_board_members.map(parseBoardMember),
+        auditBoard: parseAuditBoard(data.audit_board),
         auditTime: data.audit_time ? parseTimestamp(data.audit_time) : null,
         auditedBallotCount: data.audited_ballot_count,
         ballotManifestFilename: data.ballot_manifest_filename,
