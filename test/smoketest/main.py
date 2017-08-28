@@ -517,7 +517,7 @@ def county_audit(ac, county_id):
         if i % 10 == 0:
             r = test_endpoint_get(ac, ac.state_s, "/dos-dashboard", show=False)
             
-        if i % 40 == 0:
+        if i % 50 == 5:
             r = test_endpoint_json(ac, county_s, "/audit-board-sign-out", {});
             r = test_endpoint_json(ac, county_s, "/audit-board-sign-in",
                            [{"first_name": "Mary",
