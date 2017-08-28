@@ -6,22 +6,8 @@ import AuditBoardSignInForm from './AuditBoardSignInForm';
 
 import establishAuditBoard from '../../action/establishAuditBoard';
 
+import isValidAuditBoard from '../../selector/county/isValidAuditBoard';
 
-function validateElector(elector: any) {
-    return elector.firstName
-        && elector.firstName.trim()
-        && elector.lastName
-        && elector.lastName.trim()
-        && elector.party;
-}
-
-function validateAuditBoard(auditBoard: any) {
-    if (!auditBoard[0]) { return false; }
-    if (!auditBoard[1]) { return false; }
-
-    return validateElector(auditBoard[0])
-        && validateElector(auditBoard[1]) ;
-}
 
 const SignedInPage = ({ auditBoard }: any) => {
     return (
@@ -91,13 +77,13 @@ class AuditBoardSignInPage extends React.Component<any, any> {
             establishAuditBoard(this.state.form);
         };
 
-        const boardEstablished = validateAuditBoard(auditBoard);
+        const boardEstablished = isValidAuditBoard(auditBoard);
 
         if (auditBoard.length === 2) {
             return <SignedInPage auditBoard={ auditBoard } />;
         }
 
-        const disableButton = !validateAuditBoard(this.state.form);
+        const disableButton = !isValidAuditBoard(this.state.form);
 
         return (
             <div>
