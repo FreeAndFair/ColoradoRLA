@@ -487,7 +487,9 @@ public class CountyDashboard implements PersistentEntity, Serializable {
     if (my_current_round_index == null) {
       throw new IllegalStateException("no round to end");
     } else {
-      my_rounds.get(my_current_round_index).setEndTime(Instant.now());
+      final Round round = my_rounds.get(my_current_round_index);
+      round.setActualCount(my_audited_prefix_length - round.startIndex());
+      round.setEndTime(Instant.now());
       my_current_round_index = NO_CONTENT;
     }
   }

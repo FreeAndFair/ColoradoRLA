@@ -19,6 +19,7 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -81,6 +82,71 @@ public final class CVRAuditInfoQueries {
   }
   
   /**
+   * Updates the CVRAuditInfo objects matching the specified CVR so that they all
+   * have the same ACVR. This assumes that all such objects that have a non-null
+   * ACVR already have the same ACVR, as is the case during an audit when adding
+   * new ballots to the sequence.
+   * 
+   * @param the_dashboard The dashboard to match.
+   * @param the_cvr The CVR to match.
+   * @exception PersistenceException if the objects cannot be updated.
+   */
+  public static void updateMatching(final CountyDashboard the_dashboard,
+                                    final CastVoteRecord the_cvr) {
+    final Session s = Persistence.currentSession();
+    final CriteriaBuilder cb = s.getCriteriaBuilder();
+    final CriteriaQuery<CastVoteRecord> cq = cb.createQuery(CastVoteRecord.class);
+    final Root<CVRAuditInfo> root = cq.from(CVRAuditInfo.class);
+    final List<Predicate> conjuncts = new ArrayList<>();
+    conjuncts.add(cb.equal(root.get("my_dashboard"), the_dashboard));
+    conjuncts.add(cb.equal(root.get("my_cvr"), the_cvr));
+    conjuncts.add(cb.isNotNull(root.get("my_acvr")));
+    cq.select(root.get("my_acvr"));
+    cq.where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
+    final TypedQuery<CastVoteRecord> query = s.createQuery(cq);
+    final List<CastVoteRecord> result = query.getResultList();
+    if (!result.isEmpty()) {
+      final CastVoteRecord acvr = result.get(0);
+      updateMatching(the_dashboard, the_cvr, acvr, true);
+    }
+  }
+
+  /**
+   * Updates the CVRAuditInfo objects matching the specified CVR so that they
+   * all have the specified ACVR. 
+   * 
+   * @param the_dashboard The dashboard to match.
+   * @param the_cvr The CVR to match.
+   * @param the_acvr The ACVR to set.
+   * @param the_null_only true to only update records with null ACVRs 
+   * (as when adding them to the list), false to update all records.
+   * @exception PersistenceException if the objects cannot be updated.
+   */
+  public static void updateMatching(final CountyDashboard the_dashboard,
+                                    final CastVoteRecord the_cvr,
+                                    final CastVoteRecord the_acvr,
+                                    final boolean the_null_only) {
+    final Session s = Persistence.currentSession();
+    final CriteriaBuilder cb = s.getCriteriaBuilder();
+    final CriteriaQuery<CVRAuditInfo> cq = cb.createQuery(CVRAuditInfo.class);
+    final Root<CVRAuditInfo> root = cq.from(CVRAuditInfo.class);
+    final List<Predicate> conjuncts = new ArrayList<>();
+    conjuncts.add(cb.equal(root.get("my_dashboard"), the_dashboard));
+    conjuncts.add(cb.equal(root.get("my_cvr"), the_cvr));
+    if (the_null_only) {
+      conjuncts.add(cb.isNull(root.get("my_acvr")));
+    }
+    cq.select(root);
+    cq.where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
+    final TypedQuery<CVRAuditInfo> query = s.createQuery(cq);
+    final List<CVRAuditInfo> info = query.getResultList();
+    for (final CVRAuditInfo cvrai : info) {
+      cvrai.setACVR(the_acvr);
+      Persistence.saveOrUpdate(cvrai);
+    }  
+  }
+  
+  /**
    * Gets the list of CVR IDs to audit for the specified county dashboard
    * in the current round.
    * 
@@ -99,7 +165,7 @@ public final class CVRAuditInfoQueries {
         final Query query = 
             s.createNativeQuery("select cvr_id from cvr_audit_info where " + 
                 "dashboard_id=" + the_dashboard.id().toString() + 
-                " order by index limit " + current.numberOfBallots() +
+                " order by index limit " + current.expectedCount() +
                 " offset " + current.startIndex());
         @SuppressWarnings("unchecked") // we know this gives us a list of numbers
         final List<Number> generic_results = (List<Number>) query.getResultList();

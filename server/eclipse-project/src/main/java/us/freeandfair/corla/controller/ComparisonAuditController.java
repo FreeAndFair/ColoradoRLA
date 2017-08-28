@@ -245,6 +245,7 @@ public final class ComparisonAuditController {
             undo_count = undo_count + 1;
           }
           c.setACVR(the_audit_cvr);
+          Persistence.saveOrUpdate(c);
         }
         unaudit(the_dashboard, the_cvr_under_audit, old_audit_cvr, undo_count);
         audit(the_dashboard, the_cvr_under_audit, the_audit_cvr, undo_count, true);
@@ -388,20 +389,22 @@ public final class ComparisonAuditController {
     final int to_audit = computeEstimatedBallotsToAudit(the_dashboard);
     if (new_prefix_length == cvr_audit_info.size() && 
         0 < to_audit - new_prefix_length) {
-      // we're out of ballots and the audit isn't done, so we need more
-      // TODO for now we get just enough to match the estimated ballots to
-      // audit
+      // we're out of ballots and the audit isn't done, so we need more; right 
+      // now, we add the expected amount to audit based on our error rates
       final List<CastVoteRecord> new_cvrs = 
           computeBallotOrder(the_dashboard, cvr_audit_info.size(), to_audit);
       the_dashboard.addCVRsToAudit(new_cvrs);
+      for (final CastVoteRecord cvr : new HashSet<>(new_cvrs)) {
+        CVRAuditInfoQueries.updateMatching(the_dashboard, cvr);
+      }
     }
     the_dashboard.setAuditedPrefixLength(new_prefix_length);
     final Round current_round = the_dashboard.currentRound();
-    if (current_round.startIndex() + current_round.numberOfBallots() <= new_prefix_length) {
+    if (current_round.startIndex() + current_round.expectedCount() <= new_prefix_length) {
       the_dashboard.endRound();
     }
   }
-  
+ 
   /**
    * Updates the estimated number of ballots to audit on the specified
    * county dashboard.

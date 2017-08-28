@@ -48,10 +48,19 @@ public class Round implements Serializable {
   private Instant my_end_time;
 
   /**
-   * The number of ballots to audit in this round.
+   * The expected number of ballots to audit in this round. This 
+   * number is based on the audit random sequence, so it may
+   * include duplicate ballots.
    */
   @Column(nullable = false, updatable = false)
-  private Integer my_number_of_ballots;
+  private Integer my_expected_count;
+  
+  /**
+   * The actual number of ballots audited in this round. This
+   * number is based on the audit random sequence, so it may
+   * include duplicate ballots.
+   */
+  private Integer my_actual_count;
   
   /**
    * The index of the audit random sequence where the round starts.
@@ -70,16 +79,16 @@ public class Round implements Serializable {
    * Constructs a round with the specified parameters.
    * 
    * @param the_start_time The start time.
-   * @param the_number_of_ballots The number of ballots.
+   * @param the_expected_count The expected number of ballots to audit.
    * @param the_start_index The index of the audit random sequence 
    * where the round starts.
    */
   public Round(final Instant the_start_time,
-               final Integer the_number_of_ballots,
+               final Integer the_expected_count,
                final Integer the_start_index) {
     super();
     my_start_time = the_start_time;
-    my_number_of_ballots = the_number_of_ballots;
+    my_expected_count = the_expected_count;
     my_start_index = the_start_index;
   }
   
@@ -107,10 +116,28 @@ public class Round implements Serializable {
   }
   
   /**
-   * @return the number of ballots to audit.
+   * @return the expected number of ballots to audit.
    */
-  public Integer numberOfBallots() {
-    return my_number_of_ballots;
+  public Integer expectedCount() {
+    return my_expected_count;
+  }
+  
+  /**
+   * @return the actual number of ballots audited.
+   */
+  public Integer actualCount() {
+    return my_actual_count;
+  }
+  
+  /**
+   * Sets the actual number of ballots audited.
+   * 
+   * @param the_actual_count The number of ballots audited; this
+   * should reflect the audit random sequence, not physical 
+   * ballot cards.
+   */
+  public void setActualCount(final int the_actual_count) {
+    my_actual_count = the_actual_count;
   }
   
   /**
@@ -127,8 +154,9 @@ public class Round implements Serializable {
   @Override
   public String toString() {
     return "Round [start_time=" + my_start_time + ", end_time=" +
-           my_end_time + ", number_of_ballots=" + my_number_of_ballots + 
-           ", start_index=" + my_start_index + "]";
+           my_end_time + ", expected_count=" + my_expected_count + 
+           ", actual_count=" + my_actual_count + ", start_index=" + 
+           my_start_index + "]";
   }
 
   /**
@@ -144,7 +172,8 @@ public class Round implements Serializable {
       final Round other_round = (Round) the_other;
       result &= nullableEquals(other_round.startTime(), startTime());
       result &= nullableEquals(other_round.endTime(), endTime());
-      result &= nullableEquals(other_round.numberOfBallots(), numberOfBallots());
+      result &= nullableEquals(other_round.expectedCount(), expectedCount());
+      result &= nullableEquals(other_round.actualCount(), actualCount());
       result &= nullableEquals(other_round.startIndex(), startIndex());
     } else {
       result = false;
