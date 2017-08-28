@@ -9,10 +9,15 @@ import FileUploadContainer from './FileUploadContainer';
 
 
 const AuditBoardInfo = ({ signedIn }: any) => {
+    const icon = signedIn
+               ? <span className='pt-icon pt-intent-success pt-icon-tick-circle' />
+               : <span className='pt-icon pt-intent-danger pt-icon-error' />;
+
     const text = signedIn ? 'signed in' : 'not signed in';
 
     return (
         <div className='pt-card'>
+            <span>{ icon } </span>
             Audit board is <strong>{ text }.</strong>
         </div>
     );
@@ -174,7 +179,8 @@ const CountyHomePage = (props: any) => {
         <div className='county-root'>
             <CountyNav />
             <div>
-                <Main boardSignIn={ boardSignIn }
+                <Main auditBoardSignedIn={ auditBoardSignedIn }
+                      boardSignIn={ boardSignIn }
                       auditButtonDisabled={ auditButtonDisabled }
                       name={ countyInfo.name }
                       signInButtonDisabled={ signInButtonDisabled }
