@@ -65,7 +65,7 @@ class AuditBoardSignInPage extends React.Component<any, any> {
                     className='pt-button pt-intent-primary'
                     disabled={ disableButton }
                     onClick={ submit }>
-                    Submit
+                    Sign In
                 </button>
             </div>
         );
