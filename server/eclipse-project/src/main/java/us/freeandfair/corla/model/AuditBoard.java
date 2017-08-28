@@ -15,15 +15,15 @@ import static us.freeandfair.corla.util.EqualsHashcodeHelper.*;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Embeddable;
 
-import us.freeandfair.corla.persistence.ElectorSetConverter;
+import us.freeandfair.corla.persistence.ElectorListConverter;
 
 /**
  * An audit board. Contains a set of electors, a timestamp when the board
@@ -43,8 +43,8 @@ public class AuditBoard implements Serializable {
    * The audit board members.
    */
   @Column(name = "members", columnDefinition = "text")
-  @Convert(converter = ElectorSetConverter.class)
-  private Set<Elector> my_members = new HashSet<>();
+  @Convert(converter = ElectorListConverter.class)
+  private List<Elector> my_members = new ArrayList<>();
   
   /**
    * The time at which the audit board signed in.
@@ -70,7 +70,7 @@ public class AuditBoard implements Serializable {
    * @param the_members The set of Electors on the board.
    * @param the_sign_in_time The sign in time of the board.
    */
-  public AuditBoard(final Set<Elector> the_members, final Instant the_sign_in_time) {
+  public AuditBoard(final List<Elector> the_members, final Instant the_sign_in_time) {
     my_members.addAll(the_members);
     my_sign_in_time = the_sign_in_time;
   }
@@ -78,8 +78,8 @@ public class AuditBoard implements Serializable {
   /**
    * @return the audit board members.
    */
-  public Set<Elector> members() {
-    return Collections.unmodifiableSet(my_members);
+  public List<Elector> members() {
+    return Collections.unmodifiableList(my_members);
   }
   
   /**
