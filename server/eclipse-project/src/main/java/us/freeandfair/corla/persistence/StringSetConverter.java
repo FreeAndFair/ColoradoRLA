@@ -22,7 +22,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 /**
- * A converter between lists of Strings and comma-separated strings.
+ * A converter between sets of Strings and JSON representations of those sets,
+ * for database efficiency.
  * 
  * @author Daniel M. Zimmerman
  * @version 0.0.1

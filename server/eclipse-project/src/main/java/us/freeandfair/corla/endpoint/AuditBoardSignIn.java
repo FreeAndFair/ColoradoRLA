@@ -34,13 +34,13 @@ import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
- * Establish the audit board for a county.
+ * Signs in the audit board for a county.
  * 
- * @author Joe Kiniry <kiniry@freeandfair.us>
+ * @author Daniel M. Zimmerman <dmz@freeandFair.us>
  * @version 0.0.1
  */
 @SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.ExcessiveImports"})
-public class EstablishAuditBoard extends AbstractAuditBoardDashboardEndpoint {
+public class AuditBoardSignIn extends AbstractAuditBoardDashboardEndpoint {
   /**
    * {@inheritDoc}
    */
@@ -54,7 +54,7 @@ public class EstablishAuditBoard extends AbstractAuditBoardDashboardEndpoint {
    */
   @Override
   public String endpointName() {
-    return "/audit-board";
+    return "/audit-board-sign-in";
   }
 
   /**
@@ -88,27 +88,27 @@ public class EstablishAuditBoard extends AbstractAuditBoardDashboardEndpoint {
         final County county = Authentication.authenticatedCounty(the_request); 
         if (county == null) {
           Main.LOGGER.error("could not get authenticated county");
-          unauthorized(the_response, "not authorized to set an audit board");
+          unauthorized(the_response, "not authorized to sign in audit board");
         } else {
           final CountyDashboard cdb = Persistence.getByID(county.id(), CountyDashboard.class);
           if (cdb == null) {
             Main.LOGGER.error("could not get county dashboard");
-            serverError(the_response, "could not set audit board");
+            serverError(the_response, "could not sign in audit board");
           } else {
             cdb.signInAuditBoard(parsed_audit_board);
             Persistence.saveOrUpdate(cdb);
-            ok(the_response, "audit board for county " + county +  
-                             " set to " + parsed_audit_board);
+            ok(the_response, "audit board for county " + county.id() +  
+                             " signed in: " + parsed_audit_board);
           }
         }
       } else {
-        invariantViolation(the_response, "Invalid audit board membership");
+        invariantViolation(the_response, "invalid audit board membership");
       }
     } catch (final PersistenceException e) {
-      serverError(the_response, "unable to set audit board: " + e);
+      serverError(the_response, "unable to sign in audit board: " + e);
 
     } catch (final JsonSyntaxException e) {
-      badDataContents(the_response, "Invalid audit board data");
+      badDataContents(the_response, "invalid audit board data");
     }
     return my_endpoint_result.get();
   }

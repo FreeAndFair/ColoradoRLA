@@ -79,9 +79,6 @@ public class ASMEventToEndpointRelation {
   private void addCountyDashboardPairs() {
     // All County Dashboard pairs.
     my_relation.add(new Pair<ASMEvent, String>(
-        ESTABLISH_AUDIT_BOARD_EVENT,
-        UNIMPLEMENTED));
-    my_relation.add(new Pair<ASMEvent, String>(
         UPLOAD_BALLOT_MANIFEST_EVENT,
         "BallotManifestUpload"));
     my_relation.add(new Pair<ASMEvent, String>(

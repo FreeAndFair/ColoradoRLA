@@ -66,8 +66,6 @@ public class UIToASMEventRelation {
   private void addCountyDashboardPairs() {
     // All County Dashboard pairs.
     my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
-        ESTABLISH_AUDIT_BOARD_EVENT));
-    my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         UPLOAD_BALLOT_MANIFEST_EVENT));
     my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         UPLOAD_CVRS_EVENT));

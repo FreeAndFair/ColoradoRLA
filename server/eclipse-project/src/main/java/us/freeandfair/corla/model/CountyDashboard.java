@@ -17,7 +17,6 @@ import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -60,6 +59,11 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   public static final int MIN_AUDIT_BOARD_MEMBERS = 2;
   
   /**
+   * The "no audit board" constant.
+   */
+  private static final Integer NO_AUDIT_BOARD = null;
+  
+  /**
    * The "my_dashboard" string.
    */
   private static final String MY_DASHBOARD = "my_dashboard";
@@ -93,7 +97,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   /**
    * The county.
    */
-  @OneToOne(optional = false, fetch = FetchType.EAGER)
+  @OneToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn
   private County my_county;
   
@@ -136,11 +140,17 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   /**
    * The members of the audit board.
    */
-  @ElementCollection(fetch = FetchType.EAGER)
+  @ElementCollection(fetch = FetchType.LAZY)
+  @OrderColumn(name = INDEX)
   @CollectionTable(name = "audit_board",
                    joinColumns = @JoinColumn(name = DASHBOARD_ID, 
                                              referencedColumnName = MY_ID))
-  private Set<Elector> my_members = new HashSet<>();
+  private List<AuditBoard> my_audit_boards = new ArrayList<>();
+ 
+  /**
+   * The current audit board.
+   */
+  private Integer my_current_audit_board;
   
   /**
    * The sequence of CVRs to audit, stored as CVRAuditInfo records.
@@ -153,7 +163,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   /**
    * The set of contests driving the audit.
    */
-  @ManyToMany(fetch = FetchType.EAGER)
+  @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "driving_contest",
              joinColumns = @JoinColumn(name = DASHBOARD_ID,
                                        referencedColumnName = MY_ID),
@@ -165,14 +175,14 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * The audit data.
    */
   @OneToMany(cascade = CascadeType.ALL, mappedBy = MY_DASHBOARD, 
-             fetch = FetchType.EAGER, orphanRemoval = true)
+             fetch = FetchType.LAZY, orphanRemoval = true)
   private Set<CountyContestComparisonAudit> my_comparison_audits = 
       new HashSet<>(); 
   
   /**
    * The audit investigation reports.
    */
-  @ElementCollection(fetch = FetchType.EAGER)
+  @ElementCollection(fetch = FetchType.LAZY)
   @OrderColumn(name = INDEX)
   @CollectionTable(name = "audit_investigation_report",
                    joinColumns = @JoinColumn(name = DASHBOARD_ID, 
@@ -183,7 +193,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   /**
    * The audit interim reports.
    */
-  @ElementCollection(fetch = FetchType.EAGER)
+  @ElementCollection(fetch = FetchType.LAZY)
   @OrderColumn(name = INDEX)
   @CollectionTable(name = "audit_intermediate_report",
                    joinColumns = @JoinColumn(name = DASHBOARD_ID, 
@@ -326,21 +336,55 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   }  
 
   /**
-   * @return the set of audit board members.
+   * @return the current audit board.
    */
-  public Set<Elector> auditBoardMembers() {
-    return Collections.unmodifiableSet(my_members);
+  public AuditBoard currentAuditBoard() {
+    if (my_audit_boards.isEmpty()) {
+      return null; 
+    } else {
+      return my_audit_boards.get(my_current_audit_board);
+    }
   }
   
   /**
-   * Sets the membership of the audit board; this must be the full set
-   * of electors on the board, and replaces any other set.
+   * @return the entire list of audit boards.
+   */
+  public List<AuditBoard> auditBoards() {
+    return Collections.unmodifiableList(my_audit_boards);
+  }
+  
+  /**
+   * Signs in the specified audit board as of the present time; 
+   * the supplied set of electors must be the full set of electors on
+   * the board. The previous audit board, if any, is signed out if it
+   * had not yet been signed out.
    * 
    * @param the_members The members.
    */
-  public void setAuditBoardMembers(final Collection<Elector> the_members) {
-    my_members.clear();
-    my_members.addAll(the_members);
+  public void signInAuditBoard(final Set<Elector> the_members) {
+    if (my_current_audit_board == null) {
+      my_current_audit_board = my_audit_boards.size();
+    } else {
+      final AuditBoard current = my_audit_boards.get(my_current_audit_board);
+      current.setSignOutTime(Instant.now());
+      my_current_audit_board = my_current_audit_board + 1;
+    }
+    my_audit_boards.add(new AuditBoard(the_members, Instant.now()));
+  }
+  
+  /**
+   * Signs out the current audit board.
+   * 
+   * @exception IllegalStateException if no audit board is signed in.
+   */
+  public void signOutAuditBoard() {
+    if (my_current_audit_board == null) {
+      throw new IllegalArgumentException("no audit board signed in");
+    } else {
+      final AuditBoard current = my_audit_boards.get(my_current_audit_board);
+      current.setSignOutTime(Instant.now());
+      my_current_audit_board = NO_AUDIT_BOARD;
+    }
   }
   
   /**
