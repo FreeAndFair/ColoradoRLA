@@ -8,7 +8,6 @@ import countyLoginOk from './countyLoginOk';
 import dosContestFetchOk from './dosContestFetchOk';
 import dosDashboardRefreshOk from './dosDashboardRefreshOk';
 import dosLoginOk from './dosLoginOk';
-import establishAuditBoardOk from './establishAuditBoardOk';
 import fetchAuditBoardAsmStateOk from './fetchAuditBoardAsmStateOk';
 import fetchCountyAsmStateOk from './fetchCountyAsmStateOk';
 import fetchDosAsmStateOk from './fetchDosAsmStateOk';
@@ -66,10 +65,6 @@ export default function root(state: AppState = defaultState, action: any) {
 
     case 'DOS_LOGIN_OK': {
         return dosLoginOk(state);
-    }
-
-    case 'ESTABLISH_AUDIT_BOARD_OK': {
-        return establishAuditBoardOk(state, action);
     }
 
     case 'FETCH_AUDIT_BOARD_ASM_STATE_OK': {
