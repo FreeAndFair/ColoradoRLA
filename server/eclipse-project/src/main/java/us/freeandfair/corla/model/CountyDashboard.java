@@ -474,7 +474,9 @@ public class CountyDashboard implements PersistentEntity, Serializable {
       my_rounds.get(my_current_round_index).setEndTime(Instant.now());
       my_current_round_index = my_current_round_index + 1;
     }
-    final Round round = new Round(Instant.now(), the_number_of_ballots, the_start_index);
+    // note UI round indexing is from 1, not 0
+    final Round round = new Round(my_current_round_index + 1, Instant.now(), 
+                                  the_number_of_ballots, the_start_index);
     my_rounds.add(round);
   }
   

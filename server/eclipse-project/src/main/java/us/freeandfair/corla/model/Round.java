@@ -37,6 +37,12 @@ public class Round implements Serializable {
   private static final long serialVersionUID = 1L;
 
   /**
+   * The round number.
+   */
+  @Column(nullable = false, updatable = false)
+  private Integer my_number;
+  
+  /**
    * The start time.
    */
   @Column(nullable = false, updatable = false)
@@ -78,18 +84,28 @@ public class Round implements Serializable {
   /**
    * Constructs a round with the specified parameters.
    * 
+   * @param the_number The round number.
    * @param the_start_time The start time.
    * @param the_expected_count The expected number of ballots to audit.
    * @param the_start_index The index of the audit random sequence 
    * where the round starts.
    */
-  public Round(final Instant the_start_time,
+  public Round(final Integer the_number,
+               final Instant the_start_time,
                final Integer the_expected_count,
                final Integer the_start_index) {
     super();
+    my_number = the_number;
     my_start_time = the_start_time;
     my_expected_count = the_expected_count;
     my_start_index = the_start_index;
+  }
+  
+  /**
+   * @return the round number.
+   */
+  public Integer number() {
+    return my_number;
   }
   
   /**
