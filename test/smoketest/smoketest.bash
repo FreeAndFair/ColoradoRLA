@@ -52,7 +52,10 @@ psql -d corla -a -f ../corla-test-credentials.psql > credentials.stdout
 
 ./main.py
 
-psql -d corla -a -f tabulate.sql | diff tabulate.out -
+# Compare tabulation results and vote totals
+(psql -d corla -c "table county_contest_result;"
+ psql -d corla -c "table county_contest_vote_total;"
+) | diff tabulate.out -
 
 psql -d corla -f ../corla-compare-manifest-cvr.psql > manifest-vs-cvr.out
 

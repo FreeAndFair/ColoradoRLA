@@ -1,25 +1,17 @@
-SELECT ccd.description AS contest, 
-        ccd.choice AS candidate, 
-        count(ccic.cvr_contest_info_id) as votes
-    FROM contest_choice_description AS ccd 
-        LEFT JOIN ((contest AS c 
-            LEFT JOIN cvr_contest_info AS cci
-                ON c.id = cci.contest_id)
-        LEFT JOIN 
-            cvr_contest_info_choice as ccic 
-            ON ccic.cvr_contest_info_id = cci.id)
-            ON ccd.contest_id = c.id 
-        AND ccd.choice = ccic.choice
-    GROUP BY contest, candidate
-    ORDER BY contest, candidate
-;
- contest |   candidate    | votes 
----------+----------------+-------
-         | NO             |    49
-         | YES            |    40
- DEM     | Clear Winner   |   179
- DEM     | Janet Lee Cook |    37
- REP     | Distant Loser  |    20
- REP     | Jeff Baker     |    20
+ id  | contest_ballot_count | county_ballot_count |      losers       | max_margin | min_margin | version | votes_allowed |      winners       | contest_id | county_id 
+-----+----------------------+---------------------+-------------------+------------+------------+---------+---------------+--------------------+------------+-----------
+ 145 |                  165 |                 165 | ["Distant Loser"] |        109 |        109 |       3 |             1 | ["Clear Winner"]   |        144 |         3
+ 147 |                   46 |                 165 | ["Jeff Baker"]    |         15 |         15 |       3 |             1 | ["Janet Lee Cook"] |        146 |         3
+ 149 |                   95 |                 165 | ["YES"]           |          1 |          1 |       3 |             1 | ["NO"]             |        148 |         3
+(3 rows)
+
+ result_id | vote_total |     choice     
+-----------+------------+----------------
+       145 |         14 | Distant Loser
+       147 |         12 | Jeff Baker
+       149 |         30 | YES
+       145 |        123 | Clear Winner
+       147 |         27 | Janet Lee Cook
+       149 |         31 | NO
 (6 rows)
 
