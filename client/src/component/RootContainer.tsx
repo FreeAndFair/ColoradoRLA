@@ -12,7 +12,7 @@ import RootRedirectContainer from './RootRedirectContainer';
 import CountyContestDetailContainer from './county/ContestDetailContainer';
 import CountyContestOverviewContainer from './county/ContestOverviewContainer';
 
-import AuditBoardSignInContainer from './county/AuditBoardSignInContainer';
+import AuditBoardSignInContainer from './county/AuditBoard/SignInContainer';
 
 import CountyAuditContainer from './county/audit/CountyAuditContainer';
 import CountyHomeContainer from './county/home/CountyHomeContainer';

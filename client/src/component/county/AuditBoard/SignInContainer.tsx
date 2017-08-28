@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import SignedInPage from './AuditBoard/SignedInPage';
-import SignInPage from './AuditBoard/SignInPage';
+import SignedInPage from './SignedInPage';
+import SignInPage from './SignInPage';
 
-import auditBoardSignedIn from '../../selector/county/auditBoardSignedIn';
+import auditBoardSignedIn from '../../../selector/county/auditBoardSignedIn';
 
 
 class AuditBoardSignInContainer extends React.Component<any, any> {
