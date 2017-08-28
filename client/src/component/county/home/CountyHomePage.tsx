@@ -127,6 +127,7 @@ const Info = ({ info, contests, county }: any) => (
 const CountyHomePage = (props: any) => {
     const {
         boardSignIn,
+        canAudit,
         contests,
         county,
         countyInfo,
@@ -143,10 +144,7 @@ const CountyHomePage = (props: any) => {
 
     const info = { auditDate: startTimestamp };
 
-    const canStartAudit =
-        county.asm.auditBoard.currentState === 'AUDIT_IN_PROGRESS';
-
-    const buttonDisabled = !canStartAudit;
+    const buttonDisabled = !canAudit;
 
     return (
         <div className='county-root'>

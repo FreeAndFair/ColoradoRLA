@@ -5,10 +5,13 @@ import counties from '../../../data/counties';
 
 import CountyHomePage from './CountyHomePage';
 
+import canAudit from '../../../selector/county/canAudit';
+
 
 class CountyHomeContainer extends React.Component<any, any> {
     public render() {
         const {
+            canAudit,
             county,
             history,
         } = this.props;
@@ -17,16 +20,27 @@ class CountyHomeContainer extends React.Component<any, any> {
         const boardSignIn = () => history.push('/county/sign-in');
         const startAudit = () => history.push('/county/audit');
 
-        const props = { boardSignIn, countyInfo, startAudit, ...this.props };
+        const props = {
+            boardSignIn,
+            canAudit,
+            countyInfo,
+            startAudit,
+            ...this.props,
+        };
 
         return <CountyHomePage { ...props } />;
     }
 }
 
-const mapStateToProps = ({ county }: any) => {
+const mapStateToProps = (state: any) => {
+    const { county } = state;
     const { contestDefs } = county;
 
-    return { contests: contestDefs, county };
+    return {
+        canAudit: canAudit(state),
+        contests: contestDefs,
+        county,
+    };
 };
 
 export default connect(mapStateToProps)(CountyHomeContainer);
