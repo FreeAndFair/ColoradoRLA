@@ -2,7 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 
 import SignedInPage from './AuditBoard/SignedInPage';
-import AuditBoardSignInPage from './AuditBoardSignInPage';
+import SignInPage from './AuditBoard/SignInPage';
 
 import auditBoardSignedIn from '../../selector/county/auditBoardSignedIn';
 
@@ -15,7 +15,7 @@ class AuditBoardSignInContainer extends React.Component<any, any> {
             return <SignedInPage auditBoard={ auditBoard } />;
         }
 
-        return <AuditBoardSignInPage { ...this.props } />;
+        return <SignInPage { ...this.props } />;
     }
 }
 

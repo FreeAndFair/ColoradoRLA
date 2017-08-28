@@ -1,12 +1,12 @@
 import * as React from 'react';
 
-import CountyNav from './Nav';
+import CountyNav from '../Nav';
 
-import AuditBoardSignInForm from './AuditBoardSignInForm';
+import SignInForm from './SignInForm';
 
-import establishAuditBoard from '../../action/establishAuditBoard';
+import establishAuditBoard from '../../../action/establishAuditBoard';
 
-import isValidAuditBoard from '../../selector/county/isValidAuditBoard';
+import isValidAuditBoard from '../../../selector/county/isValidAuditBoard';
 
 
 class AuditBoardSignInPage extends React.Component<any, any> {
@@ -47,14 +47,14 @@ class AuditBoardSignInPage extends React.Component<any, any> {
                         today:
                     </div>
                 </div>
-                <AuditBoardSignInForm
+                <SignInForm
                     elector={ this.state.form[0] }
                     onFirstNameChange={ this.onFirstNameChange(0) }
                     onLastNameChange={ this.onLastNameChange(0) }
                     onPartyChange={ this.onPartyChange(0) }
                     onTextConfirm={ this.onTextConfirm }
                 />
-                <AuditBoardSignInForm
+                <SignInForm
                     elector={ this.state.form[1] }
                     onFirstNameChange={ this.onFirstNameChange(1) }
                     onLastNameChange={ this.onLastNameChange(1) }
