@@ -4,7 +4,7 @@ import CountyNav from '../Nav';
 
 import SignInForm from './SignInForm';
 
-import establishAuditBoard from '../../../action/establishAuditBoard';
+import auditBoardSignIn from '../../../action/county/auditBoardSignIn';
 
 import isValidAuditBoard from '../../../selector/county/isValidAuditBoard';
 
@@ -32,7 +32,7 @@ class AuditBoardSignInPage extends React.Component<any, any> {
             return <div />;
         }
 
-        const submit = () => establishAuditBoard(this.state.form);
+        const submit = () => auditBoardSignIn(this.state.form);
 
         const disableButton = !isValidAuditBoard(this.state.form);
 
