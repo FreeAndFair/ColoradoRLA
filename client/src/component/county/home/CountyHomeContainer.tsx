@@ -6,12 +6,14 @@ import counties from '../../../data/counties';
 import CountyHomePage from './CountyHomePage';
 
 import canAudit from '../../../selector/county/canAudit';
+import canSignIn from '../../../selector/county/canSignIn';
 
 
 class CountyHomeContainer extends React.Component<any, any> {
     public render() {
         const {
             canAudit,
+            canSignIn,
             county,
             history,
         } = this.props;
@@ -23,6 +25,7 @@ class CountyHomeContainer extends React.Component<any, any> {
         const props = {
             boardSignIn,
             canAudit,
+            canSignIn,
             countyInfo,
             startAudit,
             ...this.props,
@@ -38,6 +41,7 @@ const mapStateToProps = (state: any) => {
 
     return {
         canAudit: canAudit(state),
+        canSignIn: canSignIn(state),
         contests: contestDefs,
         county,
     };

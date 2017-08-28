@@ -9,7 +9,13 @@ import FileUploadContainer from './FileUploadContainer';
 
 
 const Main = (props: any) => {
-    const { auditButtonDisabled, boardSignIn, name, startAudit } = props;
+    const {
+        auditButtonDisabled,
+        boardSignIn,
+        name,
+        signInButtonDisabled,
+        startAudit,
+    } = props;
 
     return (
         <div className='county-main pt-card'>
@@ -21,14 +27,15 @@ const Main = (props: any) => {
                 <FileUploadContainer />
                 <button
                     className='pt-button pt-intent-primary'
+                    disabled={ signInButtonDisabled }
                     onClick={ boardSignIn }>
                     <span className='pt-icon-standard pt-icon-people' />
                     <span> </span>
                     Audit Board Sign-In
                 </button>
                 <button
-                    disabled={ auditButtonDisabled }
                     className='pt-button pt-intent-primary'
+                    disabled={ auditButtonDisabled }
                     onClick={ startAudit }>
                     <span className='pt-icon-standard pt-icon-eye-open' />
                     <span> </span>
@@ -130,6 +137,7 @@ const CountyHomePage = (props: any) => {
     const {
         boardSignIn,
         canAudit,
+        canSignIn,
         contests,
         county,
         countyInfo,
@@ -147,6 +155,7 @@ const CountyHomePage = (props: any) => {
     const info = { auditDate: startTimestamp };
 
     const auditButtonDisabled = !canAudit;
+    const signInButtonDisabled = !canSignIn;
 
     return (
         <div className='county-root'>
@@ -155,6 +164,7 @@ const CountyHomePage = (props: any) => {
                 <Main boardSignIn={ boardSignIn }
                       auditButtonDisabled={ auditButtonDisabled }
                       name={ countyInfo.name }
+                      signInButtonDisabled={ signInButtonDisabled }
                       startAudit={ startAudit } />
                 <Info info={ countyInfo }
                       contests={ contests }
