@@ -2,6 +2,8 @@ import * as React from 'react';
 
 import CountyNav from '../Nav';
 
+import auditBoardSignOut from '../../../action/county/auditBoardSignOut';
+
 
 const SignedInPage = ({ auditBoard }: any) => {
     return (
@@ -39,6 +41,11 @@ const SignedInPage = ({ auditBoard }: any) => {
                 disabled={ true }
                 className='pt-button pt-intent-primary'>
                 Submit
+            </button>
+            <button
+                className='pt-button pt-intent-primary'
+                onClick={ auditBoardSignOut }>
+                Sign Out
             </button>
         </div>
     );
