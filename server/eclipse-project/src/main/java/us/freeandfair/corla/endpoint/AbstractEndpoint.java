@@ -528,7 +528,8 @@ public abstract class AbstractEndpoint implements Endpoint {
     String endpoint_result = my_endpoint_result.get();
     if (status == null) {
       status = HttpStatus.INTERNAL_SERVER_ERROR_500;
-      endpoint_result = "runtime error, no status recorded by endpoint";
+      endpoint_result = 
+          Main.GSON.toJson(new Result("server error, no response from endpoint"));
     }
     the_response.body(endpoint_result);
     the_response.status(status);

@@ -114,11 +114,6 @@ public class BallotManifestImport extends AbstractCountyDashboardEndpoint {
         final int imported = parser.recordCount().getAsInt();
         Main.LOGGER.info(imported + " ballot manifest records parsed from file " + 
                          the_file.id());
-//        final OptionalLong count = BallotManifestInfoQueries.count();
-//        if (count.isPresent()) {
-//          Main.LOGGER.info(count.getAsLong() + 
-//                           " uploaded ballot manifest records in storage");
-//        }
         updateCountyDashboard(the_response, the_file.countyID(), the_file.timestamp());
         the_file.setStatus(FileStatus.IMPORTED_AS_BALLOT_MANIFEST);
         Persistence.saveOrUpdate(the_file);

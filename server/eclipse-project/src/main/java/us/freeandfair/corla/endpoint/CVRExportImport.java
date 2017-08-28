@@ -114,11 +114,6 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
       if (parser.parse()) {
         final int imported = parser.recordCount().getAsInt();
         Main.LOGGER.info(imported + " CVRs parsed from file " + the_file.id());
-//        final OptionalLong count = 
-//            CastVoteRecordQueries.countMatching(RecordType.UPLOADED);
-//        if (count.isPresent()) {
-//          Main.LOGGER.info(count.getAsLong() + " uploaded CVRs in storage");
-//        }
         updateCountyDashboard(the_response, the_file.countyID(), the_file.timestamp());
         the_file.setStatus(FileStatus.IMPORTED_AS_CVR_EXPORT);
         Persistence.saveOrUpdate(the_file);

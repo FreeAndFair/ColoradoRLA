@@ -280,7 +280,7 @@ public final class CastVoteRecordQueries {
     }
     if (result == null) {
       Main.LOGGER.debug("found no CVR for county " + the_county_id +
-                        ", type " + the_type);
+                        ", type " + the_type + ", sequence " + the_sequence_number);
     } else {
       Main.LOGGER.debug("found CVR " + result);
     }
