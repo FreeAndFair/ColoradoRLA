@@ -2,7 +2,6 @@ import * as React from 'react';
 
 import CountyNav from './Nav';
 
-import SignedInPage from './AuditBoard/SignedInPage';
 import AuditBoardSignInForm from './AuditBoardSignInForm';
 
 import establishAuditBoard from '../../action/establishAuditBoard';
@@ -33,15 +32,7 @@ class AuditBoardSignInPage extends React.Component<any, any> {
             return <div />;
         }
 
-        const submit = () => {
-            establishAuditBoard(this.state.form);
-        };
-
-        const boardEstablished = isValidAuditBoard(auditBoard);
-
-        if (auditBoard.length === 2) {
-            return <SignedInPage auditBoard={ auditBoard } />;
-        }
+        const submit = () => establishAuditBoard(this.state.form);
 
         const disableButton = !isValidAuditBoard(this.state.form);
 

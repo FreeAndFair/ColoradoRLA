@@ -1,18 +1,30 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
+import SignedInPage from './AuditBoard/SignedInPage';
 import AuditBoardSignInPage from './AuditBoardSignInPage';
+
+import auditBoardSignedIn from '../../selector/county/auditBoardSignedIn';
 
 
 class AuditBoardSignInContainer extends React.Component<any, any> {
     public render() {
+        const { auditBoard, auditBoardSignedIn } = this.props;
+
+        if (auditBoardSignedIn) {
+            return <SignedInPage auditBoard={ auditBoard } />;
+        }
+
         return <AuditBoardSignInPage { ...this.props } />;
     }
 }
 
-const mapStateToProps = ({ county }: any) => {
+const mapStateToProps = (state: any) => {
+    const { county } = state;
+
     return {
-        auditBoard: county.auditBoardMembers,
+        auditBoard: county.auditBoard,
+        auditBoardSignedIn: auditBoardSignedIn(state),
         county,
     };
 };
