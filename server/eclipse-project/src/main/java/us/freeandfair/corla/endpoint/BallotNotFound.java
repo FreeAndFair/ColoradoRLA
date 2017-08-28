@@ -106,7 +106,7 @@ public class BallotNotFound extends AbstractAuditBoardDashboardEndpoint {
       }
       final CastVoteRecord cvr = Persistence.getByID(sbnf.id(), CastVoteRecord.class);
       if (cvr == null) {
-        badDataContents(the_response, "nonexistent CVR id");
+        badDataContents(the_response, "nonexistent CVR ID");
       }
       final List<CVRAuditInfo> matching = CVRAuditInfoQueries.matching(cdb, cvr);
       if (matching.isEmpty()) {

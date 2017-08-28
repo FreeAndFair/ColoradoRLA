@@ -141,7 +141,6 @@ public abstract class AbstractEndpoint implements Endpoint {
    * @param the_request The request.
    * @param the_response The response.
    */
-  @SuppressWarnings("unused")
   protected void loadAndCheckASM(final Request the_request,
                                  final Response the_response) {
     // get the state of the ASM
@@ -167,7 +166,6 @@ public abstract class AbstractEndpoint implements Endpoint {
    * @param the_response The response.
    * @return true if the ASM transitioned successfully
    */
-  @SuppressWarnings("unused")
   protected boolean transitionAndSaveASM(final Response the_response)  {
     if (DISABLE_ASM || my_asm.get() == null || endpointEvent() == null) {
       // there is no ASM event for this endpoint
@@ -530,7 +528,8 @@ public abstract class AbstractEndpoint implements Endpoint {
     String endpoint_result = my_endpoint_result.get();
     if (status == null) {
       status = HttpStatus.INTERNAL_SERVER_ERROR_500;
-      endpoint_result = "runtime error, no status recorded by endpoint";
+      endpoint_result = 
+          Main.GSON.toJson(new Result("server error, no response from endpoint"));
     }
     the_response.body(endpoint_result);
     the_response.status(status);

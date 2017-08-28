@@ -155,8 +155,8 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
       // one we were passed at construction and the county name string 
       // in the file?
       result = new BallotManifestInfo(my_county_id,
-                                      the_line.get(SCANNER_ID_COLUMN),
-                                      the_line.get(BATCH_NUMBER_COLUMN),
+                                      Integer.parseInt(the_line.get(SCANNER_ID_COLUMN)),
+                                      Integer.parseInt(the_line.get(BATCH_NUMBER_COLUMN)),
                                       Integer.parseInt(the_line.
                                                        get(NUM_BALLOTS_COLUMN)),
                                       the_line.get(BATCH_LOCATION_COLUMN));

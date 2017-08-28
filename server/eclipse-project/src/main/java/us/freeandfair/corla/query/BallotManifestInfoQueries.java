@@ -31,6 +31,7 @@ import org.hibernate.query.Query;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.BallotManifestInfo;
+import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.persistence.Persistence;
 
 /**
@@ -74,6 +75,38 @@ public final class BallotManifestInfoQueries {
       Main.LOGGER.error("Exception when reading ballot manifests from database: " + e);
     }
 
+    return result;
+  }
+  
+  /**
+   * Returns the location for the specified CVR, assuming one can be found.
+   * 
+   * @param the_cvr The CVR.
+   * @return the location for the CVR, or null if no location can be found.
+   */
+  public static String locationFor(final CastVoteRecord the_cvr) {
+    String result = null;
+    
+    try {
+      final Session s = Persistence.currentSession();
+      final CriteriaBuilder cb = s.getCriteriaBuilder();
+      final CriteriaQuery<String> cq = cb.createQuery(String.class);
+      final Root<BallotManifestInfo> root = cq.from(BallotManifestInfo.class);
+      cq.select(root.get("my_storage_location"));
+      cq.where(cb.and(cb.equal(root.get("my_county_id"), the_cvr.countyID()),
+                      cb.equal(root.get("my_scanner_id"), the_cvr.scannerID()),
+                      cb.equal(root.get("my_batch_id"), the_cvr.batchID())));
+      final TypedQuery<String> query = s.createQuery(cq);
+      final List<String> query_result = query.getResultList();
+      // there should never be more than one result, but if there is, we'll 
+      // return the first one
+      if (!query_result.isEmpty()) {
+        result = query_result.get(0);
+      }
+    } catch (final PersistenceException e) {
+      Main.LOGGER.error("Exception when finding ballot location: " + e);
+    }
+    
     return result;
   }
   
