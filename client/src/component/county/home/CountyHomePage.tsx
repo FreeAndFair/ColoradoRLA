@@ -8,8 +8,19 @@ import CountyNav from '../Nav';
 import FileUploadContainer from './FileUploadContainer';
 
 
+const AuditBoardInfo = ({ signedIn }: any) => {
+    const text = signedIn ? 'signed in' : 'not signed in';
+
+    return (
+        <div className='pt-card'>
+            Audit board is <strong>{ text }.</strong>
+        </div>
+    );
+};
+
 const Main = (props: any) => {
     const {
+        auditBoardSignedIn,
         auditButtonDisabled,
         boardSignIn,
         name,
@@ -25,6 +36,7 @@ const Main = (props: any) => {
                     Please upload your Ballot Manifest and Cast Vote Records.
                 </div>
                 <FileUploadContainer />
+                <AuditBoardInfo signedIn={ auditBoardSignedIn } />
                 <button
                     className='pt-button pt-intent-primary'
                     disabled={ signInButtonDisabled }
@@ -135,6 +147,7 @@ const Info = ({ info, contests, county }: any) => (
 
 const CountyHomePage = (props: any) => {
     const {
+        auditBoardSignedIn,
         boardSignIn,
         canAudit,
         canSignIn,
