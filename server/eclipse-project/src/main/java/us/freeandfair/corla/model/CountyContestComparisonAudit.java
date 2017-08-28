@@ -64,34 +64,59 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
    * Gamma, as presented in the literature:
    * https://www.stat.berkeley.edu/~stark/Preprints/gentle12.pdf
    */
-  public static final BigDecimal GENTLE_GAMMA = BigDecimal.valueOf(1.03905);
-
+  public static final BigDecimal STARK_GAMMA = BigDecimal.valueOf(1.03905);
+  
   /**
    * Gamma, as recommended by Neal McBurnett for use in Colorado.
    */
   public static final BigDecimal COLORADO_GAMMA = BigDecimal.valueOf(1.1);
-
+  
   /**
-   * The initial estimate of error rates for one-vote over- and understatements.
+   * Conservative estimate of error rates for one-vote over- and understatements.
    */
   public static final BigDecimal CONSERVATIVE_ONES_RATE = BigDecimal.valueOf(0.01);
   
   /**
-   * The initial estimate of error rates for two-vote over- and understatements.
+   * Conservative estimate of error rates for two-vote over- and understatements.
    */
   public static final BigDecimal CONSERVATIVE_TWOS_RATE = BigDecimal.valueOf(0.01);
   
   /**
-   * Rounding up of 1-vote over/understatements for the initial estimate of 
-   * error rates.
+   * Conservative rounding up of 1-vote over/understatements for the initial 
+   * estimate of error rates.
    */
   public static final boolean CONSERVATIVE_ROUND_ONES_UP = true;
   
   /**
-   * Rounding up of 2-vote over/understatements for the initial estimate of 
-   * error rates.
+   * Conservative rounding up of 2-vote over/understatements for the initial 
+   * estimate of  error rates.
    */
   public static final boolean CONSERVATIVE_ROUND_TWOS_UP = true;
+  
+  /**
+   * The gamma to use.
+   */
+  public static final BigDecimal GAMMA = STARK_GAMMA;
+  
+  /**
+   * The initial estimate of error rates for one-vote over- and understatements.
+   */
+  public static final BigDecimal ONES_RATE = BigDecimal.ZERO;
+  
+  /**
+   * The initial estimate of error rates for two-vote over- and understatements.
+   */
+  public static final BigDecimal TWOS_RATE = BigDecimal.ZERO;
+  
+  /**
+   * The initial rounding up of 1-vote over/understatements.
+   */
+  public static final boolean ROUND_ONES_UP = false;
+  
+  /**
+   * The initial rounding up of 2-vote over/understatements.
+   */
+  public static final boolean ROUND_TWOS_UP = false;
   
   /**
    * The serialVersionUID.
@@ -138,7 +163,7 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
    */
   @Column(updatable = false, nullable = false, 
           precision = PRECISION, scale = SCALE)
-  private BigDecimal my_gamma = COLORADO_GAMMA;
+  private BigDecimal my_gamma = GAMMA;
   
   /**
    * The risk limit.
@@ -275,12 +300,8 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
   public int initialBallotsToAudit() {
     // compute the conservative numbers of over/understatements based on 
     // initial estimate of error rate
-    return computeBallotsToAuditFromRates(CONSERVATIVE_TWOS_RATE,
-                                          CONSERVATIVE_ONES_RATE,
-                                          CONSERVATIVE_ONES_RATE,
-                                          CONSERVATIVE_TWOS_RATE, 
-                                          CONSERVATIVE_ROUND_ONES_UP,
-                                          CONSERVATIVE_ROUND_TWOS_UP).intValue();
+    return computeBallotsToAuditFromRates(TWOS_RATE, ONES_RATE, ONES_RATE, TWOS_RATE, 
+                                          ROUND_ONES_UP, ROUND_TWOS_UP).intValue();
   }
   
   /**
@@ -299,7 +320,7 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
    * @return the expected number of ballots remaining to audit, assuming 
    * over- and understatement rates continue as they currently are.
    */
-  public int expectedBallotsRemainingToAudit() {
+  public int expectedBallotsToAuditFromCurrentRates() {
     return computeBallotsToAuditFromProgress(my_two_vote_under, my_one_vote_under,
                                              my_one_vote_over, my_two_vote_over,
                                              my_dashboard.auditedPrefixLength());
@@ -405,9 +426,8 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
     final BigDecimal bta = 
         computeBallotsToAuditFromRates(two_under_rate, one_under_rate, 
                                        one_over_rate, two_over_rate,
-                                       CONSERVATIVE_ROUND_ONES_UP, CONSERVATIVE_ROUND_TWOS_UP);
-    final BigDecimal remaining = bta.subtract(BigDecimal.valueOf(the_number_audited));
-    return remaining.setScale(0, RoundingMode.CEILING).intValue();
+                                       ROUND_ONES_UP, ROUND_TWOS_UP);
+    return bta.setScale(0, RoundingMode.CEILING).intValue();
   }
   
   /**

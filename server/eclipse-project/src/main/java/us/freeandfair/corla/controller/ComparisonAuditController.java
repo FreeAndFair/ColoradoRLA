@@ -258,7 +258,8 @@ public final class ComparisonAuditController {
     }
 
     updateCVRUnderAudit(the_dashboard);
-    the_dashboard.setEstimatedBallotsToAudit(computeEstimatedBallotsToAudit(the_dashboard));
+    the_dashboard.setEstimatedBallotsToAudit(computeEstimatedBallotsToAudit(the_dashboard, 
+                                                                            false));
     
     return result;
   }
@@ -386,13 +387,15 @@ public final class ComparisonAuditController {
       index = index + 1;
     }
     new_prefix_length = index;
-    final int to_audit = computeEstimatedBallotsToAudit(the_dashboard);
+    final int to_audit = computeEstimatedBallotsToAudit(the_dashboard, false);
     if (new_prefix_length == cvr_audit_info.size() && 
         0 < to_audit - new_prefix_length) {
       // we're out of ballots and the audit isn't done, so we need more; right 
       // now, we add the expected amount to audit based on our error rates
+      final int to_audit_current_rates = 
+          computeEstimatedBallotsToAudit(the_dashboard, true);
       final List<CastVoteRecord> new_cvrs = 
-          computeBallotOrder(the_dashboard, cvr_audit_info.size(), to_audit);
+          computeBallotOrder(the_dashboard, cvr_audit_info.size(), to_audit_current_rates);
       the_dashboard.addCVRsToAudit(new_cvrs);
       for (final CastVoteRecord cvr : new HashSet<>(new_cvrs)) {
         CVRAuditInfoQueries.updateMatching(the_dashboard, cvr);
@@ -410,14 +413,23 @@ public final class ComparisonAuditController {
    * county dashboard.
    * 
    * @param the_dashboard The dashboard.
+   * @param the_error_rates true to project from the current error rates, 
+   * false to get the minimum given the current over- and understatements. 
    */
   private static int 
-      computeEstimatedBallotsToAudit(final CountyDashboard the_dashboard) {
+      computeEstimatedBallotsToAudit(final CountyDashboard the_dashboard,
+                                     final boolean the_error_rates) {
     int to_audit = Integer.MIN_VALUE;
     final Set<Contest> driving_contests = the_dashboard.drivingContests();
     for (final CountyContestComparisonAudit ccca : the_dashboard.comparisonAudits()) {
       if (driving_contests.contains(ccca.contest())) {
-        to_audit = Math.max(to_audit, ccca.ballotsToAudit());
+        final int bta;
+        if (the_error_rates) {
+          bta = ccca.expectedBallotsToAuditFromCurrentRates();
+        } else {
+          bta = ccca.ballotsToAudit();
+        }
+        to_audit = Math.max(to_audit, bta);
       }
     }
     return Math.max(0,  to_audit - the_dashboard.auditedPrefixLength());
