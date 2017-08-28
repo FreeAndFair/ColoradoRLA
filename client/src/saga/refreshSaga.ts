@@ -26,6 +26,8 @@ function dosRefresh() {
 
 export default function* dosLoginSaga() {
     const countyRefreshActions = [
+        'AUDIT_BOARD_SIGN_IN_OK',
+        'AUDIT_BOARD_SIGN_OUT_OK',
         'ESTABLISH_AUDIT_BOARD_OK',
         'UPLOAD_ACVR_OK',
         'UPDATE_ACVR_FORM',
