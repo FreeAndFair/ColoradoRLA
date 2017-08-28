@@ -23,7 +23,7 @@ function validateAuditBoard(auditBoard: any) {
         && validateElector(auditBoard[1]) ;
 }
 
-class AuditBoardSignInStage extends React.Component<any, any> {
+class AuditBoardSignInPage extends React.Component<any, any> {
     public state = {
         form: [
             {
@@ -170,4 +170,4 @@ class AuditBoardSignInStage extends React.Component<any, any> {
 }
 
 
-export default AuditBoardSignInStage;
+export default AuditBoardSignInPage;
