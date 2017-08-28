@@ -12,26 +12,32 @@
 
 package us.freeandfair.corla.model;
 
-import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
+import static us.freeandfair.corla.util.EqualsHashcodeHelper.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
-import javax.persistence.MapKeyColumn;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.persistence.Version;
 
-import us.freeandfair.corla.persistence.AbstractEntity;
+import org.hibernate.annotations.Immutable;
+
+import us.freeandfair.corla.persistence.PersistentEntity;
 
 /**
  * The definition of a contest; comprises a contest name and a set of
@@ -41,54 +47,63 @@ import us.freeandfair.corla.persistence.AbstractEntity;
  * @version 0.0.1
  */
 @Entity
-@Table(name = "contest")
+@Immutable // this is a Hibernate-specific annotation, but there is no JPA alternative
+@Cacheable(true)
+@Table(name = "contest",
+       uniqueConstraints = {
+           @UniqueConstraint(columnNames = {"name", "description", "votes_allowed"}) },
+       indexes = { @Index(name = "idx_contest_name", columnList = "name"),
+                   @Index(name = "idx_contest_name_description_votes_allowed", 
+                          columnList = "name, description, votes_allowed") })
 //this class has many fields that would normally be declared final, but
 //cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
-public class Contest extends AbstractEntity implements Serializable {
+public class Contest implements PersistentEntity, Serializable {
   /**
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1L;
   
   /**
+   * The ID number.
+   */
+  @Id
+  @Column(updatable = false, nullable = false)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  private Long my_id;
+  
+  /**
+   * The version (for optimistic locking).
+   */
+  @Version
+  private Long my_version;
+  
+  /**
    * The contest name.
    */
-  @Column(updatable = false, nullable = false)
+  @Column(name = "name", updatable = false, nullable = false)
   private String my_name;
 
   /**
    * The contest description.
    */
-  @Column(updatable = false, nullable = false)
+  @Column(name = "description", updatable = false, nullable = false)
   private String my_description;
   
   /**
    * The contest choices.
    */
-  @ElementCollection(fetch = FetchType.LAZY)
+  @ElementCollection(fetch = FetchType.EAGER)
   @OrderColumn(name = "index")
   @CollectionTable(name = "contest_choice",
                    joinColumns = @JoinColumn(name = "contest_id", 
                                              referencedColumnName = "my_id"))
-  @Column(name = "choice")
-  private List<String> my_choice_names;
-  
-  /**
-   * The contest choice descriptions.
-   */
-  @ElementCollection(fetch = FetchType.LAZY)
-  @CollectionTable(name = "contest_choice_description",
-                   joinColumns = @JoinColumn(name = "contest_id", 
-                                             referencedColumnName = "my_id"))
-  @MapKeyColumn(name = "choice")
-  @Column(name = "description")
-  private Map<String, String> my_choice_descriptions;
+  private List<Choice> my_choices = new ArrayList<>();
   
   /**
    * The maximum number of votes that can be made in this contest.
    */
-  @Column(updatable = false, nullable = false)
+  @Column(name = "votes_allowed", updatable = false, nullable = false)
   private Integer my_votes_allowed;
   
   /**
@@ -115,15 +130,34 @@ public class Contest extends AbstractEntity implements Serializable {
     super();
     my_name = the_name;
     my_description = the_description;
-    my_choice_names = new ArrayList<String>();
-    my_choice_descriptions = new HashMap<String, String>();
-    for (final Choice c : the_choices) {
-      my_choice_names.add(c.name());
-      my_choice_descriptions.put(c.name(), c.description());
-    }
+    my_choices.addAll(the_choices);
     my_votes_allowed = the_votes_allowed;
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Long id() {
+    return my_id;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void setID(final Long the_id) {
+    my_id = the_id;
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Long version() {
+    return my_version;
+  }
+  
   /**
    * @return the contest name.
    */
@@ -145,18 +179,19 @@ public class Contest extends AbstractEntity implements Serializable {
    * @return true if the choice is valid, false otherwise.
    */
   public boolean isValidChoice(final String the_choice) {
-    return my_choice_descriptions.containsKey(the_choice);
+    for (final Choice c : my_choices) {
+      if (c.name().equals(the_choice)) {
+        return true;
+      }
+    }
+    return false;
   }
   
   /**
    * @return the contest choices.
    */
   public List<Choice> choices() {
-    final List<Choice> result = new ArrayList<Choice>();
-    for (final String name : my_choice_names) {
-      result.add(new Choice(name, my_choice_descriptions.get(name)));
-    }
-    return Collections.unmodifiableList(result);
+    return Collections.unmodifiableList(my_choices);
   }
   
   /**
@@ -189,10 +224,7 @@ public class Contest extends AbstractEntity implements Serializable {
       final Contest other_contest = (Contest) the_other;
       result &= nullableEquals(other_contest.name(), name());
       result &= nullableEquals(other_contest.description(), description());
-      // note that the next two compare private fields instead of accessors
-      // but still maintain the contract on equals/hashCode
-      result &= nullableEquals(other_contest.my_choice_names, my_choice_names);
-      result &= nullableEquals(other_contest.my_choice_descriptions, my_choice_descriptions);
+      result &= nullableEquals(other_contest.choices(), choices());
       result &= nullableEquals(other_contest.votesAllowed(), votesAllowed());
     } else {
       result = false;
@@ -205,6 +237,6 @@ public class Contest extends AbstractEntity implements Serializable {
    */
   @Override
   public int hashCode() {
-    return toString().hashCode();
+    return nullableHashCode(name().hashCode());
   }
 }

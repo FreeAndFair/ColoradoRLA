@@ -18,9 +18,13 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
-import us.freeandfair.corla.persistence.AbstractEntity;
+import us.freeandfair.corla.persistence.PersistentEntity;
 
 /**
  * An abstract state machine state, and sufficient information to
@@ -34,11 +38,25 @@ import us.freeandfair.corla.persistence.AbstractEntity;
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
-public class PersistentASMState extends AbstractEntity implements Serializable {
+public class PersistentASMState implements PersistentEntity, Serializable {
   /**
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1L;
+  
+  /**
+   * The ID number.
+   */
+  @Id
+  @Column(updatable = false, nullable = false)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  private Long my_id;
+  
+  /**
+   * The version (for optimistic locking).
+   */
+  @Version
+  private Long my_version;
   
   /**
    * The class of AbstractStateMachine to which this state belongs, as
@@ -154,6 +172,30 @@ public class PersistentASMState extends AbstractEntity implements Serializable {
       // result is already null
     }
     return result;
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Long id() {
+    return my_id;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void setID(final Long the_id) {
+    my_id = the_id;
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Long version() {
+    return my_version;
   }
   
   /**

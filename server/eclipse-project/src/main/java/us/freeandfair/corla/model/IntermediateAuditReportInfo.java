@@ -11,22 +11,17 @@
 
 package us.freeandfair.corla.model;
 
-import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
+import static us.freeandfair.corla.util.EqualsHashcodeHelper.*;
 
 import java.io.Serializable;
 import java.time.Instant;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.Embeddable;
 
 import com.google.gson.annotations.JsonAdapter;
 
 import us.freeandfair.corla.json.IntermediateAuditReportJsonAdapter;
-import us.freeandfair.corla.persistence.AbstractEntity;
 
 /**
  * An audit investigation report.
@@ -34,24 +29,16 @@ import us.freeandfair.corla.persistence.AbstractEntity;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-@Entity
-@Table(name = "intermediate_audit_report")
+@Embeddable
 //this class has many fields that would normally be declared final, but
 //cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
 @JsonAdapter(IntermediateAuditReportJsonAdapter.class)
-public class IntermediateAuditReportInfo extends AbstractEntity implements Serializable {
+public class IntermediateAuditReportInfo implements Serializable {
   /**
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1L;
-  
-  /**
-   * The audit board dashboard to which this report belongs. 
-   */
-  @ManyToOne(optional = false, fetch = FetchType.LAZY)
-  @JoinColumn
-  private CountyDashboard my_dashboard;
   
   /**
    * The timestamp of this report.
@@ -85,23 +72,6 @@ public class IntermediateAuditReportInfo extends AbstractEntity implements Seria
     super();
     my_timestamp = the_timestamp;
     my_report = the_report;
-  }
-  
-  /**
-   * Sets the dashboard that owns this record; this should only be called by
-   * the AuditBoardDashboard class.
-   * 
-   * @param the_dashboard The dashboard.
-   */
-  protected void setDashboard(final CountyDashboard the_dashboard) {
-    my_dashboard = the_dashboard;
-  }
-  
-  /**
-   * @return the dashboard.
-   */
-  public CountyDashboard dashboard() {
-    return my_dashboard;
   }
   
   /**
@@ -152,6 +122,6 @@ public class IntermediateAuditReportInfo extends AbstractEntity implements Seria
    */
   @Override
   public int hashCode() {
-    return toString().hashCode();
+    return nullableHashCode(timestamp());
   }
 }

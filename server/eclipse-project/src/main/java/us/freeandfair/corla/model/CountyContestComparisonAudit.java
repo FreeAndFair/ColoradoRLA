@@ -18,17 +18,23 @@ import java.math.RoundingMode;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 import ch.obermuhlner.math.big.BigDecimalMath;
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
-import us.freeandfair.corla.persistence.AbstractEntity;
+import us.freeandfair.corla.persistence.PersistentEntity;
 
 /**
  * A class representing the state of a single audited contest for
@@ -38,9 +44,12 @@ import us.freeandfair.corla.persistence.AbstractEntity;
  * @version 0.0.1
  */
 @Entity
-@Table(name = "county_contest_comparison_audit")
+@Cacheable(true)
+@Table(name = "county_contest_comparison_audit",
+       indexes = { @Index(name = "idx_ccca_dashboard", columnList = "dashboard_id") })
+
 @SuppressWarnings({"PMD.ImmutableField", "PMD.CyclomaticComplexity", "PMD.GodClass"})
-public class CountyContestComparisonAudit extends AbstractEntity implements Serializable {
+public class CountyContestComparisonAudit implements PersistentEntity, Serializable {
   /**
    * The database stored precision for decimal types.
    */
@@ -90,6 +99,20 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
   private static final long serialVersionUID = 1L;
   
   /**
+   * The ID number.
+   */
+  @Id
+  @Column(updatable = false, nullable = false)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  private Long my_id;
+  
+  /**
+   * The version (for optimistic locking).
+   */
+  @Version
+  private Long my_version;
+  
+  /**
    * The county dashboard to which this audit state belongs. 
    */
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -113,39 +136,53 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
   /**
    * The gamma.
    */
-  @Column(precision = PRECISION, scale = SCALE)
+  @Column(updatable = false, nullable = false, 
+          precision = PRECISION, scale = SCALE)
   private BigDecimal my_gamma = COLORADO_GAMMA;
   
   /**
    * The risk limit.
    */
-  @Column(precision = PRECISION, scale = SCALE)
+  @Column(updatable = false, nullable = false, 
+          precision = PRECISION, scale = SCALE)
   private BigDecimal my_risk_limit = BigDecimal.ONE;
   
   /**
    * The expected number of ballots remaining to audit.
    */
-  private Integer my_ballots_to_audit;
+  @Column(nullable = false)
+  private Integer my_ballots_to_audit = 0;
   
   /**
    * The number of two-vote understatements recorded so far.
    */
+  @Column(nullable = false)
   private Integer my_two_vote_under = 0;
   
   /**
    * The number of one-vote understatements recorded so far.
    */
+  @Column(nullable = false)
   private Integer my_one_vote_under = 0;
   
   /**
    * The number of one-vote overstatements recorded so far.
    */
+  @Column(nullable = false)
   private Integer my_one_vote_over = 0;
   
   /**
    * The number of two-vote overstatements recorded so far.
    */
+  @Column(nullable = false)
   private Integer my_two_vote_over = 0;
+  
+  /**
+   * A flag that indicates whether the ballots to audit need to be 
+   * recalculated.
+   */
+  @Column(nullable = false)
+  private Boolean my_recalculate_needed = true;
   
   /**
    * Constructs a new, empty CountyContestAudit (solely for persistence).
@@ -170,6 +207,30 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
     my_contest_result = the_contest_result;
     my_contest = my_contest_result.contest();
     my_risk_limit = the_risk_limit;
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Long id() {
+    return my_id;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void setID(final Long the_id) {
+    my_id = the_id;
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Long version() {
+    return my_version;
   }
   
   /**
@@ -226,8 +287,9 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
    * @return the expected number of ballots to audit.
    */
   public Integer ballotsToAudit() {
-    if (my_ballots_to_audit == null && my_contest_result != null) {
+    if (my_recalculate_needed) {
       recalculateBallotsToAudit();
+      my_recalculate_needed = false;
     }
     return my_ballots_to_audit;
   }
@@ -392,10 +454,12 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
     switch (the_statement) {
       case -2: 
         my_two_vote_under = my_two_vote_under + 1;
+        my_recalculate_needed = true;
         break;
        
       case -1:
         my_one_vote_under = my_one_vote_under + 1;
+        my_recalculate_needed = true;
         break;
         
       case 0:
@@ -403,16 +467,17 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
         
       case 1: 
         my_one_vote_over = my_one_vote_over + 1;
+        my_recalculate_needed = true;
         break;
         
       case 2:
         my_two_vote_over = my_two_vote_over + 1;
+        my_recalculate_needed = true;
         break;
         
       default:
         throw new IllegalArgumentException("invalid over or understatement: " + the_statement);
     }
-    recalculateBallotsToAudit();
   }
     
   /**
@@ -427,10 +492,12 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
     switch (the_statement) {
       case -2: 
         my_two_vote_under = my_two_vote_under - 1;
+        my_recalculate_needed = true;
         break;
 
       case -1:
         my_one_vote_under = my_one_vote_under - 1;
+        my_recalculate_needed = true;
         break;
 
       case 0:
@@ -438,16 +505,17 @@ public class CountyContestComparisonAudit extends AbstractEntity implements Seri
 
       case 1: 
         my_one_vote_over = my_one_vote_over - 1;
+        my_recalculate_needed = true;
         break;
 
       case 2:
         my_two_vote_over = my_two_vote_over - 1;
+        my_recalculate_needed = true;
         break;
 
       default:
         throw new IllegalArgumentException("invalid over or understatement: " + the_statement);
     }
-    recalculateBallotsToAudit();
   }
   
   /**

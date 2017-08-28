@@ -25,7 +25,9 @@ import java.util.Set;
 
 import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -73,6 +75,11 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   private static final String MY_ID = "my_id";
   
   /**
+   * The "dashboard_id" string.
+   */
+  private static final String DASHBOARD_ID = "dashboard_id";
+  
+  /**
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1; 
@@ -86,7 +93,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   /**
    * The county.
    */
-  @OneToOne(optional = false, fetch = FetchType.LAZY)
+  @OneToOne(optional = false, fetch = FetchType.EAGER)
   @JoinColumn
   private County my_county;
   
@@ -129,12 +136,10 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   /**
    * The members of the audit board.
    */
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(name = "audit_board_member",
-             joinColumns = @JoinColumn(name = "county_dashboard_id", 
-                                       referencedColumnName = MY_ID),
-             inverseJoinColumns = @JoinColumn(name = "elector_id", 
-                                              referencedColumnName = MY_ID))
+  @ElementCollection(fetch = FetchType.EAGER)
+  @CollectionTable(name = "audit_board",
+                   joinColumns = @JoinColumn(name = DASHBOARD_ID, 
+                                             referencedColumnName = MY_ID))
   private Set<Elector> my_members = new HashSet<>();
   
   /**
@@ -148,9 +153,9 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   /**
    * The set of contests driving the audit.
    */
-  @ManyToMany(fetch = FetchType.LAZY)
+  @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(name = "driving_contest",
-             joinColumns = @JoinColumn(name = "county_dashboard_id",
+             joinColumns = @JoinColumn(name = DASHBOARD_ID,
                                        referencedColumnName = MY_ID),
              inverseJoinColumns = @JoinColumn(name = "contest_id", 
                                               referencedColumnName = MY_ID))
@@ -160,25 +165,29 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * The audit data.
    */
   @OneToMany(cascade = CascadeType.ALL, mappedBy = MY_DASHBOARD, 
-             fetch = FetchType.LAZY, orphanRemoval = true)
+             fetch = FetchType.EAGER, orphanRemoval = true)
   private Set<CountyContestComparisonAudit> my_comparison_audits = 
       new HashSet<>(); 
   
   /**
    * The audit investigation reports.
    */
-  @OneToMany(cascade = CascadeType.ALL, mappedBy = MY_DASHBOARD, 
-             fetch = FetchType.LAZY, orphanRemoval = true)
+  @ElementCollection(fetch = FetchType.EAGER)
   @OrderColumn(name = INDEX)
+  @CollectionTable(name = "audit_investigation_report",
+                   joinColumns = @JoinColumn(name = DASHBOARD_ID, 
+                                             referencedColumnName = MY_ID))
   private List<AuditInvestigationReportInfo> my_investigation_reports = 
       new ArrayList<>();
   
   /**
    * The audit interim reports.
    */
-  @OneToMany(cascade = CascadeType.ALL, mappedBy = MY_DASHBOARD, 
-             fetch = FetchType.LAZY, orphanRemoval = true)
+  @ElementCollection(fetch = FetchType.EAGER)
   @OrderColumn(name = INDEX)
+  @CollectionTable(name = "audit_intermediate_report",
+                   joinColumns = @JoinColumn(name = DASHBOARD_ID, 
+                                             referencedColumnName = MY_ID))
   private List<IntermediateAuditReportInfo> my_intermediate_reports = 
       new ArrayList<>();
   
@@ -420,7 +429,6 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * @param the_report The audit investigation report.
    */
   public void submitInvestigationReport(final AuditInvestigationReportInfo the_report) {
-    the_report.setDashboard(this);
     my_investigation_reports.add(the_report);
   }
   
@@ -437,7 +445,6 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * @param the_report The audit investigation report.
    */
   public void submitIntermediateReport(final IntermediateAuditReportInfo the_report) {
-    the_report.setDashboard(this);
     my_intermediate_reports.add(the_report);
   }
   
@@ -577,6 +584,6 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    */
   @Override
   public int hashCode() {
-    return toString().hashCode();
+    return id().hashCode();
   }
 }

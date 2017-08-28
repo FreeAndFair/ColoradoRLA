@@ -15,14 +15,20 @@ import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 
 import java.io.Serializable;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
-import us.freeandfair.corla.persistence.AbstractEntity;
+import us.freeandfair.corla.persistence.PersistentEntity;
 
 /**
  * A class representing a contest to audit or hand count.
@@ -31,27 +37,45 @@ import us.freeandfair.corla.persistence.AbstractEntity;
  * @version 0.0.1
  */
 @Entity
-@Table(name = "cvr_audit_info")
+@Cacheable(true)
+@Table(name = "cvr_audit_info",
+       indexes = { @Index(name = "idx_cvrai_cvr", columnList = "cvr_id"),
+                   @Index(name = "idx_cvrai_dashboard_cvr", 
+                          columnList = "dashboard_id, cvr_id") })
 //this class has many fields that would normally be declared final, but
 //cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
-public class CVRAuditInfo extends AbstractEntity implements Serializable {
+public class CVRAuditInfo implements PersistentEntity, Serializable {
   /**
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1L;
   
   /**
+   * The ID number.
+   */
+  @Id
+  @Column(updatable = false, nullable = false)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  private Long my_id;
+  
+  /**
+   * The version (for optimistic locking).
+   */
+  @Version
+  private Long my_version;
+  
+  /**
    * The county dashboard to which this record belongs. 
    */
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn
   private CountyDashboard my_dashboard;
 
   /**
    * The CVR to audit.
    */
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn
   private CastVoteRecord my_cvr;
   
@@ -90,6 +114,30 @@ public class CVRAuditInfo extends AbstractEntity implements Serializable {
     my_cvr = the_cvr;
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Long id() {
+    return my_id;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void setID(final Long the_id) {
+    my_id = the_id;
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Long version() {
+    return my_version;
+  }
+  
   /**
    * @return the county dashboard that owns this record.
    */
@@ -186,7 +234,7 @@ public class CVRAuditInfo extends AbstractEntity implements Serializable {
     if (id() == null) {
       return 0;
     } else {
-      return id().intValue();
+      return id().hashCode();
     } 
   }
 }

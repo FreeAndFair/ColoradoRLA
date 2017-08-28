@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>us.freeandfair.production</groupId>
 	<artifactId>colorado_rla</artifactId>
-	<version>0.10.0</version>
+	<version>0.11.0</version>
 	<name>ColoradoRLA</name>
 	<description>A risk-limiting audit system for the State of Colorado</description>
 	<properties>
@@ -140,7 +140,7 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>42.1.3</version>
+			<version>42.1.4</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>

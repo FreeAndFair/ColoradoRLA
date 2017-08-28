@@ -82,7 +82,7 @@ public class ACVRUpload extends AbstractAuditBoardDashboardEndpoint {
         acvr.setID(null);
         final CastVoteRecord real_acvr = 
             new CastVoteRecord(RecordType.AUDITOR_ENTERED, Instant.now(), 
-                               acvr.countyID(), acvr.cvrNumber(), acvr.scannerID(), 
+                               acvr.countyID(), acvr.cvrNumber(), null, acvr.scannerID(), 
                                acvr.batchID(), acvr.recordID(), acvr.imprintedID(), 
                                acvr.ballotType(), acvr.contestInfo());
         Persistence.saveOrUpdate(real_acvr);

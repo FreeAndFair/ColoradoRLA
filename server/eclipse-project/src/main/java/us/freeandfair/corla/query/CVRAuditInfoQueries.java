@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.PersistenceException;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -44,13 +45,12 @@ public final class CVRAuditInfoQueries {
   }
   
   /**
-   * Obtain a persistent CVRAuditInfo object for the specified county 
-   * dashboard and CVR to audit. If one does not exist, it is created
-   * and persisted.
+   * Obtain the list of persistent CVRAuditInfo objects that match the specified
+   * dashboard and CVR.
    *
    * @param the_dashboard The dashboard to match.
    * @param the_cvr The CVR to match.
-   * @return the matched CVRAuditInfo object, if one exists.
+   * @return the list of matched CVRAuditInfo objects; empty if none exist.
    */
   public static List<CVRAuditInfo> matching(final CountyDashboard the_dashboard,
                                             final CastVoteRecord the_cvr) {
@@ -90,18 +90,20 @@ public final class CVRAuditInfoQueries {
     List<Long> result = null;
     try {
       final Session s = Persistence.currentSession();
-      final CriteriaBuilder cb = s.getCriteriaBuilder();
-      final CriteriaQuery<CastVoteRecord> cq = cb.createQuery(CastVoteRecord.class);
-      final Root<CVRAuditInfo> root = cq.from(CVRAuditInfo.class);
-      cq.select(root.get("my_cvr"));
-      final TypedQuery<CastVoteRecord> query = s.createQuery(cq);
-      final List<CastVoteRecord> cvrs = query.getResultList();
+      // bypassing Hibernate here is a much more effective way of getting
+      // this particular set of information
+      final Query query = 
+          s.createNativeQuery("select cvr_id from cvr_audit_info where " + 
+                              "dashboard_id=" + the_dashboard.id().toString() + 
+                              " order by index");
+      @SuppressWarnings("unchecked") // we know this gives us a list of numbers
+      final List<Number> generic_results = (List<Number>) query.getResultList();
       result = new ArrayList<>();
-      for (final CastVoteRecord cvr : cvrs) {
-        result.add(cvr.id());
-        Persistence.evict(cvr);
+      for (final Number n : generic_results) {
+        result.add(n.longValue());
       }
     } catch (final PersistenceException e) {
+      e.printStackTrace(System.out);
       Main.LOGGER.error("could not query database for cvrs to audit list");
     }
     if (result == null) {
