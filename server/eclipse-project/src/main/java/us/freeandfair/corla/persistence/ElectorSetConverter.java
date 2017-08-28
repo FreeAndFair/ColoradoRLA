@@ -21,7 +21,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
-import us.freeandfair.corla.model.AuditBoard;
+import us.freeandfair.corla.json.FreeAndFairNamingStrategy;
+import us.freeandfair.corla.model.Elector;
 
 /**
  * A converter between lists of AuditBoard objects and JSON representations
@@ -32,19 +33,23 @@ import us.freeandfair.corla.model.AuditBoard;
  */
 @Converter
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class AuditBoardSetConverter implements AttributeConverter<Set<AuditBoard>, String> {
+public class ElectorSetConverter implements AttributeConverter<Set<Elector>, String> {
   /**
    * The type information for a set of String.
    */
-  private static final Type AUDIT_BOARD_SET = 
-      new TypeToken<Set<AuditBoard>>() { }.getType();
+  private static final Type ELECTOR_SET = 
+      new TypeToken<Set<Elector>>() { }.getType();
   
   /**
    * Our Gson instance, which does not do pretty-printing (unlike the global
    * one defined in Main).
    */
   private static final Gson GSON = 
-      new GsonBuilder().serializeNulls().disableHtmlEscaping().create();
+      new GsonBuilder().
+      setFieldNamingStrategy(new FreeAndFairNamingStrategy()).
+      serializeNulls().
+      disableHtmlEscaping().
+      create();
   
   /**
    * Converts the specified list of Strings to a database column entry.
@@ -52,7 +57,7 @@ public class AuditBoardSetConverter implements AttributeConverter<Set<AuditBoard
    * @param the_set The list of Strings.
    */
   @Override
-  public String convertToDatabaseColumn(final Set<AuditBoard> the_set) {
+  public String convertToDatabaseColumn(final Set<Elector> the_set) {
     return GSON.toJson(the_set); 
   }
 
@@ -62,7 +67,7 @@ public class AuditBoardSetConverter implements AttributeConverter<Set<AuditBoard
    * @param the_column The column entry.
    */
   @Override
-  public Set<AuditBoard> convertToEntityAttribute(final String the_column) {
-    return GSON.fromJson(the_column, AUDIT_BOARD_SET);
+  public Set<Elector> convertToEntityAttribute(final String the_column) {
+    return GSON.fromJson(the_column, ELECTOR_SET);
   }
 }

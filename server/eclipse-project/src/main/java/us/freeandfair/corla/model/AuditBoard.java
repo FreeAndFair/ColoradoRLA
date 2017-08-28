@@ -23,7 +23,7 @@ import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Embeddable;
 
-import us.freeandfair.corla.persistence.AuditBoardSetConverter;
+import us.freeandfair.corla.persistence.ElectorSetConverter;
 
 /**
  * An audit board. Contains a set of electors, a timestamp when the board
@@ -43,7 +43,7 @@ public class AuditBoard implements Serializable {
    * The audit board members.
    */
   @Column(name = "members", columnDefinition = "text")
-  @Convert(converter = AuditBoardSetConverter.class)
+  @Convert(converter = ElectorSetConverter.class)
   private Set<Elector> my_members = new HashSet<>();
   
   /**
@@ -55,8 +55,14 @@ public class AuditBoard implements Serializable {
   /**
    * The time at which the audit board signed out.
    */
-  @Column(nullable = false, updatable = false)
   private Instant my_sign_out_time;
+  
+  /**
+   * Constructs a new, empty audit board, solely for persistence.
+   */
+  public AuditBoard() {
+    // defaults
+  }
   
   /**
    * Constructs a new audit board.

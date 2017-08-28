@@ -124,7 +124,7 @@ public interface ASMTransitionFunction {
                         DEADLINE_MISSED)),
     H(new ASMTransition(BALLOT_MANIFEST_AND_CVRS_OK,
                         COUNTY_START_AUDIT_EVENT,
-                        DEADLINE_MISSED)),
+                        COUNTY_AUDIT_UNDERWAY)),
     I(new ASMTransition(COUNTY_AUDIT_UNDERWAY, 
                         COUNTY_AUDIT_COMPLETE_EVENT,
                         COUNTY_AUDIT_COMPLETE));
