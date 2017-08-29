@@ -68,9 +68,8 @@ const AuditPage = ({ nextPage, riskLimit, setRiskLimit }: any) => {
             <ElectionTypeForm />
 
             <h3>Risk Limits</h3>
-            <div>Each contest type has a default risk limit set. To change the risk limit for a
-                class, change the percentage shown. To change the risk limit for a particular
-                contest use the link below to add an exception from the default.
+            <div>Each contest has a default risk limit set. To change the default risk
+                limit, change the percentage shown.
             </div>
             { riskLimitForm }
             <div>
