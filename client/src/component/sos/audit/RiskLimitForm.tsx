@@ -55,36 +55,40 @@ class RiskLimitForm extends React.Component<FormProps & any, FormState> {
 
         this.props.forms.riskLimit = this.state;
 
+        const ballotPollingFormField = (
+            <label>
+                Ballot Polling Audits (%)
+                <NumericInput
+                    allowNumericCharactersOnly={ true }
+                    min={ toPercent(MIN_RISK_LIMIT) }
+                    max={ toPercent(MAX_RISK_LIMIT) }
+                    minorStepSize={ toPercent(0.001) }
+                    onBlur={ this.onBlur }
+                    stepSize={ toPercent(0.01) }
+                    value={ ballotPollingField }
+                    onValueChange={ this.onBallotPollingValueChange } />
+            </label>
+        );
+
+        const comparisonFormField = (
+            <label>
+                Comparison Audits (%)
+                <NumericInput
+                    allowNumericCharactersOnly={ true }
+                    min={ toPercent(MIN_RISK_LIMIT) }
+                    max={ toPercent(MAX_RISK_LIMIT) }
+                    minorStepSize={ toPercent(0.001) }
+                    onBlur={ this.onBlur }
+                    stepSize={ toPercent(0.01) }
+                    value={ comparisonField }
+                    onValueChange={ this.onComparisonValueChange } />
+            </label>
+        );
+
         return (
             <div>
-                <div>
-                    <label>
-                        Ballot Polling Audits (%)
-                        <NumericInput
-                            allowNumericCharactersOnly={ true }
-                            min={ toPercent(MIN_RISK_LIMIT) }
-                            max={ toPercent(MAX_RISK_LIMIT) }
-                            minorStepSize={ toPercent(0.001) }
-                            onBlur={ this.onBlur }
-                            stepSize={ toPercent(0.01) }
-                            value={ ballotPollingField }
-                            onValueChange={ this.onBallotPollingValueChange } />
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        Comparison Audits (%)
-                        <NumericInput
-                            allowNumericCharactersOnly={ true }
-                            min={ toPercent(MIN_RISK_LIMIT) }
-                            max={ toPercent(MAX_RISK_LIMIT) }
-                            minorStepSize={ toPercent(0.001) }
-                            onBlur={ this.onBlur }
-                            stepSize={ toPercent(0.01) }
-                            value={ comparisonField }
-                            onValueChange={ this.onComparisonValueChange } />
-                    </label>
-                </div>
+                <div>{ ballotPollingFormField }</div>
+                <div>{ comparisonFormField }</div>
             </div>
         );
     }
