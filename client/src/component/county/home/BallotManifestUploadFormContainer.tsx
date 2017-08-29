@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import BallotManifestUploader from './BallotManifestUploader';
+import BallotManifestUploadForm from './BallotManifestUploadForm';
 
 import uploadBallotManifest from '../../../action/uploadBallotManifest';
 
@@ -15,7 +15,7 @@ const UploadedBallotManifest = ({ filename, hash }: any) => (
 );
 
 
-class BallotManifestUploaderContainer extends React.Component<any, any> {
+class BallotManifestUploadFormContainer extends React.Component<any, any> {
     public render() {
         const { auditStarted, county, fileUploaded } = this.props;
         const forms: any = {};
@@ -34,7 +34,7 @@ class BallotManifestUploaderContainer extends React.Component<any, any> {
             );
         }
 
-        return <BallotManifestUploader upload={ upload } forms={ forms } />;
+        return <BallotManifestUploadForm upload={ upload } forms={ forms } />;
     }
 }
 
@@ -44,4 +44,4 @@ const mapStateToProps = ({ county }: any) => ({
     fileUploaded: !!county.ballotManifestHash,
 });
 
-export default connect(mapStateToProps)(BallotManifestUploaderContainer);
+export default connect(mapStateToProps)(BallotManifestUploadFormContainer);
