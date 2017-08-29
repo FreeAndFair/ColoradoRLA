@@ -1,21 +1,26 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import BallotManifestUploader from './BallotManifestUploader';
+import BallotManifestUploadForm from './BallotManifestUploadForm';
 
 import uploadBallotManifest from '../../../action/uploadBallotManifest';
 
 
-const UploadedBallotManifest = ({ filename, hash }: any) => (
+const UploadedBallotManifest = ({ filename, hash, enableReupload }: any) => (
     <div className='pt-card'>
         <div>Ballot manifest <strong>uploaded</strong>.</div>
         <div>File name: "{ filename }"</div>
         <div>SHA-256 hash: { hash }</div>
+        <button className='pt-button' onClick={ enableReupload }>
+            Re-upload
+        </button>
     </div>
 );
 
 
-class BallotManifestUploaderContainer extends React.Component<any, any> {
+class BallotManifestUploadFormContainer extends React.Component<any, any> {
+    public state = { reupload: false };
+
     public render() {
         const { auditStarted, county, fileUploaded } = this.props;
         const forms: any = {};
@@ -24,18 +29,30 @@ class BallotManifestUploaderContainer extends React.Component<any, any> {
             const { file, hash } = forms.ballotManifestForm;
 
             uploadBallotManifest(county.id, file, hash);
+            this.disableReupload();
         };
 
-        if (fileUploaded) {
+        if (fileUploaded && !this.state.reupload) {
             return (
                 <UploadedBallotManifest
+                    enableReupload={ this.enableReupload }
                     filename={ county.ballotManifestFilename }
                     hash={ county.ballotManifestHash } />
             );
         }
 
-        return <BallotManifestUploader upload={ upload } forms={ forms } />;
+        return (
+            <BallotManifestUploadForm
+                disableReupload={ this.disableReupload }
+                fileUploaded={ fileUploaded }
+                upload={ upload }
+                forms={ forms } />
+        );
     }
+
+    private disableReupload = () => this.setState({ reupload: false });
+
+    private enableReupload = () => this.setState({ reupload: true });
 }
 
 const mapStateToProps = ({ county }: any) => ({
@@ -44,4 +61,4 @@ const mapStateToProps = ({ county }: any) => ({
     fileUploaded: !!county.ballotManifestHash,
 });
 
-export default connect(mapStateToProps)(BallotManifestUploaderContainer);
+export default connect(mapStateToProps)(BallotManifestUploadFormContainer);
