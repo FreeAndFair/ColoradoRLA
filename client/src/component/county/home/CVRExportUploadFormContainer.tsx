@@ -40,7 +40,13 @@ class CVRExportUploadFormContainer extends React.Component<any, any> {
             );
         }
 
-        return <CVRExportUploadForm upload={ upload } forms={ forms } />;
+        return (
+            <CVRExportUploadForm
+                disableReupload={ this.disableReupload }
+                fileUploaded={ fileUploaded }
+                upload={ upload }
+                forms={ forms } />
+        );
     }
 
     private disableReupload = () => this.setState({ reupload: false });
