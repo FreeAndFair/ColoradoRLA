@@ -3,7 +3,10 @@ import * as React from 'react';
 import { Radio, RadioGroup } from '@blueprintjs/core';
 
 
-type ElectionType = 'coordinated' | 'primary';
+type ElectionType = 'coordinated'
+                  | 'primary'
+                  | 'general'
+                  | 'recall';
 
 interface FormState {
     electionType: ElectionType;
@@ -25,6 +28,8 @@ class ElectionTypeForm extends React.Component<any, FormState> {
                 label='Election Type'>
                 <Radio label='Coordinated Election' value='coordinated' />
                 <Radio label='Primary Election' value='primary' />
+                <Radio label='General Election' value='general' />
+                <Radio label='Recall Election' value='recall' />
             </RadioGroup>
         );
     }
