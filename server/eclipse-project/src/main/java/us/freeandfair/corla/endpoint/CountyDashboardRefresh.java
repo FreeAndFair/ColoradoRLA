@@ -17,7 +17,6 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.auth.Authentication;
 import us.freeandfair.corla.json.CountyDashboardRefreshResponse;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
@@ -57,7 +56,7 @@ public class CountyDashboardRefresh extends AbstractCountyDashboardEndpoint {
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
     try {
-      final County county = Authentication.authenticatedCounty(the_request);
+      final County county = Main.authentication().authenticatedCounty(the_request);
           
       okJSON(the_response, 
              Main.GSON.toJson(CountyDashboardRefreshResponse.createResponse

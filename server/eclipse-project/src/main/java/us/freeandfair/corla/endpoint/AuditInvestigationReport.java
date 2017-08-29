@@ -23,7 +23,6 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
-import us.freeandfair.corla.auth.Authentication;
 import us.freeandfair.corla.model.AuditInvestigationReportInfo;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.persistence.Persistence;
@@ -78,7 +77,7 @@ public class AuditInvestigationReport extends AbstractAuditBoardDashboardEndpoin
       final AuditInvestigationReportInfo report =
           Main.GSON.fromJson(the_request.body(), AuditInvestigationReportInfo.class);
       final CountyDashboard cdb = 
-          Persistence.getByID(Authentication.authenticatedCounty(the_request).id(), 
+          Persistence.getByID(Main.authentication().authenticatedCounty(the_request).id(), 
                               CountyDashboard.class);
       if (cdb == null) {
         Main.LOGGER.error("could not get audit board dashboard");

@@ -19,7 +19,7 @@ import spark.Response;
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.AbstractStateMachine;
-import us.freeandfair.corla.auth.Authentication;
+import us.freeandfair.corla.auth.AuthenticationInterface;
 import us.freeandfair.corla.json.SubmittedCredentials;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
 
@@ -27,7 +27,6 @@ import us.freeandfair.corla.model.Administrator.AdministratorType;
  * The endpoint for authenticating a county administrator.
  * 
  * @author Daniel M Zimmerman
- * @author Joe Kiniry <kiniry@freeandfair.us>
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
@@ -95,16 +94,23 @@ public class AuthenticateCountyAdministrator extends AbstractEndpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    if (Authentication.authenticateAs(the_request, AdministratorType.COUNTY)) {
+    if (Main.authentication().
+        isAuthenticatedAs(the_request, 
+                          AdministratorType.COUNTY, 
+                          the_request.queryParams(AuthenticationInterface.USERNAME))) {
       ok(the_response, "Authenticated");
     } else {
       try {
         final SubmittedCredentials auth_info = 
             Main.GSON.fromJson(the_request.body(), SubmittedCredentials.class);
         if (auth_info != null &&
-            Authentication.authenticateAs(the_request, auth_info, 
-                                          AdministratorType.COUNTY)) {
-          ok(the_response, "Authenticated");
+            Main.authentication().
+            authenticateAdministrator(the_request, 
+                AdministratorType.COUNTY, 
+                the_request.queryParams(AuthenticationInterface.USERNAME),
+                the_request.queryParams(AuthenticationInterface.PASSWORD),
+                the_request.queryParams(AuthenticationInterface.SECOND_FACTOR))) {
+          ok(the_response, "Authenticated (partial or fully)");
         } else {
           unauthorized(the_response, "Authentication failed");
         }

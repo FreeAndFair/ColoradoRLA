@@ -89,7 +89,7 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
       final List<Elector> parsed_signatories = 
           Main.GSON.fromJson(the_request.body(), list_type);
       if (parsed_signatories.size() >= CountyDashboard.MIN_ROUND_SIGN_OFF_MEMBERS) {
-        final County county = Authentication.authenticatedCounty(the_request); 
+        final County county = Main.authentication().authenticatedCounty(the_request); 
         if (county == null) {
           Main.LOGGER.error("could not get authenticated county");
           unauthorized(the_response, "not authorized to set an audit board");

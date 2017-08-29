@@ -27,7 +27,6 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
-import us.freeandfair.corla.auth.Authentication;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.Elector;
@@ -86,7 +85,7 @@ public class AuditBoardSignIn extends AbstractAuditBoardDashboardEndpoint {
       final List<Elector> parsed_audit_board = 
           Main.GSON.fromJson(the_request.body(), list_type);
       if (parsed_audit_board.size() >= CountyDashboard.MIN_AUDIT_BOARD_MEMBERS) {
-        final County county = Authentication.authenticatedCounty(the_request); 
+        final County county = Main.authentication().authenticatedCounty(the_request); 
         if (county == null) {
           Main.LOGGER.error("could not get authenticated county");
           unauthorized(the_response, "not authorized to sign in audit board");

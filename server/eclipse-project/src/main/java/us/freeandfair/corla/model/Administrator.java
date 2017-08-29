@@ -38,6 +38,7 @@ import us.freeandfair.corla.persistence.PersistentEntity;
  * An administrator in the system. 
  * 
  * @author Daniel M. Zimmerman
+ * @author Joseph R. Kiniry
  * @version 0.0.1
  */
 @Entity
@@ -90,7 +91,7 @@ public class Administrator implements PersistentEntity, Serializable {
   private String my_full_name;
   
   /**
-   * The two-factor authentication information.
+   * The county.
    */
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn

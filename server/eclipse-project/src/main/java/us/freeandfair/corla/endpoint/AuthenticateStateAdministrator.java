@@ -20,7 +20,7 @@ import spark.Response;
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.DoSDashboardASM;
-import us.freeandfair.corla.auth.Authentication;
+import us.freeandfair.corla.auth.AuthenticationInterface;
 import us.freeandfair.corla.json.SubmittedCredentials;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
 
@@ -96,15 +96,22 @@ public class AuthenticateStateAdministrator extends AbstractEndpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    if (Authentication.authenticateAs(the_request, AdministratorType.STATE)) {
+    if (Main.authentication().
+        isAuthenticatedAs(the_request, 
+                          AdministratorType.STATE, 
+                          the_request.queryParams(AuthenticationInterface.USERNAME))) {
       ok(the_response, "Authenticated");
     } else {
       try {
         final SubmittedCredentials auth_info = 
             Main.GSON.fromJson(the_request.body(), SubmittedCredentials.class);
         if (auth_info != null &&
-            Authentication.authenticateAs(the_request, auth_info, 
-                                          AdministratorType.STATE)) {
+            Main.authentication().
+            authenticateAdministrator(the_request, 
+                AdministratorType.STATE, 
+                the_request.queryParams(AuthenticationInterface.USERNAME),
+                the_request.queryParams(AuthenticationInterface.PASSWORD),
+                the_request.queryParams(AuthenticationInterface.SECOND_FACTOR))) {
           ok(the_response, "Authenticated");
         } else {
           unauthorized(the_response, "Authentication failed");

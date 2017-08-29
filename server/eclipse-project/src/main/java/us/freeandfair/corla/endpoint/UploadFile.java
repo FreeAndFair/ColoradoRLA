@@ -35,7 +35,6 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.auth.Authentication;
 import us.freeandfair.corla.crypto.HashChecker;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.UploadedFile;
@@ -191,7 +190,7 @@ public class UploadFile extends AbstractEndpoint {
     info.my_ok = true;
 
     // we know we have county authorization, so let's find out which county
-    final County county = Authentication.authenticatedCounty(the_request);
+    final County county = Main.authentication().authenticatedCounty(the_request);
 
     if (county == null) {
       unauthorized(the_response, "unauthorized administrator for CVR export upload");

@@ -35,6 +35,8 @@ public class SubmittedCredentials {
    */
   private final String my_second_factor;
   
+  //@ private invariant my_password != null || my_second_factor != null;
+  
   /**
    * Constructs a new instance of this class. Note that most two-factor
    * authentication systems preclude the ability to authenticate both factors

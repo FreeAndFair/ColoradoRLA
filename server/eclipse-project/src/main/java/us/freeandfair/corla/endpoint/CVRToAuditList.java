@@ -21,7 +21,6 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.auth.Authentication;
 import us.freeandfair.corla.controller.ComparisonAuditController;
 import us.freeandfair.corla.json.CVRToAuditResponse;
 import us.freeandfair.corla.json.CVRToAuditResponse.BallotOrderComparator;
@@ -149,7 +148,7 @@ public class CVRToAuditList extends AbstractEndpoint {
       }
       
       // get other things we need
-      final County county = Authentication.authenticatedCounty(the_request);
+      final County county = Main.authentication().authenticatedCounty(the_request);
       final CountyDashboard cdb = Persistence.getByID(county.id(), CountyDashboard.class);
       final List<CastVoteRecord> cvr_to_audit_list;      
       final List<CVRToAuditResponse> response_list = new ArrayList<>();

@@ -66,7 +66,7 @@ import us.freeandfair.corla.query.PersistentASMStateQueries;
 // the endpoints are excessive imports, but this may be dealt with differently
 // later, as for example by making a list of classes somewhere and instantiating
 // the endpoints dynamically
-@SuppressWarnings("PMD.ExcessiveImports")
+@SuppressWarnings({"PMD.ExcessiveImports", "PMD.GodClass", "PMD.ExcessiveImports"})
 public final class Main {
   /**
    * The path to the default properties resource.

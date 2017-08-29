@@ -30,7 +30,6 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
-import us.freeandfair.corla.auth.Authentication;
 import us.freeandfair.corla.csv.DominionCVRExportParser;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.County;
@@ -210,7 +209,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
   @SuppressWarnings({"PMD.ConfusingTernary"})
   public String endpoint(final Request the_request, final Response the_response) {    
     // we know we have county authorization, so let's find out which county
-    final County county = Authentication.authenticatedCounty(the_request);
+    final County county = Main.authentication().authenticatedCounty(the_request);
 
     if (county == null) {
       unauthorized(the_response, "unauthorized administrator for CVR export upload");

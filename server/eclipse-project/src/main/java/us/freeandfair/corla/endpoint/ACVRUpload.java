@@ -24,7 +24,6 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
-import us.freeandfair.corla.auth.Authentication;
 import us.freeandfair.corla.controller.ComparisonAuditController;
 import us.freeandfair.corla.json.SubmittedAuditCVR;
 import us.freeandfair.corla.model.CastVoteRecord;
@@ -91,7 +90,7 @@ public class ACVRUpload extends AbstractAuditBoardDashboardEndpoint {
         badDataContents(the_response, "empty audit CVR upload");
       } else {
         final CountyDashboard cdb = 
-            Persistence.getByID(Authentication.authenticatedCounty(the_request).id(),
+            Persistence.getByID(Main.authentication().authenticatedCounty(the_request).id(),
                                 CountyDashboard.class);
         if (cdb == null) {
           Main.LOGGER.error("could not get audit board dashboard");

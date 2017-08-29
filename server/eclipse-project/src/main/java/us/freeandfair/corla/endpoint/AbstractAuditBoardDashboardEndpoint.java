@@ -13,8 +13,8 @@ package us.freeandfair.corla.endpoint;
 
 import spark.Request;
 
+import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.AuditBoardDashboardASM;
-import us.freeandfair.corla.auth.Authentication;
 
 /**
  * Functionality that spans endpoints on the Audit Board Dashboard.
@@ -45,6 +45,6 @@ public abstract class AbstractAuditBoardDashboardEndpoint extends AbstractEndpoi
    */
   @Override
   protected String asmIdentity(final Request the_request) {
-    return String.valueOf(Authentication.authenticatedCounty(the_request).id());
+    return String.valueOf(Main.authentication().authenticatedCounty(the_request).id());
   }
 }

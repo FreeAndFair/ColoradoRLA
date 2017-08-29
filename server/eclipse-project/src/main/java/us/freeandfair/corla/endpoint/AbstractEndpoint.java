@@ -27,7 +27,7 @@ import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.ASMUtilities;
 import us.freeandfair.corla.asm.AbstractStateMachine;
-import us.freeandfair.corla.auth.Authentication;
+import us.freeandfair.corla.auth.AuthenticationInterface;
 import us.freeandfair.corla.json.Result;
 import us.freeandfair.corla.model.Administrator;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
@@ -450,7 +450,8 @@ public abstract class AbstractEndpoint implements Endpoint {
 
   private void persistLogEntries(final Request the_request) {
     LogEntry previous_entry = LogEntryQueries.last();
-    final Administrator admin = Authentication.authenticatedAdministrator(the_request);
+    final Administrator admin =
+        (Administrator) the_request.session().attribute(AuthenticationInterface.ADMIN);
     final String admin_data;
     if (admin == null) {
       admin_data = "(unauthenticated)";
@@ -592,10 +593,16 @@ public abstract class AbstractEndpoint implements Endpoint {
   public static boolean checkAuthorization(final Request the_request, 
                                            final AuthorizationType the_type) {
     boolean result = true;
+    final String username = 
+        the_request.queryParams(AuthenticationInterface.USERNAME);
     final boolean state = 
-        Authentication.isAuthenticatedAs(the_request, AdministratorType.STATE);
+        Main.authentication().isAuthenticatedAs(the_request,
+                                                AdministratorType.STATE,
+                                                username);
     final boolean county =
-        Authentication.isAuthenticatedAs(the_request, AdministratorType.COUNTY);
+        Main.authentication().isAuthenticatedAs(the_request,
+                                                AdministratorType.COUNTY,
+                                                username);
 
     switch (the_type) {
       case STATE: 

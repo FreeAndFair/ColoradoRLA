@@ -19,6 +19,7 @@ import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.*;
 import spark.Request;
 import spark.Response;
 
+import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.ASMUtilities;
 import us.freeandfair.corla.asm.CountyDashboardASM;
@@ -91,7 +92,7 @@ public class AuditReport extends AbstractAuditBoardDashboardEndpoint {
       }
       // sign the audit board out
       final CountyDashboard cdb = 
-          Persistence.getByID(Authentication.authenticatedCounty(the_request).id(), 
+          Persistence.getByID(Main.authentication().authenticatedCounty(the_request).id(), 
                               CountyDashboard.class);
       if (cdb.currentRound() != null) {
         invariantViolation(the_response, 
