@@ -43,6 +43,7 @@ import us.freeandfair.corla.query.CountyContestResultQueries;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
+@SuppressWarnings({"PMD.GodClass", "PMD.CyclomaticComplexity"})
 public final class ComparisonAuditController {
   /**
    * Private constructor to prevent instantiation.
@@ -53,7 +54,7 @@ public final class ComparisonAuditController {
   
   /**
    * Compute the ballot (cards) for audit, for a particular county dashboard, 
-   * random seed, and index range.
+   * and index range.
    * 
    * @param the_cdb The county dashboard.
    * @param the_min_index The minimum index to return.
@@ -94,6 +95,62 @@ public final class ComparisonAuditController {
     }
     
     return result;
+  }
+  
+  /**
+   * Compute the ballot (cards) for audit, for a particular county dashboard and 
+   * start index. This returns the specified number of cards, with or without 
+   * duplicates (as requested).
+   * 
+   * @param the_cdb The dashboard.
+   * @param the_start_index The start index.
+   * @param the_ballot_count The number of ballots.
+   * @param the_duplicates true to return duplicates, false otherwise.
+   */
+  @SuppressWarnings("PMD.UselessParentheses")
+  public static List<CastVoteRecord> computeBallotOrder(final CountyDashboard the_cdb,
+                                                        final int the_start_index,
+                                                        final int the_ballot_count,
+                                                        final boolean the_duplicates) {
+    final OptionalLong county_ballots_found = 
+        CastVoteRecordQueries.countMatching(the_cdb.id(), RecordType.UPLOADED);
+    final long county_ballots;
+    if (county_ballots_found.isPresent()) {
+      county_ballots = county_ballots_found.getAsLong();
+    } else {
+      county_ballots = 0;
+    }
+    final Set<CastVoteRecord> cvr_set = new HashSet<>();
+    final List<CastVoteRecord> cvr_to_audit_list = new ArrayList<>();
+    
+    // we need to get the CVRs for the county's sequence, starting at START, and 
+    // look up their locations; note we may have to ask for the sequence more than
+    // once because we may find duplicates in the sequence
+    
+    int start = the_start_index;
+    int end = start + the_ballot_count - 1; // end is inclusive
+    
+    final int possible_ballots = Math.min(the_ballot_count, (int) county_ballots);
+    
+    // if duplicates is set we go until the list has the right number; if not,
+    // we go until we hit the end of our CVR pool
+    while ((the_duplicates && cvr_to_audit_list.size() < the_ballot_count) || 
+           (!the_duplicates && cvr_set.size() < possible_ballots)) {
+      final List<CastVoteRecord> new_cvrs = computeBallotOrder(the_cdb, start, end);
+      for (int i = 0; i < new_cvrs.size(); i++) {
+        final CastVoteRecord cvr = new_cvrs.get(i);
+        if ((the_duplicates || !cvr_set.contains(cvr)) && !audited(the_cdb, cvr)) {
+          cvr_to_audit_list.add(cvr);
+        }
+        cvr_set.add(cvr);
+      }
+      start = end + 1; // end is inclusive
+      end = start + (the_ballot_count - cvr_to_audit_list.size()) - 1; // end is inclusive
+      // at this point, if cvr_to_audit_list.size() < ballot_count, 
+      // this is an empty range
+    }
+    
+    return cvr_to_audit_list;
   }
   
   /**
@@ -200,6 +257,27 @@ public final class ComparisonAuditController {
     updateCVRUnderAudit(the_dashboard);
     the_dashboard.setEstimatedBallotsToAudit(computeEstimatedBallotsToAudit(the_dashboard));
     
+    return result;
+  }
+  
+  /**
+   * Checks to see if the specified CVR has been audited on the specified county
+   * dashboard.
+   * 
+   * @param the_dashboard The county dashboard.
+   * @param the_cvr The CVR.
+   * @return true if the specified CVR has been audited, false otherwise.
+   */
+  public static boolean audited(final CountyDashboard the_dashboard, 
+                                final CastVoteRecord the_cvr) {
+    final List<CVRAuditInfo> info = 
+        CVRAuditInfoQueries.matching(the_dashboard, the_cvr);
+    final boolean result;
+    if (info.isEmpty() || info.get(0).acvr() == null) {
+      result = false;
+    } else {
+      result = true;
+    }
     return result;
   }
   
