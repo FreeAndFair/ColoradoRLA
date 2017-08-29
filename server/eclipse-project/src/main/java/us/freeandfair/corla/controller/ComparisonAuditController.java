@@ -155,6 +155,47 @@ public final class ComparisonAuditController {
   }
   
   /**
+<<<<<<< HEAD
+=======
+   * Compute the ballot (cards) for audit, for a particular county dashboard and 
+   * round. The returned list does not have duplicates.
+   * 
+   * @param the_cdb The dashboard.
+   * @param the_round The round number.
+   * @exception IllegalArgumentException if the specified dashboard does not have
+   * a round with the specified number, or if a round number <= 0 is specified.
+   */
+  @SuppressWarnings("PMD.UselessParentheses")
+  public static List<CastVoteRecord> computeBallotOrder(final CountyDashboard the_cdb,
+                                                        final int the_round) {
+    if (the_round <= 0 || the_cdb.rounds().size() < the_round) {
+      throw new IllegalArgumentException("invalid round number");
+    }
+    // round numbers are 1-based, not 0-based
+    final Round round = the_cdb.rounds().get(the_round - 1);
+    final Set<CastVoteRecord> cvr_set = new HashSet<>();
+    final List<CastVoteRecord> cvr_to_audit_list = new ArrayList<>();
+    
+    // we need to get the CVRs for the county's sequence, starting at START, and 
+    // look up their locations; note we may have to ask for the sequence more than
+    // once because we may find duplicates in the sequence
+    
+    final List<CastVoteRecord> cvrs = 
+        computeBallotOrder(the_cdb, round.startIndex(), 
+                           round.startIndex() + round.number() - 1); // end is inclusive
+    for (int i = 0; i < cvrs.size(); i++) {
+      final CastVoteRecord cvr = cvrs.get(i);
+      if (!cvr_set.contains(cvr) && !audited(the_cdb, cvr)) {
+        cvr_to_audit_list.add(cvr);
+      } 
+      cvr_set.add(cvr);
+    }
+    
+    return cvr_to_audit_list;
+  }
+  
+  /**
+>>>>>>> Fixed an issue with obtaining a list of CVRs with duplicates.
    * Initializes the audit data for the specified county dashboard.
    * 
    * @param the_dashboard The dashboard.
@@ -288,6 +329,27 @@ public final class ComparisonAuditController {
       }
     }
     return Math.max(0,  to_audit);
+  }
+  
+  /**
+   * Checks to see if the specified CVR has been audited on the specified county
+   * dashboard.
+   * 
+   * @param the_dashboard The county dashboard.
+   * @param the_cvr The CVR.
+   * @return true if the specified CVR has been audited, false otherwise.
+   */
+  public static boolean audited(final CountyDashboard the_dashboard, 
+                                final CastVoteRecord the_cvr) {
+    final List<CVRAuditInfo> info = 
+        CVRAuditInfoQueries.matching(the_dashboard, the_cvr);
+    final boolean result;
+    if (info.isEmpty() || info.get(0).acvr() == null) {
+      result = false;
+    } else {
+      result = true;
+    }
+    return result;
   }
   
   /**

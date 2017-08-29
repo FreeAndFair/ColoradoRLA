@@ -13,6 +13,7 @@ package us.freeandfair.corla.endpoint;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.OptionalInt;
 
 import javax.persistence.PersistenceException;
 
@@ -26,7 +27,6 @@ import us.freeandfair.corla.json.CVRToAuditResponse.BallotOrderComparator;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
-import us.freeandfair.corla.model.Round;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.BallotManifestInfoQueries;
 
@@ -140,7 +140,7 @@ public class CVRToAuditList extends AbstractEndpoint {
       if (start_param != null) {
         index = Integer.parseInt(start_param);
       }
-      boolean duplicates;
+      final boolean duplicates;
       if (duplicates_param == null) {
         duplicates = false;
       } else {
@@ -150,10 +150,29 @@ public class CVRToAuditList extends AbstractEndpoint {
       // get other things we need
       final County county = Authentication.authenticatedCounty(the_request);
       final CountyDashboard cdb = Persistence.getByID(county.id(), CountyDashboard.class);
-      final List<CastVoteRecord> cvr_to_audit_list = 
-          ComparisonAuditController.computeBallotOrder(cdb, index, ballot_count, duplicates);
+      final List<CastVoteRecord> cvr_to_audit_list;      
       final List<CVRToAuditResponse> response_list = new ArrayList<>();
       
+      // compute the round, if any
+      OptionalInt round = OptionalInt.empty(); 
+      if (round_param != null) {
+        final int round_number = Integer.parseInt(round_param);
+        if (round_number < cdb.rounds().size()) {
+          round = OptionalInt.of(Integer.parseInt(round_param));
+        } else {
+          badDataContents(the_response, "cvr list requested for invalid round " + 
+                                        round_param + " for county " + cdb.id());
+        }
+      }
+      
+      if (round.isPresent()) {
+        cvr_to_audit_list = 
+            ComparisonAuditController.computeBallotOrder(cdb, round.getAsInt());
+      } else {
+        cvr_to_audit_list = 
+            ComparisonAuditController.computeBallotOrder(cdb, index, ballot_count, duplicates);
+      }
+     
       for (int i = 0; i < cvr_to_audit_list.size(); i++) {
         final CastVoteRecord cvr = cvr_to_audit_list.get(i);
         final String location = BallotManifestInfoQueries.locationFor(cvr);
