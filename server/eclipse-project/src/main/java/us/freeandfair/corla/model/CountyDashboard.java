@@ -39,6 +39,7 @@ import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import us.freeandfair.corla.model.CVRContestInfo.ConsensusValue;
 import us.freeandfair.corla.persistence.PersistentEntity;
 
 /**
@@ -51,7 +52,8 @@ import us.freeandfair.corla.persistence.PersistentEntity;
 @Cacheable(true)
 @Table(name = "county_dashboard")
 @SuppressWarnings({"PMD.ImmutableField", "PMD.TooManyMethods", "PMD.TooManyFields",
-    "PMD.GodClass", "PMD.ExcessiveImports"})
+    "PMD.GodClass", "PMD.ExcessiveImports", "checkstyle:methodcount",
+    "PMD.ExcessivePublicCount"})
 public class CountyDashboard implements PersistentEntity, Serializable {
   /**
    * The minimum number of members on an audit board.
@@ -59,9 +61,9 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   public static final int MIN_AUDIT_BOARD_MEMBERS = 2;
   
   /**
-   * The "no audit board" constant.
+   * The "no content" constant.
    */
-  private static final Integer NO_AUDIT_BOARD = null;
+  private static final Integer NO_CONTENT = null;
   
   /**
    * The "my_dashboard" string.
@@ -150,7 +152,22 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   /**
    * The current audit board.
    */
-  private Integer my_current_audit_board;
+  private Integer my_current_audit_board_index;
+  
+  /**
+   * The audit rounds.
+   */
+  @ElementCollection(fetch = FetchType.LAZY)
+  @OrderColumn(name = INDEX)
+  @CollectionTable(name = "round", 
+                   joinColumns = @JoinColumn(name = DASHBOARD_ID,
+                                             referencedColumnName = MY_ID))
+  private List<Round> my_rounds = new ArrayList<>();
+  
+  /**
+   * The current audit round.
+   */
+  private Integer my_current_round_index;
   
   /**
    * The sequence of CVRs to audit, stored as CVRAuditInfo records.
@@ -339,10 +356,10 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * @return the current audit board.
    */
   public AuditBoard currentAuditBoard() {
-    if (my_current_audit_board == null) {
+    if (my_current_audit_board_index == null) {
       return null; 
     } else {
-      return my_audit_boards.get(my_current_audit_board);
+      return my_audit_boards.get(my_current_audit_board_index);
     }
   }
   
@@ -362,12 +379,12 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * @param the_members The members.
    */
   public void signInAuditBoard(final List<Elector> the_members) {
-    if (my_current_audit_board == null) {
-      my_current_audit_board = my_audit_boards.size();
+    if (my_current_audit_board_index == null) {
+      my_current_audit_board_index = my_audit_boards.size();
     } else {
-      final AuditBoard current = my_audit_boards.get(my_current_audit_board);
+      final AuditBoard current = my_audit_boards.get(my_current_audit_board_index);
       current.setSignOutTime(Instant.now());
-      my_current_audit_board = my_current_audit_board + 1;
+      my_current_audit_board_index = my_current_audit_board_index + 1;
     }
     my_audit_boards.add(new AuditBoard(the_members, Instant.now()));
   }
@@ -378,12 +395,12 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * @exception IllegalStateException if no audit board is signed in.
    */
   public void signOutAuditBoard() {
-    if (my_current_audit_board == null) {
+    if (my_current_audit_board_index == null) {
       throw new IllegalArgumentException("no audit board signed in");
     } else {
-      final AuditBoard current = my_audit_boards.get(my_current_audit_board);
+      final AuditBoard current = my_audit_boards.get(my_current_audit_board_index);
       current.setSignOutTime(Instant.now());
-      my_current_audit_board = NO_AUDIT_BOARD;
+      my_current_audit_board_index = NO_CONTENT;
     }
   }
   
@@ -425,6 +442,113 @@ public class CountyDashboard implements PersistentEntity, Serializable {
     }
   }
 
+  /**
+   * @return all the audit rounds.
+   */
+  public List<Round> rounds() {
+    return Collections.unmodifiableList(my_rounds);
+  }
+  
+  /**
+   * @return the current audit round, or null if no round is in progress.
+   */
+  public Round currentRound() {
+    if (my_current_round_index == null) {
+      return null; 
+    } else {
+      return my_rounds.get(my_current_round_index);
+    }
+  }
+
+  /**
+   * Begins a new round with the specified number of ballots to audit, 
+   * starting at the specified index in the random audit sequence. The
+   * previous round, if any, is ended if it had not yet been ended. 
+   * 
+   * @param the_number_of_ballots The number of ballots.
+   * @param the_start_index The start index.
+   */
+  public void startRound(final int the_number_of_ballots, 
+                         final int the_start_index) {
+    if (my_current_round_index == null) {
+      my_current_round_index = my_rounds.size();
+    } else {
+      my_rounds.get(my_current_round_index).setEndTime(Instant.now());
+      my_current_round_index = my_current_round_index + 1;
+    }
+    // note UI round indexing is from 1, not 0
+    final Round round = new Round(my_current_round_index + 1, Instant.now(), 
+                                  the_number_of_ballots, the_start_index);
+    updateRound(round);
+    my_rounds.add(round);
+    if (round.startIndex() + round.expectedCount() - 1 < auditedPrefixLength()) {
+      // the round ended before it started
+      endRound();
+    }
+  }
+  
+  /**
+   * Updates a round object with the disagreements and discrepancies in the
+   * audited prefix range between its start index and the audited prefix length.
+   * 
+   * @param the_round The round to update.
+   */
+  private void updateRound(final Round the_round) {
+    int index = the_round.startIndex();
+    final int end = the_round.startIndex() + the_round.expectedCount() - 1;
+    while (index < my_audited_prefix_length && index < end) {
+      final CVRAuditInfo cvrai = my_cvr_audit_info.get(index);
+      for (final CountyContestComparisonAudit ca : comparisonAudits()) {
+        if (ca.computeDiscrepancy(cvrai.cvr(), cvrai.acvr()) != 0) {
+          the_round.addDiscrepancy();
+          break;
+        }
+      }
+      for (final CVRContestInfo ci : cvrai.acvr().contestInfo()) {
+        if (ci.consensus() == ConsensusValue.NO) {
+          the_round.addDisagreement();
+          break;
+        }
+      }
+      the_round.addAuditedBallot();
+      index = index + 1;
+    }
+  }
+  
+  /**
+   * Ends the current round.
+   * 
+   * @exception IllegalStateException if there is no current round.
+   */
+  public void endRound() {
+    if (my_current_round_index == null) {
+      throw new IllegalStateException("no round to end");
+    } else {
+      final Round round = my_rounds.get(my_current_round_index);
+      round.setEndTime(Instant.now());
+      round.setAuditPrefixLengthAchieved(my_audited_prefix_length);
+      my_current_round_index = NO_CONTENT;
+    }
+  }
+  
+  /**
+   * @return the number of ballots remaining in the current round, or 0
+   * if there is no current round.
+   */
+  public int ballotsRemainingInCurrentRound() {
+    final int result;
+    
+    if (my_current_round_index == null) {
+      result = 0;
+    } else {
+      final Round round = currentRound();
+      result = round.startIndex() + round.expectedCount() -
+               my_audited_prefix_length; 
+    }
+    
+    return result;
+  }
+  
   /**
    * @return the list of CVR audit info (for legacy RLA algorithm).
    */
@@ -521,12 +645,25 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   }
   
   /**
-   * Sets the number of ballots audited.
-   * 
-   * @param the_ballots_audited The number of ballots audited.
+   * Adds an audited ballot. This adds it both to the total and to
+   * the current audit round, if one is ongoing.
    */
-  public void setBallotsAudited(final int the_ballots_audited) {
-    my_ballots_audited = the_ballots_audited;
+  public void addAuditedBallot() {
+    my_ballots_audited = my_ballots_audited + 1;
+    if (my_current_round_index != null) {
+      my_rounds.get(my_current_round_index).addAuditedBallot();
+    }
+  }
+ 
+  /**
+   * Removes an audited ballot. This removes it both from the total and
+   * from the current audit round, if one is ongoing.
+   */
+  public void removeAuditedBallot() {
+    my_ballots_audited = my_ballots_audited - 1;
+    if (my_current_round_index != null) {
+      my_rounds.get(my_current_round_index).removeAuditedBallot();
+    }  
   }
   
   /**
@@ -537,12 +674,25 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   }
   
   /**
-   * Sets the number of discrepancies.
-   * 
-   * @param the_discrepancies The number of discrepancies.
+   * Adds a discrepancy. This adds it both to the total and to the
+   * current audit round, if one is ongoing.
    */
-  public void setDiscrepancies(final int the_discrepancies) {
-    my_discrepancies = the_discrepancies;
+  public void addDiscrepancy() {
+    my_discrepancies = my_discrepancies + 1; 
+    if (my_current_round_index != null) {
+      my_rounds.get(my_current_round_index).addDiscrepancy();
+    } 
+  }
+  
+  /**
+   * Removes a discrepancy. This removes it both from the total and from
+   * the current audit round, if one is ongoing.
+   */
+  public void removeDiscrepancy() {
+    my_discrepancies = my_discrepancies - 1;
+    if (my_current_round_index != null) {
+      my_rounds.get(my_current_round_index).removeDiscrepancy();
+    }
   }
   
   /**
@@ -553,12 +703,25 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   }
   
   /**
-   * Sets the number of disagreements.
-   * 
-   * @param the_disagreements The number of disagreements.
+   * Adds a disagreement. This adds it both to the total and to the
+   * current audit round, if one is ongoing.
    */
-  public void setDisagreements(final int the_disagreements) {
-    my_disagreements = the_disagreements;
+  public void addDisagreement() {
+    my_disagreements = my_disagreements + 1; 
+    if (my_current_round_index != null) {
+      my_rounds.get(my_current_round_index).addDisagreement();
+    } 
+  }
+  
+  /**
+   * Removes a disagreement. This removes it both from the total and from the
+   * current audit round, if one is ongoing.
+   */
+  public void removeDisagreement() {
+    my_disagreements = my_disagreements - 1; 
+    if (my_current_round_index != null) {
+      my_rounds.get(my_current_round_index).removeDisagreement();
+    } 
   }
   
   /**

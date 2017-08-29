@@ -28,6 +28,7 @@ import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.CVRAuditInfo;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CountyDashboard;
+import us.freeandfair.corla.model.Round;
 import us.freeandfair.corla.persistence.Persistence;
 
 /**
@@ -80,7 +81,73 @@ public final class CVRAuditInfoQueries {
   }
   
   /**
-   * Gets the list of CVR IDs to audit for the specified county dashboard.
+   * Updates the CVRAuditInfo objects matching the specified CVR so that they all
+   * have the same ACVR. This assumes that all such objects that have a non-null
+   * ACVR already have the same ACVR, as is the case during an audit when adding
+   * new ballots to the sequence.
+   * 
+   * @param the_dashboard The dashboard to match.
+   * @param the_cvr The CVR to match.
+   * @exception PersistenceException if the objects cannot be updated.
+   */
+  public static void updateMatching(final CountyDashboard the_dashboard,
+                                    final CastVoteRecord the_cvr) {
+    final Session s = Persistence.currentSession();
+    final CriteriaBuilder cb = s.getCriteriaBuilder();
+    final CriteriaQuery<CastVoteRecord> cq = cb.createQuery(CastVoteRecord.class);
+    final Root<CVRAuditInfo> root = cq.from(CVRAuditInfo.class);
+    final List<Predicate> conjuncts = new ArrayList<>();
+    conjuncts.add(cb.equal(root.get("my_dashboard"), the_dashboard));
+    conjuncts.add(cb.equal(root.get("my_cvr"), the_cvr));
+    conjuncts.add(cb.isNotNull(root.get("my_acvr")));
+    cq.select(root.get("my_acvr"));
+    cq.where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
+    final TypedQuery<CastVoteRecord> query = s.createQuery(cq);
+    final List<CastVoteRecord> result = query.getResultList();
+    if (!result.isEmpty()) {
+      final CastVoteRecord acvr = result.get(0);
+      updateMatching(the_dashboard, the_cvr, acvr, true);
+    }
+  }
+
+  /**
+   * Updates the CVRAuditInfo objects matching the specified CVR so that they
+   * all have the specified ACVR. 
+   * 
+   * @param the_dashboard The dashboard to match.
+   * @param the_cvr The CVR to match.
+   * @param the_acvr The ACVR to set.
+   * @param the_null_only true to only update records with null ACVRs 
+   * (as when adding them to the list), false to update all records.
+   * @exception PersistenceException if the objects cannot be updated.
+   */
+  public static void updateMatching(final CountyDashboard the_dashboard,
+                                    final CastVoteRecord the_cvr,
+                                    final CastVoteRecord the_acvr,
+                                    final boolean the_null_only) {
+    final Session s = Persistence.currentSession();
+    final CriteriaBuilder cb = s.getCriteriaBuilder();
+    final CriteriaQuery<CVRAuditInfo> cq = cb.createQuery(CVRAuditInfo.class);
+    final Root<CVRAuditInfo> root = cq.from(CVRAuditInfo.class);
+    final List<Predicate> conjuncts = new ArrayList<>();
+    conjuncts.add(cb.equal(root.get("my_dashboard"), the_dashboard));
+    conjuncts.add(cb.equal(root.get("my_cvr"), the_cvr));
+    if (the_null_only) {
+      conjuncts.add(cb.isNull(root.get("my_acvr")));
+    }
+    cq.select(root);
+    cq.where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
+    final TypedQuery<CVRAuditInfo> query = s.createQuery(cq);
+    final List<CVRAuditInfo> info = query.getResultList();
+    for (final CVRAuditInfo cvrai : info) {
+      cvrai.setACVR(the_acvr);
+      Persistence.saveOrUpdate(cvrai);
+    }  
+  }
+  
+  /**
+   * Gets the list of CVR IDs to audit for the specified county dashboard
+   * in the current round.
    * 
    * @param the_dashboard The dashboard.
    * @return the list of CVR IDs to audit, or null if it could not be 
@@ -88,30 +155,34 @@ public final class CVRAuditInfoQueries {
    */
   public static List<Long> cvrsToAudit(final CountyDashboard the_dashboard) {
     List<Long> result = null;
-    try {
-      final Session s = Persistence.currentSession();
-      // bypassing Hibernate here is a much more effective way of getting
-      // this particular set of information
-      final Query query = 
-          s.createNativeQuery("select cvr_id from cvr_audit_info where " + 
-                              "dashboard_id=" + the_dashboard.id().toString() + 
-                              " order by index");
-      @SuppressWarnings("unchecked") // we know this gives us a list of numbers
-      final List<Number> generic_results = (List<Number>) query.getResultList();
-      result = new ArrayList<>();
-      for (final Number n : generic_results) {
-        result.add(n.longValue());
+    final Round current = the_dashboard.currentRound();
+    if (current != null) {
+      try {
+        final Session s = Persistence.currentSession();
+        // bypassing Hibernate here is a much more effective way of getting
+        // this particular set of information
+        final Query query = 
+            s.createNativeQuery("select cvr_id from cvr_audit_info where " + 
+                "dashboard_id=" + the_dashboard.id().toString() + 
+                " order by index limit " + current.expectedCount() +
+                " offset " + current.startIndex());
+        @SuppressWarnings("unchecked") // we know this gives us a list of numbers
+        final List<Number> generic_results = (List<Number>) query.getResultList();
+        result = new ArrayList<>();
+        for (final Number n : generic_results) {
+          result.add(n.longValue());
+        }
+      } catch (final PersistenceException e) {
+        e.printStackTrace(System.out);
+        Main.LOGGER.error("could not query database for cvrs to audit list");
       }
-    } catch (final PersistenceException e) {
-      e.printStackTrace(System.out);
-      Main.LOGGER.error("could not query database for cvrs to audit list");
-    }
-    if (result == null) {
-      Main.LOGGER.debug("found no cvrs to audit for county " +
-                        the_dashboard.id());
-    } else {
-      Main.LOGGER.debug("found list of cvrs to audit " + result);
-    }
+      if (result == null) {
+        Main.LOGGER.debug("found no cvrs to audit for county " +
+            the_dashboard.id());
+      } else {
+        Main.LOGGER.debug("found list of cvrs to audit " + result);
+      }
+    } // else there is no active round, so nothing to audit
     return result;
   }
 }

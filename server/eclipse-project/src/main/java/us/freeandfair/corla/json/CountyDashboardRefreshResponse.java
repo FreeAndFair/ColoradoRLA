@@ -31,6 +31,7 @@ import us.freeandfair.corla.model.ContestToAudit.AuditType;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
+import us.freeandfair.corla.model.Round;
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.model.UploadedFile.FileStatus;
 import us.freeandfair.corla.persistence.Persistence;
@@ -114,15 +115,18 @@ public class CountyDashboardRefreshResponse {
   
   /**
    * The date and time of the audit. 
-   * @todo connect this to something
    */
   private final Instant my_audit_time;
   
   /**
    * The estimated number of ballots to audit.
-   * @todo connect this to something
    */
   private final Integer my_estimated_ballots_to_audit;
+  
+  /**
+   * The ballots remaining in the round.
+   */
+  private final Integer my_ballots_remaining_in_round;
   
   /**
    * The number of ballots audited.
@@ -154,6 +158,11 @@ public class CountyDashboardRefreshResponse {
    */
   private final Integer my_audited_prefix_length;
   
+  /** 
+   * The current audit round.
+   */
+  private final Round my_current_round;
+  
   /**
    * Constructs a new CountyDashboardRefreshResponse.
    * 
@@ -167,6 +176,8 @@ public class CountyDashboardRefreshResponse {
    * @param the_contests_under_audit The contests under audit, with reasons.
    * @param the_audit_time The audit time.
    * @param the_estimated_ballots_to_audit The estimated ballots to audit.
+   * @param the_ballots_remaining_in_round The ballots remaining in the 
+   * current round.
    * @param the_audited_ballot_count The number of ballots audited.
    * @param the_discrepancy_count The number of discrepencies.
    * @param the_disagreement_count The number of disagreements.
@@ -174,8 +185,9 @@ public class CountyDashboardRefreshResponse {
    * @param the_ballot_under_audit_id The ID of the CVR under audit.
    * @param the_audited_prefix_length The length of the audited prefix of the
    * ballots to audit list.
+   * @param the_current_round The current audit round.
    */
-  @SuppressWarnings("PMD.ExcessiveParameterList")
+  @SuppressWarnings({"PMD.ExcessiveParameterList", "checkstyle:executablestatementcount"})
   protected CountyDashboardRefreshResponse(final Long the_id,
                                            final ASMState the_asm_state,
                                            final Map<String, String> the_general_information,
@@ -190,12 +202,14 @@ public class CountyDashboardRefreshResponse {
                                            final Map<Long, String> the_contests_under_audit,
                                            final Instant the_audit_time,
                                            final Integer the_estimated_ballots_to_audit,
+                                           final Integer the_ballots_remaining_in_round,
                                            final Integer the_audited_ballot_count,
                                            final Integer the_discrepancy_count, 
                                            final Integer the_disagreement_count,
                                            final List<Long> the_ballots_to_audit,
                                            final Long the_ballot_under_audit_id,
-                                           final Integer the_audited_prefix_length) {
+                                           final Integer the_audited_prefix_length,
+                                           final Round the_current_round) {
     my_id = the_id;
     my_asm_state = the_asm_state;
     my_general_information = the_general_information;
@@ -210,12 +224,14 @@ public class CountyDashboardRefreshResponse {
     my_contests_under_audit = the_contests_under_audit;
     my_audit_time = the_audit_time;
     my_estimated_ballots_to_audit = the_estimated_ballots_to_audit;
+    my_ballots_remaining_in_round = the_ballots_remaining_in_round;
     my_audited_ballot_count = the_audited_ballot_count;
     my_discrepancy_count = the_discrepancy_count;
     my_disagreement_count = the_disagreement_count;
     my_ballots_to_audit = the_ballots_to_audit;
     my_ballot_under_audit_id = the_ballot_under_audit_id;
     my_audited_prefix_length = the_audited_prefix_length;
+    my_current_round = the_current_round;
   }
   
   /**
@@ -298,12 +314,14 @@ public class CountyDashboardRefreshResponse {
                                               contests_under_audit,
                                               the_dashboard.auditTimestamp(),
                                               the_dashboard.estimatedBallotsToAudit(),
+                                              the_dashboard.ballotsRemainingInCurrentRound(),
                                               the_dashboard.ballotsAudited(),
                                               the_dashboard.discrepancies(),
                                               the_dashboard.disagreements(),
                                               CVRAuditInfoQueries.cvrsToAudit(the_dashboard),
                                               the_dashboard.cvrUnderAudit(),
-                                              the_dashboard.auditedPrefixLength());
+                                              the_dashboard.auditedPrefixLength(),
+                                              the_dashboard.currentRound());
   }
   
   /**
@@ -353,7 +371,7 @@ public class CountyDashboardRefreshResponse {
     // status
     final CountyDashboardASM asm = ASMUtilities.asmFor(CountyDashboardASM.class, 
                                                        county_id.toString());
-
+    
     return new CountyDashboardRefreshResponse(county_id, 
                                               asm.currentState(),
                                               null,
@@ -368,11 +386,13 @@ public class CountyDashboardRefreshResponse {
                                               null,
                                               the_dashboard.auditTimestamp(),
                                               the_dashboard.estimatedBallotsToAudit(),
+                                              the_dashboard.ballotsRemainingInCurrentRound(),
                                               the_dashboard.ballotsAudited(),
                                               the_dashboard.discrepancies(),
                                               the_dashboard.disagreements(),
                                               null,
                                               null,
-                                              null);
+                                              the_dashboard.auditedPrefixLength(),
+                                              the_dashboard.currentRound());
   }
 }

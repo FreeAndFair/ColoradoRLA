@@ -13,6 +13,7 @@ package us.freeandfair.corla.endpoint;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.OptionalInt;
 
 import javax.persistence.PersistenceException;
 
@@ -35,7 +36,8 @@ import us.freeandfair.corla.query.BallotManifestInfoQueries;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.CyclomaticComplexity"})
+@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.CyclomaticComplexity",
+    "PMD.ModifiedCyclomaticComplexity", "PMD.StdCyclomaticComplexity"})
 public class CVRToAuditList extends AbstractEndpoint {
   /**
    * The "start" parameter.
@@ -51,6 +53,11 @@ public class CVRToAuditList extends AbstractEndpoint {
    * The "include duplicates" parameter.
    */
   public static final String INCLUDE_DUPLICATES = "include_duplicates";
+  
+  /**
+   * The "round" parameter.
+   */
+  public static final String ROUND = "round";
   
   /**
    * {@inheritDoc}
@@ -86,18 +93,23 @@ public class CVRToAuditList extends AbstractEndpoint {
   protected boolean validateParameters(final Request the_request) {
     final String start = the_request.queryParams(START);
     final String ballot_count = the_request.queryParams(BALLOT_COUNT);
-    final String duplicates = the_request.queryParams(INCLUDE_DUPLICATES);
+    final String round = the_request.queryParams(ROUND);
     
-    boolean result = start != null && ballot_count != null;
+    boolean result = start != null && ballot_count != null ||
+                     round != null;
     
     if (result) {
       try {
-        final int s = Integer.parseInt(start);
-        result = s >= 0;
-        final int b = Integer.parseInt(ballot_count);
-        result &= b >= 0;
-        if (duplicates != null) {
-          Boolean.parseBoolean(duplicates);
+        if (start != null) {
+          final int s = Integer.parseInt(start);
+          result &= s >= 0;
+          final int b = Integer.parseInt(ballot_count);
+          result &= b >= 0;
+        }
+        
+        if (round != null) {
+          final int r = Integer.parseInt(round);
+          result &= r >= 0;
         }
       } catch (final NumberFormatException e) {
         result = false;
@@ -111,26 +123,56 @@ public class CVRToAuditList extends AbstractEndpoint {
    * {@inheritDoc}
    */
   @Override
+  @SuppressWarnings("PMD.NPathComplexity")
   public String endpoint(final Request the_request, final Response the_response) {
     try {
       // get the request parameters
-      final int index = Integer.parseInt(the_request.queryParams(START));
-      final int ballot_count = Integer.parseInt(the_request.queryParams(BALLOT_COUNT));
+      final String start_param = the_request.queryParams(START);
+      final String ballot_count_param = the_request.queryParams(BALLOT_COUNT);
       final String duplicates_param = the_request.queryParams(INCLUDE_DUPLICATES);
+      final String round_param = the_request.queryParams(ROUND);
+
+      int ballot_count = 0;
+      if (ballot_count_param != null) {
+        ballot_count = Integer.parseInt(ballot_count_param);
+      }
+      int index = 0;
+      if (start_param != null) {
+        index = Integer.parseInt(start_param);
+      }
       final boolean duplicates;
       if (duplicates_param == null) {
         duplicates = false;
       } else {
-        duplicates = Boolean.parseBoolean(the_request.queryParams(INCLUDE_DUPLICATES));
+        duplicates = true;
       }
       
       // get other things we need
       final County county = Authentication.authenticatedCounty(the_request);
       final CountyDashboard cdb = Persistence.getByID(county.id(), CountyDashboard.class);
-      final List<CastVoteRecord> cvr_to_audit_list = 
-          ComparisonAuditController.computeBallotOrder(cdb, index, ballot_count, duplicates);
+      final List<CastVoteRecord> cvr_to_audit_list;      
       final List<CVRToAuditResponse> response_list = new ArrayList<>();
       
+      // compute the round, if any
+      OptionalInt round = OptionalInt.empty(); 
+      if (round_param != null) {
+        final int round_number = Integer.parseInt(round_param);
+        if (round_number < cdb.rounds().size()) {
+          round = OptionalInt.of(Integer.parseInt(round_param));
+        } else {
+          badDataContents(the_response, "cvr list requested for invalid round " + 
+                                        round_param + " for county " + cdb.id());
+        }
+      }
+      
+      if (round.isPresent()) {
+        cvr_to_audit_list = 
+            ComparisonAuditController.computeBallotOrder(cdb, round.getAsInt());
+      } else {
+        cvr_to_audit_list = 
+            ComparisonAuditController.computeBallotOrder(cdb, index, ballot_count, duplicates);
+      }
+     
       for (int i = 0; i < cvr_to_audit_list.size(); i++) {
         final CastVoteRecord cvr = cvr_to_audit_list.get(i);
         final String location = BallotManifestInfoQueries.locationFor(cvr);

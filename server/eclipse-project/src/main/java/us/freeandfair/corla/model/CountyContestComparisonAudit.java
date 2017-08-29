@@ -64,34 +64,59 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
    * Gamma, as presented in the literature:
    * https://www.stat.berkeley.edu/~stark/Preprints/gentle12.pdf
    */
-  public static final BigDecimal GENTLE_GAMMA = BigDecimal.valueOf(1.03905);
-
+  public static final BigDecimal STARK_GAMMA = BigDecimal.valueOf(1.03905);
+  
   /**
    * Gamma, as recommended by Neal McBurnett for use in Colorado.
    */
   public static final BigDecimal COLORADO_GAMMA = BigDecimal.valueOf(1.1);
-
+  
   /**
-   * The initial estimate of error rates for one-vote over- and understatements.
+   * Conservative estimate of error rates for one-vote over- and understatements.
    */
   public static final BigDecimal CONSERVATIVE_ONES_RATE = BigDecimal.valueOf(0.01);
   
   /**
-   * The initial estimate of error rates for two-vote over- and understatements.
+   * Conservative estimate of error rates for two-vote over- and understatements.
    */
   public static final BigDecimal CONSERVATIVE_TWOS_RATE = BigDecimal.valueOf(0.01);
   
   /**
-   * Rounding up of 1-vote over/understatements for the initial estimate of 
-   * error rates.
+   * Conservative rounding up of 1-vote over/understatements for the initial 
+   * estimate of error rates.
    */
   public static final boolean CONSERVATIVE_ROUND_ONES_UP = true;
   
   /**
-   * Rounding up of 2-vote over/understatements for the initial estimate of 
-   * error rates.
+   * Conservative rounding up of 2-vote over/understatements for the initial 
+   * estimate of  error rates.
    */
   public static final boolean CONSERVATIVE_ROUND_TWOS_UP = true;
+  
+  /**
+   * The gamma to use.
+   */
+  public static final BigDecimal GAMMA = STARK_GAMMA;
+  
+  /**
+   * The initial estimate of error rates for one-vote over- and understatements.
+   */
+  public static final BigDecimal ONES_RATE = BigDecimal.ZERO;
+  
+  /**
+   * The initial estimate of error rates for two-vote over- and understatements.
+   */
+  public static final BigDecimal TWOS_RATE = BigDecimal.ZERO;
+  
+  /**
+   * The initial rounding up of 1-vote over/understatements.
+   */
+  public static final boolean ROUND_ONES_UP = false;
+  
+  /**
+   * The initial rounding up of 2-vote over/understatements.
+   */
+  public static final boolean ROUND_TWOS_UP = false;
   
   /**
    * The serialVersionUID.
@@ -138,7 +163,7 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
    */
   @Column(updatable = false, nullable = false, 
           precision = PRECISION, scale = SCALE)
-  private BigDecimal my_gamma = COLORADO_GAMMA;
+  private BigDecimal my_gamma = GAMMA;
   
   /**
    * The risk limit.
@@ -272,19 +297,16 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
    * @return the initial (conservative) expected number of ballots to audit.
    */
   @SuppressWarnings({"checkstyle:magicnumber", "PMD.AvoidDuplicateLiterals"})
-  public Integer initialBallotsToAudit() {
+  public int initialBallotsToAudit() {
     // compute the conservative numbers of over/understatements based on 
     // initial estimate of error rate
-    return computeBallotsToAuditFromRates(CONSERVATIVE_TWOS_RATE,
-                                          CONSERVATIVE_ONES_RATE,
-                                          CONSERVATIVE_ONES_RATE,
-                                          CONSERVATIVE_TWOS_RATE, 
-                                          CONSERVATIVE_ROUND_ONES_UP,
-                                          CONSERVATIVE_ROUND_TWOS_UP).intValue();
+    return computeBallotsToAuditFromRates(TWOS_RATE, ONES_RATE, ONES_RATE, TWOS_RATE, 
+                                          ROUND_ONES_UP, ROUND_TWOS_UP).intValue();
   }
   
   /**
-   * @return the expected number of ballots to audit.
+   * @return the expected overall number of ballots to audit, assuming no 
+   * further discrepancies occur.
    */
   public Integer ballotsToAudit() {
     if (my_recalculate_needed) {
@@ -295,9 +317,17 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
   }
   
   /**
-   * @return the expected number of ballots remaining to audit.
-   * This is the stopping sample size as defined in the literature:
-   * https://www.stat.berkeley.edu/~stark/Preprints/gentle12.pdf
+   * @return the expected number of ballots remaining to audit, assuming 
+   * over- and understatement rates continue as they currently are.
+   */
+  public int expectedBallotsToAuditFromCurrentRates() {
+    return computeBallotsToAuditFromProgress(my_two_vote_under, my_one_vote_under,
+                                             my_one_vote_over, my_two_vote_over,
+                                             my_dashboard.auditedPrefixLength());
+  }
+  
+  /**
+   * Recalculates the overall number of ballots to audit.
    */
   private void recalculateBallotsToAudit() {
     my_ballots_to_audit = computeBallotsToAudit(my_two_vote_under, 
@@ -307,7 +337,7 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
   }
   
   /**
-   * Computes the expected number of ballots remaining to audit given the
+   * Computes the expected number of ballots to audit overall given the
    * specified numbers of over- and understatements.
    * 
    * @param the_two_under The two-vote understatements.
@@ -363,7 +393,45 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
   }
   
   /**
-   * Computes the expected number of ballots remaining to audit given the
+   * Computes the expected number of ballots remaining to audit given the specified
+   * number of over- and understatements and the number of ballots audited so far, 
+   * assuming that the over- and understatement rate remains the same.
+   * 
+   * @param the_two_under The number of two-vote understatements.
+   * @param the_one_under The one-vote understatements.
+   * @param the_one_over The one-vote overstatements.
+   * @param the_two_over The two-vote overstatements.
+   * @param the_number_audited The number of ballots audited so far.
+   * 
+   * @return the expected number of ballots remaining to audit.
+   * This is calculated from the stopping sample size as defined in the literature:
+   * https://www.stat.berkeley.edu/~stark/Preprints/gentle12.pdf
+   */
+  private int computeBallotsToAuditFromProgress(final int the_two_under,
+                                                final int the_one_under,
+                                                final int the_one_over,
+                                                final int the_two_over,
+                                                final int the_number_audited) {
+    // compute the current over- and understatement rates
+    final BigDecimal number_audited = BigDecimal.valueOf(the_number_audited);
+    final BigDecimal two_under_rate = 
+        BigDecimal.valueOf(the_two_under).divide(number_audited, MathContext.DECIMAL128);
+    final BigDecimal one_under_rate =
+        BigDecimal.valueOf(the_one_under).divide(number_audited, MathContext.DECIMAL128);
+    final BigDecimal one_over_rate =
+        BigDecimal.valueOf(the_one_over).divide(number_audited, MathContext.DECIMAL128);
+    final BigDecimal two_over_rate =
+        BigDecimal.valueOf(the_two_over).divide(number_audited, MathContext.DECIMAL128);
+    
+    final BigDecimal bta = 
+        computeBallotsToAuditFromRates(two_under_rate, one_under_rate, 
+                                       one_over_rate, two_over_rate,
+                                       ROUND_ONES_UP, ROUND_TWOS_UP);
+    return bta.setScale(0, RoundingMode.CEILING).intValue();
+  }
+  
+  /**
+   * Computes the expected number of ballots to audit overall given the
    * specified rates of over- and understatements.
    * 
    * @param the_two_under_rate The rate of two-vote understatements.
@@ -550,14 +618,6 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
         the_acvr.contestInfoForContest(my_contest_result.contest());
 
     if (cvr_info != null && acvr_info != null) {
-      // this is a very quick calculation, and may not work correctly 
-      // for elections with multiple winners, but will err on the side of being
-      // pessimistic
-
-      // if the ACVR is a phantom ballot, we need to assume that it was a vote
-      // for all the losers; so if any winners had votes on the original CVR 
-      // it's a 2-vote overstatement, otherwise a 1-vote overstatement
-      
       if (the_acvr.recordType() == RecordType.PHANTOM_BALLOT) {
         result = computePhantomBallotDiscrepancy(cvr_info);
       } else {
@@ -579,6 +639,10 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
   private Integer computeAuditedBallotDiscrepancy(final CVRContestInfo the_cvr_info,
                                                   final CVRContestInfo the_acvr_info) {
     int result = 0;
+    
+    // this is a very quick calculation, and may not work correctly 
+    // for elections with multiple winners, but will err on the side of being
+    // pessimistic
     
     // check for overvotes
     final Set<String> acvr_choices = new HashSet<>();
@@ -603,8 +667,12 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
     loser_losses.removeAll(my_contest_result.winners());
 
     // now, we have several cases:
-
-    if (!winner_gains.isEmpty() && loser_losses.isEmpty()) {
+    
+    if (gained_votes.isEmpty() && lost_votes.isEmpty()) {
+      // the CVR and ACVR have identical choices and we
+      // can skip the rest of this
+      result = 0;
+    } else if (!winner_gains.isEmpty() && loser_losses.isEmpty()) {
       // if only winners gained votes and no losers lost votes, 
       // it's a 1-vote understatement       
       result = -1;
@@ -646,6 +714,10 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
   private Integer computePhantomBallotDiscrepancy(final CVRContestInfo the_info) {
     final int result;    
     final Set<String> winner_votes = new HashSet<>(the_info.choices());
+
+    // if the ACVR is a phantom ballot, we need to assume that it was a vote
+    // for all the losers; so if any winners had votes on the original CVR 
+    // it's a 2-vote overstatement, otherwise a 1-vote overstatement
     
     winner_votes.removeAll(my_contest_result.losers());
     if (winner_votes.isEmpty()) {

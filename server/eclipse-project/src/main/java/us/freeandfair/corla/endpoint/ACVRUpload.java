@@ -14,7 +14,6 @@ package us.freeandfair.corla.endpoint;
 import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.REPORT_MARKINGS_EVENT;
 
 import java.time.Instant;
-import java.util.OptionalLong;
 
 import javax.persistence.PersistenceException;
 
@@ -31,7 +30,6 @@ import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.CastVoteRecordQueries;
 
 /**
  * The "audit CVR upload" endpoint.
@@ -88,11 +86,6 @@ public class ACVRUpload extends AbstractAuditBoardDashboardEndpoint {
         Persistence.saveOrUpdate(real_acvr);
         Main.LOGGER.info("Audit CVR for CVR id " + submission.cvrID() + 
                          " parsed and stored as id " + real_acvr.id());
-        final OptionalLong count = 
-            CastVoteRecordQueries.countMatching(RecordType.AUDITOR_ENTERED);
-        if (count.isPresent()) {
-          Main.LOGGER.info(count.getAsLong() + " ACVRs in storage");
-        }
         final CountyDashboard cdb = 
             Persistence.getByID(Authentication.authenticatedCounty(the_request).id(),
                                 CountyDashboard.class);

@@ -32,6 +32,7 @@ import us.freeandfair.corla.model.CountyContestComparisonAudit;
 import us.freeandfair.corla.model.CountyContestResult;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
+import us.freeandfair.corla.model.Round;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CVRAuditInfoQueries;
 import us.freeandfair.corla.query.CastVoteRecordQueries;
@@ -154,6 +155,47 @@ public final class ComparisonAuditController {
   }
   
   /**
+<<<<<<< HEAD
+=======
+   * Compute the ballot (cards) for audit, for a particular county dashboard and 
+   * round. The returned list does not have duplicates.
+   * 
+   * @param the_cdb The dashboard.
+   * @param the_round The round number.
+   * @exception IllegalArgumentException if the specified dashboard does not have
+   * a round with the specified number, or if a round number <= 0 is specified.
+   */
+  @SuppressWarnings("PMD.UselessParentheses")
+  public static List<CastVoteRecord> computeBallotOrder(final CountyDashboard the_cdb,
+                                                        final int the_round) {
+    if (the_round <= 0 || the_cdb.rounds().size() < the_round) {
+      throw new IllegalArgumentException("invalid round number");
+    }
+    // round numbers are 1-based, not 0-based
+    final Round round = the_cdb.rounds().get(the_round - 1);
+    final Set<CastVoteRecord> cvr_set = new HashSet<>();
+    final List<CastVoteRecord> cvr_to_audit_list = new ArrayList<>();
+    
+    // we need to get the CVRs for the county's sequence, starting at START, and 
+    // look up their locations; note we may have to ask for the sequence more than
+    // once because we may find duplicates in the sequence
+    
+    final List<CastVoteRecord> cvrs = 
+        computeBallotOrder(the_cdb, round.startIndex(), 
+                           round.startIndex() + round.number() - 1); // end is inclusive
+    for (int i = 0; i < cvrs.size(); i++) {
+      final CastVoteRecord cvr = cvrs.get(i);
+      if (!cvr_set.contains(cvr) && !audited(the_cdb, cvr)) {
+        cvr_to_audit_list.add(cvr);
+      } 
+      cvr_set.add(cvr);
+    }
+    
+    return cvr_to_audit_list;
+  }
+  
+  /**
+>>>>>>> Fixed an issue with obtaining a list of CVRs with duplicates.
    * Initializes the audit data for the specified county dashboard.
    * 
    * @param the_dashboard The dashboard.
@@ -174,8 +216,6 @@ public final class ComparisonAuditController {
     }
     
     the_dashboard.setAuditedPrefixLength(0);
-    the_dashboard.setDiscrepancies(0);
-    the_dashboard.setDisagreements(0);
     for (final CountyContestResult ccr : 
          CountyContestResultQueries.forCounty(the_dashboard.county())) {
       final CountyContestComparisonAudit audit = 
@@ -189,6 +229,7 @@ public final class ComparisonAuditController {
     }
     the_dashboard.setComparisonAudits(comparison_audits);
     the_dashboard.setDrivingContests(county_driving_contests);
+    the_dashboard.startRound(to_audit, 0);
     the_dashboard.setEstimatedBallotsToAudit(Math.max(0,  to_audit));
     if (!county_driving_contests.isEmpty()) {
       the_dashboard.setCVRsToAudit(computeBallotOrder(the_dashboard, 0, to_audit));
@@ -243,6 +284,7 @@ public final class ComparisonAuditController {
             undo_count = undo_count + 1;
           }
           c.setACVR(the_audit_cvr);
+          Persistence.saveOrUpdate(c);
         }
         unaudit(the_dashboard, the_cvr_under_audit, old_audit_cvr, undo_count);
         audit(the_dashboard, the_cvr_under_audit, the_audit_cvr, undo_count, true);
@@ -255,9 +297,38 @@ public final class ComparisonAuditController {
     }
 
     updateCVRUnderAudit(the_dashboard);
-    the_dashboard.setEstimatedBallotsToAudit(computeEstimatedBallotsToAudit(the_dashboard));
+    the_dashboard.
+        setEstimatedBallotsToAudit(computeEstimatedBallotsToAudit(the_dashboard, false) -
+                                   the_dashboard.auditedPrefixLength());
     
     return result;
+  }
+  
+  /**
+   * Computes the estimated total number of ballots to audit on the specified
+   * county dashboard.
+   * 
+   * @param the_dashboard The dashboard.
+   * @param the_error_rates true to project from the current error rates, 
+   * false to get the minimum given the current over- and understatements. 
+   */
+  public static int 
+      computeEstimatedBallotsToAudit(final CountyDashboard the_dashboard,
+                                     final boolean the_error_rates) {
+    int to_audit = Integer.MIN_VALUE;
+    final Set<Contest> driving_contests = the_dashboard.drivingContests();
+    for (final CountyContestComparisonAudit ccca : the_dashboard.comparisonAudits()) {
+      if (driving_contests.contains(ccca.contest())) {
+        final int bta;
+        if (the_error_rates) {
+          bta = ccca.expectedBallotsToAuditFromCurrentRates();
+        } else {
+          bta = ccca.ballotsToAudit();
+        }
+        to_audit = Math.max(to_audit, bta);
+      }
+    }
+    return Math.max(0,  to_audit);
   }
   
   /**
@@ -308,16 +379,16 @@ public final class ComparisonAuditController {
       discrepancy_found |= discrepancy != 0;
     }
     if (the_update_counters) {
-      the_dashboard.setBallotsAudited(the_dashboard.ballotsAudited() + 1); 
+      the_dashboard.addAuditedBallot();
       if (discrepancy_found) {
-        the_dashboard.setDiscrepancies(the_dashboard.discrepancies() + 1);
+        the_dashboard.addDiscrepancy();
       }
       boolean disagree = false;
       for (final CVRContestInfo ci : the_audit_cvr.contestInfo()) {
         disagree |= ci.consensus() == ConsensusValue.NO;
       }
       if (disagree) {
-        the_dashboard.setDisagreements(the_dashboard.disagreements() + 1);
+        the_dashboard.addDisagreement();
       }
     }
   }
@@ -344,16 +415,16 @@ public final class ComparisonAuditController {
       }
       discrepancy_found |= discrepancy != 0;
     }
-    the_dashboard.setBallotsAudited(the_dashboard.ballotsAudited() - 1); 
+    the_dashboard.addAuditedBallot(); 
     if (discrepancy_found) {
-      the_dashboard.setDiscrepancies(the_dashboard.discrepancies() - 1);
+      the_dashboard.removeDiscrepancy();
     }
     boolean disagree = false;
     for (final CVRContestInfo ci : the_audit_cvr.contestInfo()) {
       disagree |= ci.consensus() == ConsensusValue.NO;
     }
     if (disagree) {
-      the_dashboard.setDisagreements(the_dashboard.disagreements() - 1);
+      the_dashboard.removeDisagreement();
     }
   }
   
@@ -383,35 +454,27 @@ public final class ComparisonAuditController {
       index = index + 1;
     }
     new_prefix_length = index;
-    final int to_audit = computeEstimatedBallotsToAudit(the_dashboard);
+    final int to_audit = 
+        computeEstimatedBallotsToAudit(the_dashboard, false) -
+        the_dashboard.auditedPrefixLength();
     if (new_prefix_length == cvr_audit_info.size() && 
         0 < to_audit - new_prefix_length) {
-      // we're out of ballots and the audit isn't done, so we need more
-      // TODO for now we get just enough to match the estimated ballots to
-      // audit
+      // we're out of ballots and the audit isn't done, so we need more; right 
+      // now, we add the expected amount to audit based on our error rates
+      final int to_audit_current_rates = 
+          computeEstimatedBallotsToAudit(the_dashboard, true);
       final List<CastVoteRecord> new_cvrs = 
-          computeBallotOrder(the_dashboard, cvr_audit_info.size(), to_audit);
+          computeBallotOrder(the_dashboard, cvr_audit_info.size(), to_audit_current_rates);
       the_dashboard.addCVRsToAudit(new_cvrs);
-    }
-    the_dashboard.setAuditedPrefixLength(new_prefix_length);
-  }
-  
-  /**
-   * Updates the estimated number of ballots to audit on the specified
-   * county dashboard.
-   * 
-   * @param the_dashboard The dashboard.
-   */
-  private static int 
-      computeEstimatedBallotsToAudit(final CountyDashboard the_dashboard) {
-    int to_audit = Integer.MIN_VALUE;
-    final Set<Contest> driving_contests = the_dashboard.drivingContests();
-    for (final CountyContestComparisonAudit ccca : the_dashboard.comparisonAudits()) {
-      if (driving_contests.contains(ccca.contest())) {
-        to_audit = Math.max(to_audit, ccca.ballotsToAudit());
+      for (final CastVoteRecord cvr : new HashSet<>(new_cvrs)) {
+        CVRAuditInfoQueries.updateMatching(the_dashboard, cvr);
       }
     }
-    return Math.max(0,  to_audit - the_dashboard.auditedPrefixLength());
+    the_dashboard.setAuditedPrefixLength(new_prefix_length);
+    final Round current_round = the_dashboard.currentRound();
+    if (current_round.startIndex() + current_round.expectedCount() <= new_prefix_length) {
+      the_dashboard.endRound();
+    }
   }
   
   /**
