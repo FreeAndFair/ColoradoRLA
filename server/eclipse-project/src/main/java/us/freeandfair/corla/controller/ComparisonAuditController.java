@@ -287,7 +287,7 @@ public final class ComparisonAuditController {
           Persistence.saveOrUpdate(c);
         }
         unaudit(the_dashboard, the_cvr_under_audit, old_audit_cvr, undo_count);
-        audit(the_dashboard, the_cvr_under_audit, the_audit_cvr, undo_count, true);
+        audit(the_dashboard, the_cvr_under_audit, the_audit_cvr, undo_count, false);
       }
       result = true;
     }  else {
@@ -361,15 +361,15 @@ public final class ComparisonAuditController {
    * @param the_audit_cvr The audit CVR.
    * @param the_count The number of times to count this ballot in the
    * audit.
-   * @param the_update_counters true to update the county dashboard 
-   * counters, false otherwise; false is used when this ballot has
-   * already been audited once.
+   * @param the_update_counter true to update the county dashboard 
+   * ballot audited count, false otherwise; false is used when this ballot 
+   * has already been audited once.
    */
   private static void audit(final CountyDashboard the_dashboard,
                             final CastVoteRecord the_cvr_under_audit,
                             final CastVoteRecord the_audit_cvr, 
                             final int the_count,
-                            final boolean the_update_counters) {
+                            final boolean the_update_counter) {
     boolean discrepancy_found = false;
     for (final CountyContestComparisonAudit ca : the_dashboard.comparisonAudits()) {
       final int discrepancy = ca.computeDiscrepancy(the_cvr_under_audit, the_audit_cvr);
@@ -378,18 +378,18 @@ public final class ComparisonAuditController {
       }
       discrepancy_found |= discrepancy != 0;
     }
-    if (the_update_counters) {
+    if (the_update_counter) {
       the_dashboard.addAuditedBallot();
-      if (discrepancy_found) {
-        the_dashboard.addDiscrepancy();
-      }
-      boolean disagree = false;
-      for (final CVRContestInfo ci : the_audit_cvr.contestInfo()) {
-        disagree |= ci.consensus() == ConsensusValue.NO;
-      }
-      if (disagree) {
-        the_dashboard.addDisagreement();
-      }
+    }
+    if (discrepancy_found) {
+      the_dashboard.addDiscrepancy();
+    }
+    boolean disagree = false;
+    for (final CVRContestInfo ci : the_audit_cvr.contestInfo()) {
+      disagree |= ci.consensus() == ConsensusValue.NO;
+    }
+    if (disagree) {
+      the_dashboard.addDisagreement();
     }
   }
   
@@ -415,7 +415,6 @@ public final class ComparisonAuditController {
       }
       discrepancy_found |= discrepancy != 0;
     }
-    the_dashboard.addAuditedBallot(); 
     if (discrepancy_found) {
       the_dashboard.removeDiscrepancy();
     }
