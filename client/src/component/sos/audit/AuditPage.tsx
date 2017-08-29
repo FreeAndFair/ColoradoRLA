@@ -62,23 +62,27 @@ const AuditPage = ({ nextPage, riskLimit, setRiskLimit }: any) => {
 
             <h2>Administer an Audit</h2>
 
-            <h3>Audit Definition</h3>
-            <div>Enter the date the election will take place, and the type of election.</div>
-            <ElectionDateForm />
-            <ElectionTypeForm />
-
-            <h3>Risk Limits</h3>
-            <div>Each contest has a default risk limit set. To change the default risk
-                limit, change the percentage shown.
-            </div>
-            { riskLimitForm }
-            <div>
-                Once the election has started, this information will not be able to be changed.
+            <div className='pt-card'>
+                <h3>Audit Definition</h3>
+                <div>Enter the date the election will take place, and the type of election.</div>
+                <ElectionDateForm />
+                <ElectionTypeForm />
             </div>
 
-            <button onClick={ buttonClick } className='pt-button pt-intent-primary'>
-                { buttonText }
-            </button>
+            <div className='pt-card'>
+                <h3>Risk Limits</h3>
+                <div>Each contest has a default risk limit set. To change the default risk
+                    limit, change the percentage shown.
+                </div>
+                { riskLimitForm }
+                <div>
+                    Once the election has started, this information will not be able to be changed.
+                </div>
+
+                <button onClick={ buttonClick } className='pt-button pt-intent-primary'>
+                    { buttonText }
+                </button>
+            </div>
         </div>
     );
 };
