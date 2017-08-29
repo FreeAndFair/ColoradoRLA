@@ -16,7 +16,7 @@ import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.SUBMIT_
 
 import javax.persistence.PersistenceException;
 
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.JsonParseException;
 
 import spark.Request;
 import spark.Response;
@@ -86,7 +86,7 @@ public class AuditInvestigationReport extends AbstractAuditBoardDashboardEndpoin
         cdb.submitInvestigationReport(report);
       }
       Persistence.saveOrUpdate(cdb);
-    } catch (final JsonSyntaxException e) {
+    } catch (final JsonParseException e) {
       Main.LOGGER.error("malformed audit investigation report");
       badDataContents(the_response, "Invalid audit investigation report");
     } catch (final PersistenceException e) {

@@ -21,7 +21,7 @@ import java.util.List;
 
 import javax.persistence.PersistenceException;
 
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.JsonParseException;
 
 import spark.Request;
 import spark.Response;
@@ -181,7 +181,7 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
       if (start == null) {
         badDataContents(the_response, "malformed request data");
       }
-    } catch (final JsonSyntaxException e) {
+    } catch (final JsonParseException e) {
       badDataContents(the_response, "malformed request data");
     }
     

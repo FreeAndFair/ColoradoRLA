@@ -13,6 +13,7 @@ package us.freeandfair.corla.endpoint;
 
 import javax.persistence.PersistenceException;
 
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 
 import spark.Request;
@@ -84,7 +85,7 @@ public class SetElectionInfo extends AbstractDoSDashboardEndpoint {
     } catch (final PersistenceException e) {
       serverError(the_response, "unable to set election information: " + e);
 
-    } catch (final JsonSyntaxException e) {
+    } catch (final JsonParseException e) {
       badDataContents(the_response, "malformed election information specified");
     }
     return my_endpoint_result.get();

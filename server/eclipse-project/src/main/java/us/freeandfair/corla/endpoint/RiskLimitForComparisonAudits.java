@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 
 import javax.persistence.PersistenceException;
 
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.JsonParseException;
 
 import spark.Request;
 import spark.Response;
@@ -96,7 +96,7 @@ public class RiskLimitForComparisonAudits extends AbstractDoSDashboardEndpoint {
     } catch (final PersistenceException e) {
       serverError(the_response, "unable to set risk limit: " + e);
 
-    } catch (final JsonSyntaxException e) {
+    } catch (final JsonParseException e) {
       invariantViolation(the_response, "Invalid risk limit specified");
     }
     return my_endpoint_result.get();

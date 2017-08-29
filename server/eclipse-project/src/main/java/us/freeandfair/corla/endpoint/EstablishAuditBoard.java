@@ -19,7 +19,7 @@ import java.util.List;
 
 import javax.persistence.PersistenceException;
 
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
 import spark.Request;
@@ -107,7 +107,7 @@ public class EstablishAuditBoard extends AbstractAuditBoardDashboardEndpoint {
     } catch (final PersistenceException e) {
       serverError(the_response, "unable to set audit board: " + e);
 
-    } catch (final JsonSyntaxException e) {
+    } catch (final JsonParseException e) {
       badDataContents(the_response, "Invalid audit board data");
     }
     return my_endpoint_result.get();

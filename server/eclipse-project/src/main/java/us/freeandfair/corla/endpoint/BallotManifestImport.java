@@ -23,7 +23,7 @@ import java.util.Map;
 
 import javax.persistence.PersistenceException;
 
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.JsonParseException;
 
 import spark.Request;
 import spark.Response;
@@ -164,7 +164,7 @@ public class BallotManifestImport extends AbstractCountyDashboardEndpoint {
       } else {
         badDataContents(the_response, "attempt to import a file without a verified hash");
       }
-    } catch (final JsonSyntaxException e) {
+    } catch (final JsonParseException e) {
       badDataContents(the_response, "malformed request: " + e.getMessage());
     }
     
