@@ -315,10 +315,13 @@ public final class ComparisonAuditController {
     }
 
     updateCVRUnderAudit(the_dashboard);
+    final Round current_round = the_dashboard.currentRound();
+    if (current_round.expectedCount() - current_round.actualCount() == 0) {
+      the_dashboard.endRound();
+    }
     the_dashboard.
         setEstimatedBallotsToAudit(computeEstimatedBallotsToAudit(the_dashboard, false) -
                                    the_dashboard.auditedPrefixLength());
-    
     return result;
   }
   
@@ -487,10 +490,6 @@ public final class ComparisonAuditController {
       }
     }
     the_dashboard.setAuditedPrefixLength(new_prefix_length);
-    final Round current_round = the_dashboard.currentRound();
-    if (current_round.expectedCount() - current_round.actualCount() == 0) {
-      the_dashboard.endRound();
-    }
   }
   
   /**
