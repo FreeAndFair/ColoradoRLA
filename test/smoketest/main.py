@@ -120,9 +120,6 @@ parser.add_argument('-c, --county', dest='counties', metavar='COUNTY', action='a
                     type=int,
                     help='numeric county_id for the given command, e.g. 1 '
                     'for Adams. May be specified multiple times.')
-parser.add_argument('-m, --manifest', dest='manifest',
-                    default=1,
-                    help='manifest filename and hash: integer index to pre-defined array, default 0')
 parser.add_argument('-v, --cvr', dest='cvr', type=int,
                     default=0,
                     help='predefined cvr filename and hash: integer index to pre-defined array, default 0')
@@ -342,17 +339,35 @@ def publish_ballots_to_audit(seed, cvrs):
     return ballots_to_audit
 
 
+def compute_hash(filename):
+    "Compute and return the sha-256 hash of a file"
+
+    BUF_SIZE = 2 ** 18
+
+    sha256 = hashlib.sha256()
+
+    with open(filename, 'rb') as f:
+        while True:
+            data = f.read(BUF_SIZE)
+            if not data:
+                break
+            sha256.update(data)
+
+    return sha256.hexdigest()
+
+
 def upload_files(ac, s):
     """Directly upload files, which zerotest doesn't support.
     See "File upload via POST request not working: Issue #12"
      https://github.com/jjyr/zerotest/issues/12
     """
 
-    # TODO: predefine more manifests
-    manifestfile = "../e-1/arapahoe-manifest.csv"
-    hash = "42d409d3394243046cf92e3ce569b7078cba0815d626602d15d0da3e5e844a94"
-
-    manifest = ac.args.manifest # TODO finish when we have more manifests and they make a difference
+    if ac.args.manifestfile is None:
+        manifestfile = "../e-1/arapahoe-manifest.csv"
+        hash = "42d409d3394243046cf92e3ce569b7078cba0815d626602d15d0da3e5e844a94"
+    else:
+        manifestfile = ac.args.manifestfile
+        hash = compute_hash(manifestfile)
 
     if ac.args.ye_olde_upload:
         dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -377,18 +392,7 @@ def upload_files(ac, s):
         cvrfile, hash = predefined_cvrs[ac.args.cvr]
     else:
         cvrfile = ac.args.cvrfile
-        BUF_SIZE = 2 ** 18
-
-        sha256 = hashlib.sha256()
-
-        with open(cvrfile, 'rb') as f:
-            while True:
-                data = f.read(BUF_SIZE)
-                if not data:
-                    break
-                sha256.update(data)
-
-        hash = sha256.hexdigest()
+        hash = compute_hash(cvrfile)
 
     if ac.args.ye_olde_upload:
         upload_cvrs(ac, s, os.path.join(dir_path, cvrfile), hash)
@@ -420,6 +424,8 @@ def dos_init(ac):
     'Run initial Dept of State steps: reset, risk_limit etc.'
 
     # TODO: /set-election-info", { "election_type": string, "election_date": string that is hopefully parseable as a date }
+    r = test_endpoint_json(ac, ac.state_s, "/set-election-info",
+                           { "election_type": "coordinated", "election_date": "2017-11-09T02:00:00Z"})
 
     r = test_endpoint_json(ac, ac.state_s, "/risk-limit-comp-audits",
                            {"risk_limit": ac.args.risk_limit})
