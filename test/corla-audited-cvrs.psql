@@ -1,0 +1,2 @@
+-- Show all AUDITOR_ENTERED CVRs
+SELECT * from cast_vote_record WHERE record_type = 'AUDITOR_ENTERED' ;
