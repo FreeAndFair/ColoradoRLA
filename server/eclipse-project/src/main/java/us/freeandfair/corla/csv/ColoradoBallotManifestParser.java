@@ -88,7 +88,7 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
   /**
    * The number of records parsed from the ballot manifest file.
    */
-  private OptionalInt my_record_count = OptionalInt.empty();
+  private int my_record_count = -1;
 
   /**
    * The set of parsed ballot manifests that haven't yet been flushed to the 
@@ -187,7 +187,7 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
     boolean result = true; // presume the parse will succeed
     final Iterator<CSVRecord> records = my_parser.iterator();
     
-    my_record_count = OptionalInt.of(0);
+    my_record_count = 0;
     
     try {
       // we expect the first line to be the headers, which we currently discard
@@ -204,7 +204,7 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
           result = false;
           break;
         } else {
-          my_record_count = OptionalInt.of(my_record_count.getAsInt() + 1);
+          my_record_count = my_record_count + 1;
         }
       }
     } catch (final NoSuchElementException e) {
@@ -224,6 +224,10 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
    */
   @Override
   public synchronized OptionalInt recordCount() {
-    return my_record_count;
+    if (my_record_count < 0) {
+      return OptionalInt.empty();
+    } else {
+      return OptionalInt.of(my_record_count);
+    }
   }
 }
