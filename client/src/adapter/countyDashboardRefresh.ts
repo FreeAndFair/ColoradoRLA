@@ -9,6 +9,16 @@ interface Elector {
 
 type Status = 'NO_DATA' | 'CVRS_UPLOADED_SUCCESSFULLY' | 'ERROR_IN_UPLOADED_DATA';
 
+interface CurrentRound {
+    actual_count: number;
+    disagreements: number;
+    discrepancies: number;
+    expected_count: number;
+    number: number;
+    start_index: number;
+    start_time: Date;
+}
+
 interface CountyDashboard {
     asm_state: string;
     audit_time: string;
@@ -20,6 +30,7 @@ interface CountyDashboard {
     ballot_under_audit_id: number;
     ballots_remaining_in_round: number;
     ballots_to_audit: number[];
+    current_round: CurrentRound;
     cvr_export_filename: string;
     cvr_export_hash: string;
     contests: number[];
@@ -90,6 +101,22 @@ const parseContestsUnderAudit = (contestIds: any, state: any): any => {
     });
 };
 
+function parseCurrentRound(data: any) {
+    if (!data) {
+        return {};
+    }
+
+    return {
+        actualCount: data.actual_count,
+        disagreements: data.disagreements,
+        discrepancies: data.discrepancies,
+        expectedCount: data.expected_count,
+        number: data.number,
+        startIndex: data.start_index,
+        startTime: data.start_time,
+    };
+}
+
 
 export const parse = (data: CountyDashboard, state: any): any => {
     const findContest = (id: any) => state.county.contestDefs[id];
@@ -107,6 +134,7 @@ export const parse = (data: CountyDashboard, state: any): any => {
         ballotsToAudit: data.ballots_to_audit,
         contests: parseContests(data.contests, state),
         contestsUnderAudit: parseContestsUnderAudit(data.contests_under_audit, state),
+        currentRound: parseCurrentRound(data.current_round),
         cvrExportFilename: data.cvr_export_filename,
         cvrExportHash: data.cvr_export_hash,
         disagreementCount: data.disagreement_count,
