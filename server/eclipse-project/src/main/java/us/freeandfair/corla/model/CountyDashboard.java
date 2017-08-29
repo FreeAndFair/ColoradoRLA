@@ -481,6 +481,10 @@ public class CountyDashboard implements PersistentEntity, Serializable {
                                   the_number_of_ballots, the_start_index);
     updateRound(round);
     my_rounds.add(round);
+    if (round.startIndex() + round.expectedCount() - 1 < auditedPrefixLength()) {
+      // the round ended before it started
+      endRound();
+    }
   }
   
   /**
@@ -491,7 +495,8 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    */
   private void updateRound(final Round the_round) {
     int index = the_round.startIndex();
-    while (index < my_audited_prefix_length) {
+    final int end = the_round.startIndex() + the_round.expectedCount() - 1;
+    while (index < my_audited_prefix_length && index < end) {
       final CVRAuditInfo cvrai = my_cvr_audit_info.get(index);
       for (final CountyContestComparisonAudit ca : comparisonAudits()) {
         if (ca.computeDiscrepancy(cvrai.cvr(), cvrai.acvr()) != 0) {
