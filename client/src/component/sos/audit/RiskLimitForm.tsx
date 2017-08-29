@@ -85,12 +85,7 @@ class RiskLimitForm extends React.Component<FormProps & any, FormState> {
             </label>
         );
 
-        return (
-            <div>
-                <div>{ ballotPollingFormField }</div>
-                <div>{ comparisonFormField }</div>
-            </div>
-        );
+        return <div>{ comparisonFormField }</div>;
     }
 
     private onBlur = () => {
