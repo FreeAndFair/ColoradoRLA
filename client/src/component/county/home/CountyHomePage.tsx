@@ -8,7 +8,31 @@ import CountyNav from '../Nav';
 import FileUploadContainer from './FileUploadContainer';
 
 
-const Main = ({ boardSignIn, buttonDisabled, name, startAudit }: any) => {
+const AuditBoardInfo = ({ signedIn }: any) => {
+    const icon = signedIn
+               ? <span className='pt-icon pt-intent-success pt-icon-tick-circle' />
+               : <span className='pt-icon pt-intent-danger pt-icon-error' />;
+
+    const text = signedIn ? 'signed in' : 'not signed in';
+
+    return (
+        <div className='pt-card'>
+            <span>{ icon } </span>
+            Audit board is <strong>{ text }.</strong>
+        </div>
+    );
+};
+
+const Main = (props: any) => {
+    const {
+        auditBoardSignedIn,
+        auditButtonDisabled,
+        boardSignIn,
+        name,
+        signInButtonDisabled,
+        startAudit,
+    } = props;
+
     return (
         <div className='county-main pt-card'>
             <h1>Hello, { name } County!</h1>
@@ -17,16 +41,18 @@ const Main = ({ boardSignIn, buttonDisabled, name, startAudit }: any) => {
                     Please upload your Ballot Manifest and Cast Vote Records.
                 </div>
                 <FileUploadContainer />
+                <AuditBoardInfo signedIn={ auditBoardSignedIn } />
                 <button
                     className='pt-button pt-intent-primary'
+                    disabled={ signInButtonDisabled }
                     onClick={ boardSignIn }>
                     <span className='pt-icon-standard pt-icon-people' />
                     <span> </span>
                     Audit Board Sign-In
                 </button>
                 <button
-                    disabled={ buttonDisabled }
                     className='pt-button pt-intent-primary'
+                    disabled={ auditButtonDisabled }
                     onClick={ startAudit }>
                     <span className='pt-icon-standard pt-icon-eye-open' />
                     <span> </span>
@@ -126,7 +152,10 @@ const Info = ({ info, contests, county }: any) => (
 
 const CountyHomePage = (props: any) => {
     const {
+        auditBoardSignedIn,
         boardSignIn,
+        canAudit,
+        canSignIn,
         contests,
         county,
         countyInfo,
@@ -143,18 +172,18 @@ const CountyHomePage = (props: any) => {
 
     const info = { auditDate: startTimestamp };
 
-    const canStartAudit =
-        county.asm.auditBoard.currentState === 'AUDIT_IN_PROGRESS';
-
-    const buttonDisabled = !canStartAudit;
+    const auditButtonDisabled = !canAudit;
+    const signInButtonDisabled = !canSignIn;
 
     return (
         <div className='county-root'>
             <CountyNav />
             <div>
-                <Main boardSignIn={ boardSignIn }
-                      buttonDisabled={ buttonDisabled }
+                <Main auditBoardSignedIn={ auditBoardSignedIn }
+                      boardSignIn={ boardSignIn }
+                      auditButtonDisabled={ auditButtonDisabled }
                       name={ countyInfo.name }
+                      signInButtonDisabled={ signInButtonDisabled }
                       startAudit={ startAudit } />
                 <Info info={ countyInfo }
                       contests={ contests }

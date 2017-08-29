@@ -6,11 +6,14 @@ import CountyAuditPage from './CountyAuditPage';
 
 import notice from '../../../notice';
 
+import canAudit from '../../../selector/county/canAudit';
+
 
 class CountyAuditContainer extends React.Component<any, any> {
     public render() {
-        if (!this.props.auditInProgress) {
+        if (!this.props.canAudit) {
             notice.danger('Not ready to begin audit.');
+
             return <Redirect to={ '/county' } />;
         }
 
@@ -20,13 +23,9 @@ class CountyAuditContainer extends React.Component<any, any> {
 
 const mapStateToProps = (state: any) => {
     return {
-        auditInProgress: state.county.asm.auditBoard.currentState === 'AUDIT_IN_PROGRESS',
+        canAudit: canAudit(state),
     };
 };
 
-const mapDispatchToProps = (dispatch: any) => ({});
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(CountyAuditContainer);
+export default connect(mapStateToProps)(CountyAuditContainer);
