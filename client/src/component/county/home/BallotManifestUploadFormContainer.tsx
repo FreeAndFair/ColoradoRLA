@@ -41,7 +41,13 @@ class BallotManifestUploadFormContainer extends React.Component<any, any> {
             );
         }
 
-        return <BallotManifestUploadForm upload={ upload } forms={ forms } />;
+        return (
+            <BallotManifestUploadForm
+                disableReupload={ this.disableReupload }
+                fileUploaded={ fileUploaded }
+                upload={ upload }
+                forms={ forms } />
+        );
     }
 
     private disableReupload = () => this.setState({ reupload: false });

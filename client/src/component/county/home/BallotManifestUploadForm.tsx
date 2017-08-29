@@ -10,12 +10,22 @@ class BallotManifestUploadForm extends React.Component<any, any> {
     };
 
     public render() {
-        const { forms, upload } = this.props;
+        const { disableReupload, fileUploaded, forms, upload } = this.props;
         const { file, hash } = this.state;
 
         forms.ballotManifestForm = this.state;
 
         const fileName = file ? file.name : '';
+
+        const cancelButton = (
+            <button className='pt-button pt-intent-warning' onClick={ disableReupload }>
+                Cancel
+            </button>
+        );
+
+        const renderedCancelButton = fileUploaded
+                                   ? cancelButton
+                                   : '';
 
         return (
             <div className='pt-card'>
@@ -41,6 +51,7 @@ class BallotManifestUploadForm extends React.Component<any, any> {
                             onChange={ this.onHashChange } />
                     </label>
                 </div>
+                { renderedCancelButton }
                 <button className='pt-button' onClick={ upload }>
                     Upload
                 </button>
