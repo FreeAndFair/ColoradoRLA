@@ -14,6 +14,13 @@ crtest reset
 crtest dos_init
 crtest county_setup
 
+# Check whether the /cvr-to-audit responses match the other lists, and also remove audited ballots
+crtest reset dos_init county_setup dos_start
+crtest -E "/cvr-to-audit-list?start=0&ballot_count=9&include_duplicates=true"
+crtest county_audit
+crtest -E "/cvr-to-audit-list?start=0&ballot_count=1&include_duplicates=true"
+crtest -E "/cvr-to-audit-list?start=0&ballot_count=9&include_duplicates=true"
+
 (
 ./main.py reset
 ./main.py dos_init
@@ -122,6 +129,9 @@ parser.add_argument('-v, --cvr', dest='cvr', type=int,
 parser.add_argument('-f, --cvrfile', dest='cvrfile',
                     help='cvr filename, for arbitrary cvrs. Takes precedence over -v. '
                     'Proper hash will be computed.')
+parser.add_argument('-F, --manifestfile', dest='manifestfile',
+                    help='manifest filename, for arbitrary manifests. '
+                    'Proper hash will be computed.')
 
 # TODO: allow a way to specify CVRs and contests per county.
 parser.add_argument('-C, --contest', dest='contests', metavar='CONTEST', action='append',
@@ -151,7 +161,7 @@ parser.add_argument('-d, --debuglevel', type=int, default=logging.WARNING, dest=
 
 parser.add_argument('commands', metavar="COMMAND", nargs='*',
                     help='audit commands to run. May be specified multiple times. '
-                    'Possibilities: dos_init, county_setup, dos_start, county_audit, dos_wrapup')
+                    'Possibilities: reset dos_init, county_setup, dos_start, county_audit, dos_wrapup')
 
 
 def state_login(ac, s):
@@ -160,7 +170,7 @@ def state_login(ac, s):
     path = "/auth-state-admin"
     r = s.post(ac.base + path,
                data={'username': 'stateadmin1', 'password': '', 'second_factor': ''})
-    print(r, path)
+    print(r, "POST", path)
 
 
 def county_login(ac, s, county_id):
@@ -169,7 +179,7 @@ def county_login(ac, s, county_id):
     path = "/auth-county-admin"
     r = s.post(ac.base + path,
                data={'username': 'countyadmin%d' % county_id, 'password': '', 'second_factor': ''})
-    print(r, path)
+    print(r, "POST", path)
 
 
 def test_endpoint_json(ac, s, path, data, show=True):
@@ -178,12 +188,12 @@ def test_endpoint_json(ac, s, path, data, show=True):
     r = s.post(ac.base + path, json=data)
     if r.status_code == 200:
         if show:
-            print(r, path)
+            print(r, "POST", path)
     else:
         if show:
-            print(r, path, r.text)
+            print(r, "POST", path, r.text)
         else:
-            print(r, path)
+            print(r, "POST", path)
     return r
 
 
@@ -193,12 +203,12 @@ def test_endpoint_get(ac, s, path, show=True):
     r = s.get(ac.base + path)
     if r.status_code == 200:
         if show:
-            print(r, path)
+            print(r, "GET", path)
     else:
         if show:
-            print(r, path, r.text)
+            print(r, "GET", path, r.text)
         else:
-            print(r, path)
+            print(r, "GET", path)
     return r
 
 
@@ -206,7 +216,7 @@ def test_endpoint_bytes(ac, s, path, data):
     "Do a generic test of an endpoint that posts the given data to the given path"
 
     r = s.post(ac.base + path, data)
-    print(r, path, r.text)
+    print(r, "POST", path, r.text)
     return r
 
 
@@ -214,7 +224,7 @@ def test_endpoint_post(ac, s, path, data):
     "Do a generic test of an endpoint that posts the given data to the given path"
 
     r = s.post(ac.base + path, data)
-    print(r, path, r.text)
+    print(r, "POST", path, r.text)
     return r
 
 
@@ -232,7 +242,7 @@ def upload_file(ac, s, import_path, filename, sha256):
                           files={'file': f}, data=payload)
 
     if r.status_code != 200:
-        print(r, path, r.text)
+        print(r, "POST", path, r.text)
 
     logging.debug(r, path, r.text)
 
@@ -241,8 +251,8 @@ def upload_file(ac, s, import_path, filename, sha256):
     # This could be done later, after importing another file.
     r = test_endpoint_json(ac, s, import_path, import_handle)
     if r.status_code != 200:
-        print(r, path, r.text)
-    logging.debug(r, path, r.text)
+        print(r, "POST", import_path, r.text)
+    logging.debug(r, import_path, r.text)
 
 """
 TODO: clean this out when ready.
@@ -264,7 +274,7 @@ def upload_cvrs(ac, s, filename, sha256):
         payload = {'county': '3', 'hash': sha256}
         r = s.post(ac.base + path,
                           files={'cvr_file': f}, data=payload)
-    print(r, path, r.text)
+    print(r, "POST", path, r.text)
 
 
 def upload_manifest(ac, s, filename, sha256):
@@ -275,7 +285,7 @@ def upload_manifest(ac, s, filename, sha256):
         payload = {'county': 'Arapahoe', 'hash': sha256}
         r = s.post(ac.base + path,
                           files={'bmi_file': f}, data=payload)
-    print(r, path)
+    print(r, "POST", path)
 
 
 def get_county_cvrs(ac, county_id, s):
@@ -284,7 +294,7 @@ def get_county_cvrs(ac, county_id, s):
     path = x
     r = s.get("%s/cvr/%d" % (ac.base, county_id))
     if r.status_code != 200:
-         print(r, path, r.text)
+         print(r, "GET", path, r.text)
     cvrs = r.json()
 
     return cvrs
@@ -409,6 +419,8 @@ def reset(ac):
 def dos_init(ac):
     'Run initial Dept of State steps: reset, risk_limit etc.'
 
+    # TODO: /set-election-info", { "election_type": string, "election_date": string that is hopefully parseable as a date }
+
     r = test_endpoint_json(ac, ac.state_s, "/risk-limit-comp-audits",
                            {"risk_limit": ac.args.risk_limit})
 
@@ -465,7 +477,11 @@ def dos_start(ac):
 
     r = test_endpoint_json(ac, ac.state_s, "/random-seed",
                            {'seed': ac.args.seed})
-    r = test_endpoint_post(ac, ac.state_s, "/ballots-to-audit/publish", {})
+    # r = test_endpoint_post(ac, ac.state_s, "/ballots-to-audit/publish", {})
+    r = test_endpoint_post(ac, ac.state_s, "/start-audit-round",
+                           { "multiplier": 1.0, "use_estimates": True})
+    # with use_estimates: False:    "county_ballots": { "ID": number, "ID": number, ... }
+    # only the counties listed in it have rounds started
 
     r = test_endpoint_get(ac, ac.state_s, "/dos-dashboard")
     if r.status_code == 200:
@@ -477,6 +493,7 @@ def dos_start(ac):
             if status['estimated_ballots_to_audit'] != 0:
                 print("County %s has initial sample size of %s ballot cards" % 
                       (county_id, status['estimated_ballots_to_audit']))
+                print("ballots_remaining_in_round: %d" % status['ballots_remaining_in_round'])
     logging.debug("dos-dashboard: %s" % r.text)
 
 def county_audit(ac, county_id):
@@ -504,7 +521,9 @@ def county_audit(ac, county_id):
     # r = test_endpoint_get(ac, county_s, "/audit-board-asm-state")
     # r = test_endpoint_json(ac, county_s, "/audit-board-dashboard", {})
 
-    selected = r.json()["ballots_to_audit"]
+    selected = r.json().get("ballots_to_audit", [])
+
+    print("Retrieved ballots_to_audit, got %d" % len(selected))
 
     # For each of a a bunch of selected cvrs,
     #   make it into a matching acvr and upload it, watching progress
@@ -516,7 +535,7 @@ def county_audit(ac, county_id):
     for i in range(len(selected)):
         if i % 10 == 0:
             r = test_endpoint_get(ac, ac.state_s, "/dos-dashboard", show=False)
-            
+
         if i % 50 == 5:
             r = test_endpoint_json(ac, county_s, "/audit-board-sign-out", {});
             r = test_endpoint_json(ac, county_s, "/audit-board-sign-in",
@@ -563,6 +582,8 @@ def county_audit(ac, county_id):
             # TODO test getting just contests from current county
             # TODO print other interesting info
             print("County %d upload %d: aCVR %d; estimated_ballots_to_audit: %s" % (county_id, i, acvr['id'], resp['estimated_ballots_to_audit']))
+            # print(resp)
+            print("ballots_remaining_in_round: %d" % resp['ballots_remaining_in_round'])
 
         if resp['estimated_ballots_to_audit'] <= 0:
             print("\nAudit completed after %d ballots" % (i + 1))
@@ -570,7 +591,13 @@ def county_audit(ac, county_id):
 
     r = test_endpoint_get(ac, ac.state_s, "/dos-dashboard")
 
-#    r = test_endpoint_json(ac, county_s, "/intermediate-audit-report", {})
+def county_wrapup(ac, county_id):
+    'Audit board audit-report'
+
+    county_s = requests.Session()
+    county_login(ac, county_s, county_id)
+
+    # r = test_endpoint_json(ac, county_s, "/intermediate-audit-report", {})
     r = test_endpoint_json(ac, county_s, "/audit-report", {})
 
 def dos_wrapup(ac):
@@ -616,7 +643,7 @@ if __name__ == "__main__":
 
     if not ac.args.endpoint is None:
         r = test_endpoint_get(ac, ac.state_s, ac.args.endpoint)
-        print(r, ac.args.endpoint, r.text)
+        print(r, "GET", ac.args.endpoint, r.text)
         sys.exit(0)
 
     if not ac.args.county_endpoint is None:
@@ -625,7 +652,7 @@ if __name__ == "__main__":
             county_login(ac, county_s, county_id)
 
             r = test_endpoint_get(ac, county_s, ac.args.county_endpoint)
-            print(r, ac.args.endpoint, r.text)
+            print(r, "GET", ac.args.endpoint, r.text)
 
         sys.exit(0)
 
@@ -642,9 +669,20 @@ if __name__ == "__main__":
     if "dos_start" in ac.args.commands:
         dos_start(ac)
 
+    print()
+
     if "county_audit" in ac.args.commands:
+        # TODO: go beyond 3 rounds?
+        for i in range(1, 4):
+            print("Start Round %d" % i)
+            for county_id in ac.args.counties:
+                county_audit(ac, county_id)
+            print()
+            r = test_endpoint_post(ac, ac.state_s, "/start-audit-round",
+                                   { "multiplier": 1.0, "use_estimates": True})
+
         for county_id in ac.args.counties:
-            county_audit(ac, county_id)
+            county_wrapup(ac, county_id)
 
     if "dos_wrapup" in ac.args.commands:
         dos_wrapup(ac)
