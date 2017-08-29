@@ -542,7 +542,8 @@ public class CountyDashboard implements PersistentEntity, Serializable {
       result = 0;
     } else {
       final Round round = currentRound();
-      result = round.expectedCount() - round.actualCount();
+      result = round.startIndex() + round.expectedCount() -
+               my_audited_prefix_length; 
     }
     
     return result;
