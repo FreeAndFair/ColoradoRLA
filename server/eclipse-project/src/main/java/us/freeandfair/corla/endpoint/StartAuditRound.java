@@ -188,7 +188,7 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
     try {
       // first, figure out what counties we need to do this for, if the list is limited
       final List<CountyDashboard> cdbs;
-      if (start.countyBallots() == null) {
+      if (start.countyBallots().isEmpty()) {
         cdbs = Persistence.getAll(CountyDashboard.class);
       } else {
         cdbs = new ArrayList<>();
