@@ -21,6 +21,7 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.auth.Authentication;
 import us.freeandfair.corla.controller.ComparisonAuditController;
 import us.freeandfair.corla.json.CVRToAuditResponse;
 import us.freeandfair.corla.json.CVRToAuditResponse.BallotOrderComparator;

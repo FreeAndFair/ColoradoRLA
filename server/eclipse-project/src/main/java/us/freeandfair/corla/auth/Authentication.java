@@ -9,14 +9,14 @@
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
-package us.freeandfair.corla.endpoint;
+package us.freeandfair.corla.auth;
 
 import javax.persistence.PersistenceException;
 
 import spark.Request;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.json.SubmittedUsernamePassword;
+import us.freeandfair.corla.json.SubmittedCredentials;
 import us.freeandfair.corla.model.Administrator;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
 import us.freeandfair.corla.model.County;
@@ -98,8 +98,8 @@ public final class Authentication {
     final String username_param = the_request.queryParams(USERNAME);
     final String password_param = the_request.queryParams(PASSWORD);
     return authenticate(the_request,
-                        new SubmittedUsernamePassword(username_param, 
-                                                      password_param));
+                        new SubmittedCredentials(username_param, 
+                                                 password_param, null));
   }
   
   /**
@@ -109,7 +109,7 @@ public final class Authentication {
    * @return true if authentication is successful, false otherwise.
    */
   public static boolean authenticate(final Request the_request, 
-                                     final SubmittedUsernamePassword the_auth_info) {
+                                     final SubmittedCredentials the_auth_info) {
     boolean result = false;
     if (the_auth_info.username() != null && 
         the_auth_info.username().trim().length() > 0 &&
@@ -117,7 +117,19 @@ public final class Authentication {
       try {
         final Administrator admin = 
             AdministratorQueries.byUsername(the_auth_info.username());
-        if (admin != null) { // TODO: password check!
+        if (admin != null) {
+          if (admin.type() == AdministratorType.STATE) {
+            Main.authentication().
+                authenticateStateAdministrator(the_auth_info.username(), 
+                                               the_auth_info.password(),
+                                               the_auth_info.secondFactor());
+          } else if (admin.type() == AdministratorType.COUNTY) {
+            Main.authentication().
+                authenticateCountyAdministrator(the_auth_info.username(), 
+                                                the_auth_info.password(),
+                                                the_auth_info.secondFactor());
+            
+          }
           admin.updateLastLoginTime();
           Persistence.saveOrUpdate(admin);
           result = true;
@@ -160,8 +172,8 @@ public final class Authentication {
     final String username_param = the_request.queryParams(USERNAME);
     final String password_param = the_request.queryParams(PASSWORD);
     return authenticateAs(the_request,
-                          new SubmittedUsernamePassword(username_param, 
-                                                        password_param),
+                          new SubmittedCredentials(username_param, 
+                                                   password_param, null),
                           the_type);
   }
   
@@ -176,7 +188,7 @@ public final class Authentication {
    * the administrator matches the specified type), false otherwise.
    */
   public static boolean authenticateAs(final Request the_request, 
-                                       final SubmittedUsernamePassword the_info,
+                                       final SubmittedCredentials the_info,
                                        final AdministratorType the_type) {
     boolean result = authenticate(the_request, the_info);
     

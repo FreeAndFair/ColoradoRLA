@@ -45,6 +45,7 @@ import us.freeandfair.corla.asm.AuditBoardDashboardASM;
 import us.freeandfair.corla.asm.CountyDashboardASM;
 import us.freeandfair.corla.asm.DoSDashboardASM;
 import us.freeandfair.corla.asm.PersistentASMState;
+import us.freeandfair.corla.auth.AuthenticationInterface;
 import us.freeandfair.corla.endpoint.CORSFilter;
 import us.freeandfair.corla.endpoint.Endpoint;
 import us.freeandfair.corla.json.FreeAndFairNamingStrategy;
@@ -132,6 +133,11 @@ public final class Main {
       setFieldNamingStrategy(new FreeAndFairNamingStrategy()).
       setExclusionStrategies(new VersionExclusionStrategy()).
       setPrettyPrinting().create();
+
+  /**
+   * Which authentication subsystem implementation are we to use?
+   */
+  private static AuthenticationInterface my_authentication;
   
   /**
    * The properties loaded from the properties file.
@@ -150,6 +156,38 @@ public final class Main {
   }
   
   // Instance Methods
+  
+  /**
+   * @return the implementation of `AuthenticationInterface` demanded by
+   * the system's properties file and loaded at startup.
+   */
+  public static AuthenticationInterface authentication() {
+    return my_authentication;
+  }
+  
+  /**
+   * Setup the authentication subsystem according to the property setting
+   * `authentication_class` in the system's properties file.
+   */
+  private void setupAuthentication() {
+    String authentication_class = null;
+    try {
+      // classload and attach to the authentication field the appropriate
+      // implementation of `AuthenticationInterface`.
+      authentication_class = my_properties.getProperty("authentication_class");
+      if (authentication_class == null) {
+        authentication_class = "us.freeandfair.corla.auth.DatabaseAuthentication";
+      }
+      my_authentication = (AuthenticationInterface) 
+          Class.forName(authentication_class).newInstance();
+      LOGGER.info("Loaded authentication subsystem `" + authentication_class + "'");
+    } catch (final ClassNotFoundException | 
+        IllegalAccessException | InstantiationException e) {
+      LOGGER.fatal("Authentication class '" + authentication_class + "' not found.");
+      LOGGER.fatal("Check the value of `authentication_class` in your RLA Tool " + 
+          "system properties.");
+    }
+  }
   
   /**
    * Parse a port number from properties.
@@ -417,6 +455,9 @@ public final class Main {
       redirect.before((the_request, the_response) -> 
           httpsRedirect(the_request, the_response, https_port));
     }
+
+    // authentication subsystem
+    setupAuthentication();
     
     // static files location
     staticFileLocation("/us/freeandfair/corla/static");

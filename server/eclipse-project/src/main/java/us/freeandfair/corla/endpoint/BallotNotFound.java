@@ -26,6 +26,7 @@ import spark.Response;
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent;
+import us.freeandfair.corla.auth.Authentication;
 import us.freeandfair.corla.controller.ComparisonAuditController;
 import us.freeandfair.corla.json.SubmittedBallotNotFound;
 import us.freeandfair.corla.model.CVRAuditInfo;

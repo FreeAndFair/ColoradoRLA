@@ -16,6 +16,7 @@ import spark.Response;
 
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.AbstractStateMachine;
+import us.freeandfair.corla.auth.Authentication;
 
 /**
  * The endpoint for unauthenticating an administrator.

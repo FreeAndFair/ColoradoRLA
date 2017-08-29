@@ -17,6 +17,7 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.auth.Authentication;
 import us.freeandfair.corla.json.CountyDashboardRefreshResponse;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;

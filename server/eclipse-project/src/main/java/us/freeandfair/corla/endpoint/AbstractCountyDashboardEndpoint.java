@@ -14,6 +14,7 @@ package us.freeandfair.corla.endpoint;
 import spark.Request;
 
 import us.freeandfair.corla.asm.CountyDashboardASM;
+import us.freeandfair.corla.auth.Authentication;
 
 /**
  * Functionality that spans endpoints on the Department of State Dashboard.

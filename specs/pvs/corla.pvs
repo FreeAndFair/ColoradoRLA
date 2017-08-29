@@ -2278,9 +2278,11 @@ BEGIN
 %%% Moreover, it can also determine whether a specific person is
 %%% authenticated to the system.
   traditional_authenticated?:
-    [authentication_server, person, server, two_factor_authentication -> bool]
+    [authentication_server, person, server,
+     two_factor_authentication -> bool]
   second_factor_authenticated?:
-    [second_factor_server, person, server, two_factor_authentication -> bool]
+    [second_factor_server, person, server,
+     two_factor_authentication -> bool]
 %%%
 %%% Finally, we need a means by which to deauthenticate someone.
   traditional_deauthenticate:
@@ -2601,6 +2603,14 @@ BEGIN
 %%% authentication credential pair.
   authentication_table: TYPE =
     sequence[[administrator, two_factor_authentication]]
+%%% In order to be able to authenticate a particular administrator to
+%%% a role, we need the following two tables, which encodes relations
+%%% between administrators and domain of authentication, in the
+%%% database.
+  county_authentication_table: TYPE =
+    sequence[[county_administrator, county]]
+  state_authentication_table: TYPE =
+    sequence[[state_administrator, cdos]]
 %%% The Department of State dashboard permits State administrators to
 %%% establish risk limits for each contest, specify which kinds of
 %%% audits are used for which races and in which counties, etc.  Most

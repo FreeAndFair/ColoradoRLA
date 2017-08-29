@@ -27,6 +27,7 @@ import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.ASMUtilities;
 import us.freeandfair.corla.asm.AbstractStateMachine;
+import us.freeandfair.corla.auth.Authentication;
 import us.freeandfair.corla.json.Result;
 import us.freeandfair.corla.model.Administrator;
 import us.freeandfair.corla.model.Administrator.AdministratorType;

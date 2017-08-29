@@ -30,6 +30,7 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
+import us.freeandfair.corla.auth.Authentication;
 import us.freeandfair.corla.csv.DominionCVRExportParser;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.County;

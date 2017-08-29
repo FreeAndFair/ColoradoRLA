@@ -19,7 +19,8 @@ import spark.Response;
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.AbstractStateMachine;
-import us.freeandfair.corla.json.SubmittedUsernamePassword;
+import us.freeandfair.corla.auth.Authentication;
+import us.freeandfair.corla.json.SubmittedCredentials;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
 
 /**
@@ -98,8 +99,8 @@ public class AuthenticateCountyAdministrator extends AbstractEndpoint {
       ok(the_response, "Authenticated");
     } else {
       try {
-        final SubmittedUsernamePassword auth_info = 
-            Main.GSON.fromJson(the_request.body(), SubmittedUsernamePassword.class);
+        final SubmittedCredentials auth_info = 
+            Main.GSON.fromJson(the_request.body(), SubmittedCredentials.class);
         if (auth_info != null &&
             Authentication.authenticateAs(the_request, auth_info, 
                                           AdministratorType.COUNTY)) {
