@@ -238,6 +238,9 @@ public final class Persistence {
                    "org.hibernate.cache.ehcache.EhCacheRegionFactory");
       settings.put(Environment.USE_SECOND_LEVEL_CACHE, FALSE);
       settings.put(Environment.USE_QUERY_CACHE, FALSE);
+      // IMPORTANT: the USE_DIRECT_REFERENCE_CACHE_ENTRIES setting is FALSE to address
+      // Hibernate bug HHH-11169, and must not be changed until/unless that bug is 
+      // resolved
       settings.put(Environment.USE_DIRECT_REFERENCE_CACHE_ENTRIES, FALSE);
       settings.put(Environment.DEFAULT_CACHE_CONCURRENCY_STRATEGY, "read-write"); 
       
