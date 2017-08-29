@@ -6,6 +6,9 @@ import EndOfRoundFormContainer from './EndOfRoundFormContainer';
 
 
 const EndOfRoundPage = (props: any) => {
+    const { countyInfo } = props;
+    const countyName = countyInfo.name;
+
     return (
         <div>
             <CountyNav />
@@ -13,7 +16,7 @@ const EndOfRoundPage = (props: any) => {
             <div className='pt-card'>
                 Congratulations! You have completed reporting the votes on all ballots
                 randomly selected for this round of the risk-limiting audit of the
-                [County Name] County [Election Date] [Election Type] Election.
+                <span> { countyName } </span> County [Election Date] [Election Type] Election.
             </div>
 
             <div className='pt-card'>
@@ -26,7 +29,7 @@ const EndOfRoundPage = (props: any) => {
                     <li>
                         Personally located and retrieved, or personally observed a county staff
                         member locate and retrieve, each paper ballot randomly selected for
-                        [audit round no.] of the [County Name] County [Election Date]
+                        [audit round no.] of the <span> { countyName } </span> County [Election Date]
                         [Election Type] Election;
                     </li>
                     <li>
