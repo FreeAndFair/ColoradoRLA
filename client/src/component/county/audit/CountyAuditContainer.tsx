@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 
 import CountyAuditPage from './CountyAuditPage';
-import EndOfRoundPage from './EndOfRoundPage';
+import EndOfRoundPageContainer from './EndOfRoundPageContainer';
 
 import notice from '../../../notice';
 
@@ -20,7 +20,7 @@ class CountyAuditContainer extends React.Component<any, any> {
         }
 
         if (this.props.showEndOfRoundPage) {
-            return <EndOfRoundPage />;
+            return <EndOfRoundPageContainer />;
         }
 
         return <CountyAuditPage />;
