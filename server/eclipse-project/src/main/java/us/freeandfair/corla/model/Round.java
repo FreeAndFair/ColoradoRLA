@@ -75,6 +75,18 @@ public class Round implements Serializable {
   private Integer my_start_index;
   
   /**
+   * The number of discrepancies.
+   */
+  @Column(nullable = false)
+  private Integer my_discrepancies = 0;
+  
+  /**
+   * The number of disagreements.
+   */
+  @Column(nullable = false)
+  private Integer my_disagreements = 0;
+  
+  /**
    * Constructs an empty round, solely for persistence. 
    */
   public Round() {
@@ -165,6 +177,48 @@ public class Round implements Serializable {
   }
   
   /**
+   * @return the number of discrepancies.
+   */
+  public Integer discrepancies() {
+    return my_discrepancies;
+  }
+  
+  /**
+   * Adds a discrepancy.
+   */
+  public void addDiscrepancy() {
+    my_discrepancies = my_discrepancies + 1;
+  }
+  
+  /**
+   * Removes a discrepancy.
+   */
+  public void removeDiscrepancy() {
+    my_discrepancies = my_discrepancies - 1;
+  }
+  
+  /**
+   * @return the number of disagreements.
+   */
+  public Integer disagreements() {
+    return my_disagreements;
+  }
+  
+  /**
+   * Adds a disagreement.
+   */
+  public void addDisagreement() {
+    my_disagreements = my_disagreements + 1;
+  }
+  
+  /**
+   * Removes a disagreement.
+   */
+  public void removeDisagreement() {
+    my_disagreements = my_disagreements - 1;
+  }
+  
+  /**
    * @return a String representation of this elector.
    */
   @Override
@@ -172,7 +226,8 @@ public class Round implements Serializable {
     return "Round [start_time=" + my_start_time + ", end_time=" +
            my_end_time + ", expected_count=" + my_expected_count + 
            ", actual_count=" + my_actual_count + ", start_index=" + 
-           my_start_index + "]";
+           my_start_index + ", discrepancies=" + my_discrepancies + 
+           "disagreements=" + my_disagreements + "]";
   }
 
   /**
@@ -191,6 +246,8 @@ public class Round implements Serializable {
       result &= nullableEquals(other_round.expectedCount(), expectedCount());
       result &= nullableEquals(other_round.actualCount(), actualCount());
       result &= nullableEquals(other_round.startIndex(), startIndex());
+      result &= nullableEquals(other_round.discrepancies(), discrepancies());
+      result &= nullableEquals(other_round.disagreements(), disagreements());
     } else {
       result = false;
     }

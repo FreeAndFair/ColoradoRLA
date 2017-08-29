@@ -175,8 +175,6 @@ public final class ComparisonAuditController {
     }
     
     the_dashboard.setAuditedPrefixLength(0);
-    the_dashboard.setDiscrepancies(0);
-    the_dashboard.setDisagreements(0);
     for (final CountyContestResult ccr : 
          CountyContestResultQueries.forCounty(the_dashboard.county())) {
       final CountyContestComparisonAudit audit = 
@@ -321,14 +319,14 @@ public final class ComparisonAuditController {
     if (the_update_counters) {
       the_dashboard.setBallotsAudited(the_dashboard.ballotsAudited() + 1); 
       if (discrepancy_found) {
-        the_dashboard.setDiscrepancies(the_dashboard.discrepancies() + 1);
+        the_dashboard.addDiscrepancy();
       }
       boolean disagree = false;
       for (final CVRContestInfo ci : the_audit_cvr.contestInfo()) {
         disagree |= ci.consensus() == ConsensusValue.NO;
       }
       if (disagree) {
-        the_dashboard.setDisagreements(the_dashboard.disagreements() + 1);
+        the_dashboard.addDisagreement();
       }
     }
   }
@@ -357,14 +355,14 @@ public final class ComparisonAuditController {
     }
     the_dashboard.setBallotsAudited(the_dashboard.ballotsAudited() - 1); 
     if (discrepancy_found) {
-      the_dashboard.setDiscrepancies(the_dashboard.discrepancies() - 1);
+      the_dashboard.removeDiscrepancy();
     }
     boolean disagree = false;
     for (final CVRContestInfo ci : the_audit_cvr.contestInfo()) {
       disagree |= ci.consensus() == ConsensusValue.NO;
     }
     if (disagree) {
-      the_dashboard.setDisagreements(the_dashboard.disagreements() - 1);
+      the_dashboard.removeDisagreement();
     }
   }
   
