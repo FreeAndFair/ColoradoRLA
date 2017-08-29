@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import CountyNav from '../Nav';
 
-import EndOfRoundForm from './EndOfRoundForm';
+import EndOfRoundFormContainer from './EndOfRoundFormContainer';
 
 
 class EndOfRoundPage extends React.Component<any, any> {
@@ -48,7 +48,7 @@ class EndOfRoundPage extends React.Component<any, any> {
                             submitted by the voter.
                         </li>
                     </ul>
-                    <EndOfRoundForm />
+                    <EndOfRoundFormContainer />
                 </div>
             </div>
         );
