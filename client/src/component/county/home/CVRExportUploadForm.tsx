@@ -3,7 +3,7 @@ import * as React from 'react';
 import { EditableText } from '@blueprintjs/core';
 
 
-class CVRUploader extends React.Component<any, any> {
+class CVRExportUploadForm extends React.Component<any, any> {
     public state: any = {
         file: null,
         hash: '',
@@ -66,4 +66,4 @@ class CVRUploader extends React.Component<any, any> {
 }
 
 
-export default CVRUploader;
+export default CVRExportUploadForm;

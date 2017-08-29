@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import CVRUploader from './CVRUploader';
+import CVRExportUploadForm from './CVRExportUploadForm';
 
 import uploadCvrExport from '../../../action/uploadCvrExport';
 
@@ -14,7 +14,7 @@ const UploadedCvrExport = ({ filename, hash }: any) => (
     </div>
 );
 
-class CVRUploaderContainer extends React.Component<any, any> {
+class CVRExportUploadFormContainer extends React.Component<any, any> {
     public render() {
         const { auditStarted, county, fileUploaded } = this.props;
         const forms: any = {};
@@ -33,7 +33,7 @@ class CVRUploaderContainer extends React.Component<any, any> {
             );
         }
 
-        return <CVRUploader upload={ upload } forms={ forms } />;
+        return <CVRExportUploadForm upload={ upload } forms={ forms } />;
     }
 }
 
@@ -44,4 +44,4 @@ const mapStateToProps = ({ county }: any) => ({
 });
 
 
-export default connect(mapStateToProps)(CVRUploaderContainer);
+export default connect(mapStateToProps)(CVRExportUploadFormContainer);
