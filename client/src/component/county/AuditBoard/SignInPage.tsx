@@ -26,7 +26,7 @@ class AuditBoardSignInPage extends React.Component<any, any> {
     };
 
     public render() {
-        const { auditBoard, county } = this.props;
+        const { auditBoard, countyName } = this.props;
 
         if (!auditBoard) {
             return <div />;
@@ -43,8 +43,8 @@ class AuditBoardSignInPage extends React.Component<any, any> {
                     <h2>Audit Board Sign-in</h2>
                     <div className='pt-card'>
                         Enter the full names and party affiliations of each member of
-                        the Acme County Audit Board who will be conducting this audit
-                        today:
+                        the { countyName } County Audit Board who will be conducting this
+                        audit today:
                     </div>
                 </div>
                 <SignInForm

@@ -5,7 +5,7 @@ import CountyNav from '../Nav';
 import auditBoardSignOut from '../../../action/county/auditBoardSignOut';
 
 
-const SignedInPage = ({ auditBoard }: any) => {
+const SignedInPage = ({ auditBoard, countyName }: any) => {
     return (
         <div>
             <CountyNav />
@@ -13,8 +13,8 @@ const SignedInPage = ({ auditBoard }: any) => {
                 <h2>Audit Board Sign-in</h2>
                 <div className='pt-card'>
                     Enter the full names and party affiliations of each member of
-                    the Acme County Audit Board who will be conducting this audit
-                    today.
+                    the { countyName } County Audit Board who will be conducting this
+                    audit today.
                 </div>
             </div>
             <div className='pt-card'>
