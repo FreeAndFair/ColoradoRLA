@@ -10,6 +10,7 @@ interface Elector {
 type Status = 'NO_DATA' | 'CVRS_UPLOADED_SUCCESSFULLY' | 'ERROR_IN_UPLOADED_DATA';
 
 interface CountyDashboard {
+    asm_state: string;
     audit_time: string;
     audit_board: any;
     audited_ballot_count: number;
@@ -92,6 +93,7 @@ export const parse = (data: CountyDashboard, state: any): any => {
     const findContest = (id: any) => state.county.contestDefs[id];
 
     return {
+        asm_state: data.asm_state,
         auditBoard: parseAuditBoard(data.audit_board),
         auditTime: data.audit_time ? parseTimestamp(data.audit_time) : null,
         auditedBallotCount: data.audited_ballot_count,
