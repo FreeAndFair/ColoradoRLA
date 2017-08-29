@@ -216,8 +216,9 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
           invariantViolation(the_response, "no previous audit rounds for county " + cdb.id());
         } else {
           final Round previous_round = rounds.get(rounds.size() - 1);
-          // we start the next round where the previous round actually ended
-          start_index = previous_round.startIndex() + previous_round.actualCount();
+          // we start the next round where the previous round actually ended 
+          // in the audit sequence
+          start_index = previous_round.auditPrefixLengthAchieved();
         }
         final int round_length;
         if (start.useEstimates()) {

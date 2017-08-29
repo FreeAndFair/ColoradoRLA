@@ -115,15 +115,18 @@ public class CountyDashboardRefreshResponse {
   
   /**
    * The date and time of the audit. 
-   * @todo connect this to something
    */
   private final Instant my_audit_time;
   
   /**
    * The estimated number of ballots to audit.
-   * @todo connect this to something
    */
   private final Integer my_estimated_ballots_to_audit;
+  
+  /**
+   * The ballots remaining in the round.
+   */
+  private final Integer my_ballots_remaining_in_round;
   
   /**
    * The number of ballots audited.
@@ -173,6 +176,8 @@ public class CountyDashboardRefreshResponse {
    * @param the_contests_under_audit The contests under audit, with reasons.
    * @param the_audit_time The audit time.
    * @param the_estimated_ballots_to_audit The estimated ballots to audit.
+   * @param the_ballots_remaining_in_round The ballots remaining in the 
+   * current round.
    * @param the_audited_ballot_count The number of ballots audited.
    * @param the_discrepancy_count The number of discrepencies.
    * @param the_disagreement_count The number of disagreements.
@@ -197,6 +202,7 @@ public class CountyDashboardRefreshResponse {
                                            final Map<Long, String> the_contests_under_audit,
                                            final Instant the_audit_time,
                                            final Integer the_estimated_ballots_to_audit,
+                                           final Integer the_ballots_remaining_in_round,
                                            final Integer the_audited_ballot_count,
                                            final Integer the_discrepancy_count, 
                                            final Integer the_disagreement_count,
@@ -218,6 +224,7 @@ public class CountyDashboardRefreshResponse {
     my_contests_under_audit = the_contests_under_audit;
     my_audit_time = the_audit_time;
     my_estimated_ballots_to_audit = the_estimated_ballots_to_audit;
+    my_ballots_remaining_in_round = the_ballots_remaining_in_round;
     my_audited_ballot_count = the_audited_ballot_count;
     my_discrepancy_count = the_discrepancy_count;
     my_disagreement_count = the_disagreement_count;
@@ -307,6 +314,7 @@ public class CountyDashboardRefreshResponse {
                                               contests_under_audit,
                                               the_dashboard.auditTimestamp(),
                                               the_dashboard.estimatedBallotsToAudit(),
+                                              the_dashboard.ballotsRemainingInCurrentRound(),
                                               the_dashboard.ballotsAudited(),
                                               the_dashboard.discrepancies(),
                                               the_dashboard.disagreements(),
@@ -363,7 +371,7 @@ public class CountyDashboardRefreshResponse {
     // status
     final CountyDashboardASM asm = ASMUtilities.asmFor(CountyDashboardASM.class, 
                                                        county_id.toString());
-
+    
     return new CountyDashboardRefreshResponse(county_id, 
                                               asm.currentState(),
                                               null,
@@ -378,6 +386,7 @@ public class CountyDashboardRefreshResponse {
                                               null,
                                               the_dashboard.auditTimestamp(),
                                               the_dashboard.estimatedBallotsToAudit(),
+                                              the_dashboard.ballotsRemainingInCurrentRound(),
                                               the_dashboard.ballotsAudited(),
                                               the_dashboard.discrepancies(),
                                               the_dashboard.disagreements(),

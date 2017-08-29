@@ -379,7 +379,7 @@ public final class ComparisonAuditController {
       discrepancy_found |= discrepancy != 0;
     }
     if (the_update_counters) {
-      the_dashboard.setBallotsAudited(the_dashboard.ballotsAudited() + 1); 
+      the_dashboard.addAuditedBallot();
       if (discrepancy_found) {
         the_dashboard.addDiscrepancy();
       }
@@ -415,7 +415,7 @@ public final class ComparisonAuditController {
       }
       discrepancy_found |= discrepancy != 0;
     }
-    the_dashboard.setBallotsAudited(the_dashboard.ballotsAudited() - 1); 
+    the_dashboard.addAuditedBallot(); 
     if (discrepancy_found) {
       the_dashboard.removeDiscrepancy();
     }

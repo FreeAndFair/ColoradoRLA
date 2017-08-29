@@ -510,6 +510,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
           break;
         }
       }
+      the_round.addAuditedBallot();
       index = index + 1;
     }
   }
@@ -524,10 +525,27 @@ public class CountyDashboard implements PersistentEntity, Serializable {
       throw new IllegalStateException("no round to end");
     } else {
       final Round round = my_rounds.get(my_current_round_index);
-      round.setActualCount(my_audited_prefix_length - round.startIndex());
       round.setEndTime(Instant.now());
+      round.setAuditPrefixLengthAchieved(my_audited_prefix_length);
       my_current_round_index = NO_CONTENT;
     }
+  }
+  
+  /**
+   * @return the number of ballots remaining in the current round, or 0
+   * if there is no current round.
+   */
+  public int ballotsRemainingInCurrentRound() {
+    final int result;
+    
+    if (my_current_round_index == null) {
+      result = 0;
+    } else {
+      final Round round = currentRound();
+      result = round.expectedCount() - round.actualCount();
+    }
+    
+    return result;
   }
   
   /**
@@ -626,12 +644,25 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   }
   
   /**
-   * Sets the number of ballots audited.
-   * 
-   * @param the_ballots_audited The number of ballots audited.
+   * Adds an audited ballot. This adds it both to the total and to
+   * the current audit round, if one is ongoing.
    */
-  public void setBallotsAudited(final int the_ballots_audited) {
-    my_ballots_audited = the_ballots_audited;
+  public void addAuditedBallot() {
+    my_ballots_audited = my_ballots_audited + 1;
+    if (my_current_round_index != null) {
+      my_rounds.get(my_current_round_index).addAuditedBallot();
+    }
+  }
+ 
+  /**
+   * Removes an audited ballot. This removes it both from the total and
+   * from the current audit round, if one is ongoing.
+   */
+  public void removeAuditedBallot() {
+    my_ballots_audited = my_ballots_audited - 1;
+    if (my_current_round_index != null) {
+      my_rounds.get(my_current_round_index).removeAuditedBallot();
+    }  
   }
   
   /**

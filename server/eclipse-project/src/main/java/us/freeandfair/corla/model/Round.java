@@ -66,7 +66,14 @@ public class Round implements Serializable {
    * number is based on the audit random sequence, so it may
    * include duplicate ballots.
    */
+  @Column(nullable = false)
   private Integer my_actual_count;
+  
+  /**
+   * The audited prefix length achieved by the end of this round.
+   */
+  @Column
+  private Integer my_audit_prefix_length_achieved;
   
   /**
    * The index of the audit random sequence where the round starts.
@@ -110,6 +117,7 @@ public class Round implements Serializable {
     my_number = the_number;
     my_start_time = the_start_time;
     my_expected_count = the_expected_count;
+    my_actual_count = 0;
     my_start_index = the_start_index;
   }
   
@@ -158,14 +166,34 @@ public class Round implements Serializable {
   }
   
   /**
-   * Sets the actual number of ballots audited.
-   * 
-   * @param the_actual_count The number of ballots audited; this
-   * should reflect the audit random sequence, not physical 
-   * ballot cards.
+   * @return the audit sequence prefix length achieved by the end of 
+   * this round, or null if this round has not ended.
    */
-  public void setActualCount(final int the_actual_count) {
-    my_actual_count = the_actual_count;
+  public Integer auditPrefixLengthAchieved() {
+    return my_audit_prefix_length_achieved;
+  }
+  
+  /**
+   * Sets the audit prefix sequence length achieved by the end of this round.
+   * 
+   * @param the_audit_prefix_length_achieved The prefix length achieved.
+   */
+  public void setAuditPrefixLengthAchieved(final int the_audit_prefix_length_achieved) {
+    my_audit_prefix_length_achieved = the_audit_prefix_length_achieved;
+  }
+  
+  /**
+   * Adds an audited ballot.
+   */
+  public void addAuditedBallot() {
+    my_actual_count = my_actual_count + 1;
+  }
+  
+  /**
+   * Removes an audited ballot.
+   */
+  public void removeAuditedBallot() {
+    my_actual_count = my_actual_count - 1;
   }
   
   /**
