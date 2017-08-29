@@ -27,18 +27,13 @@ import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 
 /**
- * The endpoint for uploading the random seed.
+ * The endpoint for setting the random seed.
  * 
  * @author Daniel M Zimmerman
  * @version 0.0.1
  */
-/**
- * @description <description>
- * @explanation <explanation>
- * @bon OPTIONAL_BON_TYPENAME
- */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class UploadRandomSeed extends AbstractDoSDashboardEndpoint {
+public class SetRandomSeed extends AbstractDoSDashboardEndpoint {
   /**
    * The "random seed" parameter.
    */
@@ -72,8 +67,6 @@ public class UploadRandomSeed extends AbstractDoSDashboardEndpoint {
    * Attempts to set the random seed for comparison audits. The random seed
    * should be provided as an integer in base 10, as Colorado rolls a
    * 10-sided die to determine each digit.
-   * 
-   * Session query parameters: <tt>random-seed</tt>
    * 
    * @param the_request The request.
    * @param the_response The response.
