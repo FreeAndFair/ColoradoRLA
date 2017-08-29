@@ -378,7 +378,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * 
    * @param the_members The members.
    */
-  public void signInAuditBoard(final Set<Elector> the_members) {
+  public void signInAuditBoard(final List<Elector> the_members) {
     if (my_current_audit_board_index == null) {
       my_current_audit_board_index = my_audit_boards.size();
     } else {
