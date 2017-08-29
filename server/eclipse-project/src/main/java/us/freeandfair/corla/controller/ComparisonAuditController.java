@@ -258,31 +258,38 @@ public final class ComparisonAuditController {
     }
 
     updateCVRUnderAudit(the_dashboard);
-    the_dashboard.setEstimatedBallotsToAudit(computeEstimatedBallotsToAudit(the_dashboard, 
-                                                                            false));
+    the_dashboard.
+        setEstimatedBallotsToAudit(computeEstimatedBallotsToAudit(the_dashboard, false) -
+                                   the_dashboard.auditedPrefixLength());
     
     return result;
   }
   
   /**
-   * Checks to see if the specified CVR has been audited on the specified county
-   * dashboard.
+   * Computes the estimated total number of ballots to audit on the specified
+   * county dashboard.
    * 
-   * @param the_dashboard The county dashboard.
-   * @param the_cvr The CVR.
-   * @return true if the specified CVR has been audited, false otherwise.
+   * @param the_dashboard The dashboard.
+   * @param the_error_rates true to project from the current error rates, 
+   * false to get the minimum given the current over- and understatements. 
    */
-  public static boolean audited(final CountyDashboard the_dashboard, 
-                                final CastVoteRecord the_cvr) {
-    final List<CVRAuditInfo> info = 
-        CVRAuditInfoQueries.matching(the_dashboard, the_cvr);
-    final boolean result;
-    if (info.isEmpty() || info.get(0).acvr() == null) {
-      result = false;
-    } else {
-      result = true;
+  public static int 
+      computeEstimatedBallotsToAudit(final CountyDashboard the_dashboard,
+                                     final boolean the_error_rates) {
+    int to_audit = Integer.MIN_VALUE;
+    final Set<Contest> driving_contests = the_dashboard.drivingContests();
+    for (final CountyContestComparisonAudit ccca : the_dashboard.comparisonAudits()) {
+      if (driving_contests.contains(ccca.contest())) {
+        final int bta;
+        if (the_error_rates) {
+          bta = ccca.expectedBallotsToAuditFromCurrentRates();
+        } else {
+          bta = ccca.ballotsToAudit();
+        }
+        to_audit = Math.max(to_audit, bta);
+      }
     }
-    return result;
+    return Math.max(0,  to_audit);
   }
   
   /**
@@ -387,7 +394,9 @@ public final class ComparisonAuditController {
       index = index + 1;
     }
     new_prefix_length = index;
-    final int to_audit = computeEstimatedBallotsToAudit(the_dashboard, false);
+    final int to_audit = 
+        computeEstimatedBallotsToAudit(the_dashboard, false) -
+        the_dashboard.auditedPrefixLength();
     if (new_prefix_length == cvr_audit_info.size() && 
         0 < to_audit - new_prefix_length) {
       // we're out of ballots and the audit isn't done, so we need more; right 
@@ -406,33 +415,6 @@ public final class ComparisonAuditController {
     if (current_round.startIndex() + current_round.expectedCount() <= new_prefix_length) {
       the_dashboard.endRound();
     }
-  }
- 
-  /**
-   * Updates the estimated number of ballots to audit on the specified
-   * county dashboard.
-   * 
-   * @param the_dashboard The dashboard.
-   * @param the_error_rates true to project from the current error rates, 
-   * false to get the minimum given the current over- and understatements. 
-   */
-  private static int 
-      computeEstimatedBallotsToAudit(final CountyDashboard the_dashboard,
-                                     final boolean the_error_rates) {
-    int to_audit = Integer.MIN_VALUE;
-    final Set<Contest> driving_contests = the_dashboard.drivingContests();
-    for (final CountyContestComparisonAudit ccca : the_dashboard.comparisonAudits()) {
-      if (driving_contests.contains(ccca.contest())) {
-        final int bta;
-        if (the_error_rates) {
-          bta = ccca.expectedBallotsToAuditFromCurrentRates();
-        } else {
-          bta = ccca.ballotsToAudit();
-        }
-        to_audit = Math.max(to_audit, bta);
-      }
-    }
-    return Math.max(0,  to_audit - the_dashboard.auditedPrefixLength());
   }
   
   /**

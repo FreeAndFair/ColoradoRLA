@@ -189,17 +189,32 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
       }
     
       for (final CountyDashboard cdb : cdbs) {
+        final AuditBoardDashboardASM asm = 
+            ASMUtilities.asmFor(AuditBoardDashboardASM.class, cdb.id().toString());
+        if (asm.isInInitialState() || asm.isInFinalState()) {
+          // there is no audit happening in this county, so go to the next one
+          break;
+        }
+        
         // if the county is in the middle of a round, error out
         if (cdb.currentRound() != null) {
-          invariantViolation(the_response, "audit round already in progress for county " + cdb.id());
+          invariantViolation(the_response, 
+                             "audit round already in progress for county " + cdb.id());
         }
-        final List<Round> previous_rounds = cdb.rounds();
-        int start_index;
-        if (!previous_rounds.isEmpty() && 
+        final List<Round> rounds = cdb.rounds();
+        int start_index = 0;
+        if (rounds.isEmpty()) {
+          invariantViolation(the_response, "no previous audit rounds for county " + cdb.id());
+        } else {
+          final Round previous_round = rounds.get(rounds.size() - 1);
+          // we start the next round where the previous round actually ended
+          start_index = previous_round.startIndex() + previous_round.actualCount();
+        }
         final int round_length;
         if (start.useEstimates()) {
           // use estimates based on current error rate to get length of round
-          round_length 
+          int bta = ComparisonAuditController.computeEstimatedBallotsToAudit(cdb, true);
+          round_length = bta - start_index;
         }
       }
       
