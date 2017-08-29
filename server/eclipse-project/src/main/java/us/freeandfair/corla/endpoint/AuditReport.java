@@ -94,7 +94,9 @@ public class AuditReport extends AbstractAuditBoardDashboardEndpoint {
           Persistence.getByID(Authentication.authenticatedCounty(the_request).id(), 
                               CountyDashboard.class);
       if (cdb.currentRound() != null) {
-        cdb.endRound();
+        invariantViolation(the_response, 
+                           "attempted to file audit report for county " + cdb.id() + 
+                           " during an audit round");
       }
       cdb.signOutAuditBoard();
       ok(the_response, "Final audit report saved (actual action to be specified by CDOS)");

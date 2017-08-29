@@ -30,12 +30,7 @@ import us.freeandfair.corla.persistence.Persistence;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class SetElectionInfo extends AbstractDoSDashboardEndpoint {
-  /**
-   * The "random seed" parameter.
-   */
-  public static final String RANDOM_SEED = "random_seed";
-  
+public class SetElectionInfo extends AbstractDoSDashboardEndpoint {  
   /**
    * {@inheritDoc}
    */

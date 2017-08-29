@@ -70,16 +70,29 @@ public class Round implements Serializable {
   private Integer my_actual_count;
   
   /**
-   * The audited prefix length achieved by the end of this round.
+   * The audited prefix length expected to be achieved by the end of
+   * this round.
+   */
+  @Column(nullable = false, updatable = false)
+  private Integer my_expected_audit_prefix_length;
+  
+  /**
+   * The audited prefix length actually achieved by the end of this round.
    */
   @Column
-  private Integer my_audit_prefix_length_achieved;
+  private Integer my_actual_audit_prefix_length;
   
   /**
    * The index of the audit random sequence where the round starts.
    */
   @Column(nullable = false, updatable = false)
-  private Integer my_start_index;
+  private Integer my_start_audit_prefix_length;
+  
+  /**
+   * The number of previously-audited ballots when the round starts.
+   */
+  @Column(nullable = false, updatable = false)
+  private Integer my_previous_ballots_audited;
   
   /**
    * The number of discrepancies.
@@ -106,19 +119,23 @@ public class Round implements Serializable {
    * @param the_number The round number.
    * @param the_start_time The start time.
    * @param the_expected_count The expected number of ballots to audit.
-   * @param the_start_index The index of the audit random sequence 
+   * @param the_start_audit_prefix_length The index of the audit random sequence 
    * where the round starts.
    */
   public Round(final Integer the_number,
                final Instant the_start_time,
                final Integer the_expected_count,
-               final Integer the_start_index) {
+               final Integer the_previous_ballots_audited,
+               final Integer the_expected_audit_prefix_length,
+               final Integer the_start_audit_prefix_length) {
     super();
     my_number = the_number;
     my_start_time = the_start_time;
     my_expected_count = the_expected_count;
+    my_expected_audit_prefix_length = the_expected_audit_prefix_length;
     my_actual_count = 0;
-    my_start_index = the_start_index;
+    my_start_audit_prefix_length = the_start_audit_prefix_length;
+    my_previous_ballots_audited = the_previous_ballots_audited;
   }
   
   /**
@@ -166,20 +183,44 @@ public class Round implements Serializable {
   }
   
   /**
+   * Sets the actual number of ballots audited.
+   * 
+   * @param the_actual_count The count.
+   */
+  public void setActualCount(final Integer the_actual_count) {
+    my_actual_count = the_actual_count;
+  }
+  
+  /**
+   * @return the number of ballots audited prior to this round.
+   */
+  public Integer previousBallotsAudited() {
+    return my_previous_ballots_audited;
+  }
+  
+  /**
+   * @return the expected audit sequence prefix length to be 
+   * achieved by the end of this round.
+   */
+  public Integer expectedAuditPrefixLength() {
+    return my_expected_audit_prefix_length;
+  }
+  
+  /**
    * @return the audit sequence prefix length achieved by the end of 
    * this round, or null if this round has not ended.
    */
-  public Integer auditPrefixLengthAchieved() {
-    return my_audit_prefix_length_achieved;
+  public Integer actualAuditPrefixLength() {
+    return my_actual_audit_prefix_length;
   }
   
   /**
    * Sets the audit prefix sequence length achieved by the end of this round.
    * 
-   * @param the_audit_prefix_length_achieved The prefix length achieved.
+   * @param the_audit_prefix_length The prefix length achieved.
    */
-  public void setAuditPrefixLengthAchieved(final int the_audit_prefix_length_achieved) {
-    my_audit_prefix_length_achieved = the_audit_prefix_length_achieved;
+  public void setActualAuditPrefixLength(final int the_audit_prefix_length) {
+    my_actual_audit_prefix_length = the_audit_prefix_length;
   }
   
   /**
@@ -200,8 +241,8 @@ public class Round implements Serializable {
    * @return the index of the audit random sequence where this round
    * starts.
    */
-  public Integer startIndex() {
-    return my_start_index;
+  public Integer startAuditPrefixLength() {
+    return my_start_audit_prefix_length;
   }
   
   /**
@@ -254,7 +295,7 @@ public class Round implements Serializable {
     return "Round [start_time=" + my_start_time + ", end_time=" +
            my_end_time + ", expected_count=" + my_expected_count + 
            ", actual_count=" + my_actual_count + ", start_index=" + 
-           my_start_index + ", discrepancies=" + my_discrepancies + 
+           my_start_audit_prefix_length + ", discrepancies=" + my_discrepancies + 
            "disagreements=" + my_disagreements + "]";
   }
 
@@ -273,7 +314,7 @@ public class Round implements Serializable {
       result &= nullableEquals(other_round.endTime(), endTime());
       result &= nullableEquals(other_round.expectedCount(), expectedCount());
       result &= nullableEquals(other_round.actualCount(), actualCount());
-      result &= nullableEquals(other_round.startIndex(), startIndex());
+      result &= nullableEquals(other_round.startAuditPrefixLength(), startAuditPrefixLength());
       result &= nullableEquals(other_round.discrepancies(), discrepancies());
       result &= nullableEquals(other_round.disagreements(), disagreements());
     } else {

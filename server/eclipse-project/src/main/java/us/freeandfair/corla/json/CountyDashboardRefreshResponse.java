@@ -158,6 +158,11 @@ public class CountyDashboardRefreshResponse {
    */
   private final Integer my_audited_prefix_length;
   
+  /**
+   * The audit rounds.
+   */
+  private final List<Round> my_rounds;
+  
   /** 
    * The current audit round.
    */
@@ -185,6 +190,7 @@ public class CountyDashboardRefreshResponse {
    * @param the_ballot_under_audit_id The ID of the CVR under audit.
    * @param the_audited_prefix_length The length of the audited prefix of the
    * ballots to audit list.
+   * @param the_rounds The list of audit rounds.
    * @param the_current_round The current audit round.
    */
   @SuppressWarnings({"PMD.ExcessiveParameterList", "checkstyle:executablestatementcount"})
@@ -209,6 +215,7 @@ public class CountyDashboardRefreshResponse {
                                            final List<Long> the_ballots_to_audit,
                                            final Long the_ballot_under_audit_id,
                                            final Integer the_audited_prefix_length,
+                                           final List<Round> the_rounds,
                                            final Round the_current_round) {
     my_id = the_id;
     my_asm_state = the_asm_state;
@@ -231,6 +238,7 @@ public class CountyDashboardRefreshResponse {
     my_ballots_to_audit = the_ballots_to_audit;
     my_ballot_under_audit_id = the_ballot_under_audit_id;
     my_audited_prefix_length = the_audited_prefix_length;
+    my_rounds = the_rounds;
     my_current_round = the_current_round;
   }
   
@@ -321,6 +329,7 @@ public class CountyDashboardRefreshResponse {
                                               CVRAuditInfoQueries.cvrsToAudit(the_dashboard),
                                               the_dashboard.cvrUnderAudit(),
                                               the_dashboard.auditedPrefixLength(),
+                                              the_dashboard.rounds(),
                                               the_dashboard.currentRound());
   }
   
@@ -393,6 +402,7 @@ public class CountyDashboardRefreshResponse {
                                               null,
                                               null,
                                               the_dashboard.auditedPrefixLength(),
+                                              the_dashboard.rounds(),
                                               the_dashboard.currentRound());
   }
 }
