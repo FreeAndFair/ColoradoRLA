@@ -37,6 +37,7 @@ import us.freeandfair.corla.json.SubmittedAuditRoundStart;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.Round;
 import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
  * Starts a new audit round for one or more counties.
@@ -44,7 +45,9 @@ import us.freeandfair.corla.persistence.Persistence;
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 0.0.1
  */
-@SuppressWarnings("PMD.AtLeastOneConstructor")
+@SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.StdCyclomaticComplexity",
+                   "PMD.AtLeastOneConstructor", "PMD.ModifiedCyclomaticComplexity",
+                   "PMD.NPathComplexity"})
 public class StartAuditRound extends AbstractDoSDashboardEndpoint {
   /**
    * The event to return for this endpoint.
@@ -168,10 +171,16 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
    * @param the_response The HTTP response.
    * @return the result for endpoint.
    */
+  // FindBugs thinks there's a possible NPE, but there's not because 
+  // badDataContents() would bail on the method before it happened.
+  @SuppressFBWarnings("NP_NULL_ON_SOME_PATH")
   public String startSubsequentRound(final Request the_request, final Response the_response) {
     SubmittedAuditRoundStart start = null;
     try {
       start = Main.GSON.fromJson(the_request.body(), SubmittedAuditRoundStart.class);
+      if (start == null) {
+        badDataContents(the_response, "malformed request data");
+      }
     } catch (final JsonSyntaxException e) {
       badDataContents(the_response, "malformed request data");
     }
@@ -213,14 +222,17 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
         final int round_length;
         if (start.useEstimates()) {
           // use estimates based on current error rate to get length of round
-          int bta = ComparisonAuditController.computeEstimatedBallotsToAudit(cdb, true);
-          round_length = bta - start_index;
+          round_length = 
+              ComparisonAuditController.computeEstimatedBallotsToAudit(cdb, true) - 
+              start_index;
+        } else {
+          round_length = start.countyBallots().get(cdb.id());
         }
-      }
-      
-      ok(the_response, "ballot lists published");
+        cdb.startRound(round_length, start_index);
+      }      
+      ok(the_response, "new audit round started");
     } catch (final PersistenceException e) {
-      serverError(the_response, "could not publish list of ballots to audit");
+      serverError(the_response, "could not start new audit round");
     }
     
     return my_endpoint_result.get();
