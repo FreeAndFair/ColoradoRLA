@@ -33,13 +33,25 @@ const Main = (props: any) => {
         startAudit,
     } = props;
 
+    let directions = 'Please upload your Ballot Manifest and Cast Vote Records.';
+
+    if (auditBoardSignedIn) {
+        if (auditButtonDisabled) {
+            directions = 'Please stand by for the state to begin the audit.';
+        } else {
+            directions = 'You may proceed with the audit.';
+        }
+    } else {
+        if (!signInButtonDisabled) {
+            directions = 'Please have the audit board sign in.';
+        }
+    }
+
     return (
         <div className='county-main pt-card'>
             <h1>Hello, { name } County!</h1>
             <div>
-                <div>
-                    Please upload your Ballot Manifest and Cast Vote Records.
-                </div>
+                <div className='pt-card'>{ directions }</div>
                 <FileUploadContainer />
                 <AuditBoardInfo signedIn={ auditBoardSignedIn } />
                 <button
