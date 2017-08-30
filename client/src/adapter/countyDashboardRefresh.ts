@@ -16,6 +16,7 @@ interface Round {
     expected_count: number;
     number: number;
     signatories: any;
+    start_audit_prefix_length: number;
     start_index: number;
     start_time: Date;
 }
@@ -114,6 +115,7 @@ function parseRound(data: Round) {
         expectedCount: data.expected_count,
         number: data.number,
         signatories: data.signatories || [],
+        startAuditPrefixLength: data.start_audit_prefix_length,
         startIndex: data.start_index,
         startTime: data.start_time,
     };
