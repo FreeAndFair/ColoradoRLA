@@ -31,7 +31,7 @@ const ReadonlyRiskLimit = ({ riskLimit }: any) => {
     const riskLimitPercent = round(riskLimit * 100, 2);
 
     return (
-        <div>
+        <div className='pt-card'>
             <h4>Risk limit set.</h4>
             <div>The risk limit is set at: { riskLimitPercent }%</div>
         </div>
@@ -70,13 +70,15 @@ const AuditPage = ({ nextPage, riskLimit, setRiskLimit }: any) => {
             </div>
 
             <div className='pt-card'>
-                <h3>Risk Limits</h3>
-                <div>Each contest has a default risk limit set. To change the default risk
-                    limit, change the percentage shown.
+                <h3>Risk Limit</h3>
+                <div>
+                    Enter the risk limit for comparison audits as a percentage.
                 </div>
                 { riskLimitForm }
-                <div>
-                    Once the election has started, this information will not be able to be changed.
+                <div className='pt-card'>
+                    <span className='pt-icon pt-intent-warning pt-icon-warning-sign' />
+                    <span> </span>
+                    Once entered, this risk limit cannot be modified.
                 </div>
 
                 <button onClick={ buttonClick } className='pt-button pt-intent-primary'>
