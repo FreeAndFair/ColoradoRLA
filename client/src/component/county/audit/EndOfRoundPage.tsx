@@ -5,11 +5,30 @@ import CountyNav from '../Nav';
 import EndOfRoundFormContainer from './EndOfRoundFormContainer';
 
 
+const PreviousRoundSignedOff = (props: any) => {
+    const { roundNumber } = props;
+
+    return (
+        <div>
+            <CountyNav />
+            <h3> End of Round { roundNumber }</h3>
+            <div className='pt-card'>
+                The current round, Round #{ roundNumber } is complete.
+                Please wait for the Department of State to begin the next round.
+            </div>
+        </div>
+    );
+};
+
 const EndOfRoundPage = (props: any) => {
-    const { countyInfo, previousRound } = props;
+    const { countyInfo, previousRound, previousRoundSignedOff } = props;
 
     const countyName = countyInfo.name;
     const roundNumber = previousRound.number;
+
+    if (previousRoundSignedOff) {
+        return <PreviousRoundSignedOff roundNumber={ roundNumber } />;
+    }
 
     return (
         <div>
