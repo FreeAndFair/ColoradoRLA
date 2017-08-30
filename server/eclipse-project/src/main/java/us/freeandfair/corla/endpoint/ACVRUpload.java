@@ -89,23 +89,24 @@ public class ACVRUpload extends AbstractAuditBoardDashboardEndpoint {
         Main.LOGGER.error("empty audit CVR upload");
         badDataContents(the_response, "empty audit CVR upload");
       } else {
-        final CastVoteRecord acvr = submission.auditCVR();
-        acvr.setID(null);
-        final CastVoteRecord real_acvr = 
-            new CastVoteRecord(RecordType.AUDITOR_ENTERED, Instant.now(), 
-                               acvr.countyID(), acvr.cvrNumber(), null, acvr.scannerID(), 
-                               acvr.batchID(), acvr.recordID(), acvr.imprintedID(), 
-                               acvr.ballotType(), acvr.contestInfo());
-        Persistence.saveOrUpdate(real_acvr);
-        Main.LOGGER.info("Audit CVR for CVR id " + submission.cvrID() + 
-                         " parsed and stored as id " + real_acvr.id());
         final CountyDashboard cdb = 
             Persistence.getByID(Authentication.authenticatedCounty(the_request).id(),
                                 CountyDashboard.class);
         if (cdb == null) {
           Main.LOGGER.error("could not get audit board dashboard");
           serverError(the_response, "Could not save ACVR to dashboard");
-        } else {
+        } else if (cdb.ballotsRemainingInCurrentRound() > 0) {
+          final CastVoteRecord acvr = submission.auditCVR();
+          acvr.setID(null);
+          final CastVoteRecord real_acvr = 
+              new CastVoteRecord(RecordType.AUDITOR_ENTERED, Instant.now(), 
+                                 acvr.countyID(), acvr.cvrNumber(), null, acvr.scannerID(), 
+                                 acvr.batchID(), acvr.recordID(), acvr.imprintedID(), 
+                                 acvr.ballotType(), acvr.contestInfo());
+          Persistence.saveOrUpdate(real_acvr);
+          Main.LOGGER.info("Audit CVR for CVR id " + submission.cvrID() + 
+                           " parsed and stored as id " + real_acvr.id());
+
           final CastVoteRecord cvr = Persistence.getByID(submission.cvrID(), 
                                                          CastVoteRecord.class);
           if (cvr == null) {
@@ -120,6 +121,9 @@ public class ACVRUpload extends AbstractAuditBoardDashboardEndpoint {
               badDataContents(the_response, "invalid audit CVR uploaded");
             }
           }
+        } else {
+          invariantViolation(the_response, 
+                             "ballot submission with no remaining ballots in round");
         }
         if (cdb.ballotsRemainingInCurrentRound() == 0) {
           // the round is over
