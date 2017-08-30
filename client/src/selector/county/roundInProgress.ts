@@ -4,7 +4,7 @@ import { isEmpty } from 'lodash';
 function roundInProgress(state: any): boolean {
     const { county } = state;
 
-    return !isEmpty(county.currentRound);
+    return county.ballotsRemainingInRound !== 0;
 }
 
 
