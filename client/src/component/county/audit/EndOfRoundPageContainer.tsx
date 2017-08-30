@@ -7,6 +7,18 @@ import countyInfo from '../../../selector/county/countyInfo';
 import previousRound from '../../../selector/county/previousRound';
 
 
+function signedOff(round: any): boolean {
+    if (!round.signatories) {
+        return false;
+    }
+
+    if (round.signatories.length < 2) {
+        return false;
+    }
+
+    return true;
+}
+
 class EndOfRoundPageContainer extends React.Component<any, any> {
     public render() {
         const { countyInfo, previousRound } = this.props;
@@ -14,6 +26,7 @@ class EndOfRoundPageContainer extends React.Component<any, any> {
         const props = {
             countyInfo,
             previousRound,
+            previousRoundSignedOff: signedOff(previousRound),
         };
 
         return <EndOfRoundPage { ...props } />;
