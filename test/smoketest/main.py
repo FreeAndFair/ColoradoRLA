@@ -43,10 +43,18 @@ Parallel uploads
 
 (
 ./main.py reset dos_init
-./main.py -C 1 -c 1 -c 2 -c 3 -c 4 -c 5 -c 6 -c 7 -c 8 -c 9 -c 10 -f neal_ignore/d0-n50000.csv county_setup
-./main.py dos_start
+for c in 1 2 3 4 5 6 7 8 9 10; do
+ ./main.py -c $c -f neal_ignore/d0-n50000.csv county_setup &
+done
+wait
+./main.py dos_start -C 1 
 for c in 1 2 3 4 5 6 7 8 9 10; do ./main.py -c $c county_audit &  done
-) | tee parallelcvr5000x2.out
+) 2>&1 | tee parallelcvr50000x10.out
+
+2017-08-30T07:03:36-0600 finished
+ 1127  ( ./main.py reset dos_init; for c in 1 2 3 4 5 6 7 8 9 10; do  ./main.py -c $c -f neal_ignore/d0-n50000.csv county_setup & done; ./main.py dos_start -C 1 ; for c in 1 2 3 4 5 6 7 8 9 10; do ./main.py -c $c county_audit &  done; ) 2>&1 | tee parallelcvr50000x10.out
+ 1128  cp -p $sl $sl-50000x10
+$sl-50000x10
 
 ./main.py -C 1 -c 1 -c 2 -f neal_ignore/d0-n50000.csv county_setup
 for c in 1 2 ; do ./main.py -c $c county_audit &  done
@@ -207,6 +215,8 @@ def county_login(ac, s, county_id):
 def test_endpoint_json(ac, s, path, data, show=True):
     "Do a generic test of an endpoint that posts the given data to the given path"
 
+    show=True  # TODO: drop after getting clarity on how to not show new state before action causing it
+
     r = s.post(ac.base + path, json=data)
     if r.status_code == 200:
         if show:
@@ -216,6 +226,17 @@ def test_endpoint_json(ac, s, path, data, show=True):
             print(r, "POST", path, r.text)
         else:
             print(r, "POST", path)
+
+    r = test_endpoint_get(ac, ac.state_s, "/dos-asm-state", show=False)
+    if 'current_state' in r.json():
+        print("DOS: %s" % r.json()['current_state'])
+    else:
+        print("smoketest sees no current state", r.text)
+
+    if s != ac.state_s:
+        print("County: %s" % test_endpoint_get(ac, s, "/audit-board-asm-state", show=False).json()['current_state'])
+
+            
     return r
 
 
@@ -441,6 +462,8 @@ def get_county_dashboard(ac, county_s, acvr):
               (ac.round, county_id, i, acvr['id'], resp['ballots_remaining_in_round'], resp['estimated_ballots_to_audit']))
         # print(resp)
 
+    # print(r.text)
+
     return resp
 
 def server_sequence():
@@ -528,7 +551,6 @@ def dos_start(ac):
     r = test_endpoint_json(ac, ac.state_s, "/random-seed",
                            {'seed': ac.args.seed})
     # r = test_endpoint_post(ac, ac.state_s, "/ballots-to-audit/publish", {})
-    ac.round = 1
     r = test_endpoint_json(ac, ac.state_s, "/start-audit-round",
                            { "multiplier": 1.0, "use_estimates": True})
     print(r.text)
@@ -576,7 +598,7 @@ def county_audit(ac, county_id):
     resp = get_county_dashboard(ac, county_s, {'id': -1})
     # r = test_endpoint_get(ac, county_s, "/audit-board-asm-state")
 
-    selected = r.json().get("ballots_to_audit", [])
+    selected = resp.get("ballots_to_audit", [])
 
     print("Retrieved ballots_to_audit, got %d" % len(selected))
     if len(selected) != resp['ballots_remaining_in_round']:
@@ -683,6 +705,8 @@ if __name__ == "__main__":
         ac.args.commands = ["reset", "dos_init", "county_setup",
                             "dos_start", "county_audit", "dos_wrapup"]
 
+    ac.round = 1
+
     logging.debug("Processed arguments: %s" % ac.args)
 
     ac.base = ac.args.url
@@ -728,6 +752,8 @@ if __name__ == "__main__":
                 county_audit(ac, county_id)
             print()
             ac.round += 1
+            #TODO: do we leave this out now? yields <Response [403]> POST /start-audit-round {
+            # "result": "/start-audit-round attempted to apply illegal event PUBLISH_BALLOTS_TO_AUDIT_EVENT from state DOS_AUDIT_ONGOING"} 
             r = test_endpoint_json(ac, ac.state_s, "/start-audit-round",
                                    { "multiplier": 1.0, "use_estimates": True})
 
