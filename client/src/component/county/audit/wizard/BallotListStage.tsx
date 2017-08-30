@@ -16,9 +16,12 @@ const BallotListStage = (props: any) => {
     });
 
     const contestsUnderAuditListItems = county.contestsUnderAudit.map((c: any) => {
+        const riskLimitPercent = county.riskLimit
+                               ? `${county.riskLimit * 100}%`
+                               : '';
         return (
             <li key={ c.id }>
-                { c.name } – { county.riskLimit }
+                { c.name } – { riskLimitPercent }
             </li>
         );
     });
