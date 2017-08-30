@@ -45,6 +45,13 @@ const BallotListStage = (props: any) => {
                     { ballotListRows }
                 </tbody>
             </table>
+            <div className='pt-card'>
+                Audit Board: Click Next to start reporting the votes you observe on each
+                of the above ballots.
+            </div>
+            <button className='pt-button pt-intent-primary'>
+                Next
+            </button>
         </div>
     );
 }
