@@ -54,8 +54,10 @@ public final class DatabaseAuthentication extends AbstractAuthentication
   @Override
   public boolean secondFactorAuthenticated(final Request the_request,
                                            final String the_username) {
-    // skip, as we do not implement a second factor in test mode
-    return true;
+    final String auth_stage = 
+        the_request.session().attribute(AuthenticationInterface.AUTH_STAGE);
+    return auth_stage != null && 
+        auth_stage.equals(AuthenticationInterface.ADMIN);
   }
 
   /**
@@ -92,7 +94,6 @@ public final class DatabaseAuthentication extends AbstractAuthentication
                                    final String the_username) {
     boolean result = false;
     final Object admin_attribute = the_request.session().attribute(ADMIN);
-    
     if (admin_attribute instanceof Administrator) {
       final Administrator admin = (Administrator) admin_attribute;
       result = admin.type() == the_type;
@@ -104,7 +105,6 @@ public final class DatabaseAuthentication extends AbstractAuthentication
       Main.LOGGER.error("Invalid admin type detected in session.");
       deauthenticate(the_request, the_username);
     }
-    
     return result;
   }
   
@@ -125,7 +125,7 @@ public final class DatabaseAuthentication extends AbstractAuthentication
   public void traditionalDeauthenticate(final Request the_request,
                                            final String the_username) {
     the_request.session().removeAttribute(ADMIN);
-    Main.LOGGER.info("session is now deauthenticated");
+    Main.LOGGER.info("session is now traditionally deauthenticated");
   }
 
   /**
@@ -134,7 +134,8 @@ public final class DatabaseAuthentication extends AbstractAuthentication
   @Override
   public void twoFactorDeauthenticate(final Request the_request,
                                          final String the_username) {
-    // skip, since we do not implement a second factor in test mode
+    the_request.session().removeAttribute(ADMIN);
+    Main.LOGGER.info("session is now second factor deauthenticated");
   }
   
   /**
@@ -143,7 +144,6 @@ public final class DatabaseAuthentication extends AbstractAuthentication
   @Override
   public County authenticatedCounty(final Request the_request) {
     County result = null;
-    
     if (isAuthenticatedAs(the_request, AdministratorType.COUNTY,
                     the_request.queryParams(AuthenticationInterface.USERNAME))) {
       final Administrator admin = 
@@ -152,7 +152,6 @@ public final class DatabaseAuthentication extends AbstractAuthentication
         result = admin.county();
       }
     }
-    
     return result;
   }
 }
