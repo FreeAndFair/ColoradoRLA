@@ -104,7 +104,7 @@ public class AuthenticateStateAdministrator extends AbstractEndpoint {
     } else {
       try {
         if (Main.authentication().
-            authenticateAdministrator(the_request, 
+            authenticateAdministrator(the_request, the_response,
                 AdministratorType.STATE, 
                 the_request.queryParams(AuthenticationInterface.USERNAME),
                 the_request.queryParams(AuthenticationInterface.PASSWORD),

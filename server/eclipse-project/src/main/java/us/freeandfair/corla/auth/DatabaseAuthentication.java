@@ -12,6 +12,7 @@
 package us.freeandfair.corla.auth;
 
 import spark.Request;
+import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.Administrator;
@@ -31,16 +32,6 @@ public final class DatabaseAuthentication extends AbstractAuthentication
    * {@inheritDoc}
    */
   @Override
-  public void logoutAdministrator(final Request the_request,
-                                  final String the_username) {
-    Main.LOGGER.info("Logging out administrator `" + the_username + "'");
-    deauthenticate(the_request, the_username);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   public boolean secondFactorAuthenticate(final Request the_request,
                                           final String the_username, 
                                           final String the_second_factor) {
@@ -52,19 +43,8 @@ public final class DatabaseAuthentication extends AbstractAuthentication
    * {@inheritDoc}
    */
   @Override
-  public boolean secondFactorAuthenticated(final Request the_request,
-                                           final String the_username) {
-    final String auth_stage = 
-        the_request.session().attribute(AuthenticationInterface.AUTH_STAGE);
-    return auth_stage != null && 
-        auth_stage.equals(AuthenticationInterface.ADMIN);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   public boolean traditionalAuthenticate(final Request the_request,
+                                         final Response the_response,
                                          final String the_username, 
                                          final String the_password) {
     final Administrator admin = 
