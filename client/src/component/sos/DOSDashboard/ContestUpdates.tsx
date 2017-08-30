@@ -5,6 +5,22 @@ import * as _ from 'lodash';
 import { Tooltip } from '@blueprintjs/core';
 
 
+const RemainingToAuditHeader = () => {
+    const content =
+        'Estimated number of ballots to audit to meet risk limit.';
+
+    return (
+        <Tooltip
+            className='pt-tooltip-indicator'
+            content={ content }>
+            <div>
+                <span>Remaining to Audit </span>
+                <span className='pt-icon-standard pt-icon-help' />
+            </div>
+        </Tooltip>
+    );
+};
+
 const ContestUpdates = ({ contests, seed, sos }: any) => {
     const contestStatuses = _.map(contests, (c: any) => {
         if (!sos.auditedContests) {
@@ -29,9 +45,6 @@ const ContestUpdates = ({ contests, seed, sos }: any) => {
         );
     });
 
-    const remainingToAuditTooltipContent =
-        'Estimated number of ballots to audit to meet risk limit.';
-
     return (
         <div className='pt-card'>
             <h3>Contest Updates</h3>
@@ -44,14 +57,7 @@ const ContestUpdates = ({ contests, seed, sos }: any) => {
                             <td>Audit Status</td>
                             <td>Target Risk Limit</td>
                             <td>
-                                <Tooltip
-                                    className='pt-tooltip-indicator'
-                                    content={ remainingToAuditTooltipContent }>
-                                    <div>
-                                        <span>Remaining to Audit </span>
-                                        <span className='pt-icon-standard pt-icon-help' />
-                                    </div>
-                                </Tooltip>
+                                <RemainingToAuditHeader />
                             </td>
                         </tr>
                     </thead>
