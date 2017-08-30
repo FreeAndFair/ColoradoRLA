@@ -17,8 +17,8 @@ class RoundContainer extends React.Component<any, any> {
             return <Control { ...this.props } />;
         }
 
-        if (!auditStarted) {
-            return <div>Audit not yet started.</div>;
+        if (!this.props.auditStarted) {
+            return <div />;
         }
 
         return <Status { ...this.props } />;
