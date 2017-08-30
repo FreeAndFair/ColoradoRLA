@@ -50,13 +50,19 @@ const AuditSeedPage = ({ back, nextPage, seed, uploadRandomSeed }: any) => {
         <div>
             <Nav />
             <Breadcrumb />
-            <div>
+            <div className='pt-card'>
                 <h3>Audit Definition - Enter Random Seed</h3>
-                <div>Enter the random seed generated from the public meeting on 11/10/2017.</div>
-
-                <h4>Audit Random Seed</h4>
-                <div>Please enter the seed generated from the public meeting.</div>
-                { seedForm }
+                <div className='pt-card'>
+                    Enter the random seed generated from the public meeting on 11/10/2017.
+                </div>
+                <div className='pt-card'>
+                    <span className='pt-icon pt-intent-warning pt-icon-warning-sign' />
+                    <span> </span>
+                    Once entered, this random seed cannot be modified.
+                </div>
+                <div className='pt-card'>
+                    { seedForm }
+                </div>
             </div>
             <div>
                 <button onClick={ back } className='pt-button'>
