@@ -16,7 +16,7 @@ const mapStateToProps = (state: any) => {
     const { sos } = state;
 
     return {
-        showAuditParams: auditStarted(state),
+        auditDefined: auditStarted(state),
         sos,
     };
 };
