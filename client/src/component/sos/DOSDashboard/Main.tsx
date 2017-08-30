@@ -17,7 +17,7 @@ const SeedInfo = ({ seed }: any) => {
     );
 };
 
-const AuditParams = ({ sos }: any) => {
+const Definition = ({ sos }: any) => {
     return (
         <div>
             <RiskLimitInfo riskLimit={ sos.riskLimit } />
@@ -26,22 +26,22 @@ const AuditParams = ({ sos }: any) => {
     );
 };
 
-const AuditNotDefined = () => {
+const NotDefined = () => {
     return (
         <div><em>The audit has not yet been defined.</em></div>
     );
 };
 
 const Main = (props: any) => {
-    const { showAuditParams, sos } = props;
+    const { auditDefined, sos } = props;
 
-    const auditParams = showAuditParams
-                      ? <AuditParams sos={ sos } />
-                      : <AuditNotDefined />;
+    const auditDefinition = auditDefined
+                          ? <Definition sos={ sos } />
+                          : <NotDefined />;
 
     return (
         <div className='sos-notifications pt-card'>
-            { auditParams }
+            { auditDefinition }
         </div>
     );
 };
