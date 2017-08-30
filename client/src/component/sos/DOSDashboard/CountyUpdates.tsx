@@ -58,37 +58,39 @@ const CountyUpdates = ({ countyStatus }: any) => {
     const remainingToAuditTooltipContent =
         'Estimated number of ballots to audit to meet risk limit.';
 
-    return (
-        <div className='pt-card'>
-            <h3>County Updates</h3>
-            <div className='pt-card'>
-                <table className='pt-table pt-bordered pt-condensed '>
-                    <thead>
-                        <tr>
-                            <td>Name</td>
-                            <td>Status</td>
-                            <td>Submitted</td>
-                            <td>Discrepancies</td>
-                            <td>Disagreements</td>
-                            <td>
-                                <Tooltip
-                                    className='pt-tooltip-indicator'
-                                    content={ remainingToAuditTooltipContent }>
-                                    <div>
-                                        <span>Remaining to Audit </span>
-                                        <span className='pt-icon-standard pt-icon-help' />
-                                    </div>
-                                </Tooltip>
-                            </td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        { ...countyStatusRows }
-                    </tbody>
-                </table>
+    const remainingToAuditHeader = (
+        <Tooltip
+            className='pt-tooltip-indicator'
+            content={ remainingToAuditTooltipContent }>
+            <div>
+                <span>Remaining to Audit </span>
+                <span className='pt-icon-standard pt-icon-help' />
             </div>
-        </div>
+        </Tooltip>
     );
+
+        return (
+            <div className='pt-card'>
+                <h3>County Updates</h3>
+                <div className='pt-card'>
+                    <table className='pt-table pt-bordered pt-condensed '>
+                        <thead>
+                            <tr>
+                                <td>Name</td>
+                                <td>Status</td>
+                                <td>Submitted</td>
+                                <td>Discrepancies</td>
+                                <td>Disagreements</td>
+                                <td>{ remainingToAuditHeader }</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            { ...countyStatusRows }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        );
 };
 
 
