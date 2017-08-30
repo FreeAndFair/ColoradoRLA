@@ -1,29 +1,18 @@
 import * as _ from 'lodash';
 
+import activeCounties from './activeCounties';
 import auditStarted from './auditStarted';
 
 
 function canStartNextRound(state: any): boolean {
-    const { sos } = state;
-    const { countyStatus } = sos;
+    const counties = activeCounties(state);
 
-    if (!auditStarted(state)) {
-        return false;
-    }
-
-    if (!countyStatus) {
-        return false;
-    }
-
-    const deadlineMissed = (c: any) => c.asmState === 'DEADLINE_MISSED';
-    const activeCounties = _.reject(countyStatus, deadlineMissed);
-
-    if (_.isEmpty(activeCounties)) {
+    if (_.isEmpty(counties)) {
         return false;
     }
 
     const roundOngoing = (c: any) => c.ballotsRemainingInRound > 0;
-    const allRoundsDone = !_.some(activeCounties, roundOngoing);
+    const allRoundsDone = !_.some(counties, roundOngoing);
 
     return allRoundsDone;
 }
