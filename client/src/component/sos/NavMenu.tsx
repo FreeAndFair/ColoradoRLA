@@ -60,8 +60,6 @@ class SoSNavMenu extends React.Component<any, any> {
             <Menu>
                 { homeItem }
                 <MenuDivider />
-                { countiesItem }
-                { contestsItem }
                 { defineAuditItem }
             </Menu>
         );
