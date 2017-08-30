@@ -15,12 +15,25 @@ const BallotListStage = (props: any) => {
         );
     });
 
+    const contestsUnderAuditListItems = county.contestsUnderAudit.map((c: any) => {
+        return (
+            <li key={ c.id }>
+                { c.name } – { county.riskLimit }
+            </li>
+        );
+    });
+
     return (
         <div>
             <h3>Ballots to audit</h3>
             <div className='pt-card'>
-                The Secretary of State has established the following risk limit(s) for
-                the following ballot contest(s) to audit: [Contest Name] – [Risk Limit]
+                <div>
+                    The Secretary of State has established the following risk limit(s) for
+                    the following ballot contest(s) to audit:
+                </div>
+                <ul>
+                    { contestsUnderAuditListItems }
+                </ul>
             </div>
             <div className='pt-card'>
                 The Secretary of State has randomly selected [total number of ballots]
