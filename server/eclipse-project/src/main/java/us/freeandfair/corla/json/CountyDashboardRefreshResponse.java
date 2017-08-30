@@ -169,6 +169,16 @@ public class CountyDashboardRefreshResponse {
   private final Round my_current_round;
   
   /**
+   * The election type.
+   */
+  private final String my_election_type;
+  
+  /**
+   * The election date.
+   */
+  private final Instant my_election_date;
+  
+  /**
    * Constructs a new CountyDashboardRefreshResponse.
    * 
    * @param the_id The ID.
@@ -192,6 +202,8 @@ public class CountyDashboardRefreshResponse {
    * ballots to audit list.
    * @param the_rounds The list of audit rounds.
    * @param the_current_round The current audit round.
+   * @param the_election_type The election type.
+   * @param the_election_date The election date.
    */
   @SuppressWarnings({"PMD.ExcessiveParameterList", "checkstyle:executablestatementcount"})
   protected CountyDashboardRefreshResponse(final Long the_id,
@@ -216,7 +228,9 @@ public class CountyDashboardRefreshResponse {
                                            final Long the_ballot_under_audit_id,
                                            final Integer the_audited_prefix_length,
                                            final List<Round> the_rounds,
-                                           final Round the_current_round) {
+                                           final Round the_current_round,
+                                           final String the_election_type,
+                                           final Instant the_election_date) {
     my_id = the_id;
     my_asm_state = the_asm_state;
     my_general_information = the_general_information;
@@ -240,6 +254,8 @@ public class CountyDashboardRefreshResponse {
     my_audited_prefix_length = the_audited_prefix_length;
     my_rounds = the_rounds;
     my_current_round = the_current_round;
+    my_election_type = the_election_type;
+    my_election_date = the_election_date;
   }
   
   /**
@@ -330,7 +346,9 @@ public class CountyDashboardRefreshResponse {
                                               the_dashboard.cvrUnderAudit(),
                                               the_dashboard.auditedPrefixLength(),
                                               the_dashboard.rounds(),
-                                              the_dashboard.currentRound());
+                                              the_dashboard.currentRound(),
+                                              dosd.electionType(),
+                                              dosd.electionDate());
   }
   
   /**
@@ -403,6 +421,8 @@ public class CountyDashboardRefreshResponse {
                                               null,
                                               the_dashboard.auditedPrefixLength(),
                                               the_dashboard.rounds(),
-                                              the_dashboard.currentRound());
+                                              the_dashboard.currentRound(),
+                                              null,
+                                              null);
   }
 }
