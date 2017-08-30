@@ -337,7 +337,7 @@ public final class ComparisonAuditController {
     // use estimates based on current error rate to get length of round
     boolean result = false;
     final int expected_prefix_length = 
-        computeEstimatedBallotsToAudit(the_dashboard, false);
+        computeEstimatedBallotsToAudit(the_dashboard);
     if (the_dashboard.auditedPrefixLength() < expected_prefix_length) {
       final List<CastVoteRecord> new_cvrs = 
           getCVRsInAuditSequence(the_dashboard, start_index, 
@@ -426,7 +426,7 @@ public final class ComparisonAuditController {
 
     updateCVRUnderAudit(the_dashboard);
     the_dashboard.
-        setEstimatedBallotsToAudit(computeEstimatedBallotsToAudit(the_dashboard, false) -
+        setEstimatedBallotsToAudit(computeEstimatedBallotsToAudit(the_dashboard) -
                                    the_dashboard.auditedPrefixLength());
     return result;
   }
@@ -436,22 +436,14 @@ public final class ComparisonAuditController {
    * county dashboard.
    * 
    * @param the_dashboard The dashboard.
-   * @param the_error_rates true to project from the current error rates, 
-   * false to get the minimum given the current over- and understatements. 
    */
   public static int 
-      computeEstimatedBallotsToAudit(final CountyDashboard the_dashboard,
-                                     final boolean the_error_rates) {
+      computeEstimatedBallotsToAudit(final CountyDashboard the_dashboard) {
     int to_audit = Integer.MIN_VALUE;
     final Set<Contest> driving_contests = the_dashboard.drivingContests();
     for (final CountyContestComparisonAudit ccca : the_dashboard.comparisonAudits()) {
       if (driving_contests.contains(ccca.contest())) {
-        final int bta;
-        if (the_error_rates) {
-          bta = ccca.expectedBallotsToAuditFromCurrentRates();
-        } else {
-          bta = ccca.ballotsToAudit();
-        }
+        final int bta = ccca.ballotsToAudit();
         to_audit = Math.max(to_audit, bta);
       }
     }
