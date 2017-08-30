@@ -77,9 +77,9 @@ class RiskLimitForm extends React.Component<FormProps & any, FormState> {
                     allowNumericCharactersOnly={ true }
                     min={ toPercent(MIN_RISK_LIMIT) }
                     max={ toPercent(MAX_RISK_LIMIT) }
-                    minorStepSize={ toPercent(0.001) }
+                    minorStepSize={ toPercent(0.00001) }
                     onBlur={ this.onBlur }
-                    stepSize={ toPercent(0.01) }
+                    stepSize={ toPercent(0.0001) }
                     value={ comparisonField }
                     onValueChange={ this.onComparisonValueChange } />
             </label>
