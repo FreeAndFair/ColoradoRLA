@@ -424,6 +424,25 @@ def upload_files(ac, s):
     else:
         upload_file(ac, s, '/import-cvr-export', cvrfile, hash)
 
+def get_county_dashboard(ac, county_s, acvr):
+    "Get and show useful info about /county-dashboard"
+
+    r = test_endpoint_get(ac, county_s, "/county-dashboard", show=False)
+    resp = r.json()
+    # The list of ballots_to_audit takes up way too much space in the output....
+    if False:
+        if 'ballots_to_audit' in resp:
+            resp['ballots_to_audit'] = "SUPPRESSED"
+        print(resp)
+    else:
+        # TODO print other interesting info
+
+        print("Round %d, county %d, upload %d: aCVR %d; ballots_remaining_in_round: %d, estimated_ballots_to_audit: %s" %
+              (ac.round, county_id, i, acvr['id'], resp['ballots_remaining_in_round'], resp['estimated_ballots_to_audit']))
+        # print(resp)
+
+    return resp
+
 def server_sequence():
     '''Run thru a given test sequence to explore server ASM transitions.
     TODO: needs lots of work to easily handle a full Eulerian traversal
@@ -554,12 +573,15 @@ def county_audit(ac, county_id):
 
     r = test_endpoint_get(ac, ac.state_s, "/dos-dashboard")
 
-    r = test_endpoint_get(ac, county_s, "/county-dashboard")
+    resp = get_county_dashboard(ac, county_s, {'id': -1})
     # r = test_endpoint_get(ac, county_s, "/audit-board-asm-state")
 
     selected = r.json().get("ballots_to_audit", [])
 
     print("Retrieved ballots_to_audit, got %d" % len(selected))
+    if len(selected) != resp['ballots_remaining_in_round']:
+        print("ERROR: got %d CVR ids in ballots_to_audit, but ballots_remaining_in_round is %d in county-dashboard" %
+              (len(selected), resp['ballots_remaining_in_round']))
 
     # For each of a a bunch of selected cvrs,
     #   make it into a matching acvr and upload it, watching progress
@@ -608,24 +630,13 @@ def county_audit(ac, county_id):
         test_endpoint_json(ac, county_s, "/upload-audit-cvr",
                            {'cvr_id': selected[i], 'audit_cvr': acvr}, show=False)
 
-        r = test_endpoint_get(ac, county_s, "/county-dashboard", show=False)
-        resp = r.json()
-        # The list of ballots_to_audit takes up way too much space in the output....
-        if False:
-            if 'ballots_to_audit' in resp:
-                resp['ballots_to_audit'] = "SUPPRESSED"
-            print(resp)
-        else:
-            # TODO test getting just contests from current county
-            # TODO print other interesting info
-
-            print("Round %d, county %d, upload %d: aCVR %d; ballots_remaining_in_round: %d, estimated_ballots_to_audit: %s" %
-                  (ac.round, county_id, i, acvr['id'], resp['ballots_remaining_in_round'], resp['estimated_ballots_to_audit']))
-            # print(resp)
+        resp = get_county_dashboard(ac, county_s, acvr)
 
         if resp['estimated_ballots_to_audit'] <= 0:
             print("\nAudit completed after %d ballots" % (i + 1))
             break
+
+    r = test_endpoint_json(ac, county_s, "/sign-off-audit-round", audit_board_set)
 
     r = test_endpoint_get(ac, ac.state_s, "/dos-dashboard")
 
