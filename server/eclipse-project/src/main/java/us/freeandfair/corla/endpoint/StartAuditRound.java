@@ -228,6 +228,11 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
           // use estimates based on current error rate to get length of round
           expected_prefix_length = 
               ComparisonAuditController.computeEstimatedBallotsToAudit(cdb, true);
+          if (expected_prefix_length - start_index < 0) {
+            Main.LOGGER.info("risk limit already achieved for county " + cdb.id() + 
+                             ", skipping round start");
+            continue;
+          }
           round_length = 
               ComparisonAuditController.computeBallotOrder(cdb, start_index, 
                                                            expected_prefix_length).size();
