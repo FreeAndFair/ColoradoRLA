@@ -12,7 +12,7 @@
 
 package us.freeandfair.corla.endpoint;
 
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.JsonParseException;
 
 import spark.Request;
 import spark.Response;
@@ -108,7 +108,7 @@ public class AuthenticateStateAdministrator extends AbstractEndpoint {
         } else {
           unauthorized(the_response, "Authentication failed");
         }
-      } catch (final JsonSyntaxException e) {
+      } catch (final JsonParseException e) {
         unauthorized(the_response, "Authentication failed");
       }
     }

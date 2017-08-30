@@ -21,7 +21,7 @@ import java.util.List;
 
 import javax.persistence.PersistenceException;
 
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.JsonParseException;
 
 import spark.Request;
 import spark.Response;
@@ -181,7 +181,7 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
       if (start == null) {
         badDataContents(the_response, "malformed request data");
       }
-    } catch (final JsonSyntaxException e) {
+    } catch (final JsonParseException e) {
       badDataContents(the_response, "malformed request data");
     }
     
@@ -218,18 +218,22 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
           final Round previous_round = rounds.get(rounds.size() - 1);
           // we start the next round where the previous round actually ended 
           // in the audit sequence
-          start_index = previous_round.auditPrefixLengthAchieved();
+          start_index = previous_round.actualAuditPrefixLength();
         }
         final int round_length;
+        Integer expected_prefix_length = null;
         if (start.useEstimates()) {
           // use estimates based on current error rate to get length of round
+          expected_prefix_length = 
+              ComparisonAuditController.computeEstimatedBallotsToAudit(cdb, true);
           round_length = 
-              ComparisonAuditController.computeEstimatedBallotsToAudit(cdb, true) - 
-              start_index;
+              ComparisonAuditController.computeBallotOrder(cdb, start_index, 
+                                                           expected_prefix_length).size();
         } else {
           round_length = start.countyBallots().get(cdb.id());
+          // expected prefix length stays null because we don't know it
         }
-        cdb.startRound(round_length, start_index);
+        cdb.startRound(round_length, expected_prefix_length, start_index);
       }      
       ok(the_response, "new audit round started");
     } catch (final PersistenceException e) {

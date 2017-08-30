@@ -16,6 +16,7 @@ import static us.freeandfair.corla.util.EqualsHashcodeHelper.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -105,6 +106,16 @@ public class DoSDashboard implements PersistentEntity, Serializable {
    * The random seed.
    */
   private String my_random_seed;
+  
+  /**
+   * The date of this Election (as an instant).
+   */
+  private Instant my_election_date;
+  
+  /**
+   * The type of this election.
+   */
+  private String my_election_type;
   
   /**
    * Constructs a new Department of State dashboard with default values.
@@ -242,6 +253,38 @@ public class DoSDashboard implements PersistentEntity, Serializable {
     return "DoSDashboard [county=" + id() + "]";
   }
 
+  /**
+   * @return the election date (as an instant).
+   */
+  public Instant electionDate() {
+    return my_election_date;
+  }
+  
+  /**
+   * Sets the election date.
+   * 
+   * @param the_election_date The election date (as an instant).
+   */
+  public void setElectionDate(final Instant the_election_date) {
+    my_election_date = the_election_date;
+  }
+  
+  /**
+   * @return the election type.
+   */
+  public String electionType() {
+    return my_election_type;
+  }
+  
+  /**
+   * Sets the election type.
+   * 
+   * @param the_election_type The election type.
+   */
+  public void setElectionType(final String the_election_type) {
+    my_election_type = the_election_type;
+  }
+  
   /**
    * Compare this object with another for equivalence.
    * 

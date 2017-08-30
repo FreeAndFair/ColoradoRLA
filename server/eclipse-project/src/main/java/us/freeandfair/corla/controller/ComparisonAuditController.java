@@ -54,8 +54,8 @@ public final class ComparisonAuditController {
   }
   
   /**
-   * Compute the ballot (cards) for audit, for a particular county dashboard, 
-   * and index range.
+   * Get the cast vote records to audit, in order, for the given county dashboard
+   * in the specified range in the audit sequence.
    * 
    * @param the_cdb The county dashboard.
    * @param the_min_index The minimum index to return.
@@ -64,9 +64,9 @@ public final class ComparisonAuditController {
    * the first element of this list will be the "min_index"th ballot card to audit, 
    * and the last will be the "max_index"th. 
    */
-  public static List<CastVoteRecord> computeBallotOrder(final CountyDashboard the_cdb,
-                                                        final int the_min_index,
-                                                        final int the_max_index) {
+  public static List<CastVoteRecord> getCVRsInAuditSequence(final CountyDashboard the_cdb,
+                                                            final int the_min_index,
+                                                            final int the_max_index) {
     final OptionalLong count = 
         CastVoteRecordQueries.countMatching(the_cdb.id(), RecordType.UPLOADED);
     
@@ -137,7 +137,7 @@ public final class ComparisonAuditController {
     // we go until we hit the end of our CVR pool
     while ((the_duplicates && cvr_to_audit_list.size() < the_ballot_count) || 
            (!the_duplicates && cvr_set.size() < possible_ballots)) {
-      final List<CastVoteRecord> new_cvrs = computeBallotOrder(the_cdb, start, end);
+      final List<CastVoteRecord> new_cvrs = getCVRsInAuditSequence(the_cdb, start, end);
       for (int i = 0; i < new_cvrs.size(); i++) {
         final CastVoteRecord cvr = new_cvrs.get(i);
         if ((the_duplicates || !cvr_set.contains(cvr)) && !audited(the_cdb, cvr)) {
@@ -155,8 +155,42 @@ public final class ComparisonAuditController {
   }
   
   /**
-<<<<<<< HEAD
-=======
+   * Compute the ballot (cards) for audit, for a particular county dashboard,
+   * a particular start index, and a particular desired audit prefix length.
+   * 
+   * @param the_cdb The dashboard.
+   * @param the_start_index The start index.
+   * @param the_desired_prefix_length The desired prefix length.
+   * @exception IllegalArgumentException if 
+   * the_start_index >= the_desired_prefix_length
+   */
+  public static List<CastVoteRecord> computeBallotOrder(final CountyDashboard the_cdb,
+                                                        final int the_start_index,
+                                                        final int the_desired_prefix_length) {
+    if (the_start_index >= the_desired_prefix_length) {
+      throw new IllegalArgumentException("invalid sequence bounds");
+    }
+    
+    // we need to get the CVRs for the county's sequence, starting at the_start_index,
+    // and eliminate duplicates
+    
+    final List<CastVoteRecord> cvrs = 
+        getCVRsInAuditSequence(the_cdb, the_start_index, 
+                               the_desired_prefix_length - 1); // end is inclusive
+    final Set<CastVoteRecord> cvr_set = new HashSet<>();
+    final List<CastVoteRecord> cvr_to_audit_list = new ArrayList<>();
+    for (int i = 0; i < cvrs.size(); i++) {
+      final CastVoteRecord cvr = cvrs.get(i);
+      if (!cvr_set.contains(cvr) && !audited(the_cdb, cvr)) {
+        cvr_to_audit_list.add(cvr);
+      } 
+      cvr_set.add(cvr);
+    }
+    
+    return cvr_to_audit_list;
+  }
+  
+  /**
    * Compute the ballot (cards) for audit, for a particular county dashboard and 
    * round. The returned list does not have duplicates.
    * 
@@ -173,29 +207,11 @@ public final class ComparisonAuditController {
     }
     // round numbers are 1-based, not 0-based
     final Round round = the_cdb.rounds().get(the_round - 1);
-    final Set<CastVoteRecord> cvr_set = new HashSet<>();
-    final List<CastVoteRecord> cvr_to_audit_list = new ArrayList<>();
-    
-    // we need to get the CVRs for the county's sequence, starting at START, and 
-    // look up their locations; note we may have to ask for the sequence more than
-    // once because we may find duplicates in the sequence
-    
-    final List<CastVoteRecord> cvrs = 
-        computeBallotOrder(the_cdb, round.startIndex(), 
-                           round.startIndex() + round.number() - 1); // end is inclusive
-    for (int i = 0; i < cvrs.size(); i++) {
-      final CastVoteRecord cvr = cvrs.get(i);
-      if (!cvr_set.contains(cvr) && !audited(the_cdb, cvr)) {
-        cvr_to_audit_list.add(cvr);
-      } 
-      cvr_set.add(cvr);
-    }
-    
-    return cvr_to_audit_list;
+    return computeBallotOrder(the_cdb, round.startAuditPrefixLength(), 
+                              round.expectedAuditPrefixLength());
   }
   
   /**
->>>>>>> Fixed an issue with obtaining a list of CVRs with duplicates.
    * Initializes the audit data for the specified county dashboard.
    * 
    * @param the_dashboard The dashboard.
@@ -229,10 +245,11 @@ public final class ComparisonAuditController {
     }
     the_dashboard.setComparisonAudits(comparison_audits);
     the_dashboard.setDrivingContests(county_driving_contests);
-    the_dashboard.startRound(to_audit, 0);
+    the_dashboard.startRound(computeBallotOrder(the_dashboard, 0, to_audit).size(),
+                             to_audit, 0);
     the_dashboard.setEstimatedBallotsToAudit(Math.max(0,  to_audit));
     if (!county_driving_contests.isEmpty()) {
-      the_dashboard.setCVRsToAudit(computeBallotOrder(the_dashboard, 0, to_audit));
+      the_dashboard.setCVRsToAudit(getCVRsInAuditSequence(the_dashboard, 0, to_audit));
     }
   }
   
@@ -272,6 +289,7 @@ public final class ComparisonAuditController {
           c.setACVR(the_audit_cvr);
         }
         // this just updates the counters; the actual "audit" happens later
+        the_dashboard.addAuditedBallot();
         audit(the_dashboard, the_cvr_under_audit, the_audit_cvr, 0, true);
       } else {
         // the record has been audited before, so we need to "unaudit" it 
@@ -297,10 +315,13 @@ public final class ComparisonAuditController {
     }
 
     updateCVRUnderAudit(the_dashboard);
+    final Round current_round = the_dashboard.currentRound();
+    if (current_round.expectedCount() - current_round.actualCount() == 0) {
+      the_dashboard.endRound();
+    }
     the_dashboard.
         setEstimatedBallotsToAudit(computeEstimatedBallotsToAudit(the_dashboard, false) -
                                    the_dashboard.auditedPrefixLength());
-    
     return result;
   }
   
@@ -362,8 +383,8 @@ public final class ComparisonAuditController {
    * @param the_count The number of times to count this ballot in the
    * audit.
    * @param the_update_counters true to update the county dashboard 
-   * counters, false otherwise; false is used when this ballot has
-   * already been audited once.
+   * counters, false otherwise; false is used when this ballot 
+   * has already been audited once.
    */
   private static void audit(final CountyDashboard the_dashboard,
                             final CastVoteRecord the_cvr_under_audit,
@@ -379,7 +400,6 @@ public final class ComparisonAuditController {
       discrepancy_found |= discrepancy != 0;
     }
     if (the_update_counters) {
-      the_dashboard.addAuditedBallot();
       if (discrepancy_found) {
         the_dashboard.addDiscrepancy();
       }
@@ -415,7 +435,6 @@ public final class ComparisonAuditController {
       }
       discrepancy_found |= discrepancy != 0;
     }
-    the_dashboard.addAuditedBallot(); 
     if (discrepancy_found) {
       the_dashboard.removeDiscrepancy();
     }
@@ -464,17 +483,13 @@ public final class ComparisonAuditController {
       final int to_audit_current_rates = 
           computeEstimatedBallotsToAudit(the_dashboard, true);
       final List<CastVoteRecord> new_cvrs = 
-          computeBallotOrder(the_dashboard, cvr_audit_info.size(), to_audit_current_rates);
+          getCVRsInAuditSequence(the_dashboard, cvr_audit_info.size(), to_audit_current_rates);
       the_dashboard.addCVRsToAudit(new_cvrs);
       for (final CastVoteRecord cvr : new HashSet<>(new_cvrs)) {
         CVRAuditInfoQueries.updateMatching(the_dashboard, cvr);
       }
     }
     the_dashboard.setAuditedPrefixLength(new_prefix_length);
-    final Round current_round = the_dashboard.currentRound();
-    if (current_round.startIndex() + current_round.expectedCount() <= new_prefix_length) {
-      the_dashboard.endRound();
-    }
   }
   
   /**

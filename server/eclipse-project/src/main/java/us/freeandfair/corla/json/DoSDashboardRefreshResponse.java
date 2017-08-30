@@ -12,6 +12,7 @@
 package us.freeandfair.corla.json;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -83,6 +84,16 @@ public class DoSDashboardRefreshResponse {
   private final Set<Long> my_hand_count_contests;
   
   /**
+   * The election type.
+   */
+  private final String my_election_type;
+  
+  /**
+   * The election date.
+   */
+  private final Instant my_election_date;
+  
+  /**
    * Constructs a new DosDashboardRefreshResponse.
    * 
    * @param the_asm_state The ASM state.
@@ -91,6 +102,8 @@ public class DoSDashboardRefreshResponse {
    * @param the_county_status The county statuses.
    * @param the_random_seed The random seed.
    * @param the_hand_count_contests The hand count contests.
+   * @param the_election_type The election type.
+   * @param the_election_date The election date.
    */
   protected DoSDashboardRefreshResponse(final ASMState the_asm_state,
                                         final BigDecimal the_risk_limit,
@@ -100,7 +113,9 @@ public class DoSDashboardRefreshResponse {
                                         final Map<Long, CountyDashboardRefreshResponse> 
                                            the_county_status,
                                         final String the_random_seed,
-                                        final Set<Long> the_hand_count_contests) {
+                                        final Set<Long> the_hand_count_contests,
+                                        final String the_election_type,
+                                        final Instant the_election_date) {
     my_asm_state = the_asm_state;
     my_risk_limit = the_risk_limit;
     my_audited_contests = the_audited_contests;
@@ -108,6 +123,8 @@ public class DoSDashboardRefreshResponse {
     my_county_status = the_county_status;
     my_random_seed = the_random_seed;
     my_hand_count_contests = the_hand_count_contests;
+    my_election_type = the_election_type;
+    my_election_date = the_election_date;
   }
   
   /**
@@ -150,7 +167,9 @@ public class DoSDashboardRefreshResponse {
                                            ballots_to_audit,
                                            countyStatusMap(),
                                            the_dashboard.randomSeed(),
-                                           hand_count_contests);
+                                           hand_count_contests,
+                                           the_dashboard.electionType(),
+                                           the_dashboard.electionDate());
   }
   
   /**

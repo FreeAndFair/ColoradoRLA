@@ -15,7 +15,7 @@ import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.SELECT_CONTEST
 
 import javax.persistence.PersistenceException;
 
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.JsonParseException;
 
 import spark.Request;
 import spark.Response;
@@ -82,7 +82,7 @@ public class SelectContestsForAudit extends AbstractDoSDashboardEndpoint {
           ok(the_response, "Contests selected");
         }
       }
-    } catch (final JsonSyntaxException e) {
+    } catch (final JsonParseException e) {
       Main.LOGGER.error("malformed contest selection");
       badDataContents(the_response, "Invalid contest selection data");
     } catch (final PersistenceException e) {

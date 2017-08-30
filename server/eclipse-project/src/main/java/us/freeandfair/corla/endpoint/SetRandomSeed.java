@@ -15,7 +15,7 @@ import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.PUBLIC_SEED_EV
 
 import javax.persistence.PersistenceException;
 
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.JsonParseException;
 
 import spark.Request;
 import spark.Response;
@@ -27,18 +27,13 @@ import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 
 /**
- * The endpoint for uploading the random seed.
+ * The endpoint for setting the random seed.
  * 
  * @author Daniel M Zimmerman
  * @version 0.0.1
  */
-/**
- * @description <description>
- * @explanation <explanation>
- * @bon OPTIONAL_BON_TYPENAME
- */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class UploadRandomSeed extends AbstractDoSDashboardEndpoint {
+public class SetRandomSeed extends AbstractDoSDashboardEndpoint {
   /**
    * The "random seed" parameter.
    */
@@ -73,8 +68,6 @@ public class UploadRandomSeed extends AbstractDoSDashboardEndpoint {
    * should be provided as an integer in base 10, as Colorado rolls a
    * 10-sided die to determine each digit.
    * 
-   * Session query parameters: <tt>random-seed</tt>
-   * 
    * @param the_request The request.
    * @param the_response The response.
    */
@@ -99,7 +92,7 @@ public class UploadRandomSeed extends AbstractDoSDashboardEndpoint {
     } catch (final PersistenceException e) {
       serverError(the_response, "unable to set random seed: " + e);
 
-    } catch (final JsonSyntaxException e) {
+    } catch (final JsonParseException e) {
       badDataContents(the_response, "Invalid random seed request");
     }
     return my_endpoint_result.get();

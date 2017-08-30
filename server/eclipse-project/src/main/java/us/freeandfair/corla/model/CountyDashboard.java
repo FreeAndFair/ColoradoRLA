@@ -461,27 +461,32 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   }
 
   /**
-   * Begins a new round with the specified number of ballots to audit, 
-   * starting at the specified index in the random audit sequence. The
-   * previous round, if any, is ended if it had not yet been ended. 
+   * Begins a new round with the specified number of ballots to audit
+   * and expected achieved prefix length, starting at the specified index 
+   * in the random audit sequence. 
    * 
    * @param the_number_of_ballots The number of ballots.
    * @param the_start_index The start index.
+   * @exception IllegalStateException if a round is currently ongoing.
    */
   public void startRound(final int the_number_of_ballots, 
+                         final int the_prefix_length,
                          final int the_start_index) {
     if (my_current_round_index == null) {
       my_current_round_index = my_rounds.size();
     } else {
-      my_rounds.get(my_current_round_index).setEndTime(Instant.now());
-      my_current_round_index = my_current_round_index + 1;
+      throw new IllegalStateException("cannot start a round while one is running");
     }
     // note UI round indexing is from 1, not 0
-    final Round round = new Round(my_current_round_index + 1, Instant.now(), 
-                                  the_number_of_ballots, the_start_index);
+    final Round round = new Round(my_current_round_index + 1, 
+                                  Instant.now(), 
+                                  the_number_of_ballots,
+                                  my_ballots_audited,
+                                  the_prefix_length,
+                                  the_start_index);
     updateRound(round);
     my_rounds.add(round);
-    if (round.startIndex() + round.expectedCount() - 1 < auditedPrefixLength()) {
+    if (round.expectedCount().equals(round.actualCount())) {
       // the round ended before it started
       endRound();
     }
@@ -494,9 +499,9 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * @param the_round The round to update.
    */
   private void updateRound(final Round the_round) {
-    int index = the_round.startIndex();
-    final int end = the_round.startIndex() + the_round.expectedCount() - 1;
-    while (index < my_audited_prefix_length && index < end) {
+    int index = the_round.startAuditPrefixLength();
+    while (index < my_audited_prefix_length && 
+           the_round.actualCount() < the_round.expectedCount()) {
       final CVRAuditInfo cvrai = my_cvr_audit_info.get(index);
       for (final CountyContestComparisonAudit ca : comparisonAudits()) {
         if (ca.computeDiscrepancy(cvrai.cvr(), cvrai.acvr()) != 0) {
@@ -526,7 +531,8 @@ public class CountyDashboard implements PersistentEntity, Serializable {
     } else {
       final Round round = my_rounds.get(my_current_round_index);
       round.setEndTime(Instant.now());
-      round.setAuditPrefixLengthAchieved(my_audited_prefix_length);
+      round.setActualCount(my_ballots_audited - round.startAuditPrefixLength());
+      round.setActualAuditPrefixLength(my_audited_prefix_length);
       my_current_round_index = NO_CONTENT;
     }
   }
@@ -542,8 +548,8 @@ public class CountyDashboard implements PersistentEntity, Serializable {
       result = 0;
     } else {
       final Round round = currentRound();
-      result = round.startIndex() + round.expectedCount() -
-               my_audited_prefix_length; 
+      result = round.expectedCount() + round.previousBallotsAudited() -
+               my_ballots_audited; 
     }
     
     return result;

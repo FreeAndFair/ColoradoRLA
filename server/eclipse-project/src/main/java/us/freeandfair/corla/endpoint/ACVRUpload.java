@@ -17,7 +17,7 @@ import java.time.Instant;
 
 import javax.persistence.PersistenceException;
 
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.JsonParseException;
 
 import spark.Request;
 import spark.Response;
@@ -109,7 +109,7 @@ public class ACVRUpload extends AbstractAuditBoardDashboardEndpoint {
           }
         }
       }
-    } catch (final JsonSyntaxException e) {
+    } catch (final JsonParseException e) {
       Main.LOGGER.error("malformed audit CVR upload");
       badDataContents(the_response, "malformed audit CVR upload");
     } catch (final PersistenceException e) {

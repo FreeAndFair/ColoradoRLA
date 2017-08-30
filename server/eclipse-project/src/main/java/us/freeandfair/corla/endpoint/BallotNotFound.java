@@ -17,6 +17,7 @@ import java.util.List;
 
 import javax.persistence.PersistenceException;
 
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 
 import spark.Request;
@@ -129,7 +130,7 @@ public class BallotNotFound extends AbstractAuditBoardDashboardEndpoint {
       if (ComparisonAuditController.submitAuditCVR(cdb, cvr, acvr)) {
         ok(the_response, "audit CVR submitted");
       }
-    } catch (final JsonSyntaxException e) {
+    } catch (final JsonParseException e) {
       badDataType(the_response, "invalid request format");
     } catch (final NumberFormatException e) {
       badDataContents(the_response, "malformed CVR id");
