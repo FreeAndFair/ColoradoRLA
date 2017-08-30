@@ -33,7 +33,7 @@ import ContestOverviewContainer from './sos/contest/ContestOverviewContainer';
 import CountyDetailContainer from './sos/county/CountyDetailContainer';
 import CountyOverviewContainer from './sos/county/CountyOverviewContainer';
 
-import SoSHomeContainer from './sos/SoSHomeContainer';
+import DOSDashboardContainer from './sos/DOSDashboard/Container';
 
 
 export interface RootContainerProps {
@@ -86,7 +86,7 @@ const routes: RouteDef[] = [
     ['/help', HelpRootContainer],
     ['/help/glossary', GlossaryContainer],
     ['/help/manual', ManualContainer],
-    ['/sos', SoSHomeContainer],
+    ['/sos', DOSDashboardContainer],
     ['/sos/audit', AuditContainer],
     ['/sos/audit/seed', AuditSeedContainer],
     ['/sos/audit/select-contests', SelectContestsPageContainer],

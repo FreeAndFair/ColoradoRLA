@@ -30,6 +30,8 @@ const AuditReview = ({ back, publishBallotsToAudit, saveAndDone, sos }: any) => 
         saveAndDone();
     };
 
+    const riskLimitPercent = sos.riskLimit * 100;
+
     return (
         <div>
             <Nav />
@@ -47,7 +49,7 @@ const AuditReview = ({ back, publishBallotsToAudit, saveAndDone, sos }: any) => 
                     <tbody>
                         <tr>
                             <td>Risk Limit:</td>
-                            <td>{ sos.riskLimit }</td>
+                            <td>{ riskLimitPercent }%</td>
                         </tr>
                         <tr>
                             <td>Random Number Generator Seed:</td>

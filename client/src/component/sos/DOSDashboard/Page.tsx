@@ -4,9 +4,11 @@ import * as _ from 'lodash';
 
 import { Tooltip } from '@blueprintjs/core';
 
-import SoSNav from './Nav';
+import SoSNav from '../Nav';
 
-import counties from '../../data/counties';
+import MainContainer from './MainContainer';
+
+import counties from '../../../data/counties';
 
 
 const ContestUpdates = ({ contests, seed, sos }: any) => {
@@ -152,58 +154,13 @@ const CountyUpdates = ({ countyStatus }: any) => {
     );
 };
 
-const RiskLimitInfo = ({ riskLimit }: any) => {
-    return (
-        <div className='pt-card'>
-            <strong>Target Risk Limit: </strong> { riskLimit * 100 } %
-        </div>
-    );
-};
-
-const SeedInfo = ({ seed }: any) => {
-    return (
-        <div className='pt-card'>
-            <strong>Seed: </strong> { seed }
-        </div>
-    );
-};
-
-const AuditParams = ({ sos }: any) => {
-    return (
-        <div>
-            <RiskLimitInfo riskLimit={ sos.riskLimit } />
-            <SeedInfo seed={ sos.seed } />
-        </div>
-    );
-};
-
-const AuditNotDefined = () => {
-    return (
-        <div><em>The audit has not yet been defined.</em></div>
-    );
-};
-
-const SoSHomePage = (props: any) => {
-    const { contests, countyStatus, currentAsmState, seed, sos } = props;
-
-    const ongoingStates = [
-        'AUDIT_READY_TO_START',
-        'DOS_AUDIT_ONGOING',
-        'DOS_AUDIT_COMPLETE',
-        'AUDIT_RESULTS_PUBLISHED',
-    ];
-    const showAuditParams = _.includes(ongoingStates, currentAsmState);
-
-    const auditParams = showAuditParams
-                      ? <AuditParams sos={ sos } />
-                      : <AuditNotDefined />;
+const DOSDashboardPage = (props: any) => {
+    const { contests, countyStatus, seed, sos } = props;
 
     return (
         <div className='sos-home'>
             <SoSNav />
-            <div className='sos-notifications pt-card'>
-                { auditParams }
-            </div>
+            <MainContainer />
             <div className='sos-info pt-card'>
                 <CountyUpdates countyStatus={ countyStatus } />
                 <ContestUpdates contests={ contests } seed={ seed } sos={ sos } />
@@ -218,4 +175,4 @@ const SoSHomePage = (props: any) => {
 };
 
 
-export default SoSHomePage;
+export default DOSDashboardPage;
