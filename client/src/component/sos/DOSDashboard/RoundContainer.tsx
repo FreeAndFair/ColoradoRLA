@@ -5,8 +5,10 @@ import { connect } from 'react-redux';
 import Control from './Round/Control';
 import Status from './Round/Status';
 
+import activeCounties from '../../../selector/dos/activeCounties';
 import auditStarted from '../../../selector/dos/auditStarted';
 import canStartNextRound from '../../../selector/dos/canStartNextRound';
+import currentRound from '../../../selector/dos/currentRound';
 
 
 class RoundContainer extends React.Component<any, any> {
@@ -15,11 +17,13 @@ class RoundContainer extends React.Component<any, any> {
             return <Control />;
         }
 
-        const props = {
-            auditStarted: this.props.auditStarted,
-        };
+        if (!auditStarted) {
+            return <div>Audit not yet started.</div>;
+        }
 
-        return <Status { ...this.props } />;
+        const props = { ...this.props };
+
+        return <Status { ...props } />;
     }
 }
 
@@ -27,8 +31,10 @@ const mapStateToProps = (state: any) => {
     const { sos } = state;
 
     return {
+        activeCounties: activeCounties(state),
         auditStarted: auditStarted(state),
         canStartNextRound: canStartNextRound(state),
+        currentRound: currentRound(state),
         sos,
     };
 };
