@@ -221,11 +221,15 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
           invariantViolation(the_response, 
                              "audit round already in progress for county " + cdb.id());
         }
+        final boolean round_started;
         if (start.useEstimates()) {
-          ComparisonAuditController.startNewRoundFromEstimates(cdb);
+          round_started = ComparisonAuditController.startNewRoundFromEstimates(cdb);
         } else {
-          ComparisonAuditController.
+          round_started = ComparisonAuditController.
               startNewRoundOfLength(cdb, start.countyBallots().get(cdb.id()));
+        }
+        if (!round_started) {
+          Main.LOGGER.debug("no round started for county " + cdb.id());       
         }
       }      
       ok(the_response, "new audit round started");

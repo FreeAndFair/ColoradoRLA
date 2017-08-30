@@ -336,7 +336,7 @@ public final class ComparisonAuditController {
         Math.max(computeEstimatedBallotsToAudit(the_dashboard, true),
                  computeEstimatedBallotsToAudit(the_dashboard, false));
     Main.LOGGER.info("expected prefix length=" + expected_prefix_length);
-    if (expected_prefix_length > 0) {
+    if (the_dashboard.auditedPrefixLength() < expected_prefix_length) {
       final List<CastVoteRecord> new_cvrs = 
           getCVRsInAuditSequence(the_dashboard, start_index, 
                                  expected_prefix_length - 1);
