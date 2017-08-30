@@ -41,7 +41,7 @@ class RiskLimitForm extends React.Component<FormProps & any, FormState> {
     public state: FormState = {
         ballotPollingField: `${toPercent(DEFAULT_RISK_LIMIT)}`,
         ballotPollingLimit: DEFAULT_RISK_LIMIT,
-        comparisonField: `${toPercent(DEFAULT_RISK_LIMIT)}`,
+        comparisonField: `${toPercent(DEFAULT_RISK_LIMIT).toFixed(2)}`,
         comparisonLimit: DEFAULT_RISK_LIMIT,
     };
 
@@ -106,7 +106,7 @@ class RiskLimitForm extends React.Component<FormProps & any, FormState> {
         if (isValidRiskLimit(parsedComparisonField)) {
             s.comparisonLimit = fromPercent(parsedComparisonField);
         } else {
-            s.comparisonField = `${toPercent(s.comparisonLimit)}`;
+            s.comparisonField = `${toPercent(s.comparisonLimit).toFixed(2)}`;
         }
 
         this.setState(s);
