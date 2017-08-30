@@ -5,9 +5,9 @@ import notice from '../notice';
 
 function* importCvrExportOk(action: any): IterableIterator<any> {
     const { data } = action;
-    const { received } = data;
+    const { sent } = data;
 
-    notice.ok(`Imported CVR export "${received.filename}".`);
+    notice.ok(`Imported CVR export "${sent.filename}".`);
 }
 
 function* importCvrExportFail(action: any): IterableIterator<any> {

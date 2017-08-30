@@ -5,9 +5,9 @@ import notice from '../notice';
 
 function* importBallotManifestOk(action: any): IterableIterator<any> {
     const { data } = action;
-    const { received } = data;
+    const { sent } = data;
 
-    notice.ok(`Imported ballot manifest "${received.filename}".`);
+    notice.ok(`Imported ballot manifest "${sent.filename}".`);
 }
 
 function* importBallotManifestFail(action: any): IterableIterator<any> {
