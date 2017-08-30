@@ -33,6 +33,25 @@ wait
 ./main.py dos_wrapup
 ) > multi.out
 
+Parallel auditing
+(
+./main.py -C 1 -c 1 -c 2 -c 3 -c 4 -c 5 -c 6 -c 7 -c 8 -c 9 -c 10 reset dos_init county_setup dos_start
+for c in 1 2 3 4 5 6 7 8 9 10; do ./main.py -c $c county_audit &  done
+) | tee parallelaudit.out
+
+Parallel uploads
+
+(
+./main.py reset dos_init
+./main.py -C 1 -c 1 -c 2 -c 3 -c 4 -c 5 -c 6 -c 7 -c 8 -c 9 -c 10 -f neal_ignore/d0-n50000.csv county_setup
+./main.py dos_start
+for c in 1 2 3 4 5 6 7 8 9 10; do ./main.py -c $c county_audit &  done
+) | tee parallelcvr5000x2.out
+
+./main.py -C 1 -c 1 -c 2 -f neal_ignore/d0-n50000.csv county_setup
+for c in 1 2 ; do ./main.py -c $c county_audit &  done
+
+
 crtest -e /contest
 crtest -e /contest/id/52253
 crtest -e /contest/county?3
@@ -490,6 +509,7 @@ def dos_start(ac):
     r = test_endpoint_json(ac, ac.state_s, "/random-seed",
                            {'seed': ac.args.seed})
     # r = test_endpoint_post(ac, ac.state_s, "/ballots-to-audit/publish", {})
+    ac.round = 1
     r = test_endpoint_json(ac, ac.state_s, "/start-audit-round",
                            { "multiplier": 1.0, "use_estimates": True})
     print(r.text)
@@ -506,7 +526,8 @@ def dos_start(ac):
             if status['estimated_ballots_to_audit'] != 0:
                 print("County %s has initial sample size of %s ballot cards" % 
                       (county_id, status['estimated_ballots_to_audit']))
-                print("ballots_remaining_in_round: %d" % status['ballots_remaining_in_round'])
+                print("ballots_remaining_in_round %d: %d" %
+                      (ac.round, status['ballots_remaining_in_round']))
     logging.debug("dos-dashboard: %s" % r.text)
 
 def county_audit(ac, county_id):
@@ -522,7 +543,9 @@ def county_audit(ac, county_id):
                         "last_name": "Doe",
                         "political_party": "Republican"}]
 
-    r = test_endpoint_json(ac, county_s, "/audit-board-sign-in", audit_board_set)
+    r = test_endpoint_get(ac, county_s, "/audit-board-asm-state")
+    if r.json()['current_state'] == "AUDIT_BOARD_SIGNED_OUT":
+        r = test_endpoint_json(ac, county_s, "/audit-board-sign-in", audit_board_set)
 
     # Print this tool's notion of what should be audited, based on seed etc.
     # for auditing the audit.
@@ -533,7 +556,6 @@ def county_audit(ac, county_id):
 
     r = test_endpoint_get(ac, county_s, "/county-dashboard")
     # r = test_endpoint_get(ac, county_s, "/audit-board-asm-state")
-    # r = test_endpoint_json(ac, county_s, "/audit-board-dashboard", {})
 
     selected = r.json().get("ballots_to_audit", [])
 
@@ -552,7 +574,11 @@ def county_audit(ac, county_id):
 
         if i % 50 == 5:
             r = test_endpoint_json(ac, county_s, "/audit-board-sign-out", {});
+            r = test_endpoint_get(ac, county_s, "/audit-board-asm-state")
+            print(r.text)
             r = test_endpoint_json(ac, county_s, "/audit-board-sign-in", audit_board_set)
+            r = test_endpoint_get(ac, county_s, "/audit-board-asm-state")
+            print(r.text)
 
         r = test_endpoint_get(ac, county_s, "/cvr/id/%d" % selected[i], show=False)
         acvr = r.json()
@@ -592,9 +618,10 @@ def county_audit(ac, county_id):
         else:
             # TODO test getting just contests from current county
             # TODO print other interesting info
-            print("County %d upload %d: aCVR %d; estimated_ballots_to_audit: %s" % (county_id, i, acvr['id'], resp['estimated_ballots_to_audit']))
+
+            print("Round %d, county %d, upload %d: aCVR %d; ballots_remaining_in_round: %d, estimated_ballots_to_audit: %s" %
+                  (ac.round, county_id, i, acvr['id'], resp['ballots_remaining_in_round'], resp['estimated_ballots_to_audit']))
             # print(resp)
-            print("ballots_remaining_in_round: %d" % resp['ballots_remaining_in_round'])
 
         if resp['estimated_ballots_to_audit'] <= 0:
             print("\nAudit completed after %d ballots" % (i + 1))
@@ -684,11 +711,12 @@ if __name__ == "__main__":
 
     if "county_audit" in ac.args.commands:
         # TODO: go beyond 3 rounds?
-        for i in range(1, 4):
+        for i in range(1, 5):
             print("Start Round %d" % i)
             for county_id in ac.args.counties:
                 county_audit(ac, county_id)
             print()
+            ac.round += 1
             r = test_endpoint_json(ac, ac.state_s, "/start-audit-round",
                                    { "multiplier": 1.0, "use_estimates": True})
 
