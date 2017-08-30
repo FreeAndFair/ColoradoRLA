@@ -104,6 +104,7 @@ public final class CVRAuditInfoQueries {
     cq.where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
     final TypedQuery<CastVoteRecord> query = s.createQuery(cq);
     final List<CastVoteRecord> result = query.getResultList();
+    Main.LOGGER.info("updateMatching found " + result.size() + " results");
     if (!result.isEmpty()) {
       final CastVoteRecord acvr = result.get(0);
       updateMatching(the_dashboard, the_cvr, acvr, true);
@@ -140,6 +141,7 @@ public final class CVRAuditInfoQueries {
     final TypedQuery<CVRAuditInfo> query = s.createQuery(cq);
     final List<CVRAuditInfo> info = query.getResultList();
     for (final CVRAuditInfo cvrai : info) {
+      Main.LOGGER.info("updating ACVR");
       cvrai.setACVR(the_acvr);
       Persistence.saveOrUpdate(cvrai);
     }  

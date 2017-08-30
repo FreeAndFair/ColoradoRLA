@@ -452,12 +452,10 @@ public final class ComparisonAuditController {
    * 
    * @param the_dashboard The dashboard.
    */
-  // TODO consider interaction between this method and rounds
   private static void 
       updateCVRUnderAudit(final CountyDashboard the_dashboard) {
     final List<CVRAuditInfo> cvr_audit_info = the_dashboard.cvrAuditInfo();
     int index = the_dashboard.auditedPrefixLength();
-    int new_prefix_length = -1;
     while (index < cvr_audit_info.size()) {
       final CVRAuditInfo cai = cvr_audit_info.get(index);
       if (cai.acvr() == null) {
@@ -465,27 +463,11 @@ public final class ComparisonAuditController {
       } else {
         audit(the_dashboard, cai.cvr(), cai.acvr(), 1, false);
         cai.setCounted(true);
+        Main.LOGGER.info("ALG marked an acvr");
       }
       index = index + 1;
     }
-    new_prefix_length = index;
-    final int to_audit = 
-        computeEstimatedBallotsToAudit(the_dashboard, false) -
-        the_dashboard.auditedPrefixLength();
-    if (new_prefix_length == cvr_audit_info.size() && 
-        0 < to_audit - new_prefix_length) {
-      // we're out of ballots and the audit isn't done, so we need more; right 
-      // now, we add the expected amount to audit based on our error rates
-      final int to_audit_current_rates = 
-          computeEstimatedBallotsToAudit(the_dashboard, true);
-      final List<CastVoteRecord> new_cvrs = 
-          getCVRsInAuditSequence(the_dashboard, cvr_audit_info.size(), to_audit_current_rates);
-      the_dashboard.addCVRsToAudit(new_cvrs);
-      for (final CastVoteRecord cvr : new HashSet<>(new_cvrs)) {
-        CVRAuditInfoQueries.updateMatching(the_dashboard, cvr);
-      }
-    }
-    the_dashboard.setAuditedPrefixLength(new_prefix_length);
+    the_dashboard.setAuditedPrefixLength(index);
   }
   
   /**

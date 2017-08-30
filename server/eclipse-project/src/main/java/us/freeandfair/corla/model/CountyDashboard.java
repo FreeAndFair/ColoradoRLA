@@ -435,7 +435,6 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * should be added.
    * @exception IllegalArgumentException if any null CVRs are in the list.
    */
-  // TODO consider how this method interacts with "rounds"
   public void addCVRsToAudit(final List<CastVoteRecord> the_cvrs_to_add) {
     if (the_cvrs_to_add.contains(null)) {
       throw new IllegalArgumentException("null elements in audit cvr list");
@@ -447,6 +446,29 @@ public class CountyDashboard implements PersistentEntity, Serializable {
     }
   }
 
+  /**
+   * @return the CVR IDs remaining to audit in the current round, or an empty 
+   * list if there are no CVRs remaining to audit or if no round is in progress.
+   */
+  public List<Long> cvrsToAuditInCurrentRound() {
+    final List<Long> result = new ArrayList<Long>();
+    final Set<Long> found_ids = new HashSet<Long>();
+    if (my_current_round_index != null) {
+      final Round round = my_rounds.get(my_current_round_index);
+      for (int i = my_audited_prefix_length; 
+           i < round.expectedAuditedPrefixLength(); 
+           i++) {
+        final CVRAuditInfo cvrai = my_cvr_audit_info.get(i);
+        final Long cvr_id = cvrai.cvr().id();
+        if (cvrai.acvr() == null && !found_ids.contains(cvr_id)) {
+          result.add(cvr_id);
+          found_ids.add(cvr_id);
+        }
+      }
+    }
+    return result;
+  }
+  
   /**
    * @return all the audit rounds.
    */
