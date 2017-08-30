@@ -16,9 +16,15 @@ import static us.freeandfair.corla.util.EqualsHashcodeHelper.*;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Embeddable;
+
+import us.freeandfair.corla.persistence.ElectorListConverter;
 
 /**
  * Information about an audit round. 
@@ -27,9 +33,7 @@ import javax.persistence.Embeddable;
  * @version 0.0.1
  */
 @Embeddable
-// this class has many fields that would normally be declared final, but
-// cannot be for compatibility with Hibernate and JPA.
-@SuppressWarnings("PMD.ImmutableField")
+@SuppressWarnings({"PMD.ImmutableField", "PMD.TooManyMethods"})
 public class Round implements Serializable {
   /**
    * The serialVersionUID.
@@ -102,6 +106,13 @@ public class Round implements Serializable {
   @Column(nullable = false)
   private Integer my_disagreements = 0;
   
+  /**
+   * The signatories for round sign-off
+   */
+  @Column(name = "signatories", columnDefinition = "text")
+  @Convert(converter = ElectorListConverter.class)
+  private List<Elector> my_signatories = new ArrayList<>();
+
   /**
    * Constructs an empty round, solely for persistence. 
    */
@@ -284,6 +295,21 @@ public class Round implements Serializable {
   }
   
   /**
+   * @return the signatories.
+   */
+  public List<Elector> signatories() {
+    return Collections.unmodifiableList(my_signatories);
+  }
+  
+  /**
+   * Sets the signatories.
+   */
+  public void setSignatories(final List<Elector> the_signatories) {
+    my_signatories.clear();
+    my_signatories.addAll(the_signatories);
+  }
+  
+  /**
    * @return a String representation of this elector.
    */
   @Override
@@ -292,7 +318,8 @@ public class Round implements Serializable {
            my_end_time + ", expected_count=" + my_expected_count + 
            ", actual_count=" + my_actual_count + ", start_index=" + 
            my_start_audit_prefix_length + ", discrepancies=" + my_discrepancies + 
-           "disagreements=" + my_disagreements + "]";
+           "disagreements=" + my_disagreements + ", signatories=" +
+           my_signatories + "]";
   }
 
   /**
@@ -314,6 +341,7 @@ public class Round implements Serializable {
                                startAuditedPrefixLength());
       result &= nullableEquals(other_round.discrepancies(), discrepancies());
       result &= nullableEquals(other_round.disagreements(), disagreements());
+      result &= nullableEquals(other_round.signatories(), signatories());
     } else {
       result = false;
     }

@@ -61,6 +61,11 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   public static final int MIN_AUDIT_BOARD_MEMBERS = 2;
   
   /**
+   * The minimum number of members on an audit round sign-off.
+   */
+  public static final int MIN_ROUND_SIGN_OFF_MEMBERS = 2;
+  
+  /**
    * The "no content" constant.
    */
   private static final Integer NO_CONTENT = null;
@@ -486,10 +491,6 @@ public class CountyDashboard implements PersistentEntity, Serializable {
                                   the_start_index);
     updateRound(round);
     my_rounds.add(round);
-    if (round.expectedCount().equals(round.actualCount())) {
-      // the round ended before it started
-      endRound();
-    }
   }
   
   /**
@@ -523,13 +524,15 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   /**
    * Ends the current round.
    * 
+   * @param the_signatories The signatories for round sign-off.
    * @exception IllegalStateException if there is no current round.
    */
-  public void endRound() {
+  public void endRound(final List<Elector> the_signatories) {
     if (my_current_round_index == null) {
       throw new IllegalStateException("no round to end");
     } else {
       final Round round = my_rounds.get(my_current_round_index);
+      round.setSignatories(the_signatories);
       round.setEndTime(Instant.now());
       round.setActualCount(my_ballots_audited - round.previousBallotsAudited());
       round.setActualAuditedPrefixLength(my_audited_prefix_length);

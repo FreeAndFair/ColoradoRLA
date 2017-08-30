@@ -24,7 +24,6 @@ us.freeandfair.corla.endpoint.CVRExportImport
 us.freeandfair.corla.endpoint.CVRToAuditList
 us.freeandfair.corla.endpoint.DoSDashboardASMState
 us.freeandfair.corla.endpoint.DoSDashboardRefresh
-us.freeandfair.corla.endpoint.EstablishAuditBoard
 us.freeandfair.corla.endpoint.IndicateHandCount
 us.freeandfair.corla.endpoint.IntermediateAuditReport
 us.freeandfair.corla.endpoint.PublishAuditReport
@@ -36,6 +35,7 @@ us.freeandfair.corla.endpoint.Root
 us.freeandfair.corla.endpoint.SelectContestsForAudit
 us.freeandfair.corla.endpoint.SetElectionInfo
 us.freeandfair.corla.endpoint.SetRandomSeed
+us.freeandfair.corla.endpoint.SignOffAuditRound
 us.freeandfair.corla.endpoint.StartAuditRound
 us.freeandfair.corla.endpoint.Unauthenticate
 us.freeandfair.corla.endpoint.UploadFile
