@@ -104,12 +104,16 @@ const SelectContestsPage = (props: any) => {
 
     const forms: any = {};
 
+    const haveSelectedContests = !_.isEmpty(auditedContests)
+
     const onSaveAndNext = () => {
-        selectContestsForAudit(forms.selectContestsForm);
+        if (!haveSelectedContests) {
+            selectContestsForAudit(forms.selectContestsForm);
+        }
         nextPage();
     };
 
-    const contentDiv = _.isEmpty(auditedContests)
+    const contentDiv = !haveSelectedContests
                      ? <SelectContestsForm forms={ forms } contests={ contests } />
                      : <SelectedContests auditedContests={ auditedContests } contests={ contests } />;
 
