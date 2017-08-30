@@ -47,6 +47,7 @@ const RemainingInRoundHeader = () => {
             content={ content }>
             <div>
                 <span>Remaining in Round</span>
+                <span> </span>
                 <span className='pt-icon-standard pt-icon-help' />
             </div>
         </Tooltip>
@@ -63,6 +64,7 @@ const EstRemainingHeader = () => {
             content={ content }>
             <div>
                 <span>Est. Remaining Ballots</span>
+                <span> </span>
                 <span className='pt-icon-standard pt-icon-help' />
             </div>
         </Tooltip>
