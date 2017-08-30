@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import RoundContainer from './RoundContainer';
+
 
 const RiskLimitInfo = ({ riskLimit }: any) => {
     return (
@@ -42,6 +44,7 @@ const Main = (props: any) => {
     return (
         <div className='sos-notifications pt-card'>
             { auditDefinition }
+            <RoundContainer />
         </div>
     );
 };
