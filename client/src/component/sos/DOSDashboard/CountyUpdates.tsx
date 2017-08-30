@@ -50,47 +50,47 @@ const CountyUpdates = ({ countyStatus }: any) => {
                 <td>{ c.auditedBallotCount }</td>
                 <td>{ c.discrepancyCount }</td>
                 <td>{ c.disagreementCount }</td>
-                <td>{ c.estimatedBallotsToAudit }</td>
+                <td>{ c.ballotsRemainingInRound }</td>
             </tr>
         );
     });
 
-    const remainingToAuditTooltipContent =
-        'Estimated number of ballots to audit to meet risk limit.';
+    const remainingInRoundTooltipContent =
+        'Number of ballots remaining to audit in the current round.';
 
-    const remainingToAuditHeader = (
+    const remainingInRoundHeader = (
         <Tooltip
             className='pt-tooltip-indicator'
-            content={ remainingToAuditTooltipContent }>
+            content={ remainingInRoundTooltipContent }>
             <div>
-                <span>Remaining to Audit </span>
+                <span>Remaining in Round</span>
                 <span className='pt-icon-standard pt-icon-help' />
             </div>
         </Tooltip>
     );
 
-        return (
+    return (
+        <div className='pt-card'>
+            <h3>County Updates</h3>
             <div className='pt-card'>
-                <h3>County Updates</h3>
-                <div className='pt-card'>
-                    <table className='pt-table pt-bordered pt-condensed '>
-                        <thead>
-                            <tr>
-                                <td>Name</td>
-                                <td>Status</td>
-                                <td>Submitted</td>
-                                <td>Discrepancies</td>
-                                <td>Disagreements</td>
-                                <td>{ remainingToAuditHeader }</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            { ...countyStatusRows }
-                        </tbody>
-                    </table>
-                </div>
+                <table className='pt-table pt-bordered pt-condensed '>
+                    <thead>
+                        <tr>
+                            <td>Name</td>
+                            <td>Status</td>
+                            <td>Submitted</td>
+                            <td>Discrepancies</td>
+                            <td>Disagreements</td>
+                            <td>{ remainingInRoundHeader }</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        { ...countyStatusRows }
+                    </tbody>
+                </table>
             </div>
-        );
+        </div>
+    );
 };
 
 
