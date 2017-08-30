@@ -135,6 +135,12 @@ parser.add_argument('-C, --contest', dest='contests', metavar='CONTEST', action=
                     type=int,
                     help='numeric contest_index for the given command, e.g. 0 '
                     'for first one from the CVRs. May be specified multiple times.')
+parser.add_argument('-p, --discrepancy-plan', dest='plan', default="2 17",
+                    help='Planned discrepancies. Default is "2 17", i.e. '
+                    'Every 17 ACVR upload, upload a possible discrepancy once, '
+                    'when the remainder of dividing the upload index is 2. '
+                    'Discrepancies thus come with the 3rd of every 17 ACVR uploads.')
+
 parser.add_argument('-r, --risk-limit', type=float, dest='risk_limit', default=0.1,
                     help='risk limit, e.g. 0.1')
 parser.add_argument('-s, --seed', dest='seed',
@@ -484,8 +490,9 @@ def dos_start(ac):
     r = test_endpoint_json(ac, ac.state_s, "/random-seed",
                            {'seed': ac.args.seed})
     # r = test_endpoint_post(ac, ac.state_s, "/ballots-to-audit/publish", {})
-    r = test_endpoint_post(ac, ac.state_s, "/start-audit-round",
+    r = test_endpoint_json(ac, ac.state_s, "/start-audit-round",
                            { "multiplier": 1.0, "use_estimates": True})
+    print(r.text)
     # with use_estimates: False:    "county_ballots": { "ID": number, "ID": number, ... }
     # only the counties listed in it have rounds started
 
@@ -508,13 +515,14 @@ def county_audit(ac, county_id):
     county_s = requests.Session()
     county_login(ac, county_s, county_id)
 
-    r = test_endpoint_json(ac, county_s, "/audit-board-sign-in",
-                           [{"first_name": "Mary",
-                             "last_name": "Doe",
-                             "political_party": "Democrat"},
-                            {"first_name": "John",
-                             "last_name": "Doe",
-                             "political_party": "Republican"}])
+    audit_board_set = [{"first_name": "Mary",
+                        "last_name": "Doe",
+                        "political_party": "Democrat"},
+                       {"first_name": "John",
+                        "last_name": "Doe",
+                        "political_party": "Republican"}]
+
+    r = test_endpoint_json(ac, county_s, "/audit-board-sign-in", audit_board_set)
 
     # Print this tool's notion of what should be audited, based on seed etc.
     # for auditing the audit.
@@ -544,13 +552,7 @@ def county_audit(ac, county_id):
 
         if i % 50 == 5:
             r = test_endpoint_json(ac, county_s, "/audit-board-sign-out", {});
-            r = test_endpoint_json(ac, county_s, "/audit-board-sign-in",
-                           [{"first_name": "Mary",
-                             "last_name": "Doe",
-                             "political_party": "Democrat"},
-                            {"first_name": "John",
-                             "last_name": "Doe",
-                             "political_party": "Republican"}])
+            r = test_endpoint_json(ac, county_s, "/audit-board-sign-in", audit_board_set)
 
         r = test_endpoint_get(ac, county_s, "/cvr/id/%d" % selected[i], show=False)
         acvr = r.json()
@@ -562,7 +564,10 @@ def county_audit(ac, county_id):
 
         # Modify the aCVR sometimes.
         # TODO: provide command-line parameters for discrepancy rates?
-        if False:
+        discrepancy_remainder, discrepancy_cycle = ac.args.plan.split()
+        discrepancy_remainder = int(discrepancy_remainder)
+        discrepancy_cycle = int(discrepancy_cycle)
+        if i % discrepancy_cycle == discrepancy_remainder:
             print('Possible discrepancy: blindly setting choices for first contest to ["Distant Loser"]')
             acvr['contest_info'][0]['choices'] = ["Distant Loser"]
             # acvr['contest_info'][0]['choices'] = ["No/Against"]  # for Denver election contest 0
@@ -684,7 +689,7 @@ if __name__ == "__main__":
             for county_id in ac.args.counties:
                 county_audit(ac, county_id)
             print()
-            r = test_endpoint_post(ac, ac.state_s, "/start-audit-round",
+            r = test_endpoint_json(ac, ac.state_s, "/start-audit-round",
                                    { "multiplier": 1.0, "use_estimates": True})
 
         for county_id in ac.args.counties:
