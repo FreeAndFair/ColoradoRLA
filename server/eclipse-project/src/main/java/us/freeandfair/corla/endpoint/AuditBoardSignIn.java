@@ -86,7 +86,7 @@ public class AuditBoardSignIn extends AbstractAuditBoardDashboardEndpoint {
           Main.GSON.fromJson(the_request.body(), list_type);
       if (parsed_audit_board.size() >= CountyDashboard.MIN_AUDIT_BOARD_MEMBERS) {
         final County county = Main.authentication().authenticatedCounty(the_request); 
-        if (county == null) {
+        if (county == null) { 
           Main.LOGGER.error("could not get authenticated county");
           unauthorized(the_response, "not authorized to sign in audit board");
         } else {
