@@ -86,7 +86,6 @@ const Main = (props: any) => {
                     <span> </span>
                     Start Audit
                 </button>
-                { finalReportForm }
             </div>
         </div>
     );
