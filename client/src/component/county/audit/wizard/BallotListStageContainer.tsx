@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 
 import BallotListStage from './BallotListStage';
 
+import countyInfo from '../../../../selector/county/countyInfo';
+
 
 class BallotListStageContainer extends React.Component<any, any> {
     public render() {
@@ -22,6 +24,7 @@ const mapStateToProps = (state: any) => {
 
     return {
         county,
+        countyInfo: countyInfo(state),
         cvrsToAudit: county.cvrsToAudit,
     };
 };
