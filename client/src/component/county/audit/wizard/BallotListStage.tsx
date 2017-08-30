@@ -36,7 +36,7 @@ const BallotListStage = (props: any) => {
                 </ul>
             </div>
             <div className='pt-card'>
-                The Secretary of State has randomly selected [total number of ballots]
+                The Secretary of State has randomly selected { cvrsToAudit.length } ballots
                 for the { countyInfo.name } County Audit Board to examine to satisfy the
                 risk limit(s) for the audited contest(s).
             </div>
