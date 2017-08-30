@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import startNextRound from '../../../../action/dosStartNextRound';
+
 
 const Control = (props: any) => {
     return (
@@ -9,7 +11,9 @@ const Control = (props: any) => {
                 Round [Round #N] has completed.
                 Start round [Round #N+1]?
             </div>
-            <button className='pt-button pt-intent-primary'>
+            <button
+                className='pt-button pt-intent-primary'
+                onClick={ startNextRound }>
                 Start Round
             </button>
         </div>
