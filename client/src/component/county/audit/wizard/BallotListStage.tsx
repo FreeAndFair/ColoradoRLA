@@ -2,6 +2,19 @@ import * as React from 'react';
 
 
 const BallotListStage = (props: any) => {
+    const { county, cvrsToAudit } = props;
+
+    const ballotListRows = cvrsToAudit.map((cvr: any) => {
+        return (
+            <tr key={ cvr.imprinted_id }>
+                <td>{ cvr.scanner_id }</td>
+                <td>{ cvr.batch_id }</td>
+                <td>{ cvr.record_id }</td>
+                <td>{ cvr.storage_location }</td>
+            </tr>
+        );
+    });
+
     return (
         <div>
             <h3>Ballots to audit</h3>
@@ -19,6 +32,19 @@ const BallotListStage = (props: any) => {
                 locate and retrieve, the following randomly selected ballots for the initial
                 round of this risk-limiting audit:
             </div>
+            <table className='pt-table pt-bordered pt-condensed'>
+                <thead>
+                    <tr>
+                        <th>Scanner #</th>
+                        <th>Batch #</th>
+                        <th>Ballot Position #</th>
+                        <th>Storage Bin</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    { ballotListRows }
+                </tbody>
+            </table>
         </div>
     );
 }
