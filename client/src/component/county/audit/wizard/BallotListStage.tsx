@@ -56,7 +56,7 @@ const BallotListStage = (props: any) => {
             </button>
         </div>
     );
-}
+};
 
 
 export default BallotListStage;
