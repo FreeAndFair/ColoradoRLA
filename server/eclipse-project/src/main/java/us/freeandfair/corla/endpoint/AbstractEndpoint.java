@@ -388,6 +388,7 @@ public abstract class AbstractEndpoint implements Endpoint {
   @SuppressWarnings("PMD.ConfusingTernary")
   @Override
   public void before(final Request the_request, final Response the_response) {
+    reset();
     my_log_entries.set(new ArrayList<LogEntry>());
     Main.LOGGER.info("endpoint " + endpointName() + " hit by " + the_request.host());
     // Start a transaction, if the database is functioning; otherwise abort
