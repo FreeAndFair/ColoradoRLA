@@ -37,6 +37,38 @@ function formatStatus(asmState: any) {
     }
 }
 
+const RemainingInRoundHeader = () => {
+    const content =
+        'Number of ballots remaining to audit in the current round.';
+
+    return (
+        <Tooltip
+            className='pt-tooltip-indicator'
+            content={ content }>
+            <div>
+                <span>Remaining in Round</span>
+                <span className='pt-icon-standard pt-icon-help' />
+            </div>
+        </Tooltip>
+    );
+};
+
+const EstRemainingHeader = () => {
+    const content =
+        'Estimated number of ballots remaining to audit to meet risk limit.';
+
+    return (
+        <Tooltip
+            className='pt-tooltip-indicator'
+            content={ content }>
+            <div>
+                <span>Est. Remaining Ballots</span>
+                <span className='pt-icon-standard pt-icon-help' />
+            </div>
+        </Tooltip>
+    );
+};
+
 const CountyUpdates = ({ countyStatus }: any) => {
     const countyStatusRows = _.map(countyStatus, (c: any) => {
         const county = _.find(counties, (x: any) => x.id === c.id);
@@ -56,34 +88,6 @@ const CountyUpdates = ({ countyStatus }: any) => {
         );
     });
 
-    const remainingInRoundTooltipContent =
-        'Number of ballots remaining to audit in the current round.';
-
-    const remainingInRoundHeader = (
-        <Tooltip
-            className='pt-tooltip-indicator'
-            content={ remainingInRoundTooltipContent }>
-            <div>
-                <span>Remaining in Round</span>
-                <span className='pt-icon-standard pt-icon-help' />
-            </div>
-        </Tooltip>
-    );
-
-    const estRemainingTooltipContent =
-        'Estimated number of ballots remaining to audit to meet risk limit.';
-
-    const estRemainingHeader = (
-        <Tooltip
-            className='pt-tooltip-indicator'
-            content={ estRemainingTooltipContent }>
-            <div>
-                <span>Est. Remaining Ballots</span>
-                <span className='pt-icon-standard pt-icon-help' />
-            </div>
-        </Tooltip>
-    );
-
     return (
         <div className='pt-card'>
             <h3>County Updates</h3>
@@ -96,8 +100,12 @@ const CountyUpdates = ({ countyStatus }: any) => {
                             <td>Submitted</td>
                             <td>Discrepancies</td>
                             <td>Disagreements</td>
-                            <td>{ remainingInRoundHeader }</td>
-                            <td>{ estRemainingHeader }</td>
+                            <td>
+                                <RemainingInRoundHeader />
+                            </td>
+                            <td>
+                                <EstRemainingHeader />
+                            </td>
                         </tr>
                     </thead>
                     <tbody>
