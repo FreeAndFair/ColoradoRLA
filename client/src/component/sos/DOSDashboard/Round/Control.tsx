@@ -4,12 +4,14 @@ import startNextRound from '../../../../action/dosStartNextRound';
 
 
 const Control = (props: any) => {
+    const { currentRound } = props;
+
     return (
         <div className='pt-card'>
             <h4>Start next round</h4>
             <div className='pt-card'>
-                Round [Round #N] has completed.
-                Start round [Round #N+1]?
+                Round #{ currentRound + 1 } has completed.
+                Start round #{ currentRound + 2 }?
             </div>
             <button
                 className='pt-button pt-intent-primary'
