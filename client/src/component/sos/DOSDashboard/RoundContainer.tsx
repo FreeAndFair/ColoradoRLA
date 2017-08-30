@@ -14,16 +14,14 @@ import currentRound from '../../../selector/dos/currentRound';
 class RoundContainer extends React.Component<any, any> {
     public render() {
         if (this.props.canStartNextRound) {
-            return <Control />;
+            return <Control { ...this.props } />;
         }
 
         if (!auditStarted) {
             return <div>Audit not yet started.</div>;
         }
 
-        const props = { ...this.props };
-
-        return <Status { ...props } />;
+        return <Status { ...this.props } />;
     }
 }
 
