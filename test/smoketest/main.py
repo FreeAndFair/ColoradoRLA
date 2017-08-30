@@ -158,18 +158,22 @@ def state_login(ac, s):
     "Login as state admin in given requests session"
 
     path = "/auth-state-admin"
-    r = s.post(ac.base + path,
-               data={'username': 'stateadmin1', 'password': '', 'second_factor': ''})
-    print(r, path)
+    r1 = s.post(ac.base + path,
+                data={'username': 'stateadmin1', 'password': 'a state password', 'second_factor': ''})
+    r2 = s.post(ac.base + path,
+                data={'username': 'stateadmin1', 'password': '', 'second_factor': 'a state second factor'})
+    print(r1 and r2, path)
 
 
 def county_login(ac, s, county_id):
     "Login as county admin in given requests session"
 
     path = "/auth-county-admin"
-    r = s.post(ac.base + path,
-               data={'username': 'countyadmin%d' % county_id, 'password': '', 'second_factor': ''})
-    print(r, path)
+    r1 = s.post(ac.base + path,
+                data={'username': 'countyadmin%d' % county_id, 'password': 'a password', 'second_factor': ''})
+    r2 = s.post(ac.base + path,
+                data={'username': 'countyadmin%d' % county_id, 'password': '', 'second_factor': 'a 2nd factor'})
+    print(r1 and r2, path)
 
 
 def test_endpoint_json(ac, s, path, data, show=True):
