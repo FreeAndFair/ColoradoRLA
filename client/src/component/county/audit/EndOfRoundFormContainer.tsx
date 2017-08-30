@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 
 import EndOfRoundForm from './EndOfRoundForm';
 
+import roundSignOff from '../../../action/roundSignOff';
+
 import countyInfo from '../../../selector/county/countyInfo';
 
 
@@ -29,6 +31,7 @@ class EndOfRoundFormContainer extends React.Component<any, any> {
             onFirstNameChange: this.onFirstNameChange,
             onLastNameChange: this.onLastNameChange,
             onTextConfirm: this.onTextConfirm,
+            submit: () => roundSignOff(this.state.form),
         };
 
         return <EndOfRoundForm {...props} />;

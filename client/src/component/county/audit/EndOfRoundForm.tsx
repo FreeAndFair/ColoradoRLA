@@ -49,6 +49,7 @@ const EndOfRoundForm = (props: any) => {
         onFirstNameChange,
         onLastNameChange,
         onTextConfirm,
+        submit,
     } = props;
 
     const createFormField = (index: number) => (
@@ -65,6 +66,9 @@ const EndOfRoundForm = (props: any) => {
         <div>
             { createFormField(0) }
             { createFormField(1) }
+            <button className='pt-button pt-intent-primary' onClick={ submit }>
+                Submit
+            </button>
         </div>
     );
 };
