@@ -9,7 +9,7 @@ interface Elector {
 
 type Status = 'NO_DATA' | 'CVRS_UPLOADED_SUCCESSFULLY' | 'ERROR_IN_UPLOADED_DATA';
 
-interface CurrentRound {
+interface Round {
     actual_count: number;
     disagreements: number;
     discrepancies: number;
@@ -30,7 +30,7 @@ interface CountyDashboard {
     ballot_under_audit_id: number;
     ballots_remaining_in_round: number;
     ballots_to_audit: number[];
-    current_round: CurrentRound;
+    current_round: Round;
     cvr_export_filename: string;
     cvr_export_hash: string;
     contests: number[];
@@ -40,7 +40,7 @@ interface CountyDashboard {
     estimated_ballots_to_audit: number;
     general_information: string;
     id: number;
-
+    rounds: Round[];
     status: Status;
 }
 
@@ -101,7 +101,7 @@ const parseContestsUnderAudit = (contestIds: any, state: any): any => {
     });
 };
 
-function parseCurrentRound(data: any) {
+function parseRound(data: Round) {
     if (!data) {
         return {};
     }
@@ -117,6 +117,13 @@ function parseCurrentRound(data: any) {
     };
 }
 
+function parseRounds(rounds: Round[]) {
+    if (!rounds) {
+        return [];
+    }
+
+    return rounds.map(parseRound);
+}
 
 export const parse = (data: CountyDashboard, state: any): any => {
     const findContest = (id: any) => state.county.contestDefs[id];
@@ -134,7 +141,7 @@ export const parse = (data: CountyDashboard, state: any): any => {
         ballotsToAudit: data.ballots_to_audit,
         contests: parseContests(data.contests, state),
         contestsUnderAudit: parseContestsUnderAudit(data.contests_under_audit, state),
-        currentRound: parseCurrentRound(data.current_round),
+        currentRound: parseRound(data.current_round),
         cvrExportFilename: data.cvr_export_filename,
         cvrExportHash: data.cvr_export_hash,
         disagreementCount: data.disagreement_count,
@@ -142,6 +149,7 @@ export const parse = (data: CountyDashboard, state: any): any => {
         estimatedBallotsToAudit: data.estimated_ballots_to_audit,
         generalInformation: data.general_information,
         id: data.id,
+        rounds: parseRounds(data.rounds),
         status: data.status,
     };
 };
