@@ -301,11 +301,15 @@ public final class ComparisonAuditController {
         CVRAuditInfoQueries.updateMatching(the_dashboard, cvrai.cvr(), cvrai.acvr());
       }
     }
-    Main.LOGGER.info("starting audit round " + (rounds.size() + 1) + " for county " + 
-        the_dashboard.id() + " at audit sequence number " + start_index + 
-        " with " + unique_new_cvrs.size() + " ballots to audit");
-    the_dashboard.startRound(the_round_length, expected_prefix_length, start_index);
-    return true;
+    if (unique_new_cvrs.isEmpty()) {
+      return false;
+    } else {
+      Main.LOGGER.info("starting audit round " + (rounds.size() + 1) + " for county " + 
+          the_dashboard.id() + " at audit sequence number " + start_index + 
+          " with " + unique_new_cvrs.size() + " ballots to audit");
+      the_dashboard.startRound(the_round_length, expected_prefix_length, start_index);
+      return true;
+    } 
   }
   
   /**
@@ -335,7 +339,6 @@ public final class ComparisonAuditController {
     final int expected_prefix_length = 
         Math.max(computeEstimatedBallotsToAudit(the_dashboard, true),
                  computeEstimatedBallotsToAudit(the_dashboard, false));
-    Main.LOGGER.info("expected prefix length=" + expected_prefix_length);
     if (the_dashboard.auditedPrefixLength() < expected_prefix_length) {
       final List<CastVoteRecord> new_cvrs = 
           getCVRsInAuditSequence(the_dashboard, start_index, 
@@ -348,7 +351,6 @@ public final class ComparisonAuditController {
       for (final CastVoteRecord cvr : new_cvrs) {
         ids.add(cvr.id());
       }
-      Main.LOGGER.info("cvr sequence: " + (ids.size() - 1) + " " + ids);
       the_dashboard.addCVRsToAudit(new_cvrs);
       Persistence.saveOrUpdate(the_dashboard);
       final Set<CastVoteRecord> unique_new_cvrs = new HashSet<>(new_cvrs);
@@ -359,7 +361,6 @@ public final class ComparisonAuditController {
           CVRAuditInfoQueries.updateMatching(the_dashboard, cvrai.cvr(), cvrai.acvr());
         }
       }
-      Main.LOGGER.info(unique_new_cvrs.size() + " unique unsubmitted cvrs");
       final int round_length = unique_new_cvrs.size();
       Main.LOGGER.info("starting audit round " + (rounds.size() + 1) + " for county " + 
           the_dashboard.id() + " at audit sequence number " + start_index + 
