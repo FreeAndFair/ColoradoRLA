@@ -1,10 +1,16 @@
 import * as React from 'react';
 
+import * as _ from 'lodash';
+
 
 const BallotListStage = (props: any) => {
     const { county, countyInfo, cvrsToAudit, nextStage } = props;
 
-    const ballotListRows = cvrsToAudit.map((cvr: any) => {
+    if (!cvrsToAudit) {
+        return <div />;
+    }
+
+    const ballotListRows = _.map(cvrsToAudit, (cvr: any) => {
         return (
             <tr key={ cvr.imprinted_id }>
                 <td>{ cvr.scanner_id }</td>
@@ -15,7 +21,7 @@ const BallotListStage = (props: any) => {
         );
     });
 
-    const contestsUnderAuditListItems = county.contestsUnderAudit.map((c: any) => {
+    const contestsUnderAuditListItems = _.map(county.contestsUnderAudit, (c: any) => {
         const riskLimitPercent = county.riskLimit
                                ? `${county.riskLimit * 100}%`
                                : '';
