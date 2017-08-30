@@ -13,7 +13,7 @@ class BallotListStageContainer extends React.Component<any, any> {
             return <div />;
         }
 
-        return <BallotList { ...props } />;
+        return <BallotListStage { ...props } />;
     }
 }
 

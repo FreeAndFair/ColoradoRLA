@@ -8,3 +8,6 @@ const BallotListStage = (props: any) => {
         </div>
     );
 }
+
+
+export default BallotListStage;
