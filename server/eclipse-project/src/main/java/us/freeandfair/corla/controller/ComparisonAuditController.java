@@ -343,14 +343,6 @@ public final class ComparisonAuditController {
       final List<CastVoteRecord> new_cvrs = 
           getCVRsInAuditSequence(the_dashboard, start_index, 
                                  expected_prefix_length - 1);
-      final List<Long> ids = new ArrayList<Long>();
-      for (final CVRAuditInfo cvrai : the_dashboard.cvrAuditInfo()) {
-        ids.add(cvrai.cvr().id());
-      }
-      ids.add(-1L);
-      for (final CastVoteRecord cvr : new_cvrs) {
-        ids.add(cvr.id());
-      }
       the_dashboard.addCVRsToAudit(new_cvrs);
       Persistence.saveOrUpdate(the_dashboard);
       final Set<CastVoteRecord> unique_new_cvrs = new HashSet<>(new_cvrs);
