@@ -12,6 +12,7 @@
 
 package us.freeandfair.corla.json;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -66,6 +67,11 @@ public class CountyDashboardRefreshResponse {
    * @todo this needs to be connected to something
    */
   private final Map<String, String> my_general_information;
+  
+  /**
+   * The risk limit.
+   */
+  private final BigDecimal my_risk_limit;
   
   /**
    * The audit board members.
@@ -183,6 +189,7 @@ public class CountyDashboardRefreshResponse {
    * @param the_id The ID.
    * @param the_asm_state The ASM state.
    * @param the_general_information The general information.
+   * @param the_risk_limit The risk limit.
    * @param the_audit_board The current audit board.
    * @param the_ballot_manifest_hash The ballot manifest hash.
    * @param the_cvr_export_hash The CVR export hash.
@@ -208,6 +215,7 @@ public class CountyDashboardRefreshResponse {
   protected CountyDashboardRefreshResponse(final Long the_id,
                                            final ASMState the_asm_state,
                                            final Map<String, String> the_general_information,
+                                           final BigDecimal the_risk_limit,
                                            final AuditBoard the_audit_board, 
                                            final String the_ballot_manifest_hash,
                                            final Instant the_ballot_manifest_timestamp,
@@ -233,6 +241,7 @@ public class CountyDashboardRefreshResponse {
     my_id = the_id;
     my_asm_state = the_asm_state;
     my_general_information = the_general_information;
+    my_risk_limit = the_risk_limit;
     my_audit_board = the_audit_board;
     my_ballot_manifest_hash = the_ballot_manifest_hash;
     my_ballot_manifest_timestamp = the_ballot_manifest_timestamp;
@@ -326,6 +335,7 @@ public class CountyDashboardRefreshResponse {
     return new CountyDashboardRefreshResponse(county_id, 
                                               asm.currentState(),
                                               general_information,
+                                              dosd.riskLimitForComparisonAudits(),
                                               the_dashboard.currentAuditBoard(),
                                               manifest_digest,
                                               the_dashboard.manifestUploadTimestamp(),
@@ -400,6 +410,7 @@ public class CountyDashboardRefreshResponse {
     
     return new CountyDashboardRefreshResponse(county_id, 
                                               asm.currentState(),
+                                              null,
                                               null,
                                               null,
                                               manifest_digest,
