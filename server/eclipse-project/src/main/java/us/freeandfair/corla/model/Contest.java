@@ -35,8 +35,6 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
-import org.hibernate.annotations.Immutable;
-
 import us.freeandfair.corla.persistence.PersistentEntity;
 
 /**
@@ -47,14 +45,13 @@ import us.freeandfair.corla.persistence.PersistentEntity;
  * @version 0.0.1
  */
 @Entity
-@Immutable // this is a Hibernate-specific annotation, but there is no JPA alternative
 @Cacheable(true)
 @Table(name = "contest",
        uniqueConstraints = {
-           @UniqueConstraint(columnNames = {"name", "description", "votes_allowed"}) },
+           @UniqueConstraint(columnNames = {"name", "county_id", "description", "votes_allowed"}) },
        indexes = { @Index(name = "idx_contest_name", columnList = "name"),
-                   @Index(name = "idx_contest_name_description_votes_allowed", 
-                          columnList = "name, description, votes_allowed") })
+                   @Index(name = "idx_contest_name_county_description_votes_allowed", 
+                          columnList = "name, county_id, description, votes_allowed") })
 //this class has many fields that would normally be declared final, but
 //cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
@@ -84,6 +81,12 @@ public class Contest implements PersistentEntity, Serializable {
   @Column(name = "name", updatable = false, nullable = false)
   private String my_name;
 
+  /**
+   * The contest county.
+   */
+  @Column(name = "county_id", updatable = false, nullable = false)
+  private Long my_county_id;
+  
   /**
    * The contest description.
    */
@@ -118,6 +121,7 @@ public class Contest implements PersistentEntity, Serializable {
    * Constructs a contest with the specified parameters.
    * 
    * @param the_name The contest name.
+   * @param the_county_id The county ID for this contest.
    * @param the_description The contest description.
    * @param the_choices The set of contest choices.
    * @param the_votes_allowed The maximum number of votes that can
@@ -125,10 +129,12 @@ public class Contest implements PersistentEntity, Serializable {
    */
   //@ requires 1 <= the_votes_allowed;
   //@ requires the_votes_allowed <= the_choices.size();
-  public Contest(final String the_name, final String the_description, 
-                 final List<Choice> the_choices, final int the_votes_allowed)  {
+  public Contest(final String the_name, final Long the_county_id, 
+                 final String the_description, final List<Choice> the_choices, 
+                 final int the_votes_allowed)  {
     super();
     my_name = the_name;
+    my_county_id = the_county_id;
     my_description = the_description;
     my_choices.addAll(the_choices);
     my_votes_allowed = the_votes_allowed;
@@ -170,6 +176,13 @@ public class Contest implements PersistentEntity, Serializable {
    */
   public String description() {
     return my_description;
+  }
+  
+  /**
+   * @return the county ID.
+   */
+  public Long countyID() {
+    return my_county_id;
   }
   
   /**

@@ -43,57 +43,7 @@ public final class ContestQueries {
    */
   private ContestQueries() {
     // do nothing
-  }
-  
-  /**
-   * Obtain a persistent Contest object equivalent to the specified Contest
-   * object. If there is not already such a persistent Contest object,
-   * one is created and returned.
-   *
-   * @param the_contest The contest object to match.
-   * @return the matched contest object, if one exists.
-   */
-  // we are checking to see if exactly one result is in a list, and
-  // PMD doesn't like it
-  @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
-  public static Contest matching(final Contest the_contest) {
-    Contest result = null;
-    
-    try {
-      final Session s = Persistence.currentSession();
-      final CriteriaBuilder cb = s.getCriteriaBuilder();
-      final CriteriaQuery<Contest> cq = cb.createQuery(Contest.class);
-      final Root<Contest> root = cq.from(Contest.class);
-      final List<Predicate> conjuncts = new ArrayList<>();
-      conjuncts.add(cb.equal(root.get("my_name"), the_contest.name()));
-      conjuncts.add(cb.equal(root.get("my_description"), the_contest.description()));
-      conjuncts.add(cb.equal(root.get("my_votes_allowed"), the_contest.votesAllowed()));
-      cq.select(root).where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
-      final TypedQuery<Contest> query = s.createQuery(cq);
-      final List<Contest> query_results = query.getResultList();
-      // if there's exactly one result, return that
-      if (query_results.size() == 1) {
-        result = query_results.get(0);
-      } else if (query_results.isEmpty()) {
-        // we need to persist a new object
-        Persistence.saveOrUpdate(the_contest);
-        result = the_contest;
-      } else {
-        Main.LOGGER.error("multiple matching contests found");
-        throw new PersistenceException("multiple matching contests found for " + 
-                                       the_contest);
-      }
-    } catch (final PersistenceException e) {
-      Main.LOGGER.error("could not query database for contest");
-    }
-    if (result == null) {
-      Main.LOGGER.debug("found no contest matching + " + the_contest);
-    } else {
-      Main.LOGGER.debug("found contest " + result);
-    }
-    return result;
-  }
-  
+  }  
   
   /**
    * Gets contests that are in the specified set of counties.
