@@ -99,10 +99,11 @@ public interface AuthenticationInterface {
                                    String the_second_factor);
 
   /**
-    * @trace authenticated.second_factor_authenticated?
-    * @param the_request The request.
-    * @return true iff `the_username` is second-factor authenticated.
-    */
+   * Is `the_username` authenticated with a second factor?
+   * @trace authenticated.second_factor_authenticated?
+   * @param the_request The request.
+   * @return true iff `the_username` is second-factor authenticated.
+   */
   boolean secondFactorAuthenticated(Request the_request,
                                     String the_username);
 
