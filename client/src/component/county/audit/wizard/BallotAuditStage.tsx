@@ -30,8 +30,8 @@ const AuditInstructions = ({ ballotNotFound, ballotsToAudit, county, currentBall
     <div className='pt-card'>
         <div>
             Use this page to report the voter markings on the ballot with ID
-            #{ currentBallot.id }, out of { county.estimatedBallotsToAudit } ballots
-            that you must audit.
+            #{ currentBallot.id }, out of { county.ballotsRemainingInRound } ballots
+            that you must audit in this round.
         </div>
         <div>
             The current ballot is:
