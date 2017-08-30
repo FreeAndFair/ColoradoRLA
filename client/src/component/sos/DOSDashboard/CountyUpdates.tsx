@@ -85,7 +85,7 @@ const CountyUpdates = ({ countyStatus }: any) => {
                 <td>{ c.discrepancyCount }</td>
                 <td>{ c.disagreementCount }</td>
                 <td>{ c.ballotsRemainingInRound }</td>
-                <td>{ c.estimatedBallotsToAudit }</td>
+                <td>{ Math.max(0, c.estimatedBallotsToAudit) }</td>
             </tr>
         );
     });
