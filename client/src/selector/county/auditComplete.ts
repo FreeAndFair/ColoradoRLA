@@ -1,7 +1,9 @@
 function auditComplete(state: any): boolean {
-    const { currentState } = state.county.asm.county;
+    const { county } = state;
+    const { currentState } = county.asm.county;
 
-    return currentState === 'COUNTY_AUDIT_COMPLETE';
+    return currentState === 'COUNTY_AUDIT_COMPLETE'
+        || county.estimatedBallotsToAudit <= 0;
 }
 
 
