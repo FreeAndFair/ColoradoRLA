@@ -4,14 +4,16 @@ import { connect } from 'react-redux';
 import EndOfRoundPage from './EndOfRoundPage';
 
 import countyInfo from '../../../selector/county/countyInfo';
+import previousRound from '../../../selector/county/previousRound';
 
 
 class EndOfRoundPageContainer extends React.Component<any, any> {
     public render() {
-        const { countyInfo } = this.props;
+        const { countyInfo, previousRound } = this.props;
 
         const props = {
             countyInfo,
+            previousRound,
         };
 
         return <EndOfRoundPage { ...props } />;
@@ -21,6 +23,7 @@ class EndOfRoundPageContainer extends React.Component<any, any> {
 const mapStateToProps = (state: any) => {
     return {
         countyInfo: countyInfo(state),
+        previousRound: previousRound(state),
     };
 };
 
