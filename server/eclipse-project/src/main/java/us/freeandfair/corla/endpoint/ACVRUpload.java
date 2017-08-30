@@ -11,7 +11,7 @@
 
 package us.freeandfair.corla.endpoint;
 
-import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.REPORT_MARKINGS_EVENT;
+import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.*;
 
 import java.time.Instant;
 
@@ -41,6 +41,11 @@ import us.freeandfair.corla.persistence.Persistence;
 // TODO: consider rewriting along the same lines as CVRExportUpload
 public class ACVRUpload extends AbstractAuditBoardDashboardEndpoint {
   /**
+   * The event we will return for the ASM.
+   */
+  private final ThreadLocal<ASMEvent> my_event = new ThreadLocal<ASMEvent>();
+  
+  /**
    * {@inheritDoc}
    */
   @Override
@@ -61,7 +66,15 @@ public class ACVRUpload extends AbstractAuditBoardDashboardEndpoint {
    */
   @Override
   protected ASMEvent endpointEvent() {
-    return REPORT_MARKINGS_EVENT;
+    return my_event.get();
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void reset() {
+    my_event.set(null);
   }
   
   /**
@@ -107,6 +120,12 @@ public class ACVRUpload extends AbstractAuditBoardDashboardEndpoint {
               badDataContents(the_response, "invalid audit CVR uploaded");
             }
           }
+        }
+        if (cdb.ballotsRemainingInCurrentRound() == 0) {
+          // the round is over
+          my_event.set(ROUND_COMPLETE_EVENT);
+        } else {
+          my_event.set(REPORT_MARKINGS_EVENT);
         }
       }
     } catch (final JsonParseException e) {

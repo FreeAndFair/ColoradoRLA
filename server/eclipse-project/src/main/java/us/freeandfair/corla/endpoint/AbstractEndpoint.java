@@ -174,7 +174,7 @@ public abstract class AbstractEndpoint implements Endpoint {
     try {
       my_asm.get().stepEvent(endpointEvent());
     } catch (final IllegalStateException e) {
-      illegalTransition(the_response, e.getMessage());
+      illegalTransition(the_response, e.getMessage(), false);
       return false;
     }
     return ASMUtilities.save(my_asm.get());
@@ -256,18 +256,33 @@ public abstract class AbstractEndpoint implements Endpoint {
    * the server's state machine.
    * @param the_response the HTTP response.
    * @param the_body the body of the HTTP response.
+   * @param the_halt true to halt, false otherwise.
    */
   public void illegalTransition(final Response the_response, 
-                                final String the_body) {
+                                final String the_body,
+                                final boolean the_halt) {
     my_log_entries.get().add(new LogEntry(HttpStatus.FORBIDDEN_403, 
                                     "illegal transition attempt on " + endpointName() + ": " +
                                         the_body,
                                     Instant.now()));
     my_status.set(HttpStatus.FORBIDDEN_403);
     my_endpoint_result.set(Main.GSON.toJson(new Result(the_body)));
-    halt(the_response);
+    if (the_halt) {
+      halt(the_response);
+    }
   }
 
+  /**
+   * Indicate the client cannot perform the requested action because it violates
+   * the server's state machine.
+   * 
+   * @param the_response The HTTP response.
+   * @param the_body The HTTP response body.
+   */
+  public void illegalTransition(final Response the_response, final String the_body) {
+    illegalTransition(the_response, the_body, true);
+  }
+  
   /**
    * Indicate that some data was not found.
    * @param the_response the HTTP response.
@@ -552,6 +567,14 @@ public abstract class AbstractEndpoint implements Endpoint {
    */
   protected boolean validateParameters(final Request the_request) {
     return true;
+  }
+  
+  /**
+   * Resets any thread-local state of an endpoint. The default behavior is
+   * to do nothing.
+   */
+  protected void reset() {
+    // do nothing
   }
   
   /**

@@ -12,6 +12,8 @@
 
 package us.freeandfair.corla.endpoint;
 
+import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.*;
+
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -24,6 +26,7 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.Elector;
@@ -59,6 +62,14 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
    */
   public AuthorizationType requiredAuthorization() {
     return AuthorizationType.COUNTY;
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected ASMEvent endpointEvent() {
+    return ROUND_SIGN_OFF_EVENT;
   }
   
   /**
