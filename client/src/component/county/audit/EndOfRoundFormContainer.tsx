@@ -28,6 +28,7 @@ class EndOfRoundFormContainer extends React.Component<any, any> {
         const props = {
             countyInfo,
             form: this.state.form,
+            formIsValid: this.formIsValid(),
             onFirstNameChange: this.onFirstNameChange,
             onLastNameChange: this.onLastNameChange,
             onTextConfirm: this.onTextConfirm,
@@ -63,6 +64,15 @@ class EndOfRoundFormContainer extends React.Component<any, any> {
         s.form[index].lastName = name;
 
         this.setState(s);
+    }
+
+    private formIsValid = () => {
+        const { form } = this.state;
+
+        return form[0].firstName
+            && form[0].lastName
+            && form[1].firstName
+            && form[1].lastName;
     }
 }
 
