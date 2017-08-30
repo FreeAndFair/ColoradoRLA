@@ -300,8 +300,12 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
   public int initialBallotsToAudit() {
     // compute the conservative numbers of over/understatements based on 
     // initial estimate of error rate
-    return computeBallotsToAuditFromRates(TWOS_RATE, ONES_RATE, ONES_RATE, TWOS_RATE, 
+    /*
+    return computeBallotsToAuditFromRates(TWOS_RATE, ONES_RATE, 
+                                          ONES_RATE, TWOS_RATE, 
                                           ROUND_ONES_UP, ROUND_TWOS_UP).intValue();
+                                          */
+    return computeBallotsToAudit(0, 0, 0, 0).setScale(0, RoundingMode.CEILING).intValue();
   }
   
   /**
