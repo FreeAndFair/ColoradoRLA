@@ -27,12 +27,10 @@ const ContestUpdates = ({ contests, seed, sos }: any) => {
             return <tr key={ c.id }><td /><td /><td /><td /><td /></tr>;
         }
 
-        if (!sos.estimatedBallotsToAudit) {
-            return <tr key={ c.id }><td /><td /><td /><td /><td /></tr>;
-        }
+        const status = sos.auditedContests[c.id]
+                     ? 'Under audit'
+                     : 'Not selected for audit';
 
-        const status = sos.auditedContests[c.id] ? 'Under audit' : 'Not selected for audit';
-        const toAudit = sos.estimatedBallotsToAudit[c.id];
 
         return (
             <tr key={ c.id}>
@@ -40,7 +38,6 @@ const ContestUpdates = ({ contests, seed, sos }: any) => {
                 <td>{ c.name }</td>
                 <td>{ status }</td>
                 <td>{ sos.riskLimit }</td>
-                <td>{ toAudit || '—' }</td>
             </tr>
         );
     });
@@ -56,9 +53,6 @@ const ContestUpdates = ({ contests, seed, sos }: any) => {
                             <td>Name</td>
                             <td>Audit Status</td>
                             <td>Target Risk Limit</td>
-                            <td>
-                                <RemainingToAuditHeader />
-                            </td>
                         </tr>
                     </thead>
                     <tbody>
