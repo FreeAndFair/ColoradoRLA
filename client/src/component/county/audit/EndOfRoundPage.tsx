@@ -6,13 +6,15 @@ import EndOfRoundFormContainer from './EndOfRoundFormContainer';
 
 
 const EndOfRoundPage = (props: any) => {
-    const { countyInfo } = props;
+    const { countyInfo, previousRound } = props;
+
     const countyName = countyInfo.name;
+    const roundNumber = previousRound.number;
 
     return (
         <div>
             <CountyNav />
-            <h3> End of Round [Round #]</h3>
+            <h3> End of Round { roundNumber }</h3>
             <div className='pt-card'>
                 Congratulations! You have completed reporting the votes on all ballots
                 randomly selected for this round of the risk-limiting audit of the
