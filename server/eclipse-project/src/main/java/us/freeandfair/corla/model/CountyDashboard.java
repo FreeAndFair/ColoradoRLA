@@ -499,7 +499,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * @param the_round The round to update.
    */
   private void updateRound(final Round the_round) {
-    int index = the_round.startAuditPrefixLength();
+    int index = the_round.startAuditedPrefixLength();
     while (index < my_audited_prefix_length && 
            the_round.actualCount() < the_round.expectedCount()) {
       final CVRAuditInfo cvrai = my_cvr_audit_info.get(index);
@@ -531,8 +531,8 @@ public class CountyDashboard implements PersistentEntity, Serializable {
     } else {
       final Round round = my_rounds.get(my_current_round_index);
       round.setEndTime(Instant.now());
-      round.setActualCount(my_ballots_audited - round.startAuditPrefixLength());
-      round.setActualAuditPrefixLength(my_audited_prefix_length);
+      round.setActualCount(my_ballots_audited - round.previousBallotsAudited());
+      round.setActualAuditedPrefixLength(my_audited_prefix_length);
       my_current_round_index = NO_CONTENT;
     }
   }
@@ -763,6 +763,10 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    */
   public void setAuditedPrefixLength(final int the_audited_prefix_length) {
     my_audited_prefix_length = the_audited_prefix_length;
+    if (my_current_round_index != null) {
+      my_rounds.get(my_current_round_index).
+          setActualAuditedPrefixLength(the_audited_prefix_length);
+    }
   }
   /**
    * @return a String representation of this contest.

@@ -220,7 +220,7 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
           final Round previous_round = rounds.get(rounds.size() - 1);
           // we start the next round where the previous round actually ended 
           // in the audit sequence
-          start_index = previous_round.actualAuditPrefixLength();
+          start_index = previous_round.actualAuditedPrefixLength();
         }
         final int round_length;
         Integer expected_prefix_length = null;

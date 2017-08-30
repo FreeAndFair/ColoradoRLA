@@ -164,8 +164,8 @@ public final class CVRAuditInfoQueries {
         final Query query = 
             s.createNativeQuery("select cvr_id from cvr_audit_info where " + 
                 "dashboard_id=" + the_dashboard.id().toString() + 
-                " order by index limit " + current.expectedAuditPrefixLength() +
-                " offset " + current.startAuditPrefixLength());
+                " order by index limit " + current.expectedAuditedPrefixLength() +
+                " offset " + current.actualAuditedPrefixLength());
         @SuppressWarnings("unchecked") // we know this gives us a list of numbers
         final List<Number> generic_results = (List<Number>) query.getResultList();
         result = new ArrayList<>();

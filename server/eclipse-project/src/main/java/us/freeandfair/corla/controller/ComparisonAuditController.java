@@ -207,8 +207,8 @@ public final class ComparisonAuditController {
     }
     // round numbers are 1-based, not 0-based
     final Round round = the_cdb.rounds().get(the_round - 1);
-    return computeBallotOrder(the_cdb, round.startAuditPrefixLength(), 
-                              round.expectedAuditPrefixLength());
+    return computeBallotOrder(the_cdb, round.startAuditedPrefixLength(), 
+                              round.expectedAuditedPrefixLength());
   }
   
   /**
@@ -315,10 +315,6 @@ public final class ComparisonAuditController {
     }
 
     updateCVRUnderAudit(the_dashboard);
-    final Round current_round = the_dashboard.currentRound();
-    if (current_round.expectedCount() - current_round.actualCount() == 0) {
-      the_dashboard.endRound();
-    }
     the_dashboard.
         setEstimatedBallotsToAudit(computeEstimatedBallotsToAudit(the_dashboard, false) -
                                    the_dashboard.auditedPrefixLength());
