@@ -35,14 +35,16 @@ const ContestUpdates = ({ contests, seed, sos }: any) => {
                      ? 'Under audit'
                      : 'Not selected for audit';
 
-        const riskLimitPercent = sos.riskLimit * 100;
+        const riskLimitPercent = sos.riskLimit
+                               ? `${sos.riskLimit * 100}%`
+                               : '—';
 
         return (
             <tr key={ c.id}>
                 <td>{ county.name }</td>
                 <td>{ c.name }</td>
                 <td>{ status }</td>
-                <td>{ riskLimitPercent }%</td>
+                <td>{ riskLimitPercent }</td>
             </tr>
         );
     });
