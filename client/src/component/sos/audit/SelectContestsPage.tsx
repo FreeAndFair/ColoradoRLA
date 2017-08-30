@@ -104,7 +104,7 @@ const SelectContestsPage = (props: any) => {
 
     const forms: any = {};
 
-    const haveSelectedContests = !_.isEmpty(auditedContests)
+    const haveSelectedContests = !_.isEmpty(auditedContests);
 
     const onSaveAndNext = () => {
         if (!haveSelectedContests) {
