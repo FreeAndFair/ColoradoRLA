@@ -192,7 +192,8 @@ const CountyHomePage = (props: any) => {
         <div className='county-root'>
             <CountyNav />
             <div>
-                <Main auditBoardSignedIn={ auditBoardSignedIn }
+                <Main auditComplete={ auditComplete }
+                      auditBoardSignedIn={ auditBoardSignedIn }
                       boardSignIn={ boardSignIn }
                       auditButtonDisabled={ auditButtonDisabled }
                       name={ countyInfo.name }
