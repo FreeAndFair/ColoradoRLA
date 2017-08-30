@@ -17,9 +17,7 @@ import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.PUBLISH_BALLOT
 import static us.freeandfair.corla.asm.ASMState.DoSDashboardState.RANDOM_SEED_PUBLISHED;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.PersistenceException;
 
@@ -36,12 +34,8 @@ import us.freeandfair.corla.asm.AuditBoardDashboardASM;
 import us.freeandfair.corla.asm.CountyDashboardASM;
 import us.freeandfair.corla.controller.ComparisonAuditController;
 import us.freeandfair.corla.json.SubmittedAuditRoundStart;
-import us.freeandfair.corla.model.CVRAuditInfo;
-import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CountyDashboard;
-import us.freeandfair.corla.model.Round;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.CVRAuditInfoQueries;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
@@ -227,76 +221,12 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
           invariantViolation(the_response, 
                              "audit round already in progress for county " + cdb.id());
         }
-        final List<Round> rounds = cdb.rounds();
-        int start_index = 0;
-        if (rounds.isEmpty()) {
-          invariantViolation(the_response, "no previous audit rounds for county " + cdb.id());
-        } else {
-          final Round previous_round = rounds.get(rounds.size() - 1);
-          // we start the next round where the previous round actually ended 
-          // in the audit sequence
-          start_index = previous_round.actualAuditedPrefixLength();
-        }
-        final int round_length;
-        Integer expected_prefix_length = null;
-        final List<CastVoteRecord> new_cvrs;
         if (start.useEstimates()) {
-          // use estimates based on current error rate to get length of round
-          expected_prefix_length = 
-              ComparisonAuditController.computeEstimatedBallotsToAudit(cdb, true);
-          if (expected_prefix_length - start_index <= 0) {
-            Main.LOGGER.info("risk limit already achieved for county " + cdb.id() + 
-                             ", skipping round start");
-            continue;
-          }
-          new_cvrs = 
-              ComparisonAuditController.
-                  getCVRsInAuditSequence(cdb, start_index, expected_prefix_length - 1);
-          Main.LOGGER.info("expected prefix length=" + expected_prefix_length);
-          final List<Long> ids = new ArrayList<Long>();
-          for (final CVRAuditInfo cvrai : cdb.cvrAuditInfo()) {
-            ids.add(cvrai.cvr().id());
-          }
-          ids.add(-1L);
-          for (final CastVoteRecord cvr : new_cvrs) {
-            ids.add(cvr.id());
-          }
-          Main.LOGGER.info("cvr sequence: " + ids);
-          cdb.addCVRsToAudit(new_cvrs);
-          final Set<CastVoteRecord> unique_new_cvrs = new HashSet<>(new_cvrs);
-          for (final CastVoteRecord cvr : unique_new_cvrs) {
-            CVRAuditInfoQueries.updateMatching(cdb, cvr);
-          }
-          for (int i = start_index; i < expected_prefix_length; i++) {
-            final CVRAuditInfo cvrai = cdb.cvrAuditInfo().get(i);
-            if (cvrai.acvr() != null) {
-              unique_new_cvrs.remove(cvrai.cvr());
-            }
-          }
-          Main.LOGGER.info(unique_new_cvrs.size() + " unique unsubmitted cvrs");
-          round_length = unique_new_cvrs.size();
+          ComparisonAuditController.startNewRoundFromEstimates(cdb);
         } else {
-          round_length = start.countyBallots().get(cdb.id());
-          // expected prefix length stays null because we don't know it
-          new_cvrs = 
-              ComparisonAuditController.getCVRsInAuditSequence(cdb, start_index, 
-                                                               round_length);
-          final Set<CastVoteRecord> unique_new_cvrs = new HashSet<>(new_cvrs);
-          while (unique_new_cvrs.size() < round_length) {
-            final List<CastVoteRecord> extra_cvrs =
-                ComparisonAuditController.
-                     getCVRsInAuditSequence(cdb, start_index + new_cvrs.size(),
-                                            round_length - unique_new_cvrs.size());
-            new_cvrs.addAll(extra_cvrs);
-            unique_new_cvrs.addAll(extra_cvrs);
-          }
+          ComparisonAuditController.
+              startNewRoundOfLength(cdb, start.countyBallots().get(cdb.id()));
         }
-        
-        Main.LOGGER.info("starting audit round " + (rounds.size() + 1) + " for county " + 
-                         cdb.id() + " at audit sequence number " + start_index + 
-                         " with " + round_length + " ballots to audit");
-        cdb.addCVRsToAudit(new_cvrs);
-        cdb.startRound(round_length, expected_prefix_length, start_index);
       }      
       ok(the_response, "new audit round started");
     } catch (final PersistenceException e) {
