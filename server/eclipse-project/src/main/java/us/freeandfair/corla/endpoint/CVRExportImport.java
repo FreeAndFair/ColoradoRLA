@@ -39,6 +39,7 @@ import us.freeandfair.corla.model.UploadedFile.FileStatus;
 import us.freeandfair.corla.model.UploadedFile.HashStatus;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CastVoteRecordQueries;
+import us.freeandfair.corla.query.ContestQueries;
 
 /**
  * The "CVR export import" endpoint.
@@ -111,6 +112,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
                                       Persistence.getByID(the_file.countyID(), County.class));
       final int deleted = 
           CastVoteRecordQueries.deleteMatching(the_file.countyID(), RecordType.UPLOADED);
+      ContestQueries.deleteForCounty(the_file.countyID());
       if (parser.parse()) {
         final int imported = parser.recordCount().getAsInt();
         Main.LOGGER.info(imported + " CVRs parsed from file " + the_file.id());

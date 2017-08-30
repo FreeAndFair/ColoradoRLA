@@ -100,4 +100,19 @@ public final class ContestQueries {
 
     return result;
   }
+  
+  /**
+   * Deletes all the contests for the county with the specified ID.
+   * 
+   * @param the_id The county ID.
+   */
+  public static void deleteForCounty(final Long the_county_id) {
+    final Set<Contest> contests = 
+        forCounty(Persistence.getByID(the_county_id, County.class));
+    if (contests != null) {
+      for (final Contest c : contests) {
+        Persistence.delete(c);
+      }
+    }
+  }
 }
