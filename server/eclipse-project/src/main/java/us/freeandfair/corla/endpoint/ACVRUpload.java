@@ -37,7 +37,7 @@ import us.freeandfair.corla.persistence.Persistence;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-@SuppressWarnings("PMD.AtLeastOneConstructor")
+@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.CyclomaticComplexity"})
 // TODO: consider rewriting along the same lines as CVRExportUpload
 public class ACVRUpload extends AbstractAuditBoardDashboardEndpoint {
   /**

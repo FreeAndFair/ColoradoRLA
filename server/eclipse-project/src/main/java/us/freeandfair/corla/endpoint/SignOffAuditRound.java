@@ -109,10 +109,10 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
       }
     } catch (final PersistenceException e) {
       serverError(the_response, "unable to sign off round: " + e);
-
     } catch (final JsonParseException e) {
       badDataContents(the_response, "invalid round signatories");
     }
+    ok(the_response, "audit round signed off");
     return my_endpoint_result.get();
   }
 }
