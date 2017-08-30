@@ -103,10 +103,7 @@ public class AuthenticateStateAdministrator extends AbstractEndpoint {
       ok(the_response, "Authenticated");
     } else {
       try {
-        final SubmittedCredentials auth_info = 
-            Main.GSON.fromJson(the_request.body(), SubmittedCredentials.class);
-        if (auth_info != null &&
-            Main.authentication().
+        if (Main.authentication().
             authenticateAdministrator(the_request, 
                 AdministratorType.STATE, 
                 the_request.queryParams(AuthenticationInterface.USERNAME),

@@ -53,8 +53,11 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
                                            final String the_password,
                                            final String the_second_factor) {
     boolean result = true;
-    final String auth_stage = 
+    String auth_stage = 
         the_request.session().attribute(AuthenticationInterface.AUTH_STAGE);
+    if (auth_stage == null) {
+      auth_stage = AuthenticationInterface.PASSWORD;
+    }
     try {
       // If we didn't get a well-formed request in the first place, fail.
       if (the_username == null || the_username.isEmpty()) {
@@ -67,33 +70,24 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
             auth_stage.equals(AuthenticationInterface.ADMIN)) {
           if (traditionalAuthenticate(the_request, the_username, the_password)) {
             // We have traditionally authenticated.
-            // If we are in test mode, then jump to the final state.
-            if (Main.authentication() instanceof 
-                us.freeandfair.corla.auth.DatabaseAuthentication) {
-              final Administrator admin = 
-                  AdministratorQueries.byUsername(the_username);
-              admin.updateLastLoginTime();
-              Persistence.saveOrUpdate(admin);
-              the_request.session().attribute(AuthenticationInterface.AUTH_STAGE,
-                                              AuthenticationInterface.ADMIN);
-              Main.LOGGER.info("Traditional authentication succeeded for administrator" + 
-                  the_username);
-            } else {
-              // Otherwise, capture and log the fact that we are half-way through 
-              // authentication.
-              the_request.session().attribute(AuthenticationInterface.AUTH_STAGE,
-                                              AuthenticationInterface.SECOND_FACTOR);
-            }
+            final Administrator admin = 
+                AdministratorQueries.byUsername(the_username);
+            admin.updateLastLoginTime();
+            Persistence.saveOrUpdate(admin);
+            the_request.session().attribute(AuthenticationInterface.AUTH_STAGE,
+                                            AuthenticationInterface.SECOND_FACTOR);
+            Main.LOGGER.info("Traditional authentication succeeded for administrator " + 
+                the_username);
           } else {
+            Main.LOGGER.info("Traditional authentication failed for administrator " + 
+                the_username);
             result = false;
           }
         } else if (auth_stage.equals(AuthenticationInterface.SECOND_FACTOR)) {
           // Or are we half-way through it?
-          final String second_factor =
-              the_request.queryParams(AuthenticationInterface.SECOND_FACTOR);
-          if (Main.authentication().secondFactorAuthenticate(the_request,
-                                                             the_username,
-                                                             second_factor)) {
+          if (secondFactorAuthenticate(the_request,
+                                       the_username,
+                                       the_second_factor)) {
             // We have both traditionally and second-factor authenticated.
             final Administrator admin = 
                 AdministratorQueries.byUsername(the_username);
@@ -101,12 +95,16 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
             Persistence.saveOrUpdate(admin);
             the_request.session().attribute(AuthenticationInterface.AUTH_STAGE, 
                                             AuthenticationInterface.ADMIN);
-            Main.LOGGER.info("Second factor authentication succeeded for administrator" + 
+            the_request.session().attribute(AuthenticationInterface.ADMIN, 
+                                            admin);
+            Main.LOGGER.info("Second factor authentication succeeded for administrator " + 
                 the_username);
           } else {
             // Send the authentication state machine back to its initial state.
             the_request.session().attribute(AuthenticationInterface.AUTH_STAGE, 
                                             AuthenticationInterface.PASSWORD);
+            Main.LOGGER.info("Second factor authentication failed for administrator" + 
+                the_username);
             result = false;
           }
         }

@@ -207,7 +207,7 @@ public abstract class AbstractEndpoint implements Endpoint {
   }
 
   /**
-   * Indicate and log that the operation completed succesfully, and
+   * Indicate and log that the operation completed successfully, and
    * send the specified JSON-formatted string.
    * 
    * @param the_response The HTTP response.
@@ -218,6 +218,7 @@ public abstract class AbstractEndpoint implements Endpoint {
     my_status.set(HttpStatus.OK_200);
     my_endpoint_result.set(the_json);
   }
+  
   /**
    * Indicate the client has violated an invariant or precondition relating data
    * to the endpoint in question. E.g., a digest is incorrect with regards to
