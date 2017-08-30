@@ -165,6 +165,7 @@ const Info = ({ info, contests, county }: any) => (
 const CountyHomePage = (props: any) => {
     const {
         auditBoardSignedIn,
+        auditComplete,
         boardSignIn,
         canAudit,
         canSignIn,
@@ -184,7 +185,7 @@ const CountyHomePage = (props: any) => {
 
     const info = { auditDate: startTimestamp };
 
-    const auditButtonDisabled = !canAudit;
+    const auditButtonDisabled = !canAudit || auditComplete;
     const signInButtonDisabled = !canSignIn;
 
     return (
