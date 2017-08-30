@@ -337,8 +337,7 @@ public final class ComparisonAuditController {
     // use estimates based on current error rate to get length of round
     boolean result = false;
     final int expected_prefix_length = 
-        Math.max(computeEstimatedBallotsToAudit(the_dashboard, true),
-                 computeEstimatedBallotsToAudit(the_dashboard, false));
+        computeEstimatedBallotsToAudit(the_dashboard, false);
     if (the_dashboard.auditedPrefixLength() < expected_prefix_length) {
       final List<CastVoteRecord> new_cvrs = 
           getCVRsInAuditSequence(the_dashboard, start_index, 
