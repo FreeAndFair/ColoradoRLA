@@ -3,13 +3,20 @@ import { endpoint } from '../config';
 import createFetchAction from './createFetchAction';
 
 
-const url = endpoint('cvr-to-audit-list');
+export default (round: any) => {
+    const start = round.startAuditPrefixLength;
+    const ballotCount = round.expectedCount;
+    const params = `start=${start}&ballot_count=${ballotCount}`;
 
+    const url = `${endpoint('cvr-to-audit-list')}?${params}`;
 
-export default createFetchAction({
-    failType: 'FETCH_CVRS_TO_AUDIT_FAIL',
-    networkFailType: 'FETCH_CVRS_TO_AUDIT_NETWORK_FAIL',
-    okType: 'FETCH_CVRS_TO_AUDIT_OK',
-    sendType: 'FETCH_CVRS_TO_AUDIT_SEND',
-    url,
-});
+    const a = createFetchAction({
+        failType: 'FETCH_CVRS_TO_AUDIT_FAIL',
+        networkFailType: 'FETCH_CVRS_TO_AUDIT_NETWORK_FAIL',
+        okType: 'FETCH_CVRS_TO_AUDIT_OK',
+        sendType: 'FETCH_CVRS_TO_AUDIT_SEND',
+        url,
+    });
+
+    return a();
+};
