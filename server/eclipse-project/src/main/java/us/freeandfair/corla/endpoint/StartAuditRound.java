@@ -182,13 +182,13 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
         badDataContents(the_response, "malformed request data");
       }
     } catch (final JsonParseException e) {
-      badDataContents(the_response, "malformed request data");
+      badDataContents(the_response, "malformed request data: " + e.getMessage());
     }
     
     try {
       // first, figure out what counties we need to do this for, if the list is limited
       final List<CountyDashboard> cdbs;
-      if (start.countyBallots().isEmpty()) {
+      if (start.countyBallots() == null || start.countyBallots().isEmpty()) {
         cdbs = Persistence.getAll(CountyDashboard.class);
       } else {
         cdbs = new ArrayList<>();
@@ -202,7 +202,9 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
             ASMUtilities.asmFor(AuditBoardDashboardASM.class, cdb.id().toString());
         if (asm.isInInitialState() || asm.isInFinalState()) {
           // there is no audit happening in this county, so go to the next one
-          break;
+          Main.LOGGER.debug("no audit ongoing in county " + cdb.id() + 
+                           ", skipping round start");
+          continue;
         }
         
         // if the county is in the middle of a round, error out
@@ -233,6 +235,10 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
           round_length = start.countyBallots().get(cdb.id());
           // expected prefix length stays null because we don't know it
         }
+ 
+        Main.LOGGER.info("starting audit round " + (rounds.size() + 1) + " for county " + 
+                         cdb.id() + " at audit sequence number " + start_index + 
+                         " with " + round_length + " ballots to audit");
         cdb.startRound(round_length, expected_prefix_length, start_index);
       }      
       ok(the_response, "new audit round started");
