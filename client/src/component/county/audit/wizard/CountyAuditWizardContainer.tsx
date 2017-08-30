@@ -12,9 +12,5 @@ class CountyAuditWizardContainer extends React.Component<any, any> {
 
 const mapStateToProps = ({ county }: any) => ({ county });
 
-const mapDispatchToProps = (dispatch: any) => ({});
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(CountyAuditWizardContainer);
+export default connect(mapStateToProps)(CountyAuditWizardContainer);
