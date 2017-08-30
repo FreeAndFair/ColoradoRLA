@@ -55,7 +55,7 @@ public final class ComparisonAuditController {
   
   /**
    * Get the cast vote records to audit, in order, for the given county dashboard
-   * in the specified range in the audt sequence.
+   * in the specified range in the audit sequence.
    * 
    * @param the_cdb The county dashboard.
    * @param the_min_index The minimum index to return.
