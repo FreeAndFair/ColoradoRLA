@@ -39,7 +39,6 @@ import us.freeandfair.corla.model.UploadedFile.FileStatus;
 import us.freeandfair.corla.model.UploadedFile.HashStatus;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CastVoteRecordQueries;
-import us.freeandfair.corla.query.ContestQueries;
 import us.freeandfair.corla.query.CountyContestResultQueries;
 
 /**
