@@ -51,6 +51,7 @@ const CountyUpdates = ({ countyStatus }: any) => {
                 <td>{ c.discrepancyCount }</td>
                 <td>{ c.disagreementCount }</td>
                 <td>{ c.ballotsRemainingInRound }</td>
+                <td>{ c.estimatedBallotsToAudit }</td>
             </tr>
         );
     });
@@ -69,6 +70,20 @@ const CountyUpdates = ({ countyStatus }: any) => {
         </Tooltip>
     );
 
+    const estRemainingTooltipContent =
+        'Estimated number of ballots remaining to audit to meet risk limit.';
+
+    const estRemainingHeader = (
+        <Tooltip
+            className='pt-tooltip-indicator'
+            content={ estRemainingTooltipContent }>
+            <div>
+                <span>Est. Remaining Ballots</span>
+                <span className='pt-icon-standard pt-icon-help' />
+            </div>
+        </Tooltip>
+    );
+
     return (
         <div className='pt-card'>
             <h3>County Updates</h3>
@@ -82,6 +97,7 @@ const CountyUpdates = ({ countyStatus }: any) => {
                             <td>Discrepancies</td>
                             <td>Disagreements</td>
                             <td>{ remainingInRoundHeader }</td>
+                            <td>{ estRemainingHeader }</td>
                         </tr>
                     </thead>
                     <tbody>
