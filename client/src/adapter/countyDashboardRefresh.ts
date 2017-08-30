@@ -42,6 +42,7 @@ interface CountyDashboard {
     estimated_ballots_to_audit: number;
     general_information: string;
     id: number;
+    risk_limit: number;
     rounds: Round[];
     status: Status;
 }
@@ -153,6 +154,7 @@ export const parse = (data: CountyDashboard, state: any): any => {
         estimatedBallotsToAudit: data.estimated_ballots_to_audit,
         generalInformation: data.general_information,
         id: data.id,
+        riskLimit: data.risk_limit,
         rounds: parseRounds(data.rounds),
         status: data.status,
     };
