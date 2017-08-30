@@ -61,6 +61,11 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   public static final int MIN_AUDIT_BOARD_MEMBERS = 2;
   
   /**
+   * The minimum number of members on an audit round sign-off.
+   */
+  public static final int MIN_ROUND_SIGN_OFF_MEMBERS = 2;
+  
+  /**
    * The "no content" constant.
    */
   private static final Integer NO_CONTENT = null;
@@ -430,7 +435,6 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * should be added.
    * @exception IllegalArgumentException if any null CVRs are in the list.
    */
-  // TODO consider how this method interacts with "rounds"
   public void addCVRsToAudit(final List<CastVoteRecord> the_cvrs_to_add) {
     if (the_cvrs_to_add.contains(null)) {
       throw new IllegalArgumentException("null elements in audit cvr list");
@@ -442,6 +446,29 @@ public class CountyDashboard implements PersistentEntity, Serializable {
     }
   }
 
+  /**
+   * @return the CVR IDs remaining to audit in the current round, or an empty 
+   * list if there are no CVRs remaining to audit or if no round is in progress.
+   */
+  public List<Long> cvrsToAuditInCurrentRound() {
+    final List<Long> result = new ArrayList<Long>();
+    final Set<Long> found_ids = new HashSet<Long>();
+    if (my_current_round_index != null) {
+      final Round round = my_rounds.get(my_current_round_index);
+      for (int i = my_audited_prefix_length; 
+           i < round.expectedAuditedPrefixLength(); 
+           i++) {
+        final CVRAuditInfo cvrai = my_cvr_audit_info.get(i);
+        final Long cvr_id = cvrai.cvr().id();
+        if (cvrai.acvr() == null && !found_ids.contains(cvr_id)) {
+          result.add(cvr_id);
+          found_ids.add(cvr_id);
+        }
+      }
+    }
+    return result;
+  }
+  
   /**
    * @return all the audit rounds.
    */
@@ -486,10 +513,6 @@ public class CountyDashboard implements PersistentEntity, Serializable {
                                   the_start_index);
     updateRound(round);
     my_rounds.add(round);
-    if (round.expectedCount().equals(round.actualCount())) {
-      // the round ended before it started
-      endRound();
-    }
   }
   
   /**
@@ -499,7 +522,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * @param the_round The round to update.
    */
   private void updateRound(final Round the_round) {
-    int index = the_round.startAuditPrefixLength();
+    int index = the_round.startAuditedPrefixLength();
     while (index < my_audited_prefix_length && 
            the_round.actualCount() < the_round.expectedCount()) {
       final CVRAuditInfo cvrai = my_cvr_audit_info.get(index);
@@ -523,16 +546,18 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   /**
    * Ends the current round.
    * 
+   * @param the_signatories The signatories for round sign-off.
    * @exception IllegalStateException if there is no current round.
    */
-  public void endRound() {
+  public void endRound(final List<Elector> the_signatories) {
     if (my_current_round_index == null) {
       throw new IllegalStateException("no round to end");
     } else {
       final Round round = my_rounds.get(my_current_round_index);
+      round.setSignatories(the_signatories);
       round.setEndTime(Instant.now());
-      round.setActualCount(my_ballots_audited - round.startAuditPrefixLength());
-      round.setActualAuditPrefixLength(my_audited_prefix_length);
+      round.setActualCount(my_ballots_audited - round.previousBallotsAudited());
+      round.setActualAuditedPrefixLength(my_audited_prefix_length);
       my_current_round_index = NO_CONTENT;
     }
   }
@@ -763,6 +788,10 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    */
   public void setAuditedPrefixLength(final int the_audited_prefix_length) {
     my_audited_prefix_length = the_audited_prefix_length;
+    if (my_current_round_index != null) {
+      my_rounds.get(my_current_round_index).
+          setActualAuditedPrefixLength(the_audited_prefix_length);
+    }
   }
   /**
    * @return a String representation of this contest.

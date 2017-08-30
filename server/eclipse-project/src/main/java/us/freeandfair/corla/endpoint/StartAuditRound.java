@@ -35,7 +35,6 @@ import us.freeandfair.corla.asm.CountyDashboardASM;
 import us.freeandfair.corla.controller.ComparisonAuditController;
 import us.freeandfair.corla.json.SubmittedAuditRoundStart;
 import us.freeandfair.corla.model.CountyDashboard;
-import us.freeandfair.corla.model.Round;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
@@ -85,6 +84,14 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
     return my_event.get();
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void reset() {
+    my_event.set(null);
+  }
+  
   /**
    * {@inheritDoc}
    */
@@ -153,6 +160,8 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
           serverError(the_response, "could not start round 1 for county " + 
                       cdb.id());
           Main.LOGGER.info("could not start round 1 for county " + cdb.id());
+        } catch (final IllegalStateException e) {
+          illegalTransition(the_response, e.getMessage());
         }
       }
       
@@ -212,34 +221,16 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
           invariantViolation(the_response, 
                              "audit round already in progress for county " + cdb.id());
         }
-        final List<Round> rounds = cdb.rounds();
-        int start_index = 0;
-        if (rounds.isEmpty()) {
-          invariantViolation(the_response, "no previous audit rounds for county " + cdb.id());
-        } else {
-          final Round previous_round = rounds.get(rounds.size() - 1);
-          // we start the next round where the previous round actually ended 
-          // in the audit sequence
-          start_index = previous_round.actualAuditPrefixLength();
-        }
-        final int round_length;
-        Integer expected_prefix_length = null;
+        final boolean round_started;
         if (start.useEstimates()) {
-          // use estimates based on current error rate to get length of round
-          expected_prefix_length = 
-              ComparisonAuditController.computeEstimatedBallotsToAudit(cdb, true);
-          round_length = 
-              ComparisonAuditController.computeBallotOrder(cdb, start_index, 
-                                                           expected_prefix_length).size();
+          round_started = ComparisonAuditController.startNewRoundFromEstimates(cdb);
         } else {
-          round_length = start.countyBallots().get(cdb.id());
-          // expected prefix length stays null because we don't know it
+          round_started = ComparisonAuditController.
+              startNewRoundOfLength(cdb, start.countyBallots().get(cdb.id()));
         }
- 
-        Main.LOGGER.info("starting audit round " + (rounds.size() + 1) + " for county " + 
-                         cdb.id() + " at audit sequence number " + start_index + 
-                         " with " + round_length + " ballots to audit");
-        cdb.startRound(round_length, expected_prefix_length, start_index);
+        if (!round_started) {
+          Main.LOGGER.debug("no round started for county " + cdb.id());       
+        }
       }      
       ok(the_response, "new audit round started");
     } catch (final PersistenceException e) {

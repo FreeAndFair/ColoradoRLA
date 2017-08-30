@@ -12,7 +12,7 @@
 
 package us.freeandfair.corla.endpoint;
 
-import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.SIGN_IN_AUDIT_BOARD_EVENT;
+import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.*;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -34,13 +34,13 @@ import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
- * Establish the audit board for a county.
+ * Signs off on the current audit round for a county.
  * 
- * @author Joe Kiniry <kiniry@freeandfair.us>
+ * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 0.0.1
  */
 @SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.ExcessiveImports"})
-public class EstablishAuditBoard extends AbstractAuditBoardDashboardEndpoint {
+public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
   /**
    * {@inheritDoc}
    */
@@ -54,7 +54,7 @@ public class EstablishAuditBoard extends AbstractAuditBoardDashboardEndpoint {
    */
   @Override
   public String endpointName() {
-    return "/audit-board";
+    return "/sign-off-audit-round";
   }
 
   /**
@@ -63,17 +63,21 @@ public class EstablishAuditBoard extends AbstractAuditBoardDashboardEndpoint {
   public AuthorizationType requiredAuthorization() {
     return AuthorizationType.COUNTY;
   }
-
+  
   /**
    * {@inheritDoc}
    */
   @Override
   protected ASMEvent endpointEvent() {
-    return SIGN_IN_AUDIT_BOARD_EVENT;
+    return ROUND_SIGN_OFF_EVENT;
   }
   
   /**
-   * Establish the audit board for a county.
+   * Signs off on the current audit round, regardless of its state of
+   * completion.
+   * 
+   * @param the_request The request.
+   * @param the_response The response.
    */
   @Override
   // false positive about inner class declaration
@@ -82,9 +86,9 @@ public class EstablishAuditBoard extends AbstractAuditBoardDashboardEndpoint {
                          final Response the_response) {
     try {
       final Type list_type = new TypeToken<List<Elector>>() { }.getType();
-      final List<Elector> parsed_audit_board = 
+      final List<Elector> parsed_signatories = 
           Main.GSON.fromJson(the_request.body(), list_type);
-      if (parsed_audit_board.size() >= CountyDashboard.MIN_AUDIT_BOARD_MEMBERS) {
+      if (parsed_signatories.size() >= CountyDashboard.MIN_ROUND_SIGN_OFF_MEMBERS) {
         final County county = Authentication.authenticatedCounty(the_request); 
         if (county == null) {
           Main.LOGGER.error("could not get authenticated county");
@@ -93,23 +97,22 @@ public class EstablishAuditBoard extends AbstractAuditBoardDashboardEndpoint {
           final CountyDashboard cdb = Persistence.getByID(county.id(), CountyDashboard.class);
           if (cdb == null) {
             Main.LOGGER.error("could not get county dashboard");
-            serverError(the_response, "could not set audit board");
+            serverError(the_response, "could not sign off round");
+          } else if (cdb.currentRound() == null) {
+            invariantViolation(the_response, "no round to sign off");
           } else {
-            cdb.signInAuditBoard(parsed_audit_board);
-            Persistence.saveOrUpdate(cdb);
-            ok(the_response, "audit board for county " + county +  
-                             " set to " + parsed_audit_board);
+            cdb.endRound(parsed_signatories);
           }
         }
       } else {
-        invariantViolation(the_response, "Invalid audit board membership");
+        invariantViolation(the_response, "invalid round sign off signatories");
       }
     } catch (final PersistenceException e) {
-      serverError(the_response, "unable to set audit board: " + e);
-
+      serverError(the_response, "unable to sign off round: " + e);
     } catch (final JsonParseException e) {
-      badDataContents(the_response, "Invalid audit board data");
+      badDataContents(the_response, "invalid round signatories");
     }
+    ok(the_response, "audit round signed off");
     return my_endpoint_result.get();
   }
 }

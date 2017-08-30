@@ -119,7 +119,7 @@ public class PublishBallotsToAudit extends AbstractDoSDashboardEndpoint {
           serverError(the_response, "could not set ballot list for county " + 
                       cdb.id());
           Main.LOGGER.info("could not set ballot list for county " + cdb.id());
-        }
+        } 
       }
       
       ok(the_response, "ballot lists published");

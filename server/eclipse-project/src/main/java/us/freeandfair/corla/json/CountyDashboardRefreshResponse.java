@@ -35,7 +35,6 @@ import us.freeandfair.corla.model.Round;
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.model.UploadedFile.FileStatus;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.CVRAuditInfoQueries;
 import us.freeandfair.corla.query.ContestQueries;
 import us.freeandfair.corla.query.UploadedFileQueries;
 import us.freeandfair.corla.util.SuppressFBWarnings;
@@ -342,7 +341,7 @@ public class CountyDashboardRefreshResponse {
                                               the_dashboard.ballotsAudited(),
                                               the_dashboard.discrepancies(),
                                               the_dashboard.disagreements(),
-                                              CVRAuditInfoQueries.cvrsToAudit(the_dashboard),
+                                              the_dashboard.cvrsToAuditInCurrentRound(),
                                               the_dashboard.cvrUnderAudit(),
                                               the_dashboard.auditedPrefixLength(),
                                               the_dashboard.rounds(),

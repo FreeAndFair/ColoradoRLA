@@ -16,9 +16,15 @@ import static us.freeandfair.corla.util.EqualsHashcodeHelper.*;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Embeddable;
+
+import us.freeandfair.corla.persistence.ElectorListConverter;
 
 /**
  * Information about an audit round. 
@@ -27,9 +33,7 @@ import javax.persistence.Embeddable;
  * @version 0.0.1
  */
 @Embeddable
-// this class has many fields that would normally be declared final, but
-// cannot be for compatibility with Hibernate and JPA.
-@SuppressWarnings("PMD.ImmutableField")
+@SuppressWarnings({"PMD.ImmutableField", "PMD.TooManyMethods"})
 public class Round implements Serializable {
   /**
    * The serialVersionUID.
@@ -54,17 +58,13 @@ public class Round implements Serializable {
   private Instant my_end_time;
 
   /**
-   * The expected number of ballots to audit in this round. This 
-   * number is based on the audit random sequence, so it may
-   * include duplicate ballots.
+   * The expected number of ballots to audit in this round. 
    */
   @Column(nullable = false, updatable = false)
   private Integer my_expected_count;
   
   /**
-   * The actual number of ballots audited in this round. This
-   * number is based on the audit random sequence, so it may
-   * include duplicate ballots.
+   * The actual number of ballots audited in this round. 
    */
   @Column(nullable = false)
   private Integer my_actual_count;
@@ -74,13 +74,13 @@ public class Round implements Serializable {
    * this round.
    */
   @Column(nullable = false, updatable = false)
-  private Integer my_expected_audit_prefix_length;
+  private Integer my_expected_audited_prefix_length;
   
   /**
    * The audited prefix length actually achieved by the end of this round.
    */
   @Column
-  private Integer my_actual_audit_prefix_length;
+  private Integer my_actual_audited_prefix_length;
   
   /**
    * The index of the audit random sequence where the round starts.
@@ -107,6 +107,13 @@ public class Round implements Serializable {
   private Integer my_disagreements = 0;
   
   /**
+   * The signatories for round sign-off
+   */
+  @Column(name = "signatories", columnDefinition = "text")
+  @Convert(converter = ElectorListConverter.class)
+  private List<Elector> my_signatories = new ArrayList<>();
+
+  /**
    * Constructs an empty round, solely for persistence. 
    */
   public Round() {
@@ -126,15 +133,15 @@ public class Round implements Serializable {
                final Instant the_start_time,
                final Integer the_expected_count,
                final Integer the_previous_ballots_audited,
-               final Integer the_expected_audit_prefix_length,
-               final Integer the_start_audit_prefix_length) {
+               final Integer the_expected_audited_prefix_length,
+               final Integer the_start_audited_prefix_length) {
     super();
     my_number = the_number;
     my_start_time = the_start_time;
     my_expected_count = the_expected_count;
-    my_expected_audit_prefix_length = the_expected_audit_prefix_length;
+    my_expected_audited_prefix_length = the_expected_audited_prefix_length;
     my_actual_count = 0;
-    my_start_audit_prefix_length = the_start_audit_prefix_length;
+    my_start_audit_prefix_length = the_start_audited_prefix_length;
     my_previous_ballots_audited = the_previous_ballots_audited;
   }
   
@@ -202,25 +209,25 @@ public class Round implements Serializable {
    * @return the expected audit sequence prefix length to be 
    * achieved by the end of this round.
    */
-  public Integer expectedAuditPrefixLength() {
-    return my_expected_audit_prefix_length;
+  public Integer expectedAuditedPrefixLength() {
+    return my_expected_audited_prefix_length;
   }
   
   /**
    * @return the audit sequence prefix length achieved by the end of 
    * this round, or null if this round has not ended.
    */
-  public Integer actualAuditPrefixLength() {
-    return my_actual_audit_prefix_length;
+  public Integer actualAuditedPrefixLength() {
+    return my_actual_audited_prefix_length;
   }
   
   /**
    * Sets the audit prefix sequence length achieved by the end of this round.
    * 
-   * @param the_audit_prefix_length The prefix length achieved.
+   * @param the_audited_prefix_length The prefix length achieved.
    */
-  public void setActualAuditPrefixLength(final int the_audit_prefix_length) {
-    my_actual_audit_prefix_length = the_audit_prefix_length;
+  public void setActualAuditedPrefixLength(final int the_audited_prefix_length) {
+    my_actual_audited_prefix_length = the_audited_prefix_length;
   }
   
   /**
@@ -241,7 +248,7 @@ public class Round implements Serializable {
    * @return the index of the audit random sequence where this round
    * starts.
    */
-  public Integer startAuditPrefixLength() {
+  public Integer startAuditedPrefixLength() {
     return my_start_audit_prefix_length;
   }
   
@@ -288,6 +295,21 @@ public class Round implements Serializable {
   }
   
   /**
+   * @return the signatories.
+   */
+  public List<Elector> signatories() {
+    return Collections.unmodifiableList(my_signatories);
+  }
+  
+  /**
+   * Sets the signatories.
+   */
+  public void setSignatories(final List<Elector> the_signatories) {
+    my_signatories.clear();
+    my_signatories.addAll(the_signatories);
+  }
+  
+  /**
    * @return a String representation of this elector.
    */
   @Override
@@ -296,7 +318,8 @@ public class Round implements Serializable {
            my_end_time + ", expected_count=" + my_expected_count + 
            ", actual_count=" + my_actual_count + ", start_index=" + 
            my_start_audit_prefix_length + ", discrepancies=" + my_discrepancies + 
-           "disagreements=" + my_disagreements + "]";
+           "disagreements=" + my_disagreements + ", signatories=" +
+           my_signatories + "]";
   }
 
   /**
@@ -314,9 +337,11 @@ public class Round implements Serializable {
       result &= nullableEquals(other_round.endTime(), endTime());
       result &= nullableEquals(other_round.expectedCount(), expectedCount());
       result &= nullableEquals(other_round.actualCount(), actualCount());
-      result &= nullableEquals(other_round.startAuditPrefixLength(), startAuditPrefixLength());
+      result &= nullableEquals(other_round.startAuditedPrefixLength(), 
+                               startAuditedPrefixLength());
       result &= nullableEquals(other_round.discrepancies(), discrepancies());
       result &= nullableEquals(other_round.disagreements(), disagreements());
+      result &= nullableEquals(other_round.signatories(), signatories());
     } else {
       result = false;
     }
