@@ -78,6 +78,10 @@ public class SubmittedAuditRoundStart {
    * @return the map from county IDs to absolute numbers of ballots per county.
    */
   public Map<Long, Integer> countyBallots() {
-    return Collections.unmodifiableMap(my_county_ballots);
+    if (my_county_ballots == null) {
+      return my_county_ballots;
+    } else {
+      return Collections.unmodifiableMap(my_county_ballots);
+    }
   }
 }

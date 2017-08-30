@@ -320,7 +320,7 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
    * @return the expected number of ballots remaining to audit, assuming 
    * over- and understatement rates continue as they currently are.
    */
-  public int expectedBallotsToAuditFromCurrentRates() {
+  public int expectedBallotsToAuditFromCurrentRates() {               
     return computeBallotsToAuditFromProgress(my_two_vote_under, my_one_vote_under,
                                              my_one_vote_over, my_two_vote_over,
                                              my_dashboard.auditedPrefixLength());
@@ -476,36 +476,38 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
         multiply(BigDecimalMath.log(my_risk_limit, MathContext.DECIMAL128));
     BigDecimal result = numerator.divide(denominator, MathContext.DECIMAL128);
     
-    final BigDecimal two_under;
-    final BigDecimal one_under;
-    final BigDecimal one_over;
-    final BigDecimal two_over;
+    BigDecimal two_under;
+    BigDecimal one_under;
+    BigDecimal one_over;
+    BigDecimal two_over;
  
-    if (the_round_ones_up) {
-      one_under = 
-          the_one_under_rate.multiply(result).setScale(0, RoundingMode.CEILING);
-      one_over = 
-          the_one_over_rate.multiply(result).setScale(0, RoundingMode.CEILING);
-    } else {
-      one_under = the_one_under_rate.multiply(result).round(MathContext.DECIMAL128);
-      one_over = the_one_over_rate.multiply(result).round(MathContext.DECIMAL128);
+    for (int i = 0; i < 3; i++) {
+      if (the_round_ones_up) {
+        one_under = 
+            the_one_under_rate.multiply(result).setScale(0, RoundingMode.CEILING);
+        one_over = 
+            the_one_over_rate.multiply(result).setScale(0, RoundingMode.CEILING);
+      } else {
+        one_under = the_one_under_rate.multiply(result).round(MathContext.DECIMAL128);
+        one_over = the_one_over_rate.multiply(result).round(MathContext.DECIMAL128);
+      }
+      if (the_round_twos_up) {
+        two_under = 
+            the_two_under_rate.multiply(result).setScale(0, RoundingMode.CEILING);
+        two_over = 
+            the_two_over_rate.multiply(result).setScale(0, RoundingMode.CEILING);
+      } else {
+        two_under = the_two_under_rate.multiply(result).round(MathContext.DECIMAL128);
+        two_over = the_two_over_rate.multiply(result).round(MathContext.DECIMAL128);  
+      }
+      Main.LOGGER.debug("expected numbers u1=" + one_under + "/" + one_under.intValue() + 
+                        ", u2=" + two_under + "/" + two_under.intValue() + 
+                        ", o1=" + one_over + "/" + one_over.intValue() + 
+                        ", o2=" + two_over + "/" + two_over.intValue());
+      result = computeBallotsToAudit(two_under.intValue(), one_under.intValue(), 
+                                     one_over.intValue(), two_over.intValue());
+      Main.LOGGER.debug("result=" + result);
     }
-    if (the_round_twos_up) {
-      two_under = 
-          the_two_under_rate.multiply(result).setScale(0, RoundingMode.CEILING);
-      two_over = 
-          the_two_over_rate.multiply(result).setScale(0, RoundingMode.CEILING);
-    } else {
-      two_under = the_two_under_rate.multiply(result).round(MathContext.DECIMAL128);
-      two_over = the_two_over_rate.multiply(result).round(MathContext.DECIMAL128);  
-    }
-    Main.LOGGER.info("expected numbers u1=" + one_under + "/" + one_under.intValue() + 
-                     ", u2=" + two_under + "/" + two_under.intValue() + 
-                     ", o1=" + one_over + "/" + one_over.intValue() + 
-                     ", o2=" + two_over + "/" + two_over.intValue());
-    result = computeBallotsToAudit(two_under.intValue(), one_under.intValue(), 
-                                   one_over.intValue(), two_over.intValue());
-
     Main.LOGGER.info("initial estimate for contest " + contest().name() + 
                      ", diluted margin " + contestResult().countyDilutedMargin() + 
                      ": " + result);
