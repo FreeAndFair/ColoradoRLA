@@ -129,4 +129,21 @@ public final class CountyContestResultQueries {
 
     return result;
   }
+  
+  /**
+   * Deletes all the contest results for the county with the specified ID.
+   * 
+   * @param the_id The county ID.
+   */
+  public static void deleteForCounty(final Long the_county_id) {
+    final Set<CountyContestResult> results = 
+        forCounty(Persistence.getByID(the_county_id, County.class));
+    if (results != null) {
+      for (final CountyContestResult c : results) {
+        Persistence.delete(c);
+        Persistence.delete(c.contest());
+      }
+    }
+    Persistence.flush();
+  }
 }

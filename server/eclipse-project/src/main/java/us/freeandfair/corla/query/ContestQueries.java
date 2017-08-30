@@ -114,5 +114,6 @@ public final class ContestQueries {
         Persistence.delete(c);
       }
     }
+    Persistence.flush();
   }
 }
