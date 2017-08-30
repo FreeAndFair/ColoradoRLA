@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import * as _ from 'lodash';
-
 import DOSDashboardPage from './Page';
 
 
@@ -18,7 +16,6 @@ const mapStateToProps = (state: any) => {
     return {
         contests: sos.contests,
         countyStatus: sos.countyStatus,
-        currentAsmState: sos.asm.currentState,
         seed: sos.seed,
         sos,
     };

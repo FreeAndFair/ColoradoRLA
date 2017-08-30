@@ -6,7 +6,7 @@ import { Tooltip } from '@blueprintjs/core';
 
 import SoSNav from '../Nav';
 
-import Main from './Main';
+import MainContainer from './MainContainer';
 
 import counties from '../../../data/counties';
 
@@ -155,20 +155,12 @@ const CountyUpdates = ({ countyStatus }: any) => {
 };
 
 const DOSDashboardPage = (props: any) => {
-    const { contests, countyStatus, currentAsmState, seed, sos } = props;
-
-    const ongoingStates = [
-        'AUDIT_READY_TO_START',
-        'DOS_AUDIT_ONGOING',
-        'DOS_AUDIT_COMPLETE',
-        'AUDIT_RESULTS_PUBLISHED',
-    ];
-    const showAuditParams = _.includes(ongoingStates, currentAsmState);
+    const { contests, countyStatus, seed, sos } = props;
 
     return (
         <div className='sos-home'>
             <SoSNav />
-            <Main showAuditParams={ showAuditParams } sos={ sos } />
+            <MainContainer />
             <div className='sos-info pt-card'>
                 <CountyUpdates countyStatus={ countyStatus } />
                 <ContestUpdates contests={ contests } seed={ seed } sos={ sos } />
