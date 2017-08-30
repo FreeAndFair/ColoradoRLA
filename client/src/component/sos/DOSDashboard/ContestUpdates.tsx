@@ -4,6 +4,8 @@ import * as _ from 'lodash';
 
 import { Tooltip } from '@blueprintjs/core';
 
+import counties from '../../../data/counties';
+
 
 const RemainingToAuditHeader = () => {
     const content =
@@ -27,6 +29,8 @@ const ContestUpdates = ({ contests, seed, sos }: any) => {
             return <tr key={ c.id }><td /><td /><td /><td /><td /></tr>;
         }
 
+        const county = counties[c.countyId];
+
         const status = sos.auditedContests[c.id]
                      ? 'Under audit'
                      : 'Not selected for audit';
@@ -35,7 +39,7 @@ const ContestUpdates = ({ contests, seed, sos }: any) => {
 
         return (
             <tr key={ c.id}>
-                <td>{ c.id }</td>
+                <td>{ county.name }</td>
                 <td>{ c.name }</td>
                 <td>{ status }</td>
                 <td>{ riskLimitPercent }%</td>
@@ -50,7 +54,7 @@ const ContestUpdates = ({ contests, seed, sos }: any) => {
                 <table className='pt-table'>
                     <thead>
                         <tr>
-                            <td>ID</td>
+                            <td>County</td>
                             <td>Name</td>
                             <td>Audit Status</td>
                             <td>Target Risk Limit</td>
