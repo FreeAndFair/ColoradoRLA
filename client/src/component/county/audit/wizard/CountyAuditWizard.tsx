@@ -40,6 +40,7 @@ class CountyAuditWizard extends React.Component<any, CountyAuditWizardState> {
     private nextStage = () => {
         // tslint:disable
         const t: any = {
+            'list': 'ballot-audit',
             'ballot-audit': 'review',
             'review': 'ballot-audit',
         };
@@ -53,7 +54,8 @@ class CountyAuditWizard extends React.Component<any, CountyAuditWizardState> {
     private prevStage = () => {
         // tslint:disable
         const t: any = {
-            'ballot-audit': 'ballot-audit',
+            'list': 'list',
+            'ballot-audit': 'list',
             'review': 'ballot-audit',
         };
         // tslint:enable

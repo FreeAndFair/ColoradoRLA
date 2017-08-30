@@ -2,7 +2,7 @@ import * as React from 'react';
 
 
 const BallotListStage = (props: any) => {
-    const { county, cvrsToAudit } = props;
+    const { county, cvrsToAudit, nextStage } = props;
 
     const ballotListRows = cvrsToAudit.map((cvr: any) => {
         return (
@@ -49,7 +49,9 @@ const BallotListStage = (props: any) => {
                 Audit Board: Click Next to start reporting the votes you observe on each
                 of the above ballots.
             </div>
-            <button className='pt-button pt-intent-primary'>
+            <button
+                className='pt-button pt-intent-primary'
+                onClick={ nextStage }>
                 Next
             </button>
         </div>
