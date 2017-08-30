@@ -4,9 +4,9 @@ import * as _ from 'lodash';
 
 import { Tooltip } from '@blueprintjs/core';
 
-import SoSNav from './Nav';
+import SoSNav from '../Nav';
 
-import counties from '../../data/counties';
+import counties from '../../../data/counties';
 
 
 const ContestUpdates = ({ contests, seed, sos }: any) => {
@@ -183,7 +183,7 @@ const AuditNotDefined = () => {
     );
 };
 
-const SoSHomePage = (props: any) => {
+const DOSDashboardPage = (props: any) => {
     const { contests, countyStatus, currentAsmState, seed, sos } = props;
 
     const ongoingStates = [
@@ -218,4 +218,4 @@ const SoSHomePage = (props: any) => {
 };
 
 
-export default SoSHomePage;
+export default DOSDashboardPage;
