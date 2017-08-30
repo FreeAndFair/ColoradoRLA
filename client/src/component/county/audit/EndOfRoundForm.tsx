@@ -46,6 +46,7 @@ const ElectorFormField = (props: any) => {
 const EndOfRoundForm = (props: any) => {
     const {
         form,
+        formIsValid,
         onFirstNameChange,
         onLastNameChange,
         onTextConfirm,
@@ -62,11 +63,17 @@ const EndOfRoundForm = (props: any) => {
         />
     );
 
+    const disableSubmitButton = !formIsValid;
+
     return (
         <div>
             { createFormField(0) }
             { createFormField(1) }
-            <button className='pt-button pt-intent-primary' onClick={ submit }>
+            <button
+                className='pt-button pt-intent-primary'
+                disabled={ disableSubmitButton }
+                onClick={ submit }
+            >
                 Submit
             </button>
         </div>
