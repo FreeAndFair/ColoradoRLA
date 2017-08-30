@@ -2,8 +2,9 @@ import * as _ from 'lodash';
 
 
 const parseContest = (c: any) => {
-    const result: any = _.omit(c, 'votes_allowed');
+    const result: any = _.omit(c, ['county_id', 'votes_allowed']);
 
+    result.countyId = c.county_id;
     result.votesAllowed = c.votes_allowed;
 
     return result;
