@@ -77,7 +77,7 @@ will have to be repeated. It is not possible to resume interrupted uploads.
 If the hash does not match, or the file is not the proper format, users will
 receive the following errors.
 
-![Audit_Upload_Failed_Screenshot](./screenshots/d-failed_to_upload_ballot_manifest_or_cvr_because_file_type_is_wrong_or_hash_doesn’t_match.png)
+![Audit_Upload_Failed_Screenshot](./screenshots/d-failed_to_upload.png)
 
 Once both the ballot manifest and CVR files are successfully uploaded
 users will see them both listed as -uploaded-. It is possible to re-upload
