@@ -14,9 +14,7 @@ package us.freeandfair.corla.endpoint;
 import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.UPLOAD_CVRS_EVENT;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.sql.SQLException;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +38,7 @@ import us.freeandfair.corla.model.UploadedFile.HashStatus;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CastVoteRecordQueries;
 import us.freeandfair.corla.query.CountyContestResultQueries;
+import us.freeandfair.corla.util.UploadedFileStreamer;
 
 /**
  * The "CVR export import" endpoint.
@@ -104,12 +103,18 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
    */
   // the CSV parser can throw arbitrary runtime exceptions, which we must catch
   @SuppressWarnings({"PMD.AvoidCatchingGenericException"})
-  private void parseFile(final Response the_response, final UploadedFile the_file) {  
-    try (InputStream bmi_is = the_file.file().getBinaryStream()) {
-      final InputStreamReader bmi_isr = new InputStreamReader(bmi_is, "UTF-8");
+  private void parseFile(final Response the_response, final UploadedFile the_file) {
+    final UploadedFileStreamer ufs = new UploadedFileStreamer(the_file);
+    @SuppressWarnings("PMD.DoNotUseThreads")
+    final Thread thread = new Thread(ufs);
+    thread.start();
+    
+    try {
+      final InputStreamReader bmi_isr = new InputStreamReader(ufs.inputStream(), "UTF-8");
       final DominionCVRExportParser parser = 
           new DominionCVRExportParser(bmi_isr, 
-                                      Persistence.getByID(the_file.countyID(), County.class));
+                                      Persistence.getByID(the_file.countyID(), County.class),
+                                      true);
       final int deleted = 
           CastVoteRecordQueries.deleteMatching(the_file.countyID(), RecordType.UPLOADED);
       CountyContestResultQueries.deleteForCounty(the_file.countyID());
@@ -129,14 +134,26 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
         Main.LOGGER.info("could not parse malformed CVR export file " + the_file.id());
         badDataContents(the_response, "malformed CVR export file " + the_file.id());
       }
+    } catch (final PersistenceException e) {
+      Main.LOGGER.info("parse transactions did not complete successfully, " + 
+                       "attempting cleanup");
+      try {
+        CastVoteRecordQueries.deleteMatching(the_file.countyID(), RecordType.UPLOADED);
+        CountyContestResultQueries.deleteForCounty(the_file.countyID());
+      } catch (final PersistenceException ex) {
+        // if we couldn't clean up, there's not much we can do about it
+      }
+      transactionFailure(the_response, "cvr import transaction failed: " + e.getMessage());
+      ufs.stop();
+      // we have to halt manually because a transaction failure doesn't halt
+      halt(the_response);
     } catch (final RuntimeException | IOException e) {
       Main.LOGGER.info("could not parse malformed CVR export file " + the_file.id() + 
                        ": " + e);
       badDataContents(the_response, "malformed CVR export file " + the_file.id());
-    } catch (final SQLException e) {
-      Main.LOGGER.info("could not read file " + the_file.id() + 
-                       " from persistent storage");
     }
+    
+    ufs.stop();
   }
 
   /**

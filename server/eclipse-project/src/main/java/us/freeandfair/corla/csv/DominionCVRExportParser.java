@@ -55,6 +55,11 @@ public class DominionCVRExportParser implements CVRExportParser {
   private static final int BATCH_SIZE = 80;
 
   /**
+   * The size of a batch of CVRs to be committed as a transaction.
+   */
+  private static final int TRANSACTION_SIZE = 400;
+  
+  /**
    * The column containing the CVR number in a Dominion export file.
    */
   private static final int CVR_NUMBER_COLUMN = 0;
@@ -132,17 +137,29 @@ public class DominionCVRExportParser implements CVRExportParser {
   private final Set<CastVoteRecord> my_parsed_cvrs = new HashSet<>();
   
   /**
+   * A flag that indicates whether the parse is processed as multiple 
+   * transactions.
+   */
+  private final boolean my_multi_transaction;
+  
+  /**
    * Construct a new Dominion CVR export parser using the specified Reader,
    * for CVRs provided by the specified county.
    * 
    * @param the_reader The reader from which to read the CSV to parse.
    * @param the_county The county whose CVRs are to be parsed.
+   * @param the_multi_transaction true to commit the CVRs in multiple transactions,
+   * false otherwise. If this is true, the parser assumes that a transaction is
+   * in progress when invoked, and periodically commits that transaction and 
+   * starts a new one to continue parsing, leaving a transaction open at completion.
    * @exception IOException if an error occurs while constructing the parser.
    */
-  public DominionCVRExportParser(final Reader the_reader, final County the_county) 
+  public DominionCVRExportParser(final Reader the_reader, final County the_county,
+                                 final boolean the_multi_transaction) 
       throws IOException {
     my_parser = new CSVParser(the_reader, CSVFormat.DEFAULT);
     my_county = the_county;
+    my_multi_transaction = the_multi_transaction;
   }
   
   /**
@@ -157,6 +174,7 @@ public class DominionCVRExportParser implements CVRExportParser {
       throws IOException {
     my_parser = CSVParser.parse(the_string, CSVFormat.DEFAULT);
     my_county = the_county;
+    my_multi_transaction = false;
   }
   
   /**
@@ -258,6 +276,11 @@ public class DominionCVRExportParser implements CVRExportParser {
         Persistence.evict(cvr);
       }
       my_parsed_cvrs.clear();
+    }
+    
+    if (my_multi_transaction && my_parsed_cvrs.size() % TRANSACTION_SIZE == 0) {
+      Persistence.commitTransaction();
+      Persistence.beginTransaction();
     }
   }
   
