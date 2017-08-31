@@ -18,7 +18,7 @@ First the County uploads verified ballot manifests and cast vote record
 (CVR) files. For each round of the RLA, the RLA Tool tells the County which ballot cards to audit, allows the County to enter Audit Boards 
 interpretations of the ballot cards and allows the Audit Board to sign off on the round.
 
-Red arrows on the screenshots indicate features described in the text of the Runbook.
+Orange arrows on the screenshots indicate features described in the text of the Runbook.
  
 ### Logging In
 
