@@ -321,18 +321,21 @@ public class CountyDashboardRefreshResponse {
       cvr_export_filename = cvr_export.filename();
     }
     
-    // contests
+    // contests and contests under audit
     final Set<Long> contests = new HashSet<Long>();
-    for (final Contest c : ContestQueries.forCounty(county)) {
-      contests.add(c.id());
-    }
-    
-    // contests under audit
     final Map<Long, String> contests_under_audit = new HashMap<Long, String>();
-    for (final ContestToAudit cta : dosd.contestsToAudit()) {
-      if (cta.audit() == AuditType.COMPARISON && 
-          contests.contains(cta.contest().id())) {
-        contests_under_audit.put(cta.contest().id(), cta.reason().toString());
+    if (the_dashboard.cvrUploadTimestamp() != null &&
+        the_dashboard.manifestUploadTimestamp() != null) {
+      // only add contests if uploads are done
+      for (final Contest c : ContestQueries.forCounty(county)) {
+        contests.add(c.id());
+      }
+
+      for (final ContestToAudit cta : dosd.contestsToAudit()) {
+        if (cta.audit() == AuditType.COMPARISON && 
+            contests.contains(cta.contest().id())) {
+          contests_under_audit.put(cta.contest().id(), cta.reason().toString());
+        }
       }
     }
     

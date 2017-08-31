@@ -26,6 +26,7 @@ import spark.Response;
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.County;
+import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.ContestQueries;
 import us.freeandfair.corla.util.SparkHelper;
@@ -70,28 +71,32 @@ public class ContestDownloadByCounty extends AbstractEndpoint {
     if (validateParameters(the_request)) {
       final Set<County> county_set = new HashSet<County>();
       for (final String s : the_request.queryParams()) {
-        county_set.add(Persistence.getByID(Long.valueOf(s), County.class));
-      }
-      if (county_set.contains(null)) {
-        dataNotFound(the_response, "Nonexistent county ID specified");
-      } else {
-        final Set<Contest> contest_set = ContestQueries.forCounties(county_set);
-        try {
-          final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
-          final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-          final JsonWriter jw = new JsonWriter(bw);
-          jw.beginArray();
-          for (final Contest contest : contest_set) {
-            jw.jsonValue(Main.GSON.toJson(Persistence.unproxy(contest)));
-            Persistence.evict(contest);
-          } 
-          jw.endArray();
-          jw.flush();
-          jw.close();
-          ok(the_response);
-        } catch (final IOException e) {
-          serverError(the_response, "Unable to stream response");
+        final Long county_id = Long.valueOf(s);
+        final CountyDashboard cdb = Persistence.getByID(county_id, CountyDashboard.class);
+        // only get contests for counties that have finished their uploads
+        if (cdb == null) {
+          dataNotFound(the_response, "Nonexistent county ID specified");
+        } else if (cdb.manifestUploadTimestamp() != null &&
+                   cdb.cvrUploadTimestamp() != null) {
+          county_set.add(Persistence.getByID(county_id, County.class));
         }
+      }
+      final Set<Contest> contest_set = ContestQueries.forCounties(county_set);
+      try {
+        final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
+        final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+        final JsonWriter jw = new JsonWriter(bw);
+        jw.beginArray();
+        for (final Contest contest : contest_set) {
+          jw.jsonValue(Main.GSON.toJson(Persistence.unproxy(contest)));
+          Persistence.evict(contest);
+        } 
+        jw.endArray();
+        jw.flush();
+        jw.close();
+        ok(the_response);
+      } catch (final IOException e) {
+        serverError(the_response, "Unable to stream response");
       }
     } else {
       dataNotFound(the_response, "Invalid county ID specified");
