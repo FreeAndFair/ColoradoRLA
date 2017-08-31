@@ -212,11 +212,16 @@ public final class ComparisonAuditController {
   }
   
   /**
-   * Initializes the audit data for the specified county dashboard.
+   * Initializes the audit data for the specified county dashboard and starts its
+   * first audit round.
    * 
    * @param the_dashboard The dashboard.
+   * @return true if an audit round is started for the dashboard, false otherwise; 
+   * an audit round might not be started if there are no driving contests in the
+   * county, or if the county needs to audit 0 ballots to meet the risk limit.
    */
-  public static void initializeAuditData(final CountyDashboard the_dashboard) {
+  public static boolean initializeAuditData(final CountyDashboard the_dashboard) {
+    boolean result = true;
     final DoSDashboard dosdb =
         Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
     final BigDecimal risk_limit = dosdb.riskLimitForComparisonAudits();
@@ -245,12 +250,16 @@ public final class ComparisonAuditController {
     }
     the_dashboard.setComparisonAudits(comparison_audits);
     the_dashboard.setDrivingContests(county_driving_contests);
-    the_dashboard.startRound(computeBallotOrder(the_dashboard, 0, to_audit).size(),
-                             to_audit, 0);
     the_dashboard.setEstimatedBallotsToAudit(Math.max(0,  to_audit));
-    if (!county_driving_contests.isEmpty()) {
+    if (!county_driving_contests.isEmpty() && 0 < to_audit) {
       the_dashboard.setCVRsToAudit(getCVRsInAuditSequence(the_dashboard, 0, to_audit - 1));
+      the_dashboard.startRound(computeBallotOrder(the_dashboard, 0, to_audit).size(),
+                               to_audit, 0);
+    } else {
+      result = false;
     }
+    
+    return result;
   }
   
   /**
