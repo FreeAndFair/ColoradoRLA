@@ -157,6 +157,7 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
             if (asm.currentState().equals(CountyDashboardState.COUNTY_AUDIT_UNDERWAY) &&
                 (cdb.comparisonAudits().isEmpty() || cdb.estimatedBallotsToAudit() == 0)) {
               // the county made its deadline but was assigned no contests to audit
+              // or does not need to audit any ballots to meet its risk limit
               audit_event = NO_CONTESTS_TO_AUDIT_EVENT;
               asm.stepEvent(COUNTY_AUDIT_COMPLETE_EVENT);
             } else if (asm.currentState().equals(CountyDashboardState.COUNTY_AUDIT_UNDERWAY)) {
