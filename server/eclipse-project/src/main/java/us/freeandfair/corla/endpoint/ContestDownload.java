@@ -11,17 +11,25 @@
 
 package us.freeandfair.corla.endpoint;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.HashSet;
 import java.util.Set;
+
+import com.google.gson.stream.JsonWriter;
 
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.ContestQueries;
+import us.freeandfair.corla.util.SparkHelper;
 
 /**
  * The contest download endpoint.
@@ -61,13 +69,29 @@ public class ContestDownload extends AbstractEndpoint {
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
     // only return contests for counties that have finished their uploads
-    final Set<County> counties = new HashSet<>();
+    final Set<County> county_set = new HashSet<>();
     for (final CountyDashboard cdb : Persistence.getAll(CountyDashboard.class)) {
       if (cdb.manifestUploadTimestamp() != null && cdb.cvrUploadTimestamp() != null) {
-        counties.add(cdb.county());
+        county_set.add(cdb.county());
       }
     }
-    okJSON(the_response, Main.GSON.toJson(ContestQueries.forCounties(counties)));
+    final Set<Contest> contest_set = ContestQueries.forCounties(county_set);
+    try {
+      final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
+      final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+      final JsonWriter jw = new JsonWriter(bw);
+      jw.beginArray();
+      for (final Contest contest : contest_set) {
+        jw.jsonValue(Main.GSON.toJson(Persistence.unproxy(contest)));
+        Persistence.evict(contest);
+      } 
+      jw.endArray();
+      jw.flush();
+      jw.close();
+      ok(the_response);
+    } catch (final IOException e) {
+      serverError(the_response, "Unable to stream response");
+    }
     return my_endpoint_result.get();
   }
 }
