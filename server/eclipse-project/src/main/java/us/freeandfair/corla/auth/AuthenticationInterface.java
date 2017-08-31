@@ -88,7 +88,6 @@ public interface AuthenticationInterface {
    * @param the_request The request.
    * @param the_response The response, which is used in the case that a second
    * factor challenge must be sent to the client.
-   * @param the_admin_type the type of administrator to attempt to authenticate.
    * @param the_username the username of the person to attempt to authenticate.
    * @param the_password the password for `username`.
    * @param the_second_factor the second factor for `username`.
@@ -97,7 +96,6 @@ public interface AuthenticationInterface {
   //@ requires the_password != null || the_second_factor != null;
   boolean authenticateAdministrator(Request the_request,
                                     Response the_response,
-                                    AdministratorType the_admin_type,
                                     String the_username,
                                     String the_password,
                                     String the_second_factor);
@@ -151,6 +149,14 @@ public interface AuthenticationInterface {
    */
   boolean traditionalAuthenticated(Request the_request,
                                    String the_username);
+  
+  /**
+   * @return true iff `the_username` is already authenticated in any role.
+   * @param the_request The request.
+   * @param the_username the username of the person to check.
+   */
+  boolean isAuthenticated(Request the_request,
+                          String the_username);
   
   /**
    * @return true iff `the_username` is authenticated with both traditional and

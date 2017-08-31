@@ -21,6 +21,7 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.json.AuthenticationResponse;
 import us.freeandfair.corla.model.Administrator;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
 import us.freeandfair.corla.model.County;
@@ -48,7 +49,6 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
    * @trace authentication.authenticate_state_administrator
    * @return true iff authentication succeeds.
    * @param the_request The request.
-   * @param the_admin_type the type of administrator to attempt to authenticate.
    * @param the_username the username of the person to attempt to authenticate.
    * @param the_password the password for `username`.
    * @param the_second_factor the second factor for `username`.
@@ -56,7 +56,6 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
   @Override
   public boolean authenticateAdministrator(final Request the_request,
                                            final Response the_response,
-                                           final AdministratorType the_admin_type,
                                            final String the_username, 
                                            final String the_password,
                                            final String the_second_factor) {
@@ -106,6 +105,7 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
                                             AuthenticationInterface.ADMIN);
             the_request.session().attribute(AuthenticationInterface.ADMIN, 
                                             admin);
+            the_response.body(Main.GSON.toJson(new AuthenticationResponse(admin.type())));
             Main.LOGGER.info("Second factor authentication succeeded for administrator " + 
                 the_username);
           } else {
@@ -198,6 +198,15 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
    * {@inheritDoc}
    */
   @Override
+  public boolean isAuthenticated(final Request the_request,
+                                 final String the_username) {
+    return the_request.session().attribute(ADMIN) instanceof Administrator;
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   public boolean isAuthenticatedAs(final Request the_request,
                                    final AdministratorType the_type,
                                    final String the_username) {
@@ -206,7 +215,6 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
     if (admin_attribute instanceof Administrator) {
       final Administrator admin = (Administrator) admin_attribute;
       result = admin.type() == the_type;
-      the_request.session().attribute(ADMIN, admin);
     } else if (admin_attribute != null) {
       // this should never happen since we control what's in the session object,
       // but if it does, we'll clear out that attribute and thereby force another
