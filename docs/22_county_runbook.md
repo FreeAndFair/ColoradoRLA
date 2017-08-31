@@ -4,7 +4,7 @@
 ## Introduction
 
 This Run Book guides County election administrators in Colorado who will be
-implementing a Risk Limiting Audit (RLA).
+implementing a Risk Limiting Audit (RLA) with a comparison audit.
 The RLA Tool, developed by Free & Fair for the
 Colorado Department of State for use in elections in November 2017 and later, 
 supports running a Risk-Limiting Audit as required by
@@ -17,16 +17,17 @@ fulfill the requirements of Rule 25.2.2 and Rule 25.2.3.
 First the County uploads verified ballot manifests and cast vote record
 (CVR) files. For each round of the RLA, the RLA Tool tells the County which ballot cards to audit, allows the County to enter Audit Boards 
 interpretations of the ballot cards and allows the Audit Board to sign off on the round.
+
+Red arrows on the screenshots indicate features described in the text of the Runbook.
  
 ### Logging In
 
-Persons from the County first must log in to the RLA Tool.
+A County user can log in to the RLA Tool by pointing a browser to the URL provided by the Colorado Department of State. [SCREENSHOT NEEDS UPDATE]
 
 ![County Login Screenshot](./screenshots/a-county_login.png)
 
-The RLA Tool will direct each user to the appropriate home page. 
 County users will see the (initially empty) County home page. Note the 
-logout button, circled in the upper right of this (and every) page.
+logout button ![Logout Button](https://github.com/palantir/blueprint/blob/master/resources/icons/20px/pt-icon-log-out.svg), in the upper right of this (and every) page.
 
 ![Initial County Landing Page](./screenshots/c-initial_county_landing_page_unified.png)
 
@@ -36,24 +37,19 @@ The County site has a navigation menu in the upper left corner.
 
 ![County Navigation Screenshot](./screenshots/b-county_nav.png)
 
-### 25.2.2 (A), Entering the Risk Limit
+### 25.2.2 (F), <a name="comparison-audit-upload">Audit Uploads</a>
 
-The Secretary of State will enter the Risk Limit for comparison
-audits.
+To prepare for upload, the County's ballot manifest and CVR files must each be
+ hashed using any SHA-256 hash utility. The RLA Tool
+itself does not provide a utility for verification or hashing. 
 
-### 25.2.2 (B) - (E)
-
-These parts of Rule 25 must be completed outside of the RLA Tool.
-
-### 25.2.2 (F) or (G), <a name="comparison-audit-upload">Audit Uploads</a>
-
-To prepare for upload, each county’s ballot manifest and the CVR file must be
-first verified and hashed using any SHA-256 hash utility. The RLA Tool
-itself does not provide a utility for verification or hashing.
-
-Once the ballot manifest and CVR files are verified and hashed, they
+Once the ballot manifest and CVR files are hashed, they
 can be uploaded into the RLA Tool. If the upload is interrupted the process 
-will have to be repeated. It is not possible to resume interrupted uploads.
+will have to be repeated. It is not possible to resume interrupted uploads. 
+If a County uploads multiple Ballot Manifest files, only the data from the last
+file will be used. Similarly, if a County uploads multiple CVR files, only the data from the 
+last file will be used.
+
 
 ![About to Upload Ballot Manifest Screenshot](./screenshots/e-about_to_upload_proper_ballot_manifest.png)
 
@@ -64,7 +60,13 @@ receive the following errors.
 
 ![Audit_Upload_Failed_Screenshot](./screenshots/d-failed_to_upload.png)
 
-Once both the ballot manifest and CVR files are successfully uploaded
+After the system uploads the file, it automatically imports the data in the file into the system. 
+The time required for upload and data processing depends on the size of the file. Ballot Manifest files should 
+upload in a few seconds for every County, but upload and processing time for the CVR file will depend on the 
+number of ballot cards represented in the file. A file with fewer than 10,000 CVR lines should take less than a minute,
+while a file with 500,000 CVR lines might take several minutes. 
+
+Once both the ballot manifest and CVR files are successfully uploaded 
 users will see them both listed as **uploaded**. It is possible to re-upload
 either or both files, if necessary.
 
