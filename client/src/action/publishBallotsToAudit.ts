@@ -3,7 +3,7 @@ import { endpoint } from '../config';
 import createSubmitAction from './createSubmitAction';
 
 
-const url = endpoint('ballots-to-audit/publish');
+const url = endpoint('start-audit-round');
 
 
 export default createSubmitAction({
