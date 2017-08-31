@@ -632,8 +632,12 @@ public final class ComparisonAuditController {
       if (cai.acvr() == null) {
         break;
       } else {
-        audit(the_cdb, cai.cvr(), cai.acvr(), 1, false);
+        final Pair<Boolean, Boolean> audit_results = 
+            audit(the_cdb, cai.cvr(), cai.acvr(), 1, false);
         cai.setCounted(true);
+        cai.setDiscrepancy(audit_results.first());
+        cai.setDisagreement(audit_results.second());
+        Persistence.saveOrUpdate(cai);
       }
       index = index + 1;
     }
