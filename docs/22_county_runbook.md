@@ -83,7 +83,7 @@ Once both the ballot manifest and CVR files are successfully uploaded
 users will see them both listed as -uploaded-. It is possible to re-upload
 either or both files, if necessary.
 
-![Audit Upload Successful Screenshot](./screenshots/h-successfully uploaded cvr.png)
+![Audit Upload Successful Screenshot](./screenshots/h-successfully_uploaded_cvr.png)
 
 After successfully uploading both the Ballot Manifest and the CVR
 files, the County Dashboard shows the current audit status, including
