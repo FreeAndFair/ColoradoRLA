@@ -35,12 +35,24 @@ const AuditInstructions = ({ ballotNotFound, ballotsToAudit, county, currentBall
         </div>
         <div>
             The current ballot is:
-            <ul>
-                <li>Ballot Type: { currentBallot.ballotType }</li>
-                <li>Scanner ID: { currentBallot.scannerId }</li>
-                <li>Batch ID: { currentBallot.batchId }</li>
-                <li>Record ID: { currentBallot.recordId }</li>
-            </ul>
+            <div className='pt-card'>
+                <table className='pt-table pt-bordered pt-condensed'>
+                    <thead>
+                        <tr>
+                            <th>Scanner #</th>
+                            <th>Batch #</th>
+                            <th>Ballot Position #</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{ currentBallot.scannerId }</td>
+                            <td>{ currentBallot.batchId }</td>
+                            <td>{ currentBallot.recordId }</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <div>
                 Please ensure that the paper ballot you are examining is the
                 same ballot type/ID.
