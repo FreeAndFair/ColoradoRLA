@@ -121,7 +121,7 @@ and Storage Bin #.
 ![Ballots_to_Audit_Screenshot](./screenshots/p-ballots_to_audit_unified.png)
 
 
-#### 25.2.3 (A)(1) and (B) Ballot Verification
+### 25.2.3 (A)(1) and (B) Ballot Verification
 
 The RLA Tool allows Audit Board members to report the markings on each
 individual ballot.
@@ -162,7 +162,7 @@ overvote, the review screen will say, simply, "overvote".
 ![Review_Screen](./screenshots/y-verify_selections.png)
 
 Note that in case of an
-overvote, the review screen will say, simply, "overvote". [SCREENSHOT NEEDS UPDATE]
+overvote, the review screen will say, simply, "overvote".
 
 ![Overvote Screenshot](./screenshots/21-overvote_for_this_contest.png)
 
