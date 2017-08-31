@@ -13,6 +13,10 @@ package us.freeandfair.corla.auth;
 
 import javax.persistence.PersistenceException;
 
+import org.apache.log4j.Logger;
+
+import com.google.gson.Gson;
+
 import spark.Request;
 import spark.Response;
 
@@ -30,7 +34,8 @@ import us.freeandfair.corla.query.AdministratorQueries;
  * @author Joseph R. Kiniry
  */
 @SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.CyclomaticComplexity",
-    "PMD.ModifiedCyclomaticComplexity", "PMD.StdCyclomaticComplexity"})
+    "PMD.ModifiedCyclomaticComplexity", "PMD.StdCyclomaticComplexity",
+    "PMD.EmptyMethodInAbstractClassShouldBeAbstract"})
 public abstract class AbstractAuthentication implements AuthenticationInterface {  
   /**
    * Authenticate the administrator `the_username` with credentials
@@ -232,5 +237,29 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
                              final String the_username) {
     traditionalDeauthenticate(the_request, the_username);
     twoFactorDeauthenticate(the_request, the_username);
+  }
+ 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void setLogger(final Logger the_logger) {
+    // skip, as we have access to Main.LOGGER
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void setGSON(final Gson the_gson) {
+    // skip, as we have access to Main.GSON
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void setAuthenticationServerName(final String the_name) {
+    // skip, as there is no server necessary for the built-in test service
   }
 }

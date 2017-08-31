@@ -13,7 +13,6 @@ package us.freeandfair.corla.auth;
 
 import spark.Request;
 
-import us.freeandfair.corla.Main;
 import us.freeandfair.corla.json.SubmittedCredentials;
 import us.freeandfair.corla.model.Administrator;
 import us.freeandfair.corla.model.Administrator.AdministratorType;

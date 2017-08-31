@@ -20,7 +20,6 @@ import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.AbstractStateMachine;
 import us.freeandfair.corla.auth.AuthenticationInterface;
-import us.freeandfair.corla.json.SubmittedCredentials;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
 
 /**

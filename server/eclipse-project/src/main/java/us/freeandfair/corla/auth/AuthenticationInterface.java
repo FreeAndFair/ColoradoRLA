@@ -11,6 +11,10 @@
 
 package us.freeandfair.corla.auth;
 
+import org.apache.log4j.Logger;
+
+import com.google.gson.Gson;
+
 import spark.Request;
 import spark.Response;
 
@@ -51,6 +55,28 @@ public interface AuthenticationInterface {
    * is authenticated).
    */
   String AUTH_STAGE = "authentication_stage";
+  
+  /**
+   * Set the logger for the authentication subsystem.  This method should
+   * be called immediately after construction and before the subsystem is used.
+   * @param the_logger the logger to use.
+   */
+  void setLogger(Logger the_logger);
+
+  /**
+   * Set the GSON serialization/deserialization subsystem to use. This method
+   * should be called immediately after construction and before the subsystem
+   * is used.
+   * @param the_gson the GSON subsystem to use.
+   */
+  void setGSON(Gson the_gson);
+
+  /**
+   * Set the DNS name of the authentication server to use for this particular
+   * authentication service. 
+   * @param the_name the full DNS name of the authentication server.
+   */
+  void setAuthenticationServerName(String the_name);
   
   /**
    * Authenticate the administrator `the_username` with credentials

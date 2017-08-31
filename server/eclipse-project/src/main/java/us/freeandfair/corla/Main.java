@@ -181,6 +181,12 @@ public final class Main {
       my_authentication = (AuthenticationInterface) 
           Class.forName(authentication_class).newInstance();
       LOGGER.info("Loaded authentication subsystem `" + authentication_class + "'");
+      my_authentication.setLogger(LOGGER);
+      my_authentication.setGSON(GSON);
+      final String authentication_server =
+          my_properties.getProperty("authentication_server", "localhost");
+      my_authentication.setAuthenticationServerName(authentication_server);
+      LOGGER.info("Initialized authentication subsystem `" + authentication_class + "'");
     } catch (final ClassNotFoundException | 
         IllegalAccessException | InstantiationException e) {
       LOGGER.fatal("Authentication class '" + authentication_class + "' not found.");
