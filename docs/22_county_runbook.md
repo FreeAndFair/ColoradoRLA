@@ -123,9 +123,6 @@ to launch the audit.
 ![Launch_Audit_Navigation_Button_Screenshot](./screenshots/o-go_to_the_audit_page_to_begin_auditing_ballots.png)
 
 
-
-
-
 ### 25.2.2 (J) Number of Ballot Cards to Audit (intial?)
 
 The number of ballot cards to audit changes during the course of the
