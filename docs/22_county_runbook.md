@@ -55,6 +55,8 @@ last file will be used.
 
 ![About to Upload Ballot Manifest Screenshot](./screenshots/e-about_to_upload_proper_ballot_manifest.png)
 
+***
+
 ![About to Upload CVR Screenshot](./screenshots/g-about_to_upload_proper_cvr.png)
 
 If the hash does not match the file 
