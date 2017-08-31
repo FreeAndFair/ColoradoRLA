@@ -212,11 +212,16 @@ public final class ComparisonAuditController {
   }
   
   /**
-   * Initializes the audit data for the specified county dashboard.
+   * Initializes the audit data for the specified county dashboard and starts its
+   * first audit round.
    * 
-   * @param the_dashboard The dashboard.
+   * @param the_cdb The dashboard.
+   * @return true if an audit round is started for the dashboard, false otherwise; 
+   * an audit round might not be started if there are no driving contests in the
+   * county, or if the county needs to audit 0 ballots to meet the risk limit.
    */
-  public static void initializeAuditData(final CountyDashboard the_dashboard) {
+  public static boolean initializeAuditData(final CountyDashboard the_cdb) {
+    boolean result = true;
     final DoSDashboard dosdb =
         Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
     final BigDecimal risk_limit = dosdb.riskLimitForComparisonAudits();
@@ -231,11 +236,11 @@ public final class ComparisonAuditController {
       }
     }
     
-    the_dashboard.setAuditedPrefixLength(0);
+    the_cdb.setAuditedPrefixLength(0);
     for (final CountyContestResult ccr : 
-         CountyContestResultQueries.forCounty(the_dashboard.county())) {
+         CountyContestResultQueries.forCounty(the_cdb.county())) {
       final CountyContestComparisonAudit audit = 
-          new CountyContestComparisonAudit(the_dashboard, ccr, risk_limit);
+          new CountyContestComparisonAudit(the_cdb, ccr, risk_limit);
       final Contest contest = audit.contest();
       comparison_audits.add(audit);
       if (all_driving_contests.contains(contest)) {
@@ -243,30 +248,35 @@ public final class ComparisonAuditController {
         county_driving_contests.add(contest);
       }
     }
-    the_dashboard.setComparisonAudits(comparison_audits);
-    the_dashboard.setDrivingContests(county_driving_contests);
-    the_dashboard.startRound(computeBallotOrder(the_dashboard, 0, to_audit).size(),
-                             to_audit, 0);
-    the_dashboard.setEstimatedBallotsToAudit(Math.max(0,  to_audit));
-    if (!county_driving_contests.isEmpty()) {
-      the_dashboard.setCVRsToAudit(getCVRsInAuditSequence(the_dashboard, 0, to_audit - 1));
+    the_cdb.setComparisonAudits(comparison_audits);
+    the_cdb.setDrivingContests(county_driving_contests);
+    the_cdb.setEstimatedBallotsToAudit(Math.max(0,  to_audit));
+    the_cdb.setOptimisticBallotsToAudit(Math.max(0,  to_audit));
+    if (!county_driving_contests.isEmpty() && 0 < to_audit) {
+      the_cdb.setCVRsToAudit(getCVRsInAuditSequence(the_cdb, 0, to_audit - 1));
+      the_cdb.startRound(computeBallotOrder(the_cdb, 0, to_audit).size(),
+                               to_audit, 0);
+    } else {
+      result = false;
     }
+    
+    return result;
   }
   
   /**
    * Starts a new round on the specified dashboard with the specified number
    * of physical ballots.
    * 
-   * @param the_dashboard The dashboard.
+   * @param the_cdb The dashboard.
    * @param the_round_length The count.
    * @return true if a round is started, false otherwise (a round might not
    * be started because the risk limit has already been achieved).
    * @exception IllegalStateException if a round cannot be started from 
    * estimates because there are no previous rounds.
    */
-  public static boolean startNewRoundOfLength(final CountyDashboard the_dashboard,
+  public static boolean startNewRoundOfLength(final CountyDashboard the_cdb,
                                               final int the_round_length) {
-    final List<Round> rounds = the_dashboard.rounds();
+    final List<Round> rounds = the_cdb.rounds();
     int start_index = 0;
     if (rounds.isEmpty()) {
       throw new IllegalArgumentException("no previous audit rounds");
@@ -278,7 +288,7 @@ public final class ComparisonAuditController {
     }
 
     final List<CastVoteRecord> new_cvrs = 
-        ComparisonAuditController.getCVRsInAuditSequence(the_dashboard, 
+        ComparisonAuditController.getCVRsInAuditSequence(the_cdb, 
                                                          start_index, 
                                                          the_round_length);
     List<CastVoteRecord> extra_cvrs = new_cvrs;
@@ -286,28 +296,28 @@ public final class ComparisonAuditController {
     while (!extra_cvrs.isEmpty() && unique_new_cvrs.size() < the_round_length) {
       extra_cvrs =
           ComparisonAuditController.
-               getCVRsInAuditSequence(the_dashboard, start_index + new_cvrs.size(),
+               getCVRsInAuditSequence(the_cdb, start_index + new_cvrs.size(),
                                       the_round_length - unique_new_cvrs.size());
       new_cvrs.addAll(extra_cvrs);
       unique_new_cvrs.addAll(extra_cvrs);
     }
-    the_dashboard.addCVRsToAudit(new_cvrs);
-    Persistence.saveOrUpdate(the_dashboard);
-    final int expected_prefix_length = the_dashboard.cvrAuditInfo().size();
+    the_cdb.addCVRsToAudit(new_cvrs);
+    Persistence.saveOrUpdate(the_cdb);
+    final int expected_prefix_length = the_cdb.cvrAuditInfo().size();
     for (int i = start_index; i < expected_prefix_length; i++) {
-      final CVRAuditInfo cvrai = the_dashboard.cvrAuditInfo().get(i);
+      final CVRAuditInfo cvrai = the_cdb.cvrAuditInfo().get(i);
       if (cvrai.acvr() != null && !unique_new_cvrs.contains(cvrai.cvr())) {
         unique_new_cvrs.remove(cvrai.cvr());
-        CVRAuditInfoQueries.updateMatching(the_dashboard, cvrai.cvr(), cvrai.acvr());
+        CVRAuditInfoQueries.updateMatching(the_cdb, cvrai.cvr(), cvrai.acvr());
       }
     }
     if (unique_new_cvrs.isEmpty()) {
       return false;
     } else {
       Main.LOGGER.info("starting audit round " + (rounds.size() + 1) + " for county " + 
-          the_dashboard.id() + " at audit sequence number " + start_index + 
+          the_cdb.id() + " at audit sequence number " + start_index + 
           " with " + unique_new_cvrs.size() + " ballots to audit");
-      the_dashboard.startRound(the_round_length, expected_prefix_length, start_index);
+      the_cdb.startRound(the_round_length, expected_prefix_length, start_index);
       return true;
     } 
   }
@@ -316,15 +326,20 @@ public final class ComparisonAuditController {
    * Starts a new round on the specified dashboard, using the current error
    * rates to estimate the necessary number of ballots to audit.
    * 
-   * @param the_dashboard The dashboard.
+   * @param the_cdb The dashboard.
    * @return true if a round is started, false otherwise (a round might not
    * be started because the risk limit has already been achieved).
    * @exception IllegalStateException if a round cannot be started from 
-   * estimates because there are no previous rounds.
+   * estimates because there are no previous rounds or because there are no CVRs.
    */
   public static boolean 
-      startNewRoundFromEstimates(final CountyDashboard the_dashboard) {
-    final List<Round> rounds = the_dashboard.rounds();
+      startNewRoundFromEstimates(final CountyDashboard the_cdb) {
+    final OptionalLong cvr_count = 
+        CastVoteRecordQueries.countMatching(the_cdb.id(), RecordType.UPLOADED);
+    if (!cvr_count.isPresent()) {
+      throw new IllegalArgumentException("no cvrs");
+    }
+    final List<Round> rounds = the_cdb.rounds();
     int start_index = 0;
     if (rounds.isEmpty()) {
       throw new IllegalArgumentException("no previous audit rounds");
@@ -334,31 +349,48 @@ public final class ComparisonAuditController {
       // in the audit sequence
       start_index = previous_round.actualAuditedPrefixLength();
     }
-    // use estimates based on current error rate to get length of round
     boolean result = false;
-    final int expected_prefix_length = 
-        computeEstimatedBallotsToAudit(the_dashboard, false);
-    if (the_dashboard.auditedPrefixLength() < expected_prefix_length) {
-      final List<CastVoteRecord> new_cvrs = 
-          getCVRsInAuditSequence(the_dashboard, start_index, 
-                                 expected_prefix_length - 1);
-      the_dashboard.addCVRsToAudit(new_cvrs);
-      Persistence.saveOrUpdate(the_dashboard);
-      final Set<CastVoteRecord> unique_new_cvrs = new HashSet<>(new_cvrs);
-      for (int i = start_index; i < expected_prefix_length; i++) {
-        final CVRAuditInfo cvrai = the_dashboard.cvrAuditInfo().get(i);
-        if (cvrai.acvr() != null && !unique_new_cvrs.contains(cvrai.cvr())) {
-          unique_new_cvrs.remove(cvrai.cvr());
-          CVRAuditInfoQueries.updateMatching(the_dashboard, cvrai.cvr(), cvrai.acvr());
+    if (the_cdb.ballotsAudited() == cvr_count.getAsLong()) {
+      // if we've audited all the CVRs already, we're done
+      Main.LOGGER.info("all CVRs have been audited, not starting new round");
+    } else {
+      // use estimates based on current error rate to get length of round
+      // we keep doing this until we find a CVR to actually audit
+      final Set<CastVoteRecord> unique_new_cvrs = new HashSet<>();
+      int expected_prefix_length = 0;
+      while (unique_new_cvrs.isEmpty()) {
+        expected_prefix_length = computeEstimatedBallotsToAudit(the_cdb);
+        if (the_cdb.auditedPrefixLength() < expected_prefix_length) {
+          final List<CastVoteRecord> new_cvrs = 
+              getCVRsInAuditSequence(the_cdb, start_index, 
+                                     expected_prefix_length - 1);
+          Main.LOGGER.info("cvrs in audit sequence: " + new_cvrs.size());
+          the_cdb.addCVRsToAudit(new_cvrs);
+          Persistence.saveOrUpdate(the_cdb);
+          unique_new_cvrs.addAll(new_cvrs);
+          final Set<CastVoteRecord> updated_cvrs = new HashSet<>();
+          for (int i = 0; i < expected_prefix_length; i++) {
+            final CVRAuditInfo cvrai = the_cdb.cvrAuditInfo().get(i);
+            if (cvrai.acvr() != null && !updated_cvrs.contains(cvrai.cvr())) {
+              CVRAuditInfoQueries.updateMatching(the_cdb, cvrai.cvr(), cvrai.acvr());
+              updated_cvrs.add(cvrai.cvr());
+            }
+          }
+          unique_new_cvrs.removeAll(updated_cvrs);
+          if (unique_new_cvrs.isEmpty()) { 
+            // we didn't find a CVR, so "audit" the CVRs we've added and try again
+            updateCVRUnderAudit(the_cdb);
+          }
         }
+
+        final int round_length = unique_new_cvrs.size();
+        Main.LOGGER.info("starting audit round " + (rounds.size() + 1) + " for county " + 
+            the_cdb.id() + " at audit sequence number " + start_index + 
+            " with " + round_length + " ballots to audit");
+        the_cdb.startRound(round_length, expected_prefix_length, 
+                           start_index);
+        result = true;
       }
-      final int round_length = unique_new_cvrs.size();
-      Main.LOGGER.info("starting audit round " + (rounds.size() + 1) + " for county " + 
-          the_dashboard.id() + " at audit sequence number " + start_index + 
-          " with " + round_length + " ballots to audit");
-      the_dashboard.startRound(round_length, expected_prefix_length, 
-                               start_index);
-      result = true;
     }
     return result;
   }
@@ -366,7 +398,7 @@ public final class ComparisonAuditController {
   /**
    * Submit an audit CVR for a CVR under audit to the specified county dashboard.
    * 
-   * @param the_dashboard The dashboard.
+   * @param the_cdb The dashboard.
    * @param the_cvr_under_audit The CVR under audit.
    * @param the_audit_cvr The corresponding audit CVR.
    * @return true if the audit CVR is submitted successfully, false if it doesn't
@@ -376,7 +408,7 @@ public final class ComparisonAuditController {
   //@ require the_cvr_under_audit != null;
   //@ require the_acvr != null;
   @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.AvoidDeeplyNestedIfStmts"})
-  public static boolean submitAuditCVR(final CountyDashboard the_dashboard,
+  public static boolean submitAuditCVR(final CountyDashboard the_cdb,
                                        final CastVoteRecord the_cvr_under_audit, 
                                        final CastVoteRecord the_audit_cvr) {
     // performs a sanity check to make sure the CVR under audit and the ACVR
@@ -384,11 +416,11 @@ public final class ComparisonAuditController {
     boolean result = false;
     
     final List<CVRAuditInfo> info = 
-        CVRAuditInfoQueries.matching(the_dashboard, the_cvr_under_audit);
+        CVRAuditInfoQueries.matching(the_cdb, the_cvr_under_audit);
     
     if (info == null || info.isEmpty()) {
       Main.LOGGER.info("attempt to submit ACVR for county " + 
-                       the_dashboard.id() + ", cvr " +
+                       the_cdb.id() + ", cvr " +
                        the_cvr_under_audit.id() + " not under audit");
     } else if (checkACVRSanity(the_cvr_under_audit, the_audit_cvr)) {
       // if the record is the current CVR under audit, or if it hasn't been
@@ -399,8 +431,8 @@ public final class ComparisonAuditController {
           c.setACVR(the_audit_cvr);
         }
         // this just updates the counters; the actual "audit" happens later
-        the_dashboard.addAuditedBallot();
-        audit(the_dashboard, the_cvr_under_audit, the_audit_cvr, 0, true);
+        the_cdb.addAuditedBallot();
+        audit(the_cdb, the_cvr_under_audit, the_audit_cvr, 0, true);
       } else {
         // the record has been audited before, so we need to "unaudit" it 
         // this requires a linear search over the matching records to see
@@ -414,44 +446,60 @@ public final class ComparisonAuditController {
           c.setACVR(the_audit_cvr);
           Persistence.saveOrUpdate(c);
         }
-        unaudit(the_dashboard, the_cvr_under_audit, old_audit_cvr, undo_count);
-        audit(the_dashboard, the_cvr_under_audit, the_audit_cvr, undo_count, true);
+        unaudit(the_cdb, the_cvr_under_audit, old_audit_cvr, undo_count);
+        audit(the_cdb, the_cvr_under_audit, the_audit_cvr, undo_count, true);
       }
       result = true;
     }  else {
       Main.LOGGER.info("attempt to submit non-corresponding ACVR " +
-                       the_audit_cvr.id() + " for county " + the_dashboard.id() + 
+                       the_audit_cvr.id() + " for county " + the_cdb.id() + 
                        ", cvr " + the_cvr_under_audit.id());
     }
 
-    updateCVRUnderAudit(the_dashboard);
-    the_dashboard.
-        setEstimatedBallotsToAudit(computeEstimatedBallotsToAudit(the_dashboard, false) -
-                                   the_dashboard.auditedPrefixLength());
+    updateCVRUnderAudit(the_cdb);
+    the_cdb.
+        setEstimatedBallotsToAudit(computeEstimatedBallotsToAudit(the_cdb) -
+                                   the_cdb.auditedPrefixLength());
+    the_cdb.
+        setOptimisticBallotsToAudit(computeOptimisticBallotsToAudit(the_cdb) -
+                                    the_cdb.auditedPrefixLength());
     return result;
   }
   
   /**
    * Computes the estimated total number of ballots to audit on the specified
-   * county dashboard.
+   * county dashboard. This uses the minimum ballots to audit calculation, 
+   * increased by the percentage of discrepancies seen in the audited ballots
+   * so far. 
    * 
-   * @param the_dashboard The dashboard.
-   * @param the_error_rates true to project from the current error rates, 
-   * false to get the minimum given the current over- and understatements. 
+   * @param the_cdb The dashboard.
    */
   public static int 
-      computeEstimatedBallotsToAudit(final CountyDashboard the_dashboard,
-                                     final boolean the_error_rates) {
+      computeEstimatedBallotsToAudit(final CountyDashboard the_cdb) {
     int to_audit = Integer.MIN_VALUE;
-    final Set<Contest> driving_contests = the_dashboard.drivingContests();
-    for (final CountyContestComparisonAudit ccca : the_dashboard.comparisonAudits()) {
+    final Set<Contest> driving_contests = the_cdb.drivingContests();
+    for (final CountyContestComparisonAudit ccca : the_cdb.comparisonAudits()) {
       if (driving_contests.contains(ccca.contest())) {
-        final int bta;
-        if (the_error_rates) {
-          bta = ccca.expectedBallotsToAuditFromCurrentRates();
-        } else {
-          bta = ccca.ballotsToAudit();
-        }
+        final int bta = ccca.estimatedBallotsToAudit();
+        to_audit = Math.max(to_audit, bta);
+      }
+    }
+    return Math.max(0,  to_audit);
+  }
+  
+  /**
+   * Computes the optimistic total number of ballots to audit on the specified
+   * county dashboard. This uses the minimum ballots to audit calculation.
+   * 
+   * @param the_cdb The dashboard.
+   */
+  public static int 
+      computeOptimisticBallotsToAudit(final CountyDashboard the_cdb) {
+    int to_audit = Integer.MIN_VALUE;
+    final Set<Contest> driving_contests = the_cdb.drivingContests();
+    for (final CountyContestComparisonAudit ccca : the_cdb.comparisonAudits()) {
+      if (driving_contests.contains(ccca.contest())) {
+        final int bta = ccca.optimisticBallotsToAudit();
         to_audit = Math.max(to_audit, bta);
       }
     }
@@ -462,14 +510,14 @@ public final class ComparisonAuditController {
    * Checks to see if the specified CVR has been audited on the specified county
    * dashboard.
    * 
-   * @param the_dashboard The county dashboard.
+   * @param the_cdb The county dashboard.
    * @param the_cvr The CVR.
    * @return true if the specified CVR has been audited, false otherwise.
    */
-  public static boolean audited(final CountyDashboard the_dashboard, 
+  public static boolean audited(final CountyDashboard the_cdb, 
                                 final CastVoteRecord the_cvr) {
     final List<CVRAuditInfo> info = 
-        CVRAuditInfoQueries.matching(the_dashboard, the_cvr);
+        CVRAuditInfoQueries.matching(the_cdb, the_cvr);
     final boolean result;
     if (info.isEmpty() || info.get(0).acvr() == null) {
       result = false;
@@ -483,7 +531,7 @@ public final class ComparisonAuditController {
    * Audits a CVR/ACVR pair by adding it to all the audits in progress.
    * This also updates the local audit counters, as appropriate.
    * 
-   * @param the_dashboard The dashboard.
+   * @param the_cdb The dashboard.
    * @param the_cvr_under_audit The CVR under audit.
    * @param the_audit_cvr The audit CVR.
    * @param the_count The number of times to count this ballot in the
@@ -492,13 +540,13 @@ public final class ComparisonAuditController {
    * counters, false otherwise; false is used when this ballot 
    * has already been audited once.
    */
-  private static void audit(final CountyDashboard the_dashboard,
+  private static void audit(final CountyDashboard the_cdb,
                             final CastVoteRecord the_cvr_under_audit,
                             final CastVoteRecord the_audit_cvr, 
                             final int the_count,
                             final boolean the_update_counters) {
     boolean discrepancy_found = false;
-    for (final CountyContestComparisonAudit ca : the_dashboard.comparisonAudits()) {
+    for (final CountyContestComparisonAudit ca : the_cdb.comparisonAudits()) {
       final int discrepancy = ca.computeDiscrepancy(the_cvr_under_audit, the_audit_cvr);
       for (int i = 0; i < the_count; i++) {
         ca.recordDiscrepancy(discrepancy);
@@ -507,14 +555,14 @@ public final class ComparisonAuditController {
     }
     if (the_update_counters) {
       if (discrepancy_found) {
-        the_dashboard.addDiscrepancy();
+        the_cdb.addDiscrepancy();
       }
       boolean disagree = false;
       for (final CVRContestInfo ci : the_audit_cvr.contestInfo()) {
         disagree |= ci.consensus() == ConsensusValue.NO;
       }
       if (disagree) {
-        the_dashboard.addDisagreement();
+        the_cdb.addDisagreement();
       }
     }
   }
@@ -524,17 +572,17 @@ public final class ComparisonAuditController {
    * progress in the specified county dashboard. This also updates the
    * dashboard's counters as appropriate.
    *
-   * @param the_dashboard The county dashboard.
+   * @param the_cdb The county dashboard.
    * @param the_cvr_under_audit The CVR under audit.
    * @param the_audit_cvr The audit CVR.
    * @param the_count The number of times to remove this ballot from the audit.
    */
-  private static void unaudit(final CountyDashboard the_dashboard,
+  private static void unaudit(final CountyDashboard the_cdb,
                               final CastVoteRecord the_cvr_under_audit,
                               final CastVoteRecord the_audit_cvr,
                               final int the_count) {
     boolean discrepancy_found = false;
-    for (final CountyContestComparisonAudit ca : the_dashboard.comparisonAudits()) {
+    for (final CountyContestComparisonAudit ca : the_cdb.comparisonAudits()) {
       final int discrepancy = ca.computeDiscrepancy(the_cvr_under_audit, the_audit_cvr);
       for (int i = 0; i < the_count; i++) {
         ca.removeDiscrepancy(discrepancy);
@@ -542,14 +590,14 @@ public final class ComparisonAuditController {
       discrepancy_found |= discrepancy != 0;
     }
     if (discrepancy_found) {
-      the_dashboard.removeDiscrepancy();
+      the_cdb.removeDiscrepancy();
     }
     boolean disagree = false;
     for (final CVRContestInfo ci : the_audit_cvr.contestInfo()) {
       disagree |= ci.consensus() == ConsensusValue.NO;
     }
     if (disagree) {
-      the_dashboard.removeDisagreement();
+      the_cdb.removeDisagreement();
     }
   }
   
@@ -560,23 +608,23 @@ public final class ComparisonAuditController {
    * in between, and extends the sequence of ballots to audit if it
    * reaches the end and the audit is not concluded.
    * 
-   * @param the_dashboard The dashboard.
+   * @param the_cdb The dashboard.
    */
   private static void 
-      updateCVRUnderAudit(final CountyDashboard the_dashboard) {
-    final List<CVRAuditInfo> cvr_audit_info = the_dashboard.cvrAuditInfo();
-    int index = the_dashboard.auditedPrefixLength();
+      updateCVRUnderAudit(final CountyDashboard the_cdb) {
+    final List<CVRAuditInfo> cvr_audit_info = the_cdb.cvrAuditInfo();
+    int index = the_cdb.auditedPrefixLength();
     while (index < cvr_audit_info.size()) {
       final CVRAuditInfo cai = cvr_audit_info.get(index);
       if (cai.acvr() == null) {
         break;
       } else {
-        audit(the_dashboard, cai.cvr(), cai.acvr(), 1, false);
+        audit(the_cdb, cai.cvr(), cai.acvr(), 1, false);
         cai.setCounted(true);
       }
       index = index + 1;
     }
-    the_dashboard.setAuditedPrefixLength(index);
+    the_cdb.setAuditedPrefixLength(index);
   }
   
   /**

@@ -33,6 +33,7 @@ import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CountyContestComparisonAuditQueries;
+import us.freeandfair.corla.util.Pair;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
@@ -67,6 +68,11 @@ public class DoSDashboardRefreshResponse {
    * A map from audited contests to estimated ballots left to audit.
    */
   private final Map<Long, Integer> my_estimated_ballots_to_audit;
+  
+  /**
+   * A map from audited contests to optimistic ballots left to audit.
+   */
+  private final Map<Long, Integer> my_optimistic_ballots_to_audit;
   
   /**
    * A map from county IDs to county status.
@@ -105,11 +111,14 @@ public class DoSDashboardRefreshResponse {
    * @param the_election_type The election type.
    * @param the_election_date The election date.
    */
+  @SuppressWarnings("PMD.ExcessiveParameterList")
   protected DoSDashboardRefreshResponse(final ASMState the_asm_state,
                                         final BigDecimal the_risk_limit,
                                         final Map<Long, AuditReason> the_audited_contests,
                                         final Map<Long, Integer> 
                                            the_estimated_ballots_to_audit,
+                                        final Map<Long, Integer>
+                                           the_optimistic_ballots_to_audit,
                                         final Map<Long, CountyDashboardRefreshResponse> 
                                            the_county_status,
                                         final String the_random_seed,
@@ -120,6 +129,7 @@ public class DoSDashboardRefreshResponse {
     my_risk_limit = the_risk_limit;
     my_audited_contests = the_audited_contests;
     my_estimated_ballots_to_audit = the_estimated_ballots_to_audit;
+    my_optimistic_ballots_to_audit = the_optimistic_ballots_to_audit;
     my_county_status = the_county_status;
     my_random_seed = the_random_seed;
     my_hand_count_contests = the_hand_count_contests;
@@ -140,14 +150,17 @@ public class DoSDashboardRefreshResponse {
     // construct the various audit info from the contests to audit in the dashboard
     final Map<Long, AuditReason> audited_contests = 
         new HashMap<Long, AuditReason>();
-    final Map<Long, Integer> ballots_to_audit = new HashMap<Long, Integer>();
+    final Map<Long, Integer> estimated_ballots_to_audit = new HashMap<Long, Integer>();
+    final Map<Long, Integer> optimistic_ballots_to_audit = new HashMap<Long, Integer>();
     final Set<Long> hand_count_contests = new HashSet<Long>();
     
     for (final ContestToAudit cta : the_dashboard.contestsToAudit()) {
       switch (cta.audit()) {
         case COMPARISON:
           audited_contests.put(cta.contest().id(), cta.reason());
-          ballots_to_audit.put(cta.contest().id(), ballotsToAudit(cta.contest()));
+          final Pair<Integer, Integer> estimates = ballotsToAudit(cta.contest());
+          estimated_ballots_to_audit.put(cta.contest().id(), estimates.first());
+          optimistic_ballots_to_audit.put(cta.contest().id(), estimates.second());
           break;
           
         case HAND_COUNT:
@@ -164,7 +177,8 @@ public class DoSDashboardRefreshResponse {
     return new DoSDashboardRefreshResponse(asm.currentState(),
                                            the_dashboard.riskLimitForComparisonAudits(),
                                            audited_contests,
-                                           ballots_to_audit,
+                                           estimated_ballots_to_audit,
+                                           optimistic_ballots_to_audit,
                                            countyStatusMap(),
                                            the_dashboard.randomSeed(),
                                            hand_count_contests,
@@ -173,21 +187,26 @@ public class DoSDashboardRefreshResponse {
   }
   
   /**
-   * Gets the estimated ballots to audit for a contest under audit.
+   * Gets the estimated and optimistic ballots to audit for a contest under audit.
    * 
    * @param the_contest The contest
-   * @return the estimated ballots to audit.
+   * @return a pair <estimated, optimistic> of numbers of ballots to audit.
    */
-  private static Integer ballotsToAudit(final Contest the_contest) {
-    int to_audit = Integer.MIN_VALUE;
+  private static Pair<Integer, Integer> ballotsToAudit(final Contest the_contest) {
+    int optimistic = Integer.MIN_VALUE;
+    int estimated = Integer.MIN_VALUE;
     for (final CountyContestComparisonAudit ccca : 
          CountyContestComparisonAuditQueries.matching(the_contest)) {
-      to_audit = 
-          Math.max(to_audit, 
-                   Math.max(0, ccca.ballotsToAudit() - 
+      optimistic = 
+          Math.max(optimistic, 
+                   Math.max(0, ccca.optimisticBallotsToAudit() - 
                                ccca.dashboard().auditedPrefixLength()));
+      estimated = 
+          Math.max(estimated, 
+                   Math.max(0, ccca.estimatedBallotsToAudit() - 
+                               ccca.dashboard().auditedPrefixLength()));    
     }
-    return Math.max(0, to_audit);
+    return new Pair<Integer, Integer>(Math.max(0, estimated), Math.max(0, optimistic));
   }
   
   /**

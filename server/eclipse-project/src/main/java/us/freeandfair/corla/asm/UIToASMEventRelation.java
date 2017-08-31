@@ -107,8 +107,8 @@ public class UIToASMEventRelation {
     // resulting set.
     final Set<ASMEvent> result = new HashSet<ASMEvent>();
     for (final Pair<UIEvent, ASMEvent> p : my_relation) {
-      if (p.getFirst().equals(a_ue)) {
-        result.add(p.getSecond());
+      if (p.first().equals(a_ue)) {
+        result.add(p.second());
       }
     }
     return result;
@@ -126,8 +126,8 @@ public class UIToASMEventRelation {
     // resulting set.
     final Set<UIEvent> result = new HashSet<UIEvent>();
     for (final Pair<UIEvent, ASMEvent> p : my_relation) {
-      if (p.getSecond().equals(an_ae)) {
-        result.add(p.getFirst());
+      if (p.second().equals(an_ae)) {
+        result.add(p.first());
       }
     }
     return result;

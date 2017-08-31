@@ -173,10 +173,17 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
   private BigDecimal my_risk_limit = BigDecimal.ONE;
   
   /**
-   * The expected number of ballots remaining to audit.
+   * The number of ballots remaining to audit assuming no overstatements.
    */
   @Column(nullable = false)
-  private Integer my_ballots_to_audit = 0;
+  private Integer my_optimistic_ballots_to_audit = 0;
+
+  /**
+   * The expected number of ballots remaining to audit assuming
+   * overstatements at the current rate.
+   */
+  @Column(nullable = false)
+  private Integer my_estimated_ballots_to_audit = 0;
   
   /**
    * The number of two-vote understatements recorded so far.
@@ -298,46 +305,56 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
    */
   @SuppressWarnings({"checkstyle:magicnumber", "PMD.AvoidDuplicateLiterals"})
   public int initialBallotsToAudit() {
-    // compute the conservative numbers of over/understatements based on 
-    // initial estimate of error rate
-    /*
-    return computeBallotsToAuditFromRates(TWOS_RATE, ONES_RATE, 
-                                          ONES_RATE, TWOS_RATE, 
-                                          ROUND_ONES_UP, ROUND_TWOS_UP).intValue();
-                                          */
-    return computeBallotsToAudit(0, 0, 0, 0).setScale(0, RoundingMode.CEILING).intValue();
+    return computeOptimisticBallotsToAudit(0, 0, 0, 0).
+               setScale(0, RoundingMode.CEILING).intValue();
   }
   
   /**
    * @return the expected overall number of ballots to audit, assuming no 
-   * further discrepancies occur.
+   * further overstatements occur.
    */
-  public Integer ballotsToAudit() {
+  public Integer optimisticBallotsToAudit() {
     if (my_recalculate_needed) {
       recalculateBallotsToAudit();
       my_recalculate_needed = false;
     }
-    return my_ballots_to_audit;
+    return my_optimistic_ballots_to_audit;
   }
   
   /**
-   * @return the expected number of ballots remaining to audit, assuming 
-   * over- and understatement rates continue as they currently are.
+   * @return the expected overall number of ballots to audit, assuming 
+   * overstatements continue to occur at the current rate.
    */
-  public int expectedBallotsToAuditFromCurrentRates() {               
-    return computeBallotsToAuditFromProgress(my_two_vote_under, my_one_vote_under,
-                                             my_one_vote_over, my_two_vote_over,
-                                             my_dashboard.auditedPrefixLength());
+  public Integer estimatedBallotsToAudit() {
+    if (my_recalculate_needed) {
+      recalculateBallotsToAudit();
+      my_recalculate_needed = false;
+    }
+    return my_estimated_ballots_to_audit;
   }
   
   /**
-   * Recalculates the overall number of ballots to audit.
+   * Recalculates the overall numbers of ballots to audit.
    */
   private void recalculateBallotsToAudit() {
-    my_ballots_to_audit = computeBallotsToAudit(my_two_vote_under, 
-                                                my_one_vote_under,
-                                                my_one_vote_over,
-                                                my_two_vote_over).intValue();
+    final BigDecimal optimistic = computeOptimisticBallotsToAudit(my_two_vote_under, 
+                                                                  my_one_vote_under,
+                                                                  my_one_vote_over,
+                                                                  my_two_vote_over);
+    my_optimistic_ballots_to_audit = optimistic.intValue();
+    if (my_one_vote_over + my_two_vote_over == 0) {
+      my_estimated_ballots_to_audit = my_optimistic_ballots_to_audit;
+    } else {
+      // compute the "fudge factor" for the estimate
+      final BigDecimal prefix_length = BigDecimal.valueOf(my_dashboard.auditedPrefixLength());
+      final BigDecimal overstatements = 
+          BigDecimal.valueOf(my_one_vote_over + my_two_vote_over);
+      final BigDecimal fudge_factor =
+          BigDecimal.ONE.add(overstatements.divide(prefix_length, MathContext.DECIMAL128));
+      final BigDecimal estimated =
+          optimistic.multiply(fudge_factor);
+      my_estimated_ballots_to_audit = estimated.setScale(0, RoundingMode.CEILING).intValue();
+    }
   }
   
   /**
@@ -354,7 +371,7 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
    * https://www.stat.berkeley.edu/~stark/Preprints/gentle12.pdf
    */
   @SuppressWarnings({"checkstyle:magicnumber", "PMD.AvoidDuplicateLiterals"})
-  private BigDecimal computeBallotsToAudit(final int the_two_under,
+  private BigDecimal computeOptimisticBallotsToAudit(final int the_two_under,
                                            final int the_one_under,
                                            final int the_one_over,
                                            final int the_two_over) {
@@ -391,128 +408,6 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
     final BigDecimal result = ceil.max(over_under_sum);
 
     Main.LOGGER.info("estimate for contest " + contest().name() + 
-                     ", diluted margin " + contestResult().countyDilutedMargin() + 
-                     ": " + result);
-    return result;
-  }
-  
-  /**
-   * Computes the expected number of ballots remaining to audit given the specified
-   * number of over- and understatements and the number of ballots audited so far, 
-   * assuming that the over- and understatement rate remains the same.
-   * 
-   * @param the_two_under The number of two-vote understatements.
-   * @param the_one_under The one-vote understatements.
-   * @param the_one_over The one-vote overstatements.
-   * @param the_two_over The two-vote overstatements.
-   * @param the_number_audited The number of ballots audited so far.
-   * 
-   * @return the expected number of ballots remaining to audit.
-   * This is calculated from the stopping sample size as defined in the literature:
-   * https://www.stat.berkeley.edu/~stark/Preprints/gentle12.pdf
-   */
-  private int computeBallotsToAuditFromProgress(final int the_two_under,
-                                                final int the_one_under,
-                                                final int the_one_over,
-                                                final int the_two_over,
-                                                final int the_number_audited) {
-    // compute the current over- and understatement rates
-    final BigDecimal number_audited = BigDecimal.valueOf(the_number_audited);
-    final BigDecimal two_under_rate = 
-        BigDecimal.valueOf(the_two_under).divide(number_audited, MathContext.DECIMAL128);
-    final BigDecimal one_under_rate =
-        BigDecimal.valueOf(the_one_under).divide(number_audited, MathContext.DECIMAL128);
-    final BigDecimal one_over_rate =
-        BigDecimal.valueOf(the_one_over).divide(number_audited, MathContext.DECIMAL128);
-    final BigDecimal two_over_rate =
-        BigDecimal.valueOf(the_two_over).divide(number_audited, MathContext.DECIMAL128);
-    
-    final BigDecimal bta = 
-        computeBallotsToAuditFromRates(two_under_rate, one_under_rate, 
-                                       one_over_rate, two_over_rate,
-                                       ROUND_ONES_UP, ROUND_TWOS_UP);
-    return bta.setScale(0, RoundingMode.CEILING).intValue();
-  }
-  
-  /**
-   * Computes the expected number of ballots to audit overall given the
-   * specified rates of over- and understatements.
-   * 
-   * @param the_two_under_rate The rate of two-vote understatements.
-   * @param the_one_under_rate The rate of one-vote understatements.
-   * @param the_one_over_rate The rate of one-vote overstatements.
-   * @param the_two_over_rate The rate of two-vote overstatements.
-   * @param the_round_ones_up true to always round the number of one-
-   * vote over- and understatements up, false otherwise
-   * @param the_round_twos_up true to always round the number of twox-
-   * vote over- and understatements up, false otherwise
-   */
-  @SuppressWarnings("checkstyle:magicnumber")
-  private BigDecimal computeBallotsToAuditFromRates(final BigDecimal the_two_under_rate,
-                                                    final BigDecimal the_one_under_rate,
-                                                    final BigDecimal the_one_over_rate,
-                                                    final BigDecimal the_two_over_rate,
-                                                    final boolean the_round_ones_up,
-                                                    final boolean the_round_twos_up) {
-    final BigDecimal invgamma = BigDecimal.ONE.divide(my_gamma, MathContext.DECIMAL128);
-    final BigDecimal twogamma = 
-        BigDecimal.valueOf(2).multiply(my_gamma);
-    final BigDecimal invtwogamma = BigDecimal.ONE.divide(twogamma, MathContext.DECIMAL128);
-    
-    final BigDecimal two_under_initial = 
-        the_two_under_rate.multiply(BigDecimalMath.log(BigDecimal.ONE.add(invgamma), 
-                                                       MathContext.DECIMAL128));
-    final BigDecimal one_under_initial =
-        the_one_under_rate.multiply(BigDecimalMath.log(BigDecimal.ONE.add(invtwogamma), 
-                                                       MathContext.DECIMAL128));
-    final BigDecimal one_over_initial = 
-        the_one_over_rate.multiply(BigDecimalMath.log(BigDecimal.ONE.subtract(invtwogamma), 
-                                                      MathContext.DECIMAL128));
-    final BigDecimal two_over_initial =
-        the_two_over_rate.multiply(BigDecimalMath.log(BigDecimal.ONE.subtract(invgamma),
-                                                      MathContext.DECIMAL128));
-    final BigDecimal sum = 
-        two_under_initial.add(one_under_initial).add(one_over_initial).add(two_over_initial);
-    final BigDecimal denominator =
-        my_contest_result.countyDilutedMargin().add(twogamma.multiply(sum));
-    final BigDecimal numerator = 
-        twogamma.negate().
-        multiply(BigDecimalMath.log(my_risk_limit, MathContext.DECIMAL128));
-    BigDecimal result = numerator.divide(denominator, MathContext.DECIMAL128);
-    
-    BigDecimal two_under;
-    BigDecimal one_under;
-    BigDecimal one_over;
-    BigDecimal two_over;
- 
-    for (int i = 0; i < 3; i++) {
-      if (the_round_ones_up) {
-        one_under = 
-            the_one_under_rate.multiply(result).setScale(0, RoundingMode.CEILING);
-        one_over = 
-            the_one_over_rate.multiply(result).setScale(0, RoundingMode.CEILING);
-      } else {
-        one_under = the_one_under_rate.multiply(result).round(MathContext.DECIMAL128);
-        one_over = the_one_over_rate.multiply(result).round(MathContext.DECIMAL128);
-      }
-      if (the_round_twos_up) {
-        two_under = 
-            the_two_under_rate.multiply(result).setScale(0, RoundingMode.CEILING);
-        two_over = 
-            the_two_over_rate.multiply(result).setScale(0, RoundingMode.CEILING);
-      } else {
-        two_under = the_two_under_rate.multiply(result).round(MathContext.DECIMAL128);
-        two_over = the_two_over_rate.multiply(result).round(MathContext.DECIMAL128);  
-      }
-      Main.LOGGER.debug("expected numbers u1=" + one_under + "/" + one_under.intValue() + 
-                        ", u2=" + two_under + "/" + two_under.intValue() + 
-                        ", o1=" + one_over + "/" + one_over.intValue() + 
-                        ", o2=" + two_over + "/" + two_over.intValue());
-      result = computeBallotsToAudit(two_under.intValue(), one_under.intValue(), 
-                                     one_over.intValue(), two_over.intValue());
-      Main.LOGGER.debug("result=" + result);
-    }
-    Main.LOGGER.info("initial estimate for contest " + contest().name() + 
                      ", diluted margin " + contestResult().countyDilutedMargin() + 
                      ": " + result);
     return result;

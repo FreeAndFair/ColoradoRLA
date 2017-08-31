@@ -22,7 +22,6 @@ import us.freeandfair.corla.model.Administrator.AdministratorType;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.AdministratorQueries;
-import us.freeandfair.corla.query.CountyQueries;
 
 /**
  * Authentication tasks used by many endpoints.
@@ -211,7 +210,7 @@ public final class Authentication {
     if (isAuthenticatedAs(the_request, AdministratorType.COUNTY)) {
       final Administrator admin = authenticatedAdministrator(the_request);
       if (admin != null) {
-        result = CountyQueries.forAdministrator(admin);
+        result = admin.county();
       }
     }
     

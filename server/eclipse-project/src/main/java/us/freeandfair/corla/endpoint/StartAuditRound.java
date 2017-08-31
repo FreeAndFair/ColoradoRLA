@@ -49,6 +49,11 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
                    "PMD.NPathComplexity"})
 public class StartAuditRound extends AbstractDoSDashboardEndpoint {
   /**
+   * The "county " string.
+   */
+  private static final String COUNTY = "county ";
+  
+  /**
    * The event to return for this endpoint.
    */
   private final ThreadLocal<ASMEvent> my_event = new ThreadLocal<ASMEvent>();
@@ -125,12 +130,22 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
       for (final CountyDashboard cdb : cdbs) {
         try {
           if (cdb.cvrUploadTimestamp() == null) {
-            Main.LOGGER.info("county " + cdb.id() + " missed the file upload deadline");
+            Main.LOGGER.info(COUNTY + cdb.id() + " missed the file upload deadline");
           } else {
             // find the initial window
-            ComparisonAuditController.initializeAuditData(cdb);
-            Main.LOGGER.info("county " + cdb.id() + " initially estimated to audit " + 
-                             cdb.estimatedBallotsToAudit() + " ballots");
+            final boolean started = ComparisonAuditController.initializeAuditData(cdb);
+            if (started) {
+              Main.LOGGER.info(COUNTY + cdb.id() + " estimated to audit " + 
+                               cdb.estimatedBallotsToAudit() + " ballots in round 1");
+            } else if (cdb.drivingContests().isEmpty()) {
+              Main.LOGGER.info(COUNTY + cdb.id() + " has no driving contests, its " +
+                               "audit is complete.");
+            } else if (cdb.estimatedBallotsToAudit() == 0) {
+              Main.LOGGER.info(COUNTY + cdb.id() + " needs to audit 0 ballots to " +
+                               "achieve its risk limit, its audit is complete.");
+            } else {
+              Main.LOGGER.error("unable to start audit for county " + cdb.id());
+            }
             Persistence.saveOrUpdate(cdb);
           } 
           // update the ASMs for the county and audit board
@@ -140,8 +155,9 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
             asm.stepEvent(COUNTY_START_AUDIT_EVENT);
             final ASMEvent audit_event;
             if (asm.currentState().equals(CountyDashboardState.COUNTY_AUDIT_UNDERWAY) &&
-                cdb.comparisonAudits().isEmpty()) {
+                (cdb.comparisonAudits().isEmpty() || cdb.estimatedBallotsToAudit() == 0)) {
               // the county made its deadline but was assigned no contests to audit
+              // or does not need to audit any ballots to meet its risk limit
               audit_event = NO_CONTESTS_TO_AUDIT_EVENT;
               asm.stepEvent(COUNTY_AUDIT_COMPLETE_EVENT);
             } else if (asm.currentState().equals(CountyDashboardState.COUNTY_AUDIT_UNDERWAY)) {
@@ -223,7 +239,8 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
         }
         final boolean round_started;
         if (start.useEstimates()) {
-          round_started = ComparisonAuditController.startNewRoundFromEstimates(cdb);
+          round_started = 
+              ComparisonAuditController.startNewRoundFromEstimates(cdb);
         } else {
           round_started = ComparisonAuditController.
               startNewRoundOfLength(cdb, start.countyBallots().get(cdb.id()));

@@ -23,7 +23,6 @@ import java.net.URL;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
@@ -51,7 +50,6 @@ import us.freeandfair.corla.endpoint.Endpoint;
 import us.freeandfair.corla.json.FreeAndFairNamingStrategy;
 import us.freeandfair.corla.json.InstantTypeAdapter;
 import us.freeandfair.corla.json.VersionExclusionStrategy;
-import us.freeandfair.corla.model.Administrator;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
@@ -343,13 +341,11 @@ public final class Main {
           final String name = properties.getProperty(s);
           County county = Persistence.getByID(id, County.class);
           if (county == null) {
-            county = 
-                new County(name, id, new HashSet<Administrator>());
+            county = new County(name, id);
           } else if (!county.name().equals(name)) {
             // update the county's name while preserving the rest of its info
             Main.LOGGER.info("Updating " + county.name() + " county name to " + name);
-            final County new_county = 
-                new County(name, id, county.administrators());
+            final County new_county = new County(name, id);
             new_county.setID(county.id());
             county = new_county;
           }

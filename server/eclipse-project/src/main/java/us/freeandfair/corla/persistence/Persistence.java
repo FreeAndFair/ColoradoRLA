@@ -207,7 +207,7 @@ public final class Persistence {
       settings.put(Environment.C3P0_TIMEOUT, 
                    system_properties.getProperty("hibernate.c3p0.timeout", ""));
       settings.put("hibernate.c3p0.privilegeSpawnedThreads", TRUE);
-      settings.put("hibernate.c3p0.contextClassLoaderSource", "library");
+      settings.put("hibernate.c3p0.contextClassLoaderSource", "none");
       // automatic schema generation
       settings.put(Environment.HBM2DDL_AUTO, 
                    system_properties.getProperty("hibernate.hbm2ddl.auto", ""));

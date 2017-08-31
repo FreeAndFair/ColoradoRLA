@@ -15,17 +15,11 @@ package us.freeandfair.corla.model;
 import static us.freeandfair.corla.util.EqualsHashcodeHelper.*;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
@@ -46,12 +40,7 @@ import us.freeandfair.corla.persistence.PersistentEntity;
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
-public class County implements PersistentEntity, Serializable {
-  /**
-   * The "my_id" string.
-   */
-  private static final String MY_ID = "my_id";
-  
+public class County implements PersistentEntity, Serializable {  
   /**
    * The serialVersionUID.
    */
@@ -74,17 +63,6 @@ public class County implements PersistentEntity, Serializable {
    */
   @Column(nullable = false, updatable = false, unique = true)
   private String my_name;
-  
-  /**
-   * The administrators for this county.
-   */
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(name = "county_administrator",
-             joinColumns = @JoinColumn(name = "county_id", 
-                                       referencedColumnName = MY_ID),
-             inverseJoinColumns = @JoinColumn(name = "administrator_id", 
-                                              referencedColumnName = MY_ID))
-  private Set<Administrator> my_administrators = new HashSet<>();
 
   /**
    * Constructs an empty county, solely for persistence. 
@@ -100,12 +78,10 @@ public class County implements PersistentEntity, Serializable {
    * @param the_identifier The county ID.
    * @param the_administrators The administrators.
    */
-  public County(final String the_name, final Long the_identifier,
-                final Set<Administrator> the_administrators) {
+  public County(final String the_name, final Long the_identifier) {
     super();
     my_name = the_name;
     my_id = the_identifier;
-    my_administrators.addAll(the_administrators);
   }
 
   /**
@@ -142,14 +118,6 @@ public class County implements PersistentEntity, Serializable {
   }
   
   /**
-   * @return the administrators for this county. The result set is
-   * mutable, and can be used to change the persistent county record.
-   */
-  public Set<Administrator> administrators() {
-    return my_administrators;
-  }
-  
-  /**
    * @return a String representation of this contest.
    */
   @Override
@@ -170,7 +138,6 @@ public class County implements PersistentEntity, Serializable {
     if (the_other instanceof County) {
       final County other_county = (County) the_other;
       result &= nullableEquals(other_county.name(), name());
-      result &= nullableEquals(other_county.administrators(), administrators());
     } else {
       result = false;
     }

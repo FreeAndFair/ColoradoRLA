@@ -27,7 +27,6 @@ us.freeandfair.corla.endpoint.DoSDashboardRefresh
 us.freeandfair.corla.endpoint.IndicateHandCount
 us.freeandfair.corla.endpoint.IntermediateAuditReport
 us.freeandfair.corla.endpoint.PublishAuditReport
-us.freeandfair.corla.endpoint.PublishBallotsToAudit
 us.freeandfair.corla.endpoint.ResetDatabase
 us.freeandfair.corla.endpoint.ReportBallotsToAudit
 us.freeandfair.corla.endpoint.RiskLimitForComparisonAudits

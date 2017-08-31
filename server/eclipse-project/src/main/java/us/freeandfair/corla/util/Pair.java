@@ -52,14 +52,14 @@ public class Pair<A, B> {
   /**
    * @return the first object in this pair.
    */
-  public A getFirst() {
+  public A first() {
     return my_first;
   }
 
   /**
    * @return the second object in this pair.
    */
-  public B getSecond() {
+  public B second() {
     return my_second;
   }
 }
