@@ -5,6 +5,7 @@ import {
 
 import countyFetchContests from '../action/countyFetchContests';
 import countyFetchCvr from '../action/countyFetchCvr';
+import fetchCvrsToAudit from '../action/fetchCvrsToAudit';
 
 import { parse } from '../adapter/countyDashboardRefresh';
 
@@ -20,6 +21,10 @@ function* countyRefreshOk({ data }: any): any {
 
     if (county.ballotUnderAuditId) {
         countyFetchCvr(county.ballotUnderAuditId);
+    }
+
+    if (county.currentRound) {
+        fetchCvrsToAudit(county.currentRound);
     }
 }
 

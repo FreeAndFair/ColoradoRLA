@@ -27,6 +27,14 @@ const Breadcrumb = () => (
     </ul>
 );
 
+function formatReason(reason: string): string {
+    if (reason === 'STATE_WIDE_CONTEST') {
+        return 'State Contest';
+    }
+
+    return 'County Contest';
+}
+
 const SelectedContests = (props: any) => {
     const { auditedContests, contests } = props;
 
@@ -37,7 +45,7 @@ const SelectedContests = (props: any) => {
             <tr key={ contest.id }>
                 <td>{ contest.id }</td>
                 <td>{ contest.name }</td>
-                <td>{ auditedContest.reason }</td>
+                <td>{ formatReason(auditedContest.reason) }</td>
             </tr>
         );
     });
@@ -96,12 +104,16 @@ const SelectContestsPage = (props: any) => {
 
     const forms: any = {};
 
+    const haveSelectedContests = !_.isEmpty(auditedContests);
+
     const onSaveAndNext = () => {
-        selectContestsForAudit(forms.selectContestsForm);
+        if (!haveSelectedContests) {
+            selectContestsForAudit(forms.selectContestsForm);
+        }
         nextPage();
     };
 
-    const contentDiv = _.isEmpty(auditedContests)
+    const contentDiv = !haveSelectedContests
                      ? <SelectContestsForm forms={ forms } contests={ contests } />
                      : <SelectedContests auditedContests={ auditedContests } contests={ contests } />;
 

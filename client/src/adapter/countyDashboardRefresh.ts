@@ -9,14 +9,30 @@ interface Elector {
 
 type Status = 'NO_DATA' | 'CVRS_UPLOADED_SUCCESSFULLY' | 'ERROR_IN_UPLOADED_DATA';
 
+interface Round {
+    actual_count: number;
+    disagreements: number;
+    discrepancies: number;
+    expected_count: number;
+    number: number;
+    signatories: any;
+    start_audit_prefix_length: number;
+    start_index: number;
+    start_time: Date;
+}
+
 interface CountyDashboard {
+    asm_state: string;
     audit_time: string;
     audit_board: any;
     audited_ballot_count: number;
+    audited_prefix_length: number;
     ballot_manifest_filename: string;
     ballot_manifest_hash: string;
     ballot_under_audit_id: number;
+    ballots_remaining_in_round: number;
     ballots_to_audit: number[];
+    current_round: Round;
     cvr_export_filename: string;
     cvr_export_hash: string;
     contests: number[];
@@ -26,7 +42,8 @@ interface CountyDashboard {
     estimated_ballots_to_audit: number;
     general_information: string;
     id: number;
-
+    risk_limit: number;
+    rounds: Round[];
     status: Status;
 }
 
@@ -87,20 +104,49 @@ const parseContestsUnderAudit = (contestIds: any, state: any): any => {
     });
 };
 
+function parseRound(data: Round) {
+    if (!data) {
+        return {};
+    }
+
+    return {
+        actualCount: data.actual_count,
+        disagreements: data.disagreements,
+        discrepancies: data.discrepancies,
+        expectedCount: data.expected_count,
+        number: data.number,
+        signatories: data.signatories || [],
+        startAuditPrefixLength: data.start_audit_prefix_length,
+        startIndex: data.start_index,
+        startTime: data.start_time,
+    };
+}
+
+function parseRounds(rounds: Round[]) {
+    if (!rounds) {
+        return [];
+    }
+
+    return rounds.map(parseRound);
+}
 
 export const parse = (data: CountyDashboard, state: any): any => {
     const findContest = (id: any) => state.county.contestDefs[id];
 
     return {
+        asm_state: data.asm_state,
         auditBoard: parseAuditBoard(data.audit_board),
         auditTime: data.audit_time ? parseTimestamp(data.audit_time) : null,
         auditedBallotCount: data.audited_ballot_count,
+        auditedPrefixLength: data.audited_prefix_length,
         ballotManifestFilename: data.ballot_manifest_filename,
         ballotManifestHash: data.ballot_manifest_hash,
         ballotUnderAuditId: data.ballot_under_audit_id,
+        ballotsRemainingInRound: data.ballots_remaining_in_round,
         ballotsToAudit: data.ballots_to_audit,
         contests: parseContests(data.contests, state),
         contestsUnderAudit: parseContestsUnderAudit(data.contests_under_audit, state),
+        currentRound: parseRound(data.current_round),
         cvrExportFilename: data.cvr_export_filename,
         cvrExportHash: data.cvr_export_hash,
         disagreementCount: data.disagreement_count,
@@ -108,6 +154,8 @@ export const parse = (data: CountyDashboard, state: any): any => {
         estimatedBallotsToAudit: data.estimated_ballots_to_audit,
         generalInformation: data.general_information,
         id: data.id,
+        riskLimit: data.risk_limit,
+        rounds: parseRounds(data.rounds),
         status: data.status,
     };
 };

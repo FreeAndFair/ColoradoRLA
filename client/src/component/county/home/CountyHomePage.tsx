@@ -27,6 +27,7 @@ const Main = (props: any) => {
     const {
         auditBoardSignedIn,
         auditButtonDisabled,
+        auditComplete,
         boardSignIn,
         name,
         signInButtonDisabled,
@@ -46,6 +47,21 @@ const Main = (props: any) => {
             directions = 'Please have the audit board sign in.';
         }
     }
+
+    const FinalReportForm = () => (
+        <div className='pt-card'>
+            <div>
+                The audit is complete. Please click "Submit" to submit the final audit report.
+            </div>
+            <button className='pt-button pt-intent-primary'>
+                Submit
+            </button>
+        </div>
+    );
+
+    const finalReportForm = auditComplete
+                          ? <FinalReportForm />
+                          : '';
 
     return (
         <div className='county-main pt-card'>
@@ -165,6 +181,7 @@ const Info = ({ info, contests, county }: any) => (
 const CountyHomePage = (props: any) => {
     const {
         auditBoardSignedIn,
+        auditComplete,
         boardSignIn,
         canAudit,
         canSignIn,
@@ -184,14 +201,15 @@ const CountyHomePage = (props: any) => {
 
     const info = { auditDate: startTimestamp };
 
-    const auditButtonDisabled = !canAudit;
+    const auditButtonDisabled = !canAudit || auditComplete;
     const signInButtonDisabled = !canSignIn;
 
     return (
         <div className='county-root'>
             <CountyNav />
             <div>
-                <Main auditBoardSignedIn={ auditBoardSignedIn }
+                <Main auditComplete={ auditComplete }
+                      auditBoardSignedIn={ auditBoardSignedIn }
                       boardSignIn={ boardSignIn }
                       auditButtonDisabled={ auditButtonDisabled }
                       name={ countyInfo.name }

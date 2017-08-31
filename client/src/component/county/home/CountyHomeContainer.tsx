@@ -6,6 +6,7 @@ import counties from '../../../data/counties';
 import CountyHomePage from './CountyHomePage';
 
 import auditBoardSignedIn from '../../../selector/county/auditBoardSignedIn';
+import auditComplete from '../../../selector/county/auditComplete';
 import canAudit from '../../../selector/county/canAudit';
 import canSignIn from '../../../selector/county/canSignIn';
 
@@ -42,6 +43,7 @@ const mapStateToProps = (state: any) => {
 
     return {
         auditBoardSignedIn: auditBoardSignedIn(state),
+        auditComplete: auditComplete(state),
         canAudit: canAudit(state),
         canSignIn: canSignIn(state),
         contests: contestDefs,

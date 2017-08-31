@@ -19,34 +19,48 @@ class SoSNavMenu extends React.Component<any, any> {
         ];
         const disableAuditButton = _.includes(disableStates, currentAsmState);
 
+        const homeItem = (
+            <Link to='/sos'>
+                <MenuItem
+                    text='Home'
+                    iconName='home'
+                />
+            </Link>
+        );
+
+        const countiesItem = (
+            <Link to='/sos/county'>
+                <MenuItem
+                    text='Counties'
+                    iconName='map'
+                />
+            </Link>
+        );
+
+        const contestsItem = (
+            <Link to='/sos/contest'>
+                <MenuItem
+                    text='Contests'
+                    iconName='numbered-list'
+                />
+            </Link>
+        );
+
+        const defineAuditItem = (
+            <Link to='/sos/audit'>
+                <MenuItem
+                    text='Define Audit'
+                    iconName='eye-open'
+                    disabled={ disableAuditButton }
+                />
+            </Link>
+        );
+
         return (
             <Menu>
-                <Link to='/sos'>
-                    <MenuItem
-                        text='Home'
-                        iconName='home'
-                    />
-                </Link>
+                { homeItem }
                 <MenuDivider />
-                <Link to='/sos/county'>
-                    <MenuItem
-                        text='Counties'
-                        iconName='map'
-                    />
-                </Link>
-                <Link to='/sos/contest'>
-                    <MenuItem
-                        text='Contests'
-                        iconName='numbered-list'
-                    />
-                </Link>
-                <Link to='/sos/audit'>
-                    <MenuItem
-                        text='Define Audit'
-                        iconName='eye-open'
-                        disabled={ disableAuditButton }
-                    />
-                </Link>
+                { defineAuditItem }
             </Menu>
         );
     }

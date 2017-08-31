@@ -3,7 +3,7 @@ import * as React from 'react';
 import { EditableText, Radio, RadioGroup } from '@blueprintjs/core';
 
 
-const AuditBoardSignInForm = (props: any) => {
+const SignInForm = (props: any) => {
     const {
         elector,
         onFirstNameChange,
@@ -64,4 +64,4 @@ const AuditBoardSignInForm = (props: any) => {
 };
 
 
-export default AuditBoardSignInForm;
+export default SignInForm;

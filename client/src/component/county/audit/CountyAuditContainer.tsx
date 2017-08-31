@@ -3,10 +3,13 @@ import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 
 import CountyAuditPage from './CountyAuditPage';
+import EndOfRoundPageContainer from './EndOfRoundPageContainer';
 
 import notice from '../../../notice';
 
+import auditComplete from '../../../selector/county/auditComplete';
 import canAudit from '../../../selector/county/canAudit';
+import roundInProgress from '../../../selector/county/roundInProgress';
 
 
 class CountyAuditContainer extends React.Component<any, any> {
@@ -17,13 +20,20 @@ class CountyAuditContainer extends React.Component<any, any> {
             return <Redirect to={ '/county' } />;
         }
 
+        if (this.props.showEndOfRoundPage) {
+            return <EndOfRoundPageContainer />;
+        }
+
         return <CountyAuditPage />;
     }
 }
 
 const mapStateToProps = (state: any) => {
+    const showEndOfRoundPage = !roundInProgress(state) && !auditComplete(state);
+
     return {
         canAudit: canAudit(state),
+        showEndOfRoundPage,
     };
 };
 
