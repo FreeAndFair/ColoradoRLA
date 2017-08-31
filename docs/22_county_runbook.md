@@ -1,7 +1,7 @@
 # Colorado Risk Limiting Audit 
 # Run Book – County Client
 
-## Introduction to Risk Limiting Audits
+## Introduction
 
 This Run Book is written for county election administrators who will be
 implementing a Risk Limiting Audit (RLA) using the RLA Tool.  The Run
@@ -49,7 +49,7 @@ logout button, circled in the upper right of this (and every) page.
 
 The County site has a navigation menu in the upper left corner.
 
-![County Navigation Screenshot](./screenshots/countynav.png)
+![County Navigation Screenshot](./screenshots/county_nav.png)
 
 ### 25.2.2 (A), Entering the Risk Limit
 
