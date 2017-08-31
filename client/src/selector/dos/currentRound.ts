@@ -7,17 +7,18 @@ import auditStarted from './auditStarted';
 function currentRound(state: any): number {
     const counties = activeCounties(state);
 
-    let round = 0;
+    let roundNumber = 0;
 
     for (const c of counties) {
-        if (c.ballotsRemainingInRound > 0) {
-            if (c.currentRound) {
-                round = Math.max(round, c.currentRound.number);
-            }
-        }
+        const mostRecentRound = c.rounds[c.rounds.length - 1];
+        const mostRecentRoundNumber = mostRecentRound
+                                    ? mostRecentRound.number
+                                    : 0;
+
+        roundNumber = Math.max(roundNumber, mostRecentRoundNumber);
     }
 
-    return round;
+    return roundNumber;
 }
 
 
