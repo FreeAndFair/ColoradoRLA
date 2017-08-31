@@ -37,7 +37,7 @@ to the public.
 
 Persons from the County first must log in to the RLA Tool.
 
-![County Login Screenshot](./screenshots/a-county\ login.png)
+![County Login Screenshot](./screenshots/a-county login.png)
 
 The RLA Tool will direct each user to the appropriate home page. 
 County users will see the (initially empty) County home page. Note the 
