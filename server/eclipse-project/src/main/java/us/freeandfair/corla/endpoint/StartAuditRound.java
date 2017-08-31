@@ -238,7 +238,8 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
         }
         final boolean round_started;
         if (start.useEstimates()) {
-          round_started = ComparisonAuditController.startNewRoundFromEstimates(cdb);
+          round_started = 
+              ComparisonAuditController.startNewRoundFromEstimates(cdb);
         } else {
           round_started = ComparisonAuditController.
               startNewRoundOfLength(cdb, start.countyBallots().get(cdb.id()));

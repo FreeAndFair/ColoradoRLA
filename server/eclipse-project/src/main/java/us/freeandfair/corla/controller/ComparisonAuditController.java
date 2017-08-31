@@ -354,13 +354,15 @@ public final class ComparisonAuditController {
       the_dashboard.addCVRsToAudit(new_cvrs);
       Persistence.saveOrUpdate(the_dashboard);
       final Set<CastVoteRecord> unique_new_cvrs = new HashSet<>(new_cvrs);
-      for (int i = start_index; i < expected_prefix_length; i++) {
+      final Set<CastVoteRecord> updated_cvrs = new HashSet<>();
+      for (int i = 0; i < expected_prefix_length; i++) {
         final CVRAuditInfo cvrai = the_dashboard.cvrAuditInfo().get(i);
-        if (cvrai.acvr() != null && !unique_new_cvrs.contains(cvrai.cvr())) {
-          unique_new_cvrs.remove(cvrai.cvr());
+        if (cvrai.acvr() != null && !updated_cvrs.contains(cvrai.cvr())) {
           CVRAuditInfoQueries.updateMatching(the_dashboard, cvrai.cvr(), cvrai.acvr());
+          updated_cvrs.add(cvrai.cvr());
         }
       }
+      unique_new_cvrs.removeAll(updated_cvrs);
       final int round_length = unique_new_cvrs.size();
       Main.LOGGER.info("starting audit round " + (rounds.size() + 1) + " for county " + 
           the_dashboard.id() + " at audit sequence number " + start_index + 
