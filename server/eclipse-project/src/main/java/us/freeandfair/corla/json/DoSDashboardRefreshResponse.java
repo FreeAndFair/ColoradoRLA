@@ -204,7 +204,8 @@ public class DoSDashboardRefreshResponse {
       estimated = 
           Math.max(estimated, 
                    Math.max(0, ccca.estimatedBallotsToAudit() - 
-                               ccca.dashboard().auditedPrefixLength()));    }
+                               ccca.dashboard().auditedPrefixLength()));    
+    }
     return new Pair<Integer, Integer>(Math.max(0, estimated), Math.max(0, optimistic));
   }
   

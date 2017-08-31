@@ -233,6 +233,11 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    * The estimated ballots to audit.
    */
   private Integer my_estimated_ballots_to_audit = 0;
+
+  /**
+   * The optimistic ballots to audit.
+   */
+  private Integer my_optimistic_ballots_to_audit = 0;
   
   /**
    * The length of the audited prefix of the list of ballots to audit;
@@ -769,6 +774,23 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    */
   public void setEstimatedBallotsToAudit(final int the_estimated_ballots_to_audit) {
     my_estimated_ballots_to_audit = the_estimated_ballots_to_audit;
+  }
+  
+  /**
+   * @return the optimistic number of ballots to audit.
+   */
+  public Integer optimisticBallotsToAudit() {
+    return my_optimistic_ballots_to_audit;
+  }
+  
+  /**
+   * Sets the optimistic number of ballots to audit. 
+   * 
+   * @param the_optimistic_ballots_to_audit The optimistic number of ballots 
+   * to audit.
+   */
+  public void setOptimisticBallotsToAudit(final int the_optimistic_ballots_to_audit) {
+    my_optimistic_ballots_to_audit = the_optimistic_ballots_to_audit;
   }
   
   /**

@@ -251,6 +251,7 @@ public final class ComparisonAuditController {
     the_cdb.setComparisonAudits(comparison_audits);
     the_cdb.setDrivingContests(county_driving_contests);
     the_cdb.setEstimatedBallotsToAudit(Math.max(0,  to_audit));
+    the_cdb.setOptimisticBallotsToAudit(Math.max(0,  to_audit));
     if (!county_driving_contests.isEmpty() && 0 < to_audit) {
       the_cdb.setCVRsToAudit(getCVRsInAuditSequence(the_cdb, 0, to_audit - 1));
       the_cdb.startRound(computeBallotOrder(the_cdb, 0, to_audit).size(),
@@ -459,6 +460,9 @@ public final class ComparisonAuditController {
     the_cdb.
         setEstimatedBallotsToAudit(computeEstimatedBallotsToAudit(the_cdb) -
                                    the_cdb.auditedPrefixLength());
+    the_cdb.
+        setOptimisticBallotsToAudit(computeOptimisticBallotsToAudit(the_cdb) -
+                                    the_cdb.auditedPrefixLength());
     return result;
   }
   
@@ -477,6 +481,25 @@ public final class ComparisonAuditController {
     for (final CountyContestComparisonAudit ccca : the_cdb.comparisonAudits()) {
       if (driving_contests.contains(ccca.contest())) {
         final int bta = ccca.estimatedBallotsToAudit();
+        to_audit = Math.max(to_audit, bta);
+      }
+    }
+    return Math.max(0,  to_audit);
+  }
+  
+  /**
+   * Computes the optimistic total number of ballots to audit on the specified
+   * county dashboard. This uses the minimum ballots to audit calculation.
+   * 
+   * @param the_cdb The dashboard.
+   */
+  public static int 
+      computeOptimisticBallotsToAudit(final CountyDashboard the_cdb) {
+    int to_audit = Integer.MIN_VALUE;
+    final Set<Contest> driving_contests = the_cdb.drivingContests();
+    for (final CountyContestComparisonAudit ccca : the_cdb.comparisonAudits()) {
+      if (driving_contests.contains(ccca.contest())) {
+        final int bta = ccca.optimisticBallotsToAudit();
         to_audit = Math.max(to_audit, bta);
       }
     }
