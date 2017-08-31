@@ -123,7 +123,7 @@ public class AuthenticateStateAdministrator extends AbstractEndpoint {
             authenticateAdministrator(the_request, the_response,
                                       AdministratorType.STATE, username, 
                                       password, second_factor)) {
-          ok(the_response, "Authenticated");
+          ok(the_response, "Authenticated (partial or fully)");
         } else {
           unauthorized(the_response, "Authentication failed");
         }
