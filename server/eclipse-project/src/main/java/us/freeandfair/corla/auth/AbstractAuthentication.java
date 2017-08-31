@@ -157,7 +157,6 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
   @Override
   public void traditionalDeauthenticate(final Request the_request,
                                         final String the_username) {
-    the_request.session().removeAttribute(ADMIN);
     Main.LOGGER.info("session is now traditionally deauthenticated");
   }
   
@@ -167,7 +166,6 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
   @Override
   public void twoFactorDeauthenticate(final Request the_request,
                                       final String the_username) {
-    the_request.session().removeAttribute(ADMIN);
     Main.LOGGER.info("session is now second factor deauthenticated");
   }
   
@@ -225,6 +223,11 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
   @Override
   public void deauthenticate(final Request the_request,
                              final String the_username) {
+    final Administrator admin = 
+        AdministratorQueries.byUsername(the_username);
+    admin.updateLastLogoutTime();
+    Persistence.saveOrUpdate(admin);
+    the_request.session().removeAttribute(ADMIN);
     traditionalDeauthenticate(the_request, the_username);
     twoFactorDeauthenticate(the_request, the_username);
   }
