@@ -5,9 +5,7 @@ function previousRound(state: any): any {
         return {};
     }
 
-    const [ round ] = county.rounds;
-
-    return round || {};
+    return county.rounds[county.rounds.length - 1];
 }
 
 
