@@ -87,7 +87,7 @@ The Secretary of State will enter the random seed.
 The Secretary of State will select the contests that will drive the
 sample size and stop/go decisions for each round.  
 
-#### 25.2.3 (A)(1) Comparison Audits – Audit Board Sign-in
+### 25.2.3 (A)(1) Comparison Audits – Audit Board Sign-in
 
 The Audit Board does not log directly into the RLA Tool with usernames
 and passwords. However, whenever the Audit Board begins to interact
