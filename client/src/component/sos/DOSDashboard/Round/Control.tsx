@@ -10,8 +10,8 @@ const Control = (props: any) => {
         <div className='pt-card'>
             <h4>Start next round</h4>
             <div className='pt-card'>
-                Round #{ currentRound + 1 } has completed.
-                Start round #{ currentRound + 2 }?
+                Round #{ currentRound } has completed.
+                Start round #{ currentRound + 1 }?
             </div>
             <button
                 className='pt-button pt-intent-primary'
