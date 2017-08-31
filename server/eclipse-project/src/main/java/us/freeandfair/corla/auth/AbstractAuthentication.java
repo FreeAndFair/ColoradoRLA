@@ -11,17 +11,22 @@
 
 package us.freeandfair.corla.auth;
 
+import static us.freeandfair.corla.auth.AuthenticationStage.*;
+import static us.freeandfair.corla.model.Administrator.AdministratorType.*;
+
 import javax.persistence.PersistenceException;
 
 import org.apache.log4j.Logger;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.json.AuthenticationResponse;
+import us.freeandfair.corla.json.SubmittedCredentials;
 import us.freeandfair.corla.model.Administrator;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
 import us.freeandfair.corla.model.County;
@@ -60,10 +65,13 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
                                            final String the_password,
                                            final String the_second_factor) {
     boolean result = true;
-    String auth_stage = 
-        the_request.session().attribute(AuthenticationInterface.AUTH_STAGE);
+    AuthenticationStage auth_stage = null;
+    final Object stage = the_request.session().attribute(AUTH_STAGE);
+    if (stage instanceof AuthenticationStage) {
+      auth_stage = (AuthenticationStage) stage;
+    }
     if (auth_stage == null) {
-      auth_stage = AuthenticationInterface.PASSWORD;
+      auth_stage = NO_AUTHENTICATION;
     }
     try {
       // If we didn't get a well-formed request in the first place, fail.
@@ -71,10 +79,10 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
         result = false;
       } else {
         // Check to see if we have not started the authentication process at all.
-        if (auth_stage.equals(AuthenticationInterface.PASSWORD) || 
+        if (auth_stage == NO_AUTHENTICATION || 
             // If we are already authenticated in the session and the client is asking
             // to authenticate again, then wipe the old session and try to authenticate.
-            auth_stage.equals(AuthenticationInterface.ADMIN)) {
+            auth_stage == SECOND_FACTOR_AUTHENTICATED) {
           if (traditionalAuthenticate(the_request, the_response,
                                       the_username, the_password)) {
             // We have traditionally authenticated.
@@ -82,8 +90,8 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
                 AdministratorQueries.byUsername(the_username);
             admin.updateLastLoginTime();
             Persistence.saveOrUpdate(admin);
-            the_request.session().attribute(AuthenticationInterface.AUTH_STAGE,
-                                            AuthenticationInterface.SECOND_FACTOR);
+            the_request.session().attribute(AUTH_STAGE, TRADITIONALLY_AUTHENTICATED);
+            the_request.session().attribute(ADMIN, admin);
             Main.LOGGER.info("Traditional authentication succeeded for administrator " + 
                 the_username);
           } else {
@@ -91,27 +99,22 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
                 the_username);
             result = false;
           }
-        } else if (auth_stage.equals(AuthenticationInterface.SECOND_FACTOR)) {
+        } else if (auth_stage == TRADITIONALLY_AUTHENTICATED) {
           // Or are we half-way through it?
-          if (secondFactorAuthenticate(the_request,
-                                       the_username,
-                                       the_second_factor)) {
+          if (secondFactorAuthenticate(the_request, the_username, the_second_factor)) {
             // We have both traditionally and second-factor authenticated.
             final Administrator admin = 
                 AdministratorQueries.byUsername(the_username);
             admin.updateLastLoginTime();
             Persistence.saveOrUpdate(admin);
-            the_request.session().attribute(AuthenticationInterface.AUTH_STAGE, 
-                                            AuthenticationInterface.ADMIN);
-            the_request.session().attribute(AuthenticationInterface.ADMIN, 
-                                            admin);
+            the_request.session().attribute(AUTH_STAGE, SECOND_FACTOR_AUTHENTICATED); 
+            the_request.session().attribute(ADMIN, admin);
             the_response.body(Main.GSON.toJson(new AuthenticationResponse(admin.type())));
             Main.LOGGER.info("Second factor authentication succeeded for administrator " + 
                 the_username);
           } else {
             // Send the authentication state machine back to its initial state.
-            the_request.session().attribute(AuthenticationInterface.AUTH_STAGE, 
-                                            AuthenticationInterface.PASSWORD);
+            the_request.session().attribute(AUTH_STAGE, NO_AUTHENTICATION);
             Main.LOGGER.info("Second factor authentication failed for administrator" + 
                 the_username);
             result = false;
@@ -140,12 +143,27 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
   @Override
   public County authenticatedCounty(final Request the_request) {
     County result = null;
+<<<<<<< HEAD
     if (isAuthenticatedAs(the_request, AdministratorType.COUNTY,
                     the_request.queryParams(AuthenticationInterface.USERNAME))) {
       final Administrator admin = 
           (Administrator) the_request.session().attribute(ADMIN);
       if (admin != null) {
         result = admin.county();
+=======
+    final Object auth_stage_attribute =
+        the_request.session().attribute(AuthenticationInterface.AUTH_STAGE);
+    if (auth_stage_attribute instanceof AuthenticationStage &&
+        ((AuthenticationStage) auth_stage_attribute) == SECOND_FACTOR_AUTHENTICATED) {
+      final Object admin_attribute =
+          the_request.session().attribute(ADMIN);
+      if (admin_attribute instanceof Administrator) {
+        final Administrator admin = (Administrator) admin_attribute;
+        final String username = admin.username();
+        if (isAuthenticatedAs(the_request, COUNTY, username)) {
+          result = CountyQueries.forAdministrator(admin);
+        }
+>>>>>>> Snapshot of ongoing debug work for Dan.
       }
     }
     return result;
@@ -175,11 +193,11 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
   @Override
   public boolean traditionalAuthenticated(final Request the_request,
                                           final String the_username) {
-    final String auth_stage = 
-        the_request.session().attribute(AuthenticationInterface.AUTH_STAGE);
+    final AuthenticationStage auth_stage = 
+        (AuthenticationStage) (the_request.session().attribute(AUTH_STAGE));
     return auth_stage != null && 
-        (auth_stage.equals(AuthenticationInterface.SECOND_FACTOR) ||
-            auth_stage.equals(AuthenticationInterface.ADMIN));
+        (auth_stage == SECOND_FACTOR_AUTHENTICATED ||
+         auth_stage == TRADITIONALLY_AUTHENTICATED);
   }
   
   /**
@@ -188,10 +206,14 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
   @Override
   public boolean secondFactorAuthenticated(final Request the_request,
                                            final String the_username) {
-    final String auth_stage = 
+    final Object auth_stage_attribute = 
         the_request.session().attribute(AuthenticationInterface.AUTH_STAGE);
+    AuthenticationStage auth_stage = null;
+    if (auth_stage_attribute instanceof AuthenticationStage) {
+      auth_stage = (AuthenticationStage) auth_stage_attribute;
+    }
     return auth_stage != null && 
-        auth_stage.equals(AuthenticationInterface.ADMIN);
+        auth_stage == SECOND_FACTOR_AUTHENTICATED;
   }
   
   /**
@@ -200,7 +222,15 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
   @Override
   public boolean isAuthenticated(final Request the_request,
                                  final String the_username) {
-    return the_request.session().attribute(ADMIN) instanceof Administrator;
+    final Object auth_stage_attribute = 
+        the_request.session().attribute(AUTH_STAGE);
+    if (auth_stage_attribute instanceof AuthenticationStage) {
+      return ((AuthenticationStage) 
+               the_request.session().attribute(AUTH_STAGE)) == 
+                   SECOND_FACTOR_AUTHENTICATED &&
+        the_username.equals(the_request.session().attribute(USERNAME));
+    }
+    return false;
   }
   
   /**
@@ -211,16 +241,22 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
                                    final AdministratorType the_type,
                                    final String the_username) {
     boolean result = false;
-    final Object admin_attribute = the_request.session().attribute(ADMIN);
-    if (admin_attribute instanceof Administrator) {
-      final Administrator admin = (Administrator) admin_attribute;
-      result = admin.type() == the_type;
-    } else if (admin_attribute != null) {
-      // this should never happen since we control what's in the session object,
-      // but if it does, we'll clear out that attribute and thereby force another
-      // authentication
-      Main.LOGGER.error("Invalid admin type detected in session.");
-      deauthenticate(the_request, the_username);
+    final Object auth_stage_attribute =
+        the_request.session().attribute(AuthenticationInterface.AUTH_STAGE);
+    if (auth_stage_attribute instanceof AuthenticationStage &&
+        ((AuthenticationStage) auth_stage_attribute) == SECOND_FACTOR_AUTHENTICATED) {
+      final Object admin_attribute = the_request.session().attribute(ADMIN);
+      if (admin_attribute instanceof Administrator) {
+        final Administrator admin = (Administrator) admin_attribute;
+        result = admin.type() == the_type &&
+            the_username.equals(admin.username());
+      } else if (admin_attribute != null) {
+        // this should never happen since we control what's in the session object,
+        // but if it does, we'll clear out that attribute and thereby force another
+        // authentication
+        Main.LOGGER.error("Invalid admin type detected in session.");
+        deauthenticate(the_request, the_username);
+      }
     }
     return result;
   }
@@ -231,13 +267,31 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
   @Override
   public void deauthenticate(final Request the_request,
                              final String the_username) {
-    final Administrator admin = 
-        AdministratorQueries.byUsername(the_username);
-    admin.updateLastLogoutTime();
-    Persistence.saveOrUpdate(admin);
-    the_request.session().removeAttribute(ADMIN);
-    traditionalDeauthenticate(the_request, the_username);
-    twoFactorDeauthenticate(the_request, the_username);
+    // If we are authenticated in any fashion
+    final Object auth_stage_attribute = 
+        the_request.session().attribute(AUTH_STAGE);
+    if (auth_stage_attribute instanceof AuthenticationStage && 
+        ((AuthenticationStage) auth_stage_attribute) == NO_AUTHENTICATION) {
+      // Ensure that the username being deauthenticated is proper
+      final SubmittedCredentials credentials = authenticationCredentials(the_request);
+      if (credentials.username().equals(the_username)) {
+        // Obtain the administrator record for that user.
+        final Administrator admin = 
+            AdministratorQueries.byUsername(the_username);
+        // Update the last logout time in the logs.
+        admin.updateLastLogoutTime();
+        // Save this information to the DB.
+        Persistence.saveOrUpdate(admin);
+        the_request.session().removeAttribute(ADMIN);
+        Main.LOGGER.info("Deauthenticated user '" + the_username + "'");
+        // Take care of any specific back-end deauthentication logic.
+        traditionalDeauthenticate(the_request, the_username);
+        twoFactorDeauthenticate(the_request, the_username);
+      } else {
+        Main.LOGGER.warn("Attempted to deauthenticate user '" + the_username +
+                         "' who is not authenticated.");
+      }
+    }
   }
  
   /**
@@ -262,5 +316,28 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
   @Override
   public void setAuthenticationServerName(final String the_name) {
     // skip, as there is no server necessary for the built-in test service
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public final SubmittedCredentials authenticationCredentials(final Request the_request) {
+    SubmittedCredentials result = null;
+    // Check for JSON credentials in the request.
+    try {
+      result = Main.GSON.fromJson(the_request.body(), SubmittedCredentials.class);
+    } catch (final JsonSyntaxException jse) {
+      // There wasn't JSON there!
+    }
+    // If there wasn't a JSON request, is there an HTTP params one?
+    if (result == null) {
+      result = 
+          new SubmittedCredentials(
+              the_request.queryParams(USERNAME), 
+              the_request.queryParams(PASSWORD), 
+              the_request.queryParams(SECOND_FACTOR));
+    }
+    return result;
   }
 }

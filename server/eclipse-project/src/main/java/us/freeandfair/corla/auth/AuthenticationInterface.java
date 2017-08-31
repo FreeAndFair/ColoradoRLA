@@ -18,6 +18,7 @@ import com.google.gson.Gson;
 import spark.Request;
 import spark.Response;
 
+import us.freeandfair.corla.json.SubmittedCredentials;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
 import us.freeandfair.corla.model.County;
 
@@ -28,7 +29,7 @@ import us.freeandfair.corla.model.County;
  */
 public interface AuthenticationInterface {
   /**
-   * The constant for the "admin" property of the current session.
+   * The constant for the "admin" attribute of the current session.
    */
   String ADMIN = "admin";
   
@@ -49,10 +50,8 @@ public interface AuthenticationInterface {
   
   /**
    * The constant used to denote which authentication stage the session is in. 
-   * The value of this attribute in the session is either `PASSWORD` (indicating
-   * that password authentication is next) or `SECOND_FACTOR` (indicating that
-   * second factor authentication is next) or `ADMIN` (indicating that session
-   * is authenticated).
+   * The value of this attribute in a value of the `AuthenticationStage` 
+   * enumeration.
    */
   String AUTH_STAGE = "authentication_stage";
   
@@ -105,8 +104,8 @@ public interface AuthenticationInterface {
    * @trace authentication.second_factor_authenticate
    * @return true iff two-factor authentication with credential pair 
    * (username, password) succeeds.
-   * @param the_username the username of the person to attempt to authenticate.
    * @param the_request The request.
+   * @param the_username the username of the person to attempt to authenticate.
    * @param the_second_factor the second factor for `username`.
    */
   //@ requires 0 < the_username.length();
@@ -206,4 +205,10 @@ public interface AuthenticationInterface {
    * as a county administrator.
    */
   County authenticatedCounty(Request the_request);
+  
+  /**
+   * @return the submitted credentials associated with any request.
+   * @param the_request The request.
+   */
+  SubmittedCredentials authenticationCredentials(Request the_request);
 }

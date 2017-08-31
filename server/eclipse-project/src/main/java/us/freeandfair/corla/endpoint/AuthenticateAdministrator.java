@@ -19,9 +19,7 @@ import spark.Response;
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.AbstractStateMachine;
-import us.freeandfair.corla.auth.AuthenticationInterface;
 import us.freeandfair.corla.json.SubmittedCredentials;
-import us.freeandfair.corla.model.Administrator.AdministratorType;
 
 /**
  * The endpoint for authenticating an administrator.
@@ -96,29 +94,17 @@ public class AuthenticateAdministrator extends AbstractEndpoint {
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
     try {
-      // Check for JSON credentials in the request.
-      final SubmittedCredentials auth_info = 
-          Main.GSON.fromJson(the_request.body(), SubmittedCredentials.class);
-      final String username;
-      final String password;
-      final String second_factor;
-      // If there wasn't a JSON request, are there HTTP parameters?
-      if (auth_info == null) {
-        username = the_request.queryParams(AuthenticationInterface.USERNAME);
-        password = the_request.queryParams(AuthenticationInterface.PASSWORD);
-        second_factor = the_request.queryParams(AuthenticationInterface.SECOND_FACTOR);
-      } else {
-        username = auth_info.username();
-        password = auth_info.password();
-        second_factor = auth_info.secondFactor();
-      }
+      final SubmittedCredentials credentials =
+          Main.authentication().authenticationCredentials(the_request);
       if (Main.authentication().
-          isAuthenticated(the_request, username)) {
+          isAuthenticated(the_request, credentials.username())) {
         ok(the_response, "Already authenticated");
       } else {
         if (Main.authentication().
             authenticateAdministrator(the_request, the_response,
-                                      username, password, second_factor)) {
+                                      credentials.username(), 
+                                      credentials.password(),
+                                      credentials.secondFactor())) {
           ok(the_response, "Authenticated (partial or fully)");
         } else {
           unauthorized(the_response, "Authentication failed");

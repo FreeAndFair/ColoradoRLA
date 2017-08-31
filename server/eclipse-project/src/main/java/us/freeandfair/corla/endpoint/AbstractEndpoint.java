@@ -11,6 +11,9 @@
 
 package us.freeandfair.corla.endpoint;
 
+import static us.freeandfair.corla.auth.AuthenticationStage.SECOND_FACTOR_AUTHENTICATED;
+import static us.freeandfair.corla.model.Administrator.AdministratorType.*;
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,14 +31,15 @@ import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.ASMUtilities;
 import us.freeandfair.corla.asm.AbstractStateMachine;
 import us.freeandfair.corla.auth.AuthenticationInterface;
+import us.freeandfair.corla.auth.AuthenticationStage;
 import us.freeandfair.corla.json.Result;
+import us.freeandfair.corla.json.SubmittedCredentials;
 import us.freeandfair.corla.model.Administrator;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
 import us.freeandfair.corla.model.LogEntry;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.LogEntryQueries;
 import us.freeandfair.corla.util.SuppressFBWarnings;
-
 /**
  * Basic behaviors that span all endpoints. In particular, standard exceptional
  * behavior with regards to cross-cutting concerns like authentication or
@@ -451,13 +455,13 @@ public abstract class AbstractEndpoint implements Endpoint {
 
   private void persistLogEntries(final Request the_request) {
     LogEntry previous_entry = LogEntryQueries.last();
-    final Administrator admin =
-        (Administrator) the_request.session().attribute(AuthenticationInterface.ADMIN);
+    final Object admin_attribute = 
+        the_request.session().attribute(AuthenticationInterface.ADMIN);
     final String admin_data;
-    if (admin == null) {
-      admin_data = "(unauthenticated)";
+    if (admin_attribute instanceof Administrator) {
+      admin_data = ((Administrator) admin_attribute).username();
     } else {
-      admin_data = admin.username();
+      admin_data = "(unauthenticated)";
     }
     
     for (final LogEntry entry : my_log_entries.get()) {
@@ -589,40 +593,51 @@ public abstract class AbstractEndpoint implements Endpoint {
    * @param the_type The authorization type.
    * @return true if the request is appropriately authorized, false otherwise.
    */
-  //@ require the_session != null
-  //@ require the_type != null
   public static boolean checkAuthorization(final Request the_request, 
                                            final AuthorizationType the_type) {
     boolean result = true;
-    final String username = 
-        the_request.queryParams(AuthenticationInterface.USERNAME);
-    final boolean state = 
-        Main.authentication().isAuthenticatedAs(the_request,
-                                                AdministratorType.STATE,
-                                                username);
-    final boolean county =
-        Main.authentication().isAuthenticatedAs(the_request,
-                                                AdministratorType.COUNTY,
-                                                username);
+    final boolean state;
+    final boolean county;
+    final Object auth_stage_attribute =
+        the_request.session().attribute(AuthenticationInterface.AUTH_STAGE);
+    if (auth_stage_attribute instanceof AuthenticationStage) {
+      if ((AuthenticationStage) auth_stage_attribute != 
+          SECOND_FACTOR_AUTHENTICATED) {
+        result = the_type == AuthorizationType.NONE;
+      } else {
+        final Object admin_attribute = 
+            the_request.session().attribute(AuthenticationInterface.ADMIN);
+        if (admin_attribute instanceof Administrator) {
+          final AdministratorType admin_type = ((Administrator) admin_attribute).type();
+          state = admin_type == STATE;
+          county = admin_type == COUNTY;
+        } else {
+          final SubmittedCredentials credentials =
+              Main.authentication().authenticationCredentials(the_request);
+          final String username = credentials.username(); 
+          state = Main.authentication().isAuthenticatedAs(the_request, STATE, username);
+          county = Main.authentication().isAuthenticatedAs(the_request, COUNTY, username);
+        }
+        switch (the_type) {
+          case STATE: 
+            result = state;
+            break;
 
-    switch (the_type) {
-      case STATE: 
-        result = state;
-        break;
-      
-      case COUNTY:
-        result = county;
-        break;
-          
-      case EITHER:
-        result = county || state;
-        break;
-          
-      case NONE:
+          case COUNTY:
+            result = county;
+            break;
 
-      default:
+          case EITHER:
+            result = county || state;
+            break;
+
+          case NONE:
+
+          default:
+        }
+      }
     }
-    
+      
     return result;
   }
 }

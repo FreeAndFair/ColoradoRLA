@@ -17,7 +17,7 @@ import spark.Response;
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.AbstractStateMachine;
-import us.freeandfair.corla.auth.AuthenticationInterface;
+import us.freeandfair.corla.json.SubmittedCredentials;
 
 /**
  * The endpoint for unauthenticating an administrator.
@@ -90,8 +90,10 @@ public class Unauthenticate extends AbstractEndpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    Main.authentication().deauthenticate(the_request, 
-        the_request.queryParams(AuthenticationInterface.USERNAME));
+    final SubmittedCredentials credentials =
+        Main.authentication().authenticationCredentials(the_request);
+    final String username = credentials.username();
+    Main.authentication().deauthenticate(the_request, username);
     ok(the_response, "Unauthenticated");
     return my_endpoint_result.get();
   }

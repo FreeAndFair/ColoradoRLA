@@ -11,6 +11,8 @@
 
 package us.freeandfair.corla.endpoint;
 
+import static us.freeandfair.corla.model.Administrator.AdministratorType.COUNTY;
+
 import com.google.gson.JsonParseException;
 
 import spark.Request;
@@ -21,7 +23,8 @@ import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.AbstractStateMachine;
 import us.freeandfair.corla.auth.AuthenticationInterface;
 import us.freeandfair.corla.json.SubmittedCredentials;
-import us.freeandfair.corla.model.Administrator.AdministratorType;
+import us.freeandfair.corla.model.Administrator;
+import us.freeandfair.corla.query.AdministratorQueries;
 
 /**
  * The endpoint for authenticating a county administrator.
@@ -94,38 +97,32 @@ public class AuthenticateCountyAdministrator extends AbstractEndpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
+    final SubmittedCredentials credentials =
+        Main.authentication().authenticationCredentials(the_request);
     if (Main.authentication().
-        isAuthenticatedAs(the_request, 
-                          AdministratorType.COUNTY, 
-                          the_request.queryParams(AuthenticationInterface.USERNAME))) {
-      ok(the_response, "Authenticated");
+        isAuthenticatedAs(the_request, COUNTY, credentials.username())) {
+      ok(the_response, "Already authenticated");
     } else {
-      try {
-        // Check for JSON credentials in the request.
-        final SubmittedCredentials auth_info = 
-            Main.GSON.fromJson(the_request.body(), SubmittedCredentials.class);
-        final String username;
-        final String password;
-        final String second_factor;
-        // If there wasn't a JSON request, is there an HTTP params one?
-        if (auth_info == null) {
-          username = the_request.queryParams(AuthenticationInterface.USERNAME);
-          password = the_request.queryParams(AuthenticationInterface.PASSWORD);
-          second_factor = the_request.queryParams(AuthenticationInterface.SECOND_FACTOR);
+      if (Main.authentication().
+          authenticateAdministrator(the_request, the_response,
+                                    credentials.username(),
+                                    credentials.password(),
+                                    credentials.secondFactor())) {
+        final Object admin_attribute =
+            the_request.session().attribute(AuthenticationInterface.ADMIN);
+        if (admin_attribute instanceof Administrator)  {
+          final Administrator admin = (Administrator) admin_attribute; 
+          if (admin.type() == COUNTY) {
+            ok(the_response, "Authenticated (partial or fully)");
+          } else {
+            unauthorized(the_response, "Authentication failed");
+          }
         } else {
-          username = auth_info.username();
-          password = auth_info.password();
-          second_factor = auth_info.secondFactor();
-        }
-        if (Main.authentication().
-            authenticateAdministrator(the_request, the_response,
-                                      AdministratorType.COUNTY, username, 
-                                      password, second_factor)) {
-          ok(the_response, "Authenticated (partial or fully)");
-        } else {
+          // this should never happen
+          Main.LOGGER.error("logic error in admin session attribute");
           unauthorized(the_response, "Authentication failed");
         }
-      } catch (final JsonParseException e) {
+      } else {
         unauthorized(the_response, "Authentication failed");
       }
     }
