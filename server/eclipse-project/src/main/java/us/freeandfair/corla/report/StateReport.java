@@ -70,4 +70,22 @@ public class StateReport {
   public Map<County, CountyReport> countyReports() {
     return Collections.unmodifiableMap(my_county_reports);
   }
+  
+  /**
+   * @return the CSV representation of this report, as a byte array.
+   */
+  public byte[] generateCSV() {
+    byte[] result = null;
+    
+    return result;
+  }
+  
+  /**
+   * @return the PDF representation of this report, as a byte array.
+   */
+  public byte[] generatePDF() {
+    byte[] result = null;
+    
+    return result;
+  }
 }

@@ -94,6 +94,20 @@ public class CVRAuditInfo implements PersistentEntity, Serializable {
   private Boolean my_counted = false;
   
   /**
+   * A flag indicating whether this CVRAuditInfo was counted as a 
+   * discrepancy in the audit calculations.
+   */
+  @Column(nullable = false) 
+  private Boolean my_discrepancy = false;
+  
+  /**
+   * A flag indicating whether this CVRAuditInfo was counted as a
+   * disagreement in the audit calculations.
+   */
+  @Column(nullable = false)
+  private Boolean my_disagreement = false;
+  
+  /**
    * Constructs an empty CVRAuditInfo, solely for persistence.
    */
   public CVRAuditInfo() {
@@ -184,6 +198,42 @@ public class CVRAuditInfo implements PersistentEntity, Serializable {
    */
   public void setCounted(final boolean the_counted) {
     my_counted = the_counted;
+  }
+  
+  /**
+   * @return true if this record was counted as a discrepancy,
+   * false otherwise.
+   */
+  public boolean discrepancy() {
+    return my_discrepancy;
+  }
+
+  /**
+   * Sets the flag that indicates whether this record has been
+   * counted as a discrepancy.
+   * 
+   * @param the_discrepancy The new flag value.
+   */
+  public void setDiscrepancy(final boolean the_discrepancy) {
+    my_discrepancy = the_discrepancy;
+  }
+  
+  /**
+   * @return true if this record was counted as a disagreement,
+   * false otherwise.
+   */
+  public boolean disagreement() {
+    return my_disagreement;
+  }
+  
+  /**
+   * Sets the flag that indicates whether this record has been
+   * counted as a disagreement.
+   * 
+   * @param the_counted The new flag value.
+   */
+  public void setDisagreement(final boolean the_disagreement) {
+    my_disagreement = the_disagreement;
   }
   
   /**

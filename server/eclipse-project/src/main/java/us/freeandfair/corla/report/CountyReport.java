@@ -19,6 +19,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import us.freeandfair.corla.controller.ComparisonAuditController;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.County;
@@ -144,5 +147,25 @@ public class CountyReport {
    */
   public List<Round> rounds() {
     return Collections.unmodifiableList(my_rounds);
+  }
+  
+  /**
+   * @return the Excel representation of this report, as a byte array.
+   */
+  public byte[] generateExcel() {
+    byte[] result = null;
+    final Workbook workbook = new XSSFWorkbook();
+    
+    
+    return result;
+  }
+  
+  /**
+   * @return the PDF representation of this report, as a byte array.
+   */
+  public byte[] generatePDF() {
+    byte[] result = null;
+    
+    return result;
   }
 }

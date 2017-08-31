@@ -37,6 +37,7 @@ import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CVRAuditInfoQueries;
 import us.freeandfair.corla.query.CastVoteRecordQueries;
 import us.freeandfair.corla.query.CountyContestResultQueries;
+import us.freeandfair.corla.util.Pair;
 
 /**
  * Controller methods relevant to comparison audits.
@@ -429,6 +430,7 @@ public final class ComparisonAuditController {
       if (old_audit_cvr == null) {
         for (final CVRAuditInfo c : info) {
           c.setACVR(the_audit_cvr);
+          Persistence.saveOrUpdate(c);
         }
         // this just updates the counters; the actual "audit" happens later
         the_cdb.addAuditedBallot();
@@ -447,7 +449,14 @@ public final class ComparisonAuditController {
           Persistence.saveOrUpdate(c);
         }
         unaudit(the_cdb, the_cvr_under_audit, old_audit_cvr, undo_count);
-        audit(the_cdb, the_cvr_under_audit, the_audit_cvr, undo_count, true);
+        final Pair<Boolean, Boolean> audit_results = 
+            audit(the_cdb, the_cvr_under_audit, the_audit_cvr, undo_count, true);
+        for (final CVRAuditInfo c : info) {
+          if (c.counted()) {
+            c.setDiscrepancy(audit_results.first());
+            c.setDisagreement(audit_results.second());
+          }
+        }
       }
       result = true;
     }  else {
@@ -539,12 +548,14 @@ public final class ComparisonAuditController {
    * @param the_update_counters true to update the county dashboard 
    * counters, false otherwise; false is used when this ballot 
    * has already been audited once.
+   * @return a pair of booleans, (discrepancy, disagreement), indicating
+   * whether a discrepancy or disagreement was registered.
    */
-  private static void audit(final CountyDashboard the_cdb,
-                            final CastVoteRecord the_cvr_under_audit,
-                            final CastVoteRecord the_audit_cvr, 
-                            final int the_count,
-                            final boolean the_update_counters) {
+  private static Pair<Boolean, Boolean> audit(final CountyDashboard the_cdb,
+                                              final CastVoteRecord the_cvr_under_audit,
+                                              final CastVoteRecord the_audit_cvr, 
+                                              final int the_count,
+                                              final boolean the_update_counters) {
     boolean discrepancy_found = false;
     for (final CountyContestComparisonAudit ca : the_cdb.comparisonAudits()) {
       final int discrepancy = ca.computeDiscrepancy(the_cvr_under_audit, the_audit_cvr);
@@ -553,18 +564,20 @@ public final class ComparisonAuditController {
       }
       discrepancy_found |= discrepancy != 0;
     }
+    boolean disagreement_found = false;
+    for (final CVRContestInfo ci : the_audit_cvr.contestInfo()) {
+      disagreement_found |= ci.consensus() == ConsensusValue.NO;
+    }
     if (the_update_counters) {
       if (discrepancy_found) {
         the_cdb.addDiscrepancy();
       }
-      boolean disagree = false;
-      for (final CVRContestInfo ci : the_audit_cvr.contestInfo()) {
-        disagree |= ci.consensus() == ConsensusValue.NO;
-      }
-      if (disagree) {
+
+      if (disagreement_found) {
         the_cdb.addDisagreement();
       }
     }
+    return new Pair<Boolean, Boolean>(discrepancy_found, disagreement_found);
   }
   
   /**
