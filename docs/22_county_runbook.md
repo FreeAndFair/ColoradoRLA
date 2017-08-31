@@ -164,7 +164,7 @@ overvote, the review screen will say, simply, "overvote".
 Note that in case of an
 overvote, the review screen will say, simply, "overvote". [SCREENSHOT NEEDS UPDATE]
 
-![Overvote Screenshot]()
+![Overvote Screenshot](./screenshots/21-overvote_for_this_contest.png)
 
 Note: do *not* use your browser's "back" arrow during the audit
 process.  If the review screen does not match the Audit Board's
