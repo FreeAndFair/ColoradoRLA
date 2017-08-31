@@ -211,7 +211,7 @@ public final class Authentication {
     if (isAuthenticatedAs(the_request, AdministratorType.COUNTY)) {
       final Administrator admin = authenticatedAdministrator(the_request);
       if (admin != null) {
-        result = CountyQueries.forAdministrator(admin);
+        result = admin.county();
       }
     }
     

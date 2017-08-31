@@ -21,10 +21,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
@@ -89,14 +92,19 @@ public class Administrator implements PersistentEntity, Serializable {
   /**
    * The two-factor authentication information.
    */
-  // TODO this is a placeholder, the final format of this is not yet known
-  @Column(nullable = false, updatable = false)
-  private String my_two_factor_auth_info;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn
+  private County my_county;
   
   /**
    * The last login time.
    */
   private Instant my_last_login_time;
+  
+  /**
+   * The last logout time.
+   */
+  private Instant my_last_logout_time;
   
   /**
    * Constructs a new Administrator with default values.
@@ -106,22 +114,23 @@ public class Administrator implements PersistentEntity, Serializable {
   }
   
   /**
-   * Constructs a new Administrator with the specified values.
+   * Constructs a new Administrator with the specified values, which has
+   * never logged in or out.
    * 
    * @param the_username The username.
+   * @param the_type The type.
    * @param the_full_name The full name.
-   * @param the_two_factor_auth_info The two-factor authentication information.
-   * @param the_last_login_time The last login time.
+   * @param the_county The county.
    */
-  public Administrator(final String the_username, 
-                       final String the_full_name, 
-                       final String the_two_factor_auth_info, 
-                       final Instant the_last_login_time) {
+  public Administrator(final String the_username,
+                       final AdministratorType the_type,
+                       final String the_full_name,
+                       final County the_county) {
     super();
     my_username = the_username;
+    my_type = the_type;
     my_full_name = the_full_name;
-    my_two_factor_auth_info = the_two_factor_auth_info;
-    my_last_login_time = the_last_login_time;
+    my_county = the_county;
   }
   
   /**
@@ -170,10 +179,10 @@ public class Administrator implements PersistentEntity, Serializable {
   }
   
   /**
-   * @return the two factor authentication information.
+   * @return the county for the administrator, or null if it doesn't have one.
    */
-  public String twoFactorAuthInfo() {
-    return my_two_factor_auth_info;
+  public County county() {
+    return my_county;
   }
   
   /**
@@ -189,6 +198,20 @@ public class Administrator implements PersistentEntity, Serializable {
   public void updateLastLoginTime() {
     my_last_login_time = Instant.now();
   }
+
+  /**
+   * @return the last logout time.
+   */
+  public Instant lastLogoutTime() {
+    return my_last_logout_time;
+  }
+  
+  /**
+   * Updates the last logout time to the current time.
+   */
+  public void updateLastLogoutTime() {
+    my_last_logout_time = Instant.now();
+  }
   
   /**
    * @return a String representation of this contest.
@@ -196,8 +219,9 @@ public class Administrator implements PersistentEntity, Serializable {
   @Override
   public String toString() {
     return "Administrator [username=" + my_username + ", type=" + 
-           my_type + ", full_name=" + my_full_name + ", last_login_time = " + 
-           my_last_login_time + "]";
+           my_type + ", full_name=" + my_full_name + ", county=" + 
+           my_county + ", last_login_time=" + my_last_login_time +
+           ", last_logout_time=" + my_last_logout_time + "]";
   }
 
   /**
