@@ -3,7 +3,7 @@
 
 ## Introduction
 
-This Run Book guides County election administrators in Colorado who will be
+This Run Book guides State election administrators in Colorado who will be
 implementing a Risk Limiting Audit (RLA) with a comparison audit.
 The RLA Tool, developed by Free & Fair for the
 Colorado Department of State for use in elections in November 2017 and later, 
