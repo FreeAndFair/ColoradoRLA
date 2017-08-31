@@ -22,7 +22,7 @@ Orange arrows on the screenshots indicate features described in the text of the 
  
 ### Logging In
 
-A County user can log in to the RLA Tool by pointing a browser to the URL provided by the Colorado Department of State. [SCREENSHOT NEEDS UPDATE]
+A County user can log in to the RLA Tool by pointing a browser to the URL provided by the Colorado Department of State. **[SCREENSHOT NEEDS UPDATE]**
 
 ![County Login Screenshot](./screenshots/a-county_login.png)
 
@@ -60,13 +60,13 @@ last file will be used.
 If the hash does not match the file 
 (either because the wrong hash was entered, or because the file was changed as it traveled over the network), 
 the data from the file will not be imported and the user will
-receive the following error messages. [SCREENSHOT NEEDS UPDATE]
+receive the following error messages. **[SCREENSHOT NEEDS UPDATE]**
 
 ![Audit_Upload_Failed_Screenshot](./screenshots/d-failed_to_upload.png)
 
 If the hash matches the file but the file is not in the proper format, the data from the file will not be 
 imported and the user will
-receive the following error messages. [SCREENSHOT NEEDS UPDATE]
+receive the following error messages. **[SCREENSHOT NEEDS UPDATE]**
 
 ![Format Error Screenshot]()
 
@@ -169,7 +169,7 @@ overvote, the review screen will say, simply, "overvote".
 Note: do *not* use your browser's "back" arrow during the audit
 process.  If the review screen does not match the Audit Board's
 interpretation, click the "Back" button.
-<!--- this may be irrelevant now, check UI --->
+**<!--- this may be irrelevant now, check UI --->**
 
 If the review screen matches the Audit Board's interpretation, click
 "Submit and Next Ballot". This submission is final. There is no way to
@@ -179,7 +179,6 @@ continues until the end of the round, when the screen will show the
 end-of-round page, with boxes for the Audit Board to "sign" their approval of the round. [SCREENSHOT NEEDS UPDATE]
 
 ![End of Round Screenshot]()
-
 
 
 Note that while the audit is in progress, the County Home page 
@@ -194,7 +193,7 @@ If the Audit Board needs to take a break, go to lunch, head home for
 the night, or change, then the Audit Board must file an "Intermediate
 Audit Report" on their auditing. They should use the Sign Out button
 On the Audit Board Sign-in Page
-<!--- what if AB finishes a round? --->
+**<!--- what if AB finishes a round? --->**
 
 ![Audit_Board_Sign_Out](./screenshots/n-sign_out_of_the_audit_board.png)
 
