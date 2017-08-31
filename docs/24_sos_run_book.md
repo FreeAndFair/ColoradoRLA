@@ -103,7 +103,7 @@ You will receive the following error if the random seed is not long enough.
 The RLA Tool uses the random seed in the required pseudo-random number
 generator. Once the random seed is entered the audit has begun.
 
-![Audit Has Begun](./screenshots/14-the_audit_is_launched.png)
+![Audit Has Begun](./screenshots/15-the_audit_is_launched.png)
 
 ### 25.2.2 (K) Random Selection of Ballot Cards for Audit
 
