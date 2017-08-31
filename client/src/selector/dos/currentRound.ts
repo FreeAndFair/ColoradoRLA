@@ -11,8 +11,11 @@ function currentRound(state: any): number {
 
     for (const c of counties) {
         const mostRecentRound = c.rounds[c.rounds.length - 1];
+        const mostRecentRoundNumber = mostRecentRound
+                                    ? mostRecentRound.number
+                                    : 0;
 
-        roundNumber = Math.max(roundNumber, mostRecentRound.number);
+        roundNumber = Math.max(roundNumber, mostRecentRoundNumber);
     }
 
     return roundNumber;
