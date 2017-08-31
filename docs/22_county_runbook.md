@@ -49,7 +49,7 @@ logout button, circled in the upper right of this (and every) page.
 
 The County site has a navigation menu in the upper left corner.
 
-![County Navigation Screenshot](./screenshots/CountyNav.png)
+![County Navigation Screenshot](./screenshots/countynav.png)
 
 ### 25.2.2 (A), Entering the Risk Limit
 
