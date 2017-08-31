@@ -29,6 +29,7 @@ export default function* dosLoginSaga() {
         'AUDIT_BOARD_SIGN_IN_OK',
         'AUDIT_BOARD_SIGN_OUT_OK',
         'ESTABLISH_AUDIT_BOARD_OK',
+        'SUBMIT_ROUND_SIGN_OFF_OK',
         'UPLOAD_ACVR_OK',
         'UPDATE_ACVR_FORM',
         'UPLOAD_BALLOT_MANIFEST_OK',
@@ -39,6 +40,7 @@ export default function* dosLoginSaga() {
     yield takeLatest(countyRefreshActions, countyRefresh);
 
     const dosRefreshActions = [
+        'DOS_START_NEXT_ROUND_OK',
         'PUBLISH_BALLOTS_TO_AUDIT_OK',
         'SELECT_CONTESTS_FOR_AUDIT_OK',
         'SET_RISK_LIMIT_OK',
