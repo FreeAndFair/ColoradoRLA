@@ -42,13 +42,17 @@ for c in 1 2 3 4 5 6 7 8 9 10; do ./main.py -c $c county_audit &  done
 Parallel uploads
 
 (
+date -Is
 ./main.py reset dos_init
 for c in 1 2 3 4 5 6 7 8 9 10; do
  ./main.py -c $c -f neal_ignore/d0-n50000.csv county_setup &
 done
 wait
 ./main.py dos_start -C 1 
-for c in 1 2 3 4 5 6 7 8 9 10; do ./main.py -c $c county_audit &  done
+for c in 1 2 3 4 5 6 7 8 9 10; do ./main.py -c $c county_audit &
+wait
+done
+date -Is
 ) 2>&1 | tee parallelcvr50000x10.out
 
 2017-08-30T07:03:36-0600 finished
@@ -167,6 +171,8 @@ parser.add_argument('-p, --discrepancy-plan', dest='plan', default="2 17",
                     'Every 17 ACVR upload, upload a possible discrepancy once, '
                     'when the remainder of dividing the upload index is 2. '
                     'Discrepancies thus come with the 3rd of every 17 ACVR uploads.')
+parser.add_argument('-P, --discrepancy-end', dest='plan_limit', type=int, default=sys.maxint,
+                    help='Last upload with possible discrepancy is # PLAN_LIMIT')
 
 parser.add_argument('-R, --rounds', type=int, default=4, dest='rounds',
   help='Set maximum number of rounds')
@@ -296,7 +302,7 @@ def upload_file(ac, s, import_path, filename, sha256):
     if r.status_code != 200:
         print(r, "POST", path, r.text)
 
-    logging.debug(r, path, r.text)
+    logging.debug("%s %s %s" % (r, path, r.text))
 
     import_handle = r.json()
 
@@ -304,7 +310,7 @@ def upload_file(ac, s, import_path, filename, sha256):
     r = test_endpoint_json(ac, s, import_path, import_handle)
     if r.status_code != 200:
         print(r, "POST", import_path, r.text)
-    logging.debug(r, import_path, r.text)
+    logging.debug("%s %s %s" % (r, import_path, r.text))
 
 """
 TODO: clean this out when ready.
@@ -462,19 +468,15 @@ def get_county_dashboard(ac, county_s, i=0, acvr={'id': -1}, show=True):
 
     total_audited = i + 1 + county_dashboard['rounds'][-1]['previous_ballots_audited']
 
-    # The list of ballots_to_audit takes up way too much space in the output....
-    if False:
-        if 'ballots_to_audit' in county_dashboard:
-            county_dashboard['ballots_to_audit'] = "SUPPRESSED"
-        print(county_dashboard)
-    elif show:
-        # TODO print other interesting info
-
+    if show:
+        logging.debug("county-dashboard: %s" % r.text)
         print("Round %d, county %d, upload %d: aCVR %d; ballots_remaining_in_round: %d, estimated_ballots_to_audit: %s" %
               (ac.round, county_id, total_audited, acvr['id'], county_dashboard['ballots_remaining_in_round'], county_dashboard['estimated_ballots_to_audit']))
-        # print(county_dashboard)
 
-    # print(r.text)
+        """ TODO: drop this assuming it isn't helpful any more.
+        print("Round %d, county %d, upload %d: aCVR %d; ballots_remaining_in_round: %d, audited_ballot_count: %d, estimated_ballots_to_audit: %s" %
+              (ac.round, county_id, total_audited, acvr['id'], county_dashboard['ballots_remaining_in_round'], county_dashboard['audited_ballot_count'], county_dashboard['estimated_ballots_to_audit']))
+        """
 
     return county_dashboard
 
@@ -589,11 +591,6 @@ def county_audit(ac, county_id):
     county_s = requests.Session()
     county_login(ac, county_s, county_id)
 
-    # TODO: put in ac
-    discrepancy_remainder, discrepancy_cycle = ac.args.plan.split()
-    discrepancy_remainder = int(discrepancy_remainder)
-    discrepancy_cycle = int(discrepancy_cycle)
-
     county_dashboard = get_county_dashboard(ac, county_s, -1)
 
     # audit over detection:
@@ -663,7 +660,8 @@ def county_audit(ac, county_id):
 
         # Modify the aCVR sometimes.
         # TODO: provide command-line parameters for discrepancy rates?
-        if total_audited % discrepancy_cycle == discrepancy_remainder:
+        if (total_audited % ac.discrepancy_cycle == ac.discrepancy_remainder
+            and  total_audited <= ac.args.plan_limit):
             print('Possible discrepancy: blindly setting choices for first contest to ["Distant Loser"]')
             acvr['contest_info'][0]['choices'] = ["Distant Loser"]
             # acvr['contest_info'][0]['choices'] = ["No/Against"]  # for Denver election contest 0
@@ -735,9 +733,12 @@ if __name__ == "__main__":
         ac.args.commands = ["reset", "dos_init", "county_setup",
                             "dos_start", "county_audit", "dos_wrapup"]
 
-    ac.round = 1
+    fields = [int(f) for f in ac.args.plan.split()]
+    ac.discrepancy_remainder, ac.discrepancy_cycle = fields
 
     print("Arguments: %s" % ac.args)
+
+    ac.round = 1
 
     ac.base = ac.args.url
 
