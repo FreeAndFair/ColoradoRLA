@@ -158,8 +158,7 @@ the Audit Board can review what was entered.
 ![Audit_Board_Clicks_Review_Button](./screenshots/x-ballot_interpretations_entered.png)
 
 Check that the information on the review screen reflects the Audit
-Board's interpretation of the ballot. Note that in case of an
-overvote, the review screen will say, simply, "overvote".
+Board's interpretation of the ballot.
 
 ![Review_Screen](./screenshots/y-verify_selections.png)
 
