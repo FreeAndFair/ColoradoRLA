@@ -37,19 +37,19 @@ to the public.
 
 Persons from the County first must log in to the RLA Tool.
 
-![County Login Screenshot](./screenshots/a-county login.png)
+![County Login Screenshot](./screenshots/a-county_login.png)
 
 The RLA Tool will direct each user to the appropriate home page. 
 County users will see the (initially empty) County home page. Note the 
 logout button, circled in the upper right of this (and every) page.
 
-![Initial County Landing Page](./screenshots/c-initial county landing page unified.png)
+![Initial County Landing Page](./screenshots/c-initial_county_landing_page_unified.png)
 
 ### Navigation
 
 The County site has a navigation menu in the upper left corner.
 
-![County Navigation Screenshot](./screenshots/countynav.png)
+![County Navigation Screenshot](./screenshots/CountyNav.png)
 
 ### 25.2.2 (A), Entering the Risk Limit
 
@@ -70,14 +70,14 @@ Once the ballot manifest and CVR files are verified and hashed, they
 can be uploaded into the RLA Tool. If the upload is interrupted the process 
 will have to be repeated. It is not possible to resume interrupted uploads.
 
-![About to Upload Ballot Manifest Screenshot](./screenshots/e-about to upload proper ballot manifest.png)
+![About to Upload Ballot Manifest Screenshot](./screenshots/e-about_to_upload_proper_ballot_manifest.png)
 
-![About to Upload CVR Screenshot](./screenshots/g-about to upload proper cvr.png)
+![About to Upload CVR Screenshot](./screenshots/g-about_to_upload_proper_cvr.png)
 
 If the hash does not match, or the file is not the proper format, users will
 receive the following errors.
 
-![Audit Upload Failed Screenshot](./screenshots/d-failed to upload ballot manifest or cvr because file type is wrong or hash doesn’t match.png)
+![Audit_Upload_Failed_Screenshot](./screenshots/d-failed_to_upload_ballot_manifest_or_cvr_because_file_type_is_wrong_or_hash_doesn’t_match.png)
 
 Once both the ballot manifest and CVR files are successfully uploaded
 users will see them both listed as -uploaded-. It is possible to re-upload
@@ -91,7 +91,7 @@ all contests on all CVRs. Users will not see the estimated number of ballot card
 remaining to be audited to meet the risk limit until the Secretary of State has 
 launched the audit.
 
-!Contest Info Now Displayed](./screenshots/i-contest info now displayed.png)
+![Audit_Upload_Successful_Screenshot](./screenshots/h-successfully_uploaded_cvr.png)
 
 ### 25.2.2 (H), Entering the Random Seed
 
@@ -109,18 +109,18 @@ and passwords. However, whenever the Audit Board begins to interact
 with the RLA Tool, either at the beginning of an audit round or after
 taking a break, there is an informal sign-in process. 
 
-![Audit Board Sign In Screenshot](./screenshots/k-selecting audit board members unified.png)
+![Audit_Board_Sign_In_Screenshot](./screenshots/k-selecting_audit_board_members_unified.png)
 
 After the authenticated County Audit Administrator formally logs in, there is a
 screen where the identity and party affiliation of Audit Board Members is listed
 with a sign out button if the audit needs to be paused.
 
-![Audit Board Sign Out Screenshot](./screenshots/n-sign out of the audit board.png)
+![Audit_Board_Sign_Out_Screenshot](./screenshots/n-sign_out_of_the_audit_board.png)
 
 Once the Audit Board is signed in use the navigation panel at the top of the screen
 to launch the audit.
 
-![Launch Audit Navigation Button Screenshot](./screenshots/o-go to the audit page to begin auditing ballots.png)
+![Launch_Audit_Navigation_Button_Screenshot](./screenshots/o-go_to_the_audit_page_to_begin_auditing_ballots.png)
 
 
 
@@ -143,7 +143,7 @@ Once the audit is launched county users will see a list of ballots to
 be audited. The list includes the Scanner #, Batch #, Ballot Positing #,
 and Storage Bin #.
 
-![Ballots to Audit Screenshot](./screenshots/p-ballots to audit unified.png)
+![Ballots_to_Audit_Screenshot](./screenshots/p-ballots_to_audit_unified.png)
 
 These ballots are selected based on the pseudo-random number generator 
 and random seed from 25.2.2 (H) and the current risk levels, the RLA Tool 
@@ -161,40 +161,40 @@ Tool.
 The RLA Tool allows Audit Board members to report the markings on each
 individual ballot.
 
-![Ballot Verification Landing Page](./screenshots/r-ballot verification landing page unified.png)
+![Ballot_Verification_Landing_Page](./screenshots/r-ballot_verification_landing_page_unified.png)
 
 Before recording voter intent, please double-check that the paper
 ballot ID and Ballot Style match the ID and ballot style listed on the
 screen.  Then record on the screen all final voter intent marked on
 the paper ballot.  
 
-![Recording Voter Intent](./screenshots/u-make consensus selection.png)
+![Recording_Voter_Intent](./screenshots/u-make_consensus_selection.png)
 
 In case of an overvote, mark each of the (too many or too few) choices the 
 voter intended; the RLA tool will recognize overvotes and undervotes. In 
 case the Audit Board cannot reach consensus, mark the "No Consensus" 
 box on the screen.  
 
-![No Consensus](./screenshots/v-no consensus reached.png)
+![No_Consensus](./screenshots/v-no_consensus_reached.png)
 
 Audit Board members can make notes in the comment field.
 
-![Audit Board Members Making Notes](./screenshots/w-enter notes about the race.png)
+![Audit_Board_Members_Making_Notes](./screenshots/w-enter_notes_about_the_race.png)
 
 If a ballot card is not found click the Ballot Card Not Found Button.
 
-![Ballot Card Not Found](./screenshots/t-ballot card not found button.png)
+![Ballot_Card_Not_Found](./screenshots/t-ballot_card_not_found_button.png)
 
 After entering the interpretation of the markings from any one ballot,
 the Audit Board can review what was entered.
 
-![Audit Board Clicks Review Button](./screenshots/x-ballot interpretations entered.png)
+![Audit_Board_Clicks_Review_Button](./screenshots/x-ballot_interpretations_entered.png)
 
 Check that the information on the review screen reflects the Audit
 Board's interpretation of the ballot. Note that in case of an
 overvote, the review screen will say, simply, "overvote".
 
-![Review Screen](./screenshots/y-verify selections.png)
+![Review_Screen](./screenshots/y-verify_selections.png)
 
 If the review screen matches the Audit Board's interpretation, click
 "Submit and Next Ballot". This submission is final. There is no way to
@@ -216,7 +216,7 @@ Audit must be completed outside the RLA Tool.
 An Audit Board can use the RLA Tool to report lack of consensus on any
 particular contest on any particular ballot.
 
-![No Consensus Screenshot](./screenshots/v-no consensus reached.png)
+![No_Consensus_Screenshot](./screenshots/v-no_consensus_reached.png)
 
 ### 25.2.3 (C) Comparisons, Termination, Additional Ballots
 
@@ -227,7 +227,7 @@ County Administrators to see the progress of audit for selected
 contests and the estimated number of ballot cards remaining to be
 audited to meet the risk limit. COUNTIES DON’T SEE THIS, DO THEY?
 
-![County Mid-Audit Screen](./screenshots/CountyMidAudit.png)
+![County_Mid-Audit_Screen](./screenshots/CountyMidAudit.png)
 
 The RLA Tool automatically randomly selects additional ballots for
 audit as necessary.
@@ -239,7 +239,7 @@ the night, or change, then the Audit Board must file an "Intermediate
 Audit Report" on their auditing. They should use the Sign Out button
 On the Audit Board Sign-in Page
 
-![Audit Board Sign Out](./screenshots/n-sign out of the audit board.png)
+![Audit_Board_Sign_Out](./screenshots/n-sign_out_of_the_audit_board.png)
 
 ### Audit Board Final Audit Report Page
 
