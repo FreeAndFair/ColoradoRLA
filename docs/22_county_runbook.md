@@ -1,7 +1,7 @@
 # Colorado Risk Limiting Audit 
 # Run Book – County Client
 
-## Introduction
+## Introduction to Risk Limiting Audits
 
 This Run Book is written for county election administrators who will be
 implementing a Risk Limiting Audit (RLA) using the RLA Tool.  The Run
