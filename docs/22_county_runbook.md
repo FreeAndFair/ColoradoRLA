@@ -91,7 +91,7 @@ all contests on all CVRs. Users will not see the estimated number of ballot card
 remaining to be audited to meet the risk limit until the Secretary of State has 
 launched the audit.
 
-!Contest Info Now Displayed](./screenshots/i-contest_info_now_displayed.png)
+!Contest Info Now Displayed](./screenshots/i-contest_info.png)
 
 ### 25.2.2 (H), Entering the Random Seed
 
