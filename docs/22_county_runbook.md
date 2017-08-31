@@ -27,7 +27,7 @@ A County user can log in to the RLA Tool by pointing a browser to the URL provid
 ![County Login Screenshot](./screenshots/a-county_login.png)
 
 County users will see the (initially empty) County home page. Note the 
-logout button ![Logout Button](./LogoutButton.png), in the upper right of this (and every) page.
+logout button ![Logout Button](./screenshots/LogoutButton.png), in the upper right of this (and every) page.
 
 ![Initial County Landing Page](./screenshots/c-initial_county_landing_page_unified.png)
 
