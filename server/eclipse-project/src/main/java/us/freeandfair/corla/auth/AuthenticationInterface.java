@@ -101,17 +101,6 @@ public interface AuthenticationInterface {
                                     String the_username,
                                     String the_password,
                                     String the_second_factor);
-  
-  /**
-   * Logout `the_username`.
-   * @trace authentication.logout_county_administrator
-   * @trace authentication.logout_state_administrator
-   * @param the_request The request.
-   * @param the_username the user to de-authenticate.
-   */
-  //@ ensures (* If `the_username` was logged in, now they are not. *);
-  void logoutAdministrator(Request the_request,
-                           String the_username);
 
   /**
    * Attempt to authenticate `the_username` using `the_second_factor`.

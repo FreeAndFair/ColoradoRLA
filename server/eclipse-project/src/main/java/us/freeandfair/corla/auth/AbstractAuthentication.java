@@ -200,16 +200,6 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
    * {@inheritDoc}
    */
   @Override
-  public void logoutAdministrator(final Request the_request,
-                                  final String the_username) {
-    Main.LOGGER.info("Logging out administrator `" + the_username + "'");
-    deauthenticate(the_request, the_username);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   public boolean isAuthenticatedAs(final Request the_request,
                                    final AdministratorType the_type,
                                    final String the_username) {
