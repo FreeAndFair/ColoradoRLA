@@ -20,6 +20,7 @@ import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.AbstractStateMachine;
 import us.freeandfair.corla.auth.AuthenticationInterface;
+import us.freeandfair.corla.json.SubmittedCredentials;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
 
 /**
@@ -100,12 +101,26 @@ public class AuthenticateCountyAdministrator extends AbstractEndpoint {
       ok(the_response, "Authenticated");
     } else {
       try {
+        // Check for JSON credentials in the request.
+        final SubmittedCredentials auth_info = 
+            Main.GSON.fromJson(the_request.body(), SubmittedCredentials.class);
+        final String username;
+        final String password;
+        final String second_factor;
+        // If there wasn't a JSON request, is there an HTTP params one?
+        if (auth_info == null) {
+          username = the_request.queryParams(AuthenticationInterface.USERNAME);
+          password = the_request.queryParams(AuthenticationInterface.PASSWORD);
+          second_factor = the_request.queryParams(AuthenticationInterface.SECOND_FACTOR);
+        } else {
+          username = auth_info.username();
+          password = auth_info.password();
+          second_factor = auth_info.secondFactor();
+        }
         if (Main.authentication().
             authenticateAdministrator(the_request, the_response,
-                AdministratorType.COUNTY, 
-                the_request.queryParams(AuthenticationInterface.USERNAME),
-                the_request.queryParams(AuthenticationInterface.PASSWORD),
-                the_request.queryParams(AuthenticationInterface.SECOND_FACTOR))) {
+                                      AdministratorType.COUNTY, username, 
+                                      password, second_factor)) {
           ok(the_response, "Authenticated (partial or fully)");
         } else {
           unauthorized(the_response, "Authentication failed");
