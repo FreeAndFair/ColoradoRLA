@@ -22,7 +22,6 @@ import us.freeandfair.corla.model.Administrator.AdministratorType;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.AdministratorQueries;
-import us.freeandfair.corla.query.CountyQueries;
 
 /**
  * Authentication tasks used by many endpoints.

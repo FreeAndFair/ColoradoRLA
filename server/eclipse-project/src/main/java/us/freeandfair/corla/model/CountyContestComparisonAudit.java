@@ -173,10 +173,17 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
   private BigDecimal my_risk_limit = BigDecimal.ONE;
   
   /**
-   * The expected number of ballots remaining to audit.
+   * The number of ballots remaining to audit assuming no overstatements.
    */
   @Column(nullable = false)
-  private Integer my_ballots_to_audit = 0;
+  private Integer my_optimistic_ballots_to_audit = 0;
+
+  /**
+   * The expected number of ballots remaining to audit assuming
+   * overstatements at the current rate.
+   */
+  @Column(nullable = false)
+  private Integer my_estimated_ballots_to_audit = 0;
   
   /**
    * The number of two-vote understatements recorded so far.
@@ -298,36 +305,56 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
    */
   @SuppressWarnings({"checkstyle:magicnumber", "PMD.AvoidDuplicateLiterals"})
   public int initialBallotsToAudit() {
-    // compute the conservative numbers of over/understatements based on 
-    // initial estimate of error rate
-    /*
-    return computeBallotsToAuditFromRates(TWOS_RATE, ONES_RATE, 
-                                          ONES_RATE, TWOS_RATE, 
-                                          ROUND_ONES_UP, ROUND_TWOS_UP).intValue();
-                                          */
-    return computeBallotsToAudit(0, 0, 0, 0).setScale(0, RoundingMode.CEILING).intValue();
+    return computeOptimisticBallotsToAudit(0, 0, 0, 0).
+               setScale(0, RoundingMode.CEILING).intValue();
   }
   
   /**
    * @return the expected overall number of ballots to audit, assuming no 
-   * further discrepancies occur.
+   * further overstatements occur.
    */
-  public Integer ballotsToAudit() {
+  public Integer optimisticBallotsToAudit() {
     if (my_recalculate_needed) {
       recalculateBallotsToAudit();
       my_recalculate_needed = false;
     }
-    return my_ballots_to_audit;
+    return my_optimistic_ballots_to_audit;
   }
   
   /**
-   * Recalculates the overall number of ballots to audit.
+   * @return the expected overall number of ballots to audit, assuming 
+   * overstatements continue to occur at the current rate.
+   */
+  public Integer estimatedBallotsToAudit() {
+    if (my_recalculate_needed) {
+      recalculateBallotsToAudit();
+      my_recalculate_needed = false;
+    }
+    return my_estimated_ballots_to_audit;
+  }
+  
+  /**
+   * Recalculates the overall numbers of ballots to audit.
    */
   private void recalculateBallotsToAudit() {
-    my_ballots_to_audit = computeBallotsToAudit(my_two_vote_under, 
-                                                my_one_vote_under,
-                                                my_one_vote_over,
-                                                my_two_vote_over).intValue();
+    final BigDecimal optimistic = computeOptimisticBallotsToAudit(my_two_vote_under, 
+                                                                  my_one_vote_under,
+                                                                  my_one_vote_over,
+                                                                  my_two_vote_over);
+    my_optimistic_ballots_to_audit = optimistic.intValue();
+    if (my_one_vote_over + my_two_vote_over == 0) {
+      my_estimated_ballots_to_audit = my_optimistic_ballots_to_audit;
+    } else {
+      // compute the "fudge factor" for the estimate
+      final BigDecimal prefix_length = BigDecimal.valueOf(my_dashboard.auditedPrefixLength());
+      final BigDecimal overstatements = 
+          BigDecimal.valueOf(my_one_vote_over + my_two_vote_over);
+      final BigDecimal fudge_factor =
+          BigDecimal.ONE.add(overstatements.divide(prefix_length, MathContext.DECIMAL128));
+      final BigDecimal estimated =
+          optimistic.multiply(fudge_factor);
+      my_estimated_ballots_to_audit = estimated.setScale(0, RoundingMode.CEILING).intValue();
+    }
   }
   
   /**
@@ -344,7 +371,7 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
    * https://www.stat.berkeley.edu/~stark/Preprints/gentle12.pdf
    */
   @SuppressWarnings({"checkstyle:magicnumber", "PMD.AvoidDuplicateLiterals"})
-  private BigDecimal computeBallotsToAudit(final int the_two_under,
+  private BigDecimal computeOptimisticBallotsToAudit(final int the_two_under,
                                            final int the_one_under,
                                            final int the_one_over,
                                            final int the_two_over) {
