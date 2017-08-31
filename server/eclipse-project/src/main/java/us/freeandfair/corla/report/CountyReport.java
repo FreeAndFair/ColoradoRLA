@@ -11,7 +11,10 @@
 
 package us.freeandfair.corla.report;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,14 +22,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import us.freeandfair.corla.Main;
 import us.freeandfair.corla.controller.ComparisonAuditController;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyContestResult;
 import us.freeandfair.corla.model.CountyDashboard;
+import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.model.Round;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CountyContestResultQueries;
@@ -38,6 +49,21 @@ import us.freeandfair.corla.query.CountyContestResultQueries;
  * @version 0.0.1
  */
 public class CountyReport {
+  /**
+   * The font size for Excel.
+   */
+  public static final short FONT_SIZE = 12;
+  
+  /**
+   * The DoS dashboard used to generate this report.
+   */
+  private final DoSDashboard my_dosdb;
+  
+  /**
+   * The county dashboard used to generate this report.
+   */
+  private final CountyDashboard my_cdb;
+  
   /**
    * The county for which this report was generated.
    */
@@ -52,12 +78,6 @@ public class CountyReport {
    * The lists of CVR imprinted IDs to audit for each round.
    */
   private final Map<Integer, List<String>> my_cvrs_to_audit_by_round;
-  
-  /**
-   * The "ballot verification report" for each round (we still don't know
-   * what this means).
-   */
-  private final Map<Integer, String> my_ballot_verification_reports_by_round;
   
   /**
    * The contests driving the audit, and their results.
@@ -89,22 +109,21 @@ public class CountyReport {
     my_county = the_county;
     my_timestamp = the_timestamp;
     my_driving_contest_results = CountyContestResultQueries.forCounty(my_county);
-    final CountyDashboard cdb = 
+    my_cdb = 
         Persistence.getByID(my_county.id(), CountyDashboard.class);
-    my_rounds = cdb.rounds();
+    my_rounds = my_cdb.rounds();
     my_cvrs_to_audit_by_round = new HashMap<>();
-    my_ballot_verification_reports_by_round = new HashMap<>();
     for (final Round r : my_rounds) {
       final List<CastVoteRecord> cvrs_to_audit = 
-          ComparisonAuditController.computeBallotOrder(cdb, r.number());
+          ComparisonAuditController.computeBallotOrder(my_cdb, r.number());
       cvrs_to_audit.sort(new CastVoteRecord.BallotOrderComparator());
       final List<String> cvr_ids_to_audit = new ArrayList<>();
       for (final CastVoteRecord cvr : cvrs_to_audit) {
         cvr_ids_to_audit.add(cvr.imprintedID());
       }
       my_cvrs_to_audit_by_round.put(r.number(), cvr_ids_to_audit);
-      my_ballot_verification_reports_by_round.put(r.number(), "TBD");
     }
+    my_dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
   }
   
   /**
@@ -129,13 +148,6 @@ public class CountyReport {
   }
   
   /**
-   * @return the ballot verification reports by round map for this report.
-   */
-  public Map<Integer, String> ballotVerificationReportsByRound() {
-    return Collections.unmodifiableMap(my_ballot_verification_reports_by_round);
-  }
-  
-  /**
    * @return the driving contest results for this report.
    */
   public Set<CountyContestResult> drivingContestResults() {
@@ -151,13 +163,77 @@ public class CountyReport {
   
   /**
    * @return the Excel representation of this report, as a byte array.
+   * @exception IOException if the report cannot be generated.
    */
-  public byte[] generateExcel() {
-    byte[] result = null;
+  public byte[] generateExcel() 
+      throws IOException {
     final Workbook workbook = new XSSFWorkbook();
     
+    // bold font for titles and such
+    final Font bold_font = workbook.createFont();
+    bold_font.setFontHeightInPoints(FONT_SIZE);
+    bold_font.setBold(true);
+    final CellStyle bold_style = workbook.createCellStyle();
+    bold_style.setFont(bold_font);
     
-    return result;
+    // regular font for other fields
+    final Font standard_font = workbook.createFont();
+    standard_font.setFontHeightInPoints(FONT_SIZE);
+    final CellStyle standard_style = workbook.createCellStyle();
+    standard_style.setFont(standard_font);
+    
+    // the summary sheet
+    final Sheet summary_sheet = workbook.createSheet("Summary");
+    int row_number = 0;
+    Row row = summary_sheet.createRow(row_number++);
+    int cell_number = 0;
+    
+    Cell cell = row.createCell(cell_number++);
+    cell.setCellType(CellType.STRING);
+    cell.setCellStyle(bold_style);
+    if (my_dosdb.electionType() == null) {
+      cell.setCellValue("ELECTION TYPE NOT SET");
+    } else {
+      cell.setCellValue(my_dosdb.electionType());
+    }
+    cell = row.createCell(cell_number++);
+    cell.setCellType(CellType.STRING);
+    cell.setCellStyle(bold_style);
+    if (my_dosdb.electionDate() == null) {
+      cell.setCellValue("ELECTION DATE NOT SET");
+    } else {
+      cell.setCellValue(LocalDate.from(my_dosdb.electionDate()).toString());
+    }
+    
+    row_number++;
+    row = summary_sheet.createRow(row_number++);
+    cell_number = 0;
+    cell = row.createCell(cell_number++);
+    cell.setCellStyle(bold_style);
+    cell.setCellValue("Audited Contests");
+    
+    for (final CountyContestResult ccr : my_driving_contest_results) {
+      row_number++;
+      row = summary_sheet.createRow(row_number++);
+      cell_number = 0;
+      cell.setCellStyle(bold_style);
+      cell.setCellValue(ccr.contest().name());
+      cell = row.createCell(cell_number++);
+      cell.setCellStyle(bold_style);
+      cell.setCellValue("Vote For " + ccr.contest().votesAllowed());
+    }
+    
+    for (int i = 0; i < summary_sheet.getRow(0).getPhysicalNumberOfCells(); i++) {
+      summary_sheet.autoSizeColumn(i);
+    }
+    
+    final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    workbook.write(baos);
+    baos.flush();
+    baos.close();
+    Main.LOGGER.info("output stream size: " + baos.size());
+    workbook.close();
+    return baos.toByteArray();
   }
   
   /**
