@@ -115,9 +115,14 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
           new DominionCVRExportParser(bmi_isr, 
                                       Persistence.getByID(the_file.countyID(), County.class),
                                       true);
-      final int deleted = 
-          CastVoteRecordQueries.deleteMatching(the_file.countyID(), RecordType.UPLOADED);
-      CountyContestResultQueries.deleteForCounty(the_file.countyID());
+      int deleted = 0;
+      try {
+        deleted = cleanup(the_file.countyID());
+      } catch (final PersistenceException ex) {
+        transactionFailure(the_response, "unable to delete previously uploaded CVRs");
+        // we have to halt manually
+        halt(the_response);
+      }
       if (parser.parse()) {
         final int imported = parser.recordCount().getAsInt();
         Main.LOGGER.info(imported + " CVRs parsed from file " + the_file.id());
@@ -131,6 +136,11 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
         }
         okJSON(the_response, Main.GSON.toJson(response));
       } else {
+        try {
+          cleanup(the_file.countyID());
+        } catch (final PersistenceException e) {
+          // if we couldn't clean up, there's not much we can do about it
+        }
         Main.LOGGER.info("could not parse malformed CVR export file " + the_file.id());
         badDataContents(the_response, "malformed CVR export file " + the_file.id());
       }
@@ -138,8 +148,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
       Main.LOGGER.info("parse transactions did not complete successfully, " + 
                        "attempting cleanup");
       try {
-        CastVoteRecordQueries.deleteMatching(the_file.countyID(), RecordType.UPLOADED);
-        CountyContestResultQueries.deleteForCounty(the_file.countyID());
+        cleanup(the_file.countyID());
       } catch (final PersistenceException ex) {
         // if we couldn't clean up, there's not much we can do about it
       }
@@ -150,12 +159,39 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
     } catch (final RuntimeException | IOException e) {
       Main.LOGGER.info("could not parse malformed CVR export file " + the_file.id() + 
                        ": " + e);
+      try {
+        cleanup(the_file.countyID());
+      } catch (final PersistenceException ex) {
+        // if we couldn't clean up, there's not much we can do about it
+      }
       badDataContents(the_response, "malformed CVR export file " + the_file.id());
     }
     
     ufs.stop();
   }
 
+  /**
+   * Attempts to wipe all CVR records for a specific county. This ends any current
+   * transaction, does the delete in its own transaction, and starts a new 
+   * transaction so that one is open at all times during endpoint execution.
+   * 
+   * @param the_county_id The county ID to wipe.
+   * @return the number of deleted CVR records, if any were deleted.
+   * @exception PersistenceException if the wipe was unsuccessful.
+   */
+  private int cleanup(final Long the_county_id) {
+    if (Persistence.isTransactionActive()) {
+      Persistence.commitTransaction();
+    }
+    Persistence.beginTransaction();
+    final int result = 
+        CastVoteRecordQueries.deleteMatching(the_county_id, RecordType.UPLOADED);
+    CountyContestResultQueries.deleteForCounty(the_county_id);
+    Persistence.commitTransaction();
+    Persistence.beginTransaction();
+    return result;
+  }
+  
   /**
    * {@inheritDoc}
    */
