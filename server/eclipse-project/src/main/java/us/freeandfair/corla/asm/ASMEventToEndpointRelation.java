@@ -131,8 +131,8 @@ public class ASMEventToEndpointRelation {
     // resulting set.
     final Set<String> result = new HashSet<String>();
     for (final Pair<ASMEvent, String> p : my_relation) {
-      if (p.getFirst().equals(a_ae)) {
-        result.add(p.getSecond());
+      if (p.first().equals(a_ae)) {
+        result.add(p.second());
       }
     }
     return result;
@@ -150,8 +150,8 @@ public class ASMEventToEndpointRelation {
     // resulting set.
     final Set<ASMEvent> result = new HashSet<ASMEvent>();
     for (final Pair<ASMEvent, String> p : my_relation) {
-      if (p.getSecond().equals(an_endpoint)) {
-        result.add(p.getFirst());
+      if (p.second().equals(an_endpoint)) {
+        result.add(p.first());
       }
     }
     return result;
