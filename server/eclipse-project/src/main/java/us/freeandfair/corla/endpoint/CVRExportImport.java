@@ -153,7 +153,6 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
         // if we couldn't clean up, there's not much we can do about it
       }
       transactionFailure(the_response, "cvr import transaction failed: " + e.getMessage());
-      ufs.stop();
       // we have to halt manually because a transaction failure doesn't halt
       halt(the_response);
     } catch (final RuntimeException | IOException e) {
@@ -165,9 +164,9 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
         // if we couldn't clean up, there's not much we can do about it
       }
       badDataContents(the_response, "malformed CVR export file " + the_file.id());
+    } finally {
+      ufs.stop();
     }
-    
-    ufs.stop();
   }
 
   /**
