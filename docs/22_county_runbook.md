@@ -163,7 +163,7 @@ Board's interpretation of the ballot.
 ![Review_Screen](./screenshots/y-verify_selections.png)
 
 Note that in case of an
-overvote, the review screen will say, simply, "overvote".
+overvote, the review screen will say "Overvote for this contest".
 
 ![Overvote Screenshot](./screenshots/21-overvote_for_this_contest.png)
 
