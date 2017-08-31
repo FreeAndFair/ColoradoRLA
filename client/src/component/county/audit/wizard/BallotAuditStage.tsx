@@ -53,7 +53,8 @@ const AuditInstructions = ({ ballotNotFound, ballotsToAudit, county, currentBall
                     </tbody>
                 </table>
             </div>
-            <div>
+            <div className='pt-card'>
+                The ballot #{ currentBallot.id } has Ballot Type #{ currentBallot.ballotType }.
                 Please ensure that the paper ballot you are examining is the
                 same ballot type/ID.
             </div>
