@@ -187,6 +187,8 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
     final int result = 
         CastVoteRecordQueries.deleteMatching(the_county_id, RecordType.UPLOADED);
     CountyContestResultQueries.deleteForCounty(the_county_id);
+    final CountyDashboard cdb = Persistence.getByID(the_county_id, CountyDashboard.class);
+    cdb.setCVRUploadTimestamp(null);
     Persistence.commitTransaction();
     Persistence.beginTransaction();
     return result;
