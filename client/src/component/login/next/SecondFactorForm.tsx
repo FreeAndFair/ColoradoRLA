@@ -79,7 +79,7 @@ export default class LoginForm extends React.Component<any, any> {
     private buttonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         const { username, tokenParts } = this.state.form;
 
-        const token = tokenParts.join('');
+        const token = tokenParts.join(' ');
 
         login2F(this.props.username, token);
     }
