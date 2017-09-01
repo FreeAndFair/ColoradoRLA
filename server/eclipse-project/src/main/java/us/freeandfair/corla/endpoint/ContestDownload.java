@@ -15,8 +15,8 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.UncheckedIOException;
-import java.util.stream.Stream;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.google.gson.stream.JsonWriter;
 
@@ -25,7 +25,10 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.Contest;
+import us.freeandfair.corla.model.County;
+import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.query.ContestQueries;
 import us.freeandfair.corla.util.SparkHelper;
 
 /**
@@ -65,20 +68,23 @@ public class ContestDownload extends AbstractEndpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
+    // only return contests for counties that have finished their uploads
+    final Set<County> county_set = new HashSet<>();
+    for (final CountyDashboard cdb : Persistence.getAll(CountyDashboard.class)) {
+      if (cdb.manifestUploadTimestamp() != null && cdb.cvrUploadTimestamp() != null) {
+        county_set.add(cdb.county());
+      }
+    }
+    final Set<Contest> contest_set = ContestQueries.forCounties(county_set);
     try {
       final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
       final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
       final JsonWriter jw = new JsonWriter(bw);
       jw.beginArray();
-      final Stream<Contest> contest_stream = Persistence.getAllAsStream(Contest.class);
-      contest_stream.forEach((the_contest) -> {
-        try {
-          jw.jsonValue(Main.GSON.toJson(Persistence.unproxy(the_contest)));
-          Persistence.evict(the_contest);
-        } catch (final IOException e) {
-          throw new UncheckedIOException(e);
-        } 
-      });
+      for (final Contest contest : contest_set) {
+        jw.jsonValue(Main.GSON.toJson(Persistence.unproxy(contest)));
+        Persistence.evict(contest);
+      } 
       jw.endArray();
       jw.flush();
       jw.close();
