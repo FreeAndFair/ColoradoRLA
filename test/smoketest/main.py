@@ -680,19 +680,33 @@ def county_audit(ac, county_id):
 
     return(remaining)
 
+
+def download_report(ac, s, path, extension):
+    "Download and save the given report, adding the given extension"
+
+    r = test_endpoint_get(ac, s, "/%s" % path)
+    name = "%s.%s" % (path, extension)
+    with open(name, "wb") as f:
+        f.write(r.content)
+        print("/%s report saved as %s" % (path, name))
+
+
 def county_wrapup(ac, county_id):
     'Audit board audit-report'
 
     county_s = requests.Session()
     county_login(ac, county_s, county_id)
 
-    # r = test_endpoint_json(ac, county_s, "/intermediate-audit-report", {})
+    r = test_endpoint_json(ac, county_s, "/intermediate-audit-report", {})
     r = test_endpoint_json(ac, county_s, "/audit-report", {})
+
+    download_report(ac, county_s, "county-report", "xlsx")
 
     r = test_endpoint_get(ac, county_s, "/county-dashboard", show=False)
     logging.info("county-dashboard: %s" % r.text)
 
     print("Rounds: %s " % json.dumps(r.json()['rounds'], indent=2))
+
 
 def dos_wrapup(ac):
 
@@ -700,6 +714,9 @@ def dos_wrapup(ac):
     logging.info("dos-dashboard: %s" % r.text)
 
     r = test_endpoint_json(ac, ac.state_s, "/publish-report", {})
+
+    download_report(ac, ac.state_s, "state-report", "xlsx")
+
 
 if __name__ == "__main__":
 
