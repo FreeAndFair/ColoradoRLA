@@ -11,7 +11,7 @@ MD_DOCS := 01_book.md 05_license.md 15_installation.md 25_developer.md \
            50_requirements.md 55_specification.md 65_deployment.md 70_team.md \
            89_glossary.md 99_bibliography.md
 
-all: book.pdf book.html runbook.docx county_runbook.docx sos_runbook.docx user_manual.docx 
+all: book.pdf book.html county_runbook.docx sos_runbook.docx user_manual.docx 
 
 book.pdf: $(MD_DOCS)
 	pandoc $(MD_DOCS) --toc --variable linkcolor -f markdown -t latex -o book.pdf
