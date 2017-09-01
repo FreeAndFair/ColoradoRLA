@@ -452,10 +452,36 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   }
 
   /**
+   * Gets the CVRs to audit in the specified round. This returns a list in
+   * audit order.
+   * 
+   * @param the_round_number The round number.
+   * @return the CVRs to audit in the specified round.
+   * @exception IllegalArgumentException if the specified round doesn't exist.
+   */
+  public List<CastVoteRecord> cvrsToAuditInRound(final int the_round_number) {
+    if (the_round_number < 1 || my_rounds.size() < the_round_number) {
+      throw new IllegalArgumentException("invalid round specified");
+    }
+    final Round round = my_rounds.get(the_round_number - 1);
+    final List<CastVoteRecord> result = new ArrayList<CastVoteRecord>();
+    final Set<CastVoteRecord> unique = new HashSet<CastVoteRecord>();
+    for (int i = round.startAuditedPrefixLength(); 
+         i < round.expectedAuditedPrefixLength(); i++) {
+      final CVRAuditInfo cvrai = my_cvr_audit_info.get(i);
+      if (!unique.contains(cvrai.cvr())) {
+        result.add(cvrai.cvr());
+        unique.add(cvrai.cvr());
+      }
+    }
+    return result;
+  }
+  
+  /**
    * @return the CVR IDs remaining to audit in the current round, or an empty 
    * list if there are no CVRs remaining to audit or if no round is in progress.
    */
-  public List<Long> cvrsToAuditInCurrentRound() {
+  public List<Long> cvrsRemainingToAuditInCurrentRound() {
     final List<Long> result = new ArrayList<Long>();
     final Set<Long> found_ids = new HashSet<Long>();
     if (my_current_round_index != null) {

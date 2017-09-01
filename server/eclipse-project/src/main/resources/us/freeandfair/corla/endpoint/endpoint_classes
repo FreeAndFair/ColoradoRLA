@@ -18,6 +18,7 @@ us.freeandfair.corla.endpoint.ContestDownloadByCounty
 us.freeandfair.corla.endpoint.ContestDownloadByID
 us.freeandfair.corla.endpoint.CountyDashboardASMState
 us.freeandfair.corla.endpoint.CountyDashboardRefresh
+us.freeandfair.corla.endpoint.CountyReportDownload
 us.freeandfair.corla.endpoint.CVRDownload
 us.freeandfair.corla.endpoint.CVRDownloadByCounty
 us.freeandfair.corla.endpoint.CVRDownloadByID
@@ -37,5 +38,6 @@ us.freeandfair.corla.endpoint.SetElectionInfo
 us.freeandfair.corla.endpoint.SetRandomSeed
 us.freeandfair.corla.endpoint.SignOffAuditRound
 us.freeandfair.corla.endpoint.StartAuditRound
+us.freeandfair.corla.endpoint.StateReportDownload
 us.freeandfair.corla.endpoint.Unauthenticate
 us.freeandfair.corla.endpoint.UploadFile

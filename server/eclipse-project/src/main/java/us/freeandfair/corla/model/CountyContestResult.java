@@ -16,11 +16,13 @@ import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.OptionalInt;
@@ -66,9 +68,8 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
                           unique = true),
                    @Index(name = "idx_ccr_county", columnList = "county_id"),
                    @Index(name = "idx_ccr_contest", columnList = "contest_id") })
-//this class has many fields that would normally be declared final, but
-//cannot be for compatibility with Hibernate and JPA.
-@SuppressWarnings({"PMD.TooManyMethods", "PMD.ImmutableField", "PMD.ExcessiveImports"})
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.ImmutableField", "PMD.ExcessiveImports",
+    "PMD.GodClass"})
 public class CountyContestResult implements PersistentEntity, Serializable {
   /**
    * The "my_id" string.
@@ -248,6 +249,26 @@ public class CountyContestResult implements PersistentEntity, Serializable {
   }
   
   /**
+   * @return a list of the choices in descending order by number of votes
+   * received.
+   */
+  public List<String> rankedChoices() {
+    final List<String> result = new ArrayList<String>();
+    final SortedMap<Integer, String> sorted_totals = 
+        new TreeMap<Integer, String>(new ReverseIntegerComparator());
+    for (final Entry<String, Integer> e : my_vote_totals.entrySet()) {
+      sorted_totals.put(e.getValue(), e.getKey());
+    }
+    final Iterator<Entry<Integer, String>> iterator = 
+        sorted_totals.entrySet().iterator();
+    while (iterator.hasNext()) {
+      final Entry<Integer, String> entry = iterator.next();
+      result.add(entry.getValue());
+    }
+    return result;
+  }
+  
+  /**
    * Compute the pairwise margin between the specified choices.
    * If the first choice has more votes than the second, the
    * result will be positive; if the second choie has more 
@@ -269,6 +290,71 @@ public class CountyContestResult implements PersistentEntity, Serializable {
       result = OptionalInt.empty();
     } else {
       result = OptionalInt.of(first_votes - second_votes);
+    }
+    
+    return result;
+  }
+  
+  /**
+   * Computes the margin between the specified choice and the next choice. 
+   * If the specified choice is the last choice, or is not a valid choice,
+   * the margin is empty. 
+   * 
+   * @param the_choice The choice.
+   * @return the margin.
+   */
+  public OptionalInt marginToNext(final String the_choice) {
+    final OptionalInt result;
+    final List<String> choices = rankedChoices();
+    final int index = choices.indexOf(the_choice);
+    
+    if (index < 0 || index == choices.size() - 1) {
+      result = OptionalInt.empty();
+    } else {
+      result = OptionalInt.of(voteTotals().get(the_choice) - 
+                              voteTotals().get(choices.get(index + 1)));
+    }
+    
+    return result;
+  }
+  
+  /**
+   * Computes the diluted margin between the specified choice and the next
+   * choice. If the specified choice is the last choice or is not a valid 
+   * choice, or the margin is undefined, the result is null.
+   * 
+   * @param the_choice The choice.
+   * @return the margin.
+   */
+  public BigDecimal countyDilutedMarginToNext(final String the_choice) {
+    BigDecimal result = null;
+    final OptionalInt margin = marginToNext(the_choice);
+    
+    if (margin.isPresent() && my_county_ballot_count > 0) {
+      result = BigDecimal.valueOf(margin.getAsInt()).
+                   divide(BigDecimal.valueOf(my_county_ballot_count), 
+                          MathContext.DECIMAL128);
+    }
+    
+    return result;
+  }
+  
+  /**
+   * Computes the diluted margin between the specified choice and the next
+   * choice. If the specified choice is the last choice or is not a valid 
+   * choice, or the margin is undefined, the result is null.
+   * 
+   * @param the_choice The choice.
+   * @return the margin.
+   */
+  public BigDecimal contestDilutedMarginToNext(final String the_choice) {
+    BigDecimal result = null;
+    final OptionalInt margin = marginToNext(the_choice);
+    
+    if (margin.isPresent() && my_contest_ballot_count > 0) {
+      result = BigDecimal.valueOf(margin.getAsInt()).
+                   divide(BigDecimal.valueOf(my_contest_ballot_count), 
+                          MathContext.DECIMAL128);
     }
     
     return result;

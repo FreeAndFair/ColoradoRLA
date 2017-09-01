@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.persistence.Cacheable;
@@ -413,6 +414,48 @@ public class CastVoteRecord implements PersistentEntity, Serializable {
      */
     public boolean isAuditorGenerated() {
       return this == AUDITOR_ENTERED || this == PHANTOM_BALLOT;
+    }
+  }
+  
+  /**
+   * A comparator to sort CVRLocationResponse objects by scanner ID, then batch ID,
+   * then record ID.
+   */
+  @SuppressWarnings("PMD.AtLeastOneConstructor")
+  public static class BallotOrderComparator 
+      implements Serializable, Comparator<CastVoteRecord> {
+    /**
+     * The serialVersionUID.
+     */
+    private static final long serialVersionUID = 1;
+    
+    /**
+     * Orders two CVRToAuditResponses lexicographically by the triple
+     * (scanner_id, batch_id, record_id).
+     * 
+     * @param the_first The first response.
+     * @param the_second The second response.
+     * @return a positive, negative, or 0 value as the first response is
+     * greater than, equal to, or less than the second, respectively.
+     */
+    @SuppressWarnings("PMD.ConfusingTernary")
+    public int compare(final CastVoteRecord the_first, 
+                       final CastVoteRecord the_second) {
+      final int scanner = the_first.scannerID() - the_second.scannerID();
+      final int batch = the_first.batchID() - the_second.batchID();
+      final int record = the_first.recordID() - the_second.recordID();
+      
+      final int result;
+      
+      if (scanner != 0) {
+        result = scanner;
+      } else if (batch != 0) {
+        result = batch;
+      } else {
+        result = record;
+      }
+      
+      return result;
     }
   }
 }
