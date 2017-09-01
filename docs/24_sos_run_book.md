@@ -97,9 +97,6 @@ Rule 25 calls these "contests to be audited".
 
 The Secretary of State enters the random seed. Note that once the seed is entered, it cannot be changed. 
 
-**[SCREENSHOT NEEDS UPDATE] [new text] ** 
-
-
 ![State Random Seed Entry Screenshot](./screenshots/12-enter_random_seed_about_to_click.png)
 
 If the random seed is not exactly 20 digits long, the system shows a red error message. User will have to click the "Back" button and try again.
