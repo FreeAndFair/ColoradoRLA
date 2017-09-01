@@ -42,7 +42,7 @@ The RLA Tool will direct users to the Department of
 State home page. At the start of the audit process, this page will contain no information  Note the 
 logout button ![Logout Button](./screenshots/LogoutButton.png), in the upper right of this (and every) page.
 
-![Secretary of State Home Screenshot](./screenshots/2-sos_audit_status.png)
+![Secretary of State Home Screenshot](./screenshots/2-sos_initial_landing_page.png)
 
 ### Navigation
 
@@ -55,7 +55,7 @@ Note the navigation menu in the upper left corner.
 Text indicating the status of the audit is near the top of the page. 
 **[SCREENSHOT NEEDS UPDATE]**
 
-![Audit Status Message Screenshot](./screenshots/2-sos_initial_landing_page.png)
+![Audit Status Message Screenshot](./screenshots/2-sos_audit_status.png)
 
 ### 25.2.2 (A), Entering the Risk Limit
 
