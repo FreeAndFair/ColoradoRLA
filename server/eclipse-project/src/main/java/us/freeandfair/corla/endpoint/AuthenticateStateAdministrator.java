@@ -63,7 +63,8 @@ public class AuthenticateStateAdministrator extends AbstractEndpoint {
         Main.authentication().authenticationCredentials(the_request);
     if (Main.authentication().
         secondFactorAuthenticatedAs(the_request, STATE, credentials.username())) {
-      ok(the_response, "Already fully authenticated");
+      okJSON(the_response, 
+             Main.GSON.toJson(Main.authentication().authenticationStatus(the_request)));
     } else {
       if (Main.authentication().
           authenticateAdministrator(the_request, the_response,

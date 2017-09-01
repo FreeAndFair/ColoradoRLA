@@ -16,8 +16,6 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.Administrator;
-import us.freeandfair.corla.model.Administrator.AdministratorType;
-import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.query.AdministratorQueries;
 
 /**
@@ -51,59 +49,13 @@ public final class DatabaseAuthentication extends AbstractAuthentication
         AdministratorQueries.byUsername(the_username);
     return admin != null; 
   }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public boolean traditionalAuthenticated(final Request the_request,
-                                          final String the_username) {
-    final String auth_stage = 
-        the_request.session().attribute(AuthenticationInterface.AUTH_STAGE);
-    return auth_stage != null && 
-        (auth_stage.equals(AuthenticationInterface.SECOND_FACTOR) ||
-            auth_stage.equals(AuthenticationInterface.ADMIN));
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public boolean isAuthenticatedAs(final Request the_request,
-                                   final AdministratorType the_type,
-                                   final String the_username) {
-    boolean result = false;
-    final Object admin_attribute = the_request.session().attribute(ADMIN);
-    if (admin_attribute instanceof Administrator) {
-      final Administrator admin = (Administrator) admin_attribute;
-      result = admin.type() == the_type;
-      the_request.session().attribute(ADMIN, admin);
-    } else if (admin_attribute != null) {
-      // this should never happen since we control what's in the session object,
-      // but if it does, we'll clear out that attribute and thereby force another
-      // authentication
-      Main.LOGGER.error("Invalid admin type detected in session.");
-      deauthenticate(the_request, the_username);
-    }
-    return result;
-  }
   
   /**
    * {@inheritDoc}
    */
   @Override
-  public void deauthenticate(final Request the_request,
-                                final String the_username) {
-    traditionalDeauthenticate(the_request, the_username);
-    twoFactorDeauthenticate(the_request, the_username);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   public void traditionalDeauthenticate(final Request the_request,
-                                           final String the_username) {
+                                        final String the_username) {
     the_request.session().removeAttribute(ADMIN);
     Main.LOGGER.info("session is now traditionally deauthenticated");
   }
@@ -113,25 +65,8 @@ public final class DatabaseAuthentication extends AbstractAuthentication
    */
   @Override
   public void twoFactorDeauthenticate(final Request the_request,
-                                         final String the_username) {
+                                      final String the_username) {
     the_request.session().removeAttribute(ADMIN);
     Main.LOGGER.info("session is now second factor deauthenticated");
-  }
-  
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public County authenticatedCounty(final Request the_request) {
-    County result = null;
-    if (isAuthenticatedAs(the_request, AdministratorType.COUNTY,
-                    the_request.queryParams(AuthenticationInterface.USERNAME))) {
-      final Administrator admin = 
-          (Administrator) the_request.session().attribute(ADMIN);
-      if (admin != null) {
-        result = admin.county();
-      }
-    }
-    return result;
   }
 }

@@ -29,7 +29,7 @@ import us.freeandfair.corla.model.Administrator;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class Authenticate extends AbstractEndpoint {
+public class AuthenticateAdministrator extends AbstractEndpoint {
   /**
    * @return no authorization is required for this endpoint.
    */
@@ -94,7 +94,8 @@ public class Authenticate extends AbstractEndpoint {
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
     if (Main.authentication().secondFactorAuthenticated(the_request)) {
-      ok(the_response, "Already second-factor authenticated");
+      okJSON(the_response, 
+             Main.GSON.toJson(Main.authentication().authenticationStatus(the_request)));
     } else {
       final SubmittedCredentials credentials =
           Main.authentication().authenticationCredentials(the_request);
@@ -103,16 +104,8 @@ public class Authenticate extends AbstractEndpoint {
                                     credentials.username(),
                                     credentials.password(),
                                     credentials.secondFactor())) {
-        final Object admin_attribute =
-            the_request.session().attribute(AuthenticationInterface.ADMIN);
-        if (admin_attribute instanceof Administrator)  {
-          final Administrator admin = (Administrator) admin_attribute; 
-          okJSON(the_response, Main.GSON.toJson(admin.type()));
-        } else {
-          // this should never happen
-          Main.LOGGER.error("logic error in admin session attribute");
-          unauthorized(the_response, "Authentication failed");
-        }
+        okJSON(the_response,
+               Main.GSON.toJson(Main.authentication().authenticationStatus(the_request)));
       } else {
         unauthorized(the_response, "Authentication failed");
       }

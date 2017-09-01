@@ -151,7 +151,7 @@ public interface AuthenticationInterface {
    * @return true iff the session is authenticated either traditionally
    * or with a second factor.
    */
-  boolean isAuthenticated(Request the_request);
+  boolean authenticated(Request the_request);
   
   /**
    * @return true iff the session is authenticated in any way
@@ -160,7 +160,7 @@ public interface AuthenticationInterface {
    * @param the_username the username of the person to check.
    * @param the_type the type of the administrator.
    */
-  boolean isAuthenticatedAs(Request the_request,
+  boolean authenticatedAs(Request the_request,
                             AdministratorType the_type,
                             String the_username);
      

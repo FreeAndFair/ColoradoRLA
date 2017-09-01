@@ -12,7 +12,6 @@
 package us.freeandfair.corla.auth;
 
 import static us.freeandfair.corla.auth.AuthenticationStage.*;
-import static us.freeandfair.corla.model.Administrator.AdministratorType.COUNTY;
 
 import javax.persistence.PersistenceException;
 
@@ -160,27 +159,11 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
   @Override
   public County authenticatedCounty(final Request the_request) {
     County result = null;
-<<<<<<< HEAD
-    if (isAuthenticatedAs(the_request, AdministratorType.COUNTY,
-                    the_request.queryParams(AuthenticationInterface.USERNAME))) {
+    if (secondFactorAuthenticated(the_request)) {
       final Administrator admin = 
           (Administrator) the_request.session().attribute(ADMIN);
       if (admin != null) {
         result = admin.county();
-=======
-    final Object auth_stage_attribute =
-        the_request.session().attribute(AuthenticationInterface.AUTH_STAGE);
-    if (auth_stage_attribute instanceof AuthenticationStage &&
-        ((AuthenticationStage) auth_stage_attribute) == SECOND_FACTOR_AUTHENTICATED) {
-      final Object admin_attribute =
-          the_request.session().attribute(ADMIN);
-      if (admin_attribute instanceof Administrator) {
-        final Administrator admin = (Administrator) admin_attribute;
-        final String username = admin.username();
-        if (isAuthenticatedAs(the_request, COUNTY, username)) {
-          result = CountyQueries.forAdministrator(admin);
-        }
->>>>>>> Snapshot of ongoing debug work for Dan.
       }
     }
     return result;
@@ -244,11 +227,14 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
    */
   @Override
   public boolean traditionalAuthenticated(final Request the_request) {
-    final AuthenticationStage auth_stage = 
-        (AuthenticationStage) (the_request.session().attribute(AUTH_STAGE));
-    return auth_stage != null &&
-        (auth_stage == SECOND_FACTOR_AUTHENTICATED ||
-         auth_stage == TRADITIONALLY_AUTHENTICATED);
+    final Object auth_stage_attribute = 
+        the_request.session().attribute(AuthenticationInterface.AUTH_STAGE);
+    AuthenticationStage auth_stage = null;
+    if (auth_stage_attribute instanceof AuthenticationStage) {
+      auth_stage = (AuthenticationStage) auth_stage_attribute;
+    }
+    return auth_stage != null && 
+           auth_stage == TRADITIONALLY_AUTHENTICATED;
   }
   
   /**
@@ -263,31 +249,31 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
       auth_stage = (AuthenticationStage) auth_stage_attribute;
     }
     return auth_stage != null && 
-        auth_stage == SECOND_FACTOR_AUTHENTICATED;
+           auth_stage == SECOND_FACTOR_AUTHENTICATED;
   }
   
   /**
    * {@inheritDoc}
    */
   @Override
-  public boolean isAuthenticated(final Request the_request) {
+  public boolean authenticated(final Request the_request) {
     final Object auth_stage_attribute = 
-        the_request.session().attribute(AUTH_STAGE);
+        the_request.session().attribute(AuthenticationInterface.AUTH_STAGE);
+    AuthenticationStage auth_stage = null;
     if (auth_stage_attribute instanceof AuthenticationStage) {
-      return ((AuthenticationStage) 
-               the_request.session().attribute(AUTH_STAGE)) == 
-                   SECOND_FACTOR_AUTHENTICATED;
+      auth_stage = (AuthenticationStage) auth_stage_attribute;
     }
-    return false;
+    return auth_stage != null && 
+           auth_stage != NO_AUTHENTICATION;
   }
   
   /**
    * {@inheritDoc}
    */
   @Override
-  public boolean isAuthenticatedAs(final Request the_request,
-                                   final AdministratorType the_type,
-                                   final String the_username) {
+  public boolean authenticatedAs(final Request the_request,
+                                 final AdministratorType the_type,
+                                 final String the_username) {
     boolean result = false;
     final Object auth_stage_attribute =
         the_request.session().attribute(AuthenticationInterface.AUTH_STAGE);
@@ -299,7 +285,7 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
       final Administrator admin = (Administrator) admin_attribute;
       result = stage != NO_AUTHENTICATION &&
                admin.type() == the_type &&
-               the_username.equals(admin.username());
+               admin.username().equals(the_username);
     } else if (auth_stage_attribute != null || admin_attribute != null) {
       // this should never happen since we control what's in the session object,
       // but if it does, we'll clear out that attribute and thereby force another
@@ -416,7 +402,7 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
               the_request.queryParams(SECOND_FACTOR));
     }
     // If there wasn't an HTTP params one, is the session already authenticated? 
-    if (result == null && isAuthenticated(the_request)) {
+    if (result == null && authenticated(the_request)) {
       final Administrator admin = (Administrator) the_request.session().attribute(ADMIN);
       result = new SubmittedCredentials(admin.username(), null, null);
     }

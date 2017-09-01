@@ -11,7 +11,6 @@
 
 package us.freeandfair.corla.endpoint;
 
-import static us.freeandfair.corla.auth.AuthenticationStage.SECOND_FACTOR_AUTHENTICATED;
 import static us.freeandfair.corla.model.Administrator.AdministratorType.*;
 
 import java.time.Instant;
@@ -31,11 +30,8 @@ import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.ASMUtilities;
 import us.freeandfair.corla.asm.AbstractStateMachine;
 import us.freeandfair.corla.auth.AuthenticationInterface;
-import us.freeandfair.corla.auth.AuthenticationStage;
 import us.freeandfair.corla.json.Result;
-import us.freeandfair.corla.json.SubmittedCredentials;
 import us.freeandfair.corla.model.Administrator;
-import us.freeandfair.corla.model.Administrator.AdministratorType;
 import us.freeandfair.corla.model.LogEntry;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.LogEntryQueries;
@@ -600,26 +596,23 @@ public abstract class AbstractEndpoint implements Endpoint {
   public static boolean checkAuthorization(final Request the_request, 
                                            final AuthorizationType the_type) {
     boolean result = the_type == AuthorizationType.NONE;
-    final boolean state;
-    final boolean county;
-    final Object auth_stage_attribute =
-        the_request.session().attribute(AuthenticationInterface.AUTH_STAGE);
-    if (auth_stage_attribute instanceof AuthenticationStage) {
-      if ((AuthenticationStage) auth_stage_attribute ==
-          SECOND_FACTOR_AUTHENTICATED) {
-        final Object admin_attribute = 
-            the_request.session().attribute(AuthenticationInterface.ADMIN);
-        if (admin_attribute instanceof Administrator) {
-          final AdministratorType admin_type = ((Administrator) admin_attribute).type();
-          state = admin_type == STATE;
-          county = admin_type == COUNTY;
-        } else {
-          final SubmittedCredentials credentials =
-              Main.authentication().authenticationCredentials(the_request);
-          final String username = credentials.username(); 
-          state = Main.authentication().isAuthenticatedAs(the_request, STATE, username);
-          county = Main.authentication().isAuthenticatedAs(the_request, COUNTY, username);
+    if (!result) {
+      final boolean state;
+      final boolean county;
+    
+      if (Main.authentication().secondFactorAuthenticated(the_request)) {
+        final Administrator admin = 
+            Main.authentication().authenticatedAdministrator(the_request);
+        if (admin == null) {
+          state = false; 
+          county = false;
+        } else { 
+          state = 
+              Main.authentication().authenticatedAs(the_request, STATE, admin.username());
+          county = 
+              Main.authentication().authenticatedAs(the_request, COUNTY, admin.username());
         }
+
         switch (the_type) {
           case STATE: 
             result = state;
@@ -634,13 +627,8 @@ public abstract class AbstractEndpoint implements Endpoint {
             break;
 
           case NONE:
-
           default:
         }
-      } else {
-        // this session is not authenticated, so we only return true
-        // if the requested auth type was NONE
-        result = the_type == AuthorizationType.NONE;
       }
     }
       
