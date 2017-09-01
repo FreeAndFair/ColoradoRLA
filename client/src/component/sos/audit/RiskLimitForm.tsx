@@ -81,6 +81,7 @@ class RiskLimitForm extends React.Component<FormProps & any, FormState> {
                     onBlur={ this.onBlur }
                     stepSize={ toPercent(0.01) }
                     value={ comparisonField }
+                    onButtonClick={ this.onButtonClick }
                     onValueChange={ this.onComparisonValueChange } />
             </label>
         );
@@ -90,6 +91,16 @@ class RiskLimitForm extends React.Component<FormProps & any, FormState> {
                 { comparisonFormField }
             </div>
         );
+    }
+
+    private onButtonClick = (_: number, field: string) => {
+        const s = { ...this.state };
+
+        s.comparisonField = field;
+        const parsedComparisonField = parseFloat(s.comparisonField);
+        s.comparisonLimit = fromPercent(parsedComparisonField);
+
+        this.setState(s);
     }
 
     private onBlur = () => {
