@@ -66,7 +66,7 @@ const AuditInstructions = (props: any) => {
                 <div className='pt-card'>
                     The ballot card #{ currentBallotNumber } has Ballot
                     Type #{ currentBallot.ballotType } and ID { currentBallot.imprintedId }.
-                    Please ensure that the paper ballot you are examining is the same ballot
+                    Please ensure that the paper ballot you are examining is the same Ballot
                     Type/ID.
                 </div>
                 <div className='pt-card'>
