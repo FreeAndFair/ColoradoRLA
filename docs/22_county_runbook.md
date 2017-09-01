@@ -177,7 +177,7 @@ The next ballot will then be displayed and the process
 continues until the end of the round, when the screen will show the 
 end-of-round page, with boxes for the Audit Board to "sign" their approval of the round by entering their names as indicated. [SCREENSHOT NEEDS UPDATE]
 
-![End of Round Screenshot](./screenshotsEnd_of_Round_One.png)
+![End of Round Screenshot](./screenshots/End_of_Round_One.png)
 
 
 Note that while the audit is in progress, the County Home page 
