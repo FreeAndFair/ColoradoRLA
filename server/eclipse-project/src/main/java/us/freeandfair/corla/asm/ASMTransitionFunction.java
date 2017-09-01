@@ -195,7 +195,7 @@ public interface ASMTransitionFunction {
                         AUDIT_IN_PROGRESS)),
     I(new ASMTransition(AUDIT_IN_PROGRESS,
                         SUBMIT_INTERMEDIATE_AUDIT_REPORT_EVENT,
-                        AUDIT_IN_PROGRESS)),
+                        AUDIT_BOARD_SIGNED_OUT)),
     J(new ASMTransition(AUDIT_IN_PROGRESS,
                         ROUND_COMPLETE_EVENT,
                         WAITING_FOR_ROUND_SIGN_OFF)),

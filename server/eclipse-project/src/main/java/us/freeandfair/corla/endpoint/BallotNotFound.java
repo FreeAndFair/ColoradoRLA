@@ -11,6 +11,8 @@
 
 package us.freeandfair.corla.endpoint;
 
+import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.*;
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +27,6 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
-import us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent;
 import us.freeandfair.corla.controller.ComparisonAuditController;
 import us.freeandfair.corla.json.SubmittedBallotNotFound;
 import us.freeandfair.corla.model.CVRAuditInfo;
@@ -48,6 +49,11 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
     "PMD.ModifiedCyclomaticComplexity", "PMD.StdCyclomaticComplexity"})
 public class BallotNotFound extends AbstractAuditBoardDashboardEndpoint {
   /**
+   * The event we will return for the ASM.
+   */
+  private final ThreadLocal<ASMEvent> my_event = new ThreadLocal<ASMEvent>();
+  
+  /**
    * {@inheritDoc}
    */
   @Override
@@ -68,7 +74,15 @@ public class BallotNotFound extends AbstractAuditBoardDashboardEndpoint {
    */
   @Override
   public ASMEvent endpointEvent() {
-    return AuditBoardDashboardEvent.REPORT_BALLOT_NOT_FOUND_EVENT;
+    return my_event.get();
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void reset() {
+    my_event.set(null);
   }
   
   /**
@@ -84,6 +98,7 @@ public class BallotNotFound extends AbstractAuditBoardDashboardEndpoint {
   // FindBugs thinks we can deference a null CVR, but we can't because
   // badDataContents() (which ends the method's execution) would get called first
   @SuppressFBWarnings("NP_NULL_ON_SOME_PATH")
+  @SuppressWarnings("PMD.NPathComplexity")
   public String endpoint(final Request the_request, final Response the_response) {
     // we must be authenticated as a county
     final County county = Main.authentication().authenticatedCounty(the_request);
@@ -129,6 +144,12 @@ public class BallotNotFound extends AbstractAuditBoardDashboardEndpoint {
       Persistence.saveOrUpdate(acvr);
       if (ComparisonAuditController.submitAuditCVR(cdb, cvr, acvr)) {
         ok(the_response, "audit CVR submitted");
+      }
+      if (cdb.ballotsRemainingInCurrentRound() == 0) {
+        // the round is over
+        my_event.set(ROUND_COMPLETE_EVENT);
+      } else {
+        my_event.set(REPORT_BALLOT_NOT_FOUND_EVENT);
       }
     } catch (final JsonParseException e) {
       badDataType(the_response, "invalid request format");
