@@ -90,7 +90,7 @@ comparison audits.
 On this page county officials upload their hashed verified Ballot
 Manifest and CVR files.
 
-![Audit Upload Screenshot](./screenshots/County7-county_uploads_um.png)
+![Audit Upload Screenshot](./screenshots/7-county_uploads_um.png)
 
 \newpage
 ### Entering the Random Seed
