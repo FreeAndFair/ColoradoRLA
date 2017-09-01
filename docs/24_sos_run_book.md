@@ -55,7 +55,7 @@ Note the navigation menu in the upper left corner.
 Text indicating the status of the audit is near the top of the page. 
 **[SCREENSHOT NEEDS UPDATE]**
 
-![Audit Status Message Screenshot]()
+![Audit Status Message Screenshot](./screenshots/2-sos_initial_landing_page.png)
 
 ### 25.2.2 (A), Entering the Risk Limit
 
