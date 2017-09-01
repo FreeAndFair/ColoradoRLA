@@ -5,6 +5,8 @@ import counties from '../../../data/counties';
 
 import CountyHomePage from './CountyHomePage';
 
+import finishAudit from '../../../action/county/finishAudit';
+
 import auditBoardSignedIn from '../../../selector/county/auditBoardSignedIn';
 import auditComplete from '../../../selector/county/auditComplete';
 import canAudit from '../../../selector/county/canAudit';
@@ -29,6 +31,7 @@ class CountyHomeContainer extends React.Component<any, any> {
             canAudit,
             canSignIn,
             countyInfo,
+            finishAudit,
             startAudit,
             ...this.props,
         };

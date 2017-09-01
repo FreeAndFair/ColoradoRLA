@@ -29,6 +29,7 @@ const Main = (props: any) => {
         auditButtonDisabled,
         auditComplete,
         boardSignIn,
+        finishAudit,
         name,
         signInButtonDisabled,
         startAudit,
@@ -53,7 +54,7 @@ const Main = (props: any) => {
             <div>
                 The audit is complete. Please click "Submit" to submit the final audit report.
             </div>
-            <button className='pt-button pt-intent-primary'>
+            <button className='pt-button pt-intent-primary' onClick={ finishAudit }>
                 Submit
             </button>
         </div>
@@ -190,6 +191,7 @@ const CountyHomePage = (props: any) => {
         county,
         countyInfo,
         countyDashboardRefresh,
+        finishAudit,
         startAudit,
     } = props;
     const {
@@ -213,6 +215,7 @@ const CountyHomePage = (props: any) => {
                       auditBoardSignedIn={ auditBoardSignedIn }
                       boardSignIn={ boardSignIn }
                       auditButtonDisabled={ auditButtonDisabled }
+                      finishAudit={ finishAudit }
                       name={ countyInfo.name }
                       signInButtonDisabled={ signInButtonDisabled }
                       startAudit={ startAudit } />
