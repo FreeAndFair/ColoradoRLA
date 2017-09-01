@@ -25,19 +25,20 @@ determining actual risk levels. While audits are ongoing,
 the Secretary of State can monitor the progress of the individual
 County audit boards.
 
-The RLA Tool also creates export files for use in the Audit Center, a
+The RLA Tool also exports reports and files for use in the Audit Center, a
 website required by Rule 25 to disseminate audit-related information
 to the public.
  
 ### Logging In
 
-Persons from the Secretary of State's office must log in to the RLA Tool.
+Department of State users must log in to the RLA Tool.
+**[SCREENSHOT NEEDS UPDATE]**
 
 ![State Login Screenshot](./screenshots/1-sos_login.png)
 
-The RLA Tool will direct users to the (initially empty) Department of 
-State home page. Note the logout button, circled in the upper right 
-of this (and every) page.
+The RLA Tool will direct users to the Department of 
+State home page. At the start of the audit process, this page will contain no information  Note the 
+logout button ![Logout Button](./screenshots/LogoutButton.png), in the upper right of this (and every) page.
 
 ![Secretary of State Home Screenshot](./screenshots/2-sos_initial_landing_page.png)
 
@@ -47,83 +48,88 @@ Note the navigation menu in the upper left corner.
 
 ![Secretary of State Navigation Screenshot](./screenshots/2-sos_nav.png)
 
+### Audit Status
+
+Text indicating the status of the audit is near the top of the page. 
+**[SCREENSHOT NEEDS UPDATE]**
+
+![Audit Status Message Screenshot]()
+
 ### 25.2.2 (A), Entering the Risk Limit
 
 The Secretary of State will enter date the election will take place, the type
-of election, and the Risk Limit. Once their selections are entered click ‘Save
-and Next.’
+of election, and the Risk Limit. Note that once these selections are entered  they cannot be modified. To continue, click ‘Save
+and Next.’ 
+
+The County Update table allows the Secretary of State to see which Counties have uploaded which files. 
+
+**[SCREENSHOT NEEDS UPDATE] [missing]**
+
 
 ![State Risk Limit Entry Screenshot](./screenshots/4-sos_define_audit_save_and_next.png)
 
-Once this is done you will see a message saying ‘Waiting for counties to upload contest
-data.’
+Note the change in the status message now that the Risk Limit has been entered.
 
 ![Waiting For Counties to Upload Contest Data](./screenshots/6-comparison_risk_limit_now_set.png)
 
-Once the Counties have successfully uploaded their ballot manifests and CVR
-files use the dropdown menu to define the audit.
+The County Update table allows the Secretary of State to see which Counties have uploaded which files. When the Counties have uploaded the necessary files, the Secretary of State can proceed to define the audit — choose contests and set the risk limit — 
+using the dropdown menu on the upper left.
+
+**[SCREENSHOT NEEDS UPDATE] [show realistic County status] ** 
+
 
 ![Define the Audit Button](./screenshots/3-sos_define_audit_button_in_dropdown.png)
 
-### 25.2.2 (B) - (E)
 
-These parts of Rule 25 must be completed outside of the RLA Tool.
+The County Update table allows the Secretary of State to see which Counties have uploaded which files. 
 
-
-The upload of RLA Tabulation Results Export to the State's Election
-Night Reporting System required by 25.2.2 (F)(3) must be completed
-outside of the RLA Tool.
 
 ### 25.2.2 (I) Selecting Contests
 
 The Secretary of State will then select the contests that will drive the
-sample size and stop/go decisions for each round.  Note that while
-Rule 25 calls these "contests to be audited", the RLA Tool effectively
-audits all contests, while using the contests selected by the
-Secretary of State to calculate the risk levels.
+sample size and stop/go decisions for each round.  Rule
+Rule 25 calls these "contests to be audited".
+
+**[SCREENSHOT NEEDS UPDATE] [new set of dropdown choices, County names not Contest IDs] ** 
 
 ![State Contest Selection Screenshot](./screenshots/8-sos_selects_contest_reason_why_dropdown.png)
 
 ### 25.2.2 (H), Entering the Random Seed
 
-The Secretary of State will enter the random seed.
+The Secretary of State enters the random seed. Note that once the seed is entered, it cannot be changed. 
+
+**[SCREENSHOT NEEDS UPDATE] [new text] ** 
+
 
 ![State Random Seed Entry Screenshot](./screenshots/12-enter_random_seed_about_to_click.png)
 
-You will receive the following error if the random seed is not long enough.
+If the random seed is not exactly 20 digits long, the system shows a red error message. User will have to click the "Back" button and try again.
+
+**[SCREENSHOT NEEDS UPDATE] [orange arrow pointing to back button] ** 
 
 ![State Random Seed Entry Incorrect](./screenshots/13-entered_incorrect_random_seed.png)
 
 
-The RLA Tool uses the random seed in the required pseudo-random number
-generator. Once the random seed is entered the audit has begun.
+Once the random seed is entered the the Secretary of State can launch the audit by clicking the "Launch Audit" button.
+
+**[SCREENSHOT NEEDS UPDATE] [missing, show good Audit Def'n Review with orange arrow to "Launch Audit" button] ** 
 
 ![Audit Has Begun](./screenshots/15-the_audit_is_launched.png)
 
-### 25.2.2 (K) Random Selection of Ballot Cards for Audit
+### Audit Rounds
 
-Based on the pseudo-random number generator and random seed from
-25.2.2 (H) and the current risk levels, the RLA Tool determines the
-selection of ballot cards for audit. This information is reported to the 
-County dashboard. The RLA Tool also exports all of this information (general election
-information, random seed, contests selected to guide the audit, etc.)
-in a standard format, which the Secretary of State can post to the
-Audit Center hosted on the Secretary of State website.
+Once the audit is launched, the first round of the audit begins. In each round, the tool shows each County a list of ballot cards to be reviewed. As the County Audit Boards review ballot cards and enter interpretations, the Secretary of State can see the number of ballot cards reviewed so far, the number of ballot cards with discrepancies, 
+<!— the number of disagreements —>
+and the number of ballot cards yet to be reviewed in the current round in the County Update table. 
 
-### 25.2.3 (A) Ballot Retrieval, Chain of Custody and Examination
-
-Ballot retrieval from storage container and verification of seals
-relative to the chain-of-custody logs must be done outside the RLA
-Tool.
+<!— and what of the "Contest Update" table? —>
 
 ### 25.2.3 (C) Comparisons, Termination, Additional Ballots
 
-The RLA Tool performs the comparison of the Audit Board's
-interpretations with the corresponding cast vote record from the
-voting computer system. RLA Tool permits the Secretary of State to 
+The RLA Tool permits the Secretary of State to 
 see the progress of audit for selected contests and the estimated 
 number of ballot cards remaining to be audited to meet the risk limit.
-NEED BETTER SCREENSHOT THAT SHOWS MORE COUNTIES
+**[SCREENSHOT NEEDS UPDATE] [show more counties]**
 
 ![Secretary of State Mid-Audit Screen](./screenshots/16-audit_status.png)
 
