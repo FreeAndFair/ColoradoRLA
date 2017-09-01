@@ -2244,7 +2244,7 @@ BEGIN
   two_factor_authentication: TYPE =
     [[username, password], [physical_token + biometric]]
 %%% Two-factor authentication protocols use a
-%%% \texttt{two_factor_challenge} to prompt a user to answer a
+%%% \texttt{two\_factor\_challenge} to prompt a user to answer a
 %%% response, thereby exhibiting that the user owns/controls the
 %%% second factor.
   two_factor_challenge: TYPE
