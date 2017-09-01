@@ -38,8 +38,8 @@ export default class LoginForm extends React.Component<any, any> {
                            value={ form.password } />
                 </label>
                 <button
+                    className='pt-button pt-intent-primary submit'
                     disabled={ disabled }
-                    className='pt-primary submit'
                     onClick={ this.buttonClick }>
                     Submit
                 </button>

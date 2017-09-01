@@ -66,8 +66,8 @@ export default class LoginForm extends React.Component<any, any> {
                     onTokenChange={ this.onTokenChange }
                     tokenParts={ form.tokenParts } />
                 <button
+                    className='pt-button pt-intent-primary submit'
                     disabled={ disabled }
-                    className='pt-primary submit'
                     onClick={ this.buttonClick }>
                     Submit
                 </button>
