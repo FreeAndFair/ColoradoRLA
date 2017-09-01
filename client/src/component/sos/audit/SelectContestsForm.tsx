@@ -66,12 +66,6 @@ const ContestRow = (props: any) => {
             <td>{ contest.name }</td>
             <td>
                 <Checkbox
-                    disabled={ toAudit }
-                    checked={ handCount }
-                    onChange={ onHandCountChange } />
-            </td>
-            <td>
-                <Checkbox
                     disabled={ handCount }
                     checked={ toAudit }
                     onChange={ onAuditChange } />
@@ -132,7 +126,6 @@ class SelectContestsForm extends React.Component<any, any> {
                         <tr>
                             <th>Contest ID</th>
                             <th>Contest Name</th>
-                            <th>Full hand count</th>
                             <th>Audit?</th>
                             <th>Reason</th>
                         </tr>
