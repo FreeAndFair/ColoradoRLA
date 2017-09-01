@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import Main from './Main';
 
 import auditStarted from '../../../selector/dos/auditStarted';
+import canRenderReport from '../../../selector/dos/canRenderReport';
 
 
 class MainContainer extends React.Component<any, any> {
@@ -17,6 +18,7 @@ const mapStateToProps = (state: any) => {
 
     return {
         auditDefined: auditStarted(state),
+        canRenderReport: canRenderReport(state),
         sos,
     };
 };
