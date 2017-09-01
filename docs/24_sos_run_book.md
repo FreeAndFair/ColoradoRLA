@@ -122,12 +122,10 @@ the number of ballot cards on which the audit board disagreed,
 and the number of ballot cards yet to be reviewed in the current round in the County Update table. 
 
 
-### 25.2.3 (C) Comparisons, Termination, Additional Ballots
-
 The RLA Tool permits the Secretary of State to 
 see the progress of audit for selected contests and the estimated 
 number of ballot cards remaining to be audited to meet the risk limit.
-**[SCREENSHOT NEEDS UPDATE] [show more counties]**
+<!--- **[SCREENSHOT NEEDS UPDATE] [show more counties]** --->
 
 ![Secretary of State Mid-Audit Screen](./screenshots/16-audit_status.png)
 
@@ -136,9 +134,12 @@ for hand counting at any time.
 ![Full Hand Count Screen](./screenshots/9-sos_chooses_full_hand_count.png)
 --->
 
-The RLA Tool automatically randomly selects additional ballots for
-audit as necessary until the risk limit is met.
+At the end of each round the Secretary of State can launch the next round by clicking the button.
+
+![Launch New Round Screenshot]()
 
 
-### Exports
-<!--- need to write this section --->
+
+<!--- ### Exports
+--->
+
