@@ -524,7 +524,11 @@ public class CountyReport {
         cell = row.createCell(cell_number++);
         cell.setCellType(CellType.BOOLEAN);
         cell.setCellStyle(standard_style);
-        cell.setCellValue(audit_info.acvr().recordType() == RecordType.AUDITOR_ENTERED);
+        if (audit_info.acvr() == null) {
+          cell.setCellValue(false);
+        } else {
+          cell.setCellValue(audit_info.acvr().recordType() == RecordType.AUDITOR_ENTERED);
+        }
         cell = row.createCell(cell_number++);
         cell.setCellType(CellType.BOOLEAN);
         cell.setCellStyle(standard_style);
