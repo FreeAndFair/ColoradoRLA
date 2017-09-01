@@ -114,6 +114,7 @@ TODO: to help human testers using web client, display CVRs corresponding to sele
 from __future__ import print_function
 import sys
 import os 
+import operator
 import argparse
 from argparse import Namespace
 import json
@@ -199,6 +200,8 @@ def state_login(ac, s):
     path = "/auth-state-admin"
     r = s.post(ac.base + path,
                data={'username': 'stateadmin1', 'password': '', 'second_factor': ''})
+    r = s.post(ac.base + path,
+               data={'username': 'stateadmin1', 'password': '', 'second_factor': ''})
     print(r, "POST", path)
 
 
@@ -206,6 +209,8 @@ def county_login(ac, s, county_id):
     "Login as county admin in given requests session"
 
     path = "/auth-county-admin"
+    r = s.post(ac.base + path,
+               data={'username': 'countyadmin%d' % county_id, 'password': '', 'second_factor': ''})
     r = s.post(ac.base + path,
                data={'username': 'countyadmin%d' % county_id, 'password': '', 'second_factor': ''})
     print(r, "POST", path)
@@ -524,7 +529,7 @@ def dos_start(ac):
     'Run DOS steps to start the audit, enabling county auditing to begin: contest selection, seed, etc.'
 
     r = test_endpoint_get(ac, ac.state_s, "/contest")
-    contests = r.json()
+    contests = sorted(r.json(), key=operator.itemgetter("id"))
     if len(contests) <= 0:
         print("No contests to audit, status_code = %d" % r.status_code)
         return
