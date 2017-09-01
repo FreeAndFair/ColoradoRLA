@@ -1,8 +1,10 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
+import EndOfLastRoundPage from './EndOfLastRoundPage';
 import EndOfRoundPage from './EndOfRoundPage';
 
+import allRoundsComplete from '../../../selector/county/allRoundsComplete';
 import countyInfo from '../../../selector/county/countyInfo';
 import previousRound from '../../../selector/county/previousRound';
 
@@ -21,7 +23,15 @@ function signedOff(round: any): boolean {
 
 class EndOfRoundPageContainer extends React.Component<any, any> {
     public render() {
-        const { countyInfo, previousRound } = this.props;
+        const { allRoundsComplete, countyInfo, previousRound } = this.props;
+
+        if (allRoundsComplete) {
+            return (
+                <EndOfLastRoundPage
+                    countyInfo={ countyInfo }
+                    previousRound={ previousRound }/>
+            );
+        }
 
         const props = {
             countyInfo,
@@ -35,6 +45,7 @@ class EndOfRoundPageContainer extends React.Component<any, any> {
 
 const mapStateToProps = (state: any) => {
     return {
+        allRoundsComplete: allRoundsComplete(state),
         countyInfo: countyInfo(state),
         previousRound: previousRound(state),
     };
