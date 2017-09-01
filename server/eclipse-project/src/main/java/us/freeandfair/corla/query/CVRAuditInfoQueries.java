@@ -105,7 +105,6 @@ public final class CVRAuditInfoQueries {
     cq.where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
     final TypedQuery<CVRAuditInfo> query = s.createQuery(cq);
     final List<CVRAuditInfo> result = query.getResultList();
-    Main.LOGGER.info("updateMatching found " + result.size() + " results");
     if (!result.isEmpty()) {
       for (final CVRAuditInfo cvrai : result) {
         cvrai.setACVR(the_acvr);
