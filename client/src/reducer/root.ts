@@ -12,6 +12,7 @@ import fetchAuditBoardAsmStateOk from './fetchAuditBoardAsmStateOk';
 import fetchCountyAsmStateOk from './fetchCountyAsmStateOk';
 import fetchCvrsToAuditOk from './fetchCvrsToAuditOk';
 import fetchDosAsmStateOk from './fetchDosAsmStateOk';
+import login1FOk from './login1FOk';
 import selectContestsForAuditOk from './selectContestsForAuditOk';
 import setRiskLimitOk from './setRiskLimitOk';
 import updateAcvrForm from './updateAcvrForm';
@@ -23,13 +24,15 @@ import uploadRandomSeedOk from './uploadRandomSeedOk';
 
 interface AppState {
     loggedIn: boolean;
+    loginChallenge: any;
     dashboard?: Dashboard;
     county?: any;
     sos?: any;
 }
 
-const defaultState = {
+const defaultState: AppState = {
     loggedIn: false,
+    loginChallenge: null,
 };
 
 
@@ -82,6 +85,10 @@ export default function root(state: AppState = defaultState, action: any) {
 
     case 'FETCH_DOS_ASM_STATE_OK': {
         return fetchDosAsmStateOk(state, action);
+    }
+
+    case 'LOGIN_1F_OK': {
+        return login1FOk(state, action);
     }
 
     case 'SELECT_CONTESTS_FOR_AUDIT_OK': {
