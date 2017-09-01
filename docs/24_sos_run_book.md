@@ -107,7 +107,6 @@ If the random seed is not exactly 20 digits long, the system shows a red error m
 
 Once the random seed is entered the the Secretary of State can launch the audit by clicking the "Launch Audit" button.
 
-**[SCREENSHOT NEEDS UPDATE] [missing, show good Audit Def'n Review with orange arrow to "Launch Audit" button] ** 
 
 ![Audit Has Begun](./screenshots/15-the_audit_is_launched.png)
 
@@ -132,7 +131,7 @@ for hand counting at any time.
 
 At the end of each round the Secretary of State can launch the next round by clicking the button.
 
-![Launch New Round Screenshot]()
+![Launch New Round Screenshot](./screenshots/sos_launch_round.png)
 
 
 
