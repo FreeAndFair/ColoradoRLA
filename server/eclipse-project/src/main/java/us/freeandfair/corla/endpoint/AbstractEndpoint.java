@@ -397,6 +397,10 @@ public abstract class AbstractEndpoint implements Endpoint {
     reset();
     my_log_entries.set(new ArrayList<LogEntry>());
     Main.LOGGER.info("endpoint " + endpointName() + " hit by " + the_request.host());
+    // make sure we get all the HTTP post parameters, if there are any, before
+    // anything has a chance to read the request body before Spark
+    the_request.queryParams();
+    
     // Start a transaction, if the database is functioning; otherwise abort
     if (Persistence.hasDB()) {
       Persistence.beginTransaction(); 
@@ -595,16 +599,14 @@ public abstract class AbstractEndpoint implements Endpoint {
    */
   public static boolean checkAuthorization(final Request the_request, 
                                            final AuthorizationType the_type) {
-    boolean result = true;
+    boolean result = the_type == AuthorizationType.NONE;
     final boolean state;
     final boolean county;
     final Object auth_stage_attribute =
         the_request.session().attribute(AuthenticationInterface.AUTH_STAGE);
     if (auth_stage_attribute instanceof AuthenticationStage) {
-      if ((AuthenticationStage) auth_stage_attribute != 
+      if ((AuthenticationStage) auth_stage_attribute ==
           SECOND_FACTOR_AUTHENTICATED) {
-        result = the_type == AuthorizationType.NONE;
-      } else {
         final Object admin_attribute = 
             the_request.session().attribute(AuthenticationInterface.ADMIN);
         if (admin_attribute instanceof Administrator) {
@@ -635,6 +637,10 @@ public abstract class AbstractEndpoint implements Endpoint {
 
           default:
         }
+      } else {
+        // this session is not authenticated, so we only return true
+        // if the requested auth type was NONE
+        result = the_type == AuthorizationType.NONE;
       }
     }
       

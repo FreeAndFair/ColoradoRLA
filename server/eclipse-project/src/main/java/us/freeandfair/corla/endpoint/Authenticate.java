@@ -11,15 +11,15 @@
 
 package us.freeandfair.corla.endpoint;
 
-import com.google.gson.JsonParseException;
-
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.AbstractStateMachine;
+import us.freeandfair.corla.auth.AuthenticationInterface;
 import us.freeandfair.corla.json.SubmittedCredentials;
+import us.freeandfair.corla.model.Administrator;
 
 /**
  * The endpoint for authenticating an administrator.
@@ -29,7 +29,7 @@ import us.freeandfair.corla.json.SubmittedCredentials;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class AuthenticateAdministrator extends AbstractEndpoint {
+public class Authenticate extends AbstractEndpoint {
   /**
    * @return no authorization is required for this endpoint.
    */
@@ -59,7 +59,7 @@ public class AuthenticateAdministrator extends AbstractEndpoint {
    */
   @Override
   public String endpointName() {
-    return "/auth-admin";
+    return "/authenticate";
   }
 
   /**
@@ -93,25 +93,29 @@ public class AuthenticateAdministrator extends AbstractEndpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    try {
+    if (Main.authentication().secondFactorAuthenticated(the_request)) {
+      ok(the_response, "Already second-factor authenticated");
+    } else {
       final SubmittedCredentials credentials =
           Main.authentication().authenticationCredentials(the_request);
       if (Main.authentication().
-          isAuthenticated(the_request, credentials.username())) {
-        ok(the_response, "Already authenticated");
-      } else {
-        if (Main.authentication().
-            authenticateAdministrator(the_request, the_response,
-                                      credentials.username(), 
-                                      credentials.password(),
-                                      credentials.secondFactor())) {
-          ok(the_response, "Authenticated (partial or fully)");
+          authenticateAdministrator(the_request, the_response,
+                                    credentials.username(),
+                                    credentials.password(),
+                                    credentials.secondFactor())) {
+        final Object admin_attribute =
+            the_request.session().attribute(AuthenticationInterface.ADMIN);
+        if (admin_attribute instanceof Administrator)  {
+          final Administrator admin = (Administrator) admin_attribute; 
+          okJSON(the_response, Main.GSON.toJson(admin.type()));
         } else {
+          // this should never happen
+          Main.LOGGER.error("logic error in admin session attribute");
           unauthorized(the_response, "Authentication failed");
         }
+      } else {
+        unauthorized(the_response, "Authentication failed");
       }
-    } catch (final JsonParseException e) {
-      unauthorized(the_response, "Authentication failed");
     }
     return my_endpoint_result.get();
   }

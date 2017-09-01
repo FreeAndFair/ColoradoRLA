@@ -14,14 +14,10 @@ package us.freeandfair.corla.endpoint;
 
 import static us.freeandfair.corla.model.Administrator.AdministratorType.STATE;
 
-import com.google.gson.JsonParseException;
-
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.asm.ASMEvent;
-import us.freeandfair.corla.asm.DoSDashboardASM;
 import us.freeandfair.corla.auth.AuthenticationInterface;
 import us.freeandfair.corla.json.SubmittedCredentials;
 import us.freeandfair.corla.model.Administrator;
@@ -35,22 +31,6 @@ import us.freeandfair.corla.model.Administrator;
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
 public class AuthenticateStateAdministrator extends AbstractEndpoint {
-  /**
-   * @return no authorization is required for this endpoint.
-   */
-  @Override
-  public AuthorizationType requiredAuthorization() {
-    return AuthorizationType.NONE;
-  }
-  
-  /**
-   * @return this endpoint does not use an ASM.
-   */
-  @Override
-  protected Class<DoSDashboardASM> asmClass() {
-    return null;
-  }
-
   /**
    * {@inheritDoc}
    */
@@ -68,25 +48,6 @@ public class AuthenticateStateAdministrator extends AbstractEndpoint {
   }
 
   /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected ASMEvent endpointEvent() {
-    return null;
-  }
-  
-  /**
-   * @param the_request the ignored request.
-   * @return null because the DoS dashboard is a singleton.
-   */
-  @Override
-  // this method is definitely not empty, but PMD thinks it is
-  @SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract")
-  protected String asmIdentity(final Request the_request) {
-    return null;
-  }
-
-  /**
    * Attempts to authenticate a state administrator; if the authentication is
    * successful, authentication data is added to the session.
    * 
@@ -101,28 +62,22 @@ public class AuthenticateStateAdministrator extends AbstractEndpoint {
     final SubmittedCredentials credentials =
         Main.authentication().authenticationCredentials(the_request);
     if (Main.authentication().
-        isAuthenticatedAs(the_request, STATE, credentials.username())) {
-      ok(the_response, "Already authenticated");
+        secondFactorAuthenticatedAs(the_request, STATE, credentials.username())) {
+      ok(the_response, "Already fully authenticated");
     } else {
       if (Main.authentication().
           authenticateAdministrator(the_request, the_response,
-                                    credentials.username(), 
+                                    credentials.username(),
                                     credentials.password(),
                                     credentials.secondFactor())) {
-        final Object admin_attribute =
-            the_request.session().attribute(AuthenticationInterface.ADMIN);
-        if (admin_attribute instanceof Administrator) {
-          final Administrator admin = (Administrator) admin_attribute; 
-          if (admin.type() == STATE) {
-            ok(the_response, "Authenticated (partial or fully)");
-          } else {
-            unauthorized(the_response, "Authentication failed");
-          }
+        final Administrator admin = 
+            (Administrator) the_request.session().attribute(AuthenticationInterface.ADMIN); 
+        if (admin.type() == STATE) {
+          okJSON(the_response, 
+                 Main.GSON.toJson(Main.authentication().authenticationStatus(the_request)));
         } else {
-          // this should never happen
-          Main.LOGGER.error("logic error in admin session attribute");
           unauthorized(the_response, "Authentication failed");
-        }
+        } 
       } else {
         unauthorized(the_response, "Authentication failed");
       }

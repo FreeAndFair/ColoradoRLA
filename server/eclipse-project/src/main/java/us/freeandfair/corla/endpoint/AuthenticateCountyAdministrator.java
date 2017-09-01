@@ -13,18 +13,12 @@ package us.freeandfair.corla.endpoint;
 
 import static us.freeandfair.corla.model.Administrator.AdministratorType.COUNTY;
 
-import com.google.gson.JsonParseException;
-
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.asm.ASMEvent;
-import us.freeandfair.corla.asm.AbstractStateMachine;
-import us.freeandfair.corla.auth.AuthenticationInterface;
 import us.freeandfair.corla.json.SubmittedCredentials;
 import us.freeandfair.corla.model.Administrator;
-import us.freeandfair.corla.query.AdministratorQueries;
 
 /**
  * The endpoint for authenticating a county administrator.
@@ -33,23 +27,7 @@ import us.freeandfair.corla.query.AdministratorQueries;
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class AuthenticateCountyAdministrator extends AbstractEndpoint {
-  /**
-   * @return no authorization is required for this endpoint.
-   */
-  @Override
-  public AuthorizationType requiredAuthorization() {
-    return AuthorizationType.NONE;
-  }
-  
-  /**
-   * @return this endpoint does not use an ASM.
-   */
-  @Override
-  protected Class<AbstractStateMachine> asmClass() {
-    return null;
-  }
-
+public class AuthenticateCountyAdministrator extends AbstractEndpoint {  
   /**
    * {@inheritDoc}
    */
@@ -67,25 +45,6 @@ public class AuthenticateCountyAdministrator extends AbstractEndpoint {
   }
 
   /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected ASMEvent endpointEvent() {
-    return null;
-  }
-  
-  /**
-   * Gets the ASM identity for the specified request.
-   * 
-   * @param the_request The request.
-   * @return the county ID of the authenticated county.
-   */
-  @Override
-  protected String asmIdentity(final Request the_request) {
-    return null;
-  }
-
-  /**
    * Attempts to authenticate a county administrator; if the authentication is
    * successful, authentication data is added to the session.
    * 
@@ -100,28 +59,22 @@ public class AuthenticateCountyAdministrator extends AbstractEndpoint {
     final SubmittedCredentials credentials =
         Main.authentication().authenticationCredentials(the_request);
     if (Main.authentication().
-        isAuthenticatedAs(the_request, COUNTY, credentials.username())) {
-      ok(the_response, "Already authenticated");
+        secondFactorAuthenticatedAs(the_request, COUNTY, credentials.username())) {
+      ok(the_response, "Already fully authenticated");
     } else {
       if (Main.authentication().
           authenticateAdministrator(the_request, the_response,
                                     credentials.username(),
                                     credentials.password(),
                                     credentials.secondFactor())) {
-        final Object admin_attribute =
-            the_request.session().attribute(AuthenticationInterface.ADMIN);
-        if (admin_attribute instanceof Administrator)  {
-          final Administrator admin = (Administrator) admin_attribute; 
-          if (admin.type() == COUNTY) {
-            ok(the_response, "Authenticated (partial or fully)");
-          } else {
-            unauthorized(the_response, "Authentication failed");
-          }
+        final Administrator admin = 
+            Main.authentication().authenticatedAdministrator(the_request);
+        if (admin.type() == COUNTY) {
+          okJSON(the_response, 
+                 Main.GSON.toJson(Main.authentication().authenticationStatus(the_request)));
         } else {
-          // this should never happen
-          Main.LOGGER.error("logic error in admin session attribute");
           unauthorized(the_response, "Authentication failed");
-        }
+        } 
       } else {
         unauthorized(the_response, "Authentication failed");
       }

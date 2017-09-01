@@ -19,6 +19,7 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.json.SubmittedCredentials;
+import us.freeandfair.corla.model.Administrator;
 import us.freeandfair.corla.model.Administrator.AdministratorType;
 import us.freeandfair.corla.model.County;
 
@@ -115,13 +116,12 @@ public interface AuthenticationInterface {
                                    String the_second_factor);
 
   /**
-   * Is `the_username` authenticated with a second factor?
+   * Is the session authenticated with a second factor?
    * @trace authenticated.second_factor_authenticated?
    * @param the_request The request.
-   * @return true iff `the_username` is second-factor authenticated.
+   * @return true iff the session is second-factor authenticated
    */
-  boolean secondFactorAuthenticated(Request the_request,
-                                    String the_username);
+  boolean secondFactorAuthenticated(Request the_request);
 
   /**
    * @trace authentication.traditional_authenticate
@@ -142,24 +142,20 @@ public interface AuthenticationInterface {
 
   /**
    * @trace authentication.traditional_authenticated?
-   * @return true iff `the_username` is traditionally authenticated.
-   * @param the_username the username of the person to check.
+   * @return true iff the session is traditionally authenticated.
    * @param the_request The request.
    */
-  boolean traditionalAuthenticated(Request the_request,
-                                   String the_username);
+  boolean traditionalAuthenticated(Request the_request);
   
   /**
-   * @return true iff `the_username` is already authenticated in any role.
-   * @param the_request The request.
-   * @param the_username the username of the person to check.
+   * @return true iff the session is authenticated either traditionally
+   * or with a second factor.
    */
-  boolean isAuthenticated(Request the_request,
-                          String the_username);
+  boolean isAuthenticated(Request the_request);
   
   /**
-   * @return true iff `the_username` is authenticated with both traditional and
-   * two-factor authentication as an administrator of type `the_type`.
+   * @return true iff the session is authenticated in any way
+   * as the specified administrator type and username.
    * @param the_request The request.
    * @param the_username the username of the person to check.
    * @param the_type the type of the administrator.
@@ -169,13 +165,21 @@ public interface AuthenticationInterface {
                             String the_username);
      
   /**
-   * Deauthenticate the currently authenticated user from all systems. 
-   * @return true iff `the_username` is deauthenticated.
+   * @return true iff the session is authenticated with a second factor
+   * as the specified administrator type and username.
    * @param the_request The request.
-   * @param the_request the request associated with the deauthentication.
+   * @param the_username the username of the person to check.
+   * @param the_type the type of the administrator.
    */
-  void deauthenticate(Request the_request,
-                      String the_username);
+  boolean secondFactorAuthenticatedAs(Request the_request,
+                                      AdministratorType the_type,
+                                      String the_username);
+  
+  /**
+   * Deauthenticate the currently authenticated user.
+   * @param the_request The request.
+   */
+  void deauthenticate(Request the_request);
       
   /**
    * @trace authentication.traditional_deauthenticate
@@ -206,6 +210,26 @@ public interface AuthenticationInterface {
    */
   County authenticatedCounty(Request the_request);
   
+  /** 
+   * Gets the authenticated administrator for a request.
+   * 
+   * @param the_request The request.
+   * @return the authenticated administrator, or null if this session is not 
+   * authenticated.
+   */
+  Administrator authenticatedAdministrator(Request the_request);
+  
+  /**
+   * Gets an authentication response based on the current status of a request.
+   * 
+   * @param the_request The request.
+   * @return the authentication response.
+   */
+  AuthenticationStatus authenticationStatus(Request the_request);
+  
+  /**
+   * Gets the authenticated username
+   */
   /**
    * @return the submitted credentials associated with any request.
    * @param the_request The request.

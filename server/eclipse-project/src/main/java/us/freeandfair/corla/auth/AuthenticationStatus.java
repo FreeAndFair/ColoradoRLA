@@ -9,10 +9,9 @@
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
-package us.freeandfair.corla.json;
+package us.freeandfair.corla.auth;
 
 import us.freeandfair.corla.model.Administrator.AdministratorType;
-import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
  * The response provided by the server after a successful second factor 
@@ -20,21 +19,40 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
  * particular response class is general purpose, encoding generic role used by the 
  * CORLA system.
  * @author Joseph R. Kiniry
+ * @author Daniel M. Zimmerman
  */
-@SuppressWarnings({"unused", "PMD.UnusedPrivateField", "PMD.SingularField"})
-@SuppressFBWarnings(value = {"URF_UNREAD_FIELD"}, 
-                    justification = "Field is read by Gson.")
-public class AuthenticationResponse {
+public class AuthenticationStatus {
   /**
    * The role of the user that just authenticated.
    */
   private final AdministratorType my_role;
   
   /**
+   * The authentication stage.
+   */
+  private final AuthenticationStage my_stage;
+  
+  /**
    * Create a new response object.
    * @param the_role the role that was just successfully authenticated.
    */
-  public AuthenticationResponse(final AdministratorType the_role) {
+  public AuthenticationStatus(final AdministratorType the_role,
+                              final AuthenticationStage the_stage) {
     my_role = the_role;
+    my_stage = the_stage;
+  }
+  
+  /**
+   * @return the role.
+   */
+  public AdministratorType role() {
+    return my_role;
+  }
+  
+  /**
+   * @return the stage.
+   */
+  public AuthenticationStage stage() {
+    return my_stage;
   }
 }
