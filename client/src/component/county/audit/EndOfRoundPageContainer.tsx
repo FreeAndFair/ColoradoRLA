@@ -23,11 +23,17 @@ function signedOff(round: any): boolean {
 
 class EndOfRoundPageContainer extends React.Component<any, any> {
     public render() {
-        const { allRoundsComplete, countyInfo, previousRound } = this.props;
+        const {
+            allRoundsComplete,
+            countyInfo,
+            estimatedBallotsToAudit,
+            previousRound,
+        } = this.props;
 
         const props = {
             allRoundsComplete,
             countyInfo,
+            estimatedBallotsToAudit,
             previousRound,
             previousRoundSignedOff: signedOff(previousRound),
         };
@@ -40,6 +46,7 @@ const mapStateToProps = (state: any) => {
     return {
         allRoundsComplete: allRoundsComplete(state),
         countyInfo: countyInfo(state),
+        estimatedBallotsToAudit: state.county.estimatedBallotsToAudit,
         previousRound: previousRound(state),
     };
 };
