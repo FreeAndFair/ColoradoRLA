@@ -22,7 +22,8 @@ Orange arrows on the screenshots indicate features described in the text of the 
  
 ### Logging In
 
-A County user can log in to the RLA Tool by pointing a browser to the URL provided by the Colorado Department of State. **[SCREENSHOT NEEDS UPDATE]**
+A County user can log in to the RLA Tool by pointing a browser to the URL provided by the Colorado Department of State. 
+<!—- **[SCREENSHOT NEEDS UPDATE]** —>
 
 ![County Login Screenshot](./screenshots/a-county_login.png)
 
