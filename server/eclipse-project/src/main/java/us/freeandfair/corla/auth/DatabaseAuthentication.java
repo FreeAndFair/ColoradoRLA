@@ -54,7 +54,7 @@ public final class DatabaseAuthentication extends AbstractAuthentication {
     final StringBuilder sb = new StringBuilder();
     for (int i = 0; i < 3; i++) {
       sb.append('[');
-      sb.append(String.valueOf('A' + random.nextInt(9)));
+      sb.append(Character.toString((char) ('A' + random.nextInt(9))));
       sb.append(',');
       sb.append(random.nextInt(8) + 1);
       sb.append("] ");
