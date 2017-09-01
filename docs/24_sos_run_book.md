@@ -28,11 +28,13 @@ County audit boards.
 The RLA Tool also exports reports and files for use in the Audit Center, a
 website required by Rule 25 to disseminate audit-related information
 to the public.
+
+This version of the RLA Tool requires that the contests driving the audit round sizes and risk level calculations must be single-County contests. 
  
 ### Logging In
 
 Department of State users must log in to the RLA Tool.
-**[SCREENSHOT NEEDS UPDATE]**
+<!— **[SCREENSHOT NEEDS UPDATE]** —>
 
 ![State Login Screenshot](./screenshots/1-sos_login.png)
 
@@ -87,7 +89,9 @@ The County Update table allows the Secretary of State to see which Counties have
 
 The Secretary of State will then select the contests that will drive the
 sample size and stop/go decisions for each round.  Rule
-Rule 25 calls these "contests to be audited".
+Rule 25 calls these "contests to be audited". Note that in the current
+version of the RLA Tool, each contest is considered within a single County. 
+Calculations of audit round sizes and risk levels are based on single-County contests. 
 
 **[SCREENSHOT NEEDS UPDATE] [new set of dropdown choices, County names not Contest IDs] ** 
 
