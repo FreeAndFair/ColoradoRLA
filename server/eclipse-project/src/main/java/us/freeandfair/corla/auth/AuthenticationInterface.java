@@ -35,6 +35,11 @@ public interface AuthenticationInterface {
   String ADMIN = "admin";
   
   /**
+   * The constant for the "challenge" attribute of the current session.
+   */
+  String CHALLENGE = "challenge";
+  
+  /**
    * The constant for the "username" request parameter.
    */
   String USERNAME = "username";
@@ -128,17 +133,16 @@ public interface AuthenticationInterface {
    * @return true iff traditional authentication with credential pair 
    * (username, password) succeeds.
    * @param the_request The request.
-   * @param the_response The response, which is used in the case that a second
-   * factor challenge must be sent to the client.
+   * @param the_response The response.
    * @param the_username the username of the person to attempt to authenticate.
    * @param the_password the password for `username`.
    */
   //@ requires 0 < the_username.length();
   //@ requires the_password != null;
-  boolean traditionalAuthenticate(Request the_request,
-                                  Response the_response,
-                                  String the_username, 
-                                  String the_password);
+  AuthenticationResult traditionalAuthenticate(Request the_request,
+                                               Response the_response,
+                                               String the_username, 
+                                               String the_password);
 
   /**
    * @trace authentication.traditional_authenticated?

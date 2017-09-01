@@ -89,8 +89,10 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
       } else {
         switch (auth_stage) {
           case NOT_AUTHENTICATED:
-            if (traditionalAuthenticate(the_request, the_response,
-                                        the_username, the_password)) {
+            final AuthenticationResult auth_result = 
+                traditionalAuthenticate(the_request, the_response,
+                                        the_username, the_password);
+            if (auth_result.success()) {
               // We have traditionally authenticated.
               final Administrator admin = 
                   AdministratorQueries.byUsername(the_username);
@@ -98,6 +100,7 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
               Persistence.saveOrUpdate(admin);
               the_request.session().attribute(AUTH_STAGE, TRADITIONALLY_AUTHENTICATED);
               the_request.session().attribute(ADMIN, admin);
+              the_request.session().attribute(CHALLENGE, auth_result.challenge());
               Main.LOGGER.info("Traditional authentication succeeded for administrator " + 
                                the_username);
             } else {
@@ -116,11 +119,13 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
               Persistence.saveOrUpdate(admin);
               the_request.session().attribute(AUTH_STAGE, SECOND_FACTOR_AUTHENTICATED); 
               the_request.session().attribute(ADMIN, admin);
+              the_request.session().removeAttribute(CHALLENGE);
               Main.LOGGER.info("Second factor authentication succeeded for administrator " + 
                                the_username);
             } else {
               // Send the authentication state machine back to its initial state.
               the_request.session().attribute(AUTH_STAGE, NOT_AUTHENTICATED);
+              the_request.session().removeAttribute(CHALLENGE);
               Main.LOGGER.info("Second factor authentication failed for administrator" + 
                                the_username);
               result = false;
@@ -201,7 +206,8 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
     } else {
       stage = null;
     }
-    return new AuthenticationStatus(type, stage);
+    return new AuthenticationStatus(type, stage, 
+                                    the_request.session().attribute(CHALLENGE));
   }
   
   /**
@@ -210,6 +216,8 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
   @Override
   public void traditionalDeauthenticate(final Request the_request,
                                         final String the_username) {
+    the_request.session().removeAttribute(ADMIN);
+    the_request.session().removeAttribute(CHALLENGE);
     Main.LOGGER.info("session is now traditionally deauthenticated");
   }
   
@@ -219,6 +227,8 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
   @Override
   public void twoFactorDeauthenticate(final Request the_request,
                                       final String the_username) {
+    the_request.session().removeAttribute(ADMIN);
+    the_request.session().removeAttribute(CHALLENGE);
     Main.LOGGER.info("session is now second factor deauthenticated");
   }
   

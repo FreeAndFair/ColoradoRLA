@@ -40,13 +40,13 @@ public final class DatabaseAuthentication extends AbstractAuthentication {
    * {@inheritDoc}
    */
   @Override
-  public boolean traditionalAuthenticate(final Request the_request,
-                                         final Response the_response,
-                                         final String the_username, 
-                                         final String the_password) {
+  public AuthenticationResult traditionalAuthenticate(final Request the_request,
+                                                      final Response the_response,
+                                                      final String the_username, 
+                                                      final String the_password) {
     final Administrator admin = 
         AdministratorQueries.byUsername(the_username);
-    return admin != null; 
+    return new AuthenticationResult(admin != null, "NO CHALLENGE"); 
   }
   
   /**
@@ -56,6 +56,7 @@ public final class DatabaseAuthentication extends AbstractAuthentication {
   public void traditionalDeauthenticate(final Request the_request,
                                         final String the_username) {
     the_request.session().removeAttribute(ADMIN);
+    the_request.session().removeAttribute(CHALLENGE);
     Main.LOGGER.info("session is now traditionally deauthenticated");
   }
 
@@ -66,6 +67,7 @@ public final class DatabaseAuthentication extends AbstractAuthentication {
   public void twoFactorDeauthenticate(final Request the_request,
                                       final String the_username) {
     the_request.session().removeAttribute(ADMIN);
+    the_request.session().removeAttribute(CHALLENGE);
     Main.LOGGER.info("session is now second factor deauthenticated");
   }
 }

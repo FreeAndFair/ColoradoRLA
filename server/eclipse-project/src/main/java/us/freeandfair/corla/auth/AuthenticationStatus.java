@@ -11,6 +11,8 @@
 
 package us.freeandfair.corla.auth;
 
+import java.io.Serializable;
+
 import us.freeandfair.corla.model.Administrator.AdministratorType;
 
 /**
@@ -33,13 +35,20 @@ public class AuthenticationStatus {
   private final AuthenticationStage my_stage;
   
   /**
+   * The authentication challenge.
+   */
+  private final Serializable my_challenge;
+  
+  /**
    * Create a new response object.
    * @param the_role the role that was just successfully authenticated.
    */
   public AuthenticationStatus(final AdministratorType the_role,
-                              final AuthenticationStage the_stage) {
+                              final AuthenticationStage the_stage,
+                              final Serializable the_challenge) {
     my_role = the_role;
     my_stage = the_stage;
+    my_challenge = the_challenge;
   }
   
   /**
@@ -54,5 +63,12 @@ public class AuthenticationStatus {
    */
   public AuthenticationStage stage() {
     return my_stage;
+  }
+  
+  /**
+   * @return the challenge.
+   */
+  public Serializable challenge() {
+    return my_challenge;
   }
 }
