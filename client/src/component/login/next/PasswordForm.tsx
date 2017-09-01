@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import login1F from '../../../action/login1F';
+
 
 function isFormValid(form: any): boolean {
     const { username, password } = form;
@@ -58,6 +60,8 @@ export default class LoginForm extends React.Component<any, any> {
     }
 
     private buttonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-        this.props.submit(this.state.form);
+        const { username, password } = this.state.form;
+
+        login1F(username, password);
     }
 }
