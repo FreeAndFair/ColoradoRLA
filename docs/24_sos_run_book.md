@@ -34,7 +34,7 @@ This version of the RLA Tool requires that the contests driving the audit round 
 ### Logging In
 
 Department of State users must log in to the RLA Tool.
-<!— **[SCREENSHOT NEEDS UPDATE]** —>
+<!--- **[SCREENSHOT NEEDS UPDATE]** --->
 
 ![State Login Screenshot](./screenshots/1-sos_login.png)
 
@@ -53,7 +53,7 @@ Note the navigation menu in the upper left corner.
 ### Audit Status
 
 Text indicating the status of the audit is near the top of the page. 
-**[SCREENSHOT NEEDS UPDATE]**
+
 
 ![Audit Status Message Screenshot](./screenshots/2-sos_audit_status.png)
 
@@ -77,13 +77,9 @@ Note the change in the status message now that the Risk Limit has been entered.
 The County Update table allows the Secretary of State to see which Counties have uploaded which files. When the Counties have uploaded the necessary files, the Secretary of State can proceed to define the audit — choose contests and set the risk limit — 
 using the dropdown menu on the upper left.
 
-**[SCREENSHOT NEEDS UPDATE] [show realistic County status] ** 
-
 
 ![Define the Audit Button](./screenshots/3-sos_define_audit_button_in_dropdown.png)
 
-
-The County Update table allows the Secretary of State to see which Counties have uploaded which files. 
 
 
 ### 25.2.2 (I) Selecting Contests
@@ -142,4 +138,3 @@ At the end of each round the Secretary of State can launch the next round by cli
 
 <!--- ### Exports
 --->
-
