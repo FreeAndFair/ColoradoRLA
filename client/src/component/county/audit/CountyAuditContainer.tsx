@@ -32,6 +32,7 @@ const mapStateToProps = (state: any) => {
     const showEndOfRoundPage = !roundInProgress(state) && !auditComplete(state);
 
     return {
+        auditComplete: auditComplete(state),
         canAudit: canAudit(state),
         showEndOfRoundPage,
     };

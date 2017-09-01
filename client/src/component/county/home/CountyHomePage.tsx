@@ -87,6 +87,7 @@ const Main = (props: any) => {
                     Start Audit
                 </button>
             </div>
+            { finalReportForm }
         </div>
     );
 };
