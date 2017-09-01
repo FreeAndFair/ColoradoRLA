@@ -117,7 +117,7 @@ to launch the audit.
 
 Once the audit is launched County users will see a list of ballots to
 be audited. The list includes the Scanner #, Batch #, Ballot Position #,
-and Storage Bin #.
+and (if available) the Storage Bin.
 
 ![Ballots_to_Audit_Screenshot](./screenshots/p-ballots_to_audit_unified.png)
 
@@ -126,12 +126,13 @@ and Storage Bin #.
 
 The RLA Tool allows Audit Board members to report the markings on each
 individual ballot.
+Before recording voter intent, please double-check that the paper
+Ballot Type matches the Ballot Type listed on the
+screen.   
 
 ![Ballot_Verification_Landing_Page](./screenshots/r-ballot_verification_landing_page_unified.png)
 
-Before recording voter intent, please double-check that the paper
-Ballot Type matches the Ballot Type listed on the
-screen.   If a ballot card is not found click the Ballot Card Not Found Button.
+If a ballot card is not found click the Ballot Card Not Found Button.
 
 ![Ballot_Card_Not_Found](./screenshots/t-ballot_card_not_found_button.png)
 
@@ -157,26 +158,26 @@ the Audit Board can click the Review button.
 ![Audit_Board_Clicks_Review_Button](./screenshots/x-ballot_interpretations_entered.png)
 
 On the Review screen, check that the information on the review screen reflects the Audit
-Board's interpretation of the ballot. If yes, click "Submit & Next Ballot"
-
-![Review_Screen](./screenshots/y-verify_selections.png)
-
-Note that in case of an
+Board's interpretation of the ballot. Note that in case of an
 overvote, the review screen will say "Overvote for this contest".
 
 ![Overvote Screenshot](./screenshots/21-overvote_for_this_contest.png)
 
 If the review screen does not match the Audit Board's
 interpretation, click the "Back" button.
-
-If the review screen matches the Audit Board's interpretation, click
-"Submit and Next Ballot". This submission is final. There is no way to
+If the information on the review screen is correct, click "Submit & Next Ballot".
+This submission is final. There is no way to
 revise a ballot interpretation once it has been submitted from the
-Review Screen. The next ballot will then be displayed and the process
-continues until the end of the round, when the screen will show the 
-end-of-round page, with boxes for the Audit Board to "sign" their approval of the round. [SCREENSHOT NEEDS UPDATE]
+Review Screen. 
 
-![End of Round Screenshot]()
+![Review_Screen](./screenshots/y-verify_selections.png)
+
+
+The next ballot will then be displayed and the process
+continues until the end of the round, when the screen will show the 
+end-of-round page, with boxes for the Audit Board to "sign" their approval of the round by entering their names as indicated. [SCREENSHOT NEEDS UPDATE]
+
+![End of Round Screenshot](./screenshotsEnd_of_Round_One.png)
 
 
 Note that while the audit is in progress, the County Home page 
@@ -188,10 +189,9 @@ gives a summary of progress.
 ### Audit Board Intermediate Audit Report Page
 
 If the Audit Board needs to take a break, go to lunch, head home for
-the night, or change, then the Audit Board must file an "Intermediate
+the night, or pause their work for any reason, then the Audit Board must file an "Intermediate
 Audit Report" on their auditing. They should use the Sign Out button
-On the Audit Board Sign-in Page
-**<!--- what if AB finishes a round? --->**
+On the Audit Board Sign-in Page.
 
 ![Audit_Board_Sign_Out](./screenshots/n-sign_out_of_the_audit_board.png)
 
