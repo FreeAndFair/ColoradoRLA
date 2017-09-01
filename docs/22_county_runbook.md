@@ -206,9 +206,6 @@ On the Audit Board Sign-in Page.
 
 ### Audit Board Final Audit Report Page
 
-After the RLA Tool deems that a County's audit is complete, the Audit
-Board must file an "Final Audit Report" on their audit. *(Ed. note: A
-button for filing such a report will be available on the **Audit Board
-Interpretation Page** in the phase-3 release.)*  [SCREENSHOT NEEDS UPDATE]
+When the  County has completed the entire audit, the County will be able to download a final audit report by clicking the button on the End of Audit page. 
 
-![Final Audit Report Screenshot]()
+![Final Audit Report Screenshot](./screenshots/County_End_of_Audit.png)
