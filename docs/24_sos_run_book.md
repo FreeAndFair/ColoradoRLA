@@ -101,9 +101,7 @@ The Secretary of State enters the random seed. Note that once the seed is entere
 
 If the random seed is not exactly 20 digits long, the system shows a red error message. User will have to click the "Back" button and try again.
 
-**[SCREENSHOT NEEDS UPDATE] [orange arrow pointing to back button] ** 
-
-![State Random Seed Entry Incorrect](./screenshots/13-entered_incorrect_random_seed.png)
+![State Random Seed Entry Incorrect](./screenshots/13-entered_incorrect_random_seed1.png)
 
 
 Once the random seed is entered the the Secretary of State can launch the audit by clicking the "Launch Audit" button.
