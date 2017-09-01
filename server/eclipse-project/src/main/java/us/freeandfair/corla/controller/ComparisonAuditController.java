@@ -271,13 +271,15 @@ public final class ComparisonAuditController {
    * 
    * @param the_cdb The dashboard.
    * @param the_round_length The count.
+   * @param the_multiplier The multiplier.
    * @return true if a round is started, false otherwise (a round might not
    * be started because the risk limit has already been achieved).
    * @exception IllegalStateException if a round cannot be started from 
    * estimates because there are no previous rounds.
    */
   public static boolean startNewRoundOfLength(final CountyDashboard the_cdb,
-                                              final int the_round_length) {
+                                              final int the_round_length,
+                                              final BigDecimal the_multiplier) {
     final List<Round> rounds = the_cdb.rounds();
     int start_index = 0;
     if (rounds.isEmpty()) {
@@ -329,13 +331,15 @@ public final class ComparisonAuditController {
    * rates to estimate the necessary number of ballots to audit.
    * 
    * @param the_cdb The dashboard.
+   * @param the_multiplier The multiplier.
    * @return true if a round is started, false otherwise (a round might not
    * be started because the risk limit has already been achieved).
    * @exception IllegalStateException if a round cannot be started from 
    * estimates because there are no previous rounds or because there are no CVRs.
    */
   public static boolean 
-      startNewRoundFromEstimates(final CountyDashboard the_cdb) {
+      startNewRoundFromEstimates(final CountyDashboard the_cdb,
+                                 final BigDecimal the_multiplier) {
     final OptionalLong cvr_count = 
         CastVoteRecordQueries.countMatching(the_cdb.id(), RecordType.UPLOADED);
     if (!cvr_count.isPresent()) {

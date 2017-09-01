@@ -16,6 +16,7 @@ import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.*;
 import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.PUBLISH_BALLOTS_TO_AUDIT_EVENT;
 import static us.freeandfair.corla.asm.ASMState.DoSDashboardState.RANDOM_SEED_PUBLISHED;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -238,12 +239,18 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
                              "audit round already in progress for county " + cdb.id());
         }
         final boolean round_started;
+        final BigDecimal multiplier;
+        if (start.multiplier() == null) {
+          multiplier = BigDecimal.ONE;
+        } else {
+          multiplier = start.multiplier();
+        }
         if (start.useEstimates()) {
           round_started = 
-              ComparisonAuditController.startNewRoundFromEstimates(cdb);
+              ComparisonAuditController.startNewRoundFromEstimates(cdb, multiplier);
         } else {
           round_started = ComparisonAuditController.
-              startNewRoundOfLength(cdb, start.countyBallots().get(cdb.id()));
+              startNewRoundOfLength(cdb, start.countyBallots().get(cdb.id()), multiplier);
         }
         if (!round_started) {
           Main.LOGGER.debug("no round started for county " + cdb.id());       
