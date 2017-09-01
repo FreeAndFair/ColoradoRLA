@@ -61,19 +61,23 @@ last file will be used.
 
 If the hash does not match the file 
 (either because the wrong hash was entered, or because the file was changed as it traveled over the network), 
-the data from the file will not be imported and the user will
-receive the following error messages. 
+the data from the file will be uploaded but the data will not be imported. The user will
+see the following messages. 
 
 ![Audit_Upload_Failed_Screenshot](./screenshots/hash_mismatch.png)
 
 If the hash matches the file but the file is not in the proper format, the data from the file will not be 
-imported and the user will
-receive the following error messages. 
+imported. The user will
+see the following messages. 
 
 ![Format Error Screenshot](./screenshots/bad_format.png)
 
 
-If the hash matches and the file format is correct,  the system will import the data from the file. 
+If the hash matches and the file format is correct,  the system will import the data from the file. The user will see the following messages.
+
+
+![Audit Upload Successful Screenshot](./screenshots/h-successfully_uploaded_cvr.png)
+
 The time required for data import depends on the size of the file. Import time for the CVR file will depend on the 
 number of ballot cards represented in the file. A file with fewer than 10,000 CVR lines should take less than a minute,
 while a file with 500,000 CVR lines or more might take about a half hour. The ballot manifest file upload and import will be quicker than the CVR file upload and import.
@@ -81,8 +85,6 @@ while a file with 500,000 CVR lines or more might take about a half hour. The ba
 Once both the ballot manifest and CVR files are successfully uploaded and imported
 users will see them both listed as **uploaded**. It is possible to re-upload
 either or both files, if necessary.
-
-![Audit Upload Successful Screenshot](./screenshots/h-successfully_uploaded_cvr.png)
 
 After successfully upload and import of both the Ballot Manifest and the CVR
 files, the County home page shows the status of ballot cards and 
@@ -105,7 +107,7 @@ After the authenticated County Audit Administrator formally logs in, there is a
 screen where the identity and party affiliation of Audit Board Members is listed
 with a sign out button if the audit needs to be paused.
 
-![Audit_Board_Sign_Out_Screenshot](./screenshots/n-sign_out_of_the_audit_board1.png)
+![Audit_Board_Sign_Out_Screenshot](./screenshots/n-sign_out_of_the_audit_board.png)
 
 Once the Audit Board is signed in use the navigation panel at the top of the screen
 to launch the audit.
@@ -113,10 +115,10 @@ to launch the audit.
 ![Launch_Audit_Navigation_Button_Screenshot](./screenshots/o-go_to_the_audit_page_to_begin_auditing_ballots.png)
 
 
-### 25.2.2 (K) Random Selection of Ballot Cards for Audit
+### 25.2.2 (K) Audit Rounds
 
-Once the audit is launched County users will see a list of ballots to
-be audited. The list includes the Scanner #, Batch #, Ballot Position #,
+Once the Secretary of State launches the audit the County user will see a list of ballots to
+be audited in the current round. The list includes the Scanner #, Batch #, Ballot Position #,
 and (if available) the Storage Bin.
 
 ![Ballots_to_Audit_Screenshot](./screenshots/p-ballots_to_audit_unified.png)
@@ -175,13 +177,20 @@ Review Screen.
 
 The next ballot will then be displayed and the process
 continues until the end of the round, when the screen will show the 
-end-of-round page, with boxes for the Audit Board to "sign" their approval of the round by entering their names as indicated. [SCREENSHOT NEEDS UPDATE]
+end-of-round page, with boxes for the Audit Board to "sign" their approval of the round by entering their names as indicated. 
 
 ![End of Round Screenshot](./screenshots/End_of_Round_One.png)
 
+### County Home Page During Audit
 
 Note that while the audit is in progress, the County Home page 
-gives a summary of progress.
+gives a summary of progress. The County Info table shows how many Ballot 
+Cards are required for the current round, and how many have already 
+been audited. The number of "disagreements" is the number of ballot cards on 
+which the Audit Board could not come to complete consensus. The number of 
+"discrepancies" is the number of ballot cards where the Audit Board's 
+interpretation differs from the interpretation in the uploaded CVR file, or 
+where the ballot card in question could not be found.
 
 ![County_Mid-Audit_Screen](./screenshots/County_Home_Mid_Round.png)
 
