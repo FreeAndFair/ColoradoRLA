@@ -57,7 +57,7 @@ import us.freeandfair.corla.query.CountyContestResultQueries;
  * @version 0.0.1
  */
 @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.StdCyclomaticComplexity",
-    "PMD.ModifiedCyclomaticComplexity", "PMD.ExcessiveImports"})
+                   "PMD.ModifiedCyclomaticComplexity", "PMD.ExcessiveImports"})
 public class CountyReport {
   /**
    * The affirmation statement.
@@ -183,6 +183,13 @@ public class CountyReport {
   }
   
   /**
+   * @return the county dashboard for this report.
+   */
+  public CountyDashboard dashboard() {
+    return my_cdb;
+  }
+  
+  /**
    * @return the Excel representation of this report, as a byte array.
    * @exception IOException if the report cannot be generated.
    */
@@ -246,6 +253,16 @@ public class CountyReport {
     cell.setCellValue(my_county.name() + " County Audit Report");
     
     row = summary_sheet.createRow(row_number++);
+    cell = row.createCell(cell_number++);
+    cell.setCellType(CellType.STRING);
+    cell.setCellStyle(bold_style);
+    cell.setCellValue("Generated " + 
+                      LocalDateTime.ofInstant(my_timestamp,
+                                              ZoneOffset.systemDefault()).toString());
+    
+    row = summary_sheet.createRow(row_number++);
+    cell_number = 0;
+    cell = row.createCell(cell_number++);
     cell.setCellType(CellType.STRING);
     cell.setCellStyle(bold_style);
     if (my_dosdb.electionType() == null && my_dosdb.electionDate() == null) {
@@ -253,7 +270,8 @@ public class CountyReport {
     } else {
       cell.setCellValue(my_dosdb.electionType() + " - " +
                         LocalDateTime.ofInstant(my_dosdb.electionDate(), 
-                                                ZoneOffset.UTC).toLocalDate().toString());
+                                                ZoneOffset.systemDefault()).
+                        toLocalDate().toString());
     }
     
     row_number++;

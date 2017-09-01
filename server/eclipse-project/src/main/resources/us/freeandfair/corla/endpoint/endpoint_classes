@@ -38,5 +38,6 @@ us.freeandfair.corla.endpoint.SetElectionInfo
 us.freeandfair.corla.endpoint.SetRandomSeed
 us.freeandfair.corla.endpoint.SignOffAuditRound
 us.freeandfair.corla.endpoint.StartAuditRound
+us.freeandfair.corla.endpoint.StateReportDownload
 us.freeandfair.corla.endpoint.Unauthenticate
 us.freeandfair.corla.endpoint.UploadFile

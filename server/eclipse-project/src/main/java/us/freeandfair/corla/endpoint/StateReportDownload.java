@@ -20,17 +20,17 @@ import javax.persistence.PersistenceException;
 import spark.Request;
 import spark.Response;
 
-import us.freeandfair.corla.report.CountyReport;
+import us.freeandfair.corla.report.StateReport;
 import us.freeandfair.corla.util.SparkHelper;
 
 /**
- * The county report download endpoint.
+ * The state report download endpoint.
  * 
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class CountyReportDownload extends AbstractEndpoint {
+public class StateReportDownload extends AbstractEndpoint {
   /**
    * {@inheritDoc}
    */
@@ -44,7 +44,7 @@ public class CountyReportDownload extends AbstractEndpoint {
    */
   @Override
   public String endpointName() {
-    return "/county-report";
+    return "/state-report";
   }
 
   /**
@@ -52,7 +52,7 @@ public class CountyReportDownload extends AbstractEndpoint {
    */
   @Override
   public AuthorizationType requiredAuthorization() {
-    return AuthorizationType.COUNTY;
+    return AuthorizationType.STATE;
   }
   
   /**
@@ -66,8 +66,7 @@ public class CountyReportDownload extends AbstractEndpoint {
     try {
       final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
       final BufferedOutputStream bos = new BufferedOutputStream(os);
-      final CountyReport cr = 
-          new CountyReport(Authentication.authenticatedCounty(the_request));
+      final StateReport cr = new StateReport();
       if (pdf) {
         the_response.type("application/pdf");
         bos.write(cr.generatePDF());
