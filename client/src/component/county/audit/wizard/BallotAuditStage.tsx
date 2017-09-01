@@ -110,7 +110,7 @@ const ContestChoices = (props: any) => {
     };
 
     const choiceForms = _.map(choices, (choice: any) => {
-        const checked = (marks.choices || {})[choice.name];
+        const checked = marks.choices[choice.name];
 
         return (
             <Checkbox
@@ -145,8 +145,8 @@ const BallotContestMarkForm = (props: any) => {
     const { contest, county, currentBallot, updateBallotMarks } = props;
     const { name, description, choices, votesAllowed } = contest;
 
-    const acvr = ((county.acvrs || {})[currentBallot.id]) || {};
-    const contestMarks = acvr[contest.id] || {};
+    const acvr = county.acvrs[currentBallot.id];
+    const contestMarks = acvr[contest.id];
 
     const updateComments = (comments: any) => {
         updateBallotMarks({ comments });

@@ -2,6 +2,7 @@ import { all } from 'redux-saga/effects';
 
 import * as config from '../config';
 
+import acvrUploadSaga from './acvrUploadSaga';
 import auditBoardSignInSaga from './auditBoardSignInSaga';
 import ballotNotFoundOkSaga from './ballotNotFoundOkSaga';
 import countyDashboardRefreshOkSaga from './countyDashboardRefreshOkSaga';
@@ -11,7 +12,6 @@ import debugSaga from './debugSaga';
 import dosAuditSaga from './dosAuditSaga';
 import dosLoginSaga from './dosLoginSaga';
 import dosPollSaga from './dosPollSaga';
-import fileUploadSaga from './fileUploadSaga';
 import logoutSaga from './logoutSaga';
 import nextLoginSaga from './nextLoginSaga';
 import refreshSaga from './refreshSaga';
@@ -23,6 +23,7 @@ import uploadCvrExportSaga from './uploadCvrExportSaga';
 
 export default function* rootSaga() {
     const sagas = [
+        acvrUploadSaga(),
         auditBoardSignInSaga(),
         ballotNotFoundOkSaga(),
         countyLoginSaga(),
@@ -31,7 +32,6 @@ export default function* rootSaga() {
         dosAuditSaga(),
         dosLoginSaga(),
         dosPollSaga(),
-        fileUploadSaga(),
         logoutSaga(),
         nextLoginSaga(),
         refreshSaga(),

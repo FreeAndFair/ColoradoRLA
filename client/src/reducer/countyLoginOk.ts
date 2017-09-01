@@ -4,6 +4,7 @@ import * as cookies from 'js-cookie';
 export default (state: any) => ({
     ...state,
     county: {
+        acvrs: {},
         asm: {
             auditBoard: {},
             county: {},

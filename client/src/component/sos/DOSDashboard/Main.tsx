@@ -2,6 +2,8 @@ import * as React from 'react';
 
 import RoundContainer from './RoundContainer';
 
+import fetchReport from '../../../action/dos/fetchReport';
+
 
 const RiskLimitInfo = ({ riskLimit }: any) => {
     return (
@@ -35,7 +37,7 @@ const NotDefined = () => {
 };
 
 const Main = (props: any) => {
-    const { auditDefined, sos } = props;
+    const { auditDefined, canRenderReport, sos } = props;
 
     const auditDefinition = auditDefined
                           ? <Definition sos={ sos } />
@@ -56,6 +58,15 @@ const Main = (props: any) => {
         <div className='sos-notifications pt-card'>
             { auditDefinition }
             <RoundContainer />
+            <div className='pt-card'>
+                <div>Click to download intermediate audit report.</div>
+                <button
+                    className='pt-button'
+                    disabled={ !canRenderReport }
+                    onClick={ fetchReport }>
+                    Download
+                </button>
+            </div>
         </div>
     );
 };

@@ -13,18 +13,6 @@ export default (state: any, action: any) => {
         noConsensus,
     } = action.data;
 
-    if (!nextState.county.acvrs) {
-        nextState.county.acvrs = {};
-    }
-
-    if (!nextState.county.acvrs[ballotId]) {
-        nextState.county.acvrs[ballotId] = {};
-    }
-
-    if (!nextState.county.acvrs[ballotId][contestId]) {
-        nextState.county.acvrs[ballotId][contestId] = {};
-    }
-
     const nextMarks: any = {
         choices,
         comments,
@@ -35,6 +23,12 @@ export default (state: any, action: any) => {
     }
 
     const marks = nextState.county.acvrs[ballotId][contestId];
+
+    if (nextMarks.noConsensus) {
+        const toClear = _.merge({}, marks.choices, nextMarks.choices);
+        nextMarks.choices = _.mapValues(toClear, () => false);
+    }
+
     nextState.county.acvrs[ballotId][contestId] = _.merge({}, marks, nextMarks);
 
     return nextState;

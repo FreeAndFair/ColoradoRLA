@@ -4,15 +4,15 @@ import notice from '../notice';
 
 
 function* uploadAcvrOk(): any {
-    notice.ok('Uploaded ACVR.');
+    notice.ok('Audit Board interpretations recorded.');
 }
 
 function* uploadAcvrFail(): any {
-    notice.danger('Failed to upload ACVR.');
+    notice.danger('Failed to record Audit Board interpretations.');
 }
 
 function* uploadAcvrNetworkFail(): any {
-    notice.danger('Network error: failed to upload ACVR.');
+    notice.danger('Network error: failed to record Audit Board interpretations.');
 }
 
 

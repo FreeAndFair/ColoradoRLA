@@ -7,6 +7,8 @@ import CountyNav from '../Nav';
 
 import FileUploadContainer from './FileUploadContainer';
 
+import fetchReport from '../../../action/county/fetchReport';
+
 
 const AuditBoardInfo = ({ signedIn }: any) => {
     const icon = signedIn
@@ -29,6 +31,7 @@ const Main = (props: any) => {
         auditButtonDisabled,
         auditComplete,
         boardSignIn,
+        canRenderReport,
         name,
         signInButtonDisabled,
         startAudit,
@@ -59,6 +62,15 @@ const Main = (props: any) => {
                 <div className='pt-card'>{ directions }</div>
                 <FileUploadContainer />
                 <AuditBoardInfo signedIn={ auditBoardSignedIn } />
+                <div className='pt-card'>
+                    <div>Click to download intermediate audit report.</div>
+                    <button
+                        className='pt-button'
+                        disabled={ !canRenderReport }
+                        onClick={ fetchReport }>
+                        Download
+                    </button>
+                </div>
                 <button
                     className='pt-button pt-intent-primary'
                     disabled={ signInButtonDisabled }
@@ -174,6 +186,7 @@ const CountyHomePage = (props: any) => {
         auditComplete,
         boardSignIn,
         canAudit,
+        canRenderReport,
         canSignIn,
         contests,
         county,
@@ -202,6 +215,7 @@ const CountyHomePage = (props: any) => {
                 <Main auditComplete={ auditComplete }
                       auditBoardSignedIn={ auditBoardSignedIn }
                       boardSignIn={ boardSignIn }
+                      canRenderReport={ canRenderReport }
                       auditButtonDisabled={ auditButtonDisabled }
                       name={ countyInfo.name }
                       signInButtonDisabled={ signInButtonDisabled }
