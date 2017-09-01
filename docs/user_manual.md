@@ -1,5 +1,5 @@
 # The Colorado Risk Limiting Audit (CORLA) Tool User Manual
-## Free & Fair, August 2017
+## Free & Fair, September 2017
 
 This User Manual provides an overview of the components that comprise
 the Colorado Department of State’s (CDOS) Risk Limiting Audit Tool
