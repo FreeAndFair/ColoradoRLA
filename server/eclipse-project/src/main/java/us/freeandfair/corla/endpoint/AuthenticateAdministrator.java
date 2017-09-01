@@ -17,9 +17,7 @@ import spark.Response;
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.AbstractStateMachine;
-import us.freeandfair.corla.auth.AuthenticationInterface;
 import us.freeandfair.corla.json.SubmittedCredentials;
-import us.freeandfair.corla.model.Administrator;
 
 /**
  * The endpoint for authenticating an administrator.
@@ -59,7 +57,7 @@ public class AuthenticateAdministrator extends AbstractEndpoint {
    */
   @Override
   public String endpointName() {
-    return "/authenticate";
+    return "/auth-admin";
   }
 
   /**
@@ -93,12 +91,14 @@ public class AuthenticateAdministrator extends AbstractEndpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    if (Main.authentication().secondFactorAuthenticated(the_request)) {
+    final SubmittedCredentials credentials =
+        Main.authentication().authenticationCredentials(the_request);
+    if (Main.authentication().secondFactorAuthenticated(the_request) &&
+        Main.authentication().authenticatedAdministrator(the_request).username().
+            equals(credentials.username())) {
       okJSON(the_response, 
              Main.GSON.toJson(Main.authentication().authenticationStatus(the_request)));
     } else {
-      final SubmittedCredentials credentials =
-          Main.authentication().authenticationCredentials(the_request);
       if (Main.authentication().
           authenticateAdministrator(the_request, the_response,
                                     credentials.username(),
