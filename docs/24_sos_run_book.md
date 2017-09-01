@@ -122,14 +122,14 @@ see the progress of audit for selected contests and the estimated
 number of ballot cards remaining to be audited to meet the risk limit.
 <!--- **[SCREENSHOT NEEDS UPDATE] [show more counties]** --->
 
-![Secretary of State Mid-Audit Screen](./screenshots/16-audit_status1.png)
+![Secretary of State Mid-Audit Screen](./screenshots/16-audit_status.png)
 
 <!--- The RLA Tool also allows the Secretary of State to designate a contest
 for hand counting at any time.
 ![Full Hand Count Screen](./screenshots/9-sos_chooses_full_hand_count.png)
 --->
 
-At the end of each round the Secretary of State can launch the next round by clicking the button.
+At the end of each round the Secretary of State can launch the next round by clicking the "Start Round" button. This button will work only if each County Audit Board has not only finished the audit round but also signed off on the audit round.
 
 ![Launch New Round Screenshot](./screenshots/sos_launch_round.png)
 
