@@ -23,6 +23,12 @@ export default (state: any, action: any) => {
     }
 
     const marks = nextState.county.acvrs[ballotId][contestId];
+
+    if (nextMarks.noConsensus) {
+        const toClear = _.merge({}, marks.choices, nextMarks.choices);
+        nextMarks.choices = _.mapValues(toClear, () => false);
+    }
+
     nextState.county.acvrs[ballotId][contestId] = _.merge({}, marks, nextMarks);
 
     return nextState;
