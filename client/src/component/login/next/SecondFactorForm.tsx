@@ -20,7 +20,7 @@ const ChallengeForm = (props: any) => {
                     <input className='pt-input password'
                            type='password'
                            onChange={ onTokenChange(index) }
-                           value={ tokenParts[index] } />
+                           value={ tokenParts[index] || '' } />
                 </label>
             </div>
         );
