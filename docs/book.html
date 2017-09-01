@@ -24,7 +24,7 @@
 <p>Building and packaging the server is accomplished by running <code>mvn package</code> from the <code>../server/eclipse-project</code> directory, as in</p>
 <pre><code>cd server/eclipse-project
 mvn package</code></pre>
-<p>Running the server can also be accomplished by running the application directly (as in <code>java -jar ../server/eclipse-project/target/colorado_rla-VERSION-shaded.jar</code>, for some specific <em>VERSION</em> number) or installing the system in a webserver with a Java container.</p>
+<p>Running the server can also be accomplished by running the application directly (as in <code>java -jar ../server/eclipse-project/target/colorado_rla-VERSION-shaded.jar</code>, for some specific <em>VERSION</em> number) or installing the system in a webserver, as documented in the <code>INSTALL.html</code> documentation delivered with the system to CDOS.</p>
 <p>To run the client in a standalone manner (rather than from a deployed server), you will need to get <a href="https://www.npmjs.com/get-npm">Node.js and npm</a>. Next, run:</p>
 <pre><code>cd client
 npm install
@@ -88,15 +88,15 @@ npm start</code></pre>
 <h3 id="data-persistence">Data Persistence</h3>
 <p>In order to use the Postgres database in development, one must:</p>
 <ol type="1">
-<li>Install PostgreSQL (<code>brew install postgres</code> on OS X, <code>apt-get    install postgresql</code> on many Linux distributions, or whatever is appropriate) and start it running.</li>
+<li>Install PostgreSQL (<code>brew install postgres</code> on MacOS, <code>apt-get    install postgresql</code> on many Linux distributions, or whatever is appropriate) and start it running.</li>
 <li>Create a database called &quot;<code>corla</code>&quot;, and grant all privileges on it to a user called &quot;<code>corla</code>&quot; with password &quot;<code>corla</code>&quot;.</li>
-<li><p>Initialize the &quot;<code>corla</code>&quot; database with test administrator data. For example, to accomplish the above on OS X using Homebrew, one issues the following commands:</p>
+<li><p>Initialize the &quot;<code>corla</code>&quot; database with test administrator data. For example, to accomplish the above on MacOS using Homebrew, one issues the following commands:</p>
 <pre><code>brew install postgres
 createuser -P corla
 createdb -O corla corla</code></pre>
 <p>On Linux, one would replace the first command with something akin to <code>sudo apt-get install postgresql</code>.</p></li>
 </ol>
-<p>That's it. If the database is there the server will use it and will, at this stage, create all its tables and such automatically. 4. Run the server (to create all the database tables). Recall that this is accomplished by either running the server in Eclipse using the Run button or running it from a command line using a command akin to <code>java -jar colorado_rla-VERSION-shaded.jar</code>. 5. Load test authentication credentials into the database, by executing the SQL in <code>corla-test-credentials.sql</code> (found in the <code>test</code> directory of the repository). This can be done with the following command on OS X:</p>
+<p>That's it. If the database is there the server will use it and will, at this stage, create all its tables and such automatically. 4. Run the server (to create all the database tables). Recall that this is accomplished by either running the server in Eclipse using the Run button or running it from a command line using a command akin to <code>java -jar colorado_rla-VERSION-shaded.jar</code>. 5. Load test authentication credentials into the database, by executing the SQL in <code>corla-test-credentials.psql</code> (found in the <code>test</code> directory of the repository). This can be done with the following command on OS X:</p>
 <pre><code>psql -U corla -d corla -a -f corla-test-credentials.psql</code></pre>
 <p>or the following command on Linux:</p>
 <pre><code>psql -U corla -h localhost -d corla -a -f corla-test-credentials.psql</code></pre>
@@ -276,7 +276,8 @@ createdb -O corla corla</code></pre>
 <h2 id="history-2">History</h2>
 <ul>
 <li>Outline and first draft, 5 July 2017 by Joe Kiniry.</li>
-<li>Second draft, 6 July 2017 by Joe Kiniry. Still no refined system requirements above and beyond those in the DQ.</li>
+<li>Second draft, 6 July 2017 by Joe Kiniry. Still no refined system requirements above and beyond those in the <a href="http://bcn.boulder.co.us/~neal/elections/corla/DQ_RLA_0500517_FE_KRT_VAAA_2017-1420.pdf">Documented Quote</a> issued by the Colorado Department of State (DQ).</li>
+<li>Third draft, in progress August 2017, by Stephanie Singer, based on the final Rule 25 promulgated by the Colorado Department of State</li>
 </ul>
 <h2 id="mandatory-requirements">Mandatory Requirements</h2>
 <h3 id="mandatory-behavioral-requirements">Mandatory Behavioral Requirements</h3>
@@ -448,88 +449,6 @@ createdb -O corla corla</code></pre>
 <li><p><strong>Clear Ballot ClearCount</strong> Clear Ballot Group's browser-based central count tabulation, consolidation and reporting system.</p></li>
 <li><p><strong>OpenCount</strong> OpenCount is a system that can interpret scanned paper ballots and interpret them into cast vote records. It can understand some of the existing proprietary file formats for other vendors’ equipment, and can semi-automatically figure out the shape and nature of a ballot with a little help from an elections official. OpenCount was originally designed and implemented at Berkeley under the guidance of Prof. David Wagner.</p></li>
 <li><p><strong>Dominion</strong> Dominion Voting Systems is an election technology company. http://www.dominionvoting.com/</p></li>
-<li><p><strong>Dominion Democracy Suite</strong> Dominion's election management system for setting up an election as well as acquiring, tallying and reporting election results.</p></li>
-<li><p><strong>dashboard</strong> A computer user interface.</p></li>
-<li><p><strong>developer dashboard</strong> TBD</p></li>
-<li><p><strong>state-wide dashboard</strong> A Dashboard enabling the Secretary of State to carry out actions required by the Risk Limiting Audit process.</p></li>
-<li><p><strong>county dashboard</strong> A Dashboard enabling County election officials to carry out actions required by the Risk Limiting Audit process.</p></li>
-<li><p><strong>audit progress</strong> TBD</p></li>
-<li><p><strong>discrepency</strong> Given a Contest and an audited ballot, an integer between -2 and 2 (inclusive) indicating the amount to be added to the margin of victory due to the difference between the audited interpretation and the CVR.</p></li>
-<li><p><strong>random</strong> TBD</p></li>
-<li><p><strong>contest margin</strong> The Margin between the winning choice with the least votes of all winning choices and the losing choice with the most votes among all losing choices.</p></li>
-<li><p><strong>access control</strong> TBD</p></li>
-<li><p><strong>role</strong> TBD</p></li>
-<li><p><strong>fault tolerance</strong> TBD</p></li>
-<li><p><strong>user interface (UI)</strong> The means by which the user and a computer system interact, in particular the use of input devices and software.</p></li>
-<li><p><strong>user experience (UX)</strong> The overall experience of a person using a product such as a website or computer application, especially in terms of how easy or pleasing it is to use.</p></li>
-<li><p><strong>data synchronization</strong> TBD</p></li>
-<li><p><strong>Colorado Department of State (CDOS)</strong> An agency of Colorado state government created by C.R.S. Title 24 Article 21.</p></li>
-<li><p><strong>abstract state machine</strong> (AST) - TBD including <a href="https://en.wikipedia.org/wiki/Abstract_state_machines">Abstract state machine</a></p></li>
-<li><p><strong>audit center</strong> (aka the public interface to the system) TBD</p></li>
-<li><p><strong>public audit meeting</strong> The meeting where the random seed (and possibly more) is determined.</p></li>
-<li><p><strong>working group</strong> TBD</p></li>
-<li><p><strong>regional training</strong> TBD</p></li>
-<li><p><strong>list of ballot cards to audit</strong> An ordered list of ballot cards selected for audit by the Risk-Limiting Audit algorithm</p></li>
-<li><p><strong>uploading interface</strong> A part of the county dashboard.</p></li>
-<li><p><strong>authenticate</strong> (also known as log-in)</p></li>
-<li><p><strong>comma separated value</strong> (aka CSV)</p></li>
-<li><p><strong>county number</strong> each county has a unique number associated with it, as defined by CDOS.</p></li>
-<li><p><strong>county name</strong> The name of one county.</p></li>
-<li><p><strong>scanner ID number</strong> each scanner has a unique number associated with it. All references to scanners in artifacts such as Cast Vote Records use scanner ID numbers.</p></li>
-<li><p><strong>batch number</strong> TBD</p></li>
-<li><p><strong>storage bin</strong> (aka transfer case, ballot box, secured container) A physical means by which to securely store ballot cards.</p></li>
-<li><p><strong>CVR file</strong> TBD</p></li>
-<li><p><strong>CVR number</strong> concatenation of scanner number - batch number - ballot card position within the batch</p></li>
-<li><p><strong>database table</strong> TBD</p></li>
-<li><p><strong>tool back-end</strong> TBD</p></li>
-<li><p><strong>tool front-end</strong> TBD</p></li>
-<li><p><strong>county auditing interface</strong> TBD</p></li>
-<li><p><strong>paper ballot</strong> A Ballot made of paper.</p></li>
-<li><p><strong>audit adjudication interface</strong> A computer user interface enabling an Audit Board to record interpretations of the ballot cards selected for audit.</p></li>
-<li><p><strong>ballot style</strong> A short name for the set of contests appearing on a Ballot Card</p></li>
-<li><p><strong>political party</strong> Any group of registered electors who, by petition or assembly, nominate candidates for the official general election ballot (Colorado Constitution, Article XXVIII Section 2).</p></li>
-<li><p><strong>username</strong> An identification used by a person with access to a computer, network, or online service.</p></li>
-<li><p><strong>password</strong> A secret word, phrase or string of characters that must be used to gain admission to a computer, interface, or system.</p></li>
-<li><p><strong>credentials</strong> TBD</p></li>
-<li><p><strong>audit supervisor</strong> TBD</p></li>
-<li><p><strong>audit board member</strong> (aka auditor?) TBD</p></li>
-<li><p><strong>email</strong> Messages distributed by electronic means from one computer user to one or more recipients via a network.</p></li>
-<li><p><strong>audit round</strong> TBD</p></li>
-<li><p><strong>audit round results</strong> (reviewed/submitted/acknowledged)</p></li>
-<li><p><strong>press</strong> TBD</p></li>
-<li><p><strong>audit mistake</strong> TBD</p></li>
-<li><p><strong>ballot instructions</strong> TBD</p></li>
-<li><p><strong>digital ballot adjudication</strong> TBD</p></li>
-<li><p><strong>manual ballot adjudication</strong> TBD</p></li>
-<li><p><strong>ambiguous mark</strong> A Ballot Mark whose interpretation as a voter choice is uncertain.</p></li>
-<li><p><strong>SOS voter intent guide</strong> TBD</p></li>
-<li><p><strong>ballot mark</strong> Any mark on a Paper Ballot that was not printed on the Paper Ballot by the Board of Election.</p></li>
-<li><p><strong>voter marking</strong> TBD</p></li>
-<li><p><strong>EO survey</strong> TBD</p></li>
-<li><p><strong>SOS rule making</strong> TBD</p></li>
-<li><p><strong>detailed project plan</strong> TBD</p></li>
-<li><p><strong>closeout plan</strong> TBD</p></li>
-<li><p><strong>load testing</strong> TBD</p></li>
-<li><p><strong>penetration testing</strong> TBD</p></li>
-<li><p><strong>go live date</strong> TBD</p></li>
-<li><p><strong>domain model</strong> TBD</p></li>
-<li><p><strong>domain engineering</strong> TBD</p></li>
-<li><p><strong>formal method</strong> TBD</p></li>
-<li><p><strong>formal model</strong> TBD</p></li>
-<li><p><strong>requirement</strong> TBD</p></li>
-<li><p><strong>system architecture</strong> TBD</p></li>
-<li><p><strong>design-by-contract</strong> TBD</p></li>
-<li><p><strong>continuous integration</strong> TBD</p></li>
-<li><p><strong>issue tracker</strong> TBD</p></li>
-<li><p><strong>repository</strong> The purpose of Git is to manage a project, or a set of files, as they change over time. Git stores this information in a data structure called a repository. A git repository contains, among other things, the following: A set of commit objects. A set of references to commit objects, called heads.</p></li>
-<li><p><strong>git</strong> A version control system (VCS) for tracking changes in computer files and coordinating work on those files among multiple people.</p></li>
-<li><p><strong>Asana</strong> A web and mobile application designed to help teams track their work.</p></li>
-<li><p><strong>Slack</strong> A cloud-based set of team collaboration tools and services.</p></li>
-<li><p><strong>Paused Audit</strong> <span class="citation" data-cites="review">@review</span> morganmillerux I'm unclear if they will be allowed to pause and audit but it seems valuable to state what it is and then explicitly allow or disallow it.</p></li>
-<li><p><strong>Missing/Not Found Ballot</strong> A Phantom Ballot.</p></li>
-<li><p><strong>Credentialing Authority</strong> <span class="citation" data-cites="review">@review</span> morganmillerux Do we need a concept of who's allowed to author credentials?</p></li>
-<li><p><strong>Submit Ballot Interpretation</strong> <span class="citation" data-cites="review">@review</span> morganmillerux I see an entry for Audit Results but I think it would also be helpful to define the granular steps of submitting each ballot interpretation.</p></li>
-<li><p><strong>Ballot Interpretation</strong> <span class="citation" data-cites="review">@review</span> morganmillerux Perhaps I didn't a synonym for this, but this should be included.</p></li>
 <li><p><strong>Ballot Retrieval</strong> <span class="citation" data-cites="review">@review</span> morganmillerux the process of getting the ballots seems like a specific point of concern and merits being called out.</p></li>
 </ul>
 

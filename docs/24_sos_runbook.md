@@ -33,8 +33,7 @@ This version of the RLA Tool requires that the contests driving the audit round 
  
 ### Logging In
 
-Department of State users must log in to the RLA Tool.
-<!--- **[SCREENSHOT NEEDS UPDATE]** --->
+Department of State users must log in to the RLA Tool by pointing their browser to the url designated by the Department of State.
 
 ![State Login Screenshot](./screenshots/1-sos_login.png)
 
@@ -90,7 +89,6 @@ Rule 25 calls these "contests to be audited". Note that in the current
 version of the RLA Tool, each contest is considered within a single County. 
 Calculations of audit round sizes and risk levels are based on single-County contests. 
 
-**[SCREENSHOT NEEDS UPDATE] [new set of dropdown choices, County names not Contest IDs] ** 
 
 ![State Contest Selection Screenshot](./screenshots/8-sos_selects_contest_reason_why_dropdown.png)
 
@@ -120,7 +118,6 @@ and the number of ballot cards yet to be reviewed in the current round in the Co
 The RLA Tool permits the Secretary of State to 
 see the progress of audit for selected contests and the estimated 
 number of ballot cards remaining to be audited to meet the risk limit.
-<!--- **[SCREENSHOT NEEDS UPDATE] [show more counties]** --->
 
 ![Secretary of State Mid-Audit Screen](./screenshots/16-audit_status.png)
 
