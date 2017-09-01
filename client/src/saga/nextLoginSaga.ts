@@ -6,7 +6,15 @@ import {
 import notice from '../notice';
 
 
-function* loginOk(action: any) {
+function* login1FOk(action: any) {
+    const { stage } = action.data.received;
+
+    if (stage === 'SECOND_FACTOR_AUTHENTICATED') {
+        yield put({ type: 'LOGIN_2F_OK', data: action.data });
+    }
+}
+
+function* login2FOk(action: any) {
     const { role } = action.data.received;
 
     if (role === 'STATE') {
@@ -28,8 +36,9 @@ function* loginNetworkFail(): IterableIterator<void> {
 export default function* dosLoginSaga() {
     yield takeLatest('LOGIN_1F_NETWORK_FAIL', loginNetworkFail);
     yield takeLatest('LOGIN_1F_FAIL', loginFail);
+    yield takeLatest('LOGIN_1F_OK', login1FOk);
 
     yield takeLatest('LOGIN_2F_FAIL', loginFail);
     yield takeLatest('LOGIN_2F_NETWORK_FAIL', loginNetworkFail);
-    yield takeLatest('LOGIN_2F_OK', loginOk);
+    yield takeLatest('LOGIN_2F_OK', login2FOk);
 }
