@@ -253,6 +253,7 @@ public class CountyReport {
     cell.setCellValue(my_county.name() + " County Audit Report");
     
     row = summary_sheet.createRow(row_number++);
+    cell_number = 0;
     cell = row.createCell(cell_number++);
     cell.setCellType(CellType.STRING);
     cell.setCellStyle(bold_style);
@@ -318,13 +319,33 @@ public class CountyReport {
     cell.setCellStyle(integer_style);
     cell.setCellValue(my_rounds.size());
     
+    if (!my_rounds.isEmpty()) {
+      row = summary_sheet.createRow(row_number++);
+      cell_number = 0;
+      cell = row.createCell(cell_number++);
+      cell.setCellType(CellType.STRING);
+      cell.setCellStyle(bold_style);
+      cell.setCellValue("Ballot Cards Audited by Round");
+      for (final Round round : my_rounds) {
+        cell = row.createCell(cell_number++);
+        cell.setCellStyle(standard_style);
+        cell.setCellType(CellType.NUMERIC);
+        cell.setCellValue(round.actualCount());
+      }
+    }
     row_number++;
     row = summary_sheet.createRow(row_number++);
     cell_number = 0;
     cell = row.createCell(cell_number++);
     cell.setCellStyle(bold_style);
-    cell.setCellValue("Audited Contests");
+    if (my_driving_contest_results.isEmpty()) {
+      cell.setCellValue("No Audited Contests");
+    } else {
+      cell.setCellValue("Audited Contests");
+    }
     
+    max_cell_number = Math.max(max_cell_number, cell_number);
+
     for (final CountyContestResult ccr : my_driving_contest_results) {
       row_number++;
       row = summary_sheet.createRow(row_number++);

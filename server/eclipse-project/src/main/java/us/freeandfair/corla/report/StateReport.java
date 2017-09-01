@@ -182,6 +182,7 @@ public class StateReport {
     cell.setCellValue("State Audit Report");
     
     row = summary_sheet.createRow(row_number++);
+    cell_number = 0;
     cell = row.createCell(cell_number++);
     cell.setCellType(CellType.STRING);
     cell.setCellStyle(bold_style);
@@ -253,26 +254,37 @@ public class StateReport {
     cell.setCellStyle(integer_style);
     cell.setCellValue(audit_rounds);
     
-    row_number++;
-    row = summary_sheet.createRow(row_number++);
-    cell_number = 0;
-    cell = row.createCell(cell_number++);
-    cell.setCellStyle(bold_style);
-    cell.setCellValue("Audited Contests By County");
-    
+    max_cell_number = Math.max(max_cell_number, cell_number);
+
     for (final Entry<County, CountyReport> e : my_county_reports.entrySet()) {
       row_number++;
       row = summary_sheet.createRow(row_number++);
       cell_number = 0;
       cell = row.createCell(cell_number++);
       cell.setCellStyle(bold_style);
+      cell.setCellType(CellType.STRING);
       cell.setCellValue(e.getKey().name() + " County");
       
       if (e.getValue().drivingContestResults().isEmpty()) {
         cell = row.createCell(cell_number++);
         cell.setCellStyle(bold_style);
+        cell.setCellType(CellType.STRING);
         cell.setCellValue("No Contests Audited");
-      } else {      
+      } else {  
+        cell.setCellValue(cell.getStringCellValue() + " - Ballot Cards Audited by Round");
+        for (final Round round : e.getValue().rounds()) {
+          cell = row.createCell(cell_number++);
+          cell.setCellStyle(standard_style);
+          cell.setCellType(CellType.NUMERIC);
+          cell.setCellValue(round.actualCount());
+        }
+
+        row = summary_sheet.createRow(row_number++);
+        cell_number = 0;
+        cell = row.createCell(cell_number++);
+        cell.setCellStyle(bold_style);
+        cell.setCellValue("Audited Contests");
+        
         for (final CountyContestResult ccr : e.getValue().drivingContestResults()) {
           row_number++;
           row = summary_sheet.createRow(row_number++);
