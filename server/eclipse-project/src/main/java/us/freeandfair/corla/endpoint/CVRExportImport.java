@@ -17,7 +17,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.PersistenceException;
 
@@ -48,6 +50,13 @@ import us.freeandfair.corla.util.UploadedFileStreamer;
  */
 @SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.ExcessiveImports"})
 public class CVRExportImport extends AbstractCountyDashboardEndpoint {
+  /**
+   * The static set of counties that are currently running imports. This is
+   * used to prevent multiple counties from importing CVRs at the same time, 
+   * which would cause issues since this endpoint is not a single transaction.
+   */
+  private static final Set<Long> COUNTIES_RUNNING = new HashSet<Long>();
+  
   /**
    * {@inheritDoc}
    */
@@ -207,6 +216,18 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
       return my_endpoint_result.get();
     }
     
+    // check to be sure that the same county isn't in the middle of a CVR import
+    synchronized (COUNTIES_RUNNING) {
+      if (COUNTIES_RUNNING.contains(county.id())) {
+        transactionFailure(the_response, 
+                           "county " + county.id() + " is already uploading CVRs, try later");
+        // for a transaction failure, we have to halt explicitly
+        halt(the_response);
+      }
+      // signal that we're starting the import
+      COUNTIES_RUNNING.add(county.id());
+    }
+    
     try {
       final UploadedFile file =
           Main.GSON.fromJson(the_request.body(), UploadedFile.class);
@@ -222,6 +243,11 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
       }
     } catch (final JsonParseException e) {
       badDataContents(the_response, "malformed request: " + e.getMessage());
+    } finally {
+      // signal that we're done with the import
+      synchronized (COUNTIES_RUNNING) {
+        COUNTIES_RUNNING.remove(county.id());
+      }
     }
     
     return my_endpoint_result.get();
