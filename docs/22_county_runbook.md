@@ -170,7 +170,6 @@ overvote, the review screen will say "Overvote for this contest".
 Note: do *not* use your browser's "back" arrow during the audit
 process.  If the review screen does not match the Audit Board's
 interpretation, click the "Back" button.
-**<!--- this may be irrelevant now, check UI --->**
 
 If the review screen matches the Audit Board's interpretation, click
 "Submit and Next Ballot". This submission is final. There is no way to
