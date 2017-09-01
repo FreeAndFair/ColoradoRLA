@@ -38,7 +38,7 @@ const AuditInstructions = (props: any) => {
     return (
         <div className='pt-card'>
             <div className='pt-card'>
-                Use this page to report the voter markings on ballot #{ currentBallotNumber },
+                Use this page to report the voter markings on ballot card #{ currentBallotNumber },
                 out of { county.ballotsRemainingInRound } ballots that you must audit in this round.
             </div>
             <div>
@@ -64,7 +64,7 @@ const AuditInstructions = (props: any) => {
                     </div>
                 </div>
                 <div className='pt-card'>
-                    The ballot card #{ currentBallotNumber } has Ballot
+                    Ballot card #{ currentBallotNumber } has Ballot
                     Type #{ currentBallot.ballotType } and ID { currentBallot.imprintedId }.
                     Please ensure that the paper ballot you are examining is the same Ballot
                     Type/ID.
