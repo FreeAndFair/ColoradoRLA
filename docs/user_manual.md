@@ -3,8 +3,7 @@
 
 This User Manual provides an overview of the components that comprise
 the Colorado Department of State’s (CDOS) Risk Limiting Audit Tool
-(RLA Tool).  It contains annotated screenshots with detailed
-descriptions of what is contained on every page users experience. It
+(RLA Tool). It contains screenshots of every page users experience. It
 also contains a glossary of relevant terms. This RLA Tool represents
 the cutting edge in efforts to provide verifiable evidence that
 election results are accurate, and November 2017 is the first time any
