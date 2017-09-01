@@ -6,16 +6,14 @@ import LoginForm from './LoginForm';
 
 export class LoginFormContainer extends React.Component<any, any> {
     public render() {
-        const { loggedIn } = this.props;
-
-        return <LoginForm />;
+        return <LoginForm { ...this.props } />;
     }
 }
 
 const mapStateToProps = (state: any) => {
-    const { loggedIn } = state;
+    const { loggedIn, loginChallenge } = state;
 
-    return { loggedIn };
+    return { loggedIn, loginChallenge };
 };
 
 

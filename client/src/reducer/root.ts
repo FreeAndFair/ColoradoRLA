@@ -23,13 +23,15 @@ import uploadRandomSeedOk from './uploadRandomSeedOk';
 
 interface AppState {
     loggedIn: boolean;
+    loginChallenge: any;
     dashboard?: Dashboard;
     county?: any;
     sos?: any;
 }
 
-const defaultState = {
+const defaultState: AppState = {
     loggedIn: false,
+    loginChallenge: null,
 };
 
 
