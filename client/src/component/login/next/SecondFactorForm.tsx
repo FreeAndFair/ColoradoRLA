@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import login2F from '../../../action/login2F';
+
 
 function isFormValid(form: any): boolean {
     const { username } = form;
@@ -86,7 +88,10 @@ export default class LoginForm extends React.Component<any, any> {
     }
 
     private buttonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-        const token = this.state.form.tokenParts.join('');
-        console.log('token', token);
+        const { username, tokenParts } = this.state.form;
+
+        const token = tokenParts.join('');
+
+        login2F(username, token);
     }
 }
