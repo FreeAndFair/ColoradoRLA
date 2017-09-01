@@ -388,6 +388,9 @@ public abstract class AbstractEndpoint implements Endpoint {
    * authentication checking.
    */
   @SuppressWarnings("PMD.ConfusingTernary")
+  // this warning is caused by the call to queryParams(), 
+  // but we really don't need the result
+  @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT")
   @Override
   public void before(final Request the_request, final Response the_response) {
     reset();

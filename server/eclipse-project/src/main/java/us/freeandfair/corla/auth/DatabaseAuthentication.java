@@ -24,8 +24,7 @@ import us.freeandfair.corla.query.AdministratorQueries;
  * @trace authentication
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public final class DatabaseAuthentication extends AbstractAuthentication
-    implements AuthenticationInterface {
+public final class DatabaseAuthentication extends AbstractAuthentication {
   /**
    * {@inheritDoc}
    */
