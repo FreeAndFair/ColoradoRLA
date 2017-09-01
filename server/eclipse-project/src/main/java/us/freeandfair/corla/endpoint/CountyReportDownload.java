@@ -20,6 +20,7 @@ import javax.persistence.PersistenceException;
 import spark.Request;
 import spark.Response;
 
+import us.freeandfair.corla.Main;
 import us.freeandfair.corla.report.CountyReport;
 import us.freeandfair.corla.util.SparkHelper;
 
@@ -67,7 +68,7 @@ public class CountyReportDownload extends AbstractEndpoint {
       final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
       final BufferedOutputStream bos = new BufferedOutputStream(os);
       final CountyReport cr = 
-          new CountyReport(Authentication.authenticatedCounty(the_request));
+          new CountyReport(Main.authentication().authenticatedCounty(the_request));
       if (pdf) {
         the_response.type("application/pdf");
         bos.write(cr.generatePDF());
