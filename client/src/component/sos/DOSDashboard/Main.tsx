@@ -41,6 +41,17 @@ const Main = (props: any) => {
                           ? <Definition sos={ sos } />
                           : <NotDefined />;
 
+    if (sos.asm.currentState === 'DOS_AUDIT_COMPLETE') {
+        return (
+            <div className='sos-notifications pt-card'>
+                { auditDefinition }
+                <div className='pt-card'>
+                    Congratulations! The audit is complete.
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className='sos-notifications pt-card'>
             { auditDefinition }

@@ -22,11 +22,6 @@ const DOSDashboardPage = (props: any) => {
                 <CountyUpdates countyStatus={ countyStatus } />
                 <ContestUpdates contests={ contests } seed={ seed } sos={ sos } />
             </div>
-            <div>
-                <button disabled className='pt-button pt-intent-primary'>
-                    Final Audit Report
-                </button>
-            </div>
         </div>
     );
 };

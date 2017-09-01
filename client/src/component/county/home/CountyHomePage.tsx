@@ -48,20 +48,9 @@ const Main = (props: any) => {
         }
     }
 
-    const FinalReportForm = () => (
-        <div className='pt-card'>
-            <div>
-                The audit is complete. Please click "Submit" to submit the final audit report.
-            </div>
-            <button className='pt-button pt-intent-primary'>
-                Submit
-            </button>
-        </div>
-    );
-
-    const finalReportForm = auditComplete
-                          ? <FinalReportForm />
-                          : '';
+    if (auditComplete) {
+        directions = 'The audit is complete.';
+    }
 
     return (
         <div className='county-main pt-card'>
@@ -180,6 +169,7 @@ const Info = ({ info, contests, county }: any) => (
 
 const CountyHomePage = (props: any) => {
     const {
+        allRoundsComplete,
         auditBoardSignedIn,
         auditComplete,
         boardSignIn,
@@ -189,6 +179,7 @@ const CountyHomePage = (props: any) => {
         county,
         countyInfo,
         countyDashboardRefresh,
+        finishAudit,
         startAudit,
     } = props;
     const {
