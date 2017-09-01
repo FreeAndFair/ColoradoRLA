@@ -67,7 +67,8 @@ and Next.’
 
 The County Update table allows the Secretary of State to see which Counties have uploaded which files. 
 
-**[SCREENSHOT NEEDS UPDATE] [missing]**
+![County Uploads Screenshot]()
+
 
 Note the change in the status message now that the Risk Limit has been entered.
 
@@ -116,11 +117,10 @@ Once the random seed is entered the the Secretary of State can launch the audit 
 
 ### Audit Rounds
 
-Once the audit is launched, the first round of the audit begins. In each round, the tool shows each County a list of ballot cards to be reviewed. As the County Audit Boards review ballot cards and enter interpretations, the Secretary of State can see the number of ballot cards reviewed so far, the number of ballot cards with discrepancies, 
-<!— the number of disagreements —>
+Once the audit is launched, the first round of the audit begins. In each round, the tool shows each County a list of ballot cards to be reviewed. As the County Audit Boards review ballot cards and enter interpretations, the Secretary of State can see the number of ballot cards reviewed so far, the number of ballot cards with discrepancies (between audit board interpretations and the CVR file), 
+the number of ballot cards on which the audit board disagreed,
 and the number of ballot cards yet to be reviewed in the current round in the County Update table. 
 
-<!— and what of the "Contest Update" table? —>
 
 ### 25.2.3 (C) Comparisons, Termination, Additional Ballots
 
@@ -131,18 +131,15 @@ number of ballot cards remaining to be audited to meet the risk limit.
 
 ![Secretary of State Mid-Audit Screen](./screenshots/16-audit_status.png)
 
-The RLA Tool also allows the Secretary of State to designate a contest
+<!—- The RLA Tool also allows the Secretary of State to designate a contest
 for hand counting at any time.
 
 ![Full Hand Count Screen](./screenshots/9-sos_chooses_full_hand_count.png)
 
+—>
 The RLA Tool automatically randomly selects additional ballots for
 audit as necessary until the risk limit is met.
 
-### 25.2.3 (A)(2) Ballot Polling Audits
-
-The conduct and reporting of the Audit Board for a Ballot Polling
-Audit must be completed outside the RLA Tool.
 
 ### Exports
 <!--- need to write this section --->
