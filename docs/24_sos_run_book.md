@@ -131,12 +131,11 @@ number of ballot cards remaining to be audited to meet the risk limit.
 
 ![Secretary of State Mid-Audit Screen](./screenshots/16-audit_status.png)
 
-<!—- The RLA Tool also allows the Secretary of State to designate a contest
+<!--- The RLA Tool also allows the Secretary of State to designate a contest
 for hand counting at any time.
-
 ![Full Hand Count Screen](./screenshots/9-sos_chooses_full_hand_count.png)
+--->
 
-—>
 The RLA Tool automatically randomly selects additional ballots for
 audit as necessary until the risk limit is met.
 
