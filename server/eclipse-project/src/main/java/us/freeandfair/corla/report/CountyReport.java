@@ -13,6 +13,7 @@ package us.freeandfair.corla.report;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -20,11 +21,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.OptionalInt;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -82,7 +84,7 @@ public class CountyReport {
   /**
    * The contests driving the audit, and their results.
    */
-  private final Set<CountyContestResult> my_driving_contest_results;
+  private final List<CountyContestResult> my_driving_contest_results;
   
   /**
    * The data for each audit round.
@@ -108,9 +110,15 @@ public class CountyReport {
   public CountyReport(final County the_county, final Instant the_timestamp) {
     my_county = the_county;
     my_timestamp = the_timestamp;
-    my_driving_contest_results = CountyContestResultQueries.forCounty(my_county);
+    my_driving_contest_results = new ArrayList<CountyContestResult>();
     my_cdb = 
         Persistence.getByID(my_county.id(), CountyDashboard.class);
+    for (final CountyContestResult ccr : 
+         CountyContestResultQueries.forCounty(my_county)) {
+      if (my_cdb.drivingContests().contains(ccr.contest())) {
+        my_driving_contest_results.add(ccr);
+      }
+    }
     my_rounds = my_cdb.rounds();
     my_cvrs_to_audit_by_round = new HashMap<>();
     for (final Round r : my_rounds) {
@@ -150,8 +158,8 @@ public class CountyReport {
   /**
    * @return the driving contest results for this report.
    */
-  public Set<CountyContestResult> drivingContestResults() {
-    return Collections.unmodifiableSet(my_driving_contest_results);
+  public List<CountyContestResult> drivingContestResults() {
+    return Collections.unmodifiableList(my_driving_contest_results);
   }
   
   /**
@@ -168,6 +176,9 @@ public class CountyReport {
   public byte[] generateExcel() 
       throws IOException {
     final Workbook workbook = new XSSFWorkbook();
+
+    // data format
+    final DataFormat format = workbook.createDataFormat();
     
     // bold font for titles and such
     final Font bold_font = workbook.createFont();
@@ -181,12 +192,19 @@ public class CountyReport {
     standard_font.setFontHeightInPoints(FONT_SIZE);
     final CellStyle standard_style = workbook.createCellStyle();
     standard_style.setFont(standard_font);
+    final CellStyle integer_style = workbook.createCellStyle();
+    integer_style.setFont(standard_font);
+    integer_style.setDataFormat(format.getFormat("0"));
+    final CellStyle decimal_style = workbook.createCellStyle();
+    decimal_style.setFont(standard_font);
+    decimal_style.setDataFormat(format.getFormat("0.0000"));
     
     // the summary sheet
     final Sheet summary_sheet = workbook.createSheet("Summary");
     int row_number = 0;
     Row row = summary_sheet.createRow(row_number++);
     int cell_number = 0;
+    int max_cell_number = 0;
     
     Cell cell = row.createCell(cell_number++);
     cell.setCellType(CellType.STRING);
@@ -196,6 +214,7 @@ public class CountyReport {
     } else {
       cell.setCellValue(my_dosdb.electionType());
     }
+    
     cell = row.createCell(cell_number++);
     cell.setCellType(CellType.STRING);
     cell.setCellStyle(bold_style);
@@ -205,6 +224,7 @@ public class CountyReport {
       cell.setCellValue(LocalDate.from(my_dosdb.electionDate()).toString());
     }
     
+    max_cell_number = Math.max(max_cell_number, cell_number);
     row_number++;
     row = summary_sheet.createRow(row_number++);
     cell_number = 0;
@@ -215,15 +235,76 @@ public class CountyReport {
     for (final CountyContestResult ccr : my_driving_contest_results) {
       row_number++;
       row = summary_sheet.createRow(row_number++);
-      cell_number = 0;
+      cell_number = 1;
+      cell = row.createCell(cell_number++);
       cell.setCellStyle(bold_style);
       cell.setCellValue(ccr.contest().name());
+      
       cell = row.createCell(cell_number++);
       cell.setCellStyle(bold_style);
       cell.setCellValue("Vote For " + ccr.contest().votesAllowed());
+      row = summary_sheet.createRow(row_number++);
+      
+      cell_number = 0;
+      cell = row.createCell(cell_number++);
+      cell.setCellStyle(bold_style);
+      cell.setCellValue("Choice");
+      
+      cell = row.createCell(cell_number++);
+      cell.setCellStyle(bold_style);
+      cell.setCellValue("W/L");
+      
+      cell = row.createCell(cell_number++);
+      cell.setCellStyle(bold_style);
+      cell.setCellValue("Votes");
+      
+      cell = row.createCell(cell_number++);
+      cell.setCellStyle(bold_style);
+      cell.setCellValue("Margin");
+      
+      cell = row.createCell(cell_number++);
+      cell.setCellStyle(bold_style);
+      cell.setCellValue("Diluted Margin %");
+      
+      max_cell_number = Math.max(max_cell_number, cell_number);
+      for (final String choice : ccr.rankedChoices()) {
+        row = summary_sheet.createRow(row_number++);
+        cell = row.createCell(cell_number++);
+        cell.setCellStyle(standard_style);
+        cell.setCellValue(choice);
+        
+        cell = row.createCell(cell_number++);
+        cell.setCellStyle(standard_style);
+        if (ccr.winners().contains(choice)) {
+          cell.setCellValue("W");
+        } else {
+          cell.setCellValue("L");
+        }
+        
+        cell = row.createCell(cell_number++);
+        cell.setCellStyle(integer_style);
+        cell.setCellType(CellType.NUMERIC);
+        cell.setCellValue(ccr.voteTotals().get(choice));
+        
+        cell = row.createCell(cell_number++);
+        cell.setCellStyle(integer_style);
+        cell.setCellType(CellType.NUMERIC);
+        final OptionalInt margin = ccr.marginToNext(choice);
+        if (margin.isPresent()) {
+          cell.setCellValue(margin.getAsInt());
+        }
+        
+        cell = row.createCell(cell_number++);
+        cell.setCellStyle(decimal_style);
+        cell.setCellType(CellType.NUMERIC);
+        final BigDecimal diluted_margin = ccr.countyDilutedMarginToNext(choice);
+        if (diluted_margin != null) {
+          cell.setCellValue(diluted_margin.doubleValue() * 100);
+        }
+      }
     }
     
-    for (int i = 0; i < summary_sheet.getRow(0).getPhysicalNumberOfCells(); i++) {
+    for (int i = 0; i < max_cell_number; i++) {
       summary_sheet.autoSizeColumn(i);
     }
     
