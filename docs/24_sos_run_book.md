@@ -42,7 +42,7 @@ The RLA Tool will direct users to the Department of
 State home page. At the start of the audit process, this page will contain no information  Note the 
 logout button ![Logout Button](./screenshots/LogoutButton.png), in the upper right of this (and every) page.
 
-![Secretary of State Home Screenshot](./screenshots/2-sos_initial_landing_page.png)
+![Secretary of State Home Screenshot](./screenshots/2-sos_audit_status.png)
 
 ### Navigation
 
