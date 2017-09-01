@@ -61,7 +61,7 @@ The Secretary of State will enter date the election will take place, the type
 of election, and the Risk Limit. Note that once these selections are entered they cannot be modified. To continue, click ‘Save
 and Next.’ 
 
-![State Risk Limit Entry Screenshot](./screenshots/5-sos_define_audit_save_and_next.png)
+![State Risk Limit Entry Screenshot](./screenshots/5-sos_define_audit_save_and_next1.png)
 
 The County Update table allows the Secretary of State to see which Counties have uploaded which files. 
 
