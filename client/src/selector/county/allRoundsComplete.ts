@@ -9,7 +9,9 @@ function allRoundsComplete(state: any): boolean {
         return false;
     }
 
-    return county.estimatedBallotsToAudit <= 0;
+    const { currentRound } = county;
+
+    return !currentRound || _.isEmpty(currentRound);
 }
 
 
