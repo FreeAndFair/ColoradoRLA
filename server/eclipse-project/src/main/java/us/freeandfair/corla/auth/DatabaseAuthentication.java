@@ -11,6 +11,9 @@
 
 package us.freeandfair.corla.auth;
 
+import java.security.SecureRandom;
+import java.util.Random;
+
 import spark.Request;
 import spark.Response;
 
@@ -40,13 +43,23 @@ public final class DatabaseAuthentication extends AbstractAuthentication {
    * {@inheritDoc}
    */
   @Override
+  @SuppressWarnings({"PMD.ConsecutiveLiteralAppends", "checkstyle:magicnumber"})
   public AuthenticationResult traditionalAuthenticate(final Request the_request,
                                                       final Response the_response,
                                                       final String the_username, 
                                                       final String the_password) {
     final Administrator admin = 
         AdministratorQueries.byUsername(the_username);
-    return new AuthenticationResult(admin != null, "NO CHALLENGE"); 
+    final Random random = new SecureRandom();
+    final StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < 3; i++) {
+      sb.append('[');
+      sb.append(String.valueOf('A' + random.nextInt(9)));
+      sb.append(',');
+      sb.append(random.nextInt(8) + 1);
+      sb.append("] ");
+    }
+    return new AuthenticationResult(admin != null, sb.toString().trim()); 
   }
   
   /**
