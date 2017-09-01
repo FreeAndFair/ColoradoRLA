@@ -19,9 +19,6 @@ book.pdf: $(MD_DOCS)
 book.html: $(MD_DOCS)
 	pandoc $(MD_DOCS) --toc --variable linkcolor -f markdown -t html5 -o book.html
 
-runbook.docx: runbook.md
-	pandoc runbook.md --variable linkcolor -f markdown -t docx -o runbook.docx
-
 county_runbook.docx: 22_county_runbook.md
 	pandoc 22_county_runbook.md --variable linkcolor -f markdown -t docx -o county_runbook.docx
 
