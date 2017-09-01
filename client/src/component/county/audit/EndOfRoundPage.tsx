@@ -44,6 +44,7 @@ const EndOfRoundPage = (props: any) => {
     const {
         allRoundsComplete,
         countyInfo,
+        estimatedBallotsToAudit,
         previousRound,
         previousRoundSignedOff,
     } = props;
@@ -51,7 +52,7 @@ const EndOfRoundPage = (props: any) => {
     const countyName = countyInfo.name;
     const roundNumber = previousRound.number;
 
-    if (allRoundsComplete) {
+    if (allRoundsComplete && estimatedBallotsToAudit <= 0) {
         return <LastRoundComplete />;
     }
 
