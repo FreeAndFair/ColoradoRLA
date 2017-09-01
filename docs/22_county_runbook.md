@@ -62,15 +62,15 @@ last file will be used.
 If the hash does not match the file 
 (either because the wrong hash was entered, or because the file was changed as it traveled over the network), 
 the data from the file will not be imported and the user will
-receive the following error messages. **[SCREENSHOT NEEDS UPDATE]**
+receive the following error messages. 
 
-![Audit_Upload_Failed_Screenshot](./screenshots/d-failed_to_upload.png)
+![Audit_Upload_Failed_Screenshot](./screenshots/hash_mismatch.png)
 
 If the hash matches the file but the file is not in the proper format, the data from the file will not be 
 imported and the user will
-receive the following error messages. **[SCREENSHOT NEEDS UPDATE]**
+receive the following error messages. 
 
-![Format Error Screenshot]()
+![Format Error Screenshot](./screenshots/bad_format.png)
 
 
 If the hash matches and the file format is correct,  the system will import the data from the file. 
