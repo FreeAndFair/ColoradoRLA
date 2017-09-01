@@ -34,7 +34,7 @@ const BallotListStage = (props: any) => {
 
     return (
         <div>
-            <h3>Ballots to audit</h3>
+            <h3>Ballot cards to audit</h3>
             <div className='pt-card'>
                 <div>
                     The Secretary of State has established the following risk limit(s) for
@@ -45,13 +45,13 @@ const BallotListStage = (props: any) => {
                 </ul>
             </div>
             <div className='pt-card'>
-                The Secretary of State has randomly selected { cvrsToAudit.length } ballots
+                The Secretary of State has randomly selected { cvrsToAudit.length } ballot cards
                 for the { countyInfo.name } County Audit Board to examine to satisfy the
                 risk limit(s) for the audited contest(s).
             </div>
             <div className='pt-card'>
                 The Audit Board must locate and retrieve, or observe a county staff member
-                locate and retrieve, the following randomly selected ballots for the initial
+                locate and retrieve, the following randomly selected ballot cards for the initial
                 round of this risk-limiting audit:
             </div>
             <table className='pt-table pt-bordered pt-condensed'>
@@ -69,7 +69,7 @@ const BallotListStage = (props: any) => {
             </table>
             <div className='pt-card'>
                 Audit Board: Click Next to start reporting the votes you observe on each
-                of the above ballots.
+                of the above ballot cards.
             </div>
             <button
                 className='pt-button pt-intent-primary'
