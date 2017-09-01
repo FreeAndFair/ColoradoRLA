@@ -1,9 +1,19 @@
+import * as _ from 'lodash';
+
+
 function auditComplete(state: any): boolean {
     const { county } = state;
     const { currentState } = county.asm.county;
 
-    return currentState === 'COUNTY_AUDIT_COMPLETE'
-        || county.estimatedBallotsToAudit <= 0;
+    if (currentState === 'COUNTY_AUDIT_COMPLETE') {
+        return true;
+    }
+
+    if (!county.rounds || _.isEmpty(county.rounds)) {
+        return false;
+    }
+
+    return county.estimatedBallotsToAudit <= 0;
 }
 
 
