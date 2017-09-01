@@ -13,7 +13,7 @@ export default class LoginForm extends React.Component<any, any> {
             password: '',
             username: '',
         },
-    }
+    };
 
     public render() {
         const { form } = this.state;

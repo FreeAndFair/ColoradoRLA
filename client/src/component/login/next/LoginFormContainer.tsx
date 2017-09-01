@@ -1,12 +1,19 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import LoginForm from './LoginForm';
+import PasswordForm from './PasswordForm';
+import SecondFactorForm from './SecondFactorForm';
 
 
 export class LoginFormContainer extends React.Component<any, any> {
     public render() {
-        return <LoginForm { ...this.props } />;
+        const { loginChallenge } = this.props;
+
+        if (loginChallenge) {
+            return <SecondFactorForm { ...this.props } />;
+        } else {
+            return <PasswordForm { ...this.props } />;
+        }
     }
 }
 
