@@ -7,16 +7,47 @@ function isFormValid(form: any): boolean {
     return username.length > 0;
 }
 
+const ChallengeForm = (props: any) => {
+    const { loginChallenge, onTokenChange, tokenParts } = props;
+
+    const challengeFields = loginChallenge.map((box: any, index: number) => {
+        const key = box.join('');
+
+        return (
+            <div key={ key }>
+                <label className='pt-label'>
+                    { key }
+                    <input className='pt-input password'
+                           type='password'
+                           onChange={ onTokenChange(index) }
+                           value={ tokenParts[index] } />
+                </label>
+            </div>
+        );
+    });
+
+    return (
+        <div className='pt-card'>
+            <div><strong>Grid Challenge:</strong></div>
+            <div className='pt-card'>
+                { challengeFields }
+            </div>
+        </div>
+    );
+};
+
 export default class LoginForm extends React.Component<any, any> {
-    public state = {
+    public state: any = {
         form: {
-            token: '',
+            tokenParts: [],
             username: '',
         },
     };
 
     public render() {
+        const { loginChallenge } = this.props;
         const { form } = this.state;
+
         const disabled = !isFormValid(form);
 
         return (
@@ -28,13 +59,10 @@ export default class LoginForm extends React.Component<any, any> {
                            onChange={ this.onEmailChange }
                            value={ form.username } />
                 </label>
-                <label className='pt-label'>
-                    Token
-                    <input className='pt-input password'
-                           type='password'
-                           onChange={ this.onTokenChange }
-                           value={ form.token } />
-                </label>
+                <ChallengeForm
+                    loginChallenge={ loginChallenge }
+                    onTokenChange={ this.onTokenChange }
+                    tokenParts={ form.tokenParts } />
                 <button
                     disabled={ disabled }
                     className='pt-primary submit'
@@ -51,13 +79,14 @@ export default class LoginForm extends React.Component<any, any> {
         this.setState(s);
     }
 
-    private onTokenChange = (e: React.ChangeEvent<any>) => {
+    private onTokenChange = (index: number) => (e: React.ChangeEvent<any>) => {
         const s = { ...this.state };
-        s.form.token = e.target.value;
+        s.form.tokenParts[index] = e.target.value;
         this.setState(s);
     }
 
     private buttonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-        this.props.submit(this.state.form);
+        const token = this.state.form.tokenParts.join('');
+        console.log('token', token);
     }
 }
