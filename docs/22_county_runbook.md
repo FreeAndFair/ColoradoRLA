@@ -28,7 +28,7 @@ A County user can log in to the RLA Tool by pointing a browser to the URL provid
 
 ***
 
-County users will see the (initially empty) County home page. Note the 
+County users will see the County home page. Note the 
 logout button ![Logout Button](./screenshots/LogoutButton.png), in the upper right of this (and every) page.
 
 ![Initial County Landing Page](./screenshots/c-initial_county_landing_page_unified.png)
@@ -47,7 +47,7 @@ itself does not provide a utility for verification or hashing.
 
 Once the ballot manifest and CVR files are hashed, they
 can be uploaded into the RLA Tool. If the upload is interrupted the process 
-will have to be repeated. It is not possible to resume interrupted uploads. 
+will have to be repeated. It is not possible to resume an interrupted upload — just start that file upload again. 
 If a County uploads multiple Ballot Manifest files, only the data from the last
 file will be used. Similarly, if a County uploads multiple CVR files, only the data from the 
 last file will be used.
@@ -74,10 +74,9 @@ receive the following error messages. **[SCREENSHOT NEEDS UPDATE]**
 
 
 If the hash matches and the file format is correct,  the system will import the data from the file. 
-The time required for data import depends on the size of the file. Ballot Manifest files should 
-import within seconds for every County, but import time for the CVR file will depend on the 
+The time required for data import depends on the size of the file. Import time for the CVR file will depend on the 
 number of ballot cards represented in the file. A file with fewer than 10,000 CVR lines should take less than a minute,
-while a file with 500,000 CVR lines or more might take several minutes. 
+while a file with 500,000 CVR lines or more might take about a half hour. The ballot manifest file upload and import will be quicker than the CVR file upload and import.
 
 Once both the ballot manifest and CVR files are successfully uploaded and imported
 users will see them both listed as **uploaded**. It is possible to re-upload
@@ -131,7 +130,7 @@ individual ballot.
 ![Ballot_Verification_Landing_Page](./screenshots/r-ballot_verification_landing_page_unified.png)
 
 Before recording voter intent, please double-check that the paper
-ballot card ID and Ballot Style match the ID and ballot style listed on the
+Ballot Type matches the Ballot Type listed on the
 screen.   If a ballot card is not found click the Ballot Card Not Found Button.
 
 ![Ballot_Card_Not_Found](./screenshots/t-ballot_card_not_found_button.png)
@@ -153,12 +152,12 @@ Audit Board members can make notes in the comment field.
 ![Audit_Board_Members_Making_Notes](./screenshots/w-enter_notes_about_the_race.png)
 
 After entering the interpretation of the markings from any one ballot,
-the Audit Board can review what was entered.
+the Audit Board can click the Review button.
 
 ![Audit_Board_Clicks_Review_Button](./screenshots/x-ballot_interpretations_entered.png)
 
-Check that the information on the review screen reflects the Audit
-Board's interpretation of the ballot.
+On the Review screen, check that the information on the review screen reflects the Audit
+Board's interpretation of the ballot. If yes, click "Submit & Next Ballot"
 
 ![Review_Screen](./screenshots/y-verify_selections.png)
 
@@ -167,8 +166,7 @@ overvote, the review screen will say "Overvote for this contest".
 
 ![Overvote Screenshot](./screenshots/21-overvote_for_this_contest.png)
 
-Note: do *not* use your browser's "back" arrow during the audit
-process.  If the review screen does not match the Audit Board's
+If the review screen does not match the Audit Board's
 interpretation, click the "Back" button.
 
 If the review screen matches the Audit Board's interpretation, click
