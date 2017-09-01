@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.stream.JsonWriter;
@@ -75,13 +76,13 @@ public class ContestDownload extends AbstractEndpoint {
         county_set.add(cdb.county());
       }
     }
-    final Set<Contest> contest_set = ContestQueries.forCounties(county_set);
+    final List<Contest> contest_list = ContestQueries.forCounties(county_set);
     try {
       final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
       final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
       final JsonWriter jw = new JsonWriter(bw);
       jw.beginArray();
-      for (final Contest contest : contest_set) {
+      for (final Contest contest : contest_list) {
         jw.jsonValue(Main.GSON.toJson(Persistence.unproxy(contest)));
         Persistence.evict(contest);
       } 

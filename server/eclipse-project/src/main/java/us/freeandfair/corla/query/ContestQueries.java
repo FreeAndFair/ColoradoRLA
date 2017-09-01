@@ -28,7 +28,6 @@ import org.hibernate.Session;
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.County;
-import us.freeandfair.corla.model.CountyContestResult;
 import us.freeandfair.corla.persistence.Persistence;
 
 /**
@@ -51,23 +50,24 @@ public final class ContestQueries {
    * @param the_counties The counties.
    * @return the matching contests, or null if the query fails.
    */
-  public static Set<Contest> forCounties(final Set<County> the_counties) {
-    Set<Contest> result = null;
+  public static List<Contest> forCounties(final Set<County> the_counties) {
+    List<Contest> result = null;
     
     try {
       final Session s = Persistence.currentSession();
       final CriteriaBuilder cb = s.getCriteriaBuilder();
       final CriteriaQuery<Contest> cq = cb.createQuery(Contest.class);
-      final Root<CountyContestResult> root = cq.from(CountyContestResult.class);
+      final Root<Contest> root = cq.from(Contest.class);
       final List<Predicate> disjuncts = new ArrayList<Predicate>();
       for (final County county : the_counties) {
         disjuncts.add(cb.equal(root.get("my_county"), county));
       }
-      cq.select(root.get("my_contest"));
+      cq.select(root);
       cq.where(cb.or(disjuncts.toArray(new Predicate[disjuncts.size()])));
-      cq.distinct(true);
+      cq.orderBy(cb.asc(root.get("my_county").get("my_name")), 
+                 cb.asc(root.get("my_sequence_number")));
       final TypedQuery<Contest> query = s.createQuery(cq);
-      result = new HashSet<Contest>(query.getResultList());  
+      result = query.getResultList();  
     } catch (final PersistenceException e) {
       Main.LOGGER.error("Exception when reading contests from database: " + e);
     }
@@ -88,10 +88,10 @@ public final class ContestQueries {
       final Session s = Persistence.currentSession();
       final CriteriaBuilder cb = s.getCriteriaBuilder();
       final CriteriaQuery<Contest> cq = cb.createQuery(Contest.class);
-      final Root<CountyContestResult> root = cq.from(CountyContestResult.class);
-      cq.select(root.get("my_contest"));
+      final Root<Contest> root = cq.from(Contest.class);
+      cq.select(root);
       cq.where(cb.equal(root.get("my_county"), the_county));
-      cq.distinct(true);
+      cq.orderBy(cb.asc(root.get("my_sequence_number")));
       final TypedQuery<Contest> query = s.createQuery(cq);
       result = new HashSet<Contest>(query.getResultList());
     } catch (final PersistenceException e) {

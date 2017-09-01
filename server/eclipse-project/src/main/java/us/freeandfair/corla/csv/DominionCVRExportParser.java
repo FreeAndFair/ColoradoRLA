@@ -243,6 +243,7 @@ public class DominionCVRExportParser implements CVRExportParser {
                            final Map<String, Integer> the_votes_allowed,
                            final Map<String, Integer> the_choice_counts) {
     int index = FIRST_CHOICE_COLUMN;
+    int contest_count = 0;
     for (final String cn : the_contest_names) {
       final List<Choice> choices = new ArrayList<Choice>();
       final int end = index + the_choice_counts.get(cn); 
@@ -255,8 +256,8 @@ public class DominionCVRExportParser implements CVRExportParser {
       // now that we have all the choices, we can create a Contest object for 
       // this contest (note the empty contest description at the moment, below, 
       // as that's not in the CVR files and may not actually be used)
-      final Contest c = new Contest(cn, my_county.id(), "", choices, 
-                                    the_votes_allowed.get(cn));
+      final Contest c = new Contest(cn, my_county, "", choices, 
+                                    the_votes_allowed.get(cn), contest_count++);
       Persistence.saveOrUpdate(c);
       final CountyContestResult r = 
           CountyContestResultQueries.matching(my_county, c);

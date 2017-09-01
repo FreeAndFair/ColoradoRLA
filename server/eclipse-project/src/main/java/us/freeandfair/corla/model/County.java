@@ -15,6 +15,7 @@ package us.freeandfair.corla.model;
 import static us.freeandfair.corla.util.EqualsHashcodeHelper.*;
 
 import java.io.Serializable;
+import java.util.Comparator;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
@@ -150,5 +151,42 @@ public class County implements PersistentEntity, Serializable {
   @Override
   public int hashCode() {
     return nullableHashCode(name());
+  }
+  
+  
+  /**
+   * A comparator to sort County objects alphabetically by county name.
+   */
+  @SuppressWarnings("PMD.AtLeastOneConstructor")
+  public static class NameComparator 
+      implements Serializable, Comparator<County> {
+    /**
+     * The serialVersionUID.
+     */
+    private static final long serialVersionUID = 1;
+    
+    /**
+     * Orders two County objects lexicographically by county name.
+     * 
+     * @param the_first The first response.
+     * @param the_second The second response.
+     * @return a positive, negative, or 0 value as the first response is
+     * greater than, equal to, or less than the second, respectively.
+     */
+    @SuppressWarnings("PMD.ConfusingTernary")
+    public int compare(final County the_first, 
+                       final County the_second) {
+      final int result;
+      if (the_first == null && the_second == null) {
+        result = 0;
+      } else if (the_first == null || the_first.name() == null) {
+        result = -1;
+      } else if (the_second == null || the_second.name() == null) {
+        result = 1;
+      } else {
+        result = the_first.name().compareTo(the_second.name());
+      }
+      return result;
+    }
   }
 }

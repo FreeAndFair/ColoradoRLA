@@ -30,11 +30,15 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
+import com.google.gson.annotations.JsonAdapter;
+
+import us.freeandfair.corla.json.ContestJsonAdapter;
 import us.freeandfair.corla.persistence.PersistentEntity;
 
 /**
@@ -52,6 +56,7 @@ import us.freeandfair.corla.persistence.PersistentEntity;
        indexes = { @Index(name = "idx_contest_name", columnList = "name"),
                    @Index(name = "idx_contest_name_county_description_votes_allowed", 
                           columnList = "name, county_id, description, votes_allowed") })
+@JsonAdapter(ContestJsonAdapter.class)
 //this class has many fields that would normally be declared final, but
 //cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
@@ -82,17 +87,18 @@ public class Contest implements PersistentEntity, Serializable {
   private String my_name;
 
   /**
-   * The contest county.
+   * The county to which this contest result set belongs. 
    */
-  @Column(name = "county_id", updatable = false, nullable = false)
-  private Long my_county_id;
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
+  @JoinColumn  
+  private County my_county;
   
   /**
    * The contest description.
    */
   @Column(name = "description", updatable = false, nullable = false)
   private String my_description;
-  
+    
   /**
    * The contest choices.
    */
@@ -110,6 +116,12 @@ public class Contest implements PersistentEntity, Serializable {
   private Integer my_votes_allowed;
   
   /**
+   * The import sequence number.
+   */
+  @Column(updatable = false, nullable = false)
+  private Integer my_sequence_number;
+
+  /**
    * Constructs an empty contest, solely for persistence.
    */
   public Contest() {
@@ -121,23 +133,25 @@ public class Contest implements PersistentEntity, Serializable {
    * Constructs a contest with the specified parameters.
    * 
    * @param the_name The contest name.
-   * @param the_county_id The county ID for this contest.
+   * @param the_county The county for this contest.
    * @param the_description The contest description.
    * @param the_choices The set of contest choices.
    * @param the_votes_allowed The maximum number of votes that can
    * be made in this contest.
+   * @param the_sequence_number The sequence number.
    */
   //@ requires 1 <= the_votes_allowed;
   //@ requires the_votes_allowed <= the_choices.size();
-  public Contest(final String the_name, final Long the_county_id, 
+  public Contest(final String the_name, final County the_county, 
                  final String the_description, final List<Choice> the_choices, 
-                 final int the_votes_allowed)  {
+                 final int the_votes_allowed, final int the_sequence_number)  {
     super();
     my_name = the_name;
-    my_county_id = the_county_id;
+    my_county = the_county;
     my_description = the_description;
     my_choices.addAll(the_choices);
     my_votes_allowed = the_votes_allowed;
+    my_sequence_number = the_sequence_number;
   }
 
   /**
@@ -181,8 +195,8 @@ public class Contest implements PersistentEntity, Serializable {
   /**
    * @return the county ID.
    */
-  public Long countyID() {
-    return my_county_id;
+  public County county() {
+    return my_county;
   }
   
   /**
@@ -210,8 +224,15 @@ public class Contest implements PersistentEntity, Serializable {
   /**
    * @return the maximum number of votes that can be made in this contest.
    */
-  public int votesAllowed() {
+  public Integer votesAllowed() {
     return my_votes_allowed;
+  }
+  
+  /**
+   * @return the sequence number of this contest.
+   */
+  public Integer sequenceNumber() {
+    return my_sequence_number;
   }
   
   /**
@@ -236,9 +257,11 @@ public class Contest implements PersistentEntity, Serializable {
     if (the_other instanceof Contest) {
       final Contest other_contest = (Contest) the_other;
       result &= nullableEquals(other_contest.name(), name());
+      result &= nullableEquals(other_contest.county(), county());
       result &= nullableEquals(other_contest.description(), description());
       result &= nullableEquals(other_contest.choices(), choices());
       result &= nullableEquals(other_contest.votesAllowed(), votesAllowed());
+      result &= nullableEquals(other_contest.sequenceNumber(), sequenceNumber());
     } else {
       result = false;
     }
