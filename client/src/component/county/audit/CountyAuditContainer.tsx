@@ -7,6 +7,7 @@ import EndOfRoundPageContainer from './EndOfRoundPageContainer';
 
 import notice from '../../../notice';
 
+import allRoundsComplete from '../../../selector/county/allRoundsComplete';
 import auditComplete from '../../../selector/county/auditComplete';
 import canAudit from '../../../selector/county/canAudit';
 import roundInProgress from '../../../selector/county/roundInProgress';
@@ -35,7 +36,8 @@ class CountyAuditContainer extends React.Component<any, any> {
 }
 
 const mapStateToProps = (state: any) => {
-    const showEndOfRoundPage = !roundInProgress(state) && !auditComplete(state);
+    const showEndOfRoundPage = (!roundInProgress(state) && !allRoundsComplete(state))
+                            || allRoundsComplete(state);
 
     return {
         auditComplete: auditComplete(state),
