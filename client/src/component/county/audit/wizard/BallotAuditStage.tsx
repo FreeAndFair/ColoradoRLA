@@ -16,8 +16,8 @@ const BallotNotFoundForm = ({ ballotNotFound, currentBallot }: any) => {
         <div>
             <div>
                 If the ballot card corresponding to the above Ballot ID, Ballot
-                Style, and Imprinted ID cannot be found, select the "Ballot Card Not Found"
-                button and you will be given a new ballot card to audit.
+                Type, and Imprinted ID cannot be found, select the "Ballot Card
+                Not Found" button and you will be given a new ballot card to audit.
             </div>
             <button className='pt-button pt-intent-primary' onClick={ onClick }>
                 Ballot Card Not Found
@@ -26,55 +26,67 @@ const BallotNotFoundForm = ({ ballotNotFound, currentBallot }: any) => {
     );
 };
 
-const AuditInstructions = ({ ballotNotFound, ballotsToAudit, county, currentBallot }: any) => (
-    <div className='pt-card'>
-        <div>
-            Use this page to report the voter markings on the ballot with ID
-            #{ currentBallot.id }, out of { county.ballotsRemainingInRound } ballots
-            that you must audit in this round.
-        </div>
-        <div>
-            The current ballot is:
+const AuditInstructions = (props: any) => {
+    const {
+        ballotNotFound,
+        ballotsToAudit,
+        county,
+        currentBallot,
+        currentBallotNumber,
+    } = props;
+
+    return (
+        <div className='pt-card'>
             <div className='pt-card'>
-                <table className='pt-table pt-bordered pt-condensed'>
-                    <thead>
-                        <tr>
-                            <th>Scanner #</th>
-                            <th>Batch #</th>
-                            <th>Ballot Position #</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>{ currentBallot.scannerId }</td>
-                            <td>{ currentBallot.batchId }</td>
-                            <td>{ currentBallot.recordId }</td>
-                        </tr>
-                    </tbody>
-                </table>
+                Use this page to report the voter markings on ballot #{ currentBallotNumber },
+                out of { county.ballotsRemainingInRound } ballots that you must audit in this round.
             </div>
-            <div className='pt-card'>
-                The ballot #{ currentBallot.id } has Ballot Type #{ currentBallot.ballotType }.
-                Please ensure that the paper ballot you are examining is the
-                same ballot type/ID.
-            </div>
-            <div className='pt-card'>
-                <div>
-                    Record here the <strong> voter intent </strong> as described by the Voter
-                    Intent Guide from the Secretary of State. All markings <strong> do not </strong>
-                    need to be recorded. Replicate on this page all <strong> valid votes </strong> in
-                    each ballot contest contained on this paper ballot. Or, in case of an
-                    <strong> overvote</strong>, record all final voter choices that contribute to
-                    the overvote. Please include notes in the comments field.
+            <div>
+                <div className='pt-card'>
+                    The current ballot is:
+                    <div className='pt-card'>
+                        <table className='pt-table pt-bordered pt-condensed'>
+                            <thead>
+                                <tr>
+                                    <th>Scanner #</th>
+                                    <th>Batch #</th>
+                                    <th>Ballot Position #</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{ currentBallot.scannerId }</td>
+                                    <td>{ currentBallot.batchId }</td>
+                                    <td>{ currentBallot.recordId }</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <MenuDivider />
-                <BallotNotFoundForm
-                    ballotNotFound={ ballotNotFound }
-                    currentBallot={ currentBallot } />
+                <div className='pt-card'>
+                    The ballot card #{ currentBallotNumber } has Ballot
+                    Type #{ currentBallot.ballotType } and ID { currentBallot.imprintedId }.
+                    Please ensure that the paper ballot you are examining is the same ballot
+                    Type/ID.
+                </div>
+                <div className='pt-card'>
+                    <div>
+                        Record here the <strong> voter intent </strong> as described by the Voter
+                        Intent Guide from the Secretary of State. All markings <strong> do not </strong>
+                        need to be recorded. Replicate on this page all <strong> valid votes </strong> in
+                        each ballot contest contained on this paper ballot card. Or, in case of an
+                        <strong> overvote</strong>, record all final voter choices that contribute to
+                        the overvote. Please include notes in the comments field.
+                    </div>
+                    <MenuDivider />
+                    <BallotNotFoundForm
+                        ballotNotFound={ ballotNotFound }
+                        currentBallot={ currentBallot } />
+                </div>
             </div>
         </div>
-    </div>
-);
+    );
+};
 
 const ContestInfo = ({ contest }: any) => {
     const { name, description, choices, votesAllowed } = contest;
@@ -193,6 +205,7 @@ const BallotAuditForm = (props: any) => {
 const BallotAuditStage = (props: any) => {
     const {
         county,
+        currentBallotNumber,
         nextStage,
         prevStage,
         updateBallotMarks,
@@ -216,6 +229,7 @@ const BallotAuditStage = (props: any) => {
                 ballotsToAudit={ ballotsToAudit }
                 county={ county }
                 currentBallot={ currentBallot }
+                currentBallotNumber={ currentBallotNumber }
             />
             <BallotAuditForm
                 county={ county }
