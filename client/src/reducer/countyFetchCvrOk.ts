@@ -1,5 +1,18 @@
-import { merge } from 'lodash';
+import { forEach, merge } from 'lodash';
 
+
+function createEmptyAcvr(cvr: any): any {
+    const acvr: any = {};
+
+    forEach(cvr.contestInfo, c => {
+        acvr[c.contest] = {
+            choices: {},
+            comments: '',
+        };
+    });
+
+    return acvr;
+}
 
 const parse = (data: any, state: any) => ({
     ballotType: data.ballot_type,
@@ -19,7 +32,12 @@ export default (state: any, action: any) => {
     const nextState = merge({}, state);
 
     const county = merge({}, state.county);
-    county.currentBallot = parse(action.data, state);
+    const currentBallot = parse(action.data, state);
+    county.currentBallot = currentBallot;
+
+    if (!county.acvrs[currentBallot.id]) {
+        county.acvrs[currentBallot.id] = createEmptyAcvr(currentBallot);
+    }
     nextState.county = county;
 
     return nextState;
