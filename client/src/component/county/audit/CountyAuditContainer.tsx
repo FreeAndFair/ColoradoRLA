@@ -20,6 +20,12 @@ class CountyAuditContainer extends React.Component<any, any> {
             return <Redirect to={ '/county' } />;
         }
 
+        if (this.props.auditComplete) {
+            notice.ok('The audit is complete.');
+
+            return <Redirect to={ '/county' } />;
+        }
+
         if (this.props.showEndOfRoundPage) {
             return <EndOfRoundPageContainer />;
         }
