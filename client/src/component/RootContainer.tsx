@@ -21,8 +21,6 @@ import GlossaryContainer from './help/GlossaryContainer';
 import HelpRootContainer from './help/HelpRootContainer';
 import ManualContainer from './help/ManualContainer';
 
-import LoginContainer from './login/LoginContainer';
-
 import NextLoginContainer from './login/next/LoginContainer';
 
 import AuditContainer from './sos/audit/AuditContainer';
@@ -107,8 +105,7 @@ export class RootContainer extends React.Component<RootContainerProps, void> {
             <Provider store={ store }>
                 <Router>
                     <Switch>
-                        <Route exact path='/login' component={ LoginContainer } />
-                        <Route exact path='/next-login' component={ NextLoginContainer } />
+                        <Route exact path='/login' component={ NextLoginContainer } />
                         { routes.map(makeRoute(store)) }
                     </Switch>
                 </Router>
