@@ -13,18 +13,6 @@ export default (state: any, action: any) => {
         noConsensus,
     } = action.data;
 
-    if (!nextState.county.acvrs) {
-        nextState.county.acvrs = {};
-    }
-
-    if (!nextState.county.acvrs[ballotId]) {
-        nextState.county.acvrs[ballotId] = {};
-    }
-
-    if (!nextState.county.acvrs[ballotId][contestId]) {
-        nextState.county.acvrs[ballotId][contestId] = {};
-    }
-
     const nextMarks: any = {
         choices,
         comments,
