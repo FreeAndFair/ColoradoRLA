@@ -250,6 +250,7 @@ public final class ComparisonAuditController {
       }
     }
     the_cdb.setComparisonAudits(comparison_audits);
+    Main.LOGGER.info("driving contests setting: " + county_driving_contests);
     the_cdb.setDrivingContests(county_driving_contests);
     the_cdb.setEstimatedBallotsToAudit(Math.max(0,  to_audit));
     the_cdb.setOptimisticBallotsToAudit(Math.max(0,  to_audit));

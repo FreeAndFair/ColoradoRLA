@@ -363,7 +363,8 @@ public class CountyDashboardRefreshResponse {
                                               the_dashboard.ballotsAudited(),
                                               the_dashboard.discrepancies(),
                                               the_dashboard.disagreements(),
-                                              the_dashboard.cvrsToAuditInCurrentRound(),
+                                              the_dashboard.
+                                                  cvrsRemainingToAuditInCurrentRound(),
                                               the_dashboard.cvrUnderAudit(),
                                               the_dashboard.auditedPrefixLength(),
                                               the_dashboard.rounds(),

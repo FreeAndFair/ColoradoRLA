@@ -15,14 +15,17 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalInt;
+import java.util.OptionalLong;
 
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
@@ -34,14 +37,17 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.controller.ComparisonAuditController;
+import us.freeandfair.corla.model.CVRAuditInfo;
 import us.freeandfair.corla.model.CastVoteRecord;
+import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyContestResult;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.model.Round;
 import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.query.CVRAuditInfoQueries;
+import us.freeandfair.corla.query.CastVoteRecordQueries;
 import us.freeandfair.corla.query.CountyContestResultQueries;
 
 /**
@@ -50,10 +56,20 @@ import us.freeandfair.corla.query.CountyContestResultQueries;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
+@SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.StdCyclomaticComplexity",
+    "PMD.ModifiedCyclomaticComplexity", "PMD.ExcessiveImports"})
 public class CountyReport {
+  /**
+   * The affirmation statement.
+   */
+  public static final String AFFIRMATION_STATEMENT = 
+      "We hereby affirm that the results presented in this report\n" + 
+      "are accurate to the best of our knowledge.";
+  
   /**
    * The font size for Excel.
    */
+  @SuppressWarnings("PMD.AvoidUsingShortType")
   public static final short FONT_SIZE = 12;
   
   /**
@@ -77,9 +93,9 @@ public class CountyReport {
   private final Instant my_timestamp;
   
   /**
-   * The lists of CVR imprinted IDs to audit for each round.
+   * The CVRs to audit for each round.
    */
-  private final Map<Integer, List<String>> my_cvrs_to_audit_by_round;
+  private final Map<Integer, List<CastVoteRecord>> my_cvrs_to_audit_by_round;
   
   /**
    * The contests driving the audit, and their results.
@@ -113,6 +129,7 @@ public class CountyReport {
     my_driving_contest_results = new ArrayList<CountyContestResult>();
     my_cdb = 
         Persistence.getByID(my_county.id(), CountyDashboard.class);
+    Main.LOGGER.info("driving contests: " + my_cdb.drivingContests());
     for (final CountyContestResult ccr : 
          CountyContestResultQueries.forCounty(my_county)) {
       if (my_cdb.drivingContests().contains(ccr.contest())) {
@@ -122,14 +139,10 @@ public class CountyReport {
     my_rounds = my_cdb.rounds();
     my_cvrs_to_audit_by_round = new HashMap<>();
     for (final Round r : my_rounds) {
-      final List<CastVoteRecord> cvrs_to_audit = 
-          ComparisonAuditController.computeBallotOrder(my_cdb, r.number());
+      final List<CastVoteRecord> cvrs_to_audit = my_cdb.cvrsToAuditInRound(r.number());
       cvrs_to_audit.sort(new CastVoteRecord.BallotOrderComparator());
-      final List<String> cvr_ids_to_audit = new ArrayList<>();
-      for (final CastVoteRecord cvr : cvrs_to_audit) {
-        cvr_ids_to_audit.add(cvr.imprintedID());
-      }
-      my_cvrs_to_audit_by_round.put(r.number(), cvr_ids_to_audit);
+      Main.LOGGER.info("cvrs to audit: " + cvrs_to_audit);
+      my_cvrs_to_audit_by_round.put(r.number(), cvrs_to_audit);
     }
     my_dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
   }
@@ -151,7 +164,7 @@ public class CountyReport {
   /**
    * @return the CVRs imprinted IDs to audit by round map for this report.
    */
-  public Map<Integer, List<String>> cvrsToAuditByRound() {
+  public Map<Integer, List<CastVoteRecord>> cvrsToAuditByRound() {
     return Collections.unmodifiableMap(my_cvrs_to_audit_by_round);
   }
   
@@ -173,8 +186,24 @@ public class CountyReport {
    * @return the Excel representation of this report, as a byte array.
    * @exception IOException if the report cannot be generated.
    */
-  public byte[] generateExcel() 
-      throws IOException {
+  public byte[] generateExcel() throws IOException {
+    final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    final Workbook workbook = generateExcelWorkbook();
+    workbook.write(baos);
+    baos.flush();
+    baos.close();
+    Main.LOGGER.info("output stream size: " + baos.size());
+    workbook.close();
+    return baos.toByteArray();
+  }
+  
+  /**
+   * @return the Excel workbook for this report.
+   */
+  @SuppressWarnings({"checkstyle:magicnumber", "checkstyle:executablestatementcount",
+      "checkstyle:methodlength", "PMD.ExcessiveMethodLength", "PMD.NcssMethodCount",
+      "PMD.NPathComplexity"})
+  public Workbook generateExcelWorkbook() {
     final Workbook workbook = new XSSFWorkbook();
 
     // data format
@@ -198,6 +227,11 @@ public class CountyReport {
     final CellStyle decimal_style = workbook.createCellStyle();
     decimal_style.setFont(standard_font);
     decimal_style.setDataFormat(format.getFormat("0.0000"));
+    final CellStyle box_style = workbook.createCellStyle();
+    box_style.setBorderBottom(BorderStyle.THICK);
+    box_style.setBorderTop(BorderStyle.THICK);
+    box_style.setBorderLeft(BorderStyle.THICK);
+    box_style.setBorderRight(BorderStyle.THICK);
     
     // the summary sheet
     final Sheet summary_sheet = workbook.createSheet("Summary");
@@ -209,22 +243,63 @@ public class CountyReport {
     Cell cell = row.createCell(cell_number++);
     cell.setCellType(CellType.STRING);
     cell.setCellStyle(bold_style);
-    if (my_dosdb.electionType() == null) {
-      cell.setCellValue("ELECTION TYPE NOT SET");
+    cell.setCellValue(my_county.name() + " County Audit Report");
+    
+    row = summary_sheet.createRow(row_number++);
+    cell.setCellType(CellType.STRING);
+    cell.setCellStyle(bold_style);
+    if (my_dosdb.electionType() == null && my_dosdb.electionDate() == null) {
+      cell.setCellValue("ELECTION TYPE/DATE NOT SET");
     } else {
-      cell.setCellValue(my_dosdb.electionType());
+      cell.setCellValue(my_dosdb.electionType() + " - " +
+                        LocalDateTime.ofInstant(my_dosdb.electionDate(), 
+                                                ZoneOffset.UTC).toLocalDate().toString());
     }
+    
+    row_number++;
+    row = summary_sheet.createRow(row_number++);
+    cell_number = 0;
     
     cell = row.createCell(cell_number++);
     cell.setCellType(CellType.STRING);
     cell.setCellStyle(bold_style);
-    if (my_dosdb.electionDate() == null) {
-      cell.setCellValue("ELECTION DATE NOT SET");
-    } else {
-      cell.setCellValue(LocalDate.from(my_dosdb.electionDate()).toString());
+    cell.setCellValue("Total Ballot Cards Cast");
+    
+    cell = row.createCell(cell_number++);
+    cell.setCellType(CellType.NUMERIC);
+    cell.setCellStyle(integer_style);
+    final OptionalLong ballots = 
+        CastVoteRecordQueries.countMatching(my_county.id(), RecordType.UPLOADED);
+    if (ballots.isPresent()) {
+      cell.setCellValue(ballots.getAsLong());
     }
     
-    max_cell_number = Math.max(max_cell_number, cell_number);
+    row = summary_sheet.createRow(row_number++);
+    cell_number = 0;
+    
+    cell = row.createCell(cell_number++);
+    cell.setCellType(CellType.STRING);
+    cell.setCellStyle(bold_style);
+    cell.setCellValue("Total Ballot Cards Audited");
+    
+    cell = row.createCell(cell_number++);
+    cell.setCellType(CellType.NUMERIC);
+    cell.setCellStyle(integer_style);
+    cell.setCellValue(my_cdb.ballotsAudited());
+    
+    row = summary_sheet.createRow(row_number++);
+    cell_number = 0;
+    
+    cell = row.createCell(cell_number++);
+    cell.setCellType(CellType.STRING);
+    cell.setCellStyle(bold_style);
+    cell.setCellValue("Number of Audit Rounds");
+    
+    cell = row.createCell(cell_number++);
+    cell.setCellType(CellType.NUMERIC);
+    cell.setCellStyle(integer_style);
+    cell.setCellValue(my_rounds.size());
+    
     row_number++;
     row = summary_sheet.createRow(row_number++);
     cell_number = 0;
@@ -235,7 +310,7 @@ public class CountyReport {
     for (final CountyContestResult ccr : my_driving_contest_results) {
       row_number++;
       row = summary_sheet.createRow(row_number++);
-      cell_number = 1;
+      cell_number = 0;
       cell = row.createCell(cell_number++);
       cell.setCellStyle(bold_style);
       cell.setCellValue(ccr.contest().name());
@@ -266,9 +341,10 @@ public class CountyReport {
       cell.setCellStyle(bold_style);
       cell.setCellValue("Diluted Margin %");
       
-      max_cell_number = Math.max(max_cell_number, cell_number);
       for (final String choice : ccr.rankedChoices()) {
         row = summary_sheet.createRow(row_number++);
+        max_cell_number = Math.max(max_cell_number, cell_number);
+        cell_number = 0;
         cell = row.createCell(cell_number++);
         cell.setCellStyle(standard_style);
         cell.setCellValue(choice);
@@ -304,25 +380,189 @@ public class CountyReport {
       }
     }
     
+    row_number++;
+    
     for (int i = 0; i < max_cell_number; i++) {
       summary_sheet.autoSizeColumn(i);
     }
+
+    // round sheets
     
-    final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    workbook.write(baos);
-    baos.flush();
-    baos.close();
-    Main.LOGGER.info("output stream size: " + baos.size());
-    workbook.close();
-    return baos.toByteArray();
+    for (final Round round : my_rounds) {
+      final Sheet round_sheet = workbook.createSheet("Round " + round.number());
+      row_number = 0;
+      row = round_sheet.createRow(row_number++);
+      cell_number = 0;
+      max_cell_number = 0;
+      
+      cell = row.createCell(cell_number++);
+      cell.setCellType(CellType.STRING);
+      cell.setCellStyle(bold_style);
+      cell.setCellValue("Round " + round.number());
+      
+      row_number++;
+      row = round_sheet.createRow(row_number++);
+      max_cell_number = Math.max(max_cell_number, cell_number);
+      cell_number = 0;
+      cell = row.createCell(cell_number++);
+      cell.setCellType(CellType.STRING);
+      cell.setCellStyle(bold_style);
+      cell.setCellValue("Ballot Cards Audited");
+      
+      cell = row.createCell(cell_number++);
+      cell.setCellType(CellType.NUMERIC);
+      cell.setCellStyle(integer_style);
+      cell.setCellValue(round.actualCount());
+      
+      row = round_sheet.createRow(row_number++);
+      max_cell_number = Math.max(max_cell_number, cell_number);
+      cell_number = 0;
+      cell = row.createCell(cell_number++);
+      cell.setCellType(CellType.STRING);
+      cell.setCellStyle(bold_style);
+      cell.setCellValue("Discrepancies Recorded");
+      
+      cell = row.createCell(cell_number++);
+      cell.setCellType(CellType.NUMERIC);
+      cell.setCellStyle(integer_style);
+      cell.setCellValue(round.discrepancies());
+      
+      row = round_sheet.createRow(row_number++);
+      max_cell_number = Math.max(max_cell_number, cell_number);
+      cell_number = 0;
+      cell = row.createCell(cell_number++);
+      cell.setCellType(CellType.STRING);
+      cell.setCellStyle(bold_style);
+      cell.setCellValue("Disagreements Recorded");
+      
+      cell = row.createCell(cell_number++);
+      cell.setCellType(CellType.NUMERIC);
+      cell.setCellStyle(integer_style);
+      cell.setCellValue(round.disagreements());
+      
+      row_number++;
+      row = round_sheet.createRow(row_number++);
+      max_cell_number = Math.max(max_cell_number, cell_number);
+      cell_number = 0;
+      cell = row.createCell(cell_number++);
+      cell.setCellType(CellType.STRING);
+      cell.setCellStyle(bold_style);
+      cell.setCellValue("Ballot Cards To Audit");
+      
+      row = round_sheet.createRow(row_number++);
+      cell_number = 0;
+      cell = row.createCell(cell_number++);
+      cell.setCellType(CellType.STRING);
+      cell.setCellStyle(bold_style);
+      cell.setCellValue("Imprinted ID");
+      cell = row.createCell(cell_number++);
+      cell.setCellType(CellType.STRING);
+      cell.setCellStyle(bold_style);
+      cell.setCellValue("Audited");
+      cell = row.createCell(cell_number++);
+      cell.setCellType(CellType.STRING);
+      cell.setCellStyle(bold_style);
+      cell.setCellValue("Discrepancy");
+      cell = row.createCell(cell_number++);
+      cell.setCellType(CellType.STRING);
+      cell.setCellStyle(bold_style);
+      cell.setCellValue("Disagreement");
+      
+      max_cell_number = Math.max(max_cell_number, cell_number);
+      for (final CastVoteRecord cvr : my_cvrs_to_audit_by_round.get(round.number())) {
+        final List<CVRAuditInfo> audit_info_list = 
+            CVRAuditInfoQueries.matching(my_cdb, cvr);
+        if (audit_info_list == null || audit_info_list.isEmpty()) {
+          continue;
+        }
+        final CVRAuditInfo audit_info = audit_info_list.get(0);
+        row = round_sheet.createRow(row_number++);
+        cell_number = 0;
+        cell = row.createCell(cell_number++);
+        cell.setCellType(CellType.STRING);
+        cell.setCellStyle(standard_style);
+        cell.setCellValue(cvr.imprintedID());
+        cell = row.createCell(cell_number++);
+        cell.setCellType(CellType.BOOLEAN);
+        cell.setCellStyle(standard_style);
+        cell.setCellValue(audit_info.acvr().recordType() == RecordType.AUDITOR_ENTERED);
+        cell = row.createCell(cell_number++);
+        cell.setCellType(CellType.BOOLEAN);
+        cell.setCellStyle(standard_style);
+        cell.setCellValue(audit_info.discrepancy());
+        cell = row.createCell(cell_number++);
+        cell.setCellType(CellType.BOOLEAN);
+        cell.setCellStyle(standard_style);
+        cell.setCellValue(audit_info.disagreement());
+      }
+      
+      for (int i = 0; i < max_cell_number; i++) {
+        round_sheet.autoSizeColumn(i);
+      }
+    }
+    
+    // affirmation sheet
+    final Sheet affirmation_sheet = workbook.createSheet("Affirmation");
+    row_number = 0;
+    row = affirmation_sheet.createRow(row_number++);
+    cell_number = 0;
+    max_cell_number = 0;
+
+    cell = row.createCell(cell_number++);
+    cell.setCellType(CellType.STRING);
+    cell.setCellStyle(bold_style);
+    cell.setCellValue("Affirmation");
+    
+    cell_number = 0;  
+    row_number++;
+    row = affirmation_sheet.createRow(row_number++);
+    cell = row.createCell(cell_number++);
+    cell.setCellType(CellType.STRING);
+    cell.setCellStyle(standard_style);
+    cell.setCellValue(AFFIRMATION_STATEMENT);
+    
+    for (int i = 0; i < 2; i++) {
+      cell_number = 0;
+      row_number++;
+      row = affirmation_sheet.createRow(row_number++);
+      cell = row.createCell(cell_number++);
+      cell.setCellType(CellType.STRING);
+      cell.setCellStyle(bold_style);
+      cell.setCellValue("Audit Board Member");
+
+      cell_number = 0;
+      row = affirmation_sheet.createRow(row_number++);
+      cell = row.createCell(cell_number++);
+      cell.setCellType(CellType.STRING);
+      cell.setCellStyle(box_style);
+      row.setHeight((short) 800);
+    }
+    
+    cell_number = 0;
+    row_number++;
+    row = affirmation_sheet.createRow(row_number++);
+    cell = row.createCell(cell_number++);
+    cell.setCellType(CellType.STRING);
+    cell.setCellStyle(bold_style);
+    cell.setCellValue("County Clerk");
+
+    cell_number = 0;
+    row = affirmation_sheet.createRow(row_number++);
+    cell = row.createCell(cell_number++);
+    cell.setCellType(CellType.STRING);
+    cell.setCellStyle(box_style);
+    
+    row.setHeight((short) 800);
+    
+    affirmation_sheet.autoSizeColumn(0);
+    
+    return workbook;
   }
   
   /**
    * @return the PDF representation of this report, as a byte array.
    */
   public byte[] generatePDF() {
-    byte[] result = null;
-    
-    return result;
+    return new byte[0];
   }
 }
