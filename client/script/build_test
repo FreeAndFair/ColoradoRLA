@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+# Build the ColoradoRLA server and client, and start both of them up for interactive client testing.
+
+set -eux -o pipefail
+function cleanup {
+  set +x
+  echo
+  echo "To see the ends of the logs (some of which might not have been created):"
+  echo tail "${SERVER_DIR}"/target/mvn.stdout
+  echo tail "${SERVER_LOG}"
+  echo tail "${CLIENT_LOG}"
+  echo tail credentials.stdout
+  echo tail server_test.stdout
+  echo "If you're done with the server: pkill -f java.-jar.target/colorado_rla"
+}
+trap cleanup EXIT
+
+echo client test at `date`
+git log -1
+git status -uno
+
+# Put these somewhere else before running via travis
+export TRAVIS_BUILD_DIR=`git rev-parse --show-toplevel`
+export CLIENT_DIR="${TRAVIS_BUILD_DIR}/client"
+export SERVER_DIR="${TRAVIS_BUILD_DIR}/server/eclipse-project"
+export TEST_DIR="${TRAVIS_BUILD_DIR}/test"
+
+SERVER_LOG="${SERVER_DIR}"/target/server.stdout
+CLIENT_LOG="${SERVER_DIR}"/target/client.stdout
+
+# Exit early if there were no server changes.
+# Don't run this until we're in travis. It may exit early....
+# "${TRAVIS_BUILD_DIR}/ci/changes-in-dir" server || exit 0
+
+cd "${SERVER_DIR}"
+
+echo "TODO: when should we kill the node and/or npm processes? Here they are"
+
+ps -ef | egrep 'java|node|npm'
+
+echo "Or should we use the dist package instead?"
+echo "Killing java npm and node processes"
+
+pkill -f java.-jar.target/colorado_rla || true
+pkill -KILL npm || true
+
+echo TODO revisit killing node /srv/s/electionaudits/ColoradoRLA/client/node_modules/.bin/webpack-dev-server
+pkill -KILL node || true
+
+dropdb corla || true
+createdb -O corla corla
+
+mkdir -p target
+mvn package > target/mvn.stdout
+
+# Surprising how kludgey this seems to be https://stackoverflow.com/a/45657043/507544
+version=$(sed < pom.xml '2 s/xmlns=".*"//g' | xmllint --xpath '/project/version/text()' - 2>/dev/null)
+jar=target/colorado_rla-$version-shaded.jar
+echo Built $jar
+
+# for port 8887, add this argument: src/main/resources/us/freeandfair/corla/proxiable.properties
+java -jar $jar > $SERVER_LOG &
+
+( tail -f -n0 target/server.stdout & ) | grep -q "INFO Server:444 - Started"
+
+cd ${TEST_DIR}/smoketest
+psql -d corla -a -f ../corla-test-credentials.psql > credentials.stdout
+
+cd $CLIENT_DIR
+npm install
+nohup npm start > $CLIENT_LOG 2>&1 &
+
+( tail -f -n0 $CLIENT_LOG & ) | grep -q "webpack: Compiled successfully."
+
+set +x
+
+echo
+
+cleanup
+
+echo
+echo "Client logged at $CLIENT_LOG."
+echo "Now browse to http://localhost:3000/"
+echo
+echo "We'll continue tailing the server log now at $SERVER_LOG"
+echo
+echo "Hit control-c or the equivalent at any time to kill the tail."
+echo "That will also kill the node and npm processes, it seems. Should not matter for this use case...."
+
+tail -f "${SERVER_DIR}"/target/server.stdout
