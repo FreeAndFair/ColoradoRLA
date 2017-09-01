@@ -80,7 +80,7 @@ cleanup
 
 echo
 echo "Client logged at $CLIENT_LOG."
-echo "Now browse to http://localhost:3000/county"
+echo "Now browse to http://localhost:3000/"
 echo
 echo "We'll continue tailing the server log now at $SERVER_LOG"
 echo
