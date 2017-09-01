@@ -105,7 +105,7 @@ After the authenticated County Audit Administrator formally logs in, there is a
 screen where the identity and party affiliation of Audit Board Members is listed
 with a sign out button if the audit needs to be paused.
 
-![Audit_Board_Sign_Out_Screenshot](./screenshots/n-sign_out_of_the_audit_board.png)
+![Audit_Board_Sign_Out_Screenshot](./screenshots/n-sign_out_of_the_audit_board1.png)
 
 Once the Audit Board is signed in use the navigation panel at the top of the screen
 to launch the audit.
