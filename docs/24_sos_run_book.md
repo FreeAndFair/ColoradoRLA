@@ -122,7 +122,7 @@ see the progress of audit for selected contests and the estimated
 number of ballot cards remaining to be audited to meet the risk limit.
 <!--- **[SCREENSHOT NEEDS UPDATE] [show more counties]** --->
 
-![Secretary of State Mid-Audit Screen](./screenshots/16-audit_status.png)
+![Secretary of State Mid-Audit Screen](./screenshots/16-audit_status1.png)
 
 <!--- The RLA Tool also allows the Secretary of State to designate a contest
 for hand counting at any time.
