@@ -13,12 +13,12 @@ const ChallengeForm = (props: any) => {
     const { loginChallenge, onTokenChange, tokenParts } = props;
 
     const challengeFields = loginChallenge.map((box: any, index: number) => {
-        const key = box.join('');
+        const text = box.join('');
 
         return (
-            <div key={ key }>
+            <div key={ `${text}${index}` }>
                 <label className='pt-label'>
-                    { key }
+                    { text }
                     <input className='pt-input password'
                            type='password'
                            onChange={ onTokenChange(index) }
