@@ -416,13 +416,17 @@ END information_systems
 % @relation firewall inherit server
 % @relation database_server inherit server
 % @relation enr_server inherit server
+% @relation authentication_server inherit server
+% @relation second_factor_server inherit server
 server: DATATYPE
   WITH SUBTYPES web_server,
                 application_server,
                 time_server,
                 firewall,
                 database_server,
-                enr_server
+                enr_server,
+                authentication_server,
+                second_factor_server
 BEGIN
   IMPORTING database,
             elections,
@@ -435,6 +439,8 @@ BEGIN
   database_server?(databases: set[database]):
     make_database_server: database_server
   enr_server?: make_enr_server: enr_server
+  authentication_server?: make_authentication_server: authentication_server
+  second_factor_server?: make_second_factor_server: second_factor_server
 END server
 
 %+END background
@@ -2165,15 +2171,20 @@ END public_dashboard
 
 %%% \subsection{Authentication}
 
-%%% Authentication is currently underspecified in our system design as
-%%% we do not yet have information from CDOS on the nature and kind of
-%%% their mandated two-factor authentication system. Consequently, we
-%%% have only modeled the necessary concepts and features of any
-%%% two-factor authentication system. Included in this model are the
-%%% ideas of usernames, passwords, other authentication factors
-%%% mentioned in CDOS documents (such as biometrics and physical
-%%% tokens like smartcards and one-time authentication code books),
-%%% etc.
+%%% CDOS has required us to use their existing two-factor
+%%% authentication provider for authenticating state and county
+%%% administrators. That product is proprietary and closed source,
+%%% thus to avoid violating our GPL license, we must design a facade
+%%% for two factor authentication and not open source the adaptor that
+%%% plugs that proprietary product into the facade.
+%%%
+%%% As such, authentication is specified at an abstract level in our
+%%% system design. Consequently, we have only modeled the necessary
+%%% concepts and features of any two-factor authentication
+%%% system. Included in this model are the ideas of usernames,
+%%% passwords, other authentication factors mentioned in CDOS
+%%% documents (such as biometrics and physical tokens like smartcards
+%%% and one-time authentication code books), etc.
 %%%
 %%% Given that CDOS is handling two-factor authentication, it is
 %%% unclear if they want any additional features such as a password
@@ -2189,67 +2200,168 @@ BEGIN
             cast_vote_records,
             cryptography,
             dashboard,
-            dashboard,
             election,
             information_systems,
             roles,
+            server,
             upload_system_message
 
-% @description A credential is the general idea of having some
-% knowledge or thing to permit one to authenticate to a system. Many
-% authentication systems mandate the use of multiple credentials.
+%%% A credential is the general idea of having some knowledge or thing
+%%% to permit one to authenticate to a system. Many authentication
+%%% systems mandate the use of multiple credentials.
   credential: TYPE
+
+%%% The standard core credentials used by virtually all authentication
+%%% systems are a username and password pair.
   username: TYPE FROM credential
   password: TYPE FROM credential
+%%% Most organizations, especially public institutions such as the
+%%% Colorado Department of State, have mandatory requirements on the
+%%% shape and complexity of their passwords. We model this idea with a
+%%% function that evaluates a potential password and says whether it
+%%% is "complex enough".
 % @trace Task order 1, page 4, "Uptime/Security"
   complex_enough?: [password -> bool]
-% complex_check_update: [complex_enough? -> ?]
+%%% Two other standard kinds of authentication---what provide the
+%%% ``2nd factor'' in two-factor authentication systems---are
+%%% biometric information or physical token-based
+%%% information. Examples of the former include fingerprint readers,
+%%% like those found on the iPhone and recent Apple laptops, and iris
+%%% and palm print readers, typically used in secure
+%%% facilities. Examples of the latter include one-time password cards
+%%% and digital tokens such as RSA SecurID dongles and the Google
+%%% Authenticator smartphone app.
   biometric: TYPE FROM credential
   physical_token: TYPE FROM credential
-
-% @description One has authentication if a person has the appropriate
-% combination of identity and set of credentials.
-  authentication: TYPE FROM [person, set[credential]]
-% @description Two-factor authentication is a currently-popular form
-% of authentication that requires more than just knowledge (say, of a
-% username and password), and at least one physical mechanism, such as
-% a biometric or a physical token.
+%%% The notion of authentication to a system, in this case any kind of
+%%% server, relates a person with the server and the appropriate set
+%%% of credentials.
+  authentication: TYPE FROM [person, server, set[credential]]
+%%% Two-factor authentication is a currently-popular form of
+%%% authentication that requires more than just knowledge (say, of a
+%%% username and password), and at least one physical mechanism, such
+%%% as a biometric or a physical token.
   two_factor_authentication: TYPE =
     [[username, password], [physical_token + biometric]]
-
+%%% Two-factor authentication protocols use a
+%%% \texttt{two_factor_challenge} to prompt a user to answer a
+%%% response, thereby exhibiting that the user owns/controls the
+%%% second factor.
+  two_factor_challenge: TYPE
+%%% Thus, to tie this definition to the \texttt{authentication}
+%%% definition just above, one would provide a \texttt{username},
+%%% \texttt{password}, and either a \texttt{physical\_token} or
+%%% \texttt{biometric} credential to perform two factor
+%%% authentication.
+%%%
 %%% In order to obtain a new, valid credential, some authority must
-%%% issue credentials to a specific person.
-  issue_credential: TYPE =
-    [cdos, county_election, person -> [person, two_factor_authentication]]
-
-%%% What are the credentials that have been issued to this person?
-  credential?: [person -> two_factor_authentication]
-
-%%% Is this person authenticated?
-  authenticated: [person, two_factor_authentication -> bool]
-
-%%% What follows are several functions used to authenticate
-%%% various roles to their respective dashboards.
+%%% issue credentials to a specific person on an authentication
+%%% server. Our contract stipulates that issuing and managing
+%%% credentials is the responsibility of CDOS. There are separate
+%%% issuing steps for the traditional username/password server and the
+%%% second factor server.
+  issue_credential_traditional: TYPE =
+    [cdos, authentication_server, county_election, person ->
+       [person, two_factor_authentication]]
+  issue_credential_second_factor: TYPE =
+    [cdos, second_factor_server, county_election, person ->
+       [person, two_factor_authentication]]
+%%% Once credentials are issued, an authentication system can ask what
+%%% are the credentials that have been issued to this person?
+  traditional_credentials?: [authentication_server, person, server ->
+    two_factor_authentication]
+  second_factor_credentials?: [second_factor_server, person, server ->
+    two_factor_authentication]
+%%% In order to authenticate, a person provides their credentials to
+%%% the authentication server and the server responds appropriately.
+  traditional_authenticate:
+    [authentication_server, person, server, two_factor_authentication ->
+      [authentication_server, bool]]
+  second_factor_authenticate:
+    [second_factor_server, person, server, two_factor_authentication ->
+      [second_factor_server, bool]]
+%%% Moreover, it can also determine whether a specific person is
+%%% authenticated to the system.
+  traditional_authenticated?:
+    [authentication_server, person, server,
+     two_factor_authentication -> bool]
+  second_factor_authenticated?:
+    [second_factor_server, person, server,
+     two_factor_authentication -> bool]
+%%%
+%%% Finally, we need a means by which to deauthenticate someone.
+  traditional_deauthenticate:
+    [authentication_server, person, server -> authentication_server]
+  two_factor_deauthenticate:
+    [second_factor_server, person, server -> second_factor_server]
+%%% What follows are several functions used to authenticate various
+%%% roles to their respective dashboards.
 %%%
 %%% Each dashboard has an abstract state machine that captures the
 %%% dashboard's workflow and consequntly identifies which features are
 %%% visible to its users at various stages. Those abstract state
 %%% machines and features are modeled in the dashboard modules
 %%% below. We focus only on authentication here.
-
 %%% \todokiniry{Introduce an authentication monad and a state monad for
 %%% our ASMs.}
-
-% @description Authenticate this county administrator to that county
-% dashboard.
-  authenticate_county_administrator:
-    [county_dashboard, county_administrator,
-     two_factor_authentication -> bool]
-% @description Authenticate this state administrator to that
-% state-wide dashboard.
-  authenticate_state_administrator:
-    [department_of_state_dashboard, state_administrator,
-     two_factor_authentication -> bool]
+%%%
+%%% Behind the scenes, in order to perform a two-factor authentication
+%%% across two different authentication backends, we must perform a
+%%% series of transactions with those servers, in accordance with the
+%%% protocols that they speak. We can only specify this protocol in
+%%% the general here, as we have been asked by CDOS not to reveal
+%%% anything about their authentication system in public documents.
+%%%
+%%% First, we must be able to authenticate a state administrator to
+%%% the Department of State Dashboard.
+  a_s: authentication_server
+  s_f_s: second_factor_server
+  corla_server: web_server
+  authenticate_state_administrator(d: department_of_state_dashboard,
+                                   a: state_administrator,
+                                   tfa: two_factor_authentication):
+                                     [department_of_state_dashboard, bool] =
+%%% In order to authenticate a state administrator, first we have to
+%%% authenticate their username/password credentials.
+   LET (new_a_s, t_success) =
+     traditional_authenticate(a_s, a, corla_server, tfa) IN
+%%% Then, we that authentication succeeded, we must authenticate the
+%%% state administrator using their second factor credentials.
+     IF t_success
+     THEN LET (new_s_f_s, tf_success) =
+                second_factor_authenticate(s_f_s, a, corla_server, tfa) IN
+%%% If the second factor authentication succeeds, then authentication
+%%% succeeded overall, so we update the state of the dashboard and
+%%% indicate success. 
+       IF tf_success THEN (d, true) ELSE (d, false) ENDIF
+     ELSE
+%%% Otherwise, we fail and the dashboard state does not change.
+       (d, false)
+     ENDIF
+%%% Second, we must be able to authenticate a county administrator to
+%%% the County Dashboard. This authentication algorithm is no
+%%% different from the Department of State algorithm.
+  authenticate_county_administrator(d: county_dashboard,
+                                    a: county_administrator,
+                                    tfa: two_factor_authentication):
+                                     [county_dashboard, bool] =
+   LET (new_a_s, t_success) =
+     traditional_authenticate(a_s, a, corla_server, tfa) IN
+     IF t_success
+     THEN LET (new_s_f_s, tf_success) =
+                second_factor_authenticate(s_f_s, a, corla_server, tfa) IN
+       IF tf_success THEN (d, true) ELSE (d, false) ENDIF
+     ELSE
+       (d, false)
+     ENDIF
+%%% Likewise, from the user point of view, we must be able to log an
+%%% administrator out.
+  logout_state_administrator:
+    [department_of_state_dashboard, state_administrator ->
+      [department_of_state_dashboard, bool]]
+  logout_county_administrator:
+    [county_dashboard, county_administrator ->
+      [county_administrator, bool]]
 END authentication
 
 %+END authentication
@@ -2496,6 +2608,14 @@ BEGIN
 %%% authentication credential pair.
   authentication_table: TYPE =
     sequence[[administrator, two_factor_authentication]]
+%%% In order to be able to authenticate a particular administrator to
+%%% a role, we need the following two tables, which encodes relations
+%%% between administrators and domain of authentication, in the
+%%% database.
+  county_authentication_table: TYPE =
+    sequence[[county_administrator, county]]
+  state_authentication_table: TYPE =
+    sequence[[state_administrator, cdos]]
 %%% The Department of State dashboard permits State administrators to
 %%% establish risk limits for each contest, specify which kinds of
 %%% audits are used for which races and in which counties, etc.  Most

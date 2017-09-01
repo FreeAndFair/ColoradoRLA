@@ -12,16 +12,15 @@
 
 package us.freeandfair.corla.endpoint;
 
-import com.google.gson.JsonParseException;
+import static us.freeandfair.corla.model.Administrator.AdministratorType.STATE;
 
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.asm.ASMEvent;
-import us.freeandfair.corla.asm.DoSDashboardASM;
-import us.freeandfair.corla.json.SubmittedUsernamePassword;
-import us.freeandfair.corla.model.Administrator.AdministratorType;
+import us.freeandfair.corla.auth.AuthenticationInterface;
+import us.freeandfair.corla.json.SubmittedCredentials;
+import us.freeandfair.corla.model.Administrator;
 
 /**
  * The endpoint for authenticating a state administrator.
@@ -32,22 +31,6 @@ import us.freeandfair.corla.model.Administrator.AdministratorType;
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
 public class AuthenticateStateAdministrator extends AbstractEndpoint {
-  /**
-   * @return no authorization is required for this endpoint.
-   */
-  @Override
-  public AuthorizationType requiredAuthorization() {
-    return AuthorizationType.NONE;
-  }
-  
-  /**
-   * @return this endpoint does not use an ASM.
-   */
-  @Override
-  protected Class<DoSDashboardASM> asmClass() {
-    return null;
-  }
-
   /**
    * {@inheritDoc}
    */
@@ -65,25 +48,6 @@ public class AuthenticateStateAdministrator extends AbstractEndpoint {
   }
 
   /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected ASMEvent endpointEvent() {
-    return null;
-  }
-  
-  /**
-   * @param the_request the ignored request.
-   * @return null because the DoS dashboard is a singleton.
-   */
-  @Override
-  // this method is definitely not empty, but PMD thinks it is
-  @SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract")
-  protected String asmIdentity(final Request the_request) {
-    return null;
-  }
-
-  /**
    * Attempts to authenticate a state administrator; if the authentication is
    * successful, authentication data is added to the session.
    * 
@@ -95,20 +59,27 @@ public class AuthenticateStateAdministrator extends AbstractEndpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    if (Authentication.authenticateAs(the_request, AdministratorType.STATE)) {
-      ok(the_response, "Authenticated");
+    final SubmittedCredentials credentials =
+        Main.authentication().authenticationCredentials(the_request);
+    if (Main.authentication().
+        secondFactorAuthenticatedAs(the_request, STATE, credentials.username())) {
+      okJSON(the_response, 
+             Main.GSON.toJson(Main.authentication().authenticationStatus(the_request)));
     } else {
-      try {
-        final SubmittedUsernamePassword auth_info = 
-            Main.GSON.fromJson(the_request.body(), SubmittedUsernamePassword.class);
-        if (auth_info != null &&
-            Authentication.authenticateAs(the_request, auth_info, 
-                                          AdministratorType.STATE)) {
-          ok(the_response, "Authenticated");
+      if (Main.authentication().
+          authenticateAdministrator(the_request, the_response,
+                                    credentials.username(),
+                                    credentials.password(),
+                                    credentials.secondFactor())) {
+        final Administrator admin = 
+            (Administrator) the_request.session().attribute(AuthenticationInterface.ADMIN); 
+        if (admin.type() == STATE) {
+          okJSON(the_response, 
+                 Main.GSON.toJson(Main.authentication().authenticationStatus(the_request)));
         } else {
           unauthorized(the_response, "Authentication failed");
-        }
-      } catch (final JsonParseException e) {
+        } 
+      } else {
         unauthorized(the_response, "Authentication failed");
       }
     }

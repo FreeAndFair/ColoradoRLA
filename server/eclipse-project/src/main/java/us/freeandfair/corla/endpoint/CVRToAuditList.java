@@ -148,7 +148,7 @@ public class CVRToAuditList extends AbstractEndpoint {
       }
       
       // get other things we need
-      final County county = Authentication.authenticatedCounty(the_request);
+      final County county = Main.authentication().authenticatedCounty(the_request);
       final CountyDashboard cdb = Persistence.getByID(county.id(), CountyDashboard.class);
       final List<CastVoteRecord> cvr_to_audit_list;      
       final List<CVRToAuditResponse> response_list = new ArrayList<>();

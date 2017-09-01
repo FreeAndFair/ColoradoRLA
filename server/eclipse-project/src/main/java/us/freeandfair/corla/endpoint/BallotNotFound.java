@@ -86,7 +86,7 @@ public class BallotNotFound extends AbstractAuditBoardDashboardEndpoint {
   @SuppressFBWarnings("NP_NULL_ON_SOME_PATH")
   public String endpoint(final Request the_request, final Response the_response) {
     // we must be authenticated as a county
-    final County county = Authentication.authenticatedCounty(the_request);
+    final County county = Main.authentication().authenticatedCounty(the_request);
     if (county == null) {
       unauthorized(the_response, "not authorized for audit board operations");
       return my_endpoint_result.get();

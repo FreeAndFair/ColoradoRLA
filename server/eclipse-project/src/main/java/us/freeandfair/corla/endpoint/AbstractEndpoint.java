@@ -11,6 +11,8 @@
 
 package us.freeandfair.corla.endpoint;
 
+import static us.freeandfair.corla.model.Administrator.AdministratorType.*;
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,14 +29,13 @@ import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.ASMUtilities;
 import us.freeandfair.corla.asm.AbstractStateMachine;
+import us.freeandfair.corla.auth.AuthenticationInterface;
 import us.freeandfair.corla.json.Result;
 import us.freeandfair.corla.model.Administrator;
-import us.freeandfair.corla.model.Administrator.AdministratorType;
 import us.freeandfair.corla.model.LogEntry;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.LogEntryQueries;
 import us.freeandfair.corla.util.SuppressFBWarnings;
-
 /**
  * Basic behaviors that span all endpoints. In particular, standard exceptional
  * behavior with regards to cross-cutting concerns like authentication or
@@ -206,7 +207,7 @@ public abstract class AbstractEndpoint implements Endpoint {
   }
 
   /**
-   * Indicate and log that the operation completed succesfully, and
+   * Indicate and log that the operation completed successfully, and
    * send the specified JSON-formatted string.
    * 
    * @param the_response The HTTP response.
@@ -217,6 +218,7 @@ public abstract class AbstractEndpoint implements Endpoint {
     my_status.set(HttpStatus.OK_200);
     my_endpoint_result.set(the_json);
   }
+  
   /**
    * Indicate the client has violated an invariant or precondition relating data
    * to the endpoint in question. E.g., a digest is incorrect with regards to
@@ -386,11 +388,18 @@ public abstract class AbstractEndpoint implements Endpoint {
    * authentication checking.
    */
   @SuppressWarnings("PMD.ConfusingTernary")
+  // this warning is caused by the call to queryParams(), 
+  // but we really don't need the result
+  @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT")
   @Override
   public void before(final Request the_request, final Response the_response) {
     reset();
     my_log_entries.set(new ArrayList<LogEntry>());
     Main.LOGGER.info("endpoint " + endpointName() + " hit by " + the_request.host());
+    // make sure we get all the HTTP post parameters, if there are any, before
+    // anything has a chance to read the request body before Spark
+    the_request.queryParams();
+    
     // Start a transaction, if the database is functioning; otherwise abort
     if (Persistence.hasDB()) {
       Persistence.beginTransaction(); 
@@ -449,12 +458,13 @@ public abstract class AbstractEndpoint implements Endpoint {
 
   private void persistLogEntries(final Request the_request) {
     LogEntry previous_entry = LogEntryQueries.last();
-    final Administrator admin = Authentication.authenticatedAdministrator(the_request);
+    final Object admin_attribute = 
+        the_request.session().attribute(AuthenticationInterface.ADMIN);
     final String admin_data;
-    if (admin == null) {
-      admin_data = "(unauthenticated)";
+    if (admin_attribute instanceof Administrator) {
+      admin_data = ((Administrator) admin_attribute).username();
     } else {
-      admin_data = admin.username();
+      admin_data = "(unauthenticated)";
     }
     
     for (final LogEntry entry : my_log_entries.get()) {
@@ -586,34 +596,45 @@ public abstract class AbstractEndpoint implements Endpoint {
    * @param the_type The authorization type.
    * @return true if the request is appropriately authorized, false otherwise.
    */
-  //@ require the_session != null
-  //@ require the_type != null
   public static boolean checkAuthorization(final Request the_request, 
                                            final AuthorizationType the_type) {
-    boolean result = true;
-    final boolean state = 
-        Authentication.isAuthenticatedAs(the_request, AdministratorType.STATE);
-    final boolean county =
-        Authentication.isAuthenticatedAs(the_request, AdministratorType.COUNTY);
-
-    switch (the_type) {
-      case STATE: 
-        result = state;
-        break;
-      
-      case COUNTY:
-        result = county;
-        break;
-          
-      case EITHER:
-        result = county || state;
-        break;
-          
-      case NONE:
-
-      default:
-    }
+    boolean result = the_type == AuthorizationType.NONE;
+    if (!result) {
+      final boolean state;
+      final boolean county;
     
+      if (Main.authentication().secondFactorAuthenticated(the_request)) {
+        final Administrator admin = 
+            Main.authentication().authenticatedAdministrator(the_request);
+        if (admin == null) {
+          state = false; 
+          county = false;
+        } else { 
+          state = 
+              Main.authentication().authenticatedAs(the_request, STATE, admin.username());
+          county = 
+              Main.authentication().authenticatedAs(the_request, COUNTY, admin.username());
+        }
+
+        switch (the_type) {
+          case STATE: 
+            result = state;
+            break;
+
+          case COUNTY:
+            result = county;
+            break;
+
+          case EITHER:
+            result = county || state;
+            break;
+
+          case NONE:
+          default:
+        }
+      }
+    }
+      
     return result;
   }
 }

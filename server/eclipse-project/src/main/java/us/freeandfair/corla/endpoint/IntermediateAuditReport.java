@@ -76,7 +76,7 @@ public class IntermediateAuditReport extends AbstractAuditBoardDashboardEndpoint
       final IntermediateAuditReportInfo report =
           Main.GSON.fromJson(the_request.body(), IntermediateAuditReportInfo.class);
       final CountyDashboard cdb = 
-          Persistence.getByID(Authentication.authenticatedCounty(the_request).id(),
+          Persistence.getByID(Main.authentication().authenticatedCounty(the_request).id(),
                               CountyDashboard.class);
       if (cdb == null) {
         Main.LOGGER.error("could not get audit board dashboard");

@@ -90,7 +90,7 @@ public class ACVRUpload extends AbstractAuditBoardDashboardEndpoint {
         badDataContents(the_response, "empty audit CVR upload");
       } else {
         final CountyDashboard cdb = 
-            Persistence.getByID(Authentication.authenticatedCounty(the_request).id(),
+            Persistence.getByID(Main.authentication().authenticatedCounty(the_request).id(),
                                 CountyDashboard.class);
         if (cdb == null) {
           Main.LOGGER.error("could not get audit board dashboard");

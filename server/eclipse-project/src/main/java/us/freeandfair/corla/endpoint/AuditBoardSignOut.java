@@ -74,7 +74,7 @@ public class AuditBoardSignOut extends AbstractAuditBoardDashboardEndpoint {
   public String endpoint(final Request the_request,
                          final Response the_response) {
     try {
-      final County county = Authentication.authenticatedCounty(the_request); 
+      final County county = Main.authentication().authenticatedCounty(the_request); 
       if (county == null) {
         Main.LOGGER.error("could not get authenticated county");
         unauthorized(the_response, "not authorized to perform audit board login");

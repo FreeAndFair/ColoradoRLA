@@ -6,6 +6,7 @@ us.freeandfair.corla.endpoint.AuditBoardSignIn
 us.freeandfair.corla.endpoint.AuditBoardSignOut
 us.freeandfair.corla.endpoint.AuditInvestigationReport
 us.freeandfair.corla.endpoint.AuditReport
+us.freeandfair.corla.endpoint.AuthenticateAdministrator
 us.freeandfair.corla.endpoint.AuthenticateCountyAdministrator
 us.freeandfair.corla.endpoint.AuthenticateStateAdministrator
 us.freeandfair.corla.endpoint.BallotManifestDownload

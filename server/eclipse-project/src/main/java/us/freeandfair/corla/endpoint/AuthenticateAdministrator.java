@@ -11,23 +11,39 @@
 
 package us.freeandfair.corla.endpoint;
 
-import static us.freeandfair.corla.model.Administrator.AdministratorType.COUNTY;
-
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.asm.ASMEvent;
+import us.freeandfair.corla.asm.AbstractStateMachine;
 import us.freeandfair.corla.json.SubmittedCredentials;
-import us.freeandfair.corla.model.Administrator;
 
 /**
- * The endpoint for authenticating a county administrator.
+ * The endpoint for authenticating an administrator.
  * 
  * @author Daniel M Zimmerman
+ * @author Joseph R. Kiniry
  * @version 0.0.1
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class AuthenticateCountyAdministrator extends AbstractEndpoint {  
+public class AuthenticateAdministrator extends AbstractEndpoint {
+  /**
+   * @return no authorization is required for this endpoint.
+   */
+  @Override
+  public AuthorizationType requiredAuthorization() {
+    return AuthorizationType.NONE;
+  }
+  
+  /**
+   * @return this endpoint does not use an ASM.
+   */
+  @Override
+  protected Class<AbstractStateMachine> asmClass() {
+    return null;
+  }
+
   /**
    * {@inheritDoc}
    */
@@ -41,11 +57,30 @@ public class AuthenticateCountyAdministrator extends AbstractEndpoint {
    */
   @Override
   public String endpointName() {
-    return "/auth-county-admin";
+    return "/auth-admin";
   }
 
   /**
-   * Attempts to authenticate a county administrator; if the authentication is
+   * {@inheritDoc}
+   */
+  @Override
+  protected ASMEvent endpointEvent() {
+    return null;
+  }
+  
+  /**
+   * Gets the ASM identity for the specified request.
+   * 
+   * @param the_request The request.
+   * @return the county ID of the authenticated county.
+   */
+  @Override
+  protected String asmIdentity(final Request the_request) {
+    return null;
+  }
+
+  /**
+   * Attempts to authenticate an administrator; if the authentication is
    * successful, authentication data is added to the session.
    * 
    * Session query parameters: <tt>username</tt>, <tt>password</tt>, 
@@ -58,8 +93,9 @@ public class AuthenticateCountyAdministrator extends AbstractEndpoint {
   public String endpoint(final Request the_request, final Response the_response) {
     final SubmittedCredentials credentials =
         Main.authentication().authenticationCredentials(the_request);
-    if (Main.authentication().
-        secondFactorAuthenticatedAs(the_request, COUNTY, credentials.username())) {
+    if (Main.authentication().secondFactorAuthenticated(the_request) &&
+        Main.authentication().authenticatedAdministrator(the_request).username().
+            equals(credentials.username())) {
       okJSON(the_response, 
              Main.GSON.toJson(Main.authentication().authenticationStatus(the_request)));
     } else {
@@ -68,14 +104,8 @@ public class AuthenticateCountyAdministrator extends AbstractEndpoint {
                                     credentials.username(),
                                     credentials.password(),
                                     credentials.secondFactor())) {
-        final Administrator admin = 
-            Main.authentication().authenticatedAdministrator(the_request);
-        if (admin.type() == COUNTY) {
-          okJSON(the_response, 
-                 Main.GSON.toJson(Main.authentication().authenticationStatus(the_request)));
-        } else {
-          unauthorized(the_response, "Authentication failed");
-        } 
+        okJSON(the_response,
+               Main.GSON.toJson(Main.authentication().authenticationStatus(the_request)));
       } else {
         unauthorized(the_response, "Authentication failed");
       }
