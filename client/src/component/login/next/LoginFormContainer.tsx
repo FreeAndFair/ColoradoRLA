@@ -18,9 +18,9 @@ export class LoginFormContainer extends React.Component<any, any> {
 }
 
 const mapStateToProps = (state: any) => {
-    const { dashboard, loggedIn, loginChallenge } = state;
+    const { dashboard, loggedIn, loginChallenge, username } = state;
 
-    return { dashboard, loggedIn, loginChallenge };
+    return { dashboard, loggedIn, loginChallenge, username };
 };
 
 

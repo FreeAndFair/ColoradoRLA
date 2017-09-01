@@ -10,19 +10,23 @@ function parseChallenge(challenge: string): string[][] {
 
 
 function parse(data: any) {
-    const dashboard = data.role === 'STATE'
+    const { received, sent } = data;
+
+    const dashboard = received.role === 'STATE'
         ? 'sos'
         : 'county';
 
-    const loginChallenge = data.challenge
-        ? parseChallenge(data.challenge)
+    const loginChallenge = received.challenge
+        ? parseChallenge(received.challenge)
         : null;
 
-    return { dashboard, loginChallenge };
+    const { username } = sent;
+
+    return { dashboard, loginChallenge, username };
 }
 
 
 export default (state: any, action: any) => ({
     ...state,
-    ...parse(action.data.received),
+    ...parse(action.data),
 });

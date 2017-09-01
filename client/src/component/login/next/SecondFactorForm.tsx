@@ -4,9 +4,9 @@ import login2F from '../../../action/login2F';
 
 
 function isFormValid(form: any): boolean {
-    const { username } = form;
+    const token = form.tokenParts.join('');
 
-    return username.length > 0;
+    return token !== '';
 }
 
 const ChallengeForm = (props: any) => {
@@ -42,7 +42,6 @@ export default class LoginForm extends React.Component<any, any> {
     public state: any = {
         form: {
             tokenParts: [],
-            username: '',
         },
     };
 
@@ -54,13 +53,9 @@ export default class LoginForm extends React.Component<any, any> {
 
         return (
             <div>
-                <label className='pt-label'>
-                    Email
-                    <input className='pt-input username'
-                           type='text'
-                           onChange={ this.onEmailChange }
-                           value={ form.username } />
-                </label>
+                <div className='pt-card'>
+                    Enter challenge for user: { this.props.username }
+                </div>
                 <ChallengeForm
                     loginChallenge={ loginChallenge }
                     onTokenChange={ this.onTokenChange }
@@ -75,12 +70,6 @@ export default class LoginForm extends React.Component<any, any> {
         );
     }
 
-    private onEmailChange = (e: React.ChangeEvent<any>) => {
-        const s = { ...this.state };
-        s.form.username = e.target.value;
-        this.setState(s);
-    }
-
     private onTokenChange = (index: number) => (e: React.ChangeEvent<any>) => {
         const s = { ...this.state };
         s.form.tokenParts[index] = e.target.value;
@@ -92,6 +81,6 @@ export default class LoginForm extends React.Component<any, any> {
 
         const token = tokenParts.join('');
 
-        login2F(username, token);
+        login2F(this.props.username, token);
     }
 }
