@@ -24,7 +24,7 @@ package us.freeandfair.corla.auth;
  * @version 0.0.1
  */
 public enum AuthenticationStage {
-  NO_AUTHENTICATION,
+  NOT_AUTHENTICATED,
   TRADITIONALLY_AUTHENTICATED,
   SECOND_FACTOR_AUTHENTICATED
 }

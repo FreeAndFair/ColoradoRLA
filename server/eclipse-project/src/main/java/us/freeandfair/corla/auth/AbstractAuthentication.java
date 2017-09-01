@@ -71,15 +71,15 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
       auth_stage = (AuthenticationStage) auth_stage_attribute;
     }
     if (auth_stage == null) {
-      auth_stage = NO_AUTHENTICATION;
-    } else if (auth_stage != NO_AUTHENTICATION) {
+      auth_stage = NOT_AUTHENTICATED;
+    } else if (auth_stage != NOT_AUTHENTICATED) {
       // if the existing authenticated admin is not this user, deauthenticate
       // the session
       final Object admin_attribute = the_request.session().attribute(ADMIN);
       if (admin_attribute instanceof Administrator &&
           !((Administrator) admin_attribute).username().equals(the_username)) {
         deauthenticate(the_request);
-        auth_stage = NO_AUTHENTICATION;
+        auth_stage = NOT_AUTHENTICATED;
       }
     }
     try {
@@ -88,7 +88,7 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
         result = false;
       } else {
         switch (auth_stage) {
-          case NO_AUTHENTICATION:
+          case NOT_AUTHENTICATED:
             if (traditionalAuthenticate(the_request, the_response,
                                         the_username, the_password)) {
               // We have traditionally authenticated.
@@ -120,7 +120,7 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
                                the_username);
             } else {
               // Send the authentication state machine back to its initial state.
-              the_request.session().attribute(AUTH_STAGE, NO_AUTHENTICATION);
+              the_request.session().attribute(AUTH_STAGE, NOT_AUTHENTICATED);
               Main.LOGGER.info("Second factor authentication failed for administrator" + 
                                the_username);
               result = false;
@@ -264,7 +264,7 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
       auth_stage = (AuthenticationStage) auth_stage_attribute;
     }
     return auth_stage != null && 
-           auth_stage != NO_AUTHENTICATION;
+           auth_stage != NOT_AUTHENTICATED;
   }
   
   /**
@@ -283,7 +283,7 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
         admin_attribute instanceof Administrator) {
       final AuthenticationStage stage = (AuthenticationStage) auth_stage_attribute;
       final Administrator admin = (Administrator) admin_attribute;
-      result = stage != NO_AUTHENTICATION &&
+      result = stage != NOT_AUTHENTICATED &&
                admin.type() == the_type &&
                admin.username().equals(the_username);
     } else if (auth_stage_attribute != null || admin_attribute != null) {
