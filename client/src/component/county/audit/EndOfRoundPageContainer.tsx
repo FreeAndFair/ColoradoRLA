@@ -25,15 +25,8 @@ class EndOfRoundPageContainer extends React.Component<any, any> {
     public render() {
         const { allRoundsComplete, countyInfo, previousRound } = this.props;
 
-        if (allRoundsComplete) {
-            return (
-                <EndOfLastRoundPage
-                    countyInfo={ countyInfo }
-                    previousRound={ previousRound }/>
-            );
-        }
-
         const props = {
+            allRoundsComplete,
             countyInfo,
             previousRound,
             previousRoundSignedOff: signedOff(previousRound),

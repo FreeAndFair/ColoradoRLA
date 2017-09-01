@@ -4,6 +4,8 @@ import CountyNav from '../Nav';
 
 import EndOfRoundFormContainer from './EndOfRoundFormContainer';
 
+import finishAudit from '../../../action/county/finishAudit';
+
 
 const PreviousRoundSignedOff = (props: any) => {
     const { roundNumber } = props;
@@ -20,11 +22,38 @@ const PreviousRoundSignedOff = (props: any) => {
     );
 };
 
+const LastRoundComplete = (props: any) => {
+    return (
+        <div>
+            <CountyNav />
+            <h3> End of All Audit Rounds</h3>
+            <div className='pt-card'>
+                All audit rounds are complete. Please use the form below to
+                certify that the county has completed the audit.
+            </div>
+            <div className='pt-card'>
+                <button className='pt-button pt-intent-primary' onClick={ finishAudit }>
+                    Submit
+                </button>
+            </div>
+        </div>
+    );
+};
+
 const EndOfRoundPage = (props: any) => {
-    const { countyInfo, previousRound, previousRoundSignedOff } = props;
+    const {
+        allRoundsComplete,
+        countyInfo,
+        previousRound,
+        previousRoundSignedOff,
+    } = props;
 
     const countyName = countyInfo.name;
     const roundNumber = previousRound.number;
+
+    if (allRoundsComplete) {
+        return <LastRoundComplete />;
+    }
 
     if (previousRoundSignedOff) {
         return <PreviousRoundSignedOff roundNumber={ roundNumber } />;

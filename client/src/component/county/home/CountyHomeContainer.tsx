@@ -7,6 +7,7 @@ import CountyHomePage from './CountyHomePage';
 
 import finishAudit from '../../../action/county/finishAudit';
 
+import allRoundsComplete from '../../../selector/county/allRoundsComplete';
 import auditBoardSignedIn from '../../../selector/county/auditBoardSignedIn';
 import auditComplete from '../../../selector/county/auditComplete';
 import canAudit from '../../../selector/county/canAudit';
@@ -16,6 +17,7 @@ import canSignIn from '../../../selector/county/canSignIn';
 class CountyHomeContainer extends React.Component<any, any> {
     public render() {
         const {
+            allRoundsComplete,
             canAudit,
             canSignIn,
             county,
@@ -27,6 +29,7 @@ class CountyHomeContainer extends React.Component<any, any> {
         const startAudit = () => history.push('/county/audit');
 
         const props = {
+            allRoundsComplete,
             boardSignIn,
             canAudit,
             canSignIn,
@@ -45,6 +48,7 @@ const mapStateToProps = (state: any) => {
     const { contestDefs } = county;
 
     return {
+        allRoundsComplete: allRoundsComplete(state),
         auditBoardSignedIn: auditBoardSignedIn(state),
         auditComplete: auditComplete(state),
         canAudit: canAudit(state),
