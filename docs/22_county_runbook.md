@@ -183,7 +183,7 @@ end-of-round page, with boxes for the Audit Board to "sign" their approval of th
 Note that while the audit is in progress, the County Home page 
 gives a summary of progress.
 
-![County_Mid-Audit_Screen](./screenshots/CountyMidAudit.png)
+![County_Mid-Audit_Screen](./screenshots/County_Home_Mid_Round.png)
 
 
 ### Audit Board Intermediate Audit Report Page
