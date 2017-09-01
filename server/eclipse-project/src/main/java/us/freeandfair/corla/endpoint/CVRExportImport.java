@@ -220,7 +220,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
     synchronized (COUNTIES_RUNNING) {
       if (COUNTIES_RUNNING.contains(county.id())) {
         transactionFailure(the_response, 
-                           "county " + county.id() + " is already uploading CVRs, try later");
+                           "county " + county.id() + " is already importing CVRs, try later");
         // for a transaction failure, we have to halt explicitly
         halt(the_response);
       }
