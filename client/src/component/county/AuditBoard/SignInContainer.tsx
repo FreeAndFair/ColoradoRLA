@@ -6,7 +6,8 @@ import counties from 'corla/data/counties';
 import SignedInPage from './SignedInPage';
 import SignInPage from './SignInPage';
 
-import auditBoardSignedIn from 'corla/selector/county/auditBoardSignedIn';
+import auditBoardSignedInSelector from 'corla/selector/county/auditBoardSignedIn';
+import countyInfoSelector from 'corla/selector/county/countyInfo';
 
 
 class AuditBoardSignInContainer extends React.Component<any, any> {
@@ -24,11 +25,12 @@ class AuditBoardSignInContainer extends React.Component<any, any> {
 const mapStateToProps = (state: any) => {
     const { county } = state;
 
-    const countyName = county.id ? counties[county.id].name : '';
+    const countyInfo = countyInfoSelector(state);
+    const countyName = countyInfo.name || '';
 
     return {
         auditBoard: county.auditBoard,
-        auditBoardSignedIn: auditBoardSignedIn(state),
+        auditBoardSignedIn: auditBoardSignedInSelector(state),
         county,
         countyName,
     };

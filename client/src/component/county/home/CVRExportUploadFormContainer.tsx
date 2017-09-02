@@ -5,6 +5,8 @@ import CVRExportUploadForm from './CVRExportUploadForm';
 
 import uploadCvrExport from 'corla/action/uploadCvrExport';
 
+import cvrExportUploadedSelector from 'corla/selector/county/cvrExportUploaded';
+
 
 const UploadedCvrExport = ({ enableReupload, filename, hash }: any) => (
     <div className='pt-card'>
@@ -54,11 +56,15 @@ class CVRExportUploadFormContainer extends React.Component<any, any> {
     private enableReupload = () => this.setState({ reupload: true });
 }
 
-const mapStateToProps = ({ county }: any) => ({
-    auditStarted: !!county.ballotUnderAuditId,
-    county,
-    fileUploaded: !!county.cvrExportHash,
-});
+const mapStateToProps = (state: any) => {
+    const { county } = state;
+
+    return {
+        auditStarted: !!county.ballotUnderAuditId,
+        county,
+        fileUploaded: cvrExportUploadedSelector(state),
+    };
+};
 
 
 export default connect(mapStateToProps)(CVRExportUploadFormContainer);
