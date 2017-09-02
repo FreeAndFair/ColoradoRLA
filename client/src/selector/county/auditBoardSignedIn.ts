@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import isValidAuditBoard from './isValidAuditBoard';
 
 
-const signedInStates = [
+const SIGNED_IN_STATES = [
     'WAITING_FOR_ROUND_START',
     'ROUND_IN_PROGRESS',
     'WAITING_FOR_ROUND_SIGN_OFF',
@@ -23,7 +23,7 @@ function auditBoardSignedIn(state: any) {
     const { currentState } = state.county.asm.auditBoard;
 
     return isValidAuditBoard(auditBoard)
-        && _.includes(signedInStates, currentState);
+        && _.includes(SIGNED_IN_STATES, currentState);
 }
 
 

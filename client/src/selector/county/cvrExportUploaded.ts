@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 
-const uploadedStates = [
+const UPLOADED_STATES = [
     'CVRS_OK',
     'BALLOT_MANIFEST_AND_CVRS_OK',
     'COUNTY_AUDIT_UNDERWAY',
@@ -16,7 +16,7 @@ function cvrExportUploaded(state: any): boolean {
 
     const { currentState } = state.county.asm.county;
 
-    return _.includes(uploadedStates, currentState);
+    return _.includes(UPLOADED_STATES, currentState);
 }
 
 
