@@ -613,7 +613,8 @@ def county_audit(ac, county_id):
                         "political_party": "Republican"}]
 
     r = test_endpoint_get(ac, county_s, "/audit-board-asm-state")
-    if r.json()['current_state'] == "AUDIT_BOARD_SIGNED_OUT":
+    if ((r.json()['current_state'] == "WAITING_FOR_ROUND_START_NO_AUDIT_BOARD") or
+        (r.json()['current_state'] == "ROUND_IN_PROGRESS_NO_AUDIT_BOARD")):
         r = test_endpoint_json(ac, county_s, "/audit-board-sign-in", audit_board_set)
 
     # Print this tool's notion of what should be audited, based on seed etc.
