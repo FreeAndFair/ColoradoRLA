@@ -1,4 +1,4 @@
-type AuditBoardASMState
+type AuditBoardState
     = 'AUDIT_INITIAL_STATE'
     | 'WAITING_FOR_ROUND_START'
     | 'WAITING_FOR_ROUND_START_NO_AUDIT_BOARD'
@@ -10,7 +10,7 @@ type AuditBoardASMState
     | 'UNABLE_TO_AUDIT'
     | 'AUDIT_ABORTED';
 
-type CountyASMState
+type CountyState
     = 'COUNTY_INITIAL_STATE'
     | 'COUNTY_AUTHENTICATED'
     | 'BALLOT_MANIFEST_OK'
@@ -20,7 +20,7 @@ type CountyASMState
     | 'COUNTY_AUDIT_COMPLETE'
     | 'DEADLINE_MISSED';
 
-type DOSASMState
+type DOSState
     = 'DOS_INITIAL_STATE'
     | 'DOS_AUTHENTICATED'
     | 'RISK_LIMITS_SET'
