@@ -4,9 +4,9 @@ import { connect } from 'react-redux';
 import EndOfLastRoundPage from './EndOfLastRoundPage';
 import EndOfRoundPage from './EndOfRoundPage';
 
-import allRoundsComplete from '../../../selector/county/allRoundsComplete';
-import countyInfo from '../../../selector/county/countyInfo';
-import previousRound from '../../../selector/county/previousRound';
+import allRoundsComplete from 'corla/selector/county/allRoundsComplete';
+import countyInfo from 'corla/selector/county/countyInfo';
+import previousRound from 'corla/selector/county/previousRound';
 
 
 function signedOff(round: any): boolean {

@@ -1,4 +1,4 @@
-import counties from '../../data/counties';
+import counties from 'corla/data/counties';
 
 
 function countyInfo(state: any) {

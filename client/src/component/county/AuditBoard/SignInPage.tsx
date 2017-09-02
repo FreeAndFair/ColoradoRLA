@@ -4,9 +4,9 @@ import CountyNav from '../Nav';
 
 import SignInForm from './SignInForm';
 
-import auditBoardSignIn from '../../../action/county/auditBoardSignIn';
+import auditBoardSignIn from 'corla/action/county/auditBoardSignIn';
 
-import isValidAuditBoard from '../../../selector/county/isValidAuditBoard';
+import isValidAuditBoard from 'corla/selector/county/isValidAuditBoard';
 
 
 class AuditBoardSignInPage extends React.Component<any, any> {

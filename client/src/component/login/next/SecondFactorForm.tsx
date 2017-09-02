@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import login2F from '../../../action/login2F';
+import login2F from 'corla/action/login2F';
 
 
 function isFormValid(form: any): boolean {

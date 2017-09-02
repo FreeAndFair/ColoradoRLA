@@ -1,8 +1,8 @@
-import { endpoint } from '../../config';
+import { endpoint } from 'corla/config';
 
 import createSubmitAction from '../createSubmitAction';
 
-import { format } from '../../adapter/establishBoard';
+import { format } from 'corla/adapter/establishBoard';
 
 
 const url = endpoint('audit-board-sign-in');

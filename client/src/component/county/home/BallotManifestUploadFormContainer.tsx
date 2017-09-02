@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import BallotManifestUploadForm from './BallotManifestUploadForm';
 
-import uploadBallotManifest from '../../../action/uploadBallotManifest';
+import uploadBallotManifest from 'corla/action/uploadBallotManifest';
 
 
 const UploadedBallotManifest = ({ filename, hash, enableReupload }: any) => (

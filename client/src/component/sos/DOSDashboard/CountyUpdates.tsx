@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 import { Tooltip } from '@blueprintjs/core';
 
-import counties from '../../../data/counties';
+import counties from 'corla/data/counties';
 
 
 function formatStatus(asmState: any) {

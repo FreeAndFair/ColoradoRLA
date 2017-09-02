@@ -4,7 +4,7 @@ import { Redirect } from 'react-router-dom';
 
 import AuditPage from './AuditPage';
 
-import setRiskLimit from '../../../action/setRiskLimit';
+import setRiskLimit from 'corla/action/setRiskLimit';
 
 
 class AuditContainer extends React.Component<any, any> {

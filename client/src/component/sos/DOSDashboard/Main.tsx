@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import RoundContainer from './RoundContainer';
 
-import fetchReport from '../../../action/dos/fetchReport';
+import fetchReport from 'corla/action/dos/fetchReport';
 
 
 const RiskLimitInfo = ({ riskLimit }: any) => {

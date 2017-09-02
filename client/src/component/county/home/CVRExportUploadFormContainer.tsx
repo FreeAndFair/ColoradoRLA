@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import CVRExportUploadForm from './CVRExportUploadForm';
 
-import uploadCvrExport from '../../../action/uploadCvrExport';
+import uploadCvrExport from 'corla/action/uploadCvrExport';
 
 
 const UploadedCvrExport = ({ enableReupload, filename, hash }: any) => (
