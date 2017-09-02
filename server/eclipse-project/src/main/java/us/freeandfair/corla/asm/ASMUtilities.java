@@ -47,17 +47,24 @@ public final class ASMUtilities {
     T result = null;
     
     try {
-      if (the_identity == null) {
-        // this is a singleton ASM, so it has a no-argument constructor
-        result = the_class.getConstructor().newInstance();
-      } else {
-        // this ASM has an identity, so we need a 1-argument constructor 
-        // that takes a String
-        final Constructor<T> constructor = the_class.getConstructor(String.class);
-        result = constructor.newInstance(the_identity);
+      // first, check for a no-argument constructor
+      final Constructor<?>[] constructors = the_class.getConstructors();
+      for (final Constructor<?> c : constructors) {
+        @SuppressWarnings("unchecked") // this cast is safe because of the call above
+        final Constructor<T> constructor = (Constructor<T>) c;
+        if (constructor.getParameterTypes().length == 0) {
+          // default constructor
+          result = constructor.newInstance();
+          break;
+        } else if (constructor.getParameterTypes().length == 1 &&
+                   constructor.getParameterTypes()[0].equals(String.class)) {
+          // 1-argument constructor that takes a String
+          result = constructor.newInstance(the_identity);
+          break;
+        }
       }
     } catch (final IllegalAccessException | InstantiationException | 
-                   InvocationTargetException | NoSuchMethodException e) {
+                   InvocationTargetException e) {
       Main.LOGGER.error("Unable to construct ASM of class " + the_class +
                         " with identity " + the_identity);
     }

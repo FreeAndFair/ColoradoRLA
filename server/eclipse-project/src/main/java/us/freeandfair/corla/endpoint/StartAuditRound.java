@@ -13,7 +13,7 @@
 package us.freeandfair.corla.endpoint;
 import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.*;
 import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.*;
-import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.PUBLISH_BALLOTS_TO_AUDIT_EVENT;
+import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.*;
 import static us.freeandfair.corla.asm.ASMState.DoSDashboardState.RANDOM_SEED_PUBLISHED;
 
 import java.math.BigDecimal;
@@ -107,11 +107,11 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
     if (my_asm.get().currentState() == RANDOM_SEED_PUBLISHED) {
       // the audit hasn't started yet, so start round 1 and ignore the parameters
       // we were sent
-      my_event.set(PUBLISH_BALLOTS_TO_AUDIT_EVENT);
+      my_event.set(DOS_START_ROUND_EVENT);
       return startRoundOne(the_request, the_response);
     } else {
       // start a subsequent round
-      my_event.set(null);
+      my_event.set(DOS_START_ROUND_EVENT);
       return startSubsequentRound(the_request, the_response);
     }
   }
@@ -155,15 +155,19 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
                 ASMUtilities.asmFor(CountyDashboardASM.class, String.valueOf(cdb.id()));
             asm.stepEvent(COUNTY_START_AUDIT_EVENT);
             final ASMEvent audit_event;
-            if (asm.currentState().equals(CountyDashboardState.COUNTY_AUDIT_UNDERWAY) &&
-                (cdb.comparisonAudits().isEmpty() || cdb.estimatedBallotsToAudit() == 0)) {
-              // the county made its deadline but was assigned no contests to audit
-              // or does not need to audit any ballots to meet its risk limit
-              audit_event = NO_CONTESTS_TO_AUDIT_EVENT;
-              asm.stepEvent(COUNTY_AUDIT_COMPLETE_EVENT);
-            } else if (asm.currentState().equals(CountyDashboardState.COUNTY_AUDIT_UNDERWAY)) {
-              // the audit started normally
-              audit_event = AUDIT_BOARD_START_AUDIT_EVENT;
+            if (asm.currentState().equals(CountyDashboardState.COUNTY_AUDIT_UNDERWAY)) {
+              if (cdb.comparisonAudits().isEmpty()) {
+                // the county made its deadline but was assigned no contests to audit
+                audit_event = NO_CONTESTS_TO_AUDIT_EVENT;
+                asm.stepEvent(COUNTY_AUDIT_COMPLETE_EVENT);
+              } else if (cdb.estimatedBallotsToAudit() <= 0) {
+                // the county made its deadline but has already achieved its risk limit
+                audit_event = RISK_LIMIT_ACHIEVED_EVENT;
+                asm.stepEvent(COUNTY_AUDIT_COMPLETE_EVENT);
+              } else {
+                // the audit started normally
+                audit_event = ROUND_START_EVENT;
+              }
             } else {
               // the county missed its deadline
               audit_event = COUNTY_DEADLINE_MISSED_EVENT;
@@ -232,12 +236,13 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
                            ", skipping round start");
           continue;
         }
-        
         // if the county is in the middle of a round, error out
         if (cdb.currentRound() != null) {
           invariantViolation(the_response, 
                              "audit round already in progress for county " + cdb.id());
         }
+        
+        final ASMEvent audit_event;
         final boolean round_started;
         final BigDecimal multiplier;
         if (start.multiplier() == null) {
@@ -252,8 +257,19 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
           round_started = ComparisonAuditController.
               startNewRoundOfLength(cdb, start.countyBallots().get(cdb.id()), multiplier);
         }
-        if (!round_started) {
+        if (round_started) {
+          Main.LOGGER.debug("round started for county " + cdb.id());       
+          audit_event = ROUND_START_EVENT;
+        } else {
+          // we don't know why the round didn't start, so we need to abort the audit
           Main.LOGGER.debug("no round started for county " + cdb.id());       
+          audit_event = ABORT_AUDIT_EVENT;
+        }
+        
+        // update the ASM for the audit board
+        if (!DISABLE_ASM) {
+          asm.stepEvent(audit_event);
+          ASMUtilities.save(asm);
         }
       }      
       ok(the_response, "new audit round started");

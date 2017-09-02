@@ -21,6 +21,7 @@ import javax.persistence.Entity;
 import us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent;
 import us.freeandfair.corla.asm.ASMState.DoSDashboardState;
 import us.freeandfair.corla.asm.ASMTransitionFunction.DoSDashboardTransitionFunction;
+import us.freeandfair.corla.util.SetCreator;
 
 /**
  * The ASM for the Department of State Dashboard.
@@ -31,6 +32,11 @@ import us.freeandfair.corla.asm.ASMTransitionFunction.DoSDashboardTransitionFunc
 @Entity
 @DiscriminatorValue(value = "DoSDashboardASM")
 public class DoSDashboardASM extends AbstractStateMachine {
+  /**
+   * The identity of the singleton DoS dashboard.
+   */
+  public static final String IDENTITY = "DoS";
+  
   /**
    * The serialVersionUID.
    */
@@ -52,7 +58,7 @@ public class DoSDashboardASM extends AbstractStateMachine {
           transitionsFor(Arrays.
                          asList(DoSDashboardTransitionFunction.values())),
           DoSDashboardState.DOS_INITIAL_STATE,
-          new HashSet<ASMState>(Arrays.asList(FINAL_STATES)),
-          null); // there is only one DoS dashboard, so no identity specified
+          SetCreator.setOf(FINAL_STATES),
+          IDENTITY); // there is only one DoS dashboard
   }
 }

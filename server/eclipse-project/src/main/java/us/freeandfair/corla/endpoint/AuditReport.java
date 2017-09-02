@@ -85,9 +85,13 @@ public class AuditReport extends AbstractAuditBoardDashboardEndpoint {
           all_complete &= asm.isInFinalState();       
         }
         if (all_complete) {
-          ASMUtilities.step(STATE_AUDIT_COMPLETE_EVENT, DoSDashboardASM.class, null);
+          ASMUtilities.step(DOS_AUDIT_COMPLETE_EVENT, 
+                            DoSDashboardASM.class, 
+                            DoSDashboardASM.IDENTITY);
         } else {
-          ASMUtilities.step(DOS_COUNTY_AUDIT_COMPLETE_EVENT, DoSDashboardASM.class, null);
+          ASMUtilities.step(DOS_COUNTY_AUDIT_COMPLETE_EVENT,
+                            DoSDashboardASM.class, 
+                            DoSDashboardASM.IDENTITY);
         }
       }
       // sign the audit board out

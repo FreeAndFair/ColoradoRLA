@@ -56,7 +56,7 @@ public class UIToASMEventRelation {
     my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         PUBLIC_SEED_EVENT));
     my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
-        PUBLISH_BALLOTS_TO_AUDIT_EVENT));
+        DOS_START_ROUND_EVENT));
     my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         INDICATE_FULL_HAND_COUNT_CONTEST_EVENT));
     my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 

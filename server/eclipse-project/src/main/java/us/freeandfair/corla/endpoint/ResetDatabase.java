@@ -100,9 +100,10 @@ public class ResetDatabase extends AbstractEndpoint {
     
     // reset the DoS dashboard ASM state
     final PersistentASMState dos_asm = 
-        PersistentASMStateQueries.get(DoSDashboardASM.class, null);
+        PersistentASMStateQueries.get(DoSDashboardASM.class, DoSDashboardASM.IDENTITY);
     dos_asm.updateFrom(new DoSDashboardASM());
-
+    Persistence.saveOrUpdate(dos_asm);
+    
     // for each County, reset the states of its ASMs
     for (final County c : Persistence.getAll(County.class)) {
       final String id = String.valueOf(c.id());
@@ -110,11 +111,13 @@ public class ResetDatabase extends AbstractEndpoint {
           PersistentASMStateQueries.get(CountyDashboardASM.class, id);
       if (county_asm != null) {
         county_asm.updateFrom(new CountyDashboardASM(id));
+        Persistence.saveOrUpdate(county_asm);
       }
       final PersistentASMState audit_asm =
           PersistentASMStateQueries.get(AuditBoardDashboardASM.class, id);
       if (audit_asm != null) {
         audit_asm.updateFrom(new AuditBoardDashboardASM(id));
+        Persistence.saveOrUpdate(audit_asm);
       }
     }
 

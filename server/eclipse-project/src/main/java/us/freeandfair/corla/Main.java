@@ -333,7 +333,7 @@ public final class Main {
       throws PersistenceException {
     // first, check the DoS dashboard
     final PersistentASMState dos_state = 
-        PersistentASMStateQueries.get(DoSDashboardASM.class, null);
+        PersistentASMStateQueries.get(DoSDashboardASM.class, DoSDashboardASM.IDENTITY);
     restoreOrPersistState(new DoSDashboardASM(), dos_state);
     
     DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);

@@ -37,13 +37,13 @@ public abstract class AbstractDoSDashboardEndpoint extends AbstractEndpoint {
   }
   
   /**
-   * @param the_request the ignored request.
-   * @return null because the DoS dashboard is a singleton.
+   * Gets the ASM identity for the specified request.
+   * 
+   * @param the_request The request.
+   * @return DoSDashboardASM.IDENTITY
    */
   @Override
-  // this method is definitely not empty, but PMD thinks it is
-  @SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract")
   protected String asmIdentity(final Request the_request) {
-    return null;
+    return DoSDashboardASM.IDENTITY;
   }
 }

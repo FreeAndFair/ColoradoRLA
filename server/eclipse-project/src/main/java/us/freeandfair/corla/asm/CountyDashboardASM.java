@@ -21,6 +21,7 @@ import javax.persistence.Entity;
 import us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent;
 import us.freeandfair.corla.asm.ASMState.CountyDashboardState;
 import us.freeandfair.corla.asm.ASMTransitionFunction.CountyDashboardTransitionFunction;
+import us.freeandfair.corla.util.SetCreator;
 
 /**
  * The ASM for the County Dashboard.
@@ -56,7 +57,7 @@ public class CountyDashboardASM extends AbstractStateMachine {
           transitionsFor(Arrays.
                          asList(CountyDashboardTransitionFunction.values())),
           CountyDashboardState.COUNTY_INITIAL_STATE,
-          new HashSet<ASMState>(Arrays.asList(FINAL_STATES)),
+          SetCreator.setOf(FINAL_STATES),
           the_county_id);
   } 
 }

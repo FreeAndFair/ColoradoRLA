@@ -13,6 +13,8 @@
 package us.freeandfair.corla.endpoint;
 
 import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.*;
+import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.COUNTY_AUDIT_COMPLETE_EVENT;
+import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.DOS_ROUND_COMPLETE_EVENT;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -27,8 +29,12 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
+import us.freeandfair.corla.asm.ASMUtilities;
+import us.freeandfair.corla.asm.CountyDashboardASM;
+import us.freeandfair.corla.asm.DoSDashboardASM;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
+import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.model.Elector;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.util.SuppressFBWarnings;
@@ -41,6 +47,11 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
  */
 @SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.ExcessiveImports"})
 public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
+  /**
+   * The event to return for this endpoint.
+   */
+  private final ThreadLocal<ASMEvent> my_event = new ThreadLocal<ASMEvent>();
+  
   /**
    * {@inheritDoc}
    */
@@ -69,7 +80,15 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
    */
   @Override
   protected ASMEvent endpointEvent() {
-    return ROUND_SIGN_OFF_EVENT;
+    return my_event.get();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void reset() {
+    my_event.set(null);
   }
   
   /**
@@ -82,6 +101,7 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
   @Override
   // false positive about inner class declaration
   @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
+  @SuppressWarnings("checkstyle:nestedifdepth")
   public String endpoint(final Request the_request,
                          final Response the_response) {
     try {
@@ -102,6 +122,22 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
             invariantViolation(the_response, "no round to sign off");
           } else {
             cdb.endRound(parsed_signatories);
+            // update the ASM state for the county and maybe DoS
+            if (!DISABLE_ASM) {
+              if (cdb.estimatedBallotsToAudit() <= 0) {
+                // we've reached the risk limit, so the county is done
+                my_event.set(RISK_LIMIT_ACHIEVED_EVENT);
+                ASMUtilities.step(COUNTY_AUDIT_COMPLETE_EVENT, 
+                                  CountyDashboardASM.class, 
+                                  cdb.id().toString());
+              } else {
+                // the round started normally
+                my_event.set(ROUND_SIGN_OFF_EVENT);
+              }
+              // if all the other counties have signed off on the round or finished/
+              // not started the audit, tell the DoS dashboard that the round is over
+              notifyDoSDashboard(cdb.id());
+            }
           }
         }
       } else {
@@ -114,5 +150,29 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
     }
     ok(the_response, "audit round signed off");
     return my_endpoint_result.get();
+  }
+  
+  /**
+   * Notifies the DoS dashboard that the round is over if all the counties
+   * _except_ for the one identified in the parameter have completed their
+   * audit round, or are not auditing (the excluded county is not counted
+   * because its transition will not happen until this endpoint returns). 
+   * 
+   * @param the_id The ID of the county to exclude.
+   */
+  private void notifyDoSDashboard(final Long the_id) {
+    boolean finished = true;
+    
+    for (final CountyDashboard cdb : Persistence.getAll(CountyDashboard.class)) {
+      if (!cdb.id().equals(the_id)) {
+        finished &= cdb.currentRound() == null;
+      }
+    }
+    
+    if (finished) {
+      ASMUtilities.step(DOS_ROUND_COMPLETE_EVENT, 
+                        DoSDashboardASM.class, 
+                        DoSDashboardASM.IDENTITY);
+    }
   }
 }

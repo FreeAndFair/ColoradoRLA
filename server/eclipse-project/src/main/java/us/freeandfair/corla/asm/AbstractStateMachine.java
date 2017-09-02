@@ -179,8 +179,8 @@ public abstract class AbstractStateMachine implements Serializable {
   public Set<ASMEvent> enabledASMEvents() {
     final Set<ASMEvent> result = new HashSet<>();
     for (final ASMTransition t : my_transition_function) {
-      if (t.startState().equals(my_current_state)) {
-        result.add(t.event());
+      if (t.startStates().contains(my_current_state)) {
+        result.addAll(t.events());
       }
     }
     return result;
@@ -197,7 +197,7 @@ public abstract class AbstractStateMachine implements Serializable {
   public ASMState stepTransition(final ASMTransition the_transition)
       throws IllegalStateException {
     // If we are in the right state then transition to the new state.
-    if (my_current_state.equals(the_transition.startState())) {
+    if (the_transition.startStates().contains(my_current_state)) {
       my_current_state = the_transition.endState();
       Main.LOGGER.info("ASM transition succeeded: " + the_transition); 
     } else {
@@ -224,8 +224,8 @@ public abstract class AbstractStateMachine implements Serializable {
       throws IllegalStateException {  
     ASMState result = null;
     for (final ASMTransition t : my_transition_function) {
-      if (t.startState().equals(my_current_state) &&
-          t.event().equals(the_event)) {
+      if (t.startStates().contains(my_current_state) &&
+          t.events().contains(the_event)) {
         result = t.endState();
         break;
       }

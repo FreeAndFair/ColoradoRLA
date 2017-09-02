@@ -27,11 +27,12 @@ public interface ASMEvent extends Event {
     SELECT_CONTESTS_FOR_COMPARISON_AUDIT_EVENT, // public inbound event
     PUBLISH_AUDIT_DATA_EVENT, // public inbound event @review CDOS
     PUBLIC_SEED_EVENT, // public inbound event
-    PUBLISH_BALLOTS_TO_AUDIT_EVENT, // public inbound event
+    DOS_START_ROUND_EVENT, // public inbound event
+    DOS_ROUND_COMPLETE_EVENT, // private internal event
     AUDIT_EVENT, // private internal event
     INDICATE_FULL_HAND_COUNT_CONTEST_EVENT, // public inbound event
     DOS_COUNTY_AUDIT_COMPLETE_EVENT, // private internal event
-    STATE_AUDIT_COMPLETE_EVENT, // private internal event
+    DOS_AUDIT_COMPLETE_EVENT, // private internal event
     PUBLISH_AUDIT_REPORT_EVENT // public inbound event
   }
   
@@ -51,7 +52,6 @@ public interface ASMEvent extends Event {
    * @trace asm.audit_board_dashboard_event
    */
   enum AuditBoardDashboardEvent implements ASMEvent {
-    AUDIT_BOARD_START_AUDIT_EVENT, // private internal event
     COUNTY_DEADLINE_MISSED_EVENT, // private internal event
     NO_CONTESTS_TO_AUDIT_EVENT, // private internal event
     REPORT_MARKINGS_EVENT, // public inbound event
@@ -61,7 +61,10 @@ public interface ASMEvent extends Event {
     SUBMIT_INTERMEDIATE_AUDIT_REPORT_EVENT, // public inbound event
     SIGN_OUT_AUDIT_BOARD_EVENT, // public inbound event
     SIGN_IN_AUDIT_BOARD_EVENT, // public inbound event
+    ROUND_START_EVENT, // private internal event
     ROUND_COMPLETE_EVENT, // private internal event
-    ROUND_SIGN_OFF_EVENT // public inbound event
+    ROUND_SIGN_OFF_EVENT, // public inbound event
+    RISK_LIMIT_ACHIEVED_EVENT, // private internal event
+    ABORT_AUDIT_EVENT // public inbound event
   }
 }
