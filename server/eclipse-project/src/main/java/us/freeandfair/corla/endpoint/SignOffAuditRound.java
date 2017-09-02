@@ -14,7 +14,7 @@ package us.freeandfair.corla.endpoint;
 
 import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.*;
 import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.COUNTY_AUDIT_COMPLETE_EVENT;
-import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.DOS_ROUND_COMPLETE_EVENT;
+import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.*;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -34,7 +34,6 @@ import us.freeandfair.corla.asm.CountyDashboardASM;
 import us.freeandfair.corla.asm.DoSDashboardASM;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
-import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.model.Elector;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.util.SuppressFBWarnings;
@@ -45,7 +44,9 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 0.0.1
  */
-@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.ExcessiveImports"})
+@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.ExcessiveImports",
+    "PMD.CyclomaticComplexity", "PMD.ModifiedCyclomaticComplexity",
+    "PMD.StdCyclomaticComplexity"})
 public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
   /**
    * The event to return for this endpoint.
@@ -124,19 +125,24 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
             cdb.endRound(parsed_signatories);
             // update the ASM state for the county and maybe DoS
             if (!DISABLE_ASM) {
+              final boolean audit_complete;
               if (cdb.estimatedBallotsToAudit() <= 0) {
                 // we've reached the risk limit, so the county is done
                 my_event.set(RISK_LIMIT_ACHIEVED_EVENT);
-                ASMUtilities.step(COUNTY_AUDIT_COMPLETE_EVENT, 
-                                  CountyDashboardASM.class, 
-                                  cdb.id().toString());
+                audit_complete = true;
+              } else if (cdb.ballotsCast() <= cdb.ballotsAudited()) {
+                // there are no more ballots in the county
+                my_event.set(BALLOTS_EXHAUSTED_EVENT);
+                audit_complete = true;
               } else {
-                // the round started normally
+                // the round ended normally
                 my_event.set(ROUND_SIGN_OFF_EVENT);
+                audit_complete = false;
               }
-              // if all the other counties have signed off on the round or finished/
-              // not started the audit, tell the DoS dashboard that the round is over
-              notifyDoSDashboard(cdb.id());
+              notifyRoundComplete(cdb.id());
+              if (audit_complete) {
+                notifyAuditComplete(cdb);
+              }
             }
           }
         }
@@ -160,9 +166,8 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
    * 
    * @param the_id The ID of the county to exclude.
    */
-  private void notifyDoSDashboard(final Long the_id) {
+  private void notifyRoundComplete(final Long the_id) {
     boolean finished = true;
-    
     for (final CountyDashboard cdb : Persistence.getAll(CountyDashboard.class)) {
       if (!cdb.id().equals(the_id)) {
         finished &= cdb.currentRound() == null;
@@ -174,5 +179,32 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
                         DoSDashboardASM.class, 
                         DoSDashboardASM.IDENTITY);
     }
+  }
+  
+  /**
+   * Notifies the county and DoS dashboards that the audit is complete.
+   * 
+   * @param the_cdb The county dashboard for this county.
+   */
+  private void notifyAuditComplete(final CountyDashboard the_cdb) {
+    ASMUtilities.step(COUNTY_AUDIT_COMPLETE_EVENT, 
+                      CountyDashboardASM.class, my_asm.get().identity());
+    // check to see if all counties are complete
+    boolean all_complete = true;
+    for (final County c : Persistence.getAll(County.class)) {
+      final CountyDashboardASM asm = 
+          ASMUtilities.asmFor(CountyDashboardASM.class, String.valueOf(c.id()));
+      all_complete &= asm.isInFinalState();       
+    }
+    if (all_complete) {
+      ASMUtilities.step(DOS_AUDIT_COMPLETE_EVENT, 
+                        DoSDashboardASM.class, 
+                        DoSDashboardASM.IDENTITY);
+    } else {
+      ASMUtilities.step(DOS_COUNTY_AUDIT_COMPLETE_EVENT,
+                        DoSDashboardASM.class, 
+                        DoSDashboardASM.IDENTITY);
+    }
+    the_cdb.signOutAuditBoard();
   }
 }

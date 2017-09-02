@@ -224,6 +224,12 @@ public class CountyDashboard implements PersistentEntity, Serializable {
       new ArrayList<>();
   
   /**
+   * The number of ballots cast.
+   */
+  @Column(nullable = false) 
+  private Integer my_ballots_cast = 0;
+  
+  /**
    * The number of ballots audited.
    */
   @Column(nullable = false)
@@ -726,6 +732,22 @@ public class CountyDashboard implements PersistentEntity, Serializable {
     if (my_current_round_index != null) {
       my_rounds.get(my_current_round_index).removeAuditedBallot();
     }  
+  }
+  
+  /**
+   * @return the number of ballots cast in the county.
+   */
+  public Integer ballotsCast() {
+    return my_ballots_cast;
+  }
+  
+  /**
+   * Sets the number of ballots cast in the county.
+   * 
+   * @param the_ballots_cast The number.
+   */
+  public void setBallotsCast(final Integer the_ballots_cast) {
+    my_ballots_cast = the_ballots_cast;
   }
   
   /**

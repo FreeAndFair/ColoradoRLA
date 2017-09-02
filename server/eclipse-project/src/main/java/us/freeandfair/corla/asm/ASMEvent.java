@@ -65,6 +65,7 @@ public interface ASMEvent extends Event {
     ROUND_COMPLETE_EVENT, // private internal event
     ROUND_SIGN_OFF_EVENT, // public inbound event
     RISK_LIMIT_ACHIEVED_EVENT, // private internal event
-    ABORT_AUDIT_EVENT // public inbound event
+    ABORT_AUDIT_EVENT, // public inbound event
+    BALLOTS_EXHAUSTED_EVENT // private internal event
   }
 }
