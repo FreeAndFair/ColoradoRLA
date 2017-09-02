@@ -1,8 +1,14 @@
-function canSignIn(state: any) {
-    const { county } = state;
-    const { asm } = county;
+import * as _ from 'lodash';
 
-    return asm.county.currentState === 'COUNTY_AUDIT_UNDERWAY';
+
+function canSignIn(state: any) {
+    if (!_.has(state, 'county.asm.county.currentState')) {
+        return false;
+    }
+
+    const { currentState } = state.county.asm.county;
+
+    return currentState === 'COUNTY_AUDIT_UNDERWAY';
 }
 
 
