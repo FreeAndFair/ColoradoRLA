@@ -32,6 +32,11 @@ module.exports = config => {
 
             resolve: {
                 extensions: ['.ts', '.tsx', '.js', '.json'],
+
+                alias: {
+                    // Add an import alias for the project root.
+                    corla: path.resolve(__dirname, 'src'),
+                },
             },
 
             module: {

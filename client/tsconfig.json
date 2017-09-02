@@ -1,5 +1,10 @@
 {
     "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "corla/*": ["./src/*"],
+        },
+
         "outDir": "./dist/",
         "sourceMap": true,
 

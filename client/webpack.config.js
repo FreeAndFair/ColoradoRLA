@@ -29,7 +29,12 @@ module.exports = {
 
     resolve: {
         // Add '.ts' and '.tsx' as resolvable extensions.
-        extensions: ['.ts', '.tsx', '.js', '.json']
+        extensions: ['.ts', '.tsx', '.js', '.json'],
+
+        alias: {
+            // Add an import alias for the project root.
+            corla: path.resolve(__dirname, 'src'),
+        },
     },
 
     plugins: [
