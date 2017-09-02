@@ -6,7 +6,7 @@ import counties from 'corla/data/counties';
 import SignedInPage from './SignedInPage';
 import SignInPage from './SignInPage';
 
-import auditBoardSignedIn from 'corla/selector/county/auditBoardSignedIn';
+import auditBoardSignedInSelector from 'corla/selector/county/auditBoardSignedIn';
 import countyInfoSelector from 'corla/selector/county/countyInfo';
 
 
@@ -30,7 +30,7 @@ const mapStateToProps = (state: any) => {
 
     return {
         auditBoard: county.auditBoard,
-        auditBoardSignedIn: auditBoardSignedIn(state),
+        auditBoardSignedIn: auditBoardSignedInSelector(state),
         county,
         countyName,
     };
