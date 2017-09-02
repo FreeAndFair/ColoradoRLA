@@ -1,10 +1,17 @@
-function canAudit(state: any) {
-    const { county } = state;
-    const { asm } = county;
+import * as _ from 'lodash';
 
-    return (asm.auditBoard.currentState === 'AUDIT_IN_PROGRESS'
-            || asm.auditBoard.currentState === 'WAITING_FOR_ROUND_SIGN_OFF')
-        && asm.county.currentState === 'COUNTY_AUDIT_UNDERWAY';
+import auditBoardSignedIn from './auditBoardSignedIn';
+
+
+function canAudit(state: any) {
+    if (!_.has(state, 'county.asm.county.currentState')) {
+        return false;
+    }
+
+    const countyASMState = state.county.asm.county.currentState;
+
+    return auditBoardSignedIn(state)
+        && countyASMState === 'COUNTY_AUDIT_UNDERWAY';
 }
 
 
