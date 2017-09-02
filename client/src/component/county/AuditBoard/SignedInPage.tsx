@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import CountyNav from '../Nav';
 
-import auditBoardSignOut from '../../../action/county/auditBoardSignOut';
+import auditBoardSignOut from 'corla/action/county/auditBoardSignOut';
 
 
 const SignedInPage = ({ auditBoard, countyName }: any) => {

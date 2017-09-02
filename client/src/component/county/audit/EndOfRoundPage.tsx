@@ -4,7 +4,7 @@ import CountyNav from '../Nav';
 
 import EndOfRoundFormContainer from './EndOfRoundFormContainer';
 
-import finishAudit from '../../../action/county/finishAudit';
+import finishAudit from 'corla/action/county/finishAudit';
 
 
 const PreviousRoundSignedOff = (props: any) => {

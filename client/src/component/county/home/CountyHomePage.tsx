@@ -7,7 +7,7 @@ import CountyNav from '../Nav';
 
 import FileUploadContainer from './FileUploadContainer';
 
-import fetchReport from '../../../action/county/fetchReport';
+import fetchReport from 'corla/action/county/fetchReport';
 
 
 const AuditBoardInfo = ({ signedIn }: any) => {

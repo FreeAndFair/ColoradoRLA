@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 
 import LoginForm, { FormFields } from './LoginForm';
 
-import countyLogin from '../../action/countyLogin';
-import dosLogin from '../../action/dosLogin';
+import countyLogin from 'corla/action/countyLogin';
+import dosLogin from 'corla/action/dosLogin';
 
 
 const submit = ({ dashboard, username, password }: any) => {

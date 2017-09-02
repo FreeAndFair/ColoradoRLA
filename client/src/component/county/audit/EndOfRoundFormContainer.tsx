@@ -3,9 +3,9 @@ import { connect } from 'react-redux';
 
 import EndOfRoundForm from './EndOfRoundForm';
 
-import roundSignOff from '../../../action/roundSignOff';
+import roundSignOff from 'corla/action/roundSignOff';
 
-import countyInfo from '../../../selector/county/countyInfo';
+import countyInfo from 'corla/selector/county/countyInfo';
 
 
 class EndOfRoundFormContainer extends React.Component<any, any> {

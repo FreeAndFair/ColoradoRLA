@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 import BallotListStage from './BallotListStage';
 
-import countyInfo from '../../../../selector/county/countyInfo';
+import countyInfo from 'corla/selector/county/countyInfo';
 
 
 class BallotListStageContainer extends React.Component<any, any> {

@@ -3,11 +3,11 @@ import { connect } from 'react-redux';
 
 import BallotAuditStage from './BallotAuditStage';
 
-import action from '../../../../action';
+import action from 'corla/action';
 
-import ballotNotFound from '../../../../action/ballotNotFound';
+import ballotNotFound from 'corla/action/ballotNotFound';
 
-import currentBallotNumber from '../../../../selector/county/currentBallotNumber';
+import currentBallotNumber from 'corla/selector/county/currentBallotNumber';
 
 
 class BallotAuditStageContainer extends React.Component<any, any> {

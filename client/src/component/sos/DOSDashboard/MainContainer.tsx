@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 
 import Main from './Main';
 
-import auditStarted from '../../../selector/dos/auditStarted';
-import canRenderReport from '../../../selector/dos/canRenderReport';
+import auditStarted from 'corla/selector/dos/auditStarted';
+import canRenderReport from 'corla/selector/dos/canRenderReport';
 
 
 class MainContainer extends React.Component<any, any> {

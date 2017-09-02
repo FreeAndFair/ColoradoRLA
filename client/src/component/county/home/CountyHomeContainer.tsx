@@ -1,18 +1,18 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import counties from '../../../data/counties';
+import counties from 'corla/data/counties';
 
 import CountyHomePage from './CountyHomePage';
 
-import finishAudit from '../../../action/county/finishAudit';
+import finishAudit from 'corla/action/county/finishAudit';
 
-import allRoundsComplete from '../../../selector/county/allRoundsComplete';
-import auditBoardSignedIn from '../../../selector/county/auditBoardSignedIn';
-import auditComplete from '../../../selector/county/auditComplete';
-import canAudit from '../../../selector/county/canAudit';
-import canRenderReport from '../../../selector/county/canRenderReport';
-import canSignIn from '../../../selector/county/canSignIn';
+import allRoundsComplete from 'corla/selector/county/allRoundsComplete';
+import auditBoardSignedIn from 'corla/selector/county/auditBoardSignedIn';
+import auditComplete from 'corla/selector/county/auditComplete';
+import canAudit from 'corla/selector/county/canAudit';
+import canRenderReport from 'corla/selector/county/canRenderReport';
+import canSignIn from 'corla/selector/county/canSignIn';
 
 
 class CountyHomeContainer extends React.Component<any, any> {

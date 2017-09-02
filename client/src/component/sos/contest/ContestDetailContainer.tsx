@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import dosFetchContests from '../../../action/dosFetchContests';
+import dosFetchContests from 'corla/action/dosFetchContests';
 
 import ContestDetailPage from './ContestDetailPage';
 

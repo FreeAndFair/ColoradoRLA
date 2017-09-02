@@ -5,12 +5,12 @@ import { Redirect } from 'react-router-dom';
 import CountyAuditPage from './CountyAuditPage';
 import EndOfRoundPageContainer from './EndOfRoundPageContainer';
 
-import notice from '../../../notice';
+import notice from 'corla/notice';
 
-import allRoundsComplete from '../../../selector/county/allRoundsComplete';
-import auditComplete from '../../../selector/county/auditComplete';
-import canAudit from '../../../selector/county/canAudit';
-import roundInProgress from '../../../selector/county/roundInProgress';
+import allRoundsComplete from 'corla/selector/county/allRoundsComplete';
+import auditComplete from 'corla/selector/county/auditComplete';
+import canAudit from 'corla/selector/county/canAudit';
+import roundInProgress from 'corla/selector/county/roundInProgress';
 
 
 class CountyAuditContainer extends React.Component<any, any> {

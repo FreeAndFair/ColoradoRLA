@@ -1,4 +1,4 @@
-import { endpoint } from '../../config';
+import { endpoint } from 'corla/config';
 
 import createFileFetchAction from '../createFileFetchAction';
 

@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import counties from '../../../data/counties';
+import counties from 'corla/data/counties';
 
 import SignedInPage from './SignedInPage';
 import SignInPage from './SignInPage';
 
-import auditBoardSignedIn from '../../../selector/county/auditBoardSignedIn';
+import auditBoardSignedIn from 'corla/selector/county/auditBoardSignedIn';
 
 
 class AuditBoardSignInContainer extends React.Component<any, any> {

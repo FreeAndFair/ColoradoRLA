@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import startNextRound from '../../../../action/dosStartNextRound';
+import startNextRound from 'corla/action/dosStartNextRound';
 
 
 const Control = (props: any) => {

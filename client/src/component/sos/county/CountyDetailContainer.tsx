@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import counties from '../../../data/counties';
+import counties from 'corla/data/counties';
 
-import dosDashboardRefresh from '../../../action/dosDashboardRefresh';
+import dosDashboardRefresh from 'corla/action/dosDashboardRefresh';
 
 import CountyDetailPage from './CountyDetailPage';
 
