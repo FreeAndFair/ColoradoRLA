@@ -57,7 +57,6 @@ public interface ASMEvent extends Event {
     REPORT_MARKINGS_EVENT, // public inbound event
     REPORT_BALLOT_NOT_FOUND_EVENT, // public inbound event
     SUBMIT_AUDIT_INVESTIGATION_REPORT_EVENT, // public inbound event
-    SUBMIT_AUDIT_REPORT_EVENT, // public inbound event
     SUBMIT_INTERMEDIATE_AUDIT_REPORT_EVENT, // public inbound event
     SIGN_OUT_AUDIT_BOARD_EVENT, // public inbound event
     SIGN_IN_AUDIT_BOARD_EVENT, // public inbound event

@@ -101,9 +101,6 @@ public class ASMEventToEndpointRelation {
         SUBMIT_AUDIT_INVESTIGATION_REPORT_EVENT,
         UNIMPLEMENTED));
     my_relation.add(new Pair<ASMEvent, String>(
-        SUBMIT_AUDIT_REPORT_EVENT,
-        UNIMPLEMENTED));
-    my_relation.add(new Pair<ASMEvent, String>(
         SUBMIT_INTERMEDIATE_AUDIT_REPORT_EVENT,
         UNIMPLEMENTED));
   }

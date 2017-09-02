@@ -82,8 +82,6 @@ public class UIToASMEventRelation {
     my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         SUBMIT_AUDIT_INVESTIGATION_REPORT_EVENT));
     my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
-        SUBMIT_AUDIT_REPORT_EVENT));
-    my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         SUBMIT_INTERMEDIATE_AUDIT_REPORT_EVENT));
   }
   
