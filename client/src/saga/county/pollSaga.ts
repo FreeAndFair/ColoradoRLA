@@ -7,8 +7,8 @@ import {
 } from 'redux-saga/effects';
 
 import countyDashboardRefresh from 'corla/action/county/dashboardRefresh';
-import countyFetchContests from 'corla/action/county/fetchContests';
 import fetchAuditBoardAsmState from 'corla/action/county/fetchAuditBoardAsmState';
+import countyFetchContests from 'corla/action/county/fetchContests';
 import fetchCountyAsmState from 'corla/action/county/fetchCountyAsmState';
 
 
