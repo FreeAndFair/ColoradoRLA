@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import CountyNav from '../Nav';
+import CountyNav from 'corla/component/county/Nav';
 
 
 const EndOfRoundPage = (props: any) => {

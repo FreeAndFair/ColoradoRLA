@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import EndOfRoundForm from './EndOfRoundForm';
+import SignOffForm from './SignOffForm';
 
 import roundSignOff from 'corla/action/roundSignOff';
 
 import countyInfo from 'corla/selector/county/countyInfo';
 
 
-class EndOfRoundFormContainer extends React.Component<any, any> {
+class SignOffFormContainer extends React.Component<any, any> {
     public state = {
         form: [
             {
@@ -35,7 +35,7 @@ class EndOfRoundFormContainer extends React.Component<any, any> {
             submit: () => roundSignOff(this.state.form),
         };
 
-        return <EndOfRoundForm {...props} />;
+        return <SignOffForm {...props} />;
     }
 
     private onTextConfirm = () => {
@@ -83,4 +83,4 @@ const mapStateToProps = (state: any) => {
 };
 
 
-export default connect(mapStateToProps)(EndOfRoundFormContainer);
+export default connect(mapStateToProps)(SignOffFormContainer);

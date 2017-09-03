@@ -1,8 +1,8 @@
 import * as React from 'react';
 
-import CountyNav from '../Nav';
+import CountyNav from 'corla/component/county/Nav';
 
-import EndOfRoundFormContainer from './EndOfRoundFormContainer';
+import SignOffFormContainer from './SignOffFormContainer';
 
 import finishAudit from 'corla/action/county/finishAudit';
 
@@ -101,7 +101,7 @@ const EndOfRoundPage = (props: any) => {
                         submitted by the voter.
                     </li>
                 </ul>
-                <EndOfRoundFormContainer />
+                <SignOffFormContainer />
             </div>
         </div>
     );
