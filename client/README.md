@@ -58,8 +58,6 @@ browser client.
 | ---- | ---- |
 | `/county` | County Home
 | `/county/sign-in` | County Audit Board Sign-In Page
-| `/county/contest` | Contest Overview |
-| `/county/contest/{contestId}` | Contest Detail |
 | `/county/audit` | Run Audit |
 
 ### SOS and County Officials

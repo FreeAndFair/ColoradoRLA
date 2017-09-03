@@ -9,9 +9,6 @@ import {
 
 import RootRedirectContainer from './RootRedirectContainer';
 
-import CountyContestDetailContainer from './county/ContestDetailContainer';
-import CountyContestOverviewContainer from './county/ContestOverviewContainer';
-
 import AuditBoardPageContainer from './county/AuditBoard/PageContainer';
 
 import CountyAuditPageContainer from './county/Audit/PageContainer';
@@ -81,8 +78,6 @@ const routes: RouteDef[] = [
     ['/county', CountyDashboardPageContainer],
     ['/county/sign-in', AuditBoardPageContainer],
     ['/county/audit', CountyAuditPageContainer],
-    ['/county/contest', CountyContestOverviewContainer],
-    ['/county/contest/:contestId', CountyContestDetailContainer],
     ['/help', HelpRootContainer],
     ['/help/glossary', GlossaryContainer],
     ['/help/manual', ManualContainer],
