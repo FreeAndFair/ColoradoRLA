@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.OptionalLong;
 import java.util.Set;
 
@@ -90,10 +91,12 @@ public final class ComparisonAuditController {
                                         minimum, maximum);
     final List<Integer> list_of_cvrs_to_audit = 
         prng.getRandomNumbers(the_min_index, the_max_index);
+    final Map<Integer, CastVoteRecord> matching_cvrs = 
+        CastVoteRecordQueries.get(the_cdb.id(), RecordType.UPLOADED, list_of_cvrs_to_audit);
     final List<CastVoteRecord> result = new ArrayList<>();
     
     for (final int index : list_of_cvrs_to_audit) {
-      result.add(CastVoteRecordQueries.get(the_cdb.id(), RecordType.UPLOADED, index));
+      result.add(matching_cvrs.get(index));
     }
     
     return result;

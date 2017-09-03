@@ -50,15 +50,15 @@ import us.freeandfair.corla.persistence.PersistentEntity;
  */
 @Entity
 @Immutable // this is a Hibernate-specific annotation, but there is no JPA alternative
-@Cacheable(false) // TODO: evaluate whether this should be cacheable
+@Cacheable(false) 
 @Table(name = "cast_vote_record",
        indexes = { @Index(name = "idx_cvr_county_type", columnList = "county_id, record_type"),
                    @Index(name = "idx_cvr_county_cvr_number", 
                           columnList = "county_id, cvr_number"),
                    @Index(name = "idx_cvr_county_cvr_number_type", 
-                          columnList = "county_id, sequence_number, record_type"),
-                   @Index(name = "idx_cvr_county_sequence_number_type", 
                           columnList = "county_id, cvr_number, record_type"),
+                   @Index(name = "idx_cvr_county_sequence_number_type", 
+                          columnList = "county_id, sequence_number, record_type"),
                    @Index(name = "idx_cvr_county_imprinted_id_type",
                           columnList = "county_id, imprinted_id, record_type")})
 // this class has many fields that would normally be declared final, but
