@@ -14,9 +14,9 @@ import AuditBoardPageContainer from './County/AuditBoard/PageContainer';
 import CountyAuditPageContainer from './County/Audit/PageContainer';
 import CountyDashboardPageContainer from './County/CountyDashboard/PageContainer';
 
-import GlossaryContainer from './help/GlossaryContainer';
-import HelpRootContainer from './help/HelpRootContainer';
-import ManualContainer from './help/ManualContainer';
+import GlossaryContainer from './Help/GlossaryContainer';
+import HelpRootContainer from './Help/HelpRootContainer';
+import ManualContainer from './Help/ManualContainer';
 
 import NextLoginContainer from './Login/Container';
 
