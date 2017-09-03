@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import CountyNav from '../Nav';
 
-import CountyAuditWizardContainer from './wizard/CountyAuditWizardContainer';
+import CountyAuditWizardContainer from './Wizard/Container';
 
 
 const CountyAuditPage = () => {
