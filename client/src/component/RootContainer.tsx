@@ -9,10 +9,10 @@ import {
 
 import RootRedirectContainer from './RootRedirectContainer';
 
-import AuditBoardPageContainer from './county/AuditBoard/PageContainer';
+import AuditBoardPageContainer from './County/AuditBoard/PageContainer';
 
-import CountyAuditPageContainer from './county/Audit/PageContainer';
-import CountyDashboardPageContainer from './county/CountyDashboard/PageContainer';
+import CountyAuditPageContainer from './County/Audit/PageContainer';
+import CountyDashboardPageContainer from './County/CountyDashboard/PageContainer';
 
 import GlossaryContainer from './help/GlossaryContainer';
 import HelpRootContainer from './help/HelpRootContainer';
