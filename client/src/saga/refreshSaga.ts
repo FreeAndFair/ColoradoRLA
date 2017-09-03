@@ -4,9 +4,9 @@ import {
 } from 'redux-saga/effects';
 
 import countyDashboardRefresh from 'corla/action/countyDashboardRefresh';
-import dosDashboardRefresh from 'corla/action/dosDashboardRefresh';
-import dosFetchAsmState from 'corla/action/dosFetchAsmState';
-import dosFetchContests from 'corla/action/dosFetchContests';
+import dosDashboardRefresh from 'corla/action/dos/dashboardRefresh';
+import dosFetchAsmState from 'corla/action/dos/fetchAsmState';
+import dosFetchContests from 'corla/action/dos/fetchContests';
 import fetchAuditBoardAsmState from 'corla/action/fetchAuditBoardAsmState';
 import fetchCountyAsmState from 'corla/action/fetchCountyAsmState';
 

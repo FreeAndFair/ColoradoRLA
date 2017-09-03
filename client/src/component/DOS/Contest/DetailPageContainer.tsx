@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import ContestDetailPage from './DetailPage';
 
-import dosFetchContests from 'corla/action/dosFetchContests';
+import dosFetchContests from 'corla/action/dos/fetchContests';
 
 
 class ContestDetailContainer extends React.Component<any, any> {

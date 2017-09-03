@@ -5,7 +5,7 @@ import counties from 'corla/data/counties';
 
 import CountyDetailPage from './DetailPage';
 
-import dosDashboardRefresh from 'corla/action/dosDashboardRefresh';
+import dosDashboardRefresh from 'corla/action/dos/dashboardRefresh';
 
 
 class CountyDetailContainer extends React.Component<any, any> {
