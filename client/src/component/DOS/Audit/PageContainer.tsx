@@ -2,7 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 
-import AuditPage from './AuditPage';
+import AuditPage from './Page';
 
 import setRiskLimit from 'corla/action/setRiskLimit';
 

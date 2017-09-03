@@ -20,10 +20,10 @@ import ManualContainer from './Help/ManualContainer';
 
 import NextLoginContainer from './Login/Container';
 
-import AuditContainer from './DOS/audit/AuditContainer';
-import AuditReviewContainer from './DOS/audit/AuditReviewContainer';
-import AuditSeedContainer from './DOS/audit/AuditSeedContainer';
-import SelectContestsPageContainer from './DOS/audit/SelectContestsPageContainer';
+import DOSAuditPageContainer from './DOS/Audit/PageContainer';
+import DOSAuditReviewPageContainer from './DOS/Audit/ReviewPageContainer';
+import DOSAuditSeedPageContainer from './DOS/Audit/SeedPageContainer';
+import DOSSelectContestsPageContainer from './DOS/Audit/SelectContestsPageContainer';
 
 import ContestDetailContainer from './DOS/contest/ContestDetailContainer';
 import ContestOverviewContainer from './DOS/contest/ContestOverviewContainer';
@@ -82,10 +82,10 @@ const routes: RouteDef[] = [
     ['/help/glossary', GlossaryContainer],
     ['/help/manual', ManualContainer],
     ['/sos', DOSDashboardContainer],
-    ['/sos/audit', AuditContainer],
-    ['/sos/audit/seed', AuditSeedContainer],
-    ['/sos/audit/select-contests', SelectContestsPageContainer],
-    ['/sos/audit/review', AuditReviewContainer],
+    ['/sos/audit', DOSAuditPageContainer],
+    ['/sos/audit/seed', DOSAuditSeedPageContainer],
+    ['/sos/audit/select-contests', DOSSelectContestsPageContainer],
+    ['/sos/audit/review', DOSAuditReviewPageContainer],
     ['/sos/contest', ContestOverviewContainer],
     ['/sos/contest/:contestId', ContestDetailContainer],
     ['/sos/county', CountyOverviewContainer],

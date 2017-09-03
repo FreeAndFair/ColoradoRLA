@@ -2,7 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 
-import AuditReviewPage from './AuditReviewPage';
+import AuditReviewPage from './ReviewPage';
 
 import publishBallotsToAudit from 'corla/action/publishBallotsToAudit';
 

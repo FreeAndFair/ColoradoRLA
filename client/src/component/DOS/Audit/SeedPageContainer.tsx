@@ -2,7 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 
-import AuditSeedPage from './AuditSeedPage';
+import AuditSeedPage from './SeedPage';
 
 import uploadRandomSeed from 'corla/action/uploadRandomSeed';
 
