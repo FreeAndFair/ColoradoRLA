@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import counties from 'corla/data/counties';
 
 import SignedInPage from './SignedInPage';
-import SignInPage from './SignInPage';
+import AuditBoardPage from './Page';
 
 import auditBoardSignedInSelector from 'corla/selector/county/auditBoardSignedIn';
 import countyInfoSelector from 'corla/selector/county/countyInfo';
@@ -18,7 +18,7 @@ class AuditBoardSignInContainer extends React.Component<any, any> {
             return <SignedInPage auditBoard={ auditBoard } countyName={ countyName } />;
         }
 
-        return <SignInPage { ...this.props } />;
+        return <AuditBoardPage { ...this.props } />;
     }
 }
 

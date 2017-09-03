@@ -12,10 +12,10 @@ import RootRedirectContainer from './RootRedirectContainer';
 import CountyContestDetailContainer from './county/ContestDetailContainer';
 import CountyContestOverviewContainer from './county/ContestOverviewContainer';
 
-import AuditBoardSignInContainer from './county/AuditBoard/SignInContainer';
+import AuditBoardPageContainer from './county/AuditBoard/PageContainer';
 
-import CountyAuditContainer from './county/Audit/Container';
-import CountyDashboardContainer from './county/CountyDashboard/Container';
+import CountyAuditPageContainer from './county/Audit/PageContainer';
+import CountyDashboardPageContainer from './county/CountyDashboard/PageContainer';
 
 import GlossaryContainer from './help/GlossaryContainer';
 import HelpRootContainer from './help/HelpRootContainer';
@@ -78,9 +78,9 @@ const makeRoute = (store: any) => (def: RouteDef) => {
 
 const routes: RouteDef[] = [
     ['/', RootRedirectContainer],
-    ['/county', CountyDashboardContainer],
-    ['/county/sign-in', AuditBoardSignInContainer],
-    ['/county/audit', CountyAuditContainer],
+    ['/county', CountyDashboardPageContainer],
+    ['/county/sign-in', AuditBoardPageContainer],
+    ['/county/audit', CountyAuditPageContainer],
     ['/county/contest', CountyContestOverviewContainer],
     ['/county/contest/:contestId', CountyContestDetailContainer],
     ['/help', HelpRootContainer],
