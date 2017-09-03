@@ -12,7 +12,7 @@ import RootRedirectContainer from './RootRedirectContainer';
 import AuditBoardPageContainer from './County/AuditBoard/PageContainer';
 
 import CountyAuditPageContainer from './County/Audit/PageContainer';
-import CountyDashboardPageContainer from './County/CountyDashboard/PageContainer';
+import CountyDashboardPageContainer from './County/Dashboard/PageContainer';
 
 import GlossaryContainer from './Help/GlossaryContainer';
 import HelpRootContainer from './Help/HelpRootContainer';
@@ -30,7 +30,7 @@ import DOSContestOverviewPageContainer from './DOS/Contest/OverviewPageContainer
 import DOSCountyDetailPageContainer from './DOS/County/DetailPageContainer';
 import DOSCountyOverviewPageContainer from './DOS/County/OverviewPageContainer';
 
-import DOSDashboardContainer from './DOS/DOSDashboard/Container';
+import DOSDashboardContainer from './DOS/Dashboard/PageContainer';
 
 
 export interface RootContainerProps {
