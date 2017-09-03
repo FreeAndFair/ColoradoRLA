@@ -6,10 +6,10 @@ import {
     takeLatest,
 } from 'redux-saga/effects';
 
-import countyDashboardRefresh from '../action/countyDashboardRefresh';
-import countyFetchContests from '../action/countyFetchContests';
-import fetchAuditBoardAsmState from '../action/fetchAuditBoardAsmState';
-import fetchCountyAsmState from '../action/fetchCountyAsmState';
+import countyDashboardRefresh from 'corla/action/countyDashboardRefresh';
+import countyFetchContests from 'corla/action/countyFetchContests';
+import fetchAuditBoardAsmState from 'corla/action/fetchAuditBoardAsmState';
+import fetchCountyAsmState from 'corla/action/fetchCountyAsmState';
 
 
 function* countyPoll() {

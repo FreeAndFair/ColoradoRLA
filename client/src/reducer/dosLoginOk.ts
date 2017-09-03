@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 
 import * as cookies from 'js-cookie';
 
-import counties from '../data/counties';
+import counties from 'corla/data/counties';
 
 
 type AuditStage

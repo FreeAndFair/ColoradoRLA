@@ -1,8 +1,8 @@
-import { endpoint } from '../config';
+import { endpoint } from 'corla/config';
 
 import createSubmitAction from './createSubmitAction';
 
-import { format } from '../adapter/setRiskLimit';
+import { format } from 'corla/adapter/setRiskLimit';
 
 
 const url = endpoint('risk-limit-comp-audits');

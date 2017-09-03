@@ -1,8 +1,8 @@
-import { endpoint } from '../config';
+import { endpoint } from 'corla/config';
 
 import createSubmitAction from './createSubmitAction';
 
-import { format } from '../adapter/uploadAcvr';
+import { format } from 'corla/adapter/uploadAcvr';
 
 
 const url = endpoint('upload-audit-cvr');

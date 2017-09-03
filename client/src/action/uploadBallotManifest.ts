@@ -1,6 +1,6 @@
 import action from '.';
 
-import { endpoint } from '../config';
+import { endpoint } from 'corla/config';
 
 const importUrl = endpoint('import-ballot-manifest');
 const uploadUrl = endpoint('upload-file');

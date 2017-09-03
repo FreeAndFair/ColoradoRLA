@@ -1,4 +1,4 @@
-import { parse } from '../adapter/uploadBallotManifest';
+import { parse } from 'corla/adapter/uploadBallotManifest';
 
 
 export default (state: any, action: any) => {

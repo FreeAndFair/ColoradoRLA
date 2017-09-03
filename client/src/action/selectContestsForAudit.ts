@@ -1,8 +1,8 @@
-import { endpoint } from '../config';
+import { endpoint } from 'corla/config';
 
 import createSubmitAction from './createSubmitAction';
 
-import { format } from '../adapter/contestsForAudit';
+import { format } from 'corla/adapter/contestsForAudit';
 
 
 const url = endpoint('select-contests');

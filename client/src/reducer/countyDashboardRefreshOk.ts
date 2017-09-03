@@ -1,6 +1,6 @@
 import { isEmpty, merge } from 'lodash';
 
-import { parse } from '../adapter/countyDashboardRefresh';
+import { parse } from 'corla/adapter/countyDashboardRefresh';
 
 
 export default (state: any, action: any) => {

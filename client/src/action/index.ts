@@ -1,4 +1,4 @@
-import store from '../store';
+import store from 'corla/store';
 
 
 export default (type: string, data: any = {}) =>

@@ -1,6 +1,6 @@
 import { merge } from 'lodash';
 
-import { parse } from '../adapter/dosDashboardRefresh';
+import { parse } from 'corla/adapter/dosDashboardRefresh';
 
 
 export default (state: any, action: any) => {

@@ -4,11 +4,11 @@ import {
     takeLatest,
 } from 'redux-saga/effects';
 
-import countyDashboardRefresh from '../action/countyDashboardRefresh';
-import fetchAuditBoardAsmState from '../action/fetchAuditBoardAsmState';
-import fetchCountyAsmState from '../action/fetchCountyAsmState';
+import countyDashboardRefresh from 'corla/action/countyDashboardRefresh';
+import fetchAuditBoardAsmState from 'corla/action/fetchAuditBoardAsmState';
+import fetchCountyAsmState from 'corla/action/fetchCountyAsmState';
 
-import notice from '../notice';
+import notice from 'corla/notice';
 
 
 function* countyLoginOk() {

@@ -1,6 +1,6 @@
 import action from '.';
 
-import { endpoint } from '../config';
+import { endpoint } from 'corla/config';
 
 const importUrl = endpoint('import-cvr-export');
 const uploadUrl = endpoint('upload-file');

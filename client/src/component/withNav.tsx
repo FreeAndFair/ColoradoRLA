@@ -5,8 +5,8 @@ import { Link } from 'react-router-dom';
 
 import NavMenu from './NavMenu';
 
-import logout from '../action/logout';
-import resetDatabase from '../action/resetDatabase';
+import logout from 'corla/action/logout';
+import resetDatabase from 'corla/action/resetDatabase';
 
 
 const MenuButton = () =>

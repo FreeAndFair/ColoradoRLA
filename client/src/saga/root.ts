@@ -1,6 +1,6 @@
 import { all } from 'redux-saga/effects';
 
-import * as config from '../config';
+import * as config from 'corla/config';
 
 import acvrUploadSaga from './acvrUploadSaga';
 import auditBoardSignInSaga from './auditBoardSignInSaga';

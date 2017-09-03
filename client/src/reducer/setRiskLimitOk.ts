@@ -1,4 +1,4 @@
-import { parse } from '../adapter/setRiskLimit';
+import { parse } from 'corla/adapter/setRiskLimit';
 
 
 export default (state: any, action: any) => {

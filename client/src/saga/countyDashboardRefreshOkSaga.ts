@@ -3,11 +3,11 @@ import {
     takeLatest,
 } from 'redux-saga/effects';
 
-import countyFetchContests from '../action/countyFetchContests';
-import countyFetchCvr from '../action/countyFetchCvr';
-import fetchCvrsToAudit from '../action/fetchCvrsToAudit';
+import countyFetchContests from 'corla/action/countyFetchContests';
+import countyFetchCvr from 'corla/action/countyFetchCvr';
+import fetchCvrsToAudit from 'corla/action/fetchCvrsToAudit';
 
-import { parse } from '../adapter/countyDashboardRefresh';
+import { parse } from 'corla/adapter/countyDashboardRefresh';
 
 
 function* countyRefreshOk({ data }: any): any {

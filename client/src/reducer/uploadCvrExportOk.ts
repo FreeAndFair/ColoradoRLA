@@ -1,4 +1,4 @@
-import { parse } from '../adapter/uploadCvrExport';
+import { parse } from 'corla/adapter/uploadCvrExport';
 
 
 export default (state: any, action: any) => {

@@ -1,6 +1,6 @@
 import { merge } from 'lodash';
 
-import { parse } from '../adapter/contestFetch';
+import { parse } from 'corla/adapter/contestFetch';
 
 
 export default (state: any, action: any) => {

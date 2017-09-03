@@ -3,7 +3,7 @@ import {
     takeLatest,
 } from 'redux-saga/effects';
 
-import notice from '../notice';
+import notice from 'corla/notice';
 
 
 function* login1FOk(action: any) {

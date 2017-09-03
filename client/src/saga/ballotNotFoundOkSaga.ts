@@ -1,8 +1,8 @@
 import { takeLatest } from 'redux-saga/effects';
 
-import notice from '../notice';
+import notice from 'corla/notice';
 
-import countyDashboardRefresh from '../action/countyDashboardRefresh';
+import countyDashboardRefresh from 'corla/action/countyDashboardRefresh';
 
 
 function* ballotNotFoundOk(): any {

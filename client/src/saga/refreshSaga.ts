@@ -3,12 +3,12 @@ import {
     takeLatest,
 } from 'redux-saga/effects';
 
-import countyDashboardRefresh from '../action/countyDashboardRefresh';
-import dosDashboardRefresh from '../action/dosDashboardRefresh';
-import dosFetchAsmState from '../action/dosFetchAsmState';
-import dosFetchContests from '../action/dosFetchContests';
-import fetchAuditBoardAsmState from '../action/fetchAuditBoardAsmState';
-import fetchCountyAsmState from '../action/fetchCountyAsmState';
+import countyDashboardRefresh from 'corla/action/countyDashboardRefresh';
+import dosDashboardRefresh from 'corla/action/dosDashboardRefresh';
+import dosFetchAsmState from 'corla/action/dosFetchAsmState';
+import dosFetchContests from 'corla/action/dosFetchContests';
+import fetchAuditBoardAsmState from 'corla/action/fetchAuditBoardAsmState';
+import fetchCountyAsmState from 'corla/action/fetchCountyAsmState';
 
 
 function countyRefresh() {
