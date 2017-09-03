@@ -18,8 +18,8 @@ import dosAuditSaga from './dos/auditSaga';
 import dosLoginSaga from './dos/loginSaga';
 import dosPollSaga from './dos/pollSaga';
 
+import loginSaga from './loginSaga';
 import logoutSaga from './logoutSaga';
-import nextLoginSaga from './nextLoginSaga';
 import refreshSaga from './refreshSaga';
 import sessionSaga from './sessionSaga';
 
@@ -35,8 +35,8 @@ export default function* rootSaga() {
         dosAuditSaga(),
         dosLoginSaga(),
         dosPollSaga(),
+        loginSaga(),
         logoutSaga(),
-        nextLoginSaga(),
         refreshSaga(),
         sessionSaga(),
         uploadAcvrOkSaga(),

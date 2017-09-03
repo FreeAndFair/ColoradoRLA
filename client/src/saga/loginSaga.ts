@@ -33,7 +33,7 @@ function* loginNetworkFail(): IterableIterator<void> {
 }
 
 
-export default function* dosLoginSaga() {
+export default function* loginSaga() {
     yield takeLatest('LOGIN_1F_NETWORK_FAIL', loginNetworkFail);
     yield takeLatest('LOGIN_1F_FAIL', loginFail);
     yield takeLatest('LOGIN_1F_OK', login1FOk);
