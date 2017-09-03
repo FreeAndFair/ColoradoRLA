@@ -18,7 +18,7 @@ import GlossaryContainer from './help/GlossaryContainer';
 import HelpRootContainer from './help/HelpRootContainer';
 import ManualContainer from './help/ManualContainer';
 
-import NextLoginContainer from './login/next/LoginContainer';
+import NextLoginContainer from './Login/Container';
 
 import AuditContainer from './sos/audit/AuditContainer';
 import AuditReviewContainer from './sos/audit/AuditReviewContainer';

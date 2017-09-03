@@ -38,7 +38,7 @@ const ChallengeForm = (props: any) => {
     );
 };
 
-export default class LoginForm extends React.Component<any, any> {
+export default class SecondFactorForm extends React.Component<any, any> {
     public state: any = {
         form: {
             tokenParts: [],

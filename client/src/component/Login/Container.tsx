@@ -3,14 +3,10 @@ import { connect } from 'react-redux';
 
 import { Redirect } from 'react-router-dom';
 
-import LoginPage from './LoginPage';
+import LoginPage from './Page';
 
 
-interface LoginContainerProps {
-    loggedIn: boolean;
-}
-
-export class LoginContainer extends React.Component<LoginContainerProps & any, any> {
+export class LoginContainer extends React.Component<any, any> {
     public render() {
         const { location, loggedIn } = this.props;
 
@@ -28,9 +24,5 @@ export class LoginContainer extends React.Component<LoginContainerProps & any, a
 
 const mapStateToProps = ({ loggedIn }: any) => ({ loggedIn });
 
-const mapDispatchToProps = (dispatch: any) => ({});
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(LoginContainer);
+export default connect(mapStateToProps)(LoginContainer);
