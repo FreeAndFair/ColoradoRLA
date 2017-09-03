@@ -14,7 +14,7 @@ import CountyContestOverviewContainer from './county/ContestOverviewContainer';
 
 import AuditBoardSignInContainer from './county/AuditBoard/SignInContainer';
 
-import CountyAuditContainer from './county/audit/CountyAuditContainer';
+import CountyAuditContainer from './county/Audit/Container';
 import CountyDashboardContainer from './county/CountyDashboard/Container';
 
 import GlossaryContainer from './help/GlossaryContainer';

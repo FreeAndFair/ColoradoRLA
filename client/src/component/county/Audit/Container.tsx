@@ -2,7 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 
-import CountyAuditPage from './CountyAuditPage';
+import CountyAuditPage from './Page';
 import EndOfRoundPageContainer from './EndOfRoundPageContainer';
 
 import notice from 'corla/notice';
