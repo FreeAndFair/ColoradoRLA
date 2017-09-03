@@ -24,6 +24,7 @@ import javax.persistence.PersistenceException;
 
 import us.freeandfair.corla.asm.ASMState;
 import us.freeandfair.corla.asm.ASMUtilities;
+import us.freeandfair.corla.asm.AuditBoardDashboardASM;
 import us.freeandfair.corla.asm.CountyDashboardASM;
 import us.freeandfair.corla.model.AuditBoard;
 import us.freeandfair.corla.model.Contest;
@@ -61,6 +62,11 @@ public class CountyDashboardRefreshResponse {
    * The ASM state.
    */
   private final ASMState my_asm_state;
+  
+  /**
+   * The audit board ASM state.
+   */
+  private final ASMState my_audit_board_asm_state;
   
   /**
    * The general information.
@@ -198,6 +204,7 @@ public class CountyDashboardRefreshResponse {
    * 
    * @param the_id The ID.
    * @param the_asm_state The ASM state.
+   * @param the_audit_board_asm_state The audit board ASM state.
    * @param the_general_information The general information.
    * @param the_risk_limit The risk limit.
    * @param the_audit_board The current audit board.
@@ -223,9 +230,11 @@ public class CountyDashboardRefreshResponse {
    * @param the_election_type The election type.
    * @param the_election_date The election date.
    */
-  @SuppressWarnings({"PMD.ExcessiveParameterList", "checkstyle:executablestatementcount"})
+  @SuppressWarnings({"PMD.ExcessiveParameterList", "checkstyle:executablestatementcount",
+                     "checkstyle:methodlength"})
   protected CountyDashboardRefreshResponse(final Long the_id,
                                            final ASMState the_asm_state,
+                                           final ASMState the_audit_board_asm_state,
                                            final Map<String, String> the_general_information,
                                            final BigDecimal the_risk_limit,
                                            final AuditBoard the_audit_board, 
@@ -254,6 +263,7 @@ public class CountyDashboardRefreshResponse {
                                            final Instant the_election_date) {
     my_id = the_id;
     my_asm_state = the_asm_state;
+    my_audit_board_asm_state = the_audit_board_asm_state;
     my_general_information = the_general_information;
     my_risk_limit = the_risk_limit;
     my_audit_board = the_audit_board;
@@ -347,12 +357,15 @@ public class CountyDashboardRefreshResponse {
       }
     }
     
-    // status
+    // ASM states
     final CountyDashboardASM asm = ASMUtilities.asmFor(CountyDashboardASM.class, 
                                                        county_id.toString());
+    final AuditBoardDashboardASM audit_board_asm = 
+        ASMUtilities.asmFor(AuditBoardDashboardASM.class, county_id.toString());
     
     return new CountyDashboardRefreshResponse(county_id, 
                                               asm.currentState(),
+                                              audit_board_asm.currentState(),
                                               general_information,
                                               dosd.riskLimitForComparisonAudits(),
                                               the_dashboard.currentAuditBoard(),
@@ -426,12 +439,15 @@ public class CountyDashboardRefreshResponse {
       cvr_export_filename = cvr_export.filename();
     }
     
-    // status
+    // ASM states
     final CountyDashboardASM asm = ASMUtilities.asmFor(CountyDashboardASM.class, 
                                                        county_id.toString());
+    final AuditBoardDashboardASM audit_board_asm = 
+        ASMUtilities.asmFor(AuditBoardDashboardASM.class, county_id.toString());
     
     return new CountyDashboardRefreshResponse(county_id, 
                                               asm.currentState(),
+                                              audit_board_asm.currentState(),
                                               null,
                                               null,
                                               null,
