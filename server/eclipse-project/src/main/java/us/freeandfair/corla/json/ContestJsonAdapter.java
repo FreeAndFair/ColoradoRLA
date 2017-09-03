@@ -14,7 +14,7 @@ package us.freeandfair.corla.json;
 import java.io.IOException;
 import java.util.Arrays;
 
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.JsonParseException;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -156,7 +156,7 @@ public final class ContestJsonAdapter extends TypeAdapter<Contest> {
     
     if (error || contest_id == null || county == null || description == null ||
         choices == null || votes_allowed == null) {
-      throw new JsonSyntaxException("invalid data in contest");
+      throw new JsonParseException("invalid data in contest");
     }
     
     if (sequence_number == null) {
