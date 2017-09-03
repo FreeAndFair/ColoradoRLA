@@ -171,7 +171,8 @@ public class DoSDashboardRefreshResponse {
       }
     }
     // status
-    final DoSDashboardASM asm = ASMUtilities.asmFor(DoSDashboardASM.class, null);
+    final DoSDashboardASM asm = 
+        ASMUtilities.asmFor(DoSDashboardASM.class, DoSDashboardASM.IDENTITY);
 
     
     return new DoSDashboardRefreshResponse(asm.currentState(),

@@ -84,18 +84,22 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
   /**
    * Updates the appropriate county dashboard to reflect a new 
    * CVR export upload.
+   * 
    * @param the_response The response object (for error reporting).
    * @param the_county_id The county ID.
    * @param the_timestamp The timestamp.
+   * @param the_ballots_cast The number of ballots in the CVR export.
    */
   private void updateCountyDashboard(final Response the_response, 
                                      final Long the_county_id, 
-                                     final Instant the_timestamp) {
+                                     final Instant the_timestamp,
+                                     final Integer the_ballots_cast) {
     final CountyDashboard cdb = Persistence.getByID(the_county_id, CountyDashboard.class);
     if (cdb == null) {
       serverError(the_response, "could not locate county dashboard");
     } else {
       cdb.setCVRUploadTimestamp(the_timestamp);
+      cdb.setBallotsCast(the_ballots_cast);
       try {
         Persistence.saveOrUpdate(cdb);
       } catch (final PersistenceException e) {
@@ -135,7 +139,8 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
       if (parser.parse()) {
         final int imported = parser.recordCount().getAsInt();
         Main.LOGGER.info(imported + " CVRs parsed from file " + the_file.id());
-        updateCountyDashboard(the_response, the_file.countyID(), the_file.timestamp());
+        updateCountyDashboard(the_response, the_file.countyID(), 
+                              the_file.timestamp(), imported);
         the_file.setStatus(FileStatus.IMPORTED_AS_CVR_EXPORT);
         Persistence.saveOrUpdate(the_file);
         final Map<String, Integer> response = new HashMap<String, Integer>();

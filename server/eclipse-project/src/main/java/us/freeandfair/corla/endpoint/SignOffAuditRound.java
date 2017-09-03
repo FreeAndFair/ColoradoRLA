@@ -13,6 +13,8 @@
 package us.freeandfair.corla.endpoint;
 
 import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.*;
+import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.COUNTY_AUDIT_COMPLETE_EVENT;
+import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.*;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -27,6 +29,9 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
+import us.freeandfair.corla.asm.ASMUtilities;
+import us.freeandfair.corla.asm.CountyDashboardASM;
+import us.freeandfair.corla.asm.DoSDashboardASM;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.Elector;
@@ -39,8 +44,15 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 0.0.1
  */
-@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.ExcessiveImports"})
+@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.ExcessiveImports",
+    "PMD.CyclomaticComplexity", "PMD.ModifiedCyclomaticComplexity",
+    "PMD.StdCyclomaticComplexity"})
 public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
+  /**
+   * The event to return for this endpoint.
+   */
+  private final ThreadLocal<ASMEvent> my_event = new ThreadLocal<ASMEvent>();
+  
   /**
    * {@inheritDoc}
    */
@@ -69,7 +81,15 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
    */
   @Override
   protected ASMEvent endpointEvent() {
-    return ROUND_SIGN_OFF_EVENT;
+    return my_event.get();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void reset() {
+    my_event.set(null);
   }
   
   /**
@@ -82,6 +102,7 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
   @Override
   // false positive about inner class declaration
   @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
+  @SuppressWarnings("checkstyle:nestedifdepth")
   public String endpoint(final Request the_request,
                          final Response the_response) {
     try {
@@ -102,6 +123,27 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
             invariantViolation(the_response, "no round to sign off");
           } else {
             cdb.endRound(parsed_signatories);
+            // update the ASM state for the county and maybe DoS
+            if (!DISABLE_ASM) {
+              final boolean audit_complete;
+              if (cdb.estimatedBallotsToAudit() <= 0) {
+                // we've reached the risk limit, so the county is done
+                my_event.set(RISK_LIMIT_ACHIEVED_EVENT);
+                audit_complete = true;
+              } else if (cdb.ballotsCast() <= cdb.ballotsAudited()) {
+                // there are no more ballots in the county
+                my_event.set(BALLOTS_EXHAUSTED_EVENT);
+                audit_complete = true;
+              } else {
+                // the round ended normally
+                my_event.set(ROUND_SIGN_OFF_EVENT);
+                audit_complete = false;
+              }
+              notifyRoundComplete(cdb.id());
+              if (audit_complete) {
+                notifyAuditComplete(cdb);
+              }
+            }
           }
         }
       } else {
@@ -114,5 +156,55 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
     }
     ok(the_response, "audit round signed off");
     return my_endpoint_result.get();
+  }
+  
+  /**
+   * Notifies the DoS dashboard that the round is over if all the counties
+   * _except_ for the one identified in the parameter have completed their
+   * audit round, or are not auditing (the excluded county is not counted
+   * because its transition will not happen until this endpoint returns). 
+   * 
+   * @param the_id The ID of the county to exclude.
+   */
+  private void notifyRoundComplete(final Long the_id) {
+    boolean finished = true;
+    for (final CountyDashboard cdb : Persistence.getAll(CountyDashboard.class)) {
+      if (!cdb.id().equals(the_id)) {
+        finished &= cdb.currentRound() == null;
+      }
+    }
+    
+    if (finished) {
+      ASMUtilities.step(DOS_ROUND_COMPLETE_EVENT, 
+                        DoSDashboardASM.class, 
+                        DoSDashboardASM.IDENTITY);
+    }
+  }
+  
+  /**
+   * Notifies the county and DoS dashboards that the audit is complete.
+   * 
+   * @param the_cdb The county dashboard for this county.
+   */
+  private void notifyAuditComplete(final CountyDashboard the_cdb) {
+    ASMUtilities.step(COUNTY_AUDIT_COMPLETE_EVENT, 
+                      CountyDashboardASM.class, my_asm.get().identity());
+    // check to see if all counties are complete
+    boolean all_complete = true;
+    for (final County c : Persistence.getAll(County.class)) {
+      final CountyDashboardASM asm = 
+          ASMUtilities.asmFor(CountyDashboardASM.class, String.valueOf(c.id()));
+      all_complete &= asm.isInFinalState();       
+    }
+    if (all_complete) {
+      ASMUtilities.step(DOS_AUDIT_COMPLETE_EVENT, 
+                        DoSDashboardASM.class, 
+                        DoSDashboardASM.IDENTITY);
+    } else {
+      ASMUtilities.step(DOS_COUNTY_AUDIT_COMPLETE_EVENT,
+                        DoSDashboardASM.class, 
+                        DoSDashboardASM.IDENTITY);
+    }
+    the_cdb.signOutAuditBoard();
   }
 }

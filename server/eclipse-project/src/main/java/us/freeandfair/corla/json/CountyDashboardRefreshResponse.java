@@ -139,6 +139,11 @@ public class CountyDashboardRefreshResponse {
   private final Integer my_ballots_remaining_in_round;
   
   /**
+   * The number of ballots cast.
+   */
+  private final Integer my_cast_ballot_count;
+  
+  /**
    * The number of ballots audited.
    */
   private final Integer my_audited_ballot_count;
@@ -205,6 +210,7 @@ public class CountyDashboardRefreshResponse {
    * @param the_optimistic_ballots_to_audit The optimistic ballots to audit.
    * @param the_ballots_remaining_in_round The ballots remaining in the 
    * current round.
+   * @param the_cast_ballot_count The number of ballots cast.
    * @param the_audited_ballot_count The number of ballots audited.
    * @param the_discrepancy_count The number of discrepencies.
    * @param the_disagreement_count The number of disagreements.
@@ -235,6 +241,7 @@ public class CountyDashboardRefreshResponse {
                                            final Integer the_estimated_ballots_to_audit,
                                            final Integer the_optimistic_ballots_to_audit,
                                            final Integer the_ballots_remaining_in_round,
+                                           final Integer the_cast_ballot_count,
                                            final Integer the_audited_ballot_count,
                                            final Integer the_discrepancy_count, 
                                            final Integer the_disagreement_count,
@@ -262,6 +269,7 @@ public class CountyDashboardRefreshResponse {
     my_estimated_ballots_to_audit = the_estimated_ballots_to_audit;
     my_optimistic_ballots_to_audit = the_optimistic_ballots_to_audit;
     my_ballots_remaining_in_round = the_ballots_remaining_in_round;
+    my_cast_ballot_count = the_cast_ballot_count;
     my_audited_ballot_count = the_audited_ballot_count;
     my_discrepancy_count = the_discrepancy_count;
     my_disagreement_count = the_disagreement_count;
@@ -360,6 +368,7 @@ public class CountyDashboardRefreshResponse {
                                               the_dashboard.estimatedBallotsToAudit(),
                                               the_dashboard.optimisticBallotsToAudit(),
                                               the_dashboard.ballotsRemainingInCurrentRound(),
+                                              the_dashboard.ballotsCast(),
                                               the_dashboard.ballotsAudited(),
                                               the_dashboard.discrepancies(),
                                               the_dashboard.disagreements(),
@@ -438,6 +447,7 @@ public class CountyDashboardRefreshResponse {
                                               the_dashboard.estimatedBallotsToAudit(),
                                               the_dashboard.optimisticBallotsToAudit(),
                                               the_dashboard.ballotsRemainingInCurrentRound(),
+                                              the_dashboard.ballotsCast(),
                                               the_dashboard.ballotsAudited(),
                                               the_dashboard.discrepancies(),
                                               the_dashboard.disagreements(),

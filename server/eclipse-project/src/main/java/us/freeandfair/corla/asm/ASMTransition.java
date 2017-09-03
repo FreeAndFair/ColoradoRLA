@@ -14,6 +14,10 @@ package us.freeandfair.corla.asm;
 import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+
+import us.freeandfair.corla.util.SetCreator;
 
 /**
  * A single transition of an abstract state machine.
@@ -30,12 +34,12 @@ public class ASMTransition implements Serializable {
   /**
    * The start state for this transition.
    */
-  private final ASMState my_start_state;
+  private final Set<ASMState> my_start_states = new HashSet<ASMState>();
   
   /**
-   * The event for this transition.
+   * The set of events for this transition.
    */
-  private final ASMEvent my_event;
+  private final Set<ASMEvent> my_events = new HashSet<ASMEvent>();
   
   /**
    * The end state for this transition.
@@ -53,23 +57,71 @@ public class ASMTransition implements Serializable {
   public ASMTransition(final ASMState the_start_state,
                        final ASMEvent the_event,
                        final ASMState the_end_state) {
-    my_start_state = the_start_state;
-    my_event = the_event;
+    this(SetCreator.setOf(the_start_state), 
+         SetCreator.setOf(the_event),
+         the_end_state);
+  }
+  
+  /**
+   * Constructs an ASMTransition with the specified set of start states,
+   * event, and end state.
+   * 
+   * @param the_start_states The start states.
+   * @param the_event The event.
+   * @param the_end_state The end state.
+   */
+  public ASMTransition(final Set<ASMState> the_start_states,
+                       final ASMEvent the_event,
+                       final ASMState the_end_state) {
+    this(the_start_states, 
+         SetCreator.setOf(the_event),
+         the_end_state);
+  }
+  
+  /**
+   * Constructs an ASMTransition with the specified start state,
+   * set of events, and end state.
+   * 
+   * @param the_start_state The start state.
+   * @param the_events The events.
+   * @param the_end_state The end state.
+   */
+  public ASMTransition(final ASMState the_start_state,
+                       final Set<ASMEvent> the_events,
+                       final ASMState the_end_state) {
+    this(SetCreator.setOf(the_start_state), 
+         the_events,
+         the_end_state);
+  }
+  
+  /**
+   * Constructs an ASMTransition with the specified start states,
+   * set of events, and end state.
+   * 
+   * @param the_start_states The start states.
+   * @param the_events The events.
+   * @param the_end_state The end state.
+   */
+  public ASMTransition(final Set<ASMState> the_start_states,
+                       final Set<ASMEvent> the_events,
+                       final ASMState the_end_state) {
+    my_start_states.addAll(the_start_states);
+    my_events.addAll(the_events);
     my_end_state = the_end_state;
   }
   
   /**
    * @return the start state.
    */
-  public ASMState startState() {
-    return my_start_state;
+  public Set<ASMState> startStates() {
+    return my_start_states;
   }
   
   /**
-   * @return the event.
+   * @return the events.
    */
-  public ASMEvent event() {
-    return my_event;
+  public Set<ASMEvent> events() {
+    return my_events;
   }
   
   /**
@@ -84,8 +136,8 @@ public class ASMTransition implements Serializable {
    */
   @Override
   public String toString() {
-    return "ASMTransition [start=" + my_start_state + 
-           ", event=" + my_event + ", end=" + 
+    return "ASMTransition [start=" + my_start_states + 
+           ", events=" + my_events + ", end=" + 
            my_end_state + "]";
   }
   
@@ -100,8 +152,8 @@ public class ASMTransition implements Serializable {
     boolean result = true;
     if (the_other instanceof ASMTransition) {
       final ASMTransition other_transition = (ASMTransition) the_other;
-      result &= nullableEquals(other_transition.startState(), startState());
-      result &= nullableEquals(other_transition.event(), event());
+      result &= nullableEquals(other_transition.startStates(), startStates());
+      result &= nullableEquals(other_transition.events(), events());
       result &= nullableEquals(other_transition.endState(), endState());
     } else {
       result = false;
@@ -114,6 +166,6 @@ public class ASMTransition implements Serializable {
    */
   @Override
   public int hashCode() {
-    return toString().hashCode();
+    return startStates().hashCode();
   }
 }

@@ -174,8 +174,8 @@ parser.add_argument('-p, --discrepancy-plan', dest='plan', default="2 17",
 parser.add_argument('-P, --discrepancy-end', dest='plan_limit', type=int, default=sys.maxint,
                     help='Last upload with possible discrepancy is # PLAN_LIMIT')
 
-parser.add_argument('-R, --rounds', type=int, default=4, dest='rounds',
-  help='Set maximum number of rounds')
+parser.add_argument('-R, --rounds', type=int, default=-1, dest='rounds',
+  help='Set maximum number of rounds, -1 runs until completion')
 
 parser.add_argument('-r, --risk-limit', type=float, dest='risk_limit', default=0.1,
                     help='risk limit, e.g. 0.1')
@@ -472,7 +472,7 @@ def get_county_dashboard(ac, county_s, i=0, acvr={'id': -1}, show=True):
 
     total_audited = i + 1 + county_dashboard['rounds'][-1]['previous_ballots_audited']
 
-    if show:
+    if show and acvr['id'] != -1:
         logging.debug("county-dashboard: %s" % r.text)
         print("Round %d, county %d, upload %d: aCVR %d; ballots_remaining_in_round: %d, estimated_ballots_to_audit: %s" %
               (ac.round, county_id, total_audited, acvr['id'], county_dashboard['ballots_remaining_in_round'], county_dashboard['estimated_ballots_to_audit']))
@@ -613,7 +613,8 @@ def county_audit(ac, county_id):
                         "political_party": "Republican"}]
 
     r = test_endpoint_get(ac, county_s, "/audit-board-asm-state")
-    if r.json()['current_state'] == "AUDIT_BOARD_SIGNED_OUT":
+    if ((r.json()['current_state'] == "WAITING_FOR_ROUND_START_NO_AUDIT_BOARD") or
+        (r.json()['current_state'] == "ROUND_IN_PROGRESS_NO_AUDIT_BOARD")):
         r = test_endpoint_json(ac, county_s, "/audit-board-sign-in", audit_board_set)
 
     # Print this tool's notion of what should be audited, based on seed etc.
@@ -694,15 +695,6 @@ def county_audit(ac, county_id):
 
     return(remaining)
 
-def county_wrapup(ac, county_id):
-    'Audit board audit-report'
-
-    county_s = requests.Session()
-    county_login(ac, county_s, county_id)
-
-    # r = test_endpoint_json(ac, county_s, "/intermediate-audit-report", {})
-    r = test_endpoint_json(ac, county_s, "/audit-report", {})
-
 def dos_wrapup(ac):
 
     r = test_endpoint_get(ac, ac.state_s, "/dos-dashboard")
@@ -779,39 +771,46 @@ if __name__ == "__main__":
 
     print()
 
-    if "county_audit" in ac.args.commands:
-        # TODO: go beyond 3 rounds?
-        for i in range(1, ac.args.rounds + 1):
-            print("Start Round %d" % i)
-            alldone = True
-            for county_id in ac.args.counties:
-                # TODO: really needs to track each individual county for being done....
-                remaining = county_audit(ac, county_id)
-                alldone = alldone and (remaining == 0)
-
-            if alldone:
+    if "county_audit" in ac.args.commands:   
+        round = 0
+        alldone = False
+        
+        while ((ac.args.rounds == -1) or (round < ac.args.rounds)):
+            r = test_endpoint_get(ac, ac.state_s, "/dos-asm-state")
+            if (r.json()['current_state'] == "DOS_AUDIT_COMPLETE"):
+                alldone = True
                 break
-
+            round += 1
+            print("Start Round %d" % round)
+            for county_id in ac.args.counties:
+                county_audit(ac, county_id)
+                
             print()
             ac.round += 1
-            #TODO: do we leave this out now? yields <Response [403]> POST /start-audit-round {
-            # "result": "/start-audit-round attempted to apply illegal event PUBLISH_BALLOTS_TO_AUDIT_EVENT from state DOS_AUDIT_ONGOING"} 
             r = test_endpoint_json(ac, ac.state_s, "/start-audit-round",
                                    { "multiplier": 1.0, "use_estimates": True})
 
-        if not alldone:
-            for county_id in ac.args.counties:
-                county_s = requests.Session()
-                county_login(ac, county_s, county_id)
-                county_dashboard = get_county_dashboard(ac, county_s)
-
-                to_go = county_dashboard['estimated_ballots_to_audit']
-                if to_go > 0:
-                    print("\nCounty %d Audit incomplete, ended after %d ballots and %d rounds, %d to go" %
-                          (county_id,  county_dashboard['rounds'][-1]['previous_ballots_audited'], i, to_go))
-
+        if alldone:
+            print("State audit complete")
+            
         for county_id in ac.args.counties:
-            county_wrapup(ac, county_id)
+            county_s = requests.Session()
+            county_login(ac, county_s, county_id)
+            county_dashboard = get_county_dashboard(ac, county_s)
+            rounds = len(county_dashboard['rounds'])
+            if (county_dashboard['rounds'][rounds - 1]['actual_count'] == 0):
+                # we didn't actually start the last round
+                rounds -= 1
+            to_go = county_dashboard['estimated_ballots_to_audit']
+            audited = county_dashboard['audited_ballot_count']
+            cast = county_dashboard['cast_ballot_count']
+            
+            if to_go > 0:
+                print("\nCounty %d audit incomplete, ended after %d ballots (of %d cast) and %d rounds, %d to go" %
+                      (county_id, audited, cast, rounds, to_go))
+            else:
+                print("\nCounty %d audit complete, ended after %d ballots (of %d cast) and %d rounds" %
+                      (county_id, audited, cast, rounds))
 
     if "dos_wrapup" in ac.args.commands:
         dos_wrapup(ac)

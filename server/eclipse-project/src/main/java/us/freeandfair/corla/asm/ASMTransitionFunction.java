@@ -19,6 +19,8 @@ import static us.freeandfair.corla.asm.ASMState.AuditBoardDashboardState.*;
 import static us.freeandfair.corla.asm.ASMState.CountyDashboardState.*;
 import static us.freeandfair.corla.asm.ASMState.DoSDashboardState.*;
 
+import us.freeandfair.corla.util.SetCreator;
+
 /**
  * The generic idea of an ASM transition function.
  * @trace asm.asm_transition_function
@@ -55,19 +57,23 @@ public interface ASMTransitionFunction {
                          PUBLIC_SEED_EVENT,
                          RANDOM_SEED_PUBLISHED)),
     F(new ASMTransition(RANDOM_SEED_PUBLISHED, 
-                        PUBLISH_BALLOTS_TO_AUDIT_EVENT,
+                        DOS_START_ROUND_EVENT,
                         DOS_AUDIT_ONGOING)),
     G(new ASMTransition(DOS_AUDIT_ONGOING, 
-                        AUDIT_EVENT,
+                        SetCreator.setOf(AUDIT_EVENT,
+                                         INDICATE_FULL_HAND_COUNT_CONTEST_EVENT, 
+                                         DOS_COUNTY_AUDIT_COMPLETE_EVENT,
+                                         DOS_START_ROUND_EVENT),
                         DOS_AUDIT_ONGOING)),
-    H(new ASMTransition(DOS_AUDIT_ONGOING, 
-                        INDICATE_FULL_HAND_COUNT_CONTEST_EVENT,
+    H(new ASMTransition(DOS_AUDIT_ONGOING,
+                        DOS_ROUND_COMPLETE_EVENT,
+                        DOS_ROUND_COMPLETE)),
+    I(new ASMTransition(DOS_ROUND_COMPLETE,
+                        DOS_START_ROUND_EVENT,
                         DOS_AUDIT_ONGOING)),
-    I(new ASMTransition(DOS_AUDIT_ONGOING, 
-                        DOS_COUNTY_AUDIT_COMPLETE_EVENT,
-                        DOS_AUDIT_ONGOING)),
-    J(new ASMTransition(DOS_AUDIT_ONGOING,
-                        STATE_AUDIT_COMPLETE_EVENT,
+    J(new ASMTransition(SetCreator.setOf(DOS_AUDIT_ONGOING,
+                                         DOS_ROUND_COMPLETE),
+                        DOS_AUDIT_COMPLETE_EVENT,
                         DOS_AUDIT_COMPLETE)),
     K(new ASMTransition(DOS_AUDIT_COMPLETE, 
                         PUBLISH_AUDIT_REPORT_EVENT,
@@ -107,39 +113,33 @@ public interface ASMTransitionFunction {
     B(new ASMTransition(COUNTY_INITIAL_STATE,
                         UPLOAD_CVRS_EVENT,
                         CVRS_OK)),
-    C(new ASMTransition(COUNTY_INITIAL_STATE,
-                        COUNTY_START_AUDIT_EVENT,
-                        DEADLINE_MISSED)),
-    D(new ASMTransition(BALLOT_MANIFEST_OK, 
+    C(new ASMTransition(BALLOT_MANIFEST_OK, 
                         UPLOAD_CVRS_EVENT,
                         BALLOT_MANIFEST_AND_CVRS_OK)),
-    E(new ASMTransition(BALLOT_MANIFEST_OK,
+    D(new ASMTransition(BALLOT_MANIFEST_OK,
                         UPLOAD_BALLOT_MANIFEST_EVENT,
                         BALLOT_MANIFEST_OK)),
-    F(new ASMTransition(BALLOT_MANIFEST_OK, 
-                        COUNTY_START_AUDIT_EVENT,
-                        DEADLINE_MISSED)),
-    G(new ASMTransition(CVRS_OK,
+    E(new ASMTransition(CVRS_OK,
                         UPLOAD_BALLOT_MANIFEST_EVENT,
                         BALLOT_MANIFEST_AND_CVRS_OK)),
-    H(new ASMTransition(CVRS_OK,
+    F(new ASMTransition(CVRS_OK,
                         UPLOAD_CVRS_EVENT,
                         CVRS_OK)),
-    I(new ASMTransition(CVRS_OK,
-                        COUNTY_START_AUDIT_EVENT,
-                        DEADLINE_MISSED)),
-    J(new ASMTransition(BALLOT_MANIFEST_AND_CVRS_OK,
-                        UPLOAD_BALLOT_MANIFEST_EVENT,
+    G(new ASMTransition(BALLOT_MANIFEST_AND_CVRS_OK,
+                        SetCreator.setOf(UPLOAD_BALLOT_MANIFEST_EVENT, 
+                                         UPLOAD_CVRS_EVENT),
                         BALLOT_MANIFEST_AND_CVRS_OK)),
-    K(new ASMTransition(BALLOT_MANIFEST_AND_CVRS_OK,
-                        UPLOAD_CVRS_EVENT,
-                        BALLOT_MANIFEST_AND_CVRS_OK)),
-    L(new ASMTransition(BALLOT_MANIFEST_AND_CVRS_OK,
+    H(new ASMTransition(BALLOT_MANIFEST_AND_CVRS_OK,
                         COUNTY_START_AUDIT_EVENT,
                         COUNTY_AUDIT_UNDERWAY)),
-    M(new ASMTransition(COUNTY_AUDIT_UNDERWAY, 
+    I(new ASMTransition(COUNTY_AUDIT_UNDERWAY, 
                         COUNTY_AUDIT_COMPLETE_EVENT,
-                        COUNTY_AUDIT_COMPLETE));
+                        COUNTY_AUDIT_COMPLETE)),
+    J(new ASMTransition(SetCreator.setOf(COUNTY_INITIAL_STATE,
+                                         BALLOT_MANIFEST_OK,
+                                         CVRS_OK),
+                        COUNTY_START_AUDIT_EVENT,
+                        DEADLINE_MISSED));
 
     /**
      * A single transition.
@@ -169,51 +169,70 @@ public interface ASMTransitionFunction {
    * @trace asm.audit_board_dashboard_next_state
    */
   enum AuditBoardDashboardTransitionFunction implements ASMTransitionFunction {
-    A(new ASMTransition(AUDIT_INITIAL_STATE, 
-                        AUDIT_BOARD_START_AUDIT_EVENT,
-                        AUDIT_BOARD_SIGNED_OUT)),
-    B(new ASMTransition(AUDIT_BOARD_SIGNED_OUT,
+    A(new ASMTransition(SetCreator.setOf(AUDIT_INITIAL_STATE, 
+                                         WAITING_FOR_ROUND_START_NO_AUDIT_BOARD), 
+                        ROUND_START_EVENT,
+                        ROUND_IN_PROGRESS_NO_AUDIT_BOARD)),
+    B(new ASMTransition(SetCreator.setOf(AUDIT_INITIAL_STATE,
+                                         WAITING_FOR_ROUND_START_NO_AUDIT_BOARD),
                         SIGN_IN_AUDIT_BOARD_EVENT,
-                        AUDIT_IN_PROGRESS)),
+                        WAITING_FOR_ROUND_START)),
     C(new ASMTransition(AUDIT_INITIAL_STATE,
+                        SetCreator.setOf(NO_CONTESTS_TO_AUDIT_EVENT, 
+                                         RISK_LIMIT_ACHIEVED_EVENT),
+                        AUDIT_COMPLETE)),
+    D(new ASMTransition(AUDIT_INITIAL_STATE,
                         COUNTY_DEADLINE_MISSED_EVENT,
                         UNABLE_TO_AUDIT)),
-    D(new ASMTransition(AUDIT_INITIAL_STATE,
-                        NO_CONTESTS_TO_AUDIT_EVENT,
-                        AUDIT_REPORT_SUBMITTED)),
-    E(new ASMTransition(AUDIT_IN_PROGRESS,
+    F(new ASMTransition(WAITING_FOR_ROUND_START,
+                        ROUND_START_EVENT,
+                        ROUND_IN_PROGRESS)),
+    G(new ASMTransition(WAITING_FOR_ROUND_START,
                         SIGN_OUT_AUDIT_BOARD_EVENT,
-                        AUDIT_BOARD_SIGNED_OUT)),
-    F(new ASMTransition(AUDIT_IN_PROGRESS, 
-                        REPORT_MARKINGS_EVENT,
-                        AUDIT_IN_PROGRESS)),
-    G(new ASMTransition(AUDIT_IN_PROGRESS,
-                        REPORT_BALLOT_NOT_FOUND_EVENT,
-                        AUDIT_IN_PROGRESS)),
-    H(new ASMTransition(AUDIT_IN_PROGRESS,
-                        SUBMIT_AUDIT_INVESTIGATION_REPORT_EVENT,
-                        AUDIT_IN_PROGRESS)),
-    I(new ASMTransition(AUDIT_IN_PROGRESS,
-                        SUBMIT_INTERMEDIATE_AUDIT_REPORT_EVENT,
-                        AUDIT_BOARD_SIGNED_OUT)),
-    J(new ASMTransition(AUDIT_IN_PROGRESS,
+                        WAITING_FOR_ROUND_START_NO_AUDIT_BOARD)),
+    H(new ASMTransition(WAITING_FOR_ROUND_START,
+                        RISK_LIMIT_ACHIEVED_EVENT,
+                        AUDIT_COMPLETE)),
+    M(new ASMTransition(ROUND_IN_PROGRESS,
+                        SetCreator.setOf(REPORT_MARKINGS_EVENT,
+                                         REPORT_BALLOT_NOT_FOUND_EVENT,
+                                         SUBMIT_AUDIT_INVESTIGATION_REPORT_EVENT),
+                        ROUND_IN_PROGRESS)),
+    N(new ASMTransition(ROUND_IN_PROGRESS,
+                        SIGN_OUT_AUDIT_BOARD_EVENT,
+                        ROUND_IN_PROGRESS_NO_AUDIT_BOARD)),
+    O(new ASMTransition(ROUND_IN_PROGRESS,
                         ROUND_COMPLETE_EVENT,
                         WAITING_FOR_ROUND_SIGN_OFF)),
-    K(new ASMTransition(WAITING_FOR_ROUND_SIGN_OFF,
-                        ROUND_SIGN_OFF_EVENT,
-                        AUDIT_IN_PROGRESS)),
-    L(new ASMTransition(WAITING_FOR_ROUND_SIGN_OFF,
+    /* We probably want this transition eventually, but not for CDOS
+    EARLY(new ASMTransition(ROUND_IN_PROGRESS,
+                            RISK_LIMIT_ACHIEVED_EVENT, 
+                            AUDIT_COMPLETE)), */
+    P(new ASMTransition(ROUND_IN_PROGRESS_NO_AUDIT_BOARD,
+                        SIGN_IN_AUDIT_BOARD_EVENT,
+                        ROUND_IN_PROGRESS)),
+    Q(new ASMTransition(WAITING_FOR_ROUND_SIGN_OFF,
                         SIGN_OUT_AUDIT_BOARD_EVENT,
                         WAITING_FOR_ROUND_SIGN_OFF_NO_AUDIT_BOARD)),
-    M(new ASMTransition(WAITING_FOR_ROUND_SIGN_OFF_NO_AUDIT_BOARD,
+    R(new ASMTransition(WAITING_FOR_ROUND_SIGN_OFF,
+                        ROUND_SIGN_OFF_EVENT,
+                        WAITING_FOR_ROUND_START)),
+    S(new ASMTransition(WAITING_FOR_ROUND_SIGN_OFF,
+                        SetCreator.setOf(RISK_LIMIT_ACHIEVED_EVENT,
+                                         BALLOTS_EXHAUSTED_EVENT),
+                        AUDIT_COMPLETE)),
+    T(new ASMTransition(WAITING_FOR_ROUND_SIGN_OFF_NO_AUDIT_BOARD,
                         SIGN_IN_AUDIT_BOARD_EVENT,
                         WAITING_FOR_ROUND_SIGN_OFF)),
-    N(new ASMTransition(WAITING_FOR_ROUND_SIGN_OFF_NO_AUDIT_BOARD,
-                        ROUND_SIGN_OFF_EVENT,
-                        AUDIT_BOARD_SIGNED_OUT)),
-    O(new ASMTransition(AUDIT_IN_PROGRESS, 
-                        SUBMIT_AUDIT_REPORT_EVENT,
-                        AUDIT_REPORT_SUBMITTED));
+    U(new ASMTransition(SetCreator.setOf(AUDIT_INITIAL_STATE,
+                                         WAITING_FOR_ROUND_START, 
+                                         WAITING_FOR_ROUND_START_NO_AUDIT_BOARD,
+                                         ROUND_IN_PROGRESS,
+                                         ROUND_IN_PROGRESS_NO_AUDIT_BOARD,
+                                         WAITING_FOR_ROUND_SIGN_OFF,
+                                         WAITING_FOR_ROUND_SIGN_OFF_NO_AUDIT_BOARD),
+                        ABORT_AUDIT_EVENT,
+                        AUDIT_ABORTED));
     
     /**
      * A single transition.
@@ -223,15 +242,14 @@ public interface ASMTransitionFunction {
     
     /**
      * Create a transition.
-     * @param the_pair the (current state, event) pair.
-     * @param the_state the state transitioned to when the pair is witnessed.
+     * @param the_transition the transition.
      */
     AuditBoardDashboardTransitionFunction(final ASMTransition the_transition) {
       my_transition = the_transition;
     }
     
     /**
-     * @return the pair encoding this enumeration.
+     * @return the transition.
      */
     public ASMTransition value() {
       return my_transition;
@@ -239,7 +257,7 @@ public interface ASMTransitionFunction {
   }
   
   /**
-   * @return the transition of this transition function element.
+   * @return the value of this transition function element.
    */
   ASMTransition value();
 }

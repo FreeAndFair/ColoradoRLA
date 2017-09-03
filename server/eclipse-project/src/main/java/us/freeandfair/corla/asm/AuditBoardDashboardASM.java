@@ -21,6 +21,7 @@ import javax.persistence.Entity;
 import us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent;
 import us.freeandfair.corla.asm.ASMState.AuditBoardDashboardState;
 import us.freeandfair.corla.asm.ASMTransitionFunction.AuditBoardDashboardTransitionFunction;
+import us.freeandfair.corla.util.SetCreator;
 
 /**
  * The ASM for the Audit Board Dashboard.
@@ -40,8 +41,9 @@ public class AuditBoardDashboardASM extends AbstractStateMachine {
    * The final states of this ASM.
    */
   private static final ASMState[] FINAL_STATES = 
-      {AuditBoardDashboardState.AUDIT_REPORT_SUBMITTED,
-       AuditBoardDashboardState.UNABLE_TO_AUDIT};
+      {AuditBoardDashboardState.AUDIT_COMPLETE,
+       AuditBoardDashboardState.UNABLE_TO_AUDIT,
+       AuditBoardDashboardState.AUDIT_ABORTED};
   
   /**
    * Create the Audit Board Dashboard ASM for the specified county.
@@ -56,7 +58,7 @@ public class AuditBoardDashboardASM extends AbstractStateMachine {
           transitionsFor(Arrays.
                          asList(AuditBoardDashboardTransitionFunction.values())),
           AuditBoardDashboardState.AUDIT_INITIAL_STATE,
-          new HashSet<ASMState>(Arrays.asList(FINAL_STATES)),
+          SetCreator.setOf(FINAL_STATES),
           the_county_id);
   }
 }

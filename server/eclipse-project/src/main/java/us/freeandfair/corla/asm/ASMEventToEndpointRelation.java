@@ -66,7 +66,7 @@ public class ASMEventToEndpointRelation {
         PUBLIC_SEED_EVENT,
         UNIMPLEMENTED));
     my_relation.add(new Pair<ASMEvent, String>(
-        PUBLISH_BALLOTS_TO_AUDIT_EVENT,
+        DOS_START_ROUND_EVENT,
         UNIMPLEMENTED));
     my_relation.add(new Pair<ASMEvent, String>(
         INDICATE_FULL_HAND_COUNT_CONTEST_EVENT,
@@ -99,9 +99,6 @@ public class ASMEventToEndpointRelation {
         UNIMPLEMENTED));
     my_relation.add(new Pair<ASMEvent, String>(
         SUBMIT_AUDIT_INVESTIGATION_REPORT_EVENT,
-        UNIMPLEMENTED));
-    my_relation.add(new Pair<ASMEvent, String>(
-        SUBMIT_AUDIT_REPORT_EVENT,
         UNIMPLEMENTED));
     my_relation.add(new Pair<ASMEvent, String>(
         SUBMIT_INTERMEDIATE_AUDIT_REPORT_EVENT,

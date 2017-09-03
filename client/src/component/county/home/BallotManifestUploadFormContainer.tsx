@@ -5,6 +5,8 @@ import BallotManifestUploadForm from './BallotManifestUploadForm';
 
 import uploadBallotManifest from 'corla/action/uploadBallotManifest';
 
+import ballotManifestUploadedSelector from 'corla/selector/county/ballotManifestUploaded';
+
 
 const UploadedBallotManifest = ({ filename, hash, enableReupload }: any) => (
     <div className='pt-card'>
@@ -55,10 +57,14 @@ class BallotManifestUploadFormContainer extends React.Component<any, any> {
     private enableReupload = () => this.setState({ reupload: true });
 }
 
-const mapStateToProps = ({ county }: any) => ({
-    auditStarted: !!county.ballotUnderAuditId,
-    county,
-    fileUploaded: !!county.ballotManifestHash,
-});
+const mapStateToProps = (state: any) => {
+    const { county } = state;
+
+    return {
+        auditStarted: !!county.ballotUnderAuditId,
+        county,
+        fileUploaded: ballotManifestUploadedSelector(state),
+    };
+};
 
 export default connect(mapStateToProps)(BallotManifestUploadFormContainer);

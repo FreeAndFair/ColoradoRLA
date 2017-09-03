@@ -72,7 +72,6 @@ public final class PersistentASMStateQueries {
       cq.select(root).where(predicate);
       final TypedQuery<PersistentASMState> query = s.createQuery(cq);
       final List<PersistentASMState> query_results = query.getResultList();
-      
       PersistentASMState asm = null;
       if (query_results.size() > 1) {
         Main.LOGGER.error("multiple ASM states found");

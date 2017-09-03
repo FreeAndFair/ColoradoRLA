@@ -56,7 +56,7 @@ public class UIToASMEventRelation {
     my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         PUBLIC_SEED_EVENT));
     my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
-        PUBLISH_BALLOTS_TO_AUDIT_EVENT));
+        DOS_START_ROUND_EVENT));
     my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         INDICATE_FULL_HAND_COUNT_CONTEST_EVENT));
     my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
@@ -81,8 +81,6 @@ public class UIToASMEventRelation {
         REPORT_BALLOT_NOT_FOUND_EVENT));
     my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         SUBMIT_AUDIT_INVESTIGATION_REPORT_EVENT));
-    my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
-        SUBMIT_AUDIT_REPORT_EVENT));
     my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         SUBMIT_INTERMEDIATE_AUDIT_REPORT_EVENT));
   }

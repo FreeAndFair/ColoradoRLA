@@ -13,13 +13,11 @@ package us.freeandfair.corla.report;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -44,6 +42,7 @@ import us.freeandfair.corla.model.CVRAuditInfo;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.County;
+import us.freeandfair.corla.model.County.NameComparator;
 import us.freeandfair.corla.model.CountyContestResult;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.model.Round;
@@ -95,7 +94,7 @@ public class StateReport {
    * @param the_timestamp The timestamp.
    */
   public StateReport(final Instant the_timestamp) {
-    my_county_reports = new TreeMap<>(new CountyComparator());
+    my_county_reports = new TreeMap<>(new NameComparator());
     my_timestamp = the_timestamp;
     for (final County c : Persistence.getAll(County.class)) {
       my_county_reports.put(c, new CountyReport(c, my_timestamp));
@@ -502,41 +501,5 @@ public class StateReport {
    */
   public byte[] generatePDF() {
     return new byte[0];
-  }
-  
-  /**
-   * A comparator to sort County objects alphabetically by county name.
-   */
-  @SuppressWarnings("PMD.AtLeastOneConstructor")
-  public static class CountyComparator 
-      implements Serializable, Comparator<County> {
-    /**
-     * The serialVersionUID.
-     */
-    private static final long serialVersionUID = 1;
-    
-    /**
-     * Orders two County objects lexicographically by county name.
-     * 
-     * @param the_first The first response.
-     * @param the_second The second response.
-     * @return a positive, negative, or 0 value as the first response is
-     * greater than, equal to, or less than the second, respectively.
-     */
-    @SuppressWarnings("PMD.ConfusingTernary")
-    public int compare(final County the_first, 
-                       final County the_second) {
-      final int result;
-      if (the_first == null && the_second == null) {
-        result = 0;
-      } else if (the_first == null || the_first.name() == null) {
-        result = -1;
-      } else if (the_second == null || the_second.name() == null) {
-        result = 1;
-      } else {
-        result = the_first.name().compareTo(the_second.name());
-      }
-      return result;
-    }
   }
 }
