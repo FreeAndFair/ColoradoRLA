@@ -114,8 +114,8 @@ public final class ComparisonAuditController {
       throw new IllegalArgumentException("invalid round specified");
     }
     final Round round = the_cdb.rounds().get(the_round_number - 1);
-    return CVRAuditInfoQueries.range(the_cdb, round.startAuditedPrefixLength(), 
-                                     round.expectedAuditedPrefixLength());
+    return CVRAuditInfoQueries.rangeUnique(the_cdb, round.startAuditedPrefixLength(), 
+                                           round.expectedAuditedPrefixLength());
   }
   
   /**
@@ -664,10 +664,13 @@ public final class ComparisonAuditController {
    */
   private static void 
       updateCVRUnderAudit(final CountyDashboard the_cdb) {
-    final List<CVRAuditInfo> cvr_audit_info = the_cdb.cvrAuditInfo();
+    final List<CVRAuditInfo> cvr_audit_info = 
+        CVRAuditInfoQueries.range(the_cdb, 
+                                  the_cdb.auditedPrefixLength(),
+                                  the_cdb.currentRound().
+                                  expectedAuditedPrefixLength());
     int index = the_cdb.auditedPrefixLength();
-    while (index < cvr_audit_info.size()) {
-      final CVRAuditInfo cai = cvr_audit_info.get(index);
+    for (final CVRAuditInfo cai : cvr_audit_info) {
       if (cai.acvr() == null) {
         break;
       } else {

@@ -102,10 +102,56 @@ public final class CVRAuditInfoQueries {
   }
   
   /**
+   * Obtain the sublist of CVRAuditInfo objects for the specified dashboard,
+   * starting at the specified start index (inclusive) and running 
+   * through the specified end index (exclusive).
+   * 
+   * @param the_dashboard The dashboard.
+   * @param the_start_index The start index (inclusive).
+   * @param the_end_index The end index (exclusive).
+   * @return the list of CVRAuditInfo objects, which may be empty (if the
+   * query succeeds and no objects are found in the range) or null (if the
+   * query fails).
+   */
+  public static List<CVRAuditInfo> range(final CountyDashboard the_dashboard,
+                                         final Integer the_start_index,
+                                         final Integer the_end_index) {
+    List<CVRAuditInfo> result = null;
+    
+    try {
+      final Session s = Persistence.currentSession();
+      final CriteriaBuilder cb = s.getCriteriaBuilder();
+      final CriteriaQuery<CVRAuditInfo> cq = cb.createQuery(CVRAuditInfo.class);
+      final List<Predicate> conjuncts = new ArrayList<>();
+      final Root<CVRAuditInfo> root = cq.from(CVRAuditInfo.class);
+      conjuncts.add(cb.equal(root.get(MY_DASHBOARD), the_dashboard));
+      conjuncts.add(cb.greaterThanOrEqualTo(root.get(MY_INDEX), the_start_index));
+      conjuncts.add(cb.lessThan(root.get(MY_INDEX), the_end_index));
+      cq.select(root);
+      cq.where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
+      cq.orderBy(cb.asc(root.get(MY_INDEX)));
+      final TypedQuery<CVRAuditInfo> query = s.createQuery(cq);
+      result = query.getResultList();
+    } catch (final PersistenceException e) {
+      Main.LOGGER.error("could not query database for cvr audit info range");
+    }
+    if (result == null || result.isEmpty()) {
+      Main.LOGGER.debug("found no cvr audit infos matching county " +
+                        the_dashboard.id() + RANGE + the_start_index +
+                        ", " + the_end_index + ")");
+    } else {
+      Main.LOGGER.debug("found " + result.size() + " cvr audit infos matching county " +
+                        the_dashboard.id() + RANGE + the_start_index +
+                        ", " + the_end_index + ")");
+    }
+    return result;
+  }
+  
+  /**
    * Obtain the sublist of CVRAuditInfo objects for the specified 
    * dashboard, starting at the specified start index (inclusive) and running 
-   * through the specified end index (exclusive), with no duplicate CVRs.
-   * Only the first occurrence of each CVR is listed.
+   * through the specified end index (exclusive). The returned list contains
+   * no duplicate CVRs; only the first occurrence of each CVR is listed.
    * 
    * @param the_dashboard The dashboard.
    * @param the_start_index The start index (inclusive).
@@ -114,9 +160,9 @@ public final class CVRAuditInfoQueries {
    * query succeeds and no objects are found in the range) or null (if the
    * query fails).
    */
-  public static List<CVRAuditInfo> range(final CountyDashboard the_dashboard,
-                                         final Integer the_start_index,
-                                         final Integer the_end_index) {
+  public static List<CVRAuditInfo> rangeUnique(final CountyDashboard the_dashboard,
+                                               final Integer the_start_index,
+                                               final Integer the_end_index) {
     List<CVRAuditInfo> result = null;
     
     try {
