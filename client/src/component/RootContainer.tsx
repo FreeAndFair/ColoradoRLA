@@ -20,17 +20,17 @@ import ManualContainer from './Help/ManualContainer';
 
 import NextLoginContainer from './Login/Container';
 
-import AuditContainer from './sos/audit/AuditContainer';
-import AuditReviewContainer from './sos/audit/AuditReviewContainer';
-import AuditSeedContainer from './sos/audit/AuditSeedContainer';
-import SelectContestsPageContainer from './sos/audit/SelectContestsPageContainer';
+import AuditContainer from './DOS/audit/AuditContainer';
+import AuditReviewContainer from './DOS/audit/AuditReviewContainer';
+import AuditSeedContainer from './DOS/audit/AuditSeedContainer';
+import SelectContestsPageContainer from './DOS/audit/SelectContestsPageContainer';
 
-import ContestDetailContainer from './sos/contest/ContestDetailContainer';
-import ContestOverviewContainer from './sos/contest/ContestOverviewContainer';
-import CountyDetailContainer from './sos/county/CountyDetailContainer';
-import CountyOverviewContainer from './sos/county/CountyOverviewContainer';
+import ContestDetailContainer from './DOS/contest/ContestDetailContainer';
+import ContestOverviewContainer from './DOS/contest/ContestOverviewContainer';
+import CountyDetailContainer from './DOS/county/CountyDetailContainer';
+import CountyOverviewContainer from './DOS/county/CountyOverviewContainer';
 
-import DOSDashboardContainer from './sos/DOSDashboard/Container';
+import DOSDashboardContainer from './DOS/DOSDashboard/Container';
 
 
 export interface RootContainerProps {
