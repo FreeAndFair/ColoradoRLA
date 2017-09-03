@@ -4,13 +4,14 @@
 ## Introduction
 
 This Run Book guides State election administrators in Colorado who
-will be implementing a Risk Limiting Audit (RLA) with a comparison
-audit.  The RLA Tool, developed by Free & Fair for the Colorado
+will be implementing a Risk Limiting Audit (RLA). There is a separate book for County election administrators.
+
+The RLA Tool, developed by Free & Fair for the Colorado
 Department of State for use in elections in November 2017 and later,
-supports running a Risk-Limiting Audit as required by Colorado statute
+supports Risk-Limiting Audits as required by Colorado statute
 and as described in the
 [Colorado Secretary of State's Rule 25](http://www.sos.state.co.us/pubs/rule_making/CurrentRules/8CCR1505-1/ElectionRules.pdf) for
-elections.
+elections. 
 
 The RLA Tool helps the Colorado Secretary of State fulfill the
 requirements of Rule 25.2.2 and Rule 25.2.3.  Using the RLA Tool,
@@ -31,15 +32,24 @@ information to the public.
 This version of the RLA Tool requires that the contests driving the
 audit round sizes and risk level calculations must be single-County
 contests.
+
+This version of the RLA Tool requires Cast Vote Record and Ballot Manifest files 
+in the format exported from 
+the Dominion Democracy Suite.
+
  
-### Logging In
+### Launching and Logging In
 
 Department of State users must log in to the RLA Tool by pointing
-their browser to the URL designated by the Department of State.
+their browser to the URL designated by the Department of State. 
+County users can use the same URL.
 
-![State First Login Screenshot](./screenshots/1-sos_login.png)
+![Login](./screenshots/100_login_screen_1.png)
 
-![State Two Factor Login Screenshot](./screenshots/2FA.png)
+Successful entry of username and password will lead to 
+a two-factor authentication grid challenge.
+
+![Grid Challenge](./screenshots/101_login_screen_2.png)
 
 The RLA Tool will direct users to the Department of State home
 page. At the start of the audit process, this page will contain no
