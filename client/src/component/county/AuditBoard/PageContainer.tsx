@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 
 import counties from 'corla/data/counties';
 
-import SignedInPage from './SignedInPage';
 import AuditBoardPage from './Page';
+import SignedInPage from './SignedInPage';
 
 import auditBoardSignedInSelector from 'corla/selector/county/auditBoardSignedIn';
 import countyInfoSelector from 'corla/selector/county/countyInfo';
