@@ -2,23 +2,26 @@ import { all } from 'redux-saga/effects';
 
 import * as config from 'corla/config';
 
-import acvrUploadSaga from './acvrUploadSaga';
-import auditBoardSignInSaga from './auditBoardSignInSaga';
-import ballotNotFoundOkSaga from './ballotNotFoundOkSaga';
-import countyDashboardRefreshOkSaga from './countyDashboardRefreshOkSaga';
-import countyLoginSaga from './countyLoginSaga';
-import countyPollSaga from './countyPollSaga';
+import acvrUploadSaga from './county/acvrUploadSaga';
+import auditBoardSignInSaga from './county/auditBoardSignInSaga';
+import ballotNotFoundOkSaga from './county/ballotNotFoundOkSaga';
+import countyDashboardRefreshOkSaga from './county/dashboardRefreshOkSaga';
+import countyLoginSaga from './county/loginSaga';
+import countyPollSaga from './county/pollSaga';
+import uploadAcvrOkSaga from './county/uploadAcvrOkSaga';
+import uploadBallotManifestSaga from './county/uploadBallotManifestSaga';
+import uploadCvrExportSaga from './county/uploadCvrExportSaga';
+
 import debugSaga from './debugSaga';
-import dosAuditSaga from './dosAuditSaga';
-import dosLoginSaga from './dosLoginSaga';
-import dosPollSaga from './dosPollSaga';
+
+import dosAuditSaga from './dos/auditSaga';
+import dosLoginSaga from './dos/loginSaga';
+import dosPollSaga from './dos/pollSaga';
+
 import logoutSaga from './logoutSaga';
 import nextLoginSaga from './nextLoginSaga';
 import refreshSaga from './refreshSaga';
 import sessionSaga from './sessionSaga';
-import uploadAcvrOkSaga from './uploadAcvrOkSaga';
-import uploadBallotManifestSaga from './uploadBallotManifestSaga';
-import uploadCvrExportSaga from './uploadCvrExportSaga';
 
 
 export default function* rootSaga() {
