@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import CVRExportUploadForm from './CVRExportUploadForm';
+import CVRExportForm from './Form';
 
 import uploadCvrExport from 'corla/action/uploadCvrExport';
 
@@ -19,7 +19,7 @@ const UploadedCvrExport = ({ enableReupload, filename, hash }: any) => (
     </div>
 );
 
-class CVRExportUploadFormContainer extends React.Component<any, any> {
+class CVRExportFormContainer extends React.Component<any, any> {
     public state = { reupload: false };
 
     public render() {
@@ -43,7 +43,7 @@ class CVRExportUploadFormContainer extends React.Component<any, any> {
         }
 
         return (
-            <CVRExportUploadForm
+            <CVRExportForm
                 disableReupload={ this.disableReupload }
                 fileUploaded={ fileUploaded }
                 upload={ upload }
@@ -67,4 +67,4 @@ const mapStateToProps = (state: any) => {
 };
 
 
-export default connect(mapStateToProps)(CVRExportUploadFormContainer);
+export default connect(mapStateToProps)(CVRExportFormContainer);
