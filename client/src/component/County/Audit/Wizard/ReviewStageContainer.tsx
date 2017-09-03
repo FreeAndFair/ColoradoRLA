@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import ReviewStage from './ReviewStage';
 
-import uploadAcvr from 'corla/action/uploadAcvr';
+import uploadAcvr from 'corla/action/county/uploadAcvr';
 
 
 class ReviewStageContainer extends React.Component<any, any> {

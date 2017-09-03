@@ -4,7 +4,7 @@ import { Redirect } from 'react-router-dom';
 
 import SelectContestsPage from './SelectContestsPage';
 
-import selectContestsForAudit from 'corla/action/selectContestsForAudit';
+import selectContestsForAudit from 'corla/action/dos/selectContestsForAudit';
 
 
 class SelectContestsPageContainer extends React.Component<any, any> {

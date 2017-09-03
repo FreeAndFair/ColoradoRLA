@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import SignOffForm from './SignOffForm';
 
-import roundSignOff from 'corla/action/roundSignOff';
+import roundSignOff from 'corla/action/county/roundSignOff';
 
 import countyInfo from 'corla/selector/county/countyInfo';
 

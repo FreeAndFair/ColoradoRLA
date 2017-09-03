@@ -4,9 +4,9 @@ import {
     takeLatest,
 } from 'redux-saga/effects';
 
-import countyDashboardRefresh from 'corla/action/countyDashboardRefresh';
-import fetchAuditBoardAsmState from 'corla/action/fetchAuditBoardAsmState';
-import fetchCountyAsmState from 'corla/action/fetchCountyAsmState';
+import countyDashboardRefresh from 'corla/action/county/dashboardRefresh';
+import fetchAuditBoardAsmState from 'corla/action/county/fetchAuditBoardAsmState';
+import fetchCountyAsmState from 'corla/action/county/fetchCountyAsmState';
 
 import notice from 'corla/notice';
 

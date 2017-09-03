@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import CVRExportForm from './Form';
 
-import uploadCvrExport from 'corla/action/uploadCvrExport';
+import uploadCvrExport from 'corla/action/county/uploadCvrExport';
 
 import cvrExportUploadedSelector from 'corla/selector/county/cvrExportUploaded';
 

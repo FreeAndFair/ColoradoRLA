@@ -1,6 +1,6 @@
 import { endpoint } from 'corla/config';
 
-import createFetchAction from './createFetchAction';
+import createFetchAction from 'corla/action/createFetchAction';
 
 
 const url = endpoint('county-dashboard');

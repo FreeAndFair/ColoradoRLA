@@ -6,8 +6,8 @@ import { Checkbox, EditableText, MenuDivider, Radio, RadioGroup } from '@bluepri
 
 import BackButton from './BackButton';
 
-import ballotNotFound from 'corla/action/ballotNotFound';
-import countyFetchCvr from 'corla/action/countyFetchCvr';
+import ballotNotFound from 'corla/action/county/ballotNotFound';
+import countyFetchCvr from 'corla/action/county/fetchCvr';
 
 
 const BallotNotFoundForm = ({ ballotNotFound, currentBallot }: any) => {

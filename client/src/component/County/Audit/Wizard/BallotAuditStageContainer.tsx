@@ -5,7 +5,7 @@ import BallotAuditStage from './BallotAuditStage';
 
 import action from 'corla/action';
 
-import ballotNotFound from 'corla/action/ballotNotFound';
+import ballotNotFound from 'corla/action/county/ballotNotFound';
 
 import currentBallotNumber from 'corla/selector/county/currentBallotNumber';
 

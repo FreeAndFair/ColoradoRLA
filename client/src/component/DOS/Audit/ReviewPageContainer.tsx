@@ -4,7 +4,7 @@ import { Redirect } from 'react-router-dom';
 
 import AuditReviewPage from './ReviewPage';
 
-import publishBallotsToAudit from 'corla/action/publishBallotsToAudit';
+import publishBallotsToAudit from 'corla/action/dos/publishBallotsToAudit';
 
 
 class AuditBallotListContainer extends React.Component<any, any> {

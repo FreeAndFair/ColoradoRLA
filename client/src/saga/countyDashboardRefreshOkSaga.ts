@@ -3,9 +3,9 @@ import {
     takeLatest,
 } from 'redux-saga/effects';
 
-import countyFetchContests from 'corla/action/countyFetchContests';
-import countyFetchCvr from 'corla/action/countyFetchCvr';
-import fetchCvrsToAudit from 'corla/action/fetchCvrsToAudit';
+import countyFetchContests from 'corla/action/county/fetchContests';
+import countyFetchCvr from 'corla/action/county/fetchCvr';
+import fetchCvrsToAudit from 'corla/action/county/fetchCvrsToAudit';
 
 import { parse } from 'corla/adapter/countyDashboardRefresh';
 

@@ -1,6 +1,6 @@
 import { takeLatest } from 'redux-saga/effects';
 
-import countyDashboardRefresh from 'corla/action/countyDashboardRefresh';
+import countyDashboardRefresh from 'corla/action/county/dashboardRefresh';
 
 
 function* uploadAcvrOk(): any {

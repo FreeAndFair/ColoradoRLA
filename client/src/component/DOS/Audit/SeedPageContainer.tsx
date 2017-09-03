@@ -4,7 +4,7 @@ import { Redirect } from 'react-router-dom';
 
 import AuditSeedPage from './SeedPage';
 
-import uploadRandomSeed from 'corla/action/uploadRandomSeed';
+import uploadRandomSeed from 'corla/action/dos/uploadRandomSeed';
 
 
 class AuditSeedContainer extends React.Component<any, any> {

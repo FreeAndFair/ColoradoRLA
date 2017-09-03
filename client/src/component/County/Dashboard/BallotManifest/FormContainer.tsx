@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import BallotManifestForm from './Form';
 
-import uploadBallotManifest from 'corla/action/uploadBallotManifest';
+import uploadBallotManifest from 'corla/action/county/uploadBallotManifest';
 
 import ballotManifestUploadedSelector from 'corla/selector/county/ballotManifestUploaded';
 
