@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import ContestOverviewPage from './ContestOverviewPage';
+import ContestOverviewPage from './OverviewPage';
 
 
 class ContestOverviewContainer extends React.Component<any, any> {

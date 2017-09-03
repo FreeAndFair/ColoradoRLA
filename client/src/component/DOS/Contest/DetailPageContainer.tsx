@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import dosFetchContests from 'corla/action/dosFetchContests';
+import ContestDetailPage from './DetailPage';
 
-import ContestDetailPage from './ContestDetailPage';
+import dosFetchContests from 'corla/action/dosFetchContests';
 
 
 class ContestDetailContainer extends React.Component<any, any> {

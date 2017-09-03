@@ -25,10 +25,10 @@ import DOSAuditReviewPageContainer from './DOS/Audit/ReviewPageContainer';
 import DOSAuditSeedPageContainer from './DOS/Audit/SeedPageContainer';
 import DOSSelectContestsPageContainer from './DOS/Audit/SelectContestsPageContainer';
 
-import ContestDetailContainer from './DOS/contest/ContestDetailContainer';
-import ContestOverviewContainer from './DOS/contest/ContestOverviewContainer';
 import CountyDetailContainer from './DOS/county/CountyDetailContainer';
 import CountyOverviewContainer from './DOS/county/CountyOverviewContainer';
+import DOSContestDetailPageContainer from './DOS/Contest/DetailPageContainer';
+import DOSContestOverviewPageContainer from './DOS/Contest/OverviewPageContainer';
 
 import DOSDashboardContainer from './DOS/DOSDashboard/Container';
 
@@ -86,10 +86,10 @@ const routes: RouteDef[] = [
     ['/sos/audit/seed', DOSAuditSeedPageContainer],
     ['/sos/audit/select-contests', DOSSelectContestsPageContainer],
     ['/sos/audit/review', DOSAuditReviewPageContainer],
-    ['/sos/contest', ContestOverviewContainer],
-    ['/sos/contest/:contestId', ContestDetailContainer],
     ['/sos/county', CountyOverviewContainer],
     ['/sos/county/:countyId', CountyDetailContainer],
+    ['/sos/contest', DOSContestOverviewPageContainer],
+    ['/sos/contest/:contestId', DOSContestDetailPageContainer],
 ];
 
 export class RootContainer extends React.Component<RootContainerProps, void> {
