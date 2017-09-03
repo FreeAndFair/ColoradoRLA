@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 
 import counties from 'corla/data/counties';
 
-import CountyOverviewPage from './CountyOverviewPage';
+import CountyOverviewPage from './OverviewPage';
 
 
 class CountyOverviewContainer extends React.Component<any, any> {

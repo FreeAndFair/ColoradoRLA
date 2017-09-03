@@ -3,9 +3,9 @@ import { connect } from 'react-redux';
 
 import counties from 'corla/data/counties';
 
-import dosDashboardRefresh from 'corla/action/dosDashboardRefresh';
+import CountyDetailPage from './DetailPage';
 
-import CountyDetailPage from './CountyDetailPage';
+import dosDashboardRefresh from 'corla/action/dosDashboardRefresh';
 
 
 class CountyDetailContainer extends React.Component<any, any> {
