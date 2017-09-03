@@ -3,7 +3,7 @@ import * as React from 'react';
 import { EditableText } from '@blueprintjs/core';
 
 
-class BallotManifestUploadForm extends React.Component<any, any> {
+class BallotManifestForm extends React.Component<any, any> {
     public state: any = {
         file: null,
         hash: '',
@@ -77,4 +77,4 @@ class BallotManifestUploadForm extends React.Component<any, any> {
 }
 
 
-export default BallotManifestUploadForm;
+export default BallotManifestForm;

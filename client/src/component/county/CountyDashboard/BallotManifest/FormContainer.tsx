@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import BallotManifestUploadForm from './BallotManifestUploadForm';
+import BallotManifestForm from './Form';
 
 import uploadBallotManifest from 'corla/action/uploadBallotManifest';
 
@@ -20,7 +20,7 @@ const UploadedBallotManifest = ({ filename, hash, enableReupload }: any) => (
 );
 
 
-class BallotManifestUploadFormContainer extends React.Component<any, any> {
+class BallotManifestFormContainer extends React.Component<any, any> {
     public state = { reupload: false };
 
     public render() {
@@ -44,7 +44,7 @@ class BallotManifestUploadFormContainer extends React.Component<any, any> {
         }
 
         return (
-            <BallotManifestUploadForm
+            <BallotManifestForm
                 disableReupload={ this.disableReupload }
                 fileUploaded={ fileUploaded }
                 upload={ upload }
@@ -67,4 +67,4 @@ const mapStateToProps = (state: any) => {
     };
 };
 
-export default connect(mapStateToProps)(BallotManifestUploadFormContainer);
+export default connect(mapStateToProps)(BallotManifestFormContainer);

@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import BallotManifestUploadFormContainer from './BallotManifestUploadFormContainer';
+import BallotManifestFormContainer from './BallotManifest/FormContainer';
 import CVRExportFormContainer from './CVRExport/FormContainer';
 
 
 const FileUploadForms = () => {
     return (
         <div>
-            <BallotManifestUploadFormContainer />
+            <BallotManifestFormContainer />
             <CVRExportFormContainer />
         </div>
     );
