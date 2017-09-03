@@ -1,6 +1,6 @@
-import { endpoint } from '../config';
+import { endpoint } from 'corla/config';
 
-import createSubmitAction from './createSubmitAction';
+import createSubmitAction from 'corla/action/createSubmitAction';
 
 
 const url = endpoint('auth-admin');

@@ -1,6 +1,6 @@
 import { endpoint } from 'corla/config';
 
-import createFileFetchAction from '../createFileFetchAction';
+import createFileFetchAction from 'corla/action/createFileFetchAction';
 
 
 const url = endpoint('state-report');

@@ -9,31 +9,28 @@ import {
 
 import RootRedirectContainer from './RootRedirectContainer';
 
-import CountyContestDetailContainer from './county/ContestDetailContainer';
-import CountyContestOverviewContainer from './county/ContestOverviewContainer';
+import AuditBoardPageContainer from './County/AuditBoard/PageContainer';
 
-import AuditBoardSignInContainer from './county/AuditBoard/SignInContainer';
+import CountyAuditPageContainer from './County/Audit/PageContainer';
+import CountyDashboardPageContainer from './County/Dashboard/PageContainer';
 
-import CountyAuditContainer from './county/audit/CountyAuditContainer';
-import CountyHomeContainer from './county/home/CountyHomeContainer';
+import GlossaryContainer from './Help/GlossaryContainer';
+import HelpRootContainer from './Help/HelpRootContainer';
+import ManualContainer from './Help/ManualContainer';
 
-import GlossaryContainer from './help/GlossaryContainer';
-import HelpRootContainer from './help/HelpRootContainer';
-import ManualContainer from './help/ManualContainer';
+import NextLoginContainer from './Login/Container';
 
-import NextLoginContainer from './login/next/LoginContainer';
+import DOSAuditPageContainer from './DOS/Audit/PageContainer';
+import DOSAuditReviewPageContainer from './DOS/Audit/ReviewPageContainer';
+import DOSAuditSeedPageContainer from './DOS/Audit/SeedPageContainer';
+import DOSSelectContestsPageContainer from './DOS/Audit/SelectContestsPageContainer';
 
-import AuditContainer from './sos/audit/AuditContainer';
-import AuditReviewContainer from './sos/audit/AuditReviewContainer';
-import AuditSeedContainer from './sos/audit/AuditSeedContainer';
-import SelectContestsPageContainer from './sos/audit/SelectContestsPageContainer';
+import DOSContestDetailPageContainer from './DOS/Contest/DetailPageContainer';
+import DOSContestOverviewPageContainer from './DOS/Contest/OverviewPageContainer';
+import DOSCountyDetailPageContainer from './DOS/County/DetailPageContainer';
+import DOSCountyOverviewPageContainer from './DOS/County/OverviewPageContainer';
 
-import ContestDetailContainer from './sos/contest/ContestDetailContainer';
-import ContestOverviewContainer from './sos/contest/ContestOverviewContainer';
-import CountyDetailContainer from './sos/county/CountyDetailContainer';
-import CountyOverviewContainer from './sos/county/CountyOverviewContainer';
-
-import DOSDashboardContainer from './sos/DOSDashboard/Container';
+import DOSDashboardContainer from './DOS/Dashboard/PageContainer';
 
 
 export interface RootContainerProps {
@@ -78,23 +75,21 @@ const makeRoute = (store: any) => (def: RouteDef) => {
 
 const routes: RouteDef[] = [
     ['/', RootRedirectContainer],
-    ['/county', CountyHomeContainer],
-    ['/county/sign-in', AuditBoardSignInContainer],
-    ['/county/audit', CountyAuditContainer],
-    ['/county/contest', CountyContestOverviewContainer],
-    ['/county/contest/:contestId', CountyContestDetailContainer],
+    ['/county', CountyDashboardPageContainer],
+    ['/county/sign-in', AuditBoardPageContainer],
+    ['/county/audit', CountyAuditPageContainer],
     ['/help', HelpRootContainer],
     ['/help/glossary', GlossaryContainer],
     ['/help/manual', ManualContainer],
     ['/sos', DOSDashboardContainer],
-    ['/sos/audit', AuditContainer],
-    ['/sos/audit/seed', AuditSeedContainer],
-    ['/sos/audit/select-contests', SelectContestsPageContainer],
-    ['/sos/audit/review', AuditReviewContainer],
-    ['/sos/contest', ContestOverviewContainer],
-    ['/sos/contest/:contestId', ContestDetailContainer],
-    ['/sos/county', CountyOverviewContainer],
-    ['/sos/county/:countyId', CountyDetailContainer],
+    ['/sos/audit', DOSAuditPageContainer],
+    ['/sos/audit/seed', DOSAuditSeedPageContainer],
+    ['/sos/audit/select-contests', DOSSelectContestsPageContainer],
+    ['/sos/audit/review', DOSAuditReviewPageContainer],
+    ['/sos/contest', DOSContestOverviewPageContainer],
+    ['/sos/contest/:contestId', DOSContestDetailPageContainer],
+    ['/sos/county', DOSCountyOverviewPageContainer],
+    ['/sos/county/:countyId', DOSCountyDetailPageContainer],
 ];
 
 export class RootContainer extends React.Component<RootContainerProps, void> {
