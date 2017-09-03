@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import counties from 'corla/data/counties';
 
-import CountyHomePage from './CountyHomePage';
+import CountyDashboardPage from './Page';
 
 import finishAudit from 'corla/action/county/finishAudit';
 
@@ -15,7 +15,7 @@ import canRenderReport from 'corla/selector/county/canRenderReport';
 import canSignIn from 'corla/selector/county/canSignIn';
 
 
-class CountyHomeContainer extends React.Component<any, any> {
+class CountyDashboardContainer extends React.Component<any, any> {
     public render() {
         const {
             allRoundsComplete,
@@ -42,7 +42,7 @@ class CountyHomeContainer extends React.Component<any, any> {
             ...this.props,
         };
 
-        return <CountyHomePage { ...props } />;
+        return <CountyDashboardPage { ...props } />;
     }
 }
 
@@ -62,4 +62,4 @@ const mapStateToProps = (state: any) => {
     };
 };
 
-export default connect(mapStateToProps)(CountyHomeContainer);
+export default connect(mapStateToProps)(CountyDashboardContainer);

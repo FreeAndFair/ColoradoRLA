@@ -179,7 +179,7 @@ const Info = ({ info, contests, county }: any) => (
     </div>
 );
 
-const CountyHomePage = (props: any) => {
+const CountyDashboardPage = (props: any) => {
     const {
         allRoundsComplete,
         auditBoardSignedIn,
@@ -228,4 +228,4 @@ const CountyHomePage = (props: any) => {
     );
 };
 
-export default CountyHomePage;
+export default CountyDashboardPage;

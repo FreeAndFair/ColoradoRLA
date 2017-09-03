@@ -15,7 +15,7 @@ import CountyContestOverviewContainer from './county/ContestOverviewContainer';
 import AuditBoardSignInContainer from './county/AuditBoard/SignInContainer';
 
 import CountyAuditContainer from './county/audit/CountyAuditContainer';
-import CountyHomeContainer from './county/home/CountyHomeContainer';
+import CountyDashboardContainer from './county/CountyDashboard/Container';
 
 import GlossaryContainer from './help/GlossaryContainer';
 import HelpRootContainer from './help/HelpRootContainer';
@@ -78,7 +78,7 @@ const makeRoute = (store: any) => (def: RouteDef) => {
 
 const routes: RouteDef[] = [
     ['/', RootRedirectContainer],
-    ['/county', CountyHomeContainer],
+    ['/county', CountyDashboardContainer],
     ['/county/sign-in', AuditBoardSignInContainer],
     ['/county/audit', CountyAuditContainer],
     ['/county/contest', CountyContestOverviewContainer],
