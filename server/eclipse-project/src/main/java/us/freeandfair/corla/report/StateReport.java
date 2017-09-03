@@ -18,7 +18,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.OptionalInt;
@@ -39,7 +38,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.CVRAuditInfo;
-import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.County.NameComparator;
@@ -47,7 +45,6 @@ import us.freeandfair.corla.model.CountyContestResult;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.model.Round;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.CVRAuditInfoQueries;
 import us.freeandfair.corla.query.CastVoteRecordQueries;
 
 /**
@@ -456,20 +453,14 @@ public class StateReport {
         cell.setCellValue("Disagreement");
 
         max_cell_number = Math.max(max_cell_number, cell_number);
-        for (final CastVoteRecord cvr : 
+        for (final CVRAuditInfo audit_info : 
              e.getValue().cvrsToAuditByRound().get(round.number())) {
-          final List<CVRAuditInfo> audit_info_list = 
-              CVRAuditInfoQueries.matching(e.getValue().dashboard(), cvr);
-          if (audit_info_list == null || audit_info_list.isEmpty()) {
-            continue;
-          }
-          final CVRAuditInfo audit_info = audit_info_list.get(0);
           row = county_sheet.createRow(row_number++);
           cell_number = 0;
           cell = row.createCell(cell_number++);
           cell.setCellType(CellType.STRING);
           cell.setCellStyle(standard_style);
-          cell.setCellValue(cvr.imprintedID());
+          cell.setCellValue(audit_info.cvr().imprintedID());
           cell = row.createCell(cell_number++);
           cell.setCellType(CellType.BOOLEAN);
           cell.setCellStyle(standard_style);

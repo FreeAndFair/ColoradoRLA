@@ -14,6 +14,7 @@ package us.freeandfair.corla.model;
 import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 
 import java.io.Serializable;
+import java.util.Comparator;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
@@ -41,7 +42,11 @@ import us.freeandfair.corla.persistence.PersistentEntity;
 @Table(name = "cvr_audit_info",
        indexes = { @Index(name = "idx_cvrai_cvr", columnList = "cvr_id"),
                    @Index(name = "idx_cvrai_dashboard_cvr", 
-                          columnList = "dashboard_id, cvr_id") })
+                          columnList = "dashboard_id, cvr_id"),
+                   @Index(name = "idx_cvrai_dashboard_index",
+                          columnList = "dashboard_id, index"),
+                   @Index(name = "idx_cvrai_dashboard_cvr_index",
+                          columnList = "dashboard_id, cvr_id, index")})
 //this class has many fields that would normally be declared final, but
 //cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
@@ -108,6 +113,12 @@ public class CVRAuditInfo implements PersistentEntity, Serializable {
   private Boolean my_disagreement = false;
   
   /**
+   * The index of this CVRAuditInfo in its list.
+   */
+  @Column(name = "index", nullable = false)
+  private Integer my_index;
+  
+  /**
    * Constructs an empty CVRAuditInfo, solely for persistence.
    */
   public CVRAuditInfo() {
@@ -120,12 +131,15 @@ public class CVRAuditInfo implements PersistentEntity, Serializable {
    * 
    * @param the_dashboard The dashboard this record belongs to.
    * @param the_cvr The CVR to audit.
+   * @param the_index The index of this CVRAuditInfo in the list.
    */
   public CVRAuditInfo(final CountyDashboard the_dashboard,
-                      final CastVoteRecord the_cvr) {
+                      final CastVoteRecord the_cvr,
+                      final Integer the_index) {
     super();
     my_dashboard = the_dashboard;
     my_cvr = the_cvr;
+    my_index = the_index;
   }
 
   /**
@@ -237,6 +251,13 @@ public class CVRAuditInfo implements PersistentEntity, Serializable {
   }
   
   /**
+   * @return the index.
+   */
+  public Integer index() {
+    return my_index;
+  }
+  
+  /**
    * @return a String representation of this contest to audit.
    */
   @Override
@@ -286,5 +307,47 @@ public class CVRAuditInfo implements PersistentEntity, Serializable {
     } else {
       return id().hashCode();
     } 
+  }
+  
+  /**
+   * A comparator to sort CVRAuditInfo objects by CVR scanner ID, then batch ID,
+   * then record ID.
+   */
+  @SuppressWarnings("PMD.AtLeastOneConstructor")
+  public static class BallotOrderComparator 
+      implements Serializable, Comparator<CVRAuditInfo> {
+    /**
+     * The serialVersionUID.
+     */
+    private static final long serialVersionUID = 1;
+    
+    /**
+     * Orders two CVRToAuditResponses lexicographically by the triple
+     * (scanner_id, batch_id, record_id).
+     * 
+     * @param the_first The first response.
+     * @param the_second The second response.
+     * @return a positive, negative, or 0 value as the first response is
+     * greater than, equal to, or less than the second, respectively.
+     */
+    @SuppressWarnings("PMD.ConfusingTernary")
+    public int compare(final CVRAuditInfo the_first, 
+                       final CVRAuditInfo the_second) {
+      final int scanner = the_first.cvr().scannerID() - the_second.cvr().scannerID();
+      final int batch = the_first.cvr().batchID() - the_second.cvr().batchID();
+      final int record = the_first.cvr().recordID() - the_second.cvr().recordID();
+      
+      final int result;
+      
+      if (scanner != 0) {
+        result = scanner;
+      } else if (batch != 0) {
+        result = batch;
+      } else {
+        result = record;
+      }
+      
+      return result;
+    }
   }
 }

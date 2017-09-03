@@ -100,6 +100,40 @@ public final class ComparisonAuditController {
   }
   
   /**
+   * Gets all CVRs to audit in the specified round for the specified county
+   * dashboard. This returns a list in audit order.
+   * 
+   * @param the_dashboard The dashboard.
+   * @param the_round_number The round number.
+   * @return the CVRs to audit in the specified round.
+   * @exception IllegalArgumentException if the specified round doesn't exist.
+   */
+  public static List<CVRAuditInfo> cvrsToAuditInRound(final CountyDashboard the_cdb,
+                                                      final int the_round_number) {
+    if (the_round_number < 1 || the_cdb.rounds().size() < the_round_number) {
+      throw new IllegalArgumentException("invalid round specified");
+    }
+    final Round round = the_cdb.rounds().get(the_round_number - 1);
+    return CVRAuditInfoQueries.range(the_cdb, round.startAuditedPrefixLength(), 
+                                     round.expectedAuditedPrefixLength());
+  }
+  
+  /**
+   * @return the CVR IDs remaining to audit in the current round, or an empty 
+   * list if there are no CVRs remaining to audit or if no round is in progress.
+   */
+  public static List<Long> cvrIDsRemainingInCurrentRound(final CountyDashboard the_cdb) {
+    List<Long> result = new ArrayList<Long>();
+    final Round round = the_cdb.currentRound();
+    if (round != null) {
+      result = 
+          CVRAuditInfoQueries.unauditedCVRIDsInRange(the_cdb, the_cdb.auditedPrefixLength(),
+                                                     round.expectedAuditedPrefixLength());
+    }
+    return result;
+  }
+  
+  /**
    * Compute the ballot (cards) for audit, for a particular county dashboard and 
    * start index. This returns the specified number of cards, with or without 
    * duplicates (as requested).
