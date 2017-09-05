@@ -4,11 +4,13 @@
 ## Introduction
 
 This Run Book guides State election administrators in Colorado who
-will be implementing a Risk Limiting Audit (RLA) with a comparison
-audit.  The RLA Tool, developed by Free & Fair for the Colorado
-Department of State for use in elections in November 2017 and later,
-supports running a Risk-Limiting Audit as required by Colorado statute
-and as described in the
+will be implementing a Risk Limiting Audit (RLA). There is a separate
+book for County election administrators.
+
+The RLA Tool, developed by Free & Fair for the Colorado Department of
+State for use in elections in November 2017 and later, supports
+Risk-Limiting Audits as required by Colorado statute and as described
+in the
 [Colorado Secretary of State's Rule 25](http://www.sos.state.co.us/pubs/rule_making/CurrentRules/8CCR1505-1/ElectionRules.pdf) for
 elections.
 
@@ -31,21 +33,30 @@ information to the public.
 This version of the RLA Tool requires that the contests driving the
 audit round sizes and risk level calculations must be single-County
 contests.
+
+This version of the RLA Tool requires Cast Vote Record and Ballot
+Manifest files in the format exported from the Dominion Democracy
+Suite.
  
-### Logging In
+### Launching and Logging In
 
 Department of State users must log in to the RLA Tool by pointing
-their browser to the URL designated by the Department of State.
+their browser to the URL designated by the Department of State. 
+County users can use the same URL.
 
-![State First Login Screenshot](./screenshots/1-sos_login.png)
+![Login](./screenshots/100_login_screen_1.png)
 
-![State Two Factor Login Screenshot](./screenshots/2FA.png)
+Successful entry of username and password will lead to 
+a two-factor authentication grid challenge.
+
+![Grid Challenge](./screenshots/101_login_screen_2.png)
 
 The RLA Tool will direct users to the Department of State home
 page. At the start of the audit process, this page will contain no
-information. Note the logout
-button ![Logout Button](./screenshots/LogoutButton.png), in the upper
-right of this (and every) page.
+information. Note the logout button, in the upper right of this (and
+every) page.
+
+![Logout Button](./screenshots/LogoutButton.png)
 
 ![Secretary of State Home Screenshot](./screenshots/2-sos_initial_landing_page.png)
 
@@ -65,26 +76,27 @@ Text indicating the status of the audit is near the top of the page.
 
 The Secretary of State will enter date the election will take place,
 the type of election, and the Risk Limit. Note that once these
-selections are entered they cannot be modified. To continue, click
-‘Save and Next.’
+selections are entered they cannot be modified. To continue, click the
+"Save & Next" button.
 
 ![State Risk Limit Entry Screenshot](./screenshots/5-sos_define_audit_save_and_next1.png)
 
+<!-- The County Update table allows the Secretary of State to see which -->
+<!-- Counties have uploaded which files. -->
+
+<!-- ![County Uploads Screenshot]() -->
+
+<!-- Note the change in the status message now that the Risk Limit has been -->
+<!-- entered. -->
+
 The County Update table allows the Secretary of State to see which
-Counties have uploaded which files.
-
-![County Uploads Screenshot]()
-
-Note the change in the status message now that the Risk Limit has been
-entered.
+Counties have uploaded which files. 
 
 ![Waiting For Counties to Upload Contest Data](./screenshots/6-comparison_risk_limit_now_set.png)
 
-The County Update table allows the Secretary of State to see which
-Counties have uploaded which files. When the Counties have uploaded
-the necessary files, the Secretary of State can proceed to define the
-audit — choose contests and set the risk limit — using the dropdown
-menu on the upper left.
+When the Counties have uploaded the necessary files, the Secretary of
+State can proceed to define the audit—by choosing contests and setting
+the risk limit—using the dropdown menu on the upper left.
 
 ![Define the Audit Button](./screenshots/3-sos_define_audit_button_in_dropdown.png)
 
@@ -93,9 +105,9 @@ menu on the upper left.
 The Secretary of State will then select the contests that will drive
 the sample size and stop/go decisions for each round.  Rule Rule 25
 calls these "contests to be audited". Note that in the current version
-of the RLA Tool, each contest is considered within a single County.
-Calculations of audit round sizes and risk levels are based on
-single-County contests.
+of the RLA Tool, each contest is considered to be within a single
+County.  Calculations of audit round sizes and risk levels are based
+on single County contests.
 
 ![State Contest Selection Screenshot](./screenshots/8-sos_selects_contest_reason_why_dropdown.png)
 
@@ -106,15 +118,14 @@ is entered, it cannot be changed.
 
 ![State Random Seed Entry Screenshot](./screenshots/12-enter_random_seed_about_to_click.png)
 
-If the random seed is not exactly 20 digits long, the system shows a
+If the random seed is not at least 20 digits long, the system shows a
 red error message. User will have to click the "Back" button and try
 again.
 
 ![State Random Seed Entry Incorrect](./screenshots/13-entered_incorrect_random_seed1.png)
 
-
-Once the random seed is entered the the Secretary of State can launch the audit by clicking the "Launch Audit" button.
-
+Once the random seed is entered the Secretary of State can launch the
+audit by clicking the "Launch Audit" button.
 
 ![Audit Has Begun](./screenshots/15-the_audit_is_launched.png)
 
@@ -143,8 +154,8 @@ for hand counting at any time.
 
 At the end of each round the Secretary of State can launch the next
 round by clicking the "Start Round" button. This button will work only
-if each County Audit Board has not only finished the audit round but
-also signed off on the audit round.
+if each and every County Audit Board has not only finished the audit
+round, but also signed off on the audit round.
 
 ![Launch New Round Screenshot](./screenshots/sos_launch_round.png)
 
