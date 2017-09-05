@@ -6,6 +6,7 @@ import ElectionDateForm from './ElectionDateForm';
 import ElectionTypeForm from './ElectionTypeForm';
 import RiskLimitForm from './RiskLimitForm';
 
+import setElectionInfo from 'corla/action/dos/setElectionInfo';
 import setRiskLimit from 'corla/action/dos/setRiskLimit';
 
 
@@ -54,8 +55,17 @@ const SaveButton = (props: any) => {
     const { forms, riskLimit } = props;
 
     const buttonClick = () => {
+        const { date } = forms.electionDateForm;
+        const { type } = forms.electionTypeForm;
+
+        if (date && type) {
+            setElectionInfo(date, type);
+        }
+
         if (!riskLimit) {
-            setRiskLimit(forms.riskLimit.comparisonLimit);
+            const { comparisonLimit } = forms.riskLimit;
+
+            setRiskLimit(comparisonLimit);
         }
     };
 
@@ -70,7 +80,6 @@ const AuditPage = (props: any) => {
     const { election, nextPage, riskLimit } = props;
 
     const forms: any = {};
-
 
     const riskLimitForm = riskLimit
                         ? <ReadonlyRiskLimit riskLimit={ riskLimit } />
