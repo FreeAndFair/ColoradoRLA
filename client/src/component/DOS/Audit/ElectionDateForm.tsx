@@ -10,8 +10,8 @@ class ElectionDateForm extends React.Component<any, any> {
         const { date } = this.state;
 
         return (
-            <div>
-                Election date.
+            <div className='pt-card'>
+                <div>Election Date</div>
                 <DateInput value={ date } onChange={ this.onDateChange } />
             </div>
         );
