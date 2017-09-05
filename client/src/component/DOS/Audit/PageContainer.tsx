@@ -7,15 +7,16 @@ import AuditPage from './Page';
 import setRiskLimit from 'corla/action/dos/setRiskLimit';
 
 
-class AuditContainer extends React.Component<any, any> {
+class AuditPageContainer extends React.Component<any, any> {
     public render() {
-        const { history, riskLimit, sos } = this.props;
+        const { election, history, riskLimit, sos } = this.props;
 
         if (sos.asm.currentState === 'DOS_AUDIT_ONGOING') {
             return <Redirect to='/sos' />;
         }
 
         const props = {
+            election,
             nextPage: () => history.push('/sos/audit/select-contests'),
             riskLimit,
             setRiskLimit,
@@ -27,9 +28,9 @@ class AuditContainer extends React.Component<any, any> {
 
 
 const mapStateToProps = ({ sos }: any) => {
-    const { riskLimit } = sos;
+    const { election, riskLimit } = sos;
 
-    return { riskLimit, sos };
+    return { election, riskLimit, sos };
 };
 
-export default connect(mapStateToProps)(AuditContainer);
+export default connect(mapStateToProps)(AuditPageContainer);

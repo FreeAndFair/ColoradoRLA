@@ -38,7 +38,8 @@ const ReadonlyRiskLimit = ({ riskLimit }: any) => {
     );
 };
 
-const AuditPage = ({ nextPage, riskLimit, setRiskLimit }: any) => {
+const AuditPage = (props: any) => {
+    const { election, nextPage, riskLimit, setRiskLimit } = props;
     const forms: any = {};
 
     const buttonClick = () => {
