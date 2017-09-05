@@ -4,8 +4,6 @@ import { Redirect } from 'react-router-dom';
 
 import AuditPage from './Page';
 
-import setRiskLimit from 'corla/action/dos/setRiskLimit';
-
 
 class AuditPageContainer extends React.Component<any, any> {
     public render() {
@@ -19,7 +17,6 @@ class AuditPageContainer extends React.Component<any, any> {
             election,
             nextPage: () => history.push('/sos/audit/select-contests'),
             riskLimit,
-            setRiskLimit,
         };
 
         return <AuditPage { ...props } />;

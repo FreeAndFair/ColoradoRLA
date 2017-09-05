@@ -6,6 +6,8 @@ import ElectionDateForm from './ElectionDateForm';
 import ElectionTypeForm from './ElectionTypeForm';
 import RiskLimitForm from './RiskLimitForm';
 
+import setRiskLimit from 'corla/action/dos/setRiskLimit';
+
 
 const Breadcrumb = () => (
     <ul className='pt-breadcrumbs'>
@@ -49,7 +51,7 @@ const NextButton = (props: any) => {
 };
 
 const SaveButton = (props: any) => {
-    const { forms, riskLimit, setRiskLimit } = props;
+    const { forms, riskLimit } = props;
 
     const buttonClick = () => {
         if (!riskLimit) {
@@ -65,7 +67,7 @@ const SaveButton = (props: any) => {
 };
 
 const AuditPage = (props: any) => {
-    const { election, nextPage, riskLimit, setRiskLimit } = props;
+    const { election, nextPage, riskLimit } = props;
 
     const forms: any = {};
 
@@ -76,12 +78,7 @@ const AuditPage = (props: any) => {
 
     const pageButton = riskLimit
                      ? <NextButton nextPage={ nextPage } />
-                     : (
-                         <SaveButton
-                             forms={ forms}
-                             riskLimit={ riskLimit }
-                             setRiskLimit={ setRiskLimit } />
-                     );
+                     : <SaveButton forms={ forms} riskLimit={ riskLimit } />;
 
     return (
         <div>
