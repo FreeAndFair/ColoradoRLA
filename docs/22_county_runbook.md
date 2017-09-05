@@ -1,7 +1,9 @@
-# Colorado Risk Limiting Audit 
-# County Run Book
+% County Run Book
+% Colorado Risk Limiting Audit Tool v1.0.0 alpha-1
+% 2017
 
-## Introduction
+
+# Introduction
 
 This Run Book guides County election administrators in Colorado who
 will be implementing a Risk Limiting Audit (RLA) with a comparison
@@ -21,9 +23,11 @@ to enter Audit Boards interpretations of the ballot cards and allows
 the Audit Board to sign off on the round.
 
 Orange arrows on the screenshots indicate features described in the
-text of the Runbook.
+text of the Ru Bbook.
+
  
-### Launching and Logging In
+# County Admin Functions
+## Launching and Logging In
 
 A County user can launch the RLA Tool by pointing a browser to the
 URL provided by the Colorado Department of State.
@@ -35,28 +39,43 @@ a two-factor authentication grid challenge.
 
 ![Grid Challenge](./screenshots/101_login_screen_2.png)
 
-***
+## County Home Page
 
-County users will see the County home page. Note the logout
-button ![Logout Button](./screenshots/LogoutButton.png), in the upper
-right of this (and every) page.
+Once two-factor authentication is complete, County users will see the County Home Page. 
+![County Home Page at Start](./screenshots/200_County_Home_Before.png)
 
-![County Home Page](./screenshots/200_County_Home_Before.png)
+After Ballot Manifest file and CVR file have been uploaded, the Contest Info
+table on the County Home Page
+will show the contests from the CVR file.
+While the audit is on-going, the County Info table shows how many Ballot Cards
+are required for the current round, and how many have already been
+audited. The number of "disagreements" is the number of ballot cards
+on which the Audit Board could not come to complete consensus. The
+number of "discrepancies" is the number of ballot cards where the
+Audit Board's interpretation differs from the interpretation in the
+uploaded CVR file, or where the ballot card in question could not be
+found.
 
-### Navigation
+![County Home Page During Audit](./screenshots/201_County_Home_Mid_Round.png)
+
+
+
+## Navigation
 
 In the upper left corner of every page 
 the County site has a menu that 
-can be used to navigate to the County home page,
+can be used to navigate to the County Home Page,
 the Audit Board Sign-In/Out pages or the 
-Audit (Ballot Review) pages.
+Audit (Ballot Review) pages. Click on the navigation icon
 
 ![Navigation Icon](./screenshots/000_main_nav.png)
+
+to bring up the navigation menu.
 
 ![Navigation Menu](./screenshots/000_menu_choices.png)
 
 In the upper right corner of each page is a button to return to 
-the County home page 
+the County Home Page 
 
 ![Home Button](./screenshots/000_home_icon.png)
 
@@ -66,7 +85,7 @@ altogether.
 ![Logout Button](./screenshots/000_logout_button.png)
 
 
-### Ballot Manifest and CVR File Uploads
+## Ballot Manifest and CVR File Uploads
 
 To prepare for upload, the County's ballot manifest and CVR files must
  each be hashed using any SHA-256 hash utility. The RLA Tool itself
@@ -118,12 +137,15 @@ possible to re-upload either or both files, if necessary.
 
 After successfully upload and import of both the Ballot Manifest and
 the CVR files, the Contest Info table near the bottom of the 
-County home page shows the status of ballot cards
-and all contests on all CVRs.
+County Home Page lists all contests from the CVR file. The user may have to scroll down to 
+see all contests.
 
 ![Contest Info Displayed on Home Page](./screenshots/202_contest_info.png)
 
-### Audit Board Sign In and Sign Out
+
+# Audit Board Functions
+
+## Audit Board Identity Page
 
 The Audit Board does not log directly into the RLA Tool with usernames
 and passwords. However, whenever the Audit Board begins to interact
@@ -137,7 +159,7 @@ home page.
 
 Another way to reach the Audit Board Sign-In page is to use the navigation menu.
 
-![Navigation Menu](./screenshots/000_menu_choices.png)
+![Navigation to Audit Board Identification Page](./screenshots/248_nav_to_AB_page.png)
 
 Either method will take the user to the Audit Board Sign-In page.
 
@@ -145,33 +167,35 @@ Either method will take the user to the Audit Board Sign-In page.
 
 
 After the Audit Board has signed in, the Audit Board Sign-In Screen 
-will show the names and party affiliations. If the Audit Board takes a break, 
-use the Sign Out button on this page.
+will show the names and party affiliations. 
 
-![Audit Board Sign Out](./screenshots/252_sign_out_of_the_audit_board.png)
+![Audit Board Identity](./screenshots/251_Audit_Board_Members.png)
 
-Once the Audit Board is signed in use the navigation panel at the top
-of the screen to begin the ballot review process.
 
-![Launch_Audit_Navigation_Button_Screenshot](./screenshots/254_go_to_begin_ballot_review.png)
 
-### Ballot Card Review Rounds
+## Ballot Card Review
 
-Once the Secretary of State launches the audit the County user will
+To start the process of finding and reviewing ballot cards, use the navigation menu at the top left
+of the screen.
+
+![Navigation to Ballot Card Review](./screenshots/253_nav_to_ballot_review.png)
+
+Once the Secretary of State launches a round of 
+ the audit the County user will
 see a list of ballot cards to be audited in the current round. The list
 includes the Scanner #, Batch #, Ballot Position #, and (if available)
 the Storage Bin.
 
-![Ballot Cards to Auditt](./screenshots/270_ballots_to_audit_unified.png)
+![Ballot Cards to Audit](./screenshots/270_ballots_to_audit_unified.png)
 
 Once the ballot cards have been retrieved, click "Next" to start reviewing.
 
 The RLA Tool allows Audit Board members to report the markings on each
 individual ballot card.  Before recording voter intent, please double-check
-that the paper Ballot Type matches the Ballot Type listed on the
+that the Ballot Type on the paper ballot card matches the Ballot Type listed on the
 screen.
 
-![Ballot Card Verification Page](./screenshots/272_ballot_verification.png)
+![Ballot Type](./screenshots/273_ballot_type.png)
 
 If a ballot card is not found click the "Ballot Card Not Found" Button.
 
@@ -183,7 +207,8 @@ the paper ballot card.
 ![Recording Voter Intent](./screenshots/276_Voter_Intent.png)
 
 In case of an overvote, mark each of the (too many) choices the voter
-intended; the RLA tool will recognize overvotes and undervotes.  
+intended; as the user will see on the next screen, the RLA Tool will recognize
+the overvote.  
 
 ![Marking an Overvote](./screenshots/278_Overvote.png)
 
@@ -193,8 +218,8 @@ box on the screen. There is a text box for any comments.
 
 ![No_Consensus](./screenshots/277_No_Consensus.png)
 
-After entering the interpretation of the markings from any one ballot,
-the Audit Board can click the Review button.
+After entering the interpretation of the markings from any one ballot card,
+the Audit Board clicks Review button.
 
 ![Review Button](./screenshots/279_ballot_interpretations_entered.png)
 
@@ -217,52 +242,42 @@ This submission is
 final. There is no way to revise a ballot interpretation once it has
 been submitted from the Review Screen.
 
-![Review_Screen](./screenshots/y-verify_selections.png)
+![Submitting](./screenshots/281_submit_interpretation.png)
 
-The screen for the next ballot card will then be displayed. The process continues until
+The screen for the next ballot card will then be displayed. Review of ballot cards will continue until
 the Audit Board has reviewed all the ballot cards assigned to that 
 County for that round. After the last ballot card has been reviewed,  the end-of-round page
 will appear.
 with boxes for the Audit Board to "sign" their approval of the round
 by entering their names as indicated.
 
-![End of Round](./screenshots/End_of_Round_One.png)
+## End of Round
 
+![End of Round](./screenshots/290_End_of_Round_One.png)
+
+The Audit Board certifies the round by entering their names in the End of Round form.
 Clicking the "Submit" button on this page ends the County's work for the 
-audit round. The Audit Board will still be signed in to the RLA Tool. If the Audit Board
-wishes to sign out (say, for a coffee break) then 
-they may use the main menu to navigate to the "Audit Board Sign-In" page 
-and click the "Sign Out" button.
+audit round. 
 
-### County Home Page During Audit
-
-Note that while the audit is in progress, the County Home page gives a
-summary of progress. The County Info table shows how many Ballot Cards
-are required for the current round, and how many have already been
-audited. The number of "disagreements" is the number of ballot cards
-on which the Audit Board could not come to complete consensus. The
-number of "discrepancies" is the number of ballot cards where the
-Audit Board's interpretation differs from the interpretation in the
-uploaded CVR file, or where the ballot card in question could not be
-found.
-
-![County_Mid-Audit_Screen](./screenshots/County_Home_Mid_Round.png)
-
-### Audit Board Intermediate Audit Report Page
+## Signing out the Audit Board for Breaks
 
 If the Audit Board needs to take a break, go to lunch, head home for
 the night, or pause their work for any reason, then the Audit Board
-must file an "Intermediate Audit Report" on their auditing. They
-should use the Sign Out button on the Audit Board Sign-in
-Page. *(Ed. note: Intermediate Audit Reports are not included in this
-release.)*
+must 
+<!--- file an "Intermediate Audit Report" on their auditing. They should --->
+use the Sign Out button on the Audit Board Sign-in
+Page. 
+<!--- *(Ed. note: Intermediate Audit Reports are not included in this
+release.)* --->
 
-![Audit_Board_Sign_Out](./screenshots/252_sign_out_of_the_audit_board.png)
+![Audit Board Sign Out](./screenshots/252_sign_out_of_the_audit_board.png)
 
-### Audit Board Final Audit Report Page
 
-When the County has completed the entire audit, the County will be
-able to download a final audit report by clicking the button on the
-End of Audit page.
 
-![Final Audit Report](./screenshots/County_End_of_Audit.png)
+# Ending the Audit
+
+When the County has completed the entire audit, including all 
+rounds of ballot card review required by the State, the End of Audit page
+will appear.
+
+![End of Audit](./screenshots/295_County_End_of_Audit.png)
