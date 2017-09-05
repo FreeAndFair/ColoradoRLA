@@ -76,8 +76,46 @@ const SaveButton = (props: any) => {
     );
 };
 
+const ReadOnlyPage = (props: any) => {
+    const { election, nextPage, riskLimit } = props;
+
+    return (
+        <div>
+            <Nav />
+            <Breadcrumb />
+
+            <h2>Administer an Audit</h2>
+
+            <div className='pt-card'>
+                <h3>Election Info</h3>
+                <div>Election Date: { election.date }</div>
+                <div>Election Type: { election.type }</div>
+            </div>
+
+            <div className='pt-card'>
+                <h3>Risk Limit</h3>
+                <ReadonlyRiskLimit riskLimit={ riskLimit } />
+            </div>
+            <NextButton nextPage={ nextPage } />
+        </div>
+    );
+};
+
 const AuditPage = (props: any) => {
     const { election, nextPage, riskLimit } = props;
+
+    const electionAndRiskLimitSet = riskLimit
+                                 && election.date
+                                 && election.type;
+
+    if (electionAndRiskLimitSet) {
+        return (
+            <ReadOnlyPage
+                election={ election }
+                nextPage={ nextPage }
+                riskLimit={ riskLimit } />
+        );
+    }
 
     const forms: any = {};
 
