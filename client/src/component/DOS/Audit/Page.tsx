@@ -135,7 +135,7 @@ const AuditPage = (props: any) => {
             <h2>Administer an Audit</h2>
 
             <div className='pt-card'>
-                <h3>Audit Definition</h3>
+                <h3>Election Info</h3>
                 <div>Enter the date the election will take place, and the type of election.</div>
                 <ElectionDateForm forms={ forms } />
                 <ElectionTypeForm forms={ forms } />
