@@ -11,6 +11,8 @@ class ElectionDateForm extends React.Component<any, any> {
     public state = { date: defaultElectionDate };
 
     public render() {
+        this.props.forms.electionDateForm = this.state;
+
         const date = this.localDate();
 
         return (

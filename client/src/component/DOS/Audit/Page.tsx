@@ -65,7 +65,7 @@ const AuditPage = ({ nextPage, riskLimit, setRiskLimit }: any) => {
             <div className='pt-card'>
                 <h3>Audit Definition</h3>
                 <div>Enter the date the election will take place, and the type of election.</div>
-                <ElectionDateForm />
+                <ElectionDateForm forms={ forms } />
                 <ElectionTypeForm />
             </div>
 
