@@ -22,15 +22,17 @@ class ElectionTypeForm extends React.Component<any, FormState> {
         const { electionType } = this.state;
 
         return (
-            <RadioGroup
-                selectedValue={ electionType }
-                onChange={ this.onFormChange }
-                label='Election Type'>
-                <Radio label='Coordinated Election' value='coordinated' />
-                <Radio label='Primary Election' value='primary' />
-                <Radio label='General Election' value='general' />
-                <Radio label='Recall Election' value='recall' />
-            </RadioGroup>
+            <div className='pt-card'>
+                <RadioGroup
+                    selectedValue={ electionType }
+                    onChange={ this.onFormChange }
+                    label='Election Type'>
+                    <Radio label='Coordinated Election' value='coordinated' />
+                    <Radio label='Primary Election' value='primary' />
+                    <Radio label='General Election' value='general' />
+                    <Radio label='Recall Election' value='recall' />
+                </RadioGroup>
+            </div>
         );
     }
 
