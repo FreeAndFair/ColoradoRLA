@@ -19,6 +19,8 @@ class ElectionTypeForm extends React.Component<any, FormState> {
     };
 
     public render() {
+        this.props.forms.electionTypeForm = this.state;
+
         const { electionType } = this.state;
 
         return (
@@ -38,6 +40,7 @@ class ElectionTypeForm extends React.Component<any, FormState> {
 
     private onFormChange = (e: React.ChangeEvent<any>) => {
         const electionType = e.target.value;
+
         this.setState({ electionType });
     }
 }
