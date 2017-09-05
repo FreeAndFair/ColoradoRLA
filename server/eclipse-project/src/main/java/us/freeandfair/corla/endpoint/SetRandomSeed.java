@@ -22,7 +22,7 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
-import us.freeandfair.corla.json.SubmittedRandomSeed;
+import us.freeandfair.corla.json.SubmittedElectionInfo;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 
@@ -74,8 +74,8 @@ public class SetRandomSeed extends AbstractDoSDashboardEndpoint {
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
     try {
-      final SubmittedRandomSeed seed = 
-          Main.GSON.fromJson(the_request.body(), SubmittedRandomSeed.class);
+      final SubmittedElectionInfo seed = 
+          Main.GSON.fromJson(the_request.body(), SubmittedElectionInfo.class);
       if (DoSDashboard.isValidSeed(seed.seed())) {
         final DoSDashboard dosd = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
         if (dosd == null) {

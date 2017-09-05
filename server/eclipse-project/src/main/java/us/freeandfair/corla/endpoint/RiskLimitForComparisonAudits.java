@@ -24,7 +24,7 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
-import us.freeandfair.corla.json.SubmittedRiskLimit;
+import us.freeandfair.corla.json.SubmittedElectionInfo;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 
@@ -77,8 +77,8 @@ public class RiskLimitForComparisonAudits extends AbstractDoSDashboardEndpoint {
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
     try {
-      final SubmittedRiskLimit risk_limit = 
-          Main.GSON.fromJson(the_request.body(), SubmittedRiskLimit.class);
+      final SubmittedElectionInfo risk_limit = 
+          Main.GSON.fromJson(the_request.body(), SubmittedElectionInfo.class);
       final BigDecimal parsed_limit = parseRiskLimit(risk_limit.riskLimit());
       if (parsed_limit == null) {
         invariantViolation(the_response, "invalid risk limit specified");
