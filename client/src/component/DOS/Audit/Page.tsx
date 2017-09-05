@@ -38,23 +38,50 @@ const ReadonlyRiskLimit = ({ riskLimit }: any) => {
     );
 };
 
-const AuditPage = (props: any) => {
-    const { election, nextPage, riskLimit, setRiskLimit } = props;
-    const forms: any = {};
+const NextButton = (props: any) => {
+    const { nextPage } = props;
+
+    return (
+        <button onClick={ nextPage } className='pt-button pt-intent-primary'>
+            Next
+        </button>
+    );
+};
+
+const SaveButton = (props: any) => {
+    const { forms, riskLimit, setRiskLimit } = props;
 
     const buttonClick = () => {
         if (!riskLimit) {
             setRiskLimit(forms.riskLimit.comparisonLimit);
         }
-
-        nextPage();
     };
+
+    return (
+        <button onClick={ buttonClick } className='pt-button pt-intent-primary'>
+            Save
+        </button>
+    );
+};
+
+const AuditPage = (props: any) => {
+    const { election, nextPage, riskLimit, setRiskLimit } = props;
+
+    const forms: any = {};
+
 
     const riskLimitForm = riskLimit
                         ? <ReadonlyRiskLimit riskLimit={ riskLimit } />
                         : <RiskLimitForm forms={ forms } riskLimit={ riskLimit } />;
 
-    const buttonText = riskLimit ? 'Next' : 'Save & Next';
+    const pageButton = riskLimit
+                     ? <NextButton nextPage={ nextPage } />
+                     : (
+                         <SaveButton
+                             forms={ forms}
+                             riskLimit={ riskLimit }
+                             setRiskLimit={ setRiskLimit } />
+                     );
 
     return (
         <div>
@@ -81,10 +108,7 @@ const AuditPage = (props: any) => {
                     <span> </span>
                     Once entered, this risk limit cannot be modified.
                 </div>
-
-                <button onClick={ buttonClick } className='pt-button pt-intent-primary'>
-                    { buttonText }
-                </button>
+                { pageButton }
             </div>
         </div>
     );
