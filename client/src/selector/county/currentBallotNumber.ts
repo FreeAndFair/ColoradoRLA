@@ -1,12 +1,15 @@
+import * as _ from 'lodash';
+
+
 function currentBallotNumber(state: any): number {
     const { county } = state;
-    const { ballotsToAudit, currentBallot } = county;
+    const { cvrsToAudit, currentBallot } = county;
 
-    if (!ballotsToAudit || !currentBallot) {
+    if (!cvrsToAudit || !currentBallot) {
         return null;
     }
 
-    return 1 + ballotsToAudit.indexOf(currentBallot.id);
+    return 1 + _.findIndex(cvrsToAudit, (cvr: any) => cvr.db_id === currentBallot.id);
 }
 
 
