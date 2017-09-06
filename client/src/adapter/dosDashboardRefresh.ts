@@ -26,7 +26,7 @@ function parseRounds(rounds: any[]) {
 }
 
 
-const parseCountyStatus = (countyStatus: any) => {
+function parseCountyStatus(countyStatus: any) {
     const result: any = {};
 
     _.forEach(countyStatus, c => {
@@ -49,9 +49,9 @@ const parseCountyStatus = (countyStatus: any) => {
     });
 
     return result;
-};
+}
 
-const parseAuditedContests = (data: any) => {
+function parseAuditedContests(data: any) {
     const result: any = {};
 
     _.forEach(data, (reason: any, idStr: any) => {
@@ -60,7 +60,7 @@ const parseAuditedContests = (data: any) => {
     });
 
     return result;
-};
+}
 
 function parseElection(data: any): any {
     return {
