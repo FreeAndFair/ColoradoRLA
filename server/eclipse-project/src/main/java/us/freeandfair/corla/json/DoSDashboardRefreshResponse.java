@@ -79,7 +79,7 @@ public class DoSDashboardRefreshResponse {
   private final Set<Long> my_hand_count_contests;
   
   /**
-   * The election info.
+   * The audit info.
    */
   private final AuditInfo my_audit_info;
   

@@ -180,7 +180,7 @@ public class CountyDashboardRefreshResponse {
   private final Round my_current_round;
   
   /**
-   * The election info.
+   * The audit info.
    */
   private final AuditInfo my_audit_info;
   
