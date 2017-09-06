@@ -33,7 +33,7 @@ import us.freeandfair.corla.persistence.Persistence;
  * @version 0.0.1
  */
 @SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.CyclomaticComplexity"})
-public class SetElectionInfo extends AbstractDoSDashboardEndpoint {  
+public class UpdateElectionInfo extends AbstractDoSDashboardEndpoint {  
   /**
    * {@inheritDoc}
    */
