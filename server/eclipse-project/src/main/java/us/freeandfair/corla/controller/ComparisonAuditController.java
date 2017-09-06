@@ -77,7 +77,7 @@ public final class ComparisonAuditController {
     }
 
     final String seed = 
-        Persistence.getByID(DoSDashboard.ID, DoSDashboard.class).electionInfo().seed();
+        Persistence.getByID(DoSDashboard.ID, DoSDashboard.class).auditInfo().seed();
     final boolean with_replacement = true;
     // assuming that CVRs are indexed from 0
     final int minimum = 0;
@@ -285,7 +285,7 @@ public final class ComparisonAuditController {
     boolean result = true;
     final DoSDashboard dosdb =
         Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
-    final BigDecimal risk_limit = dosdb.electionInfo().riskLimit();
+    final BigDecimal risk_limit = dosdb.auditInfo().riskLimit();
     final Set<Contest> all_driving_contests = new HashSet<>();
     final Set<Contest> county_driving_contests = new HashSet<>();
     final Set<CountyContestComparisonAudit> comparison_audits = new HashSet<>();

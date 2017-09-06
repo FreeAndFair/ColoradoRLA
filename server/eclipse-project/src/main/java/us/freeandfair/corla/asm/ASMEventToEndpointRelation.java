@@ -57,10 +57,7 @@ public class ASMEventToEndpointRelation {
   private void addDoSDashboardPairs() {
     // All Department of State Dashboard pairs.
     my_relation.add(new Pair<ASMEvent, String>(
-        ESTABLISH_RISK_LIMIT_FOR_COMPARISON_AUDITS_EVENT,
-        UNIMPLEMENTED));
-    my_relation.add(new Pair<ASMEvent, String>(
-        SELECT_CONTESTS_FOR_COMPARISON_AUDIT_EVENT,
+        PARTIAL_AUDIT_INFO_EVENT,
         UNIMPLEMENTED));
     my_relation.add(new Pair<ASMEvent, String>(
         PUBLIC_SEED_EVENT,

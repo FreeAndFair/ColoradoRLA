@@ -22,6 +22,7 @@ import javax.persistence.PersistenceException;
 import us.freeandfair.corla.asm.ASMState;
 import us.freeandfair.corla.asm.ASMUtilities;
 import us.freeandfair.corla.asm.DoSDashboardASM;
+import us.freeandfair.corla.model.AuditInfo;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.ContestToAudit;
 import us.freeandfair.corla.model.ContestToAudit.AuditReason;
@@ -29,7 +30,6 @@ import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyContestComparisonAudit;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
-import us.freeandfair.corla.model.ElectionInfo;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CountyContestComparisonAuditQueries;
 import us.freeandfair.corla.util.Pair;
@@ -81,7 +81,7 @@ public class DoSDashboardRefreshResponse {
   /**
    * The election info.
    */
-  private final ElectionInfo my_election_info;
+  private final AuditInfo my_audit_info;
   
   /**
    * Constructs a new DosDashboardRefreshResponse.
@@ -90,7 +90,7 @@ public class DoSDashboardRefreshResponse {
    * @param the_audited_contests The audited contests.
    * @param the_county_status The county statuses.
    * @param the_hand_count_contests The hand count contests.
-   * @param the_election_info The election info.
+   * @param the_audit_info The election info.
    */
   @SuppressWarnings("PMD.ExcessiveParameterList")
   protected DoSDashboardRefreshResponse(final ASMState the_asm_state,
@@ -102,14 +102,14 @@ public class DoSDashboardRefreshResponse {
                                         final Map<Long, CountyDashboardRefreshResponse> 
                                            the_county_status,
                                         final Set<Long> the_hand_count_contests,
-                                        final ElectionInfo the_election_info) {
+                                        final AuditInfo the_audit_info) {
     my_asm_state = the_asm_state;
     my_audited_contests = the_audited_contests;
     my_estimated_ballots_to_audit = the_estimated_ballots_to_audit;
     my_optimistic_ballots_to_audit = the_optimistic_ballots_to_audit;
     my_county_status = the_county_status;
     my_hand_count_contests = the_hand_count_contests;
-    my_election_info = the_election_info;
+    my_audit_info = the_audit_info;
   }
   
   /**
@@ -156,7 +156,7 @@ public class DoSDashboardRefreshResponse {
                                            optimistic_ballots_to_audit,
                                            countyStatusMap(),
                                            hand_count_contests,
-                                           the_dashboard.electionInfo());
+                                           the_dashboard.auditInfo());
   }
   
   /**

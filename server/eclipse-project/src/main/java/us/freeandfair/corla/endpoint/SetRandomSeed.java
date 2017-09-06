@@ -22,8 +22,8 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
+import us.freeandfair.corla.model.AuditInfo;
 import us.freeandfair.corla.model.DoSDashboard;
-import us.freeandfair.corla.model.ElectionInfo;
 import us.freeandfair.corla.persistence.Persistence;
 
 /**
@@ -74,26 +74,33 @@ public class SetRandomSeed extends AbstractDoSDashboardEndpoint {
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
     try {
-      final ElectionInfo seed = 
-          Main.GSON.fromJson(the_request.body(), ElectionInfo.class);
-      if (DoSDashboard.isValidSeed(seed.seed())) {
-        final DoSDashboard dosd = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
-        if (dosd == null) {
+      final AuditInfo submitted = 
+          Main.GSON.fromJson(the_request.body(), AuditInfo.class);
+      
+      if (submitted == null) {
+        badDataContents(the_response, "malformed random seed");
+      } else if (DoSDashboard.isValidSeed(submitted.seed())) {
+        // if the rest of the audit info isn't set, we can't set the seed
+        final DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
+        if (dosdb == null) {
           Main.LOGGER.error("could not get department of state dashboard");
           serverError(the_response, "could not set random seed");
-        } else {
-          dosd.updateElectionInfo(seed);
-          Persistence.saveOrUpdate(dosd);
-          ok(the_response, "random seed set to " + seed.seed());
         }
+        
+        // anything in the submitted audit info that isn't a random seed is ignored
+        final AuditInfo seed = 
+            new AuditInfo(null, null, null, submitted.seed(), null);
+        dosdb.updateAuditInfo(seed);
+        Persistence.saveOrUpdate(dosdb);
+        ok(the_response, "random seed set to " + seed.seed());
       } else {
-        invariantViolation(the_response, "Invalid random seed specified: " + seed.seed());
-      }
+        invariantViolation(the_response, "invalid random seed specified: " + submitted.seed());
+      }  
     } catch (final PersistenceException e) {
       serverError(the_response, "unable to set random seed: " + e);
 
     } catch (final JsonParseException e) {
-      badDataContents(the_response, "Invalid random seed request");
+      badDataContents(the_response, "malformed random seed");
     }
     return my_endpoint_result.get();
   }

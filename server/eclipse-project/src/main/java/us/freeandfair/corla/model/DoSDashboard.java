@@ -88,7 +88,7 @@ public class DoSDashboard implements PersistentEntity, Serializable {
    * The election info.
    */
   @Embedded
-  private ElectionInfo my_election_info = new ElectionInfo();
+  private AuditInfo my_audit_info = new AuditInfo();
   
   /**
    * Constructs a new Department of State dashboard with default values.
@@ -158,21 +158,21 @@ public class DoSDashboard implements PersistentEntity, Serializable {
   }
   
   /**
-   * @return the election info.
+   * @return the audit info.
    */
-  public ElectionInfo electionInfo() {
-    return my_election_info;
+  public AuditInfo auditInfo() {
+    return my_audit_info;
   }
   
   /**
-   * Updates the election info, using the non-null fields of the specified 
-   * ElectionInfo. This method does not do any sanity checks on the fields;
+   * Updates the audit info, using the non-null fields of the specified 
+   * AuditInfo. This method does not do any sanity checks on the fields;
    * it is assumed that they are checked by the caller.
    * 
    * @param the_new_info The new info.
    */
-  public void updateElectionInfo(final ElectionInfo the_new_info) {
-    my_election_info.updateFrom(the_new_info);
+  public void updateAuditInfo(final AuditInfo the_new_info) {
+    my_audit_info.updateFrom(the_new_info);
   }
   
   /**
@@ -226,7 +226,7 @@ public class DoSDashboard implements PersistentEntity, Serializable {
       // there can only be one DoS dashboard in the system for each
       // ID, so we check their equivalence by ID
       result &= nullableEquals(other_ddb.contestsToAudit(), contestsToAudit());
-      result &= nullableEquals(other_ddb.electionInfo(), electionInfo());
+      result &= nullableEquals(other_ddb.auditInfo(), auditInfo());
     } else {
       result = false;
     }
@@ -238,6 +238,6 @@ public class DoSDashboard implements PersistentEntity, Serializable {
    */
   @Override
   public int hashCode() {
-    return nullableHashCode(electionInfo());
+    return nullableHashCode(auditInfo());
   }
 }

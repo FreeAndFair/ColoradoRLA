@@ -25,15 +25,14 @@ import us.freeandfair.corla.asm.ASMState;
 import us.freeandfair.corla.asm.ASMUtilities;
 import us.freeandfair.corla.asm.AuditBoardDashboardASM;
 import us.freeandfair.corla.asm.CountyDashboardASM;
-import us.freeandfair.corla.controller.ComparisonAuditController;
 import us.freeandfair.corla.model.AuditBoard;
+import us.freeandfair.corla.model.AuditInfo;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.ContestToAudit;
 import us.freeandfair.corla.model.ContestToAudit.AuditType;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
-import us.freeandfair.corla.model.ElectionInfo;
 import us.freeandfair.corla.model.Round;
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.model.UploadedFile.FileStatus;
@@ -183,7 +182,7 @@ public class CountyDashboardRefreshResponse {
   /**
    * The election info.
    */
-  private final ElectionInfo my_election_info;
+  private final AuditInfo my_audit_info;
   
   /**
    * Constructs a new CountyDashboardRefreshResponse.
@@ -205,7 +204,7 @@ public class CountyDashboardRefreshResponse {
    * current round.
    * @param the_cast_ballot_count The number of ballots cast.
    * @param the_audited_ballot_count The number of ballots audited.
-   * @param the_discrepancy_count The number of discrepencies.
+   * @param the_discrepancy_count The number of discrepancies.
    * @param the_disagreement_count The number of disagreements.
    * @param the_ballot_under_audit_id The ID of the CVR under audit.
    * @param the_audited_prefix_length The length of the audited prefix of the
@@ -242,7 +241,7 @@ public class CountyDashboardRefreshResponse {
                                            final Integer the_audited_prefix_length,
                                            final List<Round> the_rounds,
                                            final Round the_current_round,
-                                           final ElectionInfo the_election_info) {
+                                           final AuditInfo the_audit_info) {
     my_id = the_id;
     my_asm_state = the_asm_state;
     my_audit_board_asm_state = the_audit_board_asm_state;
@@ -268,7 +267,7 @@ public class CountyDashboardRefreshResponse {
     my_audited_prefix_length = the_audited_prefix_length;
     my_rounds = the_rounds;
     my_current_round = the_current_round;
-    my_election_info = the_election_info;
+    my_audit_info = the_audit_info;
   }
   
   /**
@@ -367,7 +366,7 @@ public class CountyDashboardRefreshResponse {
                                               the_dashboard.auditedPrefixLength(),
                                               the_dashboard.rounds(),
                                               the_dashboard.currentRound(),
-                                              dosd.electionInfo());
+                                              dosd.auditInfo());
   }
   
   /**

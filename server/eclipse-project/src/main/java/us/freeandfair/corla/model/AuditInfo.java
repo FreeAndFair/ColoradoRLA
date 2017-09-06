@@ -30,7 +30,7 @@ import javax.persistence.Embeddable;
 //this class has many fields that would normally be declared final, but
 //cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
-public class ElectionInfo implements Serializable {
+public class AuditInfo implements Serializable {
   /**
    * The database stored precision for decimal types.
    */
@@ -75,7 +75,7 @@ public class ElectionInfo implements Serializable {
   /**
    * Constructs an empty ElectionInfo.
    */
-  public ElectionInfo() {
+  public AuditInfo() {
     // defaults
   }
   
@@ -88,7 +88,7 @@ public class ElectionInfo implements Serializable {
    * @param the_seed The random seed.
    * @param the_risk_limit The risk limit (as a string).
    */
-  public ElectionInfo(final String the_election_type,
+  public AuditInfo(final String the_election_type,
                                final Instant the_election_date,
                                final Instant the_public_meeting_date,
                                final String the_seed,
@@ -145,7 +145,7 @@ public class ElectionInfo implements Serializable {
    * 
    * @param the_other_info The other ElectionInfo.
    */
-  public void updateFrom(final ElectionInfo the_other_info) {
+  public void updateFrom(final AuditInfo the_other_info) {
     if (the_other_info.my_election_type != null) {
       my_election_type = the_other_info.my_election_type;
     }
@@ -172,8 +172,8 @@ public class ElectionInfo implements Serializable {
   @Override
   public boolean equals(final Object the_other) {
     boolean result = true;
-    if (the_other instanceof ElectionInfo) {
-      final ElectionInfo other_info = (ElectionInfo) the_other;
+    if (the_other instanceof AuditInfo) {
+      final AuditInfo other_info = (AuditInfo) the_other;
       result &= nullableEquals(other_info.electionType(), electionType());
       result &= nullableEquals(other_info.electionDate(), electionDate());
       result &= nullableEquals(other_info.publicMeetingDate(), publicMeetingDate());

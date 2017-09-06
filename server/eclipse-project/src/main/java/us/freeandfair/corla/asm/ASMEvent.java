@@ -23,9 +23,8 @@ public interface ASMEvent extends Event {
    * @trace asm.department_of_state_dashboard_event
    */
   enum DoSDashboardEvent implements ASMEvent {
-    ESTABLISH_RISK_LIMIT_FOR_COMPARISON_AUDITS_EVENT, // public inbound event
-    SELECT_CONTESTS_FOR_COMPARISON_AUDIT_EVENT, // public inbound event
-    PUBLISH_AUDIT_DATA_EVENT, // public inbound event @review CDOS
+    PARTIAL_AUDIT_INFO_EVENT, // public inbound event 
+    COMPLETE_AUDIT_INFO_EVENT, // public inbound event
     PUBLIC_SEED_EVENT, // public inbound event
     DOS_START_ROUND_EVENT, // public inbound event
     DOS_ROUND_COMPLETE_EVENT, // private internal event

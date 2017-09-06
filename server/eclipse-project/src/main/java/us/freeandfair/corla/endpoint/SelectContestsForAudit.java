@@ -11,7 +11,7 @@
 
 package us.freeandfair.corla.endpoint;
 
-import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.SELECT_CONTESTS_FOR_COMPARISON_AUDIT_EVENT;
+import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.PARTIAL_AUDIT_INFO_EVENT;
 
 import javax.persistence.PersistenceException;
 
@@ -55,7 +55,7 @@ public class SelectContestsForAudit extends AbstractDoSDashboardEndpoint {
    */
   @Override
   protected ASMEvent endpointEvent() {
-    return SELECT_CONTESTS_FOR_COMPARISON_AUDIT_EVENT;
+    return PARTIAL_AUDIT_INFO_EVENT;
   }
   
   /**
