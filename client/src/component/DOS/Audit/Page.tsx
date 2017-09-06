@@ -60,11 +60,19 @@ const SaveButton = (props: any) => {
     const { disabled, forms } = props;
 
     const buttonClick = () => {
-        const date = corlaDate.parse(forms.electionDateForm.date);
+        const electionDate = corlaDate.parse(forms.electionDateForm.date);
         const { type } = forms.electionTypeForm;
+        const publicMeetingDate = corlaDate.parse(forms.publicMeetingDateForm.date);
         const riskLimit = forms.riskLimit.comparisonLimit;
 
-        setAuditInfo({ election: { date, type }, riskLimit });
+        setAuditInfo({
+            election: {
+                date: electionDate,
+                type,
+            },
+            publicMeetingDate,
+            riskLimit,
+        });
     };
 
     return (
