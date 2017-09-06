@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import EndOfLastRoundPage from './LastRoundPage';
 import EndOfRoundPage from './Page';
 
 import allRoundsCompleteSelector from 'corla/selector/county/allRoundsComplete';
