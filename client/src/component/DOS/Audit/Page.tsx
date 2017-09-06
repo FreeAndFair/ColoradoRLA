@@ -12,6 +12,7 @@ import setElectionInfo from 'corla/action/dos/setElectionInfo';
 import setRiskLimit from 'corla/action/dos/setRiskLimit';
 
 import { timezone } from 'corla/config';
+import * as format from 'corla/format';
 
 
 const Breadcrumb = () => (
@@ -87,7 +88,7 @@ const ReadOnlyPage = (props: any) => {
     const { election, nextPage, riskLimit } = props;
 
     const electionDate = corlaDate.format(election.date);
-    const electionType = election.type;
+    const electionType = format.electionType(election.type);
 
     return (
         <div>
