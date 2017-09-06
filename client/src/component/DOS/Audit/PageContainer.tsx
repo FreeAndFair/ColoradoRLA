@@ -19,6 +19,7 @@ class AuditPageContainer extends React.Component<any, any> {
 
         const props = {
             election,
+            formValid: this.state.formValid,
             nextPage: () => history.push('/sos/audit/select-contests'),
             riskLimit,
             setFormValid: this.setFormValid,
