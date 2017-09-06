@@ -9,24 +9,24 @@ type ElectionType = 'coordinated'
                   | 'recall';
 
 interface FormState {
-    electionType: ElectionType;
+    type: ElectionType;
 }
 
 
 class ElectionTypeForm extends React.Component<any, FormState> {
     public state: FormState = {
-        electionType: null,
+        type: null,
     };
 
     public render() {
         this.props.forms.electionTypeForm = this.state;
 
-        const { electionType } = this.state;
+        const { type } = this.state;
 
         return (
             <div className='pt-card'>
                 <RadioGroup
-                    selectedValue={ electionType }
+                    selectedValue={ type }
                     onChange={ this.onFormChange }
                     label='Election Type'>
                     <Radio label='Coordinated Election' value='coordinated' />
@@ -39,9 +39,9 @@ class ElectionTypeForm extends React.Component<any, FormState> {
     }
 
     private onFormChange = (e: React.ChangeEvent<any>) => {
-        const electionType = e.target.value;
+        const type = e.target.value;
 
-        this.setState({ electionType });
+        this.setState({ type });
     }
 }
 
