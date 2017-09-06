@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import * as moment from 'moment-timezone';
+
 import Nav from '../Nav';
 
 import ElectionDateForm from './ElectionDateForm';
@@ -8,6 +10,8 @@ import RiskLimitForm from './RiskLimitForm';
 
 import setElectionInfo from 'corla/action/dos/setElectionInfo';
 import setRiskLimit from 'corla/action/dos/setRiskLimit';
+
+import { timezone } from 'corla/config';
 
 
 const Breadcrumb = () => (
@@ -59,7 +63,9 @@ const SaveButton = (props: any) => {
         const { type } = forms.electionTypeForm;
 
         if (date && type) {
-            setElectionInfo(date, type);
+            const dateObj = moment.tz(date, timezone).toDate();
+
+            setElectionInfo(dateObj, type);
         }
 
         if (!riskLimit) {
