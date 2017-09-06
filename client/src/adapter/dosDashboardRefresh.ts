@@ -75,6 +75,16 @@ function parseElection(data: any): any {
     };
 }
 
+function parseRiskLimit(data: any): number {
+    const info = data.audit_info;
+
+    if (!info) {
+        return null;
+    }
+
+    return info.risk_limit;
+}
+
 
 export const parse = (data: any) => ({
     asmState: data.asm_state,
@@ -84,6 +94,6 @@ export const parse = (data: any) => ({
     election: parseElection(data),
     estimatedBallotsToAudit: data.estimated_ballots_to_audit,
     handCountContests: data.hand_count_contests,
-    riskLimit: data.risk_limit,
+    riskLimit: parseRiskLimit(data),
     seed: data.random_seed,
 });
