@@ -41,6 +41,8 @@ class ElectionTypeForm extends React.Component<any, FormState> {
     private onFormChange = (e: React.ChangeEvent<any>) => {
         const type = e.target.value;
 
+        this.props.setFormValid(!!type);
+
         this.setState({ type });
     }
 }

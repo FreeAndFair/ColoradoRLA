@@ -104,16 +104,8 @@ const ReadOnlyPage = (props: any) => {
     );
 };
 
-function formsAreValid(forms: any): boolean {
-    const { electionDateForm, electionTypeForm, riskLimitForm } = forms;
-
-    return electionDateForm && electionDateForm.date
-        && electionTypeForm && electionTypeForm.electionType
-        && riskLimitForm && riskLimitForm.comparisonLimit;
-}
-
 const AuditPage = (props: any) => {
-    const { election, nextPage, riskLimit } = props;
+    const { election, formValid, nextPage, riskLimit, setFormValid } = props;
 
     const electionAndRiskLimitSet = riskLimit
                                  && election.date
@@ -130,7 +122,7 @@ const AuditPage = (props: any) => {
 
     const forms: any = {};
 
-    const disableButton = !formsAreValid(forms);
+    const disableButton = !formValid;
 
     return (
         <div>
@@ -143,7 +135,7 @@ const AuditPage = (props: any) => {
                 <h3>Election Info</h3>
                 <div>Enter the date the election will take place, and the type of election.</div>
                 <ElectionDateForm forms={ forms } />
-                <ElectionTypeForm forms={ forms } />
+                <ElectionTypeForm forms={ forms } setFormValid={ setFormValid } />
             </div>
 
             <div className='pt-card'>
