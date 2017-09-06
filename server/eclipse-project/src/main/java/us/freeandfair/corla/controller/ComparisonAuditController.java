@@ -225,21 +225,22 @@ public final class ComparisonAuditController {
     final Set<CastVoteRecord> previous_cvr_set = new HashSet<>();
     final List<CastVoteRecord> cvr_to_audit_list = new ArrayList<>();
     
-    // if, and only if, we're including audited ballots, we need to _exclude_ ballots
-    // that were audited prior to the start index - the easy way to do that is to 
-    // simply exclude all audited ballots that occur in the entire sequence prior to 
-    // the_start_index
+    // we should always exclude records that occurred in the sequence before 
+    // the_start_index, since they are no longer relevant to the requested
+    // stage of the audit
     
-    if (the_audited) {
+    if (the_start_index > 0) {
       previous_cvr_set.addAll(getCVRsInAuditSequence(the_cdb, 0, the_start_index - 1));
     }
-    
+
     for (int i = 0; i < cvrs.size(); i++) {
       final CastVoteRecord cvr = cvrs.get(i);
-      if (!cvr_set.contains(cvr) && 
-          ((the_audited && !previous_cvr_set.contains(cvr)) || !audited(the_cdb, cvr))) {
-        cvr_to_audit_list.add(cvr);
-      } 
+      if (!cvr_set.contains(cvr) && !previous_cvr_set.contains(cvr)) {
+        cvr.setAuditFlag(audited(the_cdb, cvr));
+        if (the_audited || !cvr.auditFlag()) {
+          cvr_to_audit_list.add(cvr);
+        }
+      }
       cvr_set.add(cvr);
     }
     
@@ -580,7 +581,8 @@ public final class ComparisonAuditController {
   
   /**
    * Checks to see if the specified CVR has been audited on the specified county
-   * dashboard.
+   * dashboard. This check sets the audit flag on the CVR record in memory, 
+   * so its result can be accessed later without an expensive database hit.
    * 
    * @param the_cdb The county dashboard.
    * @param the_cvr The CVR.

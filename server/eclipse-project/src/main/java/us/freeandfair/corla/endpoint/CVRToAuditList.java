@@ -114,7 +114,7 @@ public class CVRToAuditList extends AbstractEndpoint {
         
         if (round != null) {
           final int r = Integer.parseInt(round);
-          result &= r >= 0;
+          result &= r > 0;
         }
       } catch (final NumberFormatException e) {
         result = false;
@@ -192,7 +192,8 @@ public class CVRToAuditList extends AbstractEndpoint {
                                                  cvr.batchID(), cvr.recordID(), 
                                                  cvr.imprintedID(), 
                                                  cvr.cvrNumber(), cvr.id(),
-                                                 cvr.ballotType(), location));
+                                                 cvr.ballotType(), location,
+                                                 cvr.auditFlag()));
       }
       response_list.sort(new BallotOrderComparator());
       okJSON(the_response, Main.GSON.toJson(response_list));

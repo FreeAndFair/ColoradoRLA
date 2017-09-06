@@ -158,6 +158,15 @@ public class CastVoteRecord implements PersistentEntity, Serializable {
   private List<CVRContestInfo> my_contest_info = new ArrayList<>();
   
   /**
+   * A transient flag that indicates whether this CVR was audited; this is only
+   * used for passing information around within the RLA tool and is not serialized
+   * in the database; the authoritative source of information about whether a CVR
+   * has been audited, and in what audit, is the responsible audit information 
+   * object.
+   */
+  private transient boolean my_audit_flag;
+  
+  /**
    * Constructs an empty cast vote record, solely for persistence.
    */
   public CastVoteRecord() {
@@ -323,6 +332,27 @@ public class CastVoteRecord implements PersistentEntity, Serializable {
       }
     }
     return null;
+  }
+  
+  /**
+   * @return the audit flag. This flag is meaningless unless it was explicitly set
+   * when this record was loaded. It is useful only for communicating information
+   * about a CVR within a specific computation of the tool, and is not serialized
+   * in the database; the authoritative source of information about whether a CVR
+   * has been audited, and in what audit, is the responsible audit information 
+   * object.
+   */
+  public boolean auditFlag() {
+    return my_audit_flag;
+  }
+  
+  /**
+   * Sets the audit flag. 
+   * 
+   * @param the_audit_flag The new flag.
+   */
+  public void setAuditFlag(final boolean the_audit_flag) {
+    my_audit_flag = the_audit_flag;
   }
   
   /**

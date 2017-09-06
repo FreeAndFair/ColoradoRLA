@@ -72,6 +72,11 @@ public class CVRToAuditResponse {
   protected final String my_storage_location;
 
   /**
+   * A flag that indicates whether or not the CVR has been audited.
+   */
+  protected final boolean my_audited;
+  
+  /**
    * Create a new response object.
    * 
    * @param the_audit_sequence_number The audit sequence number.
@@ -83,7 +88,9 @@ public class CVRToAuditResponse {
    * @param the_db_id The database ID.
    * @param the_ballot_type The ballot type.
    * @param the_storage_location The storage location.
+   * @param the_audited true if the ballot has been audited, false otherwise.
    */
+  @SuppressWarnings("PMD.ExcessiveParameterList")
   public CVRToAuditResponse(final int the_audit_sequence_number,
                             final int the_scanner_id,
                             final int the_batch_id,
@@ -92,7 +99,8 @@ public class CVRToAuditResponse {
                             final int the_cvr_number,
                             final long the_db_id,
                             final String the_ballot_type,
-                            final String the_storage_location) {
+                            final String the_storage_location,
+                            final boolean the_audited) {
     my_audit_sequence_number = the_audit_sequence_number;
     my_scanner_id = the_scanner_id;
     my_batch_id = the_batch_id;
@@ -102,6 +110,7 @@ public class CVRToAuditResponse {
     my_db_id = the_db_id;
     my_ballot_type = the_ballot_type;
     my_storage_location = the_storage_location;
+    my_audited = the_audited;
   }
   
   /**
