@@ -62,12 +62,20 @@ const parseAuditedContests = (data: any) => {
     return result;
 };
 
+function parseElection(data: any): any {
+    return {
+        date: new Date(data.election_date),
+        type: data.election_type,
+    };
+}
+
 
 export const parse = (data: any) => ({
     asmState: data.asm_state,
     auditStage: data.audit_stage,
     auditedContests: parseAuditedContests(data.audited_contests),
     countyStatus: parseCountyStatus(data.county_status),
+    election: parseElection(data),
     estimatedBallotsToAudit: data.estimated_ballots_to_audit,
     handCountContests: data.hand_count_contests,
     riskLimit: data.risk_limit,
