@@ -6,6 +6,10 @@ import AuditPage from './Page';
 
 
 class AuditPageContainer extends React.Component<any, any> {
+    public state: any = {
+        formValid: false,
+    };
+
     public render() {
         const { election, history, riskLimit, sos } = this.props;
 
@@ -17,9 +21,14 @@ class AuditPageContainer extends React.Component<any, any> {
             election,
             nextPage: () => history.push('/sos/audit/select-contests'),
             riskLimit,
+            setFormValid: this.setFormValid,
         };
 
         return <AuditPage { ...props } />;
+    }
+
+    private setFormValid = (formValid: boolean) => {
+        this.setState({ formValid });
     }
 }
 
