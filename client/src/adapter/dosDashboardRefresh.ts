@@ -63,9 +63,15 @@ function parseAuditedContests(data: any) {
 }
 
 function parseElection(data: any): any {
+    const info = data.audit_info;
+
+    if (!info) {
+        return null;
+    }
+
     return {
-        date: new Date(data.election_date),
-        type: data.election_type,
+        date: new Date(info.election_date),
+        type: info.election_type,
     };
 }
 
