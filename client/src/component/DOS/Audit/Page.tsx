@@ -90,6 +90,7 @@ const ReadOnlyPage = (props: any) => {
 
     const electionDate = corlaDate.format(election.date);
     const electionType = format.electionType(election.type);
+    const publicMeetingDate = corlaDate.format(props.publicMeetingDate);
 
     return (
         <div>
@@ -102,6 +103,7 @@ const ReadOnlyPage = (props: any) => {
                 <h3>Election Info</h3>
                 <div>Election Date: { electionDate }</div>
                 <div>Election Type: { electionType }</div>
+                <div>Public Meeting Date: { publicMeetingDate }</div>
             </div>
 
             <div className='pt-card'>
