@@ -6,6 +6,9 @@ import SignOffFormContainer from './SignOffFormContainer';
 
 import finishAudit from 'corla/action/county/finishAudit';
 
+import corlaDate from 'corla/date';
+import * as format from 'corla/format';
+
 
 const PreviousRoundSignedOff = (props: any) => {
     const { roundNumber } = props;
@@ -44,6 +47,8 @@ const EndOfRoundPage = (props: any) => {
     const {
         allRoundsComplete,
         countyInfo,
+        currentRound,
+        election,
         estimatedBallotsToAudit,
         previousRound,
         previousRoundSignedOff,
@@ -60,6 +65,9 @@ const EndOfRoundPage = (props: any) => {
         return <PreviousRoundSignedOff roundNumber={ roundNumber } />;
     }
 
+    const electionDate = corlaDate.format(election.date);
+    const electionType = format.electionType(election.type);
+
     return (
         <div>
             <CountyNav />
@@ -67,7 +75,8 @@ const EndOfRoundPage = (props: any) => {
             <div className='pt-card'>
                 Congratulations! You have completed reporting the votes on all ballots
                 randomly selected for this round of the risk-limiting audit of the
-                <span> { countyName } </span> County [Election Date] [Election Type] Election.
+                <span> { countyName } </span> County <span> { electionDate } </span>
+                <span> { electionType} </span>.
             </div>
 
             <div className='pt-card'>
@@ -80,8 +89,9 @@ const EndOfRoundPage = (props: any) => {
                     <li>
                         Personally located and retrieved, or personally observed a county staff
                         member locate and retrieve, each paper ballot randomly selected for
-                        [audit round no.] of the <span> { countyName } </span> County [Election Date]
-                        [Election Type] Election;
+                        Audit Round <span> #{ currentRound } </span> of the <span> { countyName }
+                        </span> County <span> { electionDate } </span> <span> { electionType }
+                        </span>.
                     </li>
                     <li>
                         Personally examined each such randomly selected ballot;

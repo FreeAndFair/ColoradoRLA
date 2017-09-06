@@ -52,6 +52,11 @@
       "from": "@types/lodash@https://registry.npmjs.org/@types/lodash/-/lodash-4.14.72.tgz",
       "resolved": "https://registry.npmjs.org/@types/lodash/-/lodash-4.14.72.tgz"
     },
+    "@types/moment-timezone": {
+      "version": "0.2.35",
+      "from": "@types/moment-timezone@latest",
+      "resolved": "https://registry.npmjs.org/@types/moment-timezone/-/moment-timezone-0.2.35.tgz"
+    },
     "@types/node": {
       "version": "8.0.20",
       "from": "@types/node@https://registry.npmjs.org/@types/node/-/node-8.0.20.tgz",
@@ -2226,6 +2231,11 @@
       "version": "2.18.1",
       "from": "moment@https://registry.npmjs.org/moment/-/moment-2.18.1.tgz",
       "resolved": "https://registry.npmjs.org/moment/-/moment-2.18.1.tgz"
+    },
+    "moment-timezone": {
+      "version": "0.5.13",
+      "from": "moment-timezone@latest",
+      "resolved": "https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.13.tgz"
     },
     "ms": {
       "version": "2.0.0",

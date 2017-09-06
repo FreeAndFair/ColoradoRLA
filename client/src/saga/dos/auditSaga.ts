@@ -28,6 +28,18 @@ function* setRiskLimitNetworkFail(): IterableIterator<void> {
     notice.danger('Unable to set risk limit: network failure.');
 }
 
+function* setElectionInfoOk(): IterableIterator<void> {
+    notice.ok('Election date and type are now set.');
+}
+
+function* setElectionInfoFail(): IterableIterator<void> {
+    notice.danger('Unable to set election date and type.');
+}
+
+function* setElectionInfoNetworkFail(): IterableIterator<void> {
+    notice.danger('Unable to set election date and type: network failure.');
+}
+
 function* uploadRandomSeedFail(): IterableIterator<void> {
     notice.danger('Unable to set random number generator seed.');
     notice.danger('Please verify that the seed is a numeral at least 20 digits long.');
@@ -59,6 +71,10 @@ export default function* dosLoginSaga() {
     yield takeLatest('SELECT_CONTESTS_FOR_AUDIT_FAIL', selectContestsForAuditFail);
     yield takeLatest('SELECT_CONTESTS_FOR_AUDIT_NETWORK_FAIL', selectContestsForAuditNetworkFail);
     yield takeLatest('SELECT_CONTESTS_FOR_AUDIT_OK', selectContestsForAuditOk);
+
+    yield takeLatest('SET_ELECTION_INFO_FAIL', setElectionInfoFail);
+    yield takeLatest('SET_ELECTION_INFO_NETWORK_FAIL', setElectionInfoNetworkFail);
+    yield takeLatest('SET_ELECTION_INFO_OK', setElectionInfoOk);
 
     yield takeLatest('SET_RISK_LIMIT_FAIL', setRiskLimitFail);
     yield takeLatest('SET_RISK_LIMIT_NETWORK_FAIL', setRiskLimitNetworkFail);

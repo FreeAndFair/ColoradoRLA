@@ -1,24 +1,36 @@
 import * as React from 'react';
 
+import * as moment from 'moment-timezone';
+
 import { DateInput } from '@blueprintjs/datetime';
+
+import { defaultElectionDate } from 'corla/config';
 
 
 class ElectionDateForm extends React.Component<any, any> {
-    public state = { date: new Date() };
+    public state = { date: defaultElectionDate };
 
     public render() {
-        const { date } = this.state;
+        this.props.forms.electionDateForm = this.state;
+
+        const date = this.localDate();
 
         return (
-            <label>
-                Election date.
+            <div className='pt-card'>
+                <div>Election Date</div>
                 <DateInput value={ date } onChange={ this.onDateChange } />
-            </label>
+            </div>
         );
     }
 
-    private onDateChange = (date: Date) => {
+    private onDateChange = (dateObj: Date) => {
+        const date = moment(dateObj).format('YYYY-MM-DD');
+
         this.setState({ date });
+    }
+
+    private localDate(): Date {
+        return moment(this.state.date).toDate();
     }
 }
 

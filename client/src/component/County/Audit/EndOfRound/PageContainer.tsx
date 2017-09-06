@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import EndOfLastRoundPage from './LastRoundPage';
 import EndOfRoundPage from './Page';
 
-import allRoundsComplete from 'corla/selector/county/allRoundsComplete';
-import countyInfo from 'corla/selector/county/countyInfo';
-import previousRound from 'corla/selector/county/previousRound';
+import allRoundsCompleteSelector from 'corla/selector/county/allRoundsComplete';
+import countyInfoSelector from 'corla/selector/county/countyInfo';
+import currentRoundSelector from 'corla/selector/county/currentRound';
+import previousRoundSelector from 'corla/selector/county/previousRound';
 
 
 function signedOff(round: any): boolean {
@@ -23,31 +23,23 @@ function signedOff(round: any): boolean {
 
 class EndOfRoundPageContainer extends React.Component<any, any> {
     public render() {
-        const {
-            allRoundsComplete,
-            countyInfo,
-            estimatedBallotsToAudit,
-            previousRound,
-        } = this.props;
-
-        const props = {
-            allRoundsComplete,
-            countyInfo,
-            estimatedBallotsToAudit,
-            previousRound,
-            previousRoundSignedOff: signedOff(previousRound),
-        };
-
-        return <EndOfRoundPage { ...props } />;
+        return <EndOfRoundPage { ...this.props } />;
     }
 }
 
 const mapStateToProps = (state: any) => {
+    const { county } = state;
+
+    const previousRound = previousRoundSelector(state);
+
     return {
-        allRoundsComplete: allRoundsComplete(state),
-        countyInfo: countyInfo(state),
+        allRoundsComplete: allRoundsCompleteSelector(state),
+        countyInfo: countyInfoSelector(state),
+        currentRound: currentRoundSelector(state),
+        election: state.county.election,
         estimatedBallotsToAudit: state.county.estimatedBallotsToAudit,
-        previousRound: previousRound(state),
+        previousRound,
+        previousRoundSignedOff: signedOff(previousRound),
     };
 };
 

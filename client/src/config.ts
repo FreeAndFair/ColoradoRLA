@@ -10,3 +10,7 @@ const prodEndpointPrefix = '/api';
 const endpointPrefix = DEBUG ? devEndpointPrefix : prodEndpointPrefix;
 
 export const endpoint = (path: string) => `${endpointPrefix}/${path}`;
+
+export const timezone = 'America/Denver';
+
+export const defaultElectionDate = '2017-11-07';

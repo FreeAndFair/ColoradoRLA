@@ -26,7 +26,7 @@ function parseRounds(rounds: any[]) {
 }
 
 
-const parseCountyStatus = (countyStatus: any) => {
+function parseCountyStatus(countyStatus: any) {
     const result: any = {};
 
     _.forEach(countyStatus, c => {
@@ -49,9 +49,9 @@ const parseCountyStatus = (countyStatus: any) => {
     });
 
     return result;
-};
+}
 
-const parseAuditedContests = (data: any) => {
+function parseAuditedContests(data: any) {
     const result: any = {};
 
     _.forEach(data, (reason: any, idStr: any) => {
@@ -60,7 +60,14 @@ const parseAuditedContests = (data: any) => {
     });
 
     return result;
-};
+}
+
+function parseElection(data: any): any {
+    return {
+        date: new Date(data.election_date),
+        type: data.election_type,
+    };
+}
 
 
 export const parse = (data: any) => ({
@@ -68,6 +75,7 @@ export const parse = (data: any) => ({
     auditStage: data.audit_stage,
     auditedContests: parseAuditedContests(data.audited_contests),
     countyStatus: parseCountyStatus(data.county_status),
+    election: parseElection(data),
     estimatedBallotsToAudit: data.estimated_ballots_to_audit,
     handCountContests: data.hand_count_contests,
     riskLimit: data.risk_limit,

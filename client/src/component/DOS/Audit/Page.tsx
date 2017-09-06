@@ -1,10 +1,18 @@
 import * as React from 'react';
 
+import corlaDate from 'corla/date';
+
 import Nav from '../Nav';
 
 import ElectionDateForm from './ElectionDateForm';
 import ElectionTypeForm from './ElectionTypeForm';
 import RiskLimitForm from './RiskLimitForm';
+
+import setElectionInfo from 'corla/action/dos/setElectionInfo';
+import setRiskLimit from 'corla/action/dos/setRiskLimit';
+
+import { timezone } from 'corla/config';
+import * as format from 'corla/format';
 
 
 const Breadcrumb = () => (
@@ -38,22 +46,52 @@ const ReadonlyRiskLimit = ({ riskLimit }: any) => {
     );
 };
 
-const AuditPage = ({ nextPage, riskLimit, setRiskLimit }: any) => {
-    const forms: any = {};
+const NextButton = (props: any) => {
+    const { nextPage } = props;
+
+    return (
+        <button onClick={ nextPage } className='pt-button pt-intent-primary'>
+            Next
+        </button>
+    );
+};
+
+const SaveButton = (props: any) => {
+    const { disabled, forms, riskLimit } = props;
 
     const buttonClick = () => {
-        if (!riskLimit) {
-            setRiskLimit(forms.riskLimit.comparisonLimit);
+        const { date } = forms.electionDateForm;
+        const { type } = forms.electionTypeForm;
+
+        if (date && type) {
+            setElectionInfo(corlaDate.parse(date), type);
         }
 
-        nextPage();
+        if (!riskLimit) {
+            const { comparisonLimit } = forms.riskLimit;
+
+            // Temporary workaround to avoid failure due to database contention.
+            // This will be removed in an upcoming PR which will use a new endpoint
+            // that lets us set both election info and risk limit in one request.
+            setTimeout(() => setRiskLimit(comparisonLimit), 100);
+        }
     };
 
-    const riskLimitForm = riskLimit
-                        ? <ReadonlyRiskLimit riskLimit={ riskLimit } />
-                        : <RiskLimitForm forms={ forms } riskLimit={ riskLimit } />;
+    return (
+        <button
+            disabled={ disabled }
+            onClick={ buttonClick }
+            className='pt-button pt-intent-primary'>
+            Save
+        </button>
+    );
+};
 
-    const buttonText = riskLimit ? 'Next' : 'Save & Next';
+const ReadOnlyPage = (props: any) => {
+    const { election, nextPage, riskLimit } = props;
+
+    const electionDate = corlaDate.format(election.date);
+    const electionType = format.electionType(election.type);
 
     return (
         <div>
@@ -63,10 +101,53 @@ const AuditPage = ({ nextPage, riskLimit, setRiskLimit }: any) => {
             <h2>Administer an Audit</h2>
 
             <div className='pt-card'>
-                <h3>Audit Definition</h3>
+                <h3>Election Info</h3>
+                <div>Election Date: { electionDate }</div>
+                <div>Election Type: { electionType }</div>
+            </div>
+
+            <div className='pt-card'>
+                <h3>Risk Limit</h3>
+                <ReadonlyRiskLimit riskLimit={ riskLimit } />
+            </div>
+            <NextButton nextPage={ nextPage } />
+        </div>
+    );
+};
+
+const AuditPage = (props: any) => {
+    const { election, formValid, nextPage, riskLimit, setFormValid } = props;
+
+    const electionAndRiskLimitSet = riskLimit
+                                 && election
+                                 && election.date
+                                 && election.type;
+
+    if (electionAndRiskLimitSet) {
+        return (
+            <ReadOnlyPage
+                election={ election }
+                nextPage={ nextPage }
+                riskLimit={ riskLimit } />
+        );
+    }
+
+    const forms: any = {};
+
+    const disableButton = !formValid;
+
+    return (
+        <div>
+            <Nav />
+            <Breadcrumb />
+
+            <h2>Administer an Audit</h2>
+
+            <div className='pt-card'>
+                <h3>Election Info</h3>
                 <div>Enter the date the election will take place, and the type of election.</div>
-                <ElectionDateForm />
-                <ElectionTypeForm />
+                <ElectionDateForm forms={ forms } />
+                <ElectionTypeForm forms={ forms } setFormValid={ setFormValid } />
             </div>
 
             <div className='pt-card'>
@@ -74,16 +155,16 @@ const AuditPage = ({ nextPage, riskLimit, setRiskLimit }: any) => {
                 <div>
                     Enter the risk limit for comparison audits as a percentage.
                 </div>
-                { riskLimitForm }
+                <RiskLimitForm forms={ forms } riskLimit={ riskLimit } />
                 <div className='pt-card'>
                     <span className='pt-icon pt-intent-warning pt-icon-warning-sign' />
                     <span> </span>
                     Once entered, this risk limit cannot be modified.
                 </div>
-
-                <button onClick={ buttonClick } className='pt-button pt-intent-primary'>
-                    { buttonText }
-                </button>
+                <SaveButton
+                    disabled={ disableButton }
+                    forms={ forms}
+                    riskLimit={ riskLimit } />
             </div>
         </div>
     );

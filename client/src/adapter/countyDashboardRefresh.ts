@@ -130,6 +130,13 @@ function parseRounds(rounds: Round[]) {
     return rounds.map(parseRound);
 }
 
+function parseElection(data: any): any {
+    return {
+        date: new Date(data.election_date),
+        type: data.election_type,
+    };
+}
+
 export const parse = (data: CountyDashboard, state: any): any => {
     const findContest = (id: any) => state.county.contestDefs[id];
 
@@ -151,6 +158,7 @@ export const parse = (data: CountyDashboard, state: any): any => {
         cvrExportHash: data.cvr_export_hash,
         disagreementCount: data.disagreement_count,
         discrepancyCount: data.discrepancy_count,
+        election: parseElection(data),
         estimatedBallotsToAudit: data.estimated_ballots_to_audit,
         generalInformation: data.general_information,
         id: data.id,
