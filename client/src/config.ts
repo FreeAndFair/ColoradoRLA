@@ -14,3 +14,5 @@ export const endpoint = (path: string) => `${endpointPrefix}/${path}`;
 export const timezone = 'America/Denver';
 
 export const defaultElectionDate = '2017-11-07';
+
+export const defaultPublicMeetingDate = '2017-11-17';
