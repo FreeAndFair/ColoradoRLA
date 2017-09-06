@@ -116,7 +116,14 @@ const ReadOnlyPage = (props: any) => {
 };
 
 const AuditPage = (props: any) => {
-    const { election, formValid, nextPage, riskLimit, setFormValid } = props;
+    const {
+        election,
+        formValid,
+        nextPage,
+        publicMeetingDate,
+        riskLimit,
+        setFormValid,
+    } = props;
 
     const electionAndRiskLimitSet = riskLimit
                                  && election
@@ -128,6 +135,7 @@ const AuditPage = (props: any) => {
             <ReadOnlyPage
                 election={ election }
                 nextPage={ nextPage }
+                publicMeetingDate={ publicMeetingDate }
                 riskLimit={ riskLimit } />
         );
     }
