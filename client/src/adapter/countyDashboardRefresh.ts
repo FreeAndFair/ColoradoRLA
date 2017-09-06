@@ -136,6 +136,10 @@ function parseElection(data: any): any {
     };
 }
 
+function parseRiskLimit(data: any): number {
+    return _.get(data, 'audit_info.risk_limit');
+}
+
 export const parse = (data: CountyDashboard, state: any): any => {
     const findContest = (id: any) => state.county.contestDefs[id];
 
@@ -160,7 +164,7 @@ export const parse = (data: CountyDashboard, state: any): any => {
         estimatedBallotsToAudit: data.estimated_ballots_to_audit,
         generalInformation: data.general_information,
         id: data.id,
-        riskLimit: data.risk_limit,
+        riskLimit: parseRiskLimit(data),
         rounds: parseRounds(data.rounds),
         status: data.status,
     };
