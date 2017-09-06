@@ -52,7 +52,7 @@ const NextButton = (props: any) => {
 };
 
 const SaveButton = (props: any) => {
-    const { forms, riskLimit } = props;
+    const { disabled, forms, riskLimit } = props;
 
     const buttonClick = () => {
         const { date } = forms.electionDateForm;
@@ -70,7 +70,10 @@ const SaveButton = (props: any) => {
     };
 
     return (
-        <button onClick={ buttonClick } className='pt-button pt-intent-primary'>
+        <button
+            disabled={ disabled }
+            onClick={ buttonClick }
+            className='pt-button pt-intent-primary'>
             Save
         </button>
     );
@@ -101,6 +104,14 @@ const ReadOnlyPage = (props: any) => {
     );
 };
 
+function formsAreValid(forms: any): boolean {
+    const { electionDateForm, electionTypeForm, riskLimitForm } = forms;
+
+    return electionDateForm && electionDateForm.date
+        && electionTypeForm && electionTypeForm.electionType
+        && riskLimitForm && riskLimitForm.comparisonLimit;
+}
+
 const AuditPage = (props: any) => {
     const { election, nextPage, riskLimit } = props;
 
@@ -118,6 +129,8 @@ const AuditPage = (props: any) => {
     }
 
     const forms: any = {};
+
+    const disableButton = !formsAreValid(forms);
 
     return (
         <div>
@@ -144,7 +157,10 @@ const AuditPage = (props: any) => {
                     <span> </span>
                     Once entered, this risk limit cannot be modified.
                 </div>
-                <SaveButton forms={ forms} riskLimit={ riskLimit } />
+                <SaveButton
+                    disabled={ disableButton }
+                    forms={ forms}
+                    riskLimit={ riskLimit } />
             </div>
         </div>
     );
