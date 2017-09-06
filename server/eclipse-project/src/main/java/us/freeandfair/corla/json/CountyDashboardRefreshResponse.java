@@ -166,11 +166,6 @@ public class CountyDashboardRefreshResponse {
   private final Integer my_disagreement_count;
 
   /**
-   * The list of ballots to audit (by CVR ID).
-   */
-  private final List<Long> my_ballots_to_audit;
-
-  /**
    * The current ballot under audit.
    */
   private final Long my_ballot_under_audit_id;
@@ -222,7 +217,6 @@ public class CountyDashboardRefreshResponse {
    * @param the_audited_ballot_count The number of ballots audited.
    * @param the_discrepancy_count The number of discrepencies.
    * @param the_disagreement_count The number of disagreements.
-   * @param the_ballots_to_audit The list of CVRs to audit.
    * @param the_ballot_under_audit_id The ID of the CVR under audit.
    * @param the_audited_prefix_length The length of the audited prefix of the
    * ballots to audit list.
@@ -255,7 +249,6 @@ public class CountyDashboardRefreshResponse {
                                            final Integer the_audited_ballot_count,
                                            final Integer the_discrepancy_count, 
                                            final Integer the_disagreement_count,
-                                           final List<Long> the_ballots_to_audit,
                                            final Long the_ballot_under_audit_id,
                                            final Integer the_audited_prefix_length,
                                            final List<Round> the_rounds,
@@ -284,7 +277,6 @@ public class CountyDashboardRefreshResponse {
     my_audited_ballot_count = the_audited_ballot_count;
     my_discrepancy_count = the_discrepancy_count;
     my_disagreement_count = the_disagreement_count;
-    my_ballots_to_audit = the_ballots_to_audit;
     my_ballot_under_audit_id = the_ballot_under_audit_id;
     my_audited_prefix_length = the_audited_prefix_length;
     my_rounds = the_rounds;
@@ -386,9 +378,6 @@ public class CountyDashboardRefreshResponse {
                                               the_dashboard.ballotsAudited(),
                                               the_dashboard.discrepancies(),
                                               the_dashboard.disagreements(),
-                                              ComparisonAuditController.
-                                                  cvrIDsRemainingInCurrentRound
-                                                  (the_dashboard),
                                               the_dashboard.cvrUnderAudit(),
                                               the_dashboard.auditedPrefixLength(),
                                               the_dashboard.rounds(),
@@ -469,7 +458,6 @@ public class CountyDashboardRefreshResponse {
                                               the_dashboard.ballotsAudited(),
                                               the_dashboard.discrepancies(),
                                               the_dashboard.disagreements(),
-                                              null,
                                               null,
                                               the_dashboard.auditedPrefixLength(),
                                               the_dashboard.rounds(),
