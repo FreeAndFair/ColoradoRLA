@@ -70,7 +70,10 @@ const SaveButton = (props: any) => {
         if (!riskLimit) {
             const { comparisonLimit } = forms.riskLimit;
 
-            setRiskLimit(comparisonLimit);
+            // Temporary workaround to avoid failure due to database contention.
+            // This will be removed in an upcoming PR which will use a new endpoint
+            // that lets us set both election info and risk limit in one request.
+            setTimeout(() => setRiskLimit(comparisonLimit), 100);
         }
     };
 
