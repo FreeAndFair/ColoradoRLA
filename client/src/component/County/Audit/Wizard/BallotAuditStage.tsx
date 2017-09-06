@@ -29,7 +29,6 @@ const BallotNotFoundForm = ({ ballotNotFound, currentBallot }: any) => {
 const AuditInstructions = (props: any) => {
     const {
         ballotNotFound,
-        ballotsToAudit,
         county,
         currentBallot,
         currentBallotNumber,
@@ -211,7 +210,7 @@ const BallotAuditStage = (props: any) => {
         updateBallotMarks,
     } = props;
 
-    const { ballotsToAudit, ballotUnderAuditId, currentBallot } = county;
+    const { ballotUnderAuditId, currentBallot } = county;
 
     if (ballotUnderAuditId !== currentBallot.id) {
         countyFetchCvr(ballotUnderAuditId);
@@ -226,7 +225,6 @@ const BallotAuditStage = (props: any) => {
             <h2>Ballot verification</h2>
             <AuditInstructions
                 ballotNotFound={ notFound }
-                ballotsToAudit={ ballotsToAudit }
                 county={ county }
                 currentBallot={ currentBallot }
                 currentBallotNumber={ currentBallotNumber }
