@@ -8,8 +8,7 @@ import ElectionDateForm from './ElectionDateForm';
 import ElectionTypeForm from './ElectionTypeForm';
 import RiskLimitForm from './RiskLimitForm';
 
-import setElectionInfo from 'corla/action/dos/setElectionInfo';
-import setRiskLimit from 'corla/action/dos/setRiskLimit';
+import setAuditInfo from 'corla/action/dos/setAuditInfo';
 
 import { timezone } from 'corla/config';
 import * as format from 'corla/format';
@@ -57,24 +56,14 @@ const NextButton = (props: any) => {
 };
 
 const SaveButton = (props: any) => {
-    const { disabled, forms, riskLimit } = props;
+    const { disabled, forms } = props;
 
     const buttonClick = () => {
-        const { date } = forms.electionDateForm;
+        const date = corlaDate.parse(forms.electionDateForm.date);
         const { type } = forms.electionTypeForm;
+        const riskLimit = forms.riskLimit.comparisonLimit;
 
-        if (date && type) {
-            setElectionInfo(corlaDate.parse(date), type);
-        }
-
-        if (!riskLimit) {
-            const { comparisonLimit } = forms.riskLimit;
-
-            // Temporary workaround to avoid failure due to database contention.
-            // This will be removed in an upcoming PR which will use a new endpoint
-            // that lets us set both election info and risk limit in one request.
-            setTimeout(() => setRiskLimit(comparisonLimit), 100);
-        }
+        setAuditInfo({ election: { date, type }, riskLimit });
     };
 
     return (
