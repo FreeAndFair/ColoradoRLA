@@ -31,7 +31,6 @@ interface CountyDashboard {
     ballot_manifest_hash: string;
     ballot_under_audit_id: number;
     ballots_remaining_in_round: number;
-    ballots_to_audit: number[];
     current_round: Round;
     cvr_export_filename: string;
     cvr_export_hash: string;
@@ -150,7 +149,6 @@ export const parse = (data: CountyDashboard, state: any): any => {
         ballotManifestHash: data.ballot_manifest_hash,
         ballotUnderAuditId: data.ballot_under_audit_id,
         ballotsRemainingInRound: data.ballots_remaining_in_round,
-        ballotsToAudit: data.ballots_to_audit,
         contests: parseContests(data.contests, state),
         contestsUnderAudit: parseContestsUnderAudit(data.contests_under_audit, state),
         currentRound: parseRound(data.current_round),
