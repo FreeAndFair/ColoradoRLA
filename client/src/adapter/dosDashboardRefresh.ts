@@ -75,6 +75,16 @@ function parseElection(data: any): any {
     };
 }
 
+function parsePublicMeetingDate(data: any): Date {
+    if (!_.has(data, 'audit_info.public_meeting_date')) {
+        return null;
+    }
+
+    const date = data.audit_info.public_meeting_date;
+
+    return new Date(date);
+}
+
 function parseRiskLimit(data: any): number {
     const info = data.audit_info;
 
@@ -94,6 +104,7 @@ export const parse = (data: any) => ({
     election: parseElection(data),
     estimatedBallotsToAudit: data.estimated_ballots_to_audit,
     handCountContests: data.hand_count_contests,
+    publicMeetingDate: parsePublicMeetingDate(data),
     riskLimit: parseRiskLimit(data),
     seed: data.random_seed,
 });
