@@ -3,10 +3,6 @@ import * as React from 'react';
 import { Radio, RadioGroup } from '@blueprintjs/core';
 
 
-type ElectionType = 'coordinated'
-                  | 'primary'
-                  | 'general'
-                  | 'recall';
 
 interface FormState {
     type: ElectionType;
