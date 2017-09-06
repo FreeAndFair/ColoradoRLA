@@ -266,11 +266,12 @@ public class CountyReport {
     cell = row.createCell(cell_number++);
     cell.setCellType(CellType.STRING);
     cell.setCellStyle(bold_style);
-    if (my_dosdb.electionType() == null && my_dosdb.electionDate() == null) {
+    if (my_dosdb.electionInfo().electionType() == null && 
+        my_dosdb.electionInfo().electionDate() == null) {
       cell.setCellValue("ELECTION TYPE/DATE NOT SET");
     } else {
-      cell.setCellValue(my_dosdb.electionType() + " - " +
-                        LocalDateTime.ofInstant(my_dosdb.electionDate(), 
+      cell.setCellValue(my_dosdb.electionInfo().electionType() + " - " +
+                        LocalDateTime.ofInstant(my_dosdb.electionInfo().electionDate(), 
                                                 ZoneOffset.systemDefault()).
                         toLocalDate().toString());
     }

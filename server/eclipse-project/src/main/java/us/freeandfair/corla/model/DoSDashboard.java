@@ -15,16 +15,14 @@ package us.freeandfair.corla.model;
 import static us.freeandfair.corla.util.EqualsHashcodeHelper.*;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Cacheable;
 import javax.persistence.CollectionTable;
-import javax.persistence.Column;
 import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -61,16 +59,6 @@ public class DoSDashboard implements PersistentEntity, Serializable {
   public static final int MIN_SEED_LENGTH = 20;
   
   /**
-   * The database stored precision for decimal types.
-   */
-  public static final int PRECISION = 6;
-  
-  /**
-   * The database stored scale for decimal types.
-   */
-  public static final int SCALE = 4;
-  
-  /**
    * The serialVersionUID.
    */
   private static final long serialVersionUID = 1; 
@@ -97,25 +85,10 @@ public class DoSDashboard implements PersistentEntity, Serializable {
   private Set<ContestToAudit> my_contests_to_audit = new HashSet<>();
   
   /**
-   * The risk limit for comparison audits.
+   * The election info.
    */
-  @Column(precision = PRECISION, scale = SCALE)
-  private BigDecimal my_risk_limit_for_comparison_audits;
-  
-  /**
-   * The random seed.
-   */
-  private String my_random_seed;
-  
-  /**
-   * The date of this Election (as an instant).
-   */
-  private Instant my_election_date;
-  
-  /**
-   * The type of this election.
-   */
-  private String my_election_type;
+  @Embedded
+  private ElectionInfo my_election_info = new ElectionInfo();
   
   /**
    * Constructs a new Department of State dashboard with default values.
@@ -185,19 +158,21 @@ public class DoSDashboard implements PersistentEntity, Serializable {
   }
   
   /**
-   * @return the risk limit for comparison audits, or null if none has been set.
+   * @return the election info.
    */
-  public BigDecimal riskLimitForComparisonAudits() {
-    return my_risk_limit_for_comparison_audits;
+  public ElectionInfo electionInfo() {
+    return my_election_info;
   }
   
   /**
-   * Sets the risk limit for comparison audits.
+   * Updates the election info, using the non-null fields of the specified 
+   * ElectionInfo. This method does not do any sanity checks on the fields;
+   * it is assumed that they are checked by the caller.
    * 
-   * @param the_risk_limit The risk limit.
+   * @param the_new_info The new info.
    */
-  public void setRiskLimitForComparisonAudits(final BigDecimal the_risk_limit) {
-    my_risk_limit_for_comparison_audits = the_risk_limit;
+  public void updateElectionInfo(final ElectionInfo the_new_info) {
+    my_election_info.updateFrom(the_new_info);
   }
   
   /**
@@ -230,59 +205,11 @@ public class DoSDashboard implements PersistentEntity, Serializable {
   }
   
   /**
-   * Sets the random seed.
-   * 
-   * @param the_seed The random seed.
-   */
-  public void setRandomSeed(final String the_random_seed) {
-    my_random_seed = the_random_seed;
-  }
-  
-  /**
-   * @return the random seed.
-   */
-  public String randomSeed() {
-    return my_random_seed;
-  }
-  
-  /**
    * @return a String representation of this contest.
    */
   @Override
   public String toString() {
     return "DoSDashboard [county=" + id() + "]";
-  }
-
-  /**
-   * @return the election date (as an instant).
-   */
-  public Instant electionDate() {
-    return my_election_date;
-  }
-  
-  /**
-   * Sets the election date.
-   * 
-   * @param the_election_date The election date (as an instant).
-   */
-  public void setElectionDate(final Instant the_election_date) {
-    my_election_date = the_election_date;
-  }
-  
-  /**
-   * @return the election type.
-   */
-  public String electionType() {
-    return my_election_type;
-  }
-  
-  /**
-   * Sets the election type.
-   * 
-   * @param the_election_type The election type.
-   */
-  public void setElectionType(final String the_election_type) {
-    my_election_type = the_election_type;
   }
   
   /**
@@ -299,9 +226,7 @@ public class DoSDashboard implements PersistentEntity, Serializable {
       // there can only be one DoS dashboard in the system for each
       // ID, so we check their equivalence by ID
       result &= nullableEquals(other_ddb.contestsToAudit(), contestsToAudit());
-      result &= nullableEquals(other_ddb.riskLimitForComparisonAudits(), 
-                               riskLimitForComparisonAudits());
-      result &= nullableEquals(other_ddb.randomSeed(), randomSeed());
+      result &= nullableEquals(other_ddb.electionInfo(), electionInfo());
     } else {
       result = false;
     }
@@ -313,6 +238,6 @@ public class DoSDashboard implements PersistentEntity, Serializable {
    */
   @Override
   public int hashCode() {
-    return nullableHashCode(randomSeed());
+    return nullableHashCode(electionInfo());
   }
 }

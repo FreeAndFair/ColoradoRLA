@@ -254,6 +254,9 @@ public final class Persistence {
       settings.put(Environment.DEFAULT_BATCH_FETCH_SIZE, "16");
       settings.put(Environment.MAX_FETCH_DEPTH, "3");
       
+      // empty composite objects
+      settings.put(Environment.CREATE_EMPTY_COMPOSITES_ENABLED, TRUE);
+      
       // statistics
       settings.put(Environment.GENERATE_STATISTICS, FALSE);
       

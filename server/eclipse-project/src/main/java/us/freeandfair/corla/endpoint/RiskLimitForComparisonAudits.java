@@ -24,8 +24,8 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
-import us.freeandfair.corla.json.SubmittedElectionInfo;
 import us.freeandfair.corla.model.DoSDashboard;
+import us.freeandfair.corla.model.ElectionInfo;
 import us.freeandfair.corla.persistence.Persistence;
 
 /**
@@ -77,10 +77,11 @@ public class RiskLimitForComparisonAudits extends AbstractDoSDashboardEndpoint {
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
     try {
-      final SubmittedElectionInfo risk_limit = 
-          Main.GSON.fromJson(the_request.body(), SubmittedElectionInfo.class);
-      final BigDecimal parsed_limit = parseRiskLimit(risk_limit.riskLimit());
-      if (parsed_limit == null) {
+      final ElectionInfo risk_limit = 
+          Main.GSON.fromJson(the_request.body(), ElectionInfo.class);
+      if (risk_limit == null || risk_limit.riskLimit() == null ||
+          0 < BigDecimal.ZERO.compareTo(risk_limit.riskLimit()) || 
+          0 < risk_limit.riskLimit().compareTo(BigDecimal.ONE)) {
         invariantViolation(the_response, "invalid risk limit specified");
       } else {
         final DoSDashboard dosd = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
@@ -88,9 +89,9 @@ public class RiskLimitForComparisonAudits extends AbstractDoSDashboardEndpoint {
           Main.LOGGER.error("could not get department of state dashboard");
           serverError(the_response, "could not set risk limit");
         } else {
-          dosd.setRiskLimitForComparisonAudits(parsed_limit);
+          dosd.updateElectionInfo(risk_limit);
           Persistence.saveOrUpdate(dosd);
-          ok(the_response, "risk limit set to " + parsed_limit);
+          ok(the_response, "risk limit set to " + risk_limit.riskLimit());
         }
       }
     } catch (final PersistenceException e) {
@@ -100,29 +101,5 @@ public class RiskLimitForComparisonAudits extends AbstractDoSDashboardEndpoint {
       invariantViolation(the_response, "Invalid risk limit specified");
     }
     return my_endpoint_result.get();
-  }
-  
-  /**
-   * Parses a string to obtain the risk limit, or determine its invalidity.
-   * A valid risk limit string must be parsable by java.math.BigDecimal, must
-   * be greater than or equal to 0, and must be less than or equal to 1.
-   * 
-   * @param the_string The string to parse.
-   * @return the risk limit, or null if the string was not a valid risk limit.
-   */
-  private BigDecimal parseRiskLimit(final String the_string) {
-    BigDecimal result = null;
-    
-    try {
-      final BigDecimal parsed = new BigDecimal(the_string);
-      if (BigDecimal.ZERO.compareTo(parsed) <= 0 && 
-          parsed.compareTo(BigDecimal.ONE) <= 0) {
-        result = parsed;
-      } // else the parsed risk limit is out of range
-    } catch (final NumberFormatException e) {
-      // the string was invalid
-    }
-    
-    return result;
   }
 }
