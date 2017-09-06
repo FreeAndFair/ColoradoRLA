@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import * as moment from 'moment-timezone';
+import corlaDate from 'corla/date';
 
 import Nav from '../Nav';
 
@@ -63,9 +63,7 @@ const SaveButton = (props: any) => {
         const { type } = forms.electionTypeForm;
 
         if (date && type) {
-            const dateObj = moment.tz(date, timezone).toDate();
-
-            setElectionInfo(dateObj, type);
+            setElectionInfo(corlaDate.parse(date), type);
         }
 
         if (!riskLimit) {
@@ -88,6 +86,9 @@ const SaveButton = (props: any) => {
 const ReadOnlyPage = (props: any) => {
     const { election, nextPage, riskLimit } = props;
 
+    const electionDate = corlaDate.format(election.date);
+    const electionType = election.type;
+
     return (
         <div>
             <Nav />
@@ -97,8 +98,8 @@ const ReadOnlyPage = (props: any) => {
 
             <div className='pt-card'>
                 <h3>Election Info</h3>
-                <div>Election Date: { election.date }</div>
-                <div>Election Type: { election.type }</div>
+                <div>Election Date: { electionDate }</div>
+                <div>Election Type: { electionType }</div>
             </div>
 
             <div className='pt-card'>
