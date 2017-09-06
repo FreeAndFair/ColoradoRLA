@@ -40,6 +40,7 @@ import javax.persistence.Version;
 import org.hibernate.annotations.Immutable;
 
 import us.freeandfair.corla.persistence.PersistentEntity;
+import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
  * A cast vote record contains information about a single ballot, either 
@@ -64,6 +65,10 @@ import us.freeandfair.corla.persistence.PersistentEntity;
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
+// this FindBugs warning is for the transient field, which we know will not be 
+// restored when the class is unserialized, because we intentionally made it 
+// transient so it wouldn't be. Since that's what "transient" means.
+@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 public class CastVoteRecord implements PersistentEntity, Serializable {
   /**
    * The serialVersionUID.
