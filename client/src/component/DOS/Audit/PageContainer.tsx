@@ -11,7 +11,7 @@ class AuditPageContainer extends React.Component<any, any> {
     };
 
     public render() {
-        const { election, history, riskLimit, sos } = this.props;
+        const { election, history, publicMeetingDate, riskLimit, sos } = this.props;
 
         if (sos.asm.currentState === 'DOS_AUDIT_ONGOING') {
             return <Redirect to='/sos' />;
@@ -21,6 +21,7 @@ class AuditPageContainer extends React.Component<any, any> {
             election,
             formValid: this.state.formValid,
             nextPage: () => history.push('/sos/audit/select-contests'),
+            publicMeetingDate,
             riskLimit,
             setFormValid: this.setFormValid,
         };
@@ -35,9 +36,9 @@ class AuditPageContainer extends React.Component<any, any> {
 
 
 const mapStateToProps = ({ sos }: any) => {
-    const { election, riskLimit } = sos;
+    const { election, publicMeetingDate, riskLimit } = sos;
 
-    return { election, riskLimit, sos };
+    return { election, riskLimit, publicMeetingDate, sos };
 };
 
 export default connect(mapStateToProps)(AuditPageContainer);
