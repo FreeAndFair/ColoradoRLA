@@ -119,14 +119,6 @@ const AuditPage = (props: any) => {
 
     const forms: any = {};
 
-    const riskLimitForm = riskLimit
-                        ? <ReadonlyRiskLimit riskLimit={ riskLimit } />
-                        : <RiskLimitForm forms={ forms } riskLimit={ riskLimit } />;
-
-    const pageButton = riskLimit
-                     ? <NextButton nextPage={ nextPage } />
-                     : <SaveButton forms={ forms} riskLimit={ riskLimit } />;
-
     return (
         <div>
             <Nav />
@@ -146,13 +138,13 @@ const AuditPage = (props: any) => {
                 <div>
                     Enter the risk limit for comparison audits as a percentage.
                 </div>
-                { riskLimitForm }
+                <RiskLimitForm forms={ forms } riskLimit={ riskLimit } />
                 <div className='pt-card'>
                     <span className='pt-icon pt-intent-warning pt-icon-warning-sign' />
                     <span> </span>
                     Once entered, this risk limit cannot be modified.
                 </div>
-                { pageButton }
+                <SaveButton forms={ forms} riskLimit={ riskLimit } />
             </div>
         </div>
     );
