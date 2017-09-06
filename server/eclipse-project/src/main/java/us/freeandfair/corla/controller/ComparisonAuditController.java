@@ -104,10 +104,10 @@ public final class ComparisonAuditController {
   
   /**
    * Gets all CVRs to audit in the specified round for the specified county
-   * dashboard. This returns a list in audit order.
+   * dashboard. This returns a list in audit random sequence order.
    * 
    * @param the_dashboard The dashboard.
-   * @param the_round_number The round number.
+   * @param the_round_number The round number (indexed from 1).
    * @return the CVRs to audit in the specified round.
    * @exception IllegalArgumentException if the specified round doesn't exist.
    */
