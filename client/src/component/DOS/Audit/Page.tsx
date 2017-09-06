@@ -108,6 +108,7 @@ const AuditPage = (props: any) => {
     const { election, formValid, nextPage, riskLimit, setFormValid } = props;
 
     const electionAndRiskLimitSet = riskLimit
+                                 && election
                                  && election.date
                                  && election.type;
 
