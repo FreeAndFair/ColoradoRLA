@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.OptionalLong;
 import java.util.Set;
 
@@ -90,12 +91,48 @@ public final class ComparisonAuditController {
                                         minimum, maximum);
     final List<Integer> list_of_cvrs_to_audit = 
         prng.getRandomNumbers(the_min_index, the_max_index);
+    final Map<Integer, CastVoteRecord> matching_cvrs = 
+        CastVoteRecordQueries.get(the_cdb.id(), RecordType.UPLOADED, list_of_cvrs_to_audit);
     final List<CastVoteRecord> result = new ArrayList<>();
     
     for (final int index : list_of_cvrs_to_audit) {
-      result.add(CastVoteRecordQueries.get(the_cdb.id(), RecordType.UPLOADED, index));
+      result.add(matching_cvrs.get(index));
     }
     
+    return result;
+  }
+  
+  /**
+   * Gets all CVRs to audit in the specified round for the specified county
+   * dashboard. This returns a list in audit random sequence order.
+   * 
+   * @param the_dashboard The dashboard.
+   * @param the_round_number The round number (indexed from 1).
+   * @return the CVRs to audit in the specified round.
+   * @exception IllegalArgumentException if the specified round doesn't exist.
+   */
+  public static List<CVRAuditInfo> cvrsToAuditInRound(final CountyDashboard the_cdb,
+                                                      final int the_round_number) {
+    if (the_round_number < 1 || the_cdb.rounds().size() < the_round_number) {
+      throw new IllegalArgumentException("invalid round specified");
+    }
+    final Round round = the_cdb.rounds().get(the_round_number - 1);
+    return CVRAuditInfoQueries.rangeUnique(the_cdb, round.startAuditedPrefixLength(), 
+                                           round.expectedAuditedPrefixLength());
+  }
+  
+  /**
+   * @return the CVR IDs remaining to audit in the current round, or an empty 
+   * list if there are no CVRs remaining to audit or if no round is in progress.
+   */
+  public static List<Long> cvrIDsRemainingInCurrentRound(final CountyDashboard the_cdb) {
+    List<Long> result = new ArrayList<Long>();
+    final Round round = the_cdb.currentRound();
+    if (round != null) {
+      result = 
+          CVRAuditInfoQueries.unauditedCVRIDsInRange(the_cdb, the_cdb.auditedPrefixLength(),
+                                                     round.expectedAuditedPrefixLength());
+    }
     return result;
   }
   
@@ -630,10 +667,13 @@ public final class ComparisonAuditController {
    */
   private static void 
       updateCVRUnderAudit(final CountyDashboard the_cdb) {
-    final List<CVRAuditInfo> cvr_audit_info = the_cdb.cvrAuditInfo();
+    final List<CVRAuditInfo> cvr_audit_info = 
+        CVRAuditInfoQueries.range(the_cdb, 
+                                  the_cdb.auditedPrefixLength(),
+                                  the_cdb.currentRound().
+                                  expectedAuditedPrefixLength());
     int index = the_cdb.auditedPrefixLength();
-    while (index < cvr_audit_info.size()) {
-      final CVRAuditInfo cai = cvr_audit_info.get(index);
+    for (final CVRAuditInfo cai : cvr_audit_info) {
       if (cai.acvr() == null) {
         break;
       } else {

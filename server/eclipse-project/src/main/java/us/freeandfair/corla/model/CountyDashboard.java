@@ -35,6 +35,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.persistence.Version;
@@ -179,7 +180,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    */
   @OneToMany(cascade = CascadeType.ALL, mappedBy = MY_DASHBOARD, 
              fetch = FetchType.LAZY, orphanRemoval = true)
-  @OrderColumn(name = "index")
+  @OrderBy("my_index")
   private List<CVRAuditInfo> my_cvr_audit_info = new ArrayList<>();
   
   /**
@@ -452,58 +453,9 @@ public class CountyDashboard implements PersistentEntity, Serializable {
     }
     for (final CastVoteRecord cvr : the_cvrs_to_add) {
       // create a persistent record
-      final CVRAuditInfo cvrai = new CVRAuditInfo(this, cvr);
+      final CVRAuditInfo cvrai = new CVRAuditInfo(this, cvr, my_cvr_audit_info.size());
       my_cvr_audit_info.add(cvrai);
     }
-  }
-
-  /**
-   * Gets the CVRs to audit in the specified round. This returns a list in
-   * audit order.
-   * 
-   * @param the_round_number The round number.
-   * @return the CVRs to audit in the specified round.
-   * @exception IllegalArgumentException if the specified round doesn't exist.
-   */
-  public List<CastVoteRecord> cvrsToAuditInRound(final int the_round_number) {
-    if (the_round_number < 1 || my_rounds.size() < the_round_number) {
-      throw new IllegalArgumentException("invalid round specified");
-    }
-    final Round round = my_rounds.get(the_round_number - 1);
-    final List<CastVoteRecord> result = new ArrayList<CastVoteRecord>();
-    final Set<CastVoteRecord> unique = new HashSet<CastVoteRecord>();
-    for (int i = round.startAuditedPrefixLength(); 
-         i < round.expectedAuditedPrefixLength(); i++) {
-      final CVRAuditInfo cvrai = my_cvr_audit_info.get(i);
-      if (!unique.contains(cvrai.cvr())) {
-        result.add(cvrai.cvr());
-        unique.add(cvrai.cvr());
-      }
-    }
-    return result;
-  }
-  
-  /**
-   * @return the CVR IDs remaining to audit in the current round, or an empty 
-   * list if there are no CVRs remaining to audit or if no round is in progress.
-   */
-  public List<Long> cvrsRemainingToAuditInCurrentRound() {
-    final List<Long> result = new ArrayList<Long>();
-    final Set<Long> found_ids = new HashSet<Long>();
-    if (my_current_round_index != null) {
-      final Round round = my_rounds.get(my_current_round_index);
-      for (int i = my_audited_prefix_length; 
-           i < round.expectedAuditedPrefixLength(); 
-           i++) {
-        final CVRAuditInfo cvrai = my_cvr_audit_info.get(i);
-        final Long cvr_id = cvrai.cvr().id();
-        if (cvrai.acvr() == null && !found_ids.contains(cvr_id)) {
-          result.add(cvr_id);
-          found_ids.add(cvr_id);
-        }
-      }
-    }
-    return result;
   }
   
   /**

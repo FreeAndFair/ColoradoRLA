@@ -37,8 +37,8 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.controller.ComparisonAuditController;
 import us.freeandfair.corla.model.CVRAuditInfo;
-import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyContestResult;
@@ -46,7 +46,6 @@ import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.model.Round;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.CVRAuditInfoQueries;
 import us.freeandfair.corla.query.CastVoteRecordQueries;
 import us.freeandfair.corla.query.CountyContestResultQueries;
 
@@ -95,7 +94,7 @@ public class CountyReport {
   /**
    * The CVRs to audit for each round.
    */
-  private final Map<Integer, List<CastVoteRecord>> my_cvrs_to_audit_by_round;
+  private final Map<Integer, List<CVRAuditInfo>> my_cvrs_to_audit_by_round;
   
   /**
    * The contests driving the audit, and their results.
@@ -139,8 +138,9 @@ public class CountyReport {
     my_rounds = my_cdb.rounds();
     my_cvrs_to_audit_by_round = new HashMap<>();
     for (final Round r : my_rounds) {
-      final List<CastVoteRecord> cvrs_to_audit = my_cdb.cvrsToAuditInRound(r.number());
-      cvrs_to_audit.sort(new CastVoteRecord.BallotOrderComparator());
+      final List<CVRAuditInfo> cvrs_to_audit = 
+          ComparisonAuditController.cvrsToAuditInRound(my_cdb, r.number());
+      cvrs_to_audit.sort(new CVRAuditInfo.BallotOrderComparator());
       Main.LOGGER.info("cvrs to audit: " + cvrs_to_audit);
       my_cvrs_to_audit_by_round.put(r.number(), cvrs_to_audit);
     }
@@ -164,7 +164,7 @@ public class CountyReport {
   /**
    * @return the CVRs imprinted IDs to audit by round map for this report.
    */
-  public Map<Integer, List<CastVoteRecord>> cvrsToAuditByRound() {
+  public Map<Integer, List<CVRAuditInfo>> cvrsToAuditByRound() {
     return Collections.unmodifiableMap(my_cvrs_to_audit_by_round);
   }
   
@@ -508,19 +508,14 @@ public class CountyReport {
       cell.setCellValue("Disagreement");
       
       max_cell_number = Math.max(max_cell_number, cell_number);
-      for (final CastVoteRecord cvr : my_cvrs_to_audit_by_round.get(round.number())) {
-        final List<CVRAuditInfo> audit_info_list = 
-            CVRAuditInfoQueries.matching(my_cdb, cvr);
-        if (audit_info_list == null || audit_info_list.isEmpty()) {
-          continue;
-        }
-        final CVRAuditInfo audit_info = audit_info_list.get(0);
+      for (final CVRAuditInfo audit_info : 
+           my_cvrs_to_audit_by_round.get(round.number())) {
         row = round_sheet.createRow(row_number++);
         cell_number = 0;
         cell = row.createCell(cell_number++);
         cell.setCellType(CellType.STRING);
         cell.setCellStyle(standard_style);
-        cell.setCellValue(cvr.imprintedID());
+        cell.setCellValue(audit_info.cvr().imprintedID());
         cell = row.createCell(cell_number++);
         cell.setCellType(CellType.BOOLEAN);
         cell.setCellStyle(standard_style);

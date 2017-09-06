@@ -12,8 +12,12 @@
 package us.freeandfair.corla.query;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.OptionalLong;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
@@ -242,8 +246,8 @@ public final class CastVoteRecordQueries {
   }
   
   /**
-   * Obtain the CastVoteRecord object with the specified timestamp,
-   * county, type, and sequence number. 
+   * Obtain the CastVoteRecord object with the specified county, type, 
+   * and sequence number. 
    *
    * @param the_county_id The county.
    * @param the_type The type.
@@ -283,6 +287,51 @@ public final class CastVoteRecordQueries {
                         ", type " + the_type + ", sequence " + the_sequence_number);
     } else {
       Main.LOGGER.debug("found CVR " + result);
+    }
+    
+    return result;
+  }
+  
+  /**
+   * Obtain the CastVoteRecord objects with the specified county, type, and
+   * sequence numbers.
+   * 
+   * @param the_county_id The county.
+   * @param the_type The type.
+   * @param the_sequence_numbers The sequence numbers.
+   * @return the matching CastVoteRecord objects, mapped by sequence number,
+   * an empty map if no records match, or null if the query fails.
+   */
+  public static Map<Integer, CastVoteRecord> get(final Long the_county_id,
+                                                 final RecordType the_type,
+                                                 final List<Integer> the_sequence_numbers) {
+    Map<Integer, CastVoteRecord> result = null;
+    final Set<Integer> unique_numbers = new HashSet<>(the_sequence_numbers);
+   
+    try {
+      final Session s = Persistence.currentSession();
+      final CriteriaBuilder cb = s.getCriteriaBuilder();
+      final CriteriaQuery<CastVoteRecord> cq = cb.createQuery(CastVoteRecord.class);
+      final Root<CastVoteRecord> root = cq.from(CastVoteRecord.class);
+      final List<Predicate> conjuncts = new ArrayList<>();
+      conjuncts.add(cb.equal(root.get(COUNTY_ID), the_county_id));
+      conjuncts.add(cb.equal(root.get(RECORD_TYPE), the_type));
+      conjuncts.add(root.get("my_sequence_number").in(unique_numbers));
+      cq.select(root).where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
+      final TypedQuery<CastVoteRecord> query = s.createQuery(cq);
+      final List<CastVoteRecord> query_results = query.getResultList();
+      result = new HashMap<>();
+      for (final CastVoteRecord cvr : query_results) {
+        result.put(cvr.sequenceNumber(), cvr);
+      }
+    } catch (final PersistenceException e) {
+      Main.LOGGER.error(COULD_NOT_QUERY_DATABASE);
+    }
+    if (result == null) {
+      Main.LOGGER.debug("found no CVRs for county " + the_county_id +
+                        ", type " + the_type + ", sequence " + unique_numbers);
+    } else {
+      Main.LOGGER.debug("found " + result.keySet().size() + "CVRs ");
     }
     
     return result;

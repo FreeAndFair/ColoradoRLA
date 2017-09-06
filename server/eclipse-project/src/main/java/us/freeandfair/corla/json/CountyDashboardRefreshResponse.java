@@ -26,6 +26,7 @@ import us.freeandfair.corla.asm.ASMState;
 import us.freeandfair.corla.asm.ASMUtilities;
 import us.freeandfair.corla.asm.AuditBoardDashboardASM;
 import us.freeandfair.corla.asm.CountyDashboardASM;
+import us.freeandfair.corla.controller.ComparisonAuditController;
 import us.freeandfair.corla.model.AuditBoard;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.ContestToAudit;
@@ -385,8 +386,9 @@ public class CountyDashboardRefreshResponse {
                                               the_dashboard.ballotsAudited(),
                                               the_dashboard.discrepancies(),
                                               the_dashboard.disagreements(),
-                                              the_dashboard.
-                                                  cvrsRemainingToAuditInCurrentRound(),
+                                              ComparisonAuditController.
+                                                  cvrIDsRemainingInCurrentRound
+                                                  (the_dashboard),
                                               the_dashboard.cvrUnderAudit(),
                                               the_dashboard.auditedPrefixLength(),
                                               the_dashboard.rounds(),
