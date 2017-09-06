@@ -6,6 +6,7 @@ import Nav from '../Nav';
 
 import ElectionDateForm from './ElectionDateForm';
 import ElectionTypeForm from './ElectionTypeForm';
+import PublicMeetingDateForm from './PublicMeetingDateForm';
 import RiskLimitForm from './RiskLimitForm';
 
 import setAuditInfo from 'corla/action/dos/setAuditInfo';
@@ -137,6 +138,12 @@ const AuditPage = (props: any) => {
                 <div>Enter the date the election will take place, and the type of election.</div>
                 <ElectionDateForm forms={ forms } />
                 <ElectionTypeForm forms={ forms } setFormValid={ setFormValid } />
+            </div>
+
+            <div className='pt-card'>
+                <h3>Public Meeting Date</h3>
+                <div>Enter the date of the public meeting to establish the random seed.</div>
+                <PublicMeetingDateForm forms={ forms } />
             </div>
 
             <div className='pt-card'>
