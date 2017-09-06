@@ -18,6 +18,7 @@ import dosDashboardRefreshOk from './dos/dashboardRefreshOk';
 import fetchDosAsmStateOk from './dos/fetchDosAsmStateOk';
 import dosLoginOk from './dos/loginOk';
 import selectContestsForAuditOk from './dos/selectContestsForAuditOk';
+import setElectionInfoOk from './dos/setElectionInfoOk';
 import setRiskLimitOk from './dos/setRiskLimitOk';
 import uploadRandomSeedOk from './dos/uploadRandomSeedOk';
 
@@ -95,6 +96,10 @@ export default function root(state: AppState = defaultState, action: any) {
 
     case 'SELECT_CONTESTS_FOR_AUDIT_OK': {
         return selectContestsForAuditOk(state, action);
+    }
+
+    case 'SET_ELECTION_INFO_OK': {
+        return setElectionInfoOk(state, action);
     }
 
     case 'SET_RISK_LIMIT_OK': {
