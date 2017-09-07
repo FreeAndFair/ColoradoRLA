@@ -25,6 +25,7 @@ import javax.persistence.PersistenceException;
 
 import com.google.gson.JsonParseException;
 
+import spark.HaltException;
 import spark.Request;
 import spark.Response;
 
@@ -48,8 +49,15 @@ import us.freeandfair.corla.util.UploadedFileStreamer;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.ExcessiveImports"})
+@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.ExcessiveImports",
+    "PMD.CyclomaticComplexity", "PMD.ModifiedCyclomaticComplexity",
+    "PMD.StdCyclomaticComplexity"})
 public class CVRExportImport extends AbstractCountyDashboardEndpoint {
+  /**
+   * The " (id " string.
+   */
+  private static final String PAREN_ID = " (id ";
+
   /**
    * The static set of counties that are currently running imports. This is
    * used to prevent multiple counties from importing CVRs at the same time, 
@@ -114,8 +122,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
    * @param the_response The response (for error reporting).
    * @param the_file The uploaded file.
    */
-  // the CSV parser can throw arbitrary runtime exceptions, which we must catch
-  @SuppressWarnings({"PMD.AvoidCatchingGenericException"})
+  @SuppressWarnings({"PMD.AvoidCatchingGenericException", "PMD.AvoidRethrowingException"})
   private void parseFile(final Response the_response, final UploadedFile the_file) {
     final UploadedFileStreamer ufs = new UploadedFileStreamer(the_file);
     @SuppressWarnings("PMD.DoNotUseThreads")
@@ -155,8 +162,10 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
         } catch (final PersistenceException e) {
           // if we couldn't clean up, there's not much we can do about it
         }
-        Main.LOGGER.info("could not parse malformed CVR export file " + the_file.id());
-        badDataContents(the_response, "malformed CVR export file " + the_file.id());
+        Main.LOGGER.info(parser.errorMessage() + " [file " + 
+            the_file.filename() + PAREN_ID + the_file.id() + ")]");
+        badDataContents(the_response, parser.errorMessage() + " [file " + 
+                                      the_file.filename() + PAREN_ID + the_file.id() + ")]");
       }
     } catch (final PersistenceException e) {
       Main.LOGGER.info("parse transactions did not complete successfully, " + 
@@ -169,15 +178,20 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
       transactionFailure(the_response, "cvr import transaction failed: " + e.getMessage());
       // we have to halt manually because a transaction failure doesn't halt
       halt(the_response);
+    } catch (final HaltException e) {
+      // we don't want to intercept these, so we just rethrow it
+      throw e;
     } catch (final RuntimeException | IOException e) {
-      Main.LOGGER.info("could not parse malformed CVR export file " + the_file.id() + 
-                       ": " + e);
+      Main.LOGGER.info("could not parse malformed CVR export file " + 
+                       the_file.filename() + PAREN_ID + the_file.id() +
+                       "): " + e);
       try {
         cleanup(the_file.countyID());
       } catch (final PersistenceException ex) {
         // if we couldn't clean up, there's not much we can do about it
       }
-      badDataContents(the_response, "malformed CVR export file " + the_file.id());
+      badDataContents(the_response, "malformed CVR export file " + 
+                                    the_file.filename() + PAREN_ID + the_file.id() + ")");
     } finally {
       ufs.stop();
     }
@@ -240,7 +254,8 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
         badDataContents(the_response, "nonexistent file");
       } else if (!file.countyID().equals(county.id())) {
         unauthorized(the_response, "county " + county.id() + " attempted to import " + 
-                                   "file uploaded by county " + file.countyID());
+                                   "file " + file.filename() + "uploaded by county " + 
+                                   file.countyID());
       } else if (file.hashStatus() == HashStatus.VERIFIED) {
         parseFile(the_response, file);
       } else {

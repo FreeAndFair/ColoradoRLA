@@ -14,6 +14,9 @@ package us.freeandfair.corla.csv;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -39,10 +42,12 @@ import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CountyContestResultQueries;
 
 /**
- * @description <description>
- * @explanation <explanation>
- * @bon OPTIONAL_BON_TYPENAME
+ * Parser for Dominion CVR export files.
+ * 
+ * @author Daniel M. Zimmerman
+ * @version 0.0.1
  */
+@SuppressWarnings("PMD.GodClass")
 public class DominionCVRExportParser implements CVRExportParser {
   /**
    * The interval at which to report progress.
@@ -62,37 +67,56 @@ public class DominionCVRExportParser implements CVRExportParser {
   /**
    * The column containing the CVR number in a Dominion export file.
    */
-  private static final int CVR_NUMBER_COLUMN = 0;
+  private static final String CVR_NUMBER_HEADER = "CvrNumber";
   
   /**
    * The column containing the tabulator number in a Dominion export file.
    */
-  private static final int TABULATOR_NUMBER_COLUMN = 1;
+  private static final String TABULATOR_NUMBER_HEADER = "TabulatorNum";
   
   /**
    * The column containing the batch ID in a Dominion export file.
    */
-  private static final int BATCH_ID_COLUMN = 2;
+  private static final String BATCH_ID_HEADER = "BatchId";
   
   /**
    * The column containing the record ID in a Dominion export file.
    */
-  private static final int RECORD_ID_COLUMN = 3;
+  private static final String RECORD_ID_HEADER = "RecordId";
   
   /**
    * The column containing the imprinted ID in a Dominion export file.
    */
-  private static final int IMPRINTED_ID_COLUMN = 4;
+  private static final String IMPRINTED_ID_HEADER = "ImprintedId";
+  
+  /**
+   * The column containing the counting group in a Dominion export file.
+   */
+  private static final String COUNTING_GROUP_HEADER = "CountingGroup";
+  
+  /**
+   * The column containing the precinct portion in a Dominion export file.
+   */
+  @SuppressWarnings({"PMD.UnusedPrivateField", "unused"})
+  private static final String PRECINCT_PORTION_HEADER = "PrecinctPortion";
   
   /**
    * The column containing the ballot type in a Dominion export file.
    */
-  private static final int BALLOT_TYPE_COLUMN = 7;
+  private static final String BALLOT_TYPE_HEADER = "BallotType";
 
   /**
-   * The first column of contest names/choices in a Dominion export file.
+   * The prohibited headers.
    */
-  private static final int FIRST_CHOICE_COLUMN = 8;
+  private static final String[] PROHIBITED_HEADERS = {COUNTING_GROUP_HEADER};
+  
+  /**
+   * The required headers.
+   */
+  private static final String[] REQUIRED_HEADERS = {
+      CVR_NUMBER_HEADER, TABULATOR_NUMBER_HEADER, BATCH_ID_HEADER,
+      RECORD_ID_HEADER, IMPRINTED_ID_HEADER, BALLOT_TYPE_HEADER 
+      };
   
   /**
    * A flag indicating whether parse() has been run or not.
@@ -105,9 +129,24 @@ public class DominionCVRExportParser implements CVRExportParser {
   private boolean my_parse_success;
   
   /**
+   * The error message.
+   */
+  private String my_error_message;
+  
+  /**
    * The parser to be used.
    */
   private final CSVParser my_parser;
+  
+  /**
+   * The map from column names to column numbers.
+   */
+  private final Map<String, Integer> my_columns = new HashMap<String, Integer>();
+  
+  /**
+   * The index of the first choice/contest column.
+   */
+  private int my_first_contest_column;
   
   /**
    * The list of contests parsed from the supplied data export.
@@ -204,7 +243,7 @@ public class DominionCVRExportParser implements CVRExportParser {
                                        final List<String> the_names,
                                        final Map<String, Integer> the_votes_allowed,
                                        final Map<String, Integer> the_choice_counts) {
-    int index = FIRST_CHOICE_COLUMN;
+    int index = my_first_contest_column;
     do {
       final String c = the_line.get(index);
       int count = 0;
@@ -242,7 +281,7 @@ public class DominionCVRExportParser implements CVRExportParser {
                            final List<String> the_contest_names,
                            final Map<String, Integer> the_votes_allowed,
                            final Map<String, Integer> the_choice_counts) {
-    int index = FIRST_CHOICE_COLUMN;
+    int index = my_first_contest_column;
     int contest_count = 0;
     for (final String cn : the_contest_names) {
       final List<Choice> choices = new ArrayList<Choice>();
@@ -296,22 +335,23 @@ public class DominionCVRExportParser implements CVRExportParser {
   private CastVoteRecord extractCVR(final CSVRecord the_line) {
     try {
       final int cvr_id =
-          Integer.parseInt(stripEqualQuotes(the_line.get(CVR_NUMBER_COLUMN)));
+          Integer.parseInt(stripEqualQuotes(the_line.get(my_columns.get(CVR_NUMBER_HEADER))));
       final int tabulator_id = 
-          Integer.parseInt(stripEqualQuotes(the_line.get(TABULATOR_NUMBER_COLUMN)));
+          Integer.parseInt(stripEqualQuotes(the_line.get(my_columns.
+                                                         get(TABULATOR_NUMBER_HEADER))));
       final int batch_id = 
-          Integer.parseInt(stripEqualQuotes(the_line.get(BATCH_ID_COLUMN)));
+          Integer.parseInt(stripEqualQuotes(the_line.get(my_columns.get(BATCH_ID_HEADER))));
       final int record_id = 
-          Integer.parseInt(stripEqualQuotes(the_line.get(RECORD_ID_COLUMN)));
+          Integer.parseInt(stripEqualQuotes(the_line.get(my_columns.get(RECORD_ID_HEADER))));
       final String imprinted_id = 
-          stripEqualQuotes(the_line.get(IMPRINTED_ID_COLUMN));
+          stripEqualQuotes(the_line.get(my_columns.get(IMPRINTED_ID_HEADER)));
       final String ballot_type = 
-          stripEqualQuotes(the_line.get(BALLOT_TYPE_COLUMN));
+          stripEqualQuotes(the_line.get(my_columns.get(BALLOT_TYPE_HEADER)));
       final List<CVRContestInfo> contest_info = new ArrayList<CVRContestInfo>();
       
       // for each contest, see if choices exist on the CVR; "0" or "1" are
       // votes or absences of votes; "" means that the contest is not in this style
-      int index = FIRST_CHOICE_COLUMN;
+      int index = my_first_contest_column;
       for (final Contest co : my_contests) {
         boolean present = false;
         final List<String> votes = new ArrayList<String>();
@@ -358,6 +398,100 @@ public class DominionCVRExportParser implements CVRExportParser {
   }
   
   /**
+   * Processes the headers from the specified CSV record. This includes checking
+   * for the use of forbidden headers, and that all required headers are 
+   * present.
+   * 
+   * @return true if the headers are OK, false otherwise; this method also
+   * sets the error message if necessary.
+   */
+  @SuppressWarnings({"PMD.AvoidLiteralsInIfCondition", "PMD.AvoidDeeplyNestedIfStmts",
+      "PMD.ModifiedCyclomaticComplexity", "PMD.CyclomaticComplexity",
+      "PMD.StdCyclomaticComplexity", "PMD.NPathComplexity"})
+  private boolean processHeaders(final CSVRecord the_line) {
+    boolean result = true;
+    
+    // the explanations line includes the column names for the non-contest/choice
+    // columns, so let's get those
+    for (int i = 0; i < my_first_contest_column; i++) {
+      my_columns.put(the_line.get(i), i);
+    }
+    
+    // let's make sure none of our prohibited headers are present
+    final List<String> prohibited_headers = new ArrayList<>();
+    for (final String h : PROHIBITED_HEADERS) {
+      if (my_columns.get(h) != null) {
+        result = false;
+        prohibited_headers.add(h);        
+      }
+    }
+    
+    // let's make sure no required headers are missing
+    final Set<String> required_headers = 
+        new HashSet<>(Arrays.asList(REQUIRED_HEADERS));
+    for (final String header : REQUIRED_HEADERS) {
+      if (my_columns.get(header) != null) {
+        required_headers.remove(header);
+      }
+    }
+    
+    result = prohibited_headers.isEmpty() && required_headers.isEmpty();
+    
+    if (!result) {
+      final StringBuilder sb = new StringBuilder();
+      sb.append("malformed CVR file: ");
+      
+      if (!prohibited_headers.isEmpty()) {
+        sb.append("prohibited header");
+        if (prohibited_headers.size() > 1) {
+          sb.append('s');
+        }
+        sb.append(' ');
+        sb.append(stringList(prohibited_headers));
+        sb.append(" present");
+        if (!required_headers.isEmpty()) {
+          sb.append(", ");
+        }
+      }
+      
+      if (!required_headers.isEmpty()) {
+        sb.append("required header");
+        if (required_headers.size() > 1) {
+          sb.append('s');
+        }
+        sb.append(' ');
+        sb.append(stringList(required_headers));
+        sb.append(" missing");
+      }
+      
+      my_error_message = sb.toString();
+    }
+    
+    return result;
+  }
+  
+  /**
+   * Makes a comma-separated string of the specified collection of 
+   * strings.
+   * 
+   * @param the_list The list.
+   * @return the comma-separated string.
+   */
+  private String stringList(final Collection<String> the_strings) {
+    final List<String> strings = new ArrayList<>(the_strings);
+    final StringBuilder sb = new StringBuilder();
+    
+    Collections.sort(strings);
+    sb.append(strings.get(0));
+    for (int i = 1; i < strings.size(); i++) {
+      sb.append(", ");
+      sb.append(strings.get(i));
+    }
+    
+    return sb.toString();
+  }
+  
+  /**
    * Parse the supplied data export. If it has already been parsed, this
    * method returns immediately.
    * 
@@ -379,6 +513,15 @@ public class DominionCVRExportParser implements CVRExportParser {
       // we expect the first line to be the election name, which we currently discard
       records.next();
       
+      // for the second line, we count the number of empty strings to find the first
+      // contest/choice column
+      
+      final CSVRecord contest_line = records.next();
+      my_first_contest_column = 0;
+      while ("".equals(contest_line.get(my_first_contest_column))) {
+        my_first_contest_column = my_first_contest_column + 1;
+      }
+      
       // find all the contest names, how many choices each has, 
       // and how many choices can be made in each
       final List<String> contest_names = new ArrayList<String>();
@@ -388,34 +531,49 @@ public class DominionCVRExportParser implements CVRExportParser {
       // we expect the second line to be a list of contest names, each appearing once 
       // for each choice in the contest
 
-      updateContestStructures(records.next(), contest_names, contest_votes_allowed, 
+      updateContestStructures(contest_line, contest_names, contest_votes_allowed, 
                               contest_choice_counts);
 
       // we expect the third and fourth lines to be a list of contest choices
       // and a list of explanations of those choices (such as party affiliations)
       
-      addContests(records.next(), records.next(), contest_names,
-                  contest_votes_allowed, contest_choice_counts);
+      final CSVRecord choice_line = records.next();
+      final CSVRecord expl_line = records.next();
       
-      // subsequent lines contain cast vote records
-      while (records.hasNext()) {
-        final CSVRecord cvr_line = records.next();
-        final CastVoteRecord cvr = extractCVR(cvr_line);
-        if (cvr == null) {
-          // we don't record the CVR since it didn't parse
-          Main.LOGGER.error("Could not parse malformed CVR record (" + cvr_line + ")");
-          result = false;   
-          break;
-        } else {
-          my_record_count = my_record_count + 1;
-          if (my_record_count % PROGRESS_INTERVAL == 0) {
-            Main.LOGGER.info("parsed " + my_record_count + " CVRs");
+      if (processHeaders(expl_line)) {
+        addContests(choice_line, expl_line, contest_names,
+                    contest_votes_allowed, contest_choice_counts);
+
+        // subsequent lines contain cast vote records
+        while (records.hasNext()) {
+          final CSVRecord cvr_line = records.next();
+          final CastVoteRecord cvr = extractCVR(cvr_line);
+          if (cvr == null) {
+            // we don't record the CVR since it didn't parse
+            Main.LOGGER.error("Could not parse malformed CVR record (" + cvr_line + ")");
+            my_error_message = "malformed CVR record (" + cvr_line + ")";
+            result = false;   
+            break;
+          } else {
+            my_record_count = my_record_count + 1;
+            if (my_record_count % PROGRESS_INTERVAL == 0) {
+              Main.LOGGER.info("parsed " + my_record_count + " CVRs");
+            }
           }
         }
+        
+        for (final CountyContestResult r : my_results) {
+          r.updateResults();
+          Persistence.saveOrUpdate(r);
+        }
+      } else {
+        // error message was set when validating columns
+        result = false;
       }
     } catch (final NoSuchElementException | StringIndexOutOfBoundsException |
                    ArrayIndexOutOfBoundsException e) {
       Main.LOGGER.error("Could not parse CVR file because it was malformed");
+      my_error_message = "malformed CVR file";
       result = false;
     }
     
@@ -423,11 +581,6 @@ public class DominionCVRExportParser implements CVRExportParser {
     
     my_parse_status = true;
     my_parse_success = result;
-    
-    for (final CountyContestResult r : my_results) {
-      r.updateResults();
-      Persistence.saveOrUpdate(r);
-    }
     
     return result;
   }
@@ -442,5 +595,13 @@ public class DominionCVRExportParser implements CVRExportParser {
     } else {
       return OptionalInt.of(my_record_count);
     }
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public synchronized String errorMessage() {
+    return my_error_message;
   }
 }
