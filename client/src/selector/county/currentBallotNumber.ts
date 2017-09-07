@@ -9,9 +9,7 @@ function currentBallotNumber(state: any): number {
         return null;
     }
 
-    const unaudited = _.filter(cvrsToAudit, (cvr: any) => !cvr.audited);
-
-    return 1 + _.findIndex(unaudited, (cvr: any) => cvr.db_id === currentBallot.id);
+    return 1 + _.findIndex(cvrsToAudit, (cvr: any) => cvr.db_id === currentBallot.id);
 }
 
 
