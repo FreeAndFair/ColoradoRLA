@@ -21,6 +21,8 @@ import java.util.Set;
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -159,6 +161,13 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
   private CountyContestResult my_contest_result;
   
   /**
+   * The reason for this audit.
+   */
+  @Column(updatable = false, nullable = false)
+  @Enumerated(EnumType.STRING)
+  private AuditReason my_audit_reason;
+  
+  /**
    * The gamma.
    */
   @Column(updatable = false, nullable = false, 
@@ -225,20 +234,23 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
   
   /**
    * Constructs a CountyContestAudit for the specified dashboard, contest result,
-   * and risk limit.
+   * risk limit, and audit reason.
    * 
    * @param the_dashboard The dashboard.
    * @param the_contest_result The contest result.
    * @param the_risk_limit The risk limit.
+   * @param the_audit_reason The audit reason.
    */
   public CountyContestComparisonAudit(final CountyDashboard the_dashboard,
                                       final CountyContestResult the_contest_result,
-                                      final BigDecimal the_risk_limit) {
+                                      final BigDecimal the_risk_limit,
+                                      final AuditReason the_audit_reason) {
     super();
     my_dashboard = the_dashboard;
     my_contest_result = the_contest_result;
     my_contest = my_contest_result.contest();
     my_risk_limit = the_risk_limit;
+    my_audit_reason = the_audit_reason;
   }
   
   /**
@@ -298,6 +310,13 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
    */
   public BigDecimal riskLimit() {
     return my_risk_limit;
+  }
+  
+  /**
+   * @return the audit reason associated with this audit.
+   */
+  public AuditReason auditReason() {
+    return my_audit_reason;
   }
   
   /**

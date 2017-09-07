@@ -18,9 +18,9 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
+import us.freeandfair.corla.model.AuditReason;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.ContestToAudit;
-import us.freeandfair.corla.model.ContestToAudit.AuditReason;
 import us.freeandfair.corla.model.ContestToAudit.AuditType;
 import us.freeandfair.corla.persistence.Persistence;
 

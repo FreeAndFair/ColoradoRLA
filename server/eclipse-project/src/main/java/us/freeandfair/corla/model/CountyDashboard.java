@@ -18,14 +18,17 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -41,6 +44,7 @@ import javax.persistence.Table;
 import javax.persistence.Version;
 
 import us.freeandfair.corla.model.CVRContestInfo.ConsensusValue;
+import us.freeandfair.corla.persistence.AuditReasonIntegerMapConverter;
 import us.freeandfair.corla.persistence.PersistentEntity;
 
 /**
@@ -54,7 +58,7 @@ import us.freeandfair.corla.persistence.PersistentEntity;
 @Table(name = "county_dashboard")
 @SuppressWarnings({"PMD.ImmutableField", "PMD.TooManyMethods", "PMD.TooManyFields",
     "PMD.GodClass", "PMD.ExcessiveImports", "checkstyle:methodcount",
-    "PMD.ExcessivePublicCount"})
+    "PMD.ExcessivePublicCount", "PMD.CyclomaticComplexity"})
 public class CountyDashboard implements PersistentEntity, Serializable {
   /**
    * The minimum number of members on an audit board.
@@ -117,28 +121,25 @@ public class CountyDashboard implements PersistentEntity, Serializable {
 
   /**
    * The timestamp of the most recent set of uploaded CVRs.
-   * 
-   * @design This is how we are currently linking the dashboard with the most
-   * recently uploaded set of CVRs. Each uploaded file is assigned a
-   * timestamp, and it seems safe to assume that the same county won't
-   * upload two CVR files in the same nanosecond. This is therefore far more
-   * efficient that maintaining a list of all the uploaded CVRs in the database,
-   * since the query to obtain them when needed is straightforward.
    */
   private Instant my_cvr_upload_timestamp;
   
   /**
+   * The number of CVRs imported.
+   */
+  @Column(nullable = false) 
+  private Integer my_cvrs_imported = 0;
+  
+  /**
    * The timestamp of the most recent uploaded ballot manifest. 
-   * 
-   * @design This is how we are currently linking the dashboard with the most
-   * recently uploaded ballot manifest file. Each uploaded file is assigned a
-   * timestamp, and it seems safe to assume that the same county won't
-   * upload two ballot manifest files in the same nanosecond. This is therefore 
-   * far more efficient than maintaining a list of all the uploaded ballot
-   * manifests in the database, since the query to obtain them when needed is 
-   * straightforward.
    */
   private Instant my_manifest_upload_timestamp;
+  
+  /**
+   * The number of ballots described in the ballot manifest.
+   */
+  @Column(nullable = false)
+  private Integer my_ballots_in_manifest = 0;
   
   /**
    * The timestamp for the start of the audit.
@@ -225,12 +226,6 @@ public class CountyDashboard implements PersistentEntity, Serializable {
       new ArrayList<>();
   
   /**
-   * The number of ballots cast.
-   */
-  @Column(nullable = false) 
-  private Integer my_ballots_cast = 0;
-  
-  /**
    * The number of ballots audited.
    */
   @Column(nullable = false)
@@ -255,14 +250,16 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   /**
    * The number of discrepancies found in the audit so far.
    */
-  @Column(nullable = false)
-  private Integer my_discrepancies = 0;
+  @Column(nullable = false, name = "discrepancies", columnDefinition = "text")
+  @Convert(converter = AuditReasonIntegerMapConverter.class)
+  private Map<AuditReason, Integer> my_discrepancies = new HashMap<>();
   
   /**
    * The number of disagreements found in the audit so far.
    */
-  @Column(nullable = false)
-  private Integer my_disagreements = 0;
+  @Column(nullable = false, name = "disagreements", columnDefinition = "text")
+  @Convert(converter = AuditReasonIntegerMapConverter.class)
+  private Map<AuditReason, Integer> my_disagreements = new HashMap<>();
   
   /**
    * Constructs an empty county dashboard, solely for persistence.
@@ -512,22 +509,33 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    */
   private void updateRound(final Round the_round) {
     int index = the_round.startAuditedPrefixLength();
+    final Map<Contest, AuditReason> audit_reasons = new HashMap<>();
+    final Set<AuditReason> discrepancies = new HashSet<>();
+    final Set<AuditReason> disagreements = new HashSet<>();
     while (index < my_audited_prefix_length && 
            the_round.actualCount() < the_round.expectedCount()) {
       final CVRAuditInfo cvrai = my_cvr_audit_info.get(index);
       for (final CountyContestComparisonAudit ca : comparisonAudits()) {
-        if (ca.computeDiscrepancy(cvrai.cvr(), cvrai.acvr()) != 0) {
-          the_round.addDiscrepancy();
-          break;
+        audit_reasons.put(ca.contest(), ca.auditReason());
+        if (!discrepancies.contains(ca.auditReason()) && 
+            ca.computeDiscrepancy(cvrai.cvr(), cvrai.acvr()) != 0) {
+          discrepancies.add(ca.auditReason());
         }
       }
       for (final CVRContestInfo ci : cvrai.acvr().contestInfo()) {
-        if (ci.consensus() == ConsensusValue.NO) {
-          the_round.addDisagreement();
-          break;
+        final AuditReason reason = audit_reasons.get(ci.contest());
+        if (!disagreements.contains(reason) && 
+            ci.consensus() == ConsensusValue.NO) {
+          disagreements.add(reason);
         }
       }
       the_round.addAuditedBallot();
+      for (final AuditReason r : discrepancies) {
+        the_round.addDiscrepancy(r);
+      }
+      for (final AuditReason r : disagreements) {
+        the_round.addDisagreement(r);
+      }
       index = index + 1;
     }
   }
@@ -687,76 +695,119 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   }
   
   /**
-   * @return the number of ballots cast in the county.
+   * @return the number of CVRs in the CVR import.
    */
-  public Integer ballotsCast() {
-    return my_ballots_cast;
+  public Integer cvrsImported() {
+    return my_cvrs_imported;
   }
   
   /**
-   * Sets the number of ballots cast in the county.
+   * Sets the number of CVRs imported.
    * 
-   * @param the_ballots_cast The number.
+   * @param the_cvrs_imported The number.
    */
-  public void setBallotsCast(final Integer the_ballots_cast) {
-    my_ballots_cast = the_ballots_cast;
+  public void setCVRsImported(final Integer the_cvrs_imported) {
+    my_cvrs_imported = the_cvrs_imported;
   }
   
   /**
-   * @return the number of discrepancies found in the audit so far.
+   * @return the number of ballots described in the ballot manifest.
    */
-  public Integer discrepancies() {
-    return my_discrepancies;
+  public Integer ballotsInManifest() {
+    return my_ballots_in_manifest;
   }
   
   /**
-   * Adds a discrepancy. This adds it both to the total and to the
-   * current audit round, if one is ongoing.
+   * Sets the number of ballots described in the ballot manifest.
+   * 
+   * @param the_ballots_in_manifest The number.
    */
-  public void addDiscrepancy() {
-    my_discrepancies = my_discrepancies + 1; 
-    if (my_current_round_index != null) {
-      my_rounds.get(my_current_round_index).addDiscrepancy();
-    } 
+  public void setBallotsInManifest(final Integer the_ballots_in_manifest) {
+    my_ballots_in_manifest = the_ballots_in_manifest;
   }
   
   /**
-   * Removes a discrepancy. This removes it both from the total and from
-   * the current audit round, if one is ongoing.
+   * Ensures that a counter exists in the specified map for the specified key.
+   * 
+   * @param the_map The map.
+   * @param the_key The key.
    */
-  public void removeDiscrepancy() {
-    my_discrepancies = my_discrepancies - 1;
-    if (my_current_round_index != null) {
-      my_rounds.get(my_current_round_index).removeDiscrepancy();
+  private void ensureCounterExists(final Map<AuditReason, Integer> the_map,
+                                   final AuditReason the_key) {
+    if (!the_map.containsKey(the_key)) {
+      the_map.put(the_key, 0);
     }
   }
   
   /**
-   * @return the number of disagreements found in the audit so far.
+   * @return the numbers of discrepancies found in the audit so far, 
+   * categorized by contest audit reason.
    */
-  public Integer disagreements() {
-    return my_disagreements;
+  public Map<AuditReason, Integer> discrepancies() {
+    return Collections.unmodifiableMap(my_discrepancies);
   }
   
   /**
-   * Adds a disagreement. This adds it both to the total and to the
-   * current audit round, if one is ongoing.
+   * Adds a discrepancy for the specified audit reason. This adds it both to the 
+   * total and to the current audit round, if one is ongoing.
+   * 
+   * @param the_reason The reason.
    */
-  public void addDisagreement() {
-    my_disagreements = my_disagreements + 1; 
+  public void addDiscrepancy(final AuditReason the_reason) {
+    ensureCounterExists(my_discrepancies, the_reason);
+    my_discrepancies.put(the_reason, my_discrepancies.get(the_reason) + 1); 
     if (my_current_round_index != null) {
-      my_rounds.get(my_current_round_index).addDisagreement();
+      my_rounds.get(my_current_round_index).addDiscrepancy(the_reason);
     } 
   }
   
   /**
-   * Removes a disagreement. This removes it both from the total and from the
-   * current audit round, if one is ongoing.
+   * Removes a discrepancy for the specified audit reason. This removes it 
+   * both from the total and from the current audit round, if one is ongoing.
+   * 
+   * @param the_reason The reason.
    */
-  public void removeDisagreement() {
-    my_disagreements = my_disagreements - 1; 
+  public void removeDiscrepancy(final AuditReason the_reason) {
+    ensureCounterExists(my_discrepancies, the_reason);
+    my_discrepancies.put(the_reason, my_discrepancies.get(the_reason) - 1);
     if (my_current_round_index != null) {
-      my_rounds.get(my_current_round_index).removeDisagreement();
+      my_rounds.get(my_current_round_index).removeDiscrepancy(the_reason);
+    }
+  }
+  
+  /**
+   * @return the numbers of disagreements found in the audit so far,
+   * categorized by contest audit reason.
+   */
+  public Map<AuditReason, Integer> disagreements() {
+    return my_disagreements;
+  }
+  
+  /**
+   * Adds a disagreement for the specified audit reason. This adds it both to the 
+   * total and to the current audit round, if one is ongoing.
+   * 
+   * @param the_reason The reason.
+   */
+  public void addDisagreement(final AuditReason the_reason) {
+    ensureCounterExists(my_disagreements, the_reason);
+    my_disagreements.put(the_reason, my_discrepancies.get(the_reason) + 1);
+    if (my_current_round_index != null) {
+      my_rounds.get(my_current_round_index).addDisagreement(the_reason);
+    } 
+  }
+  
+  /**
+   * Removes a disagreement for the specified audit reason. This removes it 
+   * both from the total and from the current audit round, if one is ongoing.
+   * 
+   * @param the_reason The reason.
+   */
+  public void removeDisagreement(final AuditReason the_reason) {
+    ensureCounterExists(my_disagreements, the_reason);
+    my_disagreements.put(the_reason, my_disagreements.get(the_reason) - 1);
+    if (my_current_round_index != null) {
+      my_rounds.get(my_current_round_index).removeDisagreement(the_reason);
     } 
   }
   

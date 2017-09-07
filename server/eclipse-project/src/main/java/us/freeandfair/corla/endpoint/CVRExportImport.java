@@ -107,7 +107,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
       serverError(the_response, "could not locate county dashboard");
     } else {
       cdb.setCVRUploadTimestamp(the_timestamp);
-      cdb.setBallotsCast(the_ballots_cast);
+      cdb.setCVRsImported(the_ballots_cast);
       try {
         Persistence.saveOrUpdate(cdb);
       } catch (final PersistenceException e) {

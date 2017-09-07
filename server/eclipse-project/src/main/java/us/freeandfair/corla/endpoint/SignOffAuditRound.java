@@ -130,7 +130,7 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
                 // we've reached the risk limit, so the county is done
                 my_event.set(RISK_LIMIT_ACHIEVED_EVENT);
                 audit_complete = true;
-              } else if (cdb.ballotsCast() <= cdb.ballotsAudited()) {
+              } else if (cdb.cvrsImported() <= cdb.ballotsAudited()) {
                 // there are no more ballots in the county
                 my_event.set(BALLOTS_EXHAUSTED_EVENT);
                 audit_complete = true;

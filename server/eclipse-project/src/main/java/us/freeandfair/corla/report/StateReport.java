@@ -17,7 +17,9 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.OptionalInt;
@@ -37,6 +39,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.model.AuditReason;
 import us.freeandfair.corla.model.CVRAuditInfo;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.County;
@@ -400,30 +403,64 @@ public class StateReport {
         cell.setCellValue(round.actualCount());
 
         row = county_sheet.createRow(row_number++);
-        max_cell_number = Math.max(max_cell_number, cell_number);
-        cell_number = 0;
-        cell = row.createCell(cell_number++);
-        cell.setCellType(CellType.STRING);
-        cell.setCellStyle(bold_style);
-        cell.setCellValue("Discrepancies Recorded");
-
-        cell = row.createCell(cell_number++);
-        cell.setCellType(CellType.NUMERIC);
-        cell.setCellStyle(integer_style);
-        cell.setCellValue(round.discrepancies());
-
+        cell_number = 1; // these are headers for audit reasons
+        final List<AuditReason> listed_reasons = new ArrayList<>();
+        final Map<AuditReason, Integer> discrepancies = round.discrepancies();
+        final Map<AuditReason, Integer> disagreements = round.disagreements();
+        
+        for (final AuditReason r : AuditReason.values()) {
+          if (discrepancies.containsKey(r) && discrepancies.get(r) >= 0 || 
+              disagreements.containsKey(r) && disagreements.get(r) >= 0) {
+            listed_reasons.add(r);
+          }
+        }
+        for (final AuditReason r : listed_reasons) {
+          cell = row.createCell(cell_number++);
+          cell.setCellStyle(bold_style);
+          cell.setCellValue(r.toString());
+        }
+        
         row = county_sheet.createRow(row_number++);
         max_cell_number = Math.max(max_cell_number, cell_number);
         cell_number = 0;
         cell = row.createCell(cell_number++);
         cell.setCellType(CellType.STRING);
         cell.setCellStyle(bold_style);
-        cell.setCellValue("Disagreements Recorded");
+        cell.setCellValue("Discrepancies Recorded by Audit Reason");
 
+        for (final AuditReason r : listed_reasons) {
+          cell = row.createCell(cell_number++);
+          cell.setCellType(CellType.NUMERIC);
+          cell.setCellStyle(integer_style);
+          final int cell_value;
+          if (discrepancies.containsKey(r)) {
+            cell_value = discrepancies.get(r);
+          } else {
+            cell_value = 0;
+          }
+          cell.setCellValue(cell_value);
+        }
+        
+        row = county_sheet.createRow(row_number++);
+        max_cell_number = Math.max(max_cell_number, cell_number);
+        cell_number = 0;
         cell = row.createCell(cell_number++);
-        cell.setCellType(CellType.NUMERIC);
-        cell.setCellStyle(integer_style);
-        cell.setCellValue(round.disagreements());
+        cell.setCellType(CellType.STRING);
+        cell.setCellStyle(bold_style);
+        cell.setCellValue("Disagreements Recorded by Audit Reason");
+        
+        for (final AuditReason r : listed_reasons) {
+          cell = row.createCell(cell_number++);
+          cell.setCellType(CellType.NUMERIC);
+          cell.setCellStyle(integer_style);
+          final int cell_value;
+          if (disagreements.containsKey(r)) {
+            cell_value = disagreements.get(r);
+          } else {
+            cell_value = 0;
+          }
+          cell.setCellValue(cell_value);
+        }
 
         row_number++;
         row = county_sheet.createRow(row_number++);
@@ -473,11 +510,11 @@ public class StateReport {
           cell = row.createCell(cell_number++);
           cell.setCellType(CellType.BOOLEAN);
           cell.setCellStyle(standard_style);
-          cell.setCellValue(audit_info.discrepancy());
+          cell.setCellValue(!audit_info.discrepancy().isEmpty());
           cell = row.createCell(cell_number++);
           cell.setCellType(CellType.BOOLEAN);
           cell.setCellStyle(standard_style);
-          cell.setCellValue(audit_info.disagreement());
+          cell.setCellValue(!audit_info.disagreement().isEmpty());
         }
       }
       for (int i = 0; i < max_cell_number; i++) {
