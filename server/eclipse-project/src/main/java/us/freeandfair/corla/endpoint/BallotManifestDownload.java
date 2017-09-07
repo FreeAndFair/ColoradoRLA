@@ -57,10 +57,9 @@ public class BallotManifestDownload extends AbstractCountyDashboardEndpoint {
    */
   @Override
   public String endpoint(final Request the_request, final Response the_response) {
-    try {
-      final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
-      final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-      final JsonWriter jw = new JsonWriter(bw);
+    try (OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
+         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+         JsonWriter jw = new JsonWriter(bw)) {
       jw.beginArray();
       final Stream<BallotManifestInfo> bmi_stream = 
           Persistence.getAllAsStream(BallotManifestInfo.class);

@@ -64,9 +64,8 @@ public class CountyReportDownload extends AbstractEndpoint {
   @SuppressWarnings("PMD.ExceptionAsFlowControl")
   public String endpoint(final Request the_request, final Response the_response) {
     final boolean pdf = "pdf".equalsIgnoreCase(the_request.queryParams("file_type"));
-    try {
-      final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
-      final BufferedOutputStream bos = new BufferedOutputStream(os);
+    try (OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
+         BufferedOutputStream bos = new BufferedOutputStream(os)) {
       final CountyReport cr = 
           new CountyReport(Main.authentication().authenticatedCounty(the_request));
       if (pdf) {

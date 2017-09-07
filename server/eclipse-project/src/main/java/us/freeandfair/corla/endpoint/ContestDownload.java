@@ -77,10 +77,9 @@ public class ContestDownload extends AbstractEndpoint {
       }
     }
     final List<Contest> contest_list = ContestQueries.forCounties(county_set);
-    try {
-      final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
-      final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-      final JsonWriter jw = new JsonWriter(bw);
+    try (OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
+         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+         JsonWriter jw = new JsonWriter(bw)) {
       jw.beginArray();
       for (final Contest contest : contest_list) {
         jw.jsonValue(Main.GSON.toJson(Persistence.unproxy(contest)));
