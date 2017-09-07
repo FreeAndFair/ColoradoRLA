@@ -35,6 +35,7 @@ import javax.persistence.Version;
 
 import ch.obermuhlner.math.big.BigDecimalMath;
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.model.CVRContestInfo.ConsensusValue;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.persistence.PersistentEntity;
 
@@ -538,7 +539,10 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
         the_acvr.contestInfoForContest(my_contest_result.contest());
 
     if (cvr_info != null && acvr_info != null) {
-      if (the_acvr.recordType() == RecordType.PHANTOM_BALLOT) {
+      if (the_acvr.recordType() == RecordType.PHANTOM_BALLOT ||
+          acvr_info.consensus() == ConsensusValue.NO) {
+        // a lack of consensus for this contest is treated
+        // identically to a phantom ballot
         result = computePhantomBallotDiscrepancy(cvr_info);
       } else {
         result = computeAuditedBallotDiscrepancy(cvr_info, acvr_info);
