@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.OptionalInt;
-import java.util.OptionalLong;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -48,7 +47,6 @@ import us.freeandfair.corla.model.CountyContestResult;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.model.Round;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.CastVoteRecordQueries;
 
 /**
  * All the data required for a state audit report.
@@ -207,19 +205,36 @@ public class StateReport {
     row = summary_sheet.createRow(row_number++);
     cell_number = 0;
     
+    int ballots_in_manifests = 0;
+    int cvrs_in_export_files = 0;
+    for (final CountyReport cr : my_county_reports.values()) {
+      ballots_in_manifests += cr.dashboard().ballotsInManifest();
+      cvrs_in_export_files += cr.dashboard().cvrsImported();
+    }
+    
     cell = row.createCell(cell_number++);
     cell.setCellType(CellType.STRING);
     cell.setCellStyle(bold_style);
-    cell.setCellValue("Total Ballot Cards Cast");
+    cell.setCellValue("Total Ballot Cards In Manifests");
     
     cell = row.createCell(cell_number++);
     cell.setCellType(CellType.NUMERIC);
     cell.setCellStyle(integer_style);
-    final OptionalLong ballots = 
-        CastVoteRecordQueries.countMatching(RecordType.UPLOADED);
-    if (ballots.isPresent()) {
-      cell.setCellValue(ballots.getAsLong());
-    }
+
+    cell.setCellValue(ballots_in_manifests);
+    
+    row = summary_sheet.createRow(row_number++);
+    cell_number = 0;
+    
+    cell = row.createCell(cell_number++);
+    cell.setCellType(CellType.STRING);
+    cell.setCellStyle(bold_style);
+    cell.setCellValue("Total CVRs in CVR Export Files");
+    
+    cell = row.createCell(cell_number++);
+    cell.setCellType(CellType.NUMERIC);
+    cell.setCellStyle(integer_style);
+    cell.setCellValue(cvrs_in_export_files);
     
     row = summary_sheet.createRow(row_number++);
     cell_number = 0;

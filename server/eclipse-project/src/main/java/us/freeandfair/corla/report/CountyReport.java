@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalInt;
-import java.util.OptionalLong;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -47,7 +46,6 @@ import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.model.Round;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.CastVoteRecordQueries;
 import us.freeandfair.corla.query.CountyContestResultQueries;
 
 /**
@@ -284,20 +282,29 @@ public class CountyReport {
     cell = row.createCell(cell_number++);
     cell.setCellType(CellType.STRING);
     cell.setCellStyle(bold_style);
-    cell.setCellValue("Total Ballot Cards Cast");
+    cell.setCellValue("Total Ballot Cards In Manifest");
     
     cell = row.createCell(cell_number++);
     cell.setCellType(CellType.NUMERIC);
     cell.setCellStyle(integer_style);
-    final OptionalLong ballots = 
-        CastVoteRecordQueries.countMatching(my_county.id(), RecordType.UPLOADED);
-    if (ballots.isPresent()) {
-      cell.setCellValue(ballots.getAsLong());
-    }
+    cell.setCellValue(my_cdb.ballotsInManifest());
     
     row = summary_sheet.createRow(row_number++);
     cell_number = 0;
     
+    cell = row.createCell(cell_number++);
+    cell.setCellType(CellType.STRING);
+    cell.setCellStyle(bold_style);
+    cell.setCellValue("Total CVRs in CVR Export File");
+    
+    cell = row.createCell(cell_number++);
+    cell.setCellType(CellType.NUMERIC);
+    cell.setCellStyle(integer_style);
+    cell.setCellValue(my_cdb.cvrsImported());
+    
+    row = summary_sheet.createRow(row_number++);
+    cell_number = 0;
+
     cell = row.createCell(cell_number++);
     cell.setCellType(CellType.STRING);
     cell.setCellStyle(bold_style);
