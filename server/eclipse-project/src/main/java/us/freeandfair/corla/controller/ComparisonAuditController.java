@@ -649,8 +649,7 @@ public final class ComparisonAuditController {
     
     for (final CVRContestInfo ci : the_audit_cvr.contestInfo()) {
       final AuditReason reason = audit_reasons.get(ci.contest());
-      if (!disagreements.contains(reason) && 
-          ci.consensus() == ConsensusValue.NO) {
+      if (ci.consensus() == ConsensusValue.NO) {
         disagreements.add(reason);
       }
     }
@@ -699,8 +698,7 @@ public final class ComparisonAuditController {
     
     for (final CVRContestInfo ci : the_audit_cvr.contestInfo()) {
       final AuditReason reason = audit_reasons.get(ci.contest());
-      if (!disagreements.contains(reason) && 
-          ci.consensus() == ConsensusValue.NO) {
+      if (ci.consensus() == ConsensusValue.NO) {
         disagreements.add(reason);
       }
     }

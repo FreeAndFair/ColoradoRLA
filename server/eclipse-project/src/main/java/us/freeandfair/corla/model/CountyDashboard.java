@@ -524,8 +524,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
       }
       for (final CVRContestInfo ci : cvrai.acvr().contestInfo()) {
         final AuditReason reason = audit_reasons.get(ci.contest());
-        if (!disagreements.contains(reason) && 
-            ci.consensus() == ConsensusValue.NO) {
+        if (ci.consensus() == ConsensusValue.NO) {
           disagreements.add(reason);
         }
       }
