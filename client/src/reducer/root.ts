@@ -1,7 +1,6 @@
 import * as _ from 'lodash';
 
 import countyDashboardRefreshOk from './county/dashboardRefreshOk';
-import countyFetchAllCvrsOk from './county/fetchAllCvrsOk';
 import fetchAuditBoardAsmStateOk from './county/fetchAuditBoardAsmStateOk';
 import countyFetchContestsOk from './county/fetchContestsOk';
 import fetchCountyAsmStateOk from './county/fetchCountyAsmStateOk';
@@ -42,10 +41,6 @@ export default function root(state: AppState = defaultState, action: any) {
 
     case 'COUNTY_DASHBOARD_REFRESH_OK': {
         return countyDashboardRefreshOk(state, action);
-    }
-
-    case 'COUNTY_FETCH_ALL_CVRS_OK': {
-        return countyFetchAllCvrsOk(state, action);
     }
 
     case 'COUNTY_FETCH_CONTESTS_OK': {
