@@ -77,10 +77,9 @@ public class ACVRDownloadByCounty extends AbstractEndpoint {
     for (final String s : the_request.queryParams()) {
       county_set.add(Long.valueOf(s));
     }
-    try {
-      final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
-      final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-      final JsonWriter jw = new JsonWriter(bw);
+    try (OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
+         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+         JsonWriter jw = new JsonWriter(bw)) {
       jw.beginArray();
       for (final Long county : county_set) {
         final Stream<CastVoteRecord> matches = 

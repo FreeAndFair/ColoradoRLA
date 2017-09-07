@@ -68,10 +68,9 @@ public class BallotManifestDownloadByCounty extends AbstractCountyDashboardEndpo
       if (matches == null) {
         serverError(the_response, "Error retrieving records from database");
       } else {
-        try {
-          final OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
-          final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-          final JsonWriter jw = new JsonWriter(bw);
+        try (OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
+             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+             JsonWriter jw = new JsonWriter(bw)) {
           jw.beginArray();
           for (final BallotManifestInfo bmi : matches) {
             jw.jsonValue(Main.GSON.toJson(Persistence.unproxy(bmi)));
