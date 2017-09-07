@@ -140,6 +140,10 @@ function parseRiskLimit(data: any): number {
     return _.get(data, 'audit_info.risk_limit');
 }
 
+function parseDisCount(data: any): number {
+    return _.sum(_.values(data));
+}
+
 export const parse = (data: CountyDashboard, state: any): any => {
     const findContest = (id: any) => state.county.contestDefs[id];
 
@@ -158,8 +162,8 @@ export const parse = (data: CountyDashboard, state: any): any => {
         currentRound: parseRound(data.current_round),
         cvrExportFilename: data.cvr_export_filename,
         cvrExportHash: data.cvr_export_hash,
-        disagreementCount: data.disagreement_count,
-        discrepancyCount: data.discrepancy_count,
+        disagreementCount: parseDisCount(data.disagreement_count),
+        discrepancyCount: parseDisCount(data.discrepancy_count),
         election: parseElection(data),
         estimatedBallotsToAudit: data.estimated_ballots_to_audit,
         generalInformation: data.general_information,
