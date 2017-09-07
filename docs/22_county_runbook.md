@@ -32,7 +32,7 @@ text of the Run Book.
 A County user can launch the RLA Tool by pointing a browser to the
 URL provided by the Colorado Department of State.
 
-![Login](./screenshots/100_login_screen_1.png)
+![Login](./screenshots/v1a1_100_login_screen_1.pdf)
 
 Successful entry of username and password will lead to 
 a two-factor authentication grid challenge.
