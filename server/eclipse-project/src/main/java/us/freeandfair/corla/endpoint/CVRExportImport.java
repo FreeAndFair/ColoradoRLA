@@ -54,6 +54,11 @@ import us.freeandfair.corla.util.UploadedFileStreamer;
     "PMD.StdCyclomaticComplexity"})
 public class CVRExportImport extends AbstractCountyDashboardEndpoint {
   /**
+   * The " (id " string.
+   */
+  private static final String PAREN_ID = " (id ";
+
+  /**
    * The static set of counties that are currently running imports. This is
    * used to prevent multiple counties from importing CVRs at the same time, 
    * which would cause issues since this endpoint is not a single transaction.
@@ -157,8 +162,10 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
         } catch (final PersistenceException e) {
           // if we couldn't clean up, there's not much we can do about it
         }
-        Main.LOGGER.info(parser.errorMessage() + " (file " + the_file.id() + ")");
-        badDataContents(the_response, parser.errorMessage() + " (file " + the_file.id() + ")");
+        Main.LOGGER.info(parser.errorMessage() + " [file " + 
+            the_file.filename() + PAREN_ID + the_file.id() + ")]");
+        badDataContents(the_response, parser.errorMessage() + " [file " + 
+                                      the_file.filename() + PAREN_ID + the_file.id() + ")]");
       }
     } catch (final PersistenceException e) {
       Main.LOGGER.info("parse transactions did not complete successfully, " + 
@@ -175,14 +182,16 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
       // we don't want to intercept these, so we just rethrow it
       throw e;
     } catch (final RuntimeException | IOException e) {
-      Main.LOGGER.info("could not parse malformed CVR export (file " + the_file.id() + 
+      Main.LOGGER.info("could not parse malformed CVR export file " + 
+                       the_file.filename() + PAREN_ID + the_file.id() +
                        "): " + e);
       try {
         cleanup(the_file.countyID());
       } catch (final PersistenceException ex) {
         // if we couldn't clean up, there's not much we can do about it
       }
-      badDataContents(the_response, "malformed CVR export (file " + the_file.id() + ")");
+      badDataContents(the_response, "malformed CVR export file " + 
+                                    the_file.filename() + PAREN_ID + the_file.id() + ")");
     } finally {
       ufs.stop();
     }
@@ -245,7 +254,8 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
         badDataContents(the_response, "nonexistent file");
       } else if (!file.countyID().equals(county.id())) {
         unauthorized(the_response, "county " + county.id() + " attempted to import " + 
-                                   "file uploaded by county " + file.countyID());
+                                   "file " + file.filename() + "uploaded by county " + 
+                                   file.countyID());
       } else if (file.hashStatus() == HashStatus.VERIFIED) {
         parseFile(the_response, file);
       } else {

@@ -14,6 +14,9 @@ package us.freeandfair.corla.csv;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -44,6 +47,7 @@ import us.freeandfair.corla.query.CountyContestResultQueries;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
+@SuppressWarnings("PMD.GodClass")
 public class DominionCVRExportParser implements CVRExportParser {
   /**
    * The interval at which to report progress.
@@ -105,6 +109,14 @@ public class DominionCVRExportParser implements CVRExportParser {
    * The prohibited headers.
    */
   private static final String[] PROHIBITED_HEADERS = {COUNTING_GROUP_HEADER};
+  
+  /**
+   * The required headers.
+   */
+  private static final String[] REQUIRED_HEADERS = {
+      CVR_NUMBER_HEADER, TABULATOR_NUMBER_HEADER, BATCH_ID_HEADER,
+      RECORD_ID_HEADER, IMPRINTED_ID_HEADER, BALLOT_TYPE_HEADER 
+      };
   
   /**
    * A flag indicating whether parse() has been run or not.
@@ -393,41 +405,90 @@ public class DominionCVRExportParser implements CVRExportParser {
    * @return true if the headers are OK, false otherwise; this method also
    * sets the error message if necessary.
    */
+  @SuppressWarnings({"PMD.AvoidLiteralsInIfCondition", "PMD.AvoidDeeplyNestedIfStmts",
+      "PMD.ModifiedCyclomaticComplexity", "PMD.CyclomaticComplexity",
+      "PMD.StdCyclomaticComplexity", "PMD.NPathComplexity"})
   private boolean processHeaders(final CSVRecord the_line) {
     boolean result = true;
     
     // the explanations line includes the column names for the non-contest/choice
     // columns, so let's get those
-    
     for (int i = 0; i < my_first_contest_column; i++) {
       my_columns.put(the_line.get(i), i);
     }
     
     // let's make sure none of our prohibited headers are present
-    
+    final List<String> prohibited_headers = new ArrayList<>();
     for (final String h : PROHIBITED_HEADERS) {
       if (my_columns.get(h) != null) {
         result = false;
-        my_error_message = h + " column present in import file";
-        break;
+        prohibited_headers.add(h);        
       }
     }
     
-    // let's make sure all of our required headers are present
-    
-    if (result) {
-      result &= my_columns.get(CVR_NUMBER_HEADER) != null;
-      result &= my_columns.get(TABULATOR_NUMBER_HEADER) != null;
-      result &= my_columns.get(BATCH_ID_HEADER) != null;
-      result &= my_columns.get(RECORD_ID_HEADER) != null;
-      result &= my_columns.get(IMPRINTED_ID_HEADER) != null;
-      result &= my_columns.get(BALLOT_TYPE_HEADER) != null;
-      if (!result) {
-        my_error_message = "missing required columns in import file";
+    // let's make sure no required headers are missing
+    final Set<String> required_headers = 
+        new HashSet<>(Arrays.asList(REQUIRED_HEADERS));
+    for (final String header : REQUIRED_HEADERS) {
+      if (my_columns.get(header) != null) {
+        required_headers.remove(header);
       }
+    }
+    
+    result = prohibited_headers.isEmpty() && required_headers.isEmpty();
+    
+    if (!result) {
+      final StringBuilder sb = new StringBuilder();
+      sb.append("malformed CVR file: ");
+      
+      if (!prohibited_headers.isEmpty()) {
+        sb.append("prohibited header");
+        if (prohibited_headers.size() > 1) {
+          sb.append('s');
+        }
+        sb.append(' ');
+        sb.append(stringList(prohibited_headers));
+        sb.append(" present");
+        if (!required_headers.isEmpty()) {
+          sb.append(", ");
+        }
+      }
+      
+      if (!required_headers.isEmpty()) {
+        sb.append("required header");
+        if (required_headers.size() > 1) {
+          sb.append('s');
+        }
+        sb.append(' ');
+        sb.append(stringList(required_headers));
+        sb.append(" missing");
+      }
+      
+      my_error_message = sb.toString();
     }
     
     return result;
+  }
+  
+  /**
+   * Makes a comma-separated string of the specified collection of 
+   * strings.
+   * 
+   * @param the_list The list.
+   * @return the comma-separated string.
+   */
+  private String stringList(final Collection<String> the_strings) {
+    final List<String> strings = new ArrayList<>(the_strings);
+    final StringBuilder sb = new StringBuilder();
+    
+    Collections.sort(strings);
+    sb.append(strings.get(0));
+    for (int i = 1; i < strings.size(); i++) {
+      sb.append(", ");
+      sb.append(strings.get(i));
+    }
+    
+    return sb.toString();
   }
   
   /**
