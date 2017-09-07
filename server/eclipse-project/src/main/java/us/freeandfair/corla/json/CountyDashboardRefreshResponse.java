@@ -212,16 +212,10 @@ public class CountyDashboardRefreshResponse {
    * uploaded ballot manifest.
    * @param the_cvr_export_count The number of CVRs in the uploaded export file.
    * @param the_audited_ballot_count The number of ballots audited.
-<<<<<<< HEAD
-   * @param the_discrepancy_count The number of discrepancies.
-   * @param the_disagreement_count The number of disagreements.
-=======
    * @param the_discrepancy_count The number of discrepencies found, 
    * mapped by audit reason.
    * @param the_disagreement_count The number of disagreements,
    * mapped by audit reason.
-   * @param the_ballots_to_audit The list of CVRs to audit.
->>>>>>> Changes to support counts per-audit-reason statistics.
    * @param the_ballot_under_audit_id The ID of the CVR under audit.
    * @param the_audited_prefix_length The length of the audited prefix of the
    * ballots to audit list.
