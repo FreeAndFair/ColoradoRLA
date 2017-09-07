@@ -140,8 +140,8 @@ public class UpdateAuditInfo extends AbstractDoSDashboardEndpoint {
     
     // check that the 0 <= risk limit <= 1
     if (the_info.riskLimit() != null &&
-        0 < BigDecimal.ZERO.compareTo(the_info.riskLimit()) || 
-        0 < the_info.riskLimit().compareTo(BigDecimal.ONE)) {
+        (0 < BigDecimal.ZERO.compareTo(the_info.riskLimit()) || 
+         0 < the_info.riskLimit().compareTo(BigDecimal.ONE))) {
       result = false;
       invariantViolation(the_response, "invalid risk limit specified");
     }

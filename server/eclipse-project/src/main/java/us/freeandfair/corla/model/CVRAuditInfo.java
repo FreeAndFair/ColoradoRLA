@@ -14,10 +14,14 @@ package us.freeandfair.corla.model;
 import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -29,6 +33,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import us.freeandfair.corla.persistence.AuditReasonSetConverter;
 import us.freeandfair.corla.persistence.PersistentEntity;
 
 /**
@@ -99,18 +104,19 @@ public class CVRAuditInfo implements PersistentEntity, Serializable {
   private Boolean my_counted = false;
   
   /**
-   * A flag indicating whether this CVRAuditInfo was counted as a 
-   * discrepancy in the audit calculations.
+   * The number of discrepancies found in the audit so far.
    */
-  @Column(nullable = false) 
-  private Boolean my_discrepancy = false;
+  @Column(nullable = false, name = "discrepancy", columnDefinition = "text")
+  @Convert(converter = AuditReasonSetConverter.class)
+  private Set<AuditReason> my_discrepancy = new HashSet<>();
   
   /**
-   * A flag indicating whether this CVRAuditInfo was counted as a
-   * disagreement in the audit calculations.
+   * The number of disagreements found in the audit so far.
    */
-  @Column(nullable = false)
-  private Boolean my_disagreement = false;
+  @Column(nullable = false, name = "disagreement", columnDefinition = "text")
+  @Convert(converter = AuditReasonSetConverter.class)
+  private Set<AuditReason> my_disagreement = new HashSet<>();
+
   
   /**
    * The index of this CVRAuditInfo in its list.
@@ -215,39 +221,39 @@ public class CVRAuditInfo implements PersistentEntity, Serializable {
   }
   
   /**
-   * @return true if this record was counted as a discrepancy,
-   * false otherwise.
+   * @return a map from audit reason to whether this record was marked
+   * as a discrepancy in a contest audited for that reason.
    */
-  public boolean discrepancy() {
-    return my_discrepancy;
-  }
-
-  /**
-   * Sets the flag that indicates whether this record has been
-   * counted as a discrepancy.
-   * 
-   * @param the_discrepancy The new flag value.
-   */
-  public void setDiscrepancy(final boolean the_discrepancy) {
-    my_discrepancy = the_discrepancy;
+  public Set<AuditReason> discrepancy() {
+    return Collections.unmodifiableSet(my_discrepancy);
   }
   
   /**
-   * @return true if this record was counted as a disagreement,
-   * false otherwise.
+   * Sets the audit reasons for which the record is marked as a discrepancy.
+   * 
+   * @param the_reasons The reasons.
    */
-  public boolean disagreement() {
-    return my_disagreement;
+  public void setDiscrepancy(final Set<AuditReason> the_reasons) {
+    my_discrepancy.clear();
+    my_discrepancy.addAll(the_reasons);
   }
   
   /**
-   * Sets the flag that indicates whether this record has been
-   * counted as a disagreement.
-   * 
-   * @param the_counted The new flag value.
+   * @return a map from audit reason to whether this record was marked
+   * as a disagreement in a contest audited for that reason.
    */
-  public void setDisagreement(final boolean the_disagreement) {
-    my_disagreement = the_disagreement;
+  public Set<AuditReason> disagreement() {
+    return Collections.unmodifiableSet(my_discrepancy);
+  }
+  
+  /**
+   * Sets the audit reasons for which the record is marked as a disagreement.
+   * 
+   * @param the_reasons The reasons.
+   */
+  public void setDisagreement(final Set<AuditReason> the_reasons) {
+    my_disagreement.clear();
+    my_disagreement.addAll(the_reasons);
   }
   
   /**

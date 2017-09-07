@@ -27,6 +27,7 @@ import us.freeandfair.corla.asm.AuditBoardDashboardASM;
 import us.freeandfair.corla.asm.CountyDashboardASM;
 import us.freeandfair.corla.model.AuditBoard;
 import us.freeandfair.corla.model.AuditInfo;
+import us.freeandfair.corla.model.AuditReason;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.ContestToAudit;
 import us.freeandfair.corla.model.ContestToAudit.AuditType;
@@ -140,9 +141,14 @@ public class CountyDashboardRefreshResponse {
   private final Integer my_ballots_remaining_in_round;
   
   /**
-   * The number of ballots cast.
+   * The number of ballots represented by the uploaded ballot manifest.
    */
-  private final Integer my_cast_ballot_count;
+  private final Integer my_ballot_manifest_count;
+  
+  /**
+   * The number of cvrs in the uploaded CVR export.
+   */
+  private final Integer my_cvr_export_count;
   
   /**
    * The number of ballots audited.
@@ -150,14 +156,14 @@ public class CountyDashboardRefreshResponse {
   private final Integer my_audited_ballot_count;
   
   /**
-   * The number of discrepancies found.
+   * The numbers of discrepancies found, mapped by audit reason.
    */
-  private final Integer my_discrepancy_count;
+  private final Map<AuditReason, Integer> my_discrepancy_count;
   
   /**
-   * The number of disagreements found.
+   * The number of disagreements found, mapped by audit reason.
    */
-  private final Integer my_disagreement_count;
+  private final Map<AuditReason, Integer> my_disagreement_count;
 
   /**
    * The current ballot under audit.
@@ -202,10 +208,14 @@ public class CountyDashboardRefreshResponse {
    * @param the_optimistic_ballots_to_audit The optimistic ballots to audit.
    * @param the_ballots_remaining_in_round The ballots remaining in the 
    * current round.
-   * @param the_cast_ballot_count The number of ballots cast.
+   * @param the_ballot_manifest_count The number of ballots represented by the
+   * uploaded ballot manifest.
+   * @param the_cvr_export_count The number of CVRs in the uploaded export file.
    * @param the_audited_ballot_count The number of ballots audited.
-   * @param the_discrepancy_count The number of discrepancies.
-   * @param the_disagreement_count The number of disagreements.
+   * @param the_discrepancy_count The number of discrepencies found, 
+   * mapped by audit reason.
+   * @param the_disagreement_count The number of disagreements,
+   * mapped by audit reason.
    * @param the_ballot_under_audit_id The ID of the CVR under audit.
    * @param the_audited_prefix_length The length of the audited prefix of the
    * ballots to audit list.
@@ -233,10 +243,13 @@ public class CountyDashboardRefreshResponse {
                                            final Integer the_estimated_ballots_to_audit,
                                            final Integer the_optimistic_ballots_to_audit,
                                            final Integer the_ballots_remaining_in_round,
-                                           final Integer the_cast_ballot_count,
+                                           final Integer the_ballot_manifest_count,
+                                           final Integer the_cvr_export_count,
                                            final Integer the_audited_ballot_count,
-                                           final Integer the_discrepancy_count, 
-                                           final Integer the_disagreement_count,
+                                           final Map<AuditReason, Integer> 
+                                               the_discrepancy_count, 
+                                           final Map<AuditReason, Integer> 
+                                               the_disagreement_count,
                                            final Long the_ballot_under_audit_id,
                                            final Integer the_audited_prefix_length,
                                            final List<Round> the_rounds,
@@ -259,7 +272,8 @@ public class CountyDashboardRefreshResponse {
     my_estimated_ballots_to_audit = the_estimated_ballots_to_audit;
     my_optimistic_ballots_to_audit = the_optimistic_ballots_to_audit;
     my_ballots_remaining_in_round = the_ballots_remaining_in_round;
-    my_cast_ballot_count = the_cast_ballot_count;
+    my_ballot_manifest_count = the_ballot_manifest_count;
+    my_cvr_export_count = the_cvr_export_count;
     my_audited_ballot_count = the_audited_ballot_count;
     my_discrepancy_count = the_discrepancy_count;
     my_disagreement_count = the_disagreement_count;
@@ -358,7 +372,8 @@ public class CountyDashboardRefreshResponse {
                                               the_dashboard.estimatedBallotsToAudit(),
                                               the_dashboard.optimisticBallotsToAudit(),
                                               the_dashboard.ballotsRemainingInCurrentRound(),
-                                              the_dashboard.ballotsCast(),
+                                              the_dashboard.ballotsInManifest(),
+                                              the_dashboard.cvrsImported(),
                                               the_dashboard.ballotsAudited(),
                                               the_dashboard.discrepancies(),
                                               the_dashboard.disagreements(),
@@ -436,7 +451,8 @@ public class CountyDashboardRefreshResponse {
                                               the_dashboard.estimatedBallotsToAudit(),
                                               the_dashboard.optimisticBallotsToAudit(),
                                               the_dashboard.ballotsRemainingInCurrentRound(),
-                                              the_dashboard.ballotsCast(),
+                                              the_dashboard.ballotsInManifest(),
+                                              the_dashboard.cvrsImported(),
                                               the_dashboard.ballotsAudited(),
                                               the_dashboard.discrepancies(),
                                               the_dashboard.disagreements(),

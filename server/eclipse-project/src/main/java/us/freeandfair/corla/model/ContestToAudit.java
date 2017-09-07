@@ -153,17 +153,4 @@ public class ContestToAudit implements Serializable {
   public enum AuditType {
     COMPARISON, HAND_COUNT, NONE;
   }
-  
-  /**
-   * The possible audit reasons.
-   */
-  public enum AuditReason {
-    STATE_WIDE_CONTEST,
-    COUNTY_WIDE_CONTEST,
-    CLOSE_CONTEST,
-    GEOGRAPHICAL_SCOPE,
-    CONCERN_REGARDING_ACCURACY,
-    OPPORTUNISTIC_BENEFITS,
-    COUNTY_CLERK_ABILITY;
-  }
 }

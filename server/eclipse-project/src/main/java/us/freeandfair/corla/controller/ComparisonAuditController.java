@@ -13,6 +13,7 @@ package us.freeandfair.corla.controller;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ import java.util.Set;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.crypto.PseudoRandomNumberGenerator;
+import us.freeandfair.corla.model.AuditReason;
 import us.freeandfair.corla.model.CVRAuditInfo;
 import us.freeandfair.corla.model.CVRContestInfo;
 import us.freeandfair.corla.model.CVRContestInfo.ConsensusValue;
@@ -289,19 +291,26 @@ public final class ComparisonAuditController {
     final Set<Contest> all_driving_contests = new HashSet<>();
     final Set<Contest> county_driving_contests = new HashSet<>();
     final Set<CountyContestComparisonAudit> comparison_audits = new HashSet<>();
+    final Map<Contest, AuditReason> contest_reasons = new HashMap<>();
+    
     int to_audit = Integer.MIN_VALUE;
     
     for (final ContestToAudit cta : dosdb.contestsToAudit()) {
       if (cta.audit() == AuditType.COMPARISON) {
         all_driving_contests.add(cta.contest());
       }
+      contest_reasons.put(cta.contest(), cta.reason());
     }
     
     the_cdb.setAuditedPrefixLength(0);
     for (final CountyContestResult ccr : 
          CountyContestResultQueries.forCounty(the_cdb.county())) {
+      AuditReason reason = contest_reasons.get(ccr.contest());
+      if (reason == null) {
+        reason = AuditReason.OPPORTUNISTIC_BENEFITS;
+      }
       final CountyContestComparisonAudit audit = 
-          new CountyContestComparisonAudit(the_cdb, ccr, risk_limit);
+          new CountyContestComparisonAudit(the_cdb, ccr, risk_limit, reason);
       final Contest contest = audit.contest();
       comparison_audits.add(audit);
       if (all_driving_contests.contains(contest)) {
@@ -514,7 +523,7 @@ public final class ComparisonAuditController {
           Persistence.saveOrUpdate(c);
         }
         unaudit(the_cdb, the_cvr_under_audit, old_audit_cvr, undo_count);
-        final Pair<Boolean, Boolean> audit_results = 
+        final Pair<Set<AuditReason>, Set<AuditReason>> audit_results = 
             audit(the_cdb, the_cvr_under_audit, the_audit_cvr, undo_count, true);
         for (final CVRAuditInfo c : info) {
           if (c.counted()) {
@@ -614,36 +623,48 @@ public final class ComparisonAuditController {
    * @param the_update_counters true to update the county dashboard 
    * counters, false otherwise; false is used when this ballot 
    * has already been audited once.
-   * @return a pair of booleans, (discrepancy, disagreement), indicating
-   * whether a discrepancy or disagreement was registered.
+   * @return a pair of sets, (discrepancy, disagreement), indicating
+   * for which audit types a discrepancy or disagreement was registered.
    */
-  private static Pair<Boolean, Boolean> audit(final CountyDashboard the_cdb,
-                                              final CastVoteRecord the_cvr_under_audit,
-                                              final CastVoteRecord the_audit_cvr, 
-                                              final int the_count,
-                                              final boolean the_update_counters) {
-    boolean discrepancy_found = false;
+  private static Pair<Set<AuditReason>, Set<AuditReason>> 
+      audit(final CountyDashboard the_cdb,
+            final CastVoteRecord the_cvr_under_audit,
+            final CastVoteRecord the_audit_cvr, 
+            final int the_count,
+            final boolean the_update_counters) {
+    final Map<Contest, AuditReason> audit_reasons = new HashMap<>();
+    final Set<AuditReason> discrepancies = new HashSet<>();
+    final Set<AuditReason> disagreements = new HashSet<>();
+    
     for (final CountyContestComparisonAudit ca : the_cdb.comparisonAudits()) {
+      audit_reasons.put(ca.contest(), ca.auditReason());
       final int discrepancy = ca.computeDiscrepancy(the_cvr_under_audit, the_audit_cvr);
       for (int i = 0; i < the_count; i++) {
         ca.recordDiscrepancy(discrepancy);
       }
-      discrepancy_found |= discrepancy != 0;
+      if (discrepancy != 0) {
+        discrepancies.add(ca.auditReason());
+      }
     }
-    boolean disagreement_found = false;
+    
     for (final CVRContestInfo ci : the_audit_cvr.contestInfo()) {
-      disagreement_found |= ci.consensus() == ConsensusValue.NO;
+      final AuditReason reason = audit_reasons.get(ci.contest());
+      if (ci.consensus() == ConsensusValue.NO) {
+        disagreements.add(reason);
+      }
     }
+      
     if (the_update_counters) {
-      if (discrepancy_found) {
-        the_cdb.addDiscrepancy();
+      for (final AuditReason r : discrepancies) {
+        the_cdb.addDiscrepancy(r);
       }
-
-      if (disagreement_found) {
-        the_cdb.addDisagreement();
+      
+      for (final AuditReason r : disagreements) {
+        the_cdb.addDisagreement(r);
       }
     }
-    return new Pair<Boolean, Boolean>(discrepancy_found, disagreement_found);
+    
+    return new Pair<Set<AuditReason>, Set<AuditReason>>(discrepancies, disagreements);
   }
   
   /**
@@ -660,23 +681,34 @@ public final class ComparisonAuditController {
                               final CastVoteRecord the_cvr_under_audit,
                               final CastVoteRecord the_audit_cvr,
                               final int the_count) {
-    boolean discrepancy_found = false;
+    final Map<Contest, AuditReason> audit_reasons = new HashMap<>();
+    final Set<AuditReason> discrepancies = new HashSet<>();
+    final Set<AuditReason> disagreements = new HashSet<>();
+    
     for (final CountyContestComparisonAudit ca : the_cdb.comparisonAudits()) {
+      audit_reasons.put(ca.contest(), ca.auditReason());
       final int discrepancy = ca.computeDiscrepancy(the_cvr_under_audit, the_audit_cvr);
       for (int i = 0; i < the_count; i++) {
         ca.removeDiscrepancy(discrepancy);
       }
-      discrepancy_found |= discrepancy != 0;
+      if (discrepancy != 0) {
+        discrepancies.add(ca.auditReason());
+      }
     }
-    if (discrepancy_found) {
-      the_cdb.removeDiscrepancy();
-    }
-    boolean disagree = false;
+    
     for (final CVRContestInfo ci : the_audit_cvr.contestInfo()) {
-      disagree |= ci.consensus() == ConsensusValue.NO;
+      final AuditReason reason = audit_reasons.get(ci.contest());
+      if (ci.consensus() == ConsensusValue.NO) {
+        disagreements.add(reason);
+      }
     }
-    if (disagree) {
-      the_cdb.removeDisagreement();
+      
+    for (final AuditReason r : discrepancies) {
+      the_cdb.removeDiscrepancy(r);
+    }
+    
+    for (final AuditReason r : disagreements) {
+      the_cdb.removeDiscrepancy(r);
     }
   }
   
@@ -701,7 +733,7 @@ public final class ComparisonAuditController {
       if (cai.acvr() == null) {
         break;
       } else {
-        final Pair<Boolean, Boolean> audit_results = 
+        final Pair<Set<AuditReason>, Set<AuditReason>> audit_results = 
             audit(the_cdb, cai.cvr(), cai.acvr(), 1, false);
         cai.setCounted(true);
         cai.setDiscrepancy(audit_results.first());

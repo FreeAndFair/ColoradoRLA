@@ -30,9 +30,16 @@ public interface BallotManifestParser {
   boolean parse();
   
   /**
-   * The number of records parsed from the ballot manifest file
+   * The number of records parsed from the ballot manifest file.
    * 
    * @return the number of records; empty if parsing has not yet occurred.
    */
   OptionalInt recordCount();
+  
+  /**
+   * The number of ballots represented by the parsed ballot manifest records.
+   * 
+   * @return the number of ballots; empty if parsing has not yet occurred.
+   */
+  OptionalInt ballotCount();
 }

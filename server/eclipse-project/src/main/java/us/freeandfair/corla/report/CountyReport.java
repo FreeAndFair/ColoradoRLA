@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalInt;
-import java.util.OptionalLong;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -38,6 +37,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.controller.ComparisonAuditController;
+import us.freeandfair.corla.model.AuditReason;
 import us.freeandfair.corla.model.CVRAuditInfo;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.County;
@@ -46,7 +46,6 @@ import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.model.Round;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.CastVoteRecordQueries;
 import us.freeandfair.corla.query.CountyContestResultQueries;
 
 /**
@@ -283,20 +282,29 @@ public class CountyReport {
     cell = row.createCell(cell_number++);
     cell.setCellType(CellType.STRING);
     cell.setCellStyle(bold_style);
-    cell.setCellValue("Total Ballot Cards Cast");
+    cell.setCellValue("Total Ballot Cards In Manifest");
     
     cell = row.createCell(cell_number++);
     cell.setCellType(CellType.NUMERIC);
     cell.setCellStyle(integer_style);
-    final OptionalLong ballots = 
-        CastVoteRecordQueries.countMatching(my_county.id(), RecordType.UPLOADED);
-    if (ballots.isPresent()) {
-      cell.setCellValue(ballots.getAsLong());
-    }
+    cell.setCellValue(my_cdb.ballotsInManifest());
     
     row = summary_sheet.createRow(row_number++);
     cell_number = 0;
     
+    cell = row.createCell(cell_number++);
+    cell.setCellType(CellType.STRING);
+    cell.setCellStyle(bold_style);
+    cell.setCellValue("Total CVRs in CVR Export File");
+    
+    cell = row.createCell(cell_number++);
+    cell.setCellType(CellType.NUMERIC);
+    cell.setCellStyle(integer_style);
+    cell.setCellValue(my_cdb.cvrsImported());
+    
+    row = summary_sheet.createRow(row_number++);
+    cell_number = 0;
+
     cell = row.createCell(cell_number++);
     cell.setCellType(CellType.STRING);
     cell.setCellStyle(bold_style);
@@ -455,17 +463,45 @@ public class CountyReport {
       cell.setCellValue(round.actualCount());
       
       row = round_sheet.createRow(row_number++);
+      
+      row = round_sheet.createRow(row_number++);
+      cell_number = 1; // these are headers for audit reasons
+      final List<AuditReason> listed_reasons = new ArrayList<>();
+      final Map<AuditReason, Integer> discrepancies = round.discrepancies();
+      final Map<AuditReason, Integer> disagreements = round.disagreements();
+      
+      for (final AuditReason r : AuditReason.values()) {
+        if (discrepancies.containsKey(r) && discrepancies.get(r) >= 0 || 
+            disagreements.containsKey(r) && disagreements.get(r) >= 0) {
+          listed_reasons.add(r);
+        }
+      }
+      for (final AuditReason r : listed_reasons) {
+        cell = row.createCell(cell_number++);
+        cell.setCellStyle(bold_style);
+        cell.setCellValue(r.toString());
+      }
+      
+      row = round_sheet.createRow(row_number++);
       max_cell_number = Math.max(max_cell_number, cell_number);
-      cell_number = 0;
+      cell_number = 0;      
       cell = row.createCell(cell_number++);
       cell.setCellType(CellType.STRING);
       cell.setCellStyle(bold_style);
-      cell.setCellValue("Discrepancies Recorded");
-      
-      cell = row.createCell(cell_number++);
-      cell.setCellType(CellType.NUMERIC);
-      cell.setCellStyle(integer_style);
-      cell.setCellValue(round.discrepancies());
+      cell.setCellValue("Discrepancies Recorded by Audit Reason");
+
+      for (final AuditReason r : listed_reasons) {
+        cell = row.createCell(cell_number++);
+        cell.setCellType(CellType.NUMERIC);
+        cell.setCellStyle(integer_style);
+        final int cell_value;
+        if (discrepancies.containsKey(r)) {
+          cell_value = discrepancies.get(r);
+        } else {
+          cell_value = 0;
+        }
+        cell.setCellValue(cell_value);
+      }
       
       row = round_sheet.createRow(row_number++);
       max_cell_number = Math.max(max_cell_number, cell_number);
@@ -473,12 +509,20 @@ public class CountyReport {
       cell = row.createCell(cell_number++);
       cell.setCellType(CellType.STRING);
       cell.setCellStyle(bold_style);
-      cell.setCellValue("Disagreements Recorded");
+      cell.setCellValue("Disagreements Recorded by Audit Reason");
       
-      cell = row.createCell(cell_number++);
-      cell.setCellType(CellType.NUMERIC);
-      cell.setCellStyle(integer_style);
-      cell.setCellValue(round.disagreements());
+      for (final AuditReason r : listed_reasons) {
+        cell = row.createCell(cell_number++);
+        cell.setCellType(CellType.NUMERIC);
+        cell.setCellStyle(integer_style);
+        final int cell_value;
+        if (disagreements.containsKey(r)) {
+          cell_value = disagreements.get(r);
+        } else {
+          cell_value = 0;
+        }
+        cell.setCellValue(cell_value);
+      }
       
       row_number++;
       row = round_sheet.createRow(row_number++);
@@ -528,11 +572,11 @@ public class CountyReport {
         cell = row.createCell(cell_number++);
         cell.setCellType(CellType.BOOLEAN);
         cell.setCellStyle(standard_style);
-        cell.setCellValue(audit_info.discrepancy());
+        cell.setCellValue(!audit_info.discrepancy().isEmpty());
         cell = row.createCell(cell_number++);
         cell.setCellType(CellType.BOOLEAN);
         cell.setCellStyle(standard_style);
-        cell.setCellValue(audit_info.disagreement());
+        cell.setCellValue(!audit_info.disagreement().isEmpty());
       }
       
       for (int i = 0; i < max_cell_number; i++) {
