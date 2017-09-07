@@ -25,6 +25,9 @@ function parseRounds(rounds: any[]) {
     return rounds.map(parseRound);
 }
 
+function parseDisCount(data: any): number {
+    return _.sum(_.values(data));
+}
 
 function parseCountyStatus(countyStatus: any) {
     const result: any = {};
@@ -38,8 +41,8 @@ function parseCountyStatus(countyStatus: any) {
             currentRound: parseRound(c.current_round),
             cvrExportHash: c.cvr_export_hash,
             cvrTimestamp: c.cvr_export_timestamp,
-            disagreementCount: c.disagreement_count,
-            discrepancyCount: c.discrepancy_count,
+            disagreementCount: parseDisCount(c.disagreement_count),
+            discrepancyCount: parseDisCount(c.discrepancy_count),
             estimatedBallotsToAudit: c.estimated_ballots_to_audit,
             id: c.id,
             manifestTimestamp: c.ballot_manifest_timestamp,
