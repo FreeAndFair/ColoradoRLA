@@ -12,12 +12,8 @@
 
 package us.freeandfair.corla.endpoint;
 
-import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.PUBLISH_AUDIT_DATA_EVENT;
-
 import spark.Request;
 import spark.Response;
-
-import us.freeandfair.corla.asm.ASMEvent;
 
 /**
  * Download all of the data relevant to public auditing of a RLA.
@@ -48,14 +44,6 @@ public class PublishDataToAudit extends AbstractDoSDashboardEndpoint {
    */
   public AuthorizationType requiredAuthorization() {
     return AuthorizationType.STATE;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected ASMEvent endpointEvent() {
-    return PUBLISH_AUDIT_DATA_EVENT;
   }
   
   /**

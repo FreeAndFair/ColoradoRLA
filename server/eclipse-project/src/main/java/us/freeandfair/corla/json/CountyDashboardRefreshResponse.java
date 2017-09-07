@@ -12,7 +12,6 @@
 
 package us.freeandfair.corla.json;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,8 +25,8 @@ import us.freeandfair.corla.asm.ASMState;
 import us.freeandfair.corla.asm.ASMUtilities;
 import us.freeandfair.corla.asm.AuditBoardDashboardASM;
 import us.freeandfair.corla.asm.CountyDashboardASM;
-import us.freeandfair.corla.controller.ComparisonAuditController;
 import us.freeandfair.corla.model.AuditBoard;
+import us.freeandfair.corla.model.AuditInfo;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.ContestToAudit;
 import us.freeandfair.corla.model.ContestToAudit.AuditType;
@@ -74,11 +73,6 @@ public class CountyDashboardRefreshResponse {
    * @todo this needs to be connected to something
    */
   private final Map<String, String> my_general_information;
-  
-  /**
-   * The risk limit.
-   */
-  private final BigDecimal my_risk_limit;
   
   /**
    * The audit board members.
@@ -166,11 +160,6 @@ public class CountyDashboardRefreshResponse {
   private final Integer my_disagreement_count;
 
   /**
-   * The list of ballots to audit (by CVR ID).
-   */
-  private final List<Long> my_ballots_to_audit;
-
-  /**
    * The current ballot under audit.
    */
   private final Long my_ballot_under_audit_id;
@@ -191,14 +180,9 @@ public class CountyDashboardRefreshResponse {
   private final Round my_current_round;
   
   /**
-   * The election type.
+   * The audit info.
    */
-  private final String my_election_type;
-  
-  /**
-   * The election date.
-   */
-  private final Instant my_election_date;
+  private final AuditInfo my_audit_info;
   
   /**
    * Constructs a new CountyDashboardRefreshResponse.
@@ -220,9 +204,8 @@ public class CountyDashboardRefreshResponse {
    * current round.
    * @param the_cast_ballot_count The number of ballots cast.
    * @param the_audited_ballot_count The number of ballots audited.
-   * @param the_discrepancy_count The number of discrepencies.
+   * @param the_discrepancy_count The number of discrepancies.
    * @param the_disagreement_count The number of disagreements.
-   * @param the_ballots_to_audit The list of CVRs to audit.
    * @param the_ballot_under_audit_id The ID of the CVR under audit.
    * @param the_audited_prefix_length The length of the audited prefix of the
    * ballots to audit list.
@@ -237,7 +220,6 @@ public class CountyDashboardRefreshResponse {
                                            final ASMState the_asm_state,
                                            final ASMState the_audit_board_asm_state,
                                            final Map<String, String> the_general_information,
-                                           final BigDecimal the_risk_limit,
                                            final AuditBoard the_audit_board, 
                                            final String the_ballot_manifest_hash,
                                            final Instant the_ballot_manifest_timestamp,
@@ -255,18 +237,15 @@ public class CountyDashboardRefreshResponse {
                                            final Integer the_audited_ballot_count,
                                            final Integer the_discrepancy_count, 
                                            final Integer the_disagreement_count,
-                                           final List<Long> the_ballots_to_audit,
                                            final Long the_ballot_under_audit_id,
                                            final Integer the_audited_prefix_length,
                                            final List<Round> the_rounds,
                                            final Round the_current_round,
-                                           final String the_election_type,
-                                           final Instant the_election_date) {
+                                           final AuditInfo the_audit_info) {
     my_id = the_id;
     my_asm_state = the_asm_state;
     my_audit_board_asm_state = the_audit_board_asm_state;
     my_general_information = the_general_information;
-    my_risk_limit = the_risk_limit;
     my_audit_board = the_audit_board;
     my_ballot_manifest_hash = the_ballot_manifest_hash;
     my_ballot_manifest_timestamp = the_ballot_manifest_timestamp;
@@ -284,13 +263,11 @@ public class CountyDashboardRefreshResponse {
     my_audited_ballot_count = the_audited_ballot_count;
     my_discrepancy_count = the_discrepancy_count;
     my_disagreement_count = the_disagreement_count;
-    my_ballots_to_audit = the_ballots_to_audit;
     my_ballot_under_audit_id = the_ballot_under_audit_id;
     my_audited_prefix_length = the_audited_prefix_length;
     my_rounds = the_rounds;
     my_current_round = the_current_round;
-    my_election_type = the_election_type;
-    my_election_date = the_election_date;
+    my_audit_info = the_audit_info;
   }
   
   /**
@@ -368,7 +345,6 @@ public class CountyDashboardRefreshResponse {
                                               asm.currentState(),
                                               audit_board_asm.currentState(),
                                               general_information,
-                                              dosd.riskLimitForComparisonAudits(),
                                               the_dashboard.currentAuditBoard(),
                                               manifest_digest,
                                               the_dashboard.manifestUploadTimestamp(),
@@ -386,15 +362,11 @@ public class CountyDashboardRefreshResponse {
                                               the_dashboard.ballotsAudited(),
                                               the_dashboard.discrepancies(),
                                               the_dashboard.disagreements(),
-                                              ComparisonAuditController.
-                                                  cvrIDsRemainingInCurrentRound
-                                                  (the_dashboard),
                                               the_dashboard.cvrUnderAudit(),
                                               the_dashboard.auditedPrefixLength(),
                                               the_dashboard.rounds(),
                                               the_dashboard.currentRound(),
-                                              dosd.electionType(),
-                                              dosd.electionDate());
+                                              dosd.auditInfo());
   }
   
   /**
@@ -452,7 +424,6 @@ public class CountyDashboardRefreshResponse {
                                               audit_board_asm.currentState(),
                                               null,
                                               null,
-                                              null,
                                               manifest_digest,
                                               the_dashboard.manifestUploadTimestamp(),
                                               manifest_filename,
@@ -470,11 +441,9 @@ public class CountyDashboardRefreshResponse {
                                               the_dashboard.discrepancies(),
                                               the_dashboard.disagreements(),
                                               null,
-                                              null,
                                               the_dashboard.auditedPrefixLength(),
                                               the_dashboard.rounds(),
                                               the_dashboard.currentRound(),
-                                              null,
                                               null);
   }
 }

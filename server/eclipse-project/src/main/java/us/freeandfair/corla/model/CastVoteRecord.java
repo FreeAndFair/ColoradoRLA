@@ -40,6 +40,7 @@ import javax.persistence.Version;
 import org.hibernate.annotations.Immutable;
 
 import us.freeandfair.corla.persistence.PersistentEntity;
+import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
  * A cast vote record contains information about a single ballot, either 
@@ -64,6 +65,10 @@ import us.freeandfair.corla.persistence.PersistentEntity;
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
+// this FindBugs warning is for the transient field, which we know will not be 
+// restored when the class is unserialized, because we intentionally made it 
+// transient so it wouldn't be. Since that's what "transient" means.
+@SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
 public class CastVoteRecord implements PersistentEntity, Serializable {
   /**
    * The serialVersionUID.
@@ -156,6 +161,15 @@ public class CastVoteRecord implements PersistentEntity, Serializable {
                    joinColumns = @JoinColumn(name = "cvr_id", 
                                              referencedColumnName = "my_id"))
   private List<CVRContestInfo> my_contest_info = new ArrayList<>();
+  
+  /**
+   * A transient flag that indicates whether this CVR was audited; this is only
+   * used for passing information around within the RLA tool and is not serialized
+   * in the database; the authoritative source of information about whether a CVR
+   * has been audited, and in what audit, is the responsible audit information 
+   * object.
+   */
+  private transient boolean my_audit_flag;
   
   /**
    * Constructs an empty cast vote record, solely for persistence.
@@ -323,6 +337,27 @@ public class CastVoteRecord implements PersistentEntity, Serializable {
       }
     }
     return null;
+  }
+  
+  /**
+   * @return the audit flag. This flag is meaningless unless it was explicitly set
+   * when this record was loaded. It is useful only for communicating information
+   * about a CVR within a specific computation of the tool, and is not serialized
+   * in the database; the authoritative source of information about whether a CVR
+   * has been audited, and in what audit, is the responsible audit information 
+   * object.
+   */
+  public boolean auditFlag() {
+    return my_audit_flag;
+  }
+  
+  /**
+   * Sets the audit flag. 
+   * 
+   * @param the_audit_flag The new flag.
+   */
+  public void setAuditFlag(final boolean the_audit_flag) {
+    my_audit_flag = the_audit_flag;
   }
   
   /**

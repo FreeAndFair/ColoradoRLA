@@ -4,6 +4,8 @@ import Nav from '../Nav';
 
 import SeedForm from './SeedForm';
 
+import * as corlaDate from 'corla/date';
+
 
 const Breadcrumb = () => (
     <ul className='pt-breadcrumbs'>
@@ -26,7 +28,9 @@ const Breadcrumb = () => (
 );
 
 
-const AuditSeedPage = ({ back, nextPage, seed, uploadRandomSeed }: any) => {
+const AuditSeedPage = (props: any) => {
+    const { back, nextPage, publicMeetingDate, seed, uploadRandomSeed } = props;
+
     const forms: any = {};
 
     const onSaveAndNext = () => {
@@ -46,6 +50,8 @@ const AuditSeedPage = ({ back, nextPage, seed, uploadRandomSeed }: any) => {
     const dynamicSeedForm = <SeedForm forms={ forms } />;
     const seedForm = seed ? setSeedDiv : dynamicSeedForm;
 
+    const formattedPublicMeetingDate = corlaDate.format(publicMeetingDate);
+
     return (
         <div>
             <Nav />
@@ -53,7 +59,7 @@ const AuditSeedPage = ({ back, nextPage, seed, uploadRandomSeed }: any) => {
             <div className='pt-card'>
                 <h3>Audit Definition - Enter Random Seed</h3>
                 <div className='pt-card'>
-                    Enter the random seed generated from the public meeting on 11/10/2017.
+                    Enter the random seed generated from the public meeting on { formattedPublicMeetingDate }.
                 </div>
                 <div className='pt-card'>
                     <span className='pt-icon pt-intent-warning pt-icon-warning-sign' />

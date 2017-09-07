@@ -55,6 +55,11 @@ public class CVRToAuditList extends AbstractEndpoint {
   public static final String INCLUDE_DUPLICATES = "include_duplicates";
   
   /**
+   * The "include audited" parameter.
+   */
+  public static final String INCLUDE_AUDITED = "include_audited";
+  
+  /**
    * The "round" parameter.
    */
   public static final String ROUND = "round";
@@ -109,7 +114,7 @@ public class CVRToAuditList extends AbstractEndpoint {
         
         if (round != null) {
           final int r = Integer.parseInt(round);
-          result &= r >= 0;
+          result &= r > 0;
         }
       } catch (final NumberFormatException e) {
         result = false;
@@ -130,6 +135,7 @@ public class CVRToAuditList extends AbstractEndpoint {
       final String start_param = the_request.queryParams(START);
       final String ballot_count_param = the_request.queryParams(BALLOT_COUNT);
       final String duplicates_param = the_request.queryParams(INCLUDE_DUPLICATES);
+      final String audited_param = the_request.queryParams(INCLUDE_AUDITED);
       final String round_param = the_request.queryParams(ROUND);
 
       int ballot_count = 0;
@@ -146,7 +152,12 @@ public class CVRToAuditList extends AbstractEndpoint {
       } else {
         duplicates = true;
       }
-      
+      final boolean audited;
+      if (audited_param == null) {
+        audited = false;
+      } else {
+        audited = true;
+      }
       // get other things we need
       final County county = Main.authentication().authenticatedCounty(the_request);
       final CountyDashboard cdb = Persistence.getByID(county.id(), CountyDashboard.class);
@@ -167,10 +178,11 @@ public class CVRToAuditList extends AbstractEndpoint {
       
       if (round.isPresent()) {
         cvr_to_audit_list = 
-            ComparisonAuditController.computeBallotOrder(cdb, round.getAsInt());
+            ComparisonAuditController.computeBallotOrder(cdb, round.getAsInt(), audited);
       } else {
         cvr_to_audit_list = 
-            ComparisonAuditController.computeBallotOrder(cdb, index, ballot_count, duplicates);
+            ComparisonAuditController.computeBallotOrder(cdb, index, ballot_count, 
+                                                         duplicates, audited);
       }
      
       for (int i = 0; i < cvr_to_audit_list.size(); i++) {
@@ -180,7 +192,8 @@ public class CVRToAuditList extends AbstractEndpoint {
                                                  cvr.batchID(), cvr.recordID(), 
                                                  cvr.imprintedID(), 
                                                  cvr.cvrNumber(), cvr.id(),
-                                                 cvr.ballotType(), location));
+                                                 cvr.ballotType(), location,
+                                                 cvr.auditFlag()));
       }
       response_list.sort(new BallotOrderComparator());
       okJSON(the_response, Main.GSON.toJson(response_list));

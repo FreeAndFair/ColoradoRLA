@@ -63,10 +63,36 @@ function parseAuditedContests(data: any) {
 }
 
 function parseElection(data: any): any {
+    const info = data.audit_info;
+
+    if (!info) {
+        return null;
+    }
+
     return {
-        date: new Date(data.election_date),
-        type: data.election_type,
+        date: new Date(info.election_date),
+        type: info.election_type,
     };
+}
+
+function parsePublicMeetingDate(data: any): Date {
+    if (!_.has(data, 'audit_info.public_meeting_date')) {
+        return null;
+    }
+
+    const date = data.audit_info.public_meeting_date;
+
+    return new Date(date);
+}
+
+function parseRiskLimit(data: any): number {
+    const info = data.audit_info;
+
+    if (!info) {
+        return null;
+    }
+
+    return info.risk_limit;
 }
 
 
@@ -78,6 +104,7 @@ export const parse = (data: any) => ({
     election: parseElection(data),
     estimatedBallotsToAudit: data.estimated_ballots_to_audit,
     handCountContests: data.hand_count_contests,
-    riskLimit: data.risk_limit,
+    publicMeetingDate: parsePublicMeetingDate(data),
+    riskLimit: parseRiskLimit(data),
     seed: data.random_seed,
 });

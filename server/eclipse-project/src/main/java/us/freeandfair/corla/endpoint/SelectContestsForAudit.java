@@ -11,7 +11,7 @@
 
 package us.freeandfair.corla.endpoint;
 
-import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.SELECT_CONTESTS_FOR_COMPARISON_AUDIT_EVENT;
+import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.*;
 
 import javax.persistence.PersistenceException;
 
@@ -22,6 +22,7 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
+import us.freeandfair.corla.model.AuditInfo;
 import us.freeandfair.corla.model.ContestToAudit;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
@@ -34,6 +35,11 @@ import us.freeandfair.corla.persistence.Persistence;
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
 public class SelectContestsForAudit extends AbstractDoSDashboardEndpoint {
+  /**
+   * The event to return for this endpoint.
+   */
+  private final ThreadLocal<ASMEvent> my_event = new ThreadLocal<ASMEvent>();
+
   /**
    * {@inheritDoc}
    */
@@ -55,7 +61,15 @@ public class SelectContestsForAudit extends AbstractDoSDashboardEndpoint {
    */
   @Override
   protected ASMEvent endpointEvent() {
-    return SELECT_CONTESTS_FOR_COMPARISON_AUDIT_EVENT;
+    return my_event.get();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void reset() {
+    my_event.set(null);
   }
   
   /**
@@ -79,6 +93,7 @@ public class SelectContestsForAudit extends AbstractDoSDashboardEndpoint {
           Main.LOGGER.info("updating contest audit status: " + c);
           dosdb.updateContestToAudit(c);
           Persistence.saveOrUpdate(dosdb);
+          my_event.set(nextEvent(dosdb));
           ok(the_response, "Contests selected");
         }
       }
@@ -90,5 +105,26 @@ public class SelectContestsForAudit extends AbstractDoSDashboardEndpoint {
       serverError(the_response, "Unable to save contest selection");
     }
     return my_endpoint_result.get();
+  }
+  
+  /**
+   * Computes the event of this endpoint based on audit info completeness.
+   * 
+   * @param the_dosdb The DoS dashboard.
+   */
+  private ASMEvent nextEvent(final DoSDashboard the_dosdb) {
+    final ASMEvent result;
+    final AuditInfo info = the_dosdb.auditInfo();
+
+    if (info.electionDate() == null || info.electionType() == null ||
+        info.publicMeetingDate() == null || info.riskLimit() == null) {
+      Main.LOGGER.debug("partial audit information submitted");
+      result = PARTIAL_AUDIT_INFO_EVENT;
+    } else {
+      Main.LOGGER.debug("complete audit information submitted");
+      result = COMPLETE_AUDIT_INFO_EVENT;
+    }
+
+    return result;
   }
 }

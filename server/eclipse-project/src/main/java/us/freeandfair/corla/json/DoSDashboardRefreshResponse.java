@@ -11,8 +11,6 @@
 
 package us.freeandfair.corla.json;
 
-import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -24,6 +22,7 @@ import javax.persistence.PersistenceException;
 import us.freeandfair.corla.asm.ASMState;
 import us.freeandfair.corla.asm.ASMUtilities;
 import us.freeandfair.corla.asm.DoSDashboardASM;
+import us.freeandfair.corla.model.AuditInfo;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.ContestToAudit;
 import us.freeandfair.corla.model.ContestToAudit.AuditReason;
@@ -55,11 +54,6 @@ public class DoSDashboardRefreshResponse {
   private final ASMState my_asm_state;
   
   /**
-   * The risk limit.
-   */
-  private final BigDecimal my_risk_limit;
-  
-  /**
    * A map from audited contests to audit reasons.
    */
   private final Map<Long, AuditReason> my_audited_contests;
@@ -80,40 +74,26 @@ public class DoSDashboardRefreshResponse {
   private final Map<Long, CountyDashboardRefreshResponse> my_county_status;
   
   /**
-   * The random seed.
-   */
-  private final String my_random_seed;
-  
-  /**
    * A set of contests selected for full hand count.
    */
   private final Set<Long> my_hand_count_contests;
   
   /**
-   * The election type.
+   * The audit info.
    */
-  private final String my_election_type;
-  
-  /**
-   * The election date.
-   */
-  private final Instant my_election_date;
+  private final AuditInfo my_audit_info;
   
   /**
    * Constructs a new DosDashboardRefreshResponse.
    * 
    * @param the_asm_state The ASM state.
-   * @param the_risk_limit The risk limit.
    * @param the_audited_contests The audited contests.
    * @param the_county_status The county statuses.
-   * @param the_random_seed The random seed.
    * @param the_hand_count_contests The hand count contests.
-   * @param the_election_type The election type.
-   * @param the_election_date The election date.
+   * @param the_audit_info The election info.
    */
   @SuppressWarnings("PMD.ExcessiveParameterList")
   protected DoSDashboardRefreshResponse(final ASMState the_asm_state,
-                                        final BigDecimal the_risk_limit,
                                         final Map<Long, AuditReason> the_audited_contests,
                                         final Map<Long, Integer> 
                                            the_estimated_ballots_to_audit,
@@ -121,20 +101,15 @@ public class DoSDashboardRefreshResponse {
                                            the_optimistic_ballots_to_audit,
                                         final Map<Long, CountyDashboardRefreshResponse> 
                                            the_county_status,
-                                        final String the_random_seed,
                                         final Set<Long> the_hand_count_contests,
-                                        final String the_election_type,
-                                        final Instant the_election_date) {
+                                        final AuditInfo the_audit_info) {
     my_asm_state = the_asm_state;
-    my_risk_limit = the_risk_limit;
     my_audited_contests = the_audited_contests;
     my_estimated_ballots_to_audit = the_estimated_ballots_to_audit;
     my_optimistic_ballots_to_audit = the_optimistic_ballots_to_audit;
     my_county_status = the_county_status;
-    my_random_seed = the_random_seed;
     my_hand_count_contests = the_hand_count_contests;
-    my_election_type = the_election_type;
-    my_election_date = the_election_date;
+    my_audit_info = the_audit_info;
   }
   
   /**
@@ -176,15 +151,12 @@ public class DoSDashboardRefreshResponse {
 
     
     return new DoSDashboardRefreshResponse(asm.currentState(),
-                                           the_dashboard.riskLimitForComparisonAudits(),
                                            audited_contests,
                                            estimated_ballots_to_audit,
                                            optimistic_ballots_to_audit,
                                            countyStatusMap(),
-                                           the_dashboard.randomSeed(),
                                            hand_count_contests,
-                                           the_dashboard.electionType(),
-                                           the_dashboard.electionDate());
+                                           the_dashboard.auditInfo());
   }
   
   /**

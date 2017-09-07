@@ -76,7 +76,8 @@ public final class ComparisonAuditController {
       throw new IllegalStateException("unable to count CVRs for county " + the_cdb.id());
     }
 
-    final String seed = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class).randomSeed();
+    final String seed = 
+        Persistence.getByID(DoSDashboard.ID, DoSDashboard.class).auditInfo().seed();
     final boolean with_replacement = true;
     // assuming that CVRs are indexed from 0
     final int minimum = 0;
@@ -144,13 +145,15 @@ public final class ComparisonAuditController {
    * @param the_cdb The dashboard.
    * @param the_start_index The start index.
    * @param the_ballot_count The number of ballots.
-   * @param the_duplicates true to return duplicates, false otherwise.
+   * @param the_duplicates true to include duplicates, false otherwise.
+   * @param the_audited true to include already-audited ballots, false otherwise.
    */
   @SuppressWarnings("PMD.UselessParentheses")
   public static List<CastVoteRecord> computeBallotOrder(final CountyDashboard the_cdb,
                                                         final int the_start_index,
                                                         final int the_ballot_count,
-                                                        final boolean the_duplicates) {
+                                                        final boolean the_duplicates,
+                                                        final boolean the_audited) {
     final OptionalLong county_ballots_found = 
         CastVoteRecordQueries.countMatching(the_cdb.id(), RecordType.UPLOADED);
     final long county_ballots;
@@ -178,7 +181,8 @@ public final class ComparisonAuditController {
       final List<CastVoteRecord> new_cvrs = getCVRsInAuditSequence(the_cdb, start, end);
       for (int i = 0; i < new_cvrs.size(); i++) {
         final CastVoteRecord cvr = new_cvrs.get(i);
-        if ((the_duplicates || !cvr_set.contains(cvr)) && !audited(the_cdb, cvr)) {
+        if ((the_duplicates || !cvr_set.contains(cvr)) && 
+            (the_audited || !audited(the_cdb, cvr))) {
           cvr_to_audit_list.add(cvr);
         }
         cvr_set.add(cvr);
@@ -199,12 +203,15 @@ public final class ComparisonAuditController {
    * @param the_cdb The dashboard.
    * @param the_start_index The start index.
    * @param the_desired_prefix_length The desired prefix length.
+   * @param the_audited true to include already-audited ballots, false otherwise.
    * @exception IllegalArgumentException if 
    * the_start_index >= the_desired_prefix_length
    */
+  @SuppressWarnings("PMD.UselessParentheses")
   public static List<CastVoteRecord> computeBallotOrder(final CountyDashboard the_cdb,
                                                         final int the_start_index,
-                                                        final int the_desired_prefix_length) {
+                                                        final int the_desired_prefix_length,
+                                                        final boolean the_audited) {
     if (the_start_index >= the_desired_prefix_length) {
       throw new IllegalArgumentException("invalid sequence bounds");
     }
@@ -216,12 +223,25 @@ public final class ComparisonAuditController {
         getCVRsInAuditSequence(the_cdb, the_start_index, 
                                the_desired_prefix_length - 1); // end is inclusive
     final Set<CastVoteRecord> cvr_set = new HashSet<>();
+    final Set<CastVoteRecord> previous_cvr_set = new HashSet<>();
     final List<CastVoteRecord> cvr_to_audit_list = new ArrayList<>();
+    
+    // we should always exclude records that occurred in the sequence before 
+    // the_start_index, since they are no longer relevant to the requested
+    // stage of the audit
+    
+    if (the_start_index > 0) {
+      previous_cvr_set.addAll(getCVRsInAuditSequence(the_cdb, 0, the_start_index - 1));
+    }
+
     for (int i = 0; i < cvrs.size(); i++) {
       final CastVoteRecord cvr = cvrs.get(i);
-      if (!cvr_set.contains(cvr) && !audited(the_cdb, cvr)) {
-        cvr_to_audit_list.add(cvr);
-      } 
+      if (!cvr_set.contains(cvr) && !previous_cvr_set.contains(cvr)) {
+        cvr.setAuditFlag(audited(the_cdb, cvr));
+        if (the_audited || !cvr.auditFlag()) {
+          cvr_to_audit_list.add(cvr);
+        }
+      }
       cvr_set.add(cvr);
     }
     
@@ -234,19 +254,22 @@ public final class ComparisonAuditController {
    * 
    * @param the_cdb The dashboard.
    * @param the_round The round number.
+   * @param the_audited True to include already-audited ballots, false otherwise.
    * @exception IllegalArgumentException if the specified dashboard does not have
    * a round with the specified number, or if a round number <= 0 is specified.
    */
   @SuppressWarnings("PMD.UselessParentheses")
   public static List<CastVoteRecord> computeBallotOrder(final CountyDashboard the_cdb,
-                                                        final int the_round) {
+                                                        final int the_round,
+                                                        final boolean the_audited) {
     if (the_round <= 0 || the_cdb.rounds().size() < the_round) {
       throw new IllegalArgumentException("invalid round number");
     }
     // round numbers are 1-based, not 0-based
     final Round round = the_cdb.rounds().get(the_round - 1);
     return computeBallotOrder(the_cdb, round.startAuditedPrefixLength(), 
-                              round.expectedAuditedPrefixLength());
+                              round.expectedAuditedPrefixLength(), 
+                              the_audited);
   }
   
   /**
@@ -262,7 +285,7 @@ public final class ComparisonAuditController {
     boolean result = true;
     final DoSDashboard dosdb =
         Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
-    final BigDecimal risk_limit = dosdb.riskLimitForComparisonAudits();
+    final BigDecimal risk_limit = dosdb.auditInfo().riskLimit();
     final Set<Contest> all_driving_contests = new HashSet<>();
     final Set<Contest> county_driving_contests = new HashSet<>();
     final Set<CountyContestComparisonAudit> comparison_audits = new HashSet<>();
@@ -293,8 +316,8 @@ public final class ComparisonAuditController {
     the_cdb.setOptimisticBallotsToAudit(Math.max(0,  to_audit));
     if (!county_driving_contests.isEmpty() && 0 < to_audit) {
       the_cdb.setCVRsToAudit(getCVRsInAuditSequence(the_cdb, 0, to_audit - 1));
-      the_cdb.startRound(computeBallotOrder(the_cdb, 0, to_audit).size(),
-                               to_audit, 0);
+      the_cdb.startRound(computeBallotOrder(the_cdb, 0, to_audit, false).size(),
+                         to_audit, 0);
     } else {
       result = false;
     }
@@ -559,7 +582,8 @@ public final class ComparisonAuditController {
   
   /**
    * Checks to see if the specified CVR has been audited on the specified county
-   * dashboard.
+   * dashboard. This check sets the audit flag on the CVR record in memory, 
+   * so its result can be accessed later without an expensive database hit.
    * 
    * @param the_cdb The county dashboard.
    * @param the_cvr The CVR.

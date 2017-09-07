@@ -53,12 +53,12 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
   /**
    * The database stored precision for decimal types.
    */
-  public static final int PRECISION = 6;
+  public static final int PRECISION = 10;
   
   /**
    * The database stored scale for decimal types.
    */
-  public static final int SCALE = 4;
+  public static final int SCALE = 8;
   
   /**
    * Gamma, as presented in the literature:

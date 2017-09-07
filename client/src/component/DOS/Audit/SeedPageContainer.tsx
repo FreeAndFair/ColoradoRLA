@@ -9,7 +9,7 @@ import uploadRandomSeed from 'corla/action/dos/uploadRandomSeed';
 
 class AuditSeedContainer extends React.Component<any, any> {
     public render() {
-        const { history, seed, sos } = this.props;
+        const { history, publicMeetingDate, seed, sos } = this.props;
 
         if (sos.asm.currentState === 'DOS_AUDIT_ONGOING') {
             return <Redirect to='/sos' />;
@@ -18,6 +18,7 @@ class AuditSeedContainer extends React.Component<any, any> {
         const props = {
             back: () => history.push('/sos/audit/select-contests'),
             nextPage: () => history.push('/sos/audit/review'),
+            publicMeetingDate,
             seed,
             uploadRandomSeed,
         };
@@ -27,6 +28,10 @@ class AuditSeedContainer extends React.Component<any, any> {
 }
 
 
-const mapStateToProps = ({ sos }: any) => ({ sos, seed: sos.seed });
+const mapStateToProps = ({ sos }: any) => ({
+    publicMeetingDate: sos.publicMeetingDate,
+    seed: sos.seed,
+    sos,
+});
 
 export default connect(mapStateToProps)(AuditSeedContainer);
