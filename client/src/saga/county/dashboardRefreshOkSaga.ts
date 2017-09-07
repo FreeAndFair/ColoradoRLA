@@ -4,10 +4,11 @@ import {
 } from 'redux-saga/effects';
 
 import countyFetchContests from 'corla/action/county/fetchContests';
-import countyFetchCvr from 'corla/action/county/fetchCvr';
 import fetchCvrsToAudit from 'corla/action/county/fetchCvrsToAudit';
 
 import { parse } from 'corla/adapter/countyDashboardRefresh';
+
+import currentBallotIdSelector from 'corla/selector/county/currentBallotId';
 
 
 function* countyRefreshOk({ data }: any): any {
@@ -17,10 +18,6 @@ function* countyRefreshOk({ data }: any): any {
 
     if (county.id) {
         countyFetchContests(county.id);
-    }
-
-    if (county.ballotUnderAuditId) {
-        countyFetchCvr(county.ballotUnderAuditId);
     }
 
     if (county.currentRound) {

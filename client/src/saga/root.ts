@@ -5,6 +5,7 @@ import * as config from 'corla/config';
 import acvrUploadSaga from './county/acvrUploadSaga';
 import auditBoardSignInSaga from './county/auditBoardSignInSaga';
 import ballotNotFoundOkSaga from './county/ballotNotFoundOkSaga';
+import countyCvrsToAuditSaga from './county/cvrsToAuditSaga';
 import countyDashboardRefreshOkSaga from './county/dashboardRefreshOkSaga';
 import countyLoginSaga from './county/loginSaga';
 import countyPollSaga from './county/pollSaga';
@@ -29,9 +30,10 @@ export default function* rootSaga() {
         acvrUploadSaga(),
         auditBoardSignInSaga(),
         ballotNotFoundOkSaga(),
+        countyCvrsToAuditSaga(),
+        countyDashboardRefreshOkSaga(),
         countyLoginSaga(),
         countyPollSaga(),
-        countyDashboardRefreshOkSaga(),
         dosAuditSaga(),
         dosLoginSaga(),
         dosPollSaga(),
