@@ -11,12 +11,15 @@ const BallotListStage = (props: any) => {
     }
 
     const ballotListRows = _.map(cvrsToAudit, (cvr: any) => {
+        const audited = cvr.audited ? '✔' : '';
+
         return (
             <tr key={ cvr.imprinted_id }>
                 <td>{ cvr.scanner_id }</td>
                 <td>{ cvr.batch_id }</td>
                 <td>{ cvr.record_id }</td>
                 <td>{ cvr.storage_location }</td>
+                <td>{ audited }</td>
             </tr>
         );
     });
@@ -61,6 +64,7 @@ const BallotListStage = (props: any) => {
                         <th>Batch #</th>
                         <th>Ballot Position #</th>
                         <th>Storage Bin</th>
+                        <th>Audited</th>
                     </tr>
                 </thead>
                 <tbody>
