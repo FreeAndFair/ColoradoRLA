@@ -34,11 +34,13 @@ const AuditInstructions = (props: any) => {
         currentBallotNumber,
     } = props;
 
+    const { currentRound } = county;
+
     return (
         <div className='pt-card'>
             <div className='pt-card'>
                 Use this page to report the voter markings on ballot card #{ currentBallotNumber },
-                out of { county.ballotsRemainingInRound } ballots that you must audit in this round.
+                out of { currentRound.expectedCount } ballots that you must audit in this round.
             </div>
             <div>
                 <div className='pt-card'>
