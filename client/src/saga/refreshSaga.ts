@@ -44,8 +44,7 @@ export default function* dosLoginSaga() {
         'DOS_START_NEXT_ROUND_OK',
         'PUBLISH_BALLOTS_TO_AUDIT_OK',
         'SELECT_CONTESTS_FOR_AUDIT_OK',
-        'SET_ELECTION_INFO_OK',
-        'SET_RISK_LIMIT_OK',
+        'SET_AUDIT_INFO_OK',
         'UPLOAD_RANDOM_SEED_OK',
     ];
     yield takeLatest(dosRefreshActions, dosRefresh);

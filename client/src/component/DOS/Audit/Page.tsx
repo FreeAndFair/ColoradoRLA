@@ -6,10 +6,10 @@ import Nav from '../Nav';
 
 import ElectionDateForm from './ElectionDateForm';
 import ElectionTypeForm from './ElectionTypeForm';
+import PublicMeetingDateForm from './PublicMeetingDateForm';
 import RiskLimitForm from './RiskLimitForm';
 
-import setElectionInfo from 'corla/action/dos/setElectionInfo';
-import setRiskLimit from 'corla/action/dos/setRiskLimit';
+import setAuditInfo from 'corla/action/dos/setAuditInfo';
 
 import { timezone } from 'corla/config';
 import * as format from 'corla/format';
@@ -57,24 +57,22 @@ const NextButton = (props: any) => {
 };
 
 const SaveButton = (props: any) => {
-    const { disabled, forms, riskLimit } = props;
+    const { disabled, forms } = props;
 
     const buttonClick = () => {
-        const { date } = forms.electionDateForm;
+        const electionDate = corlaDate.parse(forms.electionDateForm.date);
         const { type } = forms.electionTypeForm;
+        const publicMeetingDate = corlaDate.parse(forms.publicMeetingDateForm.date);
+        const riskLimit = forms.riskLimit.comparisonLimit;
 
-        if (date && type) {
-            setElectionInfo(corlaDate.parse(date), type);
-        }
-
-        if (!riskLimit) {
-            const { comparisonLimit } = forms.riskLimit;
-
-            // Temporary workaround to avoid failure due to database contention.
-            // This will be removed in an upcoming PR which will use a new endpoint
-            // that lets us set both election info and risk limit in one request.
-            setTimeout(() => setRiskLimit(comparisonLimit), 100);
-        }
+        setAuditInfo({
+            election: {
+                date: electionDate,
+                type,
+            },
+            publicMeetingDate,
+            riskLimit,
+        });
     };
 
     return (
@@ -92,6 +90,7 @@ const ReadOnlyPage = (props: any) => {
 
     const electionDate = corlaDate.format(election.date);
     const electionType = format.electionType(election.type);
+    const publicMeetingDate = corlaDate.format(props.publicMeetingDate);
 
     return (
         <div>
@@ -104,6 +103,7 @@ const ReadOnlyPage = (props: any) => {
                 <h3>Election Info</h3>
                 <div>Election Date: { electionDate }</div>
                 <div>Election Type: { electionType }</div>
+                <div>Public Meeting Date: { publicMeetingDate }</div>
             </div>
 
             <div className='pt-card'>
@@ -116,7 +116,14 @@ const ReadOnlyPage = (props: any) => {
 };
 
 const AuditPage = (props: any) => {
-    const { election, formValid, nextPage, riskLimit, setFormValid } = props;
+    const {
+        election,
+        formValid,
+        nextPage,
+        publicMeetingDate,
+        riskLimit,
+        setFormValid,
+    } = props;
 
     const electionAndRiskLimitSet = riskLimit
                                  && election
@@ -128,6 +135,7 @@ const AuditPage = (props: any) => {
             <ReadOnlyPage
                 election={ election }
                 nextPage={ nextPage }
+                publicMeetingDate={ publicMeetingDate }
                 riskLimit={ riskLimit } />
         );
     }
@@ -148,6 +156,12 @@ const AuditPage = (props: any) => {
                 <div>Enter the date the election will take place, and the type of election.</div>
                 <ElectionDateForm forms={ forms } />
                 <ElectionTypeForm forms={ forms } setFormValid={ setFormValid } />
+            </div>
+
+            <div className='pt-card'>
+                <h3>Public Meeting Date</h3>
+                <div>Enter the date of the public meeting to establish the random seed.</div>
+                <PublicMeetingDateForm forms={ forms } />
             </div>
 
             <div className='pt-card'>
