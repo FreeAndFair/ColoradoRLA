@@ -168,8 +168,8 @@ public class CVRToAuditList extends AbstractEndpoint {
       OptionalInt round = OptionalInt.empty(); 
       if (round_param != null) {
         final int round_number = Integer.parseInt(round_param);
-        if (round_number < cdb.rounds().size()) {
-          round = OptionalInt.of(Integer.parseInt(round_param));
+        if (0 < round_number && round_number <= cdb.rounds().size()) {
+          round = OptionalInt.of(round_number);
         } else {
           badDataContents(the_response, "cvr list requested for invalid round " + 
                                         round_param + " for county " + cdb.id());
