@@ -316,7 +316,7 @@ public class Round implements Serializable {
    */
   public void addDisagreement(final AuditReason the_reason) {
     ensureCounterExists(my_disagreements, the_reason);
-    my_disagreements.put(the_reason, my_discrepancies.get(the_reason) + 1);
+    my_disagreements.put(the_reason, my_disagreements.get(the_reason) + 1);
   }
   
   /**

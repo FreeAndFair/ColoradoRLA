@@ -790,7 +790,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
    */
   public void addDisagreement(final AuditReason the_reason) {
     ensureCounterExists(my_disagreements, the_reason);
-    my_disagreements.put(the_reason, my_discrepancies.get(the_reason) + 1);
+    my_disagreements.put(the_reason, my_disagreements.get(the_reason) + 1);
     if (my_current_round_index != null) {
       my_rounds.get(my_current_round_index).addDisagreement(the_reason);
     } 
