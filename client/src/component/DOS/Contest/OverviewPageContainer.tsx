@@ -15,9 +15,5 @@ const mapStateToProps = ({ sos }: any) => ({
     sos,
 });
 
-const mapDispatchToProps = (dispatch: any) => ({});
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(ContestOverviewContainer);
+export default connect(mapStateToProps)(ContestOverviewContainer);
