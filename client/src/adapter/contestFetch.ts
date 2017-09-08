@@ -10,5 +10,8 @@ const parseContest = (c: any) => {
     return result;
 };
 
+const byId = (o: any) => o.id;
 
-export const parse = (contests: any) => contests.map(parseContest);
+
+export const parse = (contests: any) =>
+    _.keyBy(_.map(contests, parseContest), byId);
