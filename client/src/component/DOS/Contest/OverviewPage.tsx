@@ -28,7 +28,7 @@ const ContestTableRow = ({ contest }: any) => (
                 { contest.name }
             </a>
         </td>
-        <td>{ contest.choice_names.length }</td>
+        <td>{ contest.choices.length }</td>
         <td>{ contest.votesAllowed }</td>
     </tr>
 );
