@@ -4,10 +4,7 @@ import createFetchAction from 'corla/action/createFetchAction';
 
 
 export default (round: any) => {
-    const start = round.startAuditPrefixLength;
-    const ballotCount = round.expectedCount;
-    const params = `start=${start}&ballot_count=${ballotCount}`;
-
+    const params = `round=${round.number}&include_audited`;
     const url = `${endpoint('cvr-to-audit-list')}?${params}`;
 
     const a = createFetchAction({
