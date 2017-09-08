@@ -1,6 +1,3 @@
-import * as cookies from 'js-cookie';
-
-
 export default (state: any) => ({
     ...state,
     county: {
@@ -14,5 +11,4 @@ export default (state: any) => ({
     },
     dashboard: 'county',
     loggedIn: true,
-    session: cookies.get('JSESSIONID'),
 });

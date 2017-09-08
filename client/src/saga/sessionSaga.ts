@@ -1,22 +1,10 @@
 import { select, takeLatest } from 'redux-saga/effects';
 
-import * as cookies from 'js-cookie';
 
-
-function* checkSession(): IterableIterator<any> {
-    const { session } = yield select();
-
-    if (session) {
-        const currentSession = cookies.get('JSESSIONID');
-
-        if (session !== currentSession) {
-            window.location.replace('/login');
-        }
-    }
+function* checkSession(): IterableIterator<void> {
 }
 
 function* clearSession(): IterableIterator<void> {
-    cookies.remove('JSESSIONID');
 }
 
 
