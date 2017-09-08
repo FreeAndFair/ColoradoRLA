@@ -150,6 +150,8 @@ parser.add_argument('-C, --contest', dest='contests', metavar='CONTEST', action=
                     type=int,
                     help='numeric contest_index for the given command, e.g. 0 '
                     'for first one from the CVRs. May be specified multiple times.')
+parser.add_argument('-l, --loser', dest='loser', default="Distant Loser",
+                    help='Loser to use for -p, default "Distant Loser"')
 parser.add_argument('-p, --discrepancy-plan', dest='plan', default="2 17",
                     help='Planned discrepancies. Default is "2 17", i.e. '
                     'Every 17 ACVR upload, upload a possible discrepancy once, '
@@ -653,9 +655,10 @@ def county_audit(ac, county_id):
         if (total_audited % ac.discrepancy_cycle == ac.discrepancy_remainder
             and  total_audited <= ac.args.plan_limit):
 
-            print('Possible discrepancy: blindly setting choices for first contest to ["Distant Loser"]')
+            loser=ac.args.loser
+            print('Possible discrepancy: blindly setting choices for first contest to [%s]' % loser)
             # TODO: use contest info to look for the contests and add votes for losers 
-            acvr['contest_info'][0]['choices'] = ["Distant Loser"]
+            acvr['contest_info'][0]['choices'] = [loser]
             # acvr['contest_info'][0]['choices'] = ["No/Against"]  # for Denver election contest 0
 
         elif False:
@@ -718,7 +721,8 @@ def county_wrapup(ac, county_id):
 
     to_go = county_dashboard['estimated_ballots_to_audit']
     audited = county_dashboard['audited_ballot_count']
-    cast = county_dashboard['cast_ballot_count']
+    cast = -1 # FIXME: use actual cast_ballot_count when that is fixed
+    # cast = county_dashboard['cast_ballot_count']
 
     if to_go > 0:
         print("\nCounty %d audit incomplete, ended after %d ballots (of %d cast) and %d rounds, %d to go" %
