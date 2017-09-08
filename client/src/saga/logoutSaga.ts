@@ -1,11 +1,16 @@
 import { takeLatest } from 'redux-saga/effects';
 
 
-function* logout(): IterableIterator<void> {
+function* logoutRedirect(): IterableIterator<void> {
     window.location.replace('/login');
 }
 
 
 export default function* logoutSaga() {
-    yield takeLatest('LOGOUT', logout);
+    const REDIRECT_ACTIONS = [
+        'LOGOUT_SEND',
+        'NOT_AUTHORIZED',
+    ];
+
+    yield takeLatest('LOGOUT_SEND', logoutRedirect);
 }
