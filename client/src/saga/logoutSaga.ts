@@ -8,9 +8,9 @@ function* logoutRedirect(): IterableIterator<void> {
 
 export default function* logoutSaga() {
     const REDIRECT_ACTIONS = [
-        'LOGOUT_SEND',
+        'LOGOUT',
         'NOT_AUTHORIZED',
     ];
 
-    yield takeLatest('LOGOUT_SEND', logoutRedirect);
+    yield takeLatest(REDIRECT_ACTIONS, logoutRedirect);
 }
