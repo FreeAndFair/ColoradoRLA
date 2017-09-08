@@ -40,6 +40,11 @@ function createSubmitAction(config: CreateSubmitConfig) {
 
             if (!r.ok) {
                 action(failType);
+
+                if (r.status === 401) {
+                    action('NOT_AUTHORIZED');
+                }
+
                 return;
             }
 

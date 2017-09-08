@@ -34,6 +34,10 @@ function createFetchAction(config: CreateFetchConfig) {
                 action(failType);
             }
 
+            if (r.status === 401) {
+                action('NOT_AUTHORIZED');
+            }
+
             const data = await r.json();
 
             action(okType, data);
