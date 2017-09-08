@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import { Link } from 'react-router-dom';
+
 import * as _ from 'lodash';
 
 import Nav from '../Nav';
@@ -8,14 +10,16 @@ import Nav from '../Nav';
 const Breadcrumb = () => (
     <ul className='pt-breadcrumbs'>
         <li>
-            <a className='pt-breadcrumb' href='/sos'>
-                SoS
-            </a>
+            <Link to='/sos'>
+                <div className='pt-breadcrumb'>
+                    SoS
+                </div>
+            </Link>
         </li>
         <li>
-            <a className='pt-breadcrumb pt-breadcrumb-current'>
+            <div className='pt-breadcrumb pt-breadcrumb-current'>
                 Contest
-            </a>
+            </div>
         </li>
     </ul>
 );
@@ -24,9 +28,9 @@ const ContestTableRow = ({ contest }: any) => (
     <tr>
         <td>{ contest.id }</td>
         <td>
-            <a href={ `/sos/contest/${contest.id}` }>
+            <Link to={ `/sos/contest/${contest.id}` }>
                 { contest.name }
-            </a>
+            </Link>
         </td>
         <td>{ contest.choices.length }</td>
         <td>{ contest.votesAllowed }</td>
