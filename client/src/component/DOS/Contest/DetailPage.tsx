@@ -32,8 +32,8 @@ const Breadcrumb = ({ contest }: any) => (
 );
 
 const ContestChoices = ({ contest }: any) => {
-    const choiceItems = _.map(contest.choices, (c: any) => (
-        <li key={ c.id }>{ c.name }</li>
+    const choiceItems = _.map(contest.choices, (c: any, k: any) => (
+        <li key={ k }>{ c.name }</li>
     ));
 
     return (
@@ -48,7 +48,7 @@ const ContestDetailPage = (props: any) => {
     const { contest } = props;
 
     const row = (k: any, v: any) => (
-        <tr>
+        <tr key={ k } >
             <td>{ k }</td>
             <td>{ v }</td>
         </tr>
