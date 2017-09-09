@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import { Link } from 'react-router-dom';
+
 import * as _ from 'lodash';
 
 import Nav from '../Nav';
@@ -8,26 +10,30 @@ import Nav from '../Nav';
 const Breadcrumb = ({ contest }: any) => (
     <ul className='pt-breadcrumbs'>
         <li>
-            <a className='pt-breadcrumb pt-disabled' href='/sos'>
-                SoS
-            </a>
+            <Link to='/sos'>
+                <div className='pt-breadcrumb pt-disabled'>
+                    SoS
+                </div>
+            </Link>
         </li>
         <li>
-            <a className='pt-breadcrumb' href='/sos/contest'>
-                Contest
-            </a>
+            <Link to='/sos/contest'>
+                <div className='pt-breadcrumb'>
+                    Contest
+                </div>
+            </Link>
         </li>
         <li>
-            <a className='pt-breadcrumb pt-breadcrumb-current'>
+            <div className='pt-breadcrumb pt-breadcrumb-current'>
                 { contest.name }
-            </a>
+            </div>
         </li>
     </ul>
 );
 
 const ContestChoices = ({ contest }: any) => {
-    const choiceItems = _.map(contest.choices, (c: any) => (
-        <li key={ c.id }>{ c.name }</li>
+    const choiceItems = _.map(contest.choices, (c: any, k: any) => (
+        <li key={ k }>{ c.name }</li>
     ));
 
     return (
@@ -42,7 +48,7 @@ const ContestDetailPage = (props: any) => {
     const { contest } = props;
 
     const row = (k: any, v: any) => (
-        <tr>
+        <tr key={ k } >
             <td>{ k }</td>
             <td>{ v }</td>
         </tr>

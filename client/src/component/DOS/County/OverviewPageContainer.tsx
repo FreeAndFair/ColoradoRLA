@@ -20,9 +20,5 @@ const mapStateToProps = ({ sos }: any) => {
     return { counties, countyStatus, sos };
 };
 
-const mapDispatchToProps = (dispatch: any) => ({});
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(CountyOverviewContainer);
+export default connect(mapStateToProps)(CountyOverviewContainer);

@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import { Link } from 'react-router-dom';
+
 import * as _ from 'lodash';
 
 import Nav from '../Nav';
@@ -28,9 +30,9 @@ const CountyTableRow = ({ county, status }: any) => {
     return (
         <tr>
             <td>
-                <a href={ `/sos/county/${county.id}` }>
+                <Link to={ `/sos/county/${county.id}` }>
                     { county.name }
-                </a>
+                </Link>
             </td>
             <td>{ started }</td>
             <td>{ submitted }</td>
