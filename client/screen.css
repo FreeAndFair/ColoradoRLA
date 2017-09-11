@@ -51,3 +51,7 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.pt-breadcrumb {
+    margin: 10px;
+}
