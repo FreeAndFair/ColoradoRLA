@@ -101,9 +101,11 @@ const ReadOnlyPage = (props: any) => {
 
             <div className='pt-card'>
                 <h3>Election Info</h3>
-                <div>Election Date: { electionDate }</div>
-                <div>Election Type: { electionType }</div>
-                <div>Public Meeting Date: { publicMeetingDate }</div>
+                <div className='pt-card'>
+                    <div>Election Date: { electionDate }</div>
+                    <div>Election Type: { electionType }</div>
+                    <div>Public Meeting Date: { publicMeetingDate }</div>
+                </div>
             </div>
 
             <div className='pt-card'>
