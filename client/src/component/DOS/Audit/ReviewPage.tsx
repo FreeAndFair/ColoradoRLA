@@ -32,6 +32,8 @@ const AuditReview = ({ back, publishBallotsToAudit, saveAndDone, sos }: any) => 
 
     const riskLimitPercent = sos.riskLimit * 100;
 
+    const disableLaunchButton = !sos.seed;
+
     return (
         <div>
             <Nav />
@@ -62,7 +64,9 @@ const AuditReview = ({ back, publishBallotsToAudit, saveAndDone, sos }: any) => 
                 <button onClick={ back } className='pt-button'>
                     Back
                 </button>
-                <button onClick={ launch } className='pt-button pt-intent-primary'>
+                <button disabled={ disableLaunchButton }
+                        onClick={ launch }
+                        className='pt-button pt-intent-primary'>
                     Launch Audit
                 </button>
             </div>
