@@ -7,13 +7,13 @@ import CountyDashboardPage from './Page';
 
 import finishAudit from 'corla/action/county/finishAudit';
 
-import allRoundsComplete from 'corla/selector/county/allRoundsComplete';
-import auditBoardSignedIn from 'corla/selector/county/auditBoardSignedIn';
-import auditComplete from 'corla/selector/county/auditComplete';
-import auditStarted from 'corla/selector/county/auditStarted';
-import canAudit from 'corla/selector/county/canAudit';
-import canRenderReport from 'corla/selector/county/canRenderReport';
-import canSignIn from 'corla/selector/county/canSignIn';
+import allRoundsCompleteSelector from 'corla/selector/county/allRoundsComplete';
+import auditBoardSignedInSelector from 'corla/selector/county/auditBoardSignedIn';
+import auditCompleteSelector from 'corla/selector/county/auditComplete';
+import auditStartedSelector from 'corla/selector/county/auditStarted';
+import canAuditSelector from 'corla/selector/county/canAudit';
+import canRenderReportSelector from 'corla/selector/county/canRenderReport';
+import canSignInSelector from 'corla/selector/county/canSignIn';
 
 
 class CountyDashboardContainer extends React.Component<any, any> {
@@ -54,13 +54,13 @@ const mapStateToProps = (state: any) => {
     const { contestDefs } = county;
 
     return {
-        allRoundsComplete: allRoundsComplete(state),
-        auditBoardSignedIn: auditBoardSignedIn(state),
-        auditComplete: auditComplete(state),
-        auditStarted: auditStarted(state),
-        canAudit: canAudit(state),
-        canRenderReport: canRenderReport(state),
-        canSignIn: canSignIn(state),
+        allRoundsComplete: allRoundsCompleteSelector(state),
+        auditBoardSignedIn: auditBoardSignedInSelector(state),
+        auditComplete: auditCompleteSelector(state),
+        auditStarted: auditStartedSelector(state),
+        canAudit: canAuditSelector(state),
+        canRenderReport: canRenderReportSelector(state),
+        canSignIn: canSignInSelector(state),
         contests: contestDefs,
         county,
     };
