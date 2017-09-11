@@ -59,3 +59,21 @@ body {
 h2 {
     padding: 10px;
 }
+
+h3 {
+    padding: 10px;
+}
+
+.rla-page {
+    margin: 0 auto;
+    max-width: 800px;
+}
+
+.rla-page .pt-card {
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+.rla-page table {
+    margin: 0 auto;
+}

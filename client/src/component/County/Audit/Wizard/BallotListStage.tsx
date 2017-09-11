@@ -36,7 +36,7 @@ const BallotListStage = (props: any) => {
     });
 
     return (
-        <div>
+        <div className='rla-page'>
             <h3>Ballot cards to audit</h3>
             <div className='pt-card'>
                 <div>

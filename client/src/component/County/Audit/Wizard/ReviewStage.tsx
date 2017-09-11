@@ -100,7 +100,7 @@ const ReviewStage = (props: any) => {
     };
 
     return (
-        <div>
+        <div className='rla-page'>
             <BallotReview county={ county } marks={ marks } />
             <div className='pt-card'>
                 <BackButton back={ prevStage } />

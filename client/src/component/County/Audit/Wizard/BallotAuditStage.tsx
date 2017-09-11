@@ -218,7 +218,7 @@ const BallotAuditStage = (props: any) => {
     };
 
     return (
-        <div>
+        <div className='rla-page'>
             <h2>Ballot verification</h2>
             <AuditInstructions
                 ballotNotFound={ notFound }
