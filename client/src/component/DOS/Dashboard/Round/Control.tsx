@@ -4,7 +4,9 @@ import startNextRound from 'corla/action/dos/startNextRound';
 
 
 const Control = (props: any) => {
-    const { currentRound } = props;
+    const { canStartNextRound, currentRound } = props;
+
+    const buttonDisabled = !canStartNextRound;
 
     return (
         <div className='pt-card'>
@@ -19,6 +21,7 @@ const Control = (props: any) => {
                 <div>
                     <button
                         className='pt-button pt-intent-primary'
+                        disabled={ buttonDisabled }
                         onClick={ startNextRound }>
                         Start Round
                     </button>
