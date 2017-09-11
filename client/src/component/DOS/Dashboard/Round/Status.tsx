@@ -8,7 +8,7 @@ const Status = (props: any) => {
         <div className='pt-card'>
             <h4>Round status</h4>
             <div>
-                Current round: #{ currentRound }
+                Round { currentRound } in progress.
             </div>
         </div>
     );
