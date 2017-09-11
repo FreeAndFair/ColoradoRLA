@@ -11,8 +11,10 @@ function canStartNextRound(state: any): boolean {
         return false;
     }
 
-    const roundOngoing = (c: any) => c.ballotsRemainingInRound > 0;
-    const allRoundsDone = !_.some(counties, roundOngoing);
+    const waitingForRoundStart = (c: any) =>
+        c.auditBoardAsmState === 'WAITING_FOR_ROUND_START';
+
+    const allRoundsDone = _.every(counties, waitingForRoundStart);
 
     return allRoundsDone;
 }
