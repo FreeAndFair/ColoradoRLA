@@ -22,7 +22,6 @@ import dosPollSaga from './dos/pollSaga';
 import loginSaga from './loginSaga';
 import logoutSaga from './logoutSaga';
 import refreshSaga from './refreshSaga';
-import sessionSaga from './sessionSaga';
 
 
 export default function* rootSaga() {
@@ -40,7 +39,6 @@ export default function* rootSaga() {
         loginSaga(),
         logoutSaga(),
         refreshSaga(),
-        sessionSaga(),
         uploadAcvrOkSaga(),
         uploadBallotManifestSaga(),
         uploadCvrExportSaga(),

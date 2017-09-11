@@ -42,11 +42,6 @@
       "from": "@types/history@https://registry.npmjs.org/@types/history/-/history-4.6.0.tgz",
       "resolved": "https://registry.npmjs.org/@types/history/-/history-4.6.0.tgz"
     },
-    "@types/js-cookie": {
-      "version": "2.1.0",
-      "from": "@types/js-cookie@latest",
-      "resolved": "https://registry.npmjs.org/@types/js-cookie/-/js-cookie-2.1.0.tgz"
-    },
     "@types/lodash": {
       "version": "4.14.72",
       "from": "@types/lodash@https://registry.npmjs.org/@types/lodash/-/lodash-4.14.72.tgz",
@@ -1873,11 +1868,6 @@
       "version": "2.2.1",
       "from": "isomorphic-fetch@https://registry.npmjs.org/isomorphic-fetch/-/isomorphic-fetch-2.2.1.tgz",
       "resolved": "https://registry.npmjs.org/isomorphic-fetch/-/isomorphic-fetch-2.2.1.tgz"
-    },
-    "js-cookie": {
-      "version": "2.1.4",
-      "from": "js-cookie@latest",
-      "resolved": "https://registry.npmjs.org/js-cookie/-/js-cookie-2.1.4.tgz"
     },
     "js-tokens": {
       "version": "3.0.2",

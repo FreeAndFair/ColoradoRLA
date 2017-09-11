@@ -32,6 +32,7 @@ import javax.persistence.PersistenceException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.server.Server;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -39,6 +40,12 @@ import com.google.gson.GsonBuilder;
 import spark.Request;
 import spark.Response;
 import spark.Service;
+import spark.embeddedserver.EmbeddedServers;
+import spark.embeddedserver.jetty.EmbeddedJettyServer;
+import spark.embeddedserver.jetty.JettyHandler;
+import spark.http.matching.MatcherFilter;
+import spark.route.Routes;
+import spark.staticfiles.StaticFilesConfiguration;
 
 import us.freeandfair.corla.asm.AbstractStateMachine;
 import us.freeandfair.corla.asm.AuditBoardDashboardASM;
@@ -425,6 +432,29 @@ public final class Main {
       LOGGER.error("could not open database connection");
       return;
     }
+    
+    // secure the session cookies by adding an embedded server handler
+    EmbeddedServers.add(EmbeddedServers.Identifiers.JETTY, 
+        (final Routes the_route_matcher, 
+         final StaticFilesConfiguration the_static_files_config, 
+         final boolean the_has_multiple_handler) -> {
+        final MatcherFilter matcher_filter = 
+            new MatcherFilter(the_route_matcher, the_static_files_config, 
+                              false, the_has_multiple_handler);
+        matcher_filter.init(null);
+
+        final JettyHandler handler = new JettyHandler(matcher_filter);
+        handler.getSessionCookieConfig().setHttpOnly(true);
+        // secure cookies don't work if we're not using HTTPS
+        // handler.getSessionCookieConfig().setSecure(true);
+
+        return new EmbeddedJettyServer((int the_max_threads, 
+                                        int the_min_threads, 
+                                        int the_thread_timeout) -> {
+          return new Server();
+        }, handler);
+      });
+    
     // get the port numbers from properties
     final int http_port = parsePortNumber("http_port", DEFAULT_HTTP_PORT);
     final int https_port = parsePortNumber("https_port", DEFAULT_HTTPS_PORT);

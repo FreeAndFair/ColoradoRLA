@@ -1,7 +1,5 @@
 import * as _ from 'lodash';
 
-import * as cookies from 'js-cookie';
-
 import counties from 'corla/data/counties';
 
 
@@ -24,6 +22,5 @@ export default (state: any) => ({
     ...state,
     dashboard: 'sos',
     loggedIn: true,
-    session: cookies.get('JSESSIONID'),
     sos: sosInitialState(),
 });
