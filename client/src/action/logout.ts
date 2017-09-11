@@ -1,4 +1,9 @@
 import action from '.';
 
+import expireSession from './expireSession';
 
-export default () => action('LOGOUT');
+
+export default () => {
+    expireSession();
+    action('LOGOUT');
+};

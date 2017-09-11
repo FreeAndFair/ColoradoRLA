@@ -34,6 +34,10 @@ function createFileFetchAction(config: CreateFetchConfig) {
                 action(failType);
             }
 
+            if (r.status === 401) {
+                action('NOT_AUTHORIZED');
+            }
+
             const blob = await r.blob();
 
             const fileUrl = await URL.createObjectURL(blob);
