@@ -105,7 +105,7 @@ const ReviewStage = (props: any) => {
             <div className='pt-card'>
                 <BackButton back={ prevStage } />
                 <button className='pt-button pt-intent-primary' onClick={ onClick }>
-                    Submit & Next Ballot
+                    Submit & Next Ballot Card
                 </button>
             </div>
         </div>

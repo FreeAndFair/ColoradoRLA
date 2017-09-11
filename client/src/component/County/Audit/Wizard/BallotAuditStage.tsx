@@ -219,7 +219,7 @@ const BallotAuditStage = (props: any) => {
 
     return (
         <div className='rla-page'>
-            <h2>Ballot verification</h2>
+            <h2>Ballot Card Verification</h2>
             <AuditInstructions
                 ballotNotFound={ notFound }
                 county={ county }
