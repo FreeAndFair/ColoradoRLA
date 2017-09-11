@@ -175,7 +175,7 @@ const AuditPage = (props: any) => {
                 <div className='pt-card'>
                     <span className='pt-icon pt-intent-warning pt-icon-warning-sign' />
                     <span> </span>
-                    Once entered, this risk limit cannot be modified.
+                    Once saved, this risk limit cannot be modified.
                 </div>
                 <SaveButton
                     disabled={ disableButton }
