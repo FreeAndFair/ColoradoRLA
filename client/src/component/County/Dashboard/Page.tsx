@@ -30,6 +30,7 @@ const Main = (props: any) => {
         auditBoardSignedIn,
         auditButtonDisabled,
         auditComplete,
+        auditStarted,
         boardSignIn,
         canRenderReport,
         name,
@@ -55,12 +56,16 @@ const Main = (props: any) => {
         directions = 'The audit is complete.';
     }
 
+    const fileUploadContainer = auditStarted
+                              ? <div />
+                              : <FileUploadContainer />;
+
     return (
         <div className='county-main pt-card'>
             <h1>Hello, { name } County!</h1>
             <div>
                 <div className='pt-card'>{ directions }</div>
-                <FileUploadContainer />
+                { fileUploadContainer }
                 <AuditBoardInfo signedIn={ auditBoardSignedIn } />
                 <div className='pt-card'>
                     <div>Click to download intermediate audit report.</div>
@@ -184,6 +189,7 @@ const CountyDashboardPage = (props: any) => {
         allRoundsComplete,
         auditBoardSignedIn,
         auditComplete,
+        auditStarted,
         boardSignIn,
         canAudit,
         canRenderReport,
@@ -213,6 +219,7 @@ const CountyDashboardPage = (props: any) => {
             <CountyNav />
             <div>
                 <Main auditComplete={ auditComplete }
+                      auditStarted={ auditStarted }
                       auditBoardSignedIn={ auditBoardSignedIn }
                       boardSignIn={ boardSignIn }
                       canRenderReport={ canRenderReport }
