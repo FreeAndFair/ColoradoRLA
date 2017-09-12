@@ -51,7 +51,8 @@ import us.freeandfair.corla.persistence.PersistentEntity;
 @Table(name = "county_contest_comparison_audit",
        indexes = { @Index(name = "idx_ccca_dashboard", columnList = "dashboard_id") })
 
-@SuppressWarnings({"PMD.ImmutableField", "PMD.CyclomaticComplexity", "PMD.GodClass"})
+@SuppressWarnings({"PMD.ImmutableField", "PMD.CyclomaticComplexity", "PMD.GodClass",
+    "PMD.ModifiedCyclomaticComplexity", "PMD.StdCyclomaticComplexity"})
 public class CountyContestComparisonAudit implements PersistentEntity, Serializable {
   /**
    * The database stored precision for decimal types.
@@ -559,14 +560,14 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
    * @param the_acvr_info The ACVR info.
    * @return the discrepancy.
    */
-  @SuppressWarnings({"checkstyle:magicnumber", "PMD.ConfusingTernary"})
+  @SuppressWarnings({"PMD.ModifiedCyclomaticComplexity", "PMD.StdCyclomaticComplexity"})
   private Integer computeAuditedBallotDiscrepancy(final CVRContestInfo the_cvr_info,
                                                   final CVRContestInfo the_acvr_info) {
-    int result = 0;
+    // we want to get the minimum pairwise update delta, because that's the "worst"
+    // change in a pairwise margin, and the discrepancy we record; we start with
+    // Integer.MAX_VALUE so our minimization algorithm works
     
-    // this is a very quick calculation, and may not work correctly 
-    // for elections with multiple winners, but will err on the side of being
-    // pessimistic
+    int result = Integer.MAX_VALUE;
     
     // check for overvotes
     final Set<String> acvr_choices = new HashSet<>();
@@ -574,55 +575,49 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
       acvr_choices.addAll(the_acvr_info.choices());
     } // else overvote so don't count the votes
     
-    // find the candidates who gained and lost votes in the ACVR
-
-    final Set<String> gained_votes = new HashSet<>(acvr_choices);
-    gained_votes.removeAll(the_cvr_info.choices());
-    final Set<String> winner_gains = new HashSet<>(gained_votes);
-    winner_gains.removeAll(my_contest_result.losers());
-    final Set<String> loser_gains = new HashSet<>(gained_votes);
-    loser_gains.removeAll(my_contest_result.winners());
-
-    final Set<String> lost_votes = new HashSet<>(the_cvr_info.choices());
-    lost_votes.removeAll(acvr_choices);
-    final Set<String> winner_losses = new HashSet<>(lost_votes);
-    winner_losses.removeAll(my_contest_result.losers());
-    final Set<String> loser_losses = new HashSet<>(lost_votes);
-    loser_losses.removeAll(my_contest_result.winners());
-
-    // now, we have several cases:
-    
-    if (gained_votes.isEmpty() && lost_votes.isEmpty()) {
-      // the CVR and ACVR have identical choices and we
-      // can skip the rest of this
-      result = 0;
-    } else if (!winner_gains.isEmpty() && loser_losses.isEmpty()) {
-      // if only winners gained votes and no losers lost votes, 
-      // it's a 1-vote understatement       
-      result = -1;
-    } else if (!winner_gains.isEmpty() && !loser_losses.isEmpty()) {        
-      // if only winners gained votes and any losers lost votes, 
-      // it's a 2-vote understatement       
-      result = -2;
-    } else if (!winner_losses.isEmpty() && loser_gains.isEmpty()) {
-      // if any winners lost votes and no losers gained votes, 
-      // it's a 1-vote overstatement
-      result = 1;
-    } else if (!winner_losses.isEmpty() && !loser_gains.isEmpty()) {
-      // if any winners lost votes and any losers gained votes,
-      // it's a 2-vote overstatement
-      result = 2;
-    } else if (loser_gains.isEmpty()) {
-      // no votes changed for winners, and no losers gained votes,
-      // so losers must have lost votes; if _all_ the losers lost
-      // votes, it'd be a 1-vote understatement
-      if (loser_losses.equals(my_contest_result.losers())) {
-        result = -1;
+    // now, find the minimum pairwise update delta
+    for (final String winner : my_contest_result.winners()) {
+      final int winner_change;
+      if (!the_cvr_info.choices().contains(winner) && acvr_choices.contains(winner)) {
+        // the winner gained a vote
+        winner_change = 1;
+      } else if (the_cvr_info.choices().contains(winner) && !acvr_choices.contains(winner)) {
+        // the winner lost a vote
+        winner_change = -1;
+      } else {
+        // the winner's votes didn't change
+        winner_change = 0;
       }
-    } else {
-      // no votes changed for winners, and losers gained votes, 
-      // so it's a 1-vote overstatement
-      result = 1;
+      if (my_contest_result.losers().isEmpty()) {
+        // if there are no losers, we'll just negate this number - even though in 
+        // real life, we wouldn't be auditing the contest at all
+        result = Math.min(result, -winner_change);
+      } else {
+        for (final String loser : my_contest_result.losers()) {
+          final int loser_change;
+          if (!the_cvr_info.choices().contains(loser) && acvr_choices.contains(loser)) {
+            // the loser gained a vote
+            loser_change = 1;
+          } else if (the_cvr_info.choices().contains(loser) && !acvr_choices.contains(loser)) {
+            // the loser lost a vote
+            loser_change = -1;
+          } else {
+            // the loser's votes didn't change
+            loser_change = 0;
+          }
+          // the discrepancy is the loser change minus the winner change (i.e., if the loser 
+          // lost a vote (-1) and the winner gained a vote (1), that's a 2-vote 
+          // understatement (-1 - 1 = -2). 
+          result = Math.min(result, loser_change - winner_change);
+        }
+      }
+    }
+    
+    if (result == Integer.MAX_VALUE) {
+      // this should only be possible if something went horribly wrong (like the contest
+      // has no winners)
+      throw new IllegalStateException("unable to compute discrepancy in contest " + 
+                                      contest().name());
     }
     
     return result;
