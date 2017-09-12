@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
 
@@ -48,7 +49,7 @@ import us.freeandfair.corla.util.Pair;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-@SuppressWarnings({"PMD.GodClass", "PMD.CyclomaticComplexity"})
+@SuppressWarnings({"PMD.GodClass", "PMD.CyclomaticComplexity", "PMD.ExcessiveImports"})
 public final class ComparisonAuditController {
   /**
    * Private constructor to prevent instantiation.
@@ -638,13 +639,14 @@ public final class ComparisonAuditController {
     
     for (final CountyContestComparisonAudit ca : the_cdb.comparisonAudits()) {
       audit_reasons.put(ca.contest(), ca.auditReason());
-      final int discrepancy = ca.computeDiscrepancy(the_cvr_under_audit, the_audit_cvr);
-      for (int i = 0; i < the_count; i++) {
-        ca.recordDiscrepancy(discrepancy);
+      final OptionalInt discrepancy = 
+          ca.computeDiscrepancy(the_cvr_under_audit, the_audit_cvr);
+      if (discrepancy.isPresent()) {
+        for (int i = 0; i < the_count; i++) {
+          ca.recordDiscrepancy(discrepancy.getAsInt());
+        }
       }
-      if (discrepancy != 0) {
-        discrepancies.add(ca.auditReason());
-      }
+      discrepancies.add(ca.auditReason());
     }
     
     for (final CVRContestInfo ci : the_audit_cvr.contestInfo()) {
@@ -687,13 +689,14 @@ public final class ComparisonAuditController {
     
     for (final CountyContestComparisonAudit ca : the_cdb.comparisonAudits()) {
       audit_reasons.put(ca.contest(), ca.auditReason());
-      final int discrepancy = ca.computeDiscrepancy(the_cvr_under_audit, the_audit_cvr);
-      for (int i = 0; i < the_count; i++) {
-        ca.removeDiscrepancy(discrepancy);
+      final OptionalInt discrepancy = 
+          ca.computeDiscrepancy(the_cvr_under_audit, the_audit_cvr);
+      if (discrepancy.isPresent()) {
+        for (int i = 0; i < the_count; i++) {
+          ca.removeDiscrepancy(discrepancy.getAsInt());
+        }
       }
-      if (discrepancy != 0) {
-        discrepancies.add(ca.auditReason());
-      }
+      discrepancies.remove(ca.auditReason());
     }
     
     for (final CVRContestInfo ci : the_audit_cvr.contestInfo()) {

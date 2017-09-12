@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.HashSet;
+import java.util.OptionalInt;
 import java.util.Set;
 
 import javax.persistence.Cacheable;
@@ -52,7 +53,7 @@ import us.freeandfair.corla.persistence.PersistentEntity;
        indexes = { @Index(name = "idx_ccca_dashboard", columnList = "dashboard_id") })
 
 @SuppressWarnings({"PMD.ImmutableField", "PMD.CyclomaticComplexity", "PMD.GodClass",
-    "PMD.ModifiedCyclomaticComplexity", "PMD.StdCyclomaticComplexity"})
+    "PMD.ModifiedCyclomaticComplexity", "PMD.StdCyclomaticComplexity", "PMD.TooManyFields"})
 public class CountyContestComparisonAudit implements PersistentEntity, Serializable {
   /**
    * The database stored precision for decimal types.
@@ -219,6 +220,13 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
    */
   @Column(nullable = false)
   private Integer my_two_vote_over = 0;
+  
+  /**
+   * The number of discrepancies recorded so far that are neither 
+   * understatements nor overstatements.
+   */
+  @Column(nullable = false)
+  private Integer my_other = 0;
   
   /**
    * A flag that indicates whether the ballots to audit need to be 
@@ -435,13 +443,17 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
   }
   
   /**
-   * Records the specified over/understatement (the valid range is -2 .. 2).
+   * Records the specified discrepancy (the valid range is -2 .. 2: -2 and -1 are
+   * understatements, 0 is a discrepancy that doesn't affect the RLA calculations,
+   * and 1 and 2 are overstatements).
    * 
-   * @param the_statement The over/understatement to record.
+   * @param the_type The type of discrepancy to add.
+   * @exception IllegalArgumentException if an invalid discrepancy type is 
+   * specified.
    */
   @SuppressWarnings("checkstyle:magicnumber")
-  public void recordDiscrepancy(final int the_statement) {
-    switch (the_statement) {
+  public void recordDiscrepancy(final int the_type) {
+    switch (the_type) {
       case -2: 
         my_two_vote_under = my_two_vote_under + 1;
         my_recalculate_needed = true;
@@ -453,6 +465,8 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
         break;
         
       case 0:
+        my_other = my_other + 1;
+        // no recalculate needed
         break;
         
       case 1: 
@@ -466,20 +480,24 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
         break;
         
       default:
-        throw new IllegalArgumentException("invalid over or understatement: " + the_statement);
+        throw new IllegalArgumentException("invalid discrepancy type: " + the_type);
     }
   }
     
   /**
-   * Removes the specified over/understatement (the valid range is -2 .. 2).
-   * This is typically done when a new interpretation is submitted for a ballot
-   * that had already been interpreted.
+   * Removes the specified over/understatement (the valid range is -2 .. 2: 
+   * -2 and -1 are understatements, 0 is a discrepancy that doesn't affect the 
+   * RLA calculations, and 1 and 2 are overstatements). This is typically done 
+   * when a new interpretation is submitted for a ballot that had already been
+   * interpreted.
    * 
-   * @param the_statement The over/understatement to remove.
+   * @param the_type The type of discrepancy to add.
+   * @exception IllegalArgumentException if an invalid discrepancy type is 
+   * specified.
    */
   @SuppressWarnings("checkstyle:magicnumber")
-  public void removeDiscrepancy(final int the_statement) {
-    switch (the_statement) {
+  public void removeDiscrepancy(final int the_type) {
+    switch (the_type) {
       case -2: 
         my_two_vote_under = my_two_vote_under - 1;
         my_recalculate_needed = true;
@@ -491,8 +509,10 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
         break;
 
       case 0:
+        my_other = my_other - 1;
+        // no recalculate needed
         break;
-
+        
       case 1: 
         my_one_vote_over = my_one_vote_over - 1;
         my_recalculate_needed = true;
@@ -504,18 +524,65 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
         break;
 
       default:
-        throw new IllegalArgumentException("invalid over or understatement: " + the_statement);
+        throw new IllegalArgumentException("invalid discrepancy type: " + the_type);
     }
   }
   
   /**
-   * Computes the over/understatement represented by the CVR/ACVR pair
-   * stored in the specified CVRAuditInfo.
+   * Returns the count of the specified type of discrepancy. -2 and -1 represent
+   * understatements, 0 represents a discrepancy that doesn't affect the RLA 
+   * calculations, and 1 and 2 represent overstatements. 
+   * 
+   * @param the_type The type of discrepancy.
+   * @exception IllegalArgumentException if an invalid discrepancy type is 
+   * specified.
+   */
+  @SuppressWarnings("checkstyle:magicnumber")
+  public int discrepancyCount(final int the_type) {
+    final int result;
+    
+    switch (the_type) {
+      case -2: 
+        result = my_two_vote_under;
+        break;
+
+      case -1:
+        result = my_one_vote_under;
+        break;
+
+      case 0:
+        result = my_other;
+        break;
+        
+      case 1: 
+        result = my_one_vote_over;
+        break;
+
+      case 2:
+        result = my_two_vote_over;
+        break;
+
+      default:
+        throw new IllegalArgumentException("invalid discrepancy type: " + the_type);
+    }
+    
+    return result;
+  }
+  
+  /**
+   * Computes the over/understatement represented by the CVR/ACVR pair stored in
+   * the specified CVRAuditInfo. This method returns an optional int that, if
+   * present, indicates a discrepancy. There are 5 possible types of
+   * discrepancy: -1 and -2 indicate 1- and 2-vote understatements; 1 and 2
+   * indicate 1- and 2- vote overstatements; and 0 indicates a discrepancy that
+   * does not count as either an under- or overstatement for the RLA algorithm,
+   * but nonetheless indicates a difference between ballot interpretations.
    * 
    * @param the_info The CVRAuditInfo.
-   * @return the over/understatement; valid values are -2 .. 2.
+   * @return an optional int that is present if there is a discrepancy and absent
+   * otherwise.
    */
-  public Integer computeDiscrepancy(final CVRAuditInfo the_info) {
+  public OptionalInt computeDiscrepancy(final CVRAuditInfo the_info) {
     if (the_info.acvr() == null || the_info.cvr() == null) {
       throw new IllegalArgumentException("null CVR or ACVR in pair " + the_info);
     } else {
@@ -524,16 +591,23 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
   }
 
   /**
-   * Computes the over/understatement represented by the specified
-   * CVR and ACVR.
+   * Computes the over/understatement represented by the specified CVR and ACVR. 
+   * This method returns an optional int that, if present, indicates a discrepancy. 
+   * There are 5 possible types of discrepancy: -1 and -2 indicate 1- and 2-vote
+   * understatements; 1 and 2 indicate 1- and 2- vote overstatements; and 0 
+   * indicates a discrepancy that does not count as either an under- or 
+   * overstatement for the RLA algorithm, but nonetheless indicates a difference 
+   * between ballot interpretations.
    * 
    * @param the_cvr The CVR.
    * @param the_acvr The ACVR.
+   * @return an optional int that is present if there is a discrepancy and absent
+   * otherwise.
    */
   @SuppressWarnings("checkstyle:magicnumber")
-  public Integer computeDiscrepancy(final CastVoteRecord the_cvr, 
-                                    final CastVoteRecord the_acvr) {
-    int result = 0;
+  public OptionalInt computeDiscrepancy(final CastVoteRecord the_cvr, 
+                                        final CastVoteRecord the_acvr) {
+    OptionalInt result = OptionalInt.empty();
     final CVRContestInfo cvr_info = 
         the_cvr.contestInfoForContest(my_contest_result.contest());
     final CVRContestInfo acvr_info =
@@ -544,7 +618,7 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
           acvr_info.consensus() == ConsensusValue.NO) {
         // a lack of consensus for this contest is treated
         // identically to a phantom ballot
-        result = computePhantomBallotDiscrepancy(cvr_info);
+        result = OptionalInt.of(computePhantomBallotDiscrepancy(cvr_info));
       } else {
         result = computeAuditedBallotDiscrepancy(cvr_info, acvr_info);
       }
@@ -554,20 +628,29 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
   }
   
   /**
-   * Computes the discrepancy between two ballots.
+   * Computes the discrepancy between two ballots. This method returns an optional 
+   * int that, if present, indicates a discrepancy. There are 5 possible types of 
+   * discrepancy: -1 and -2 indicate 1- and 2-vote understatements; 1 and 2 indicate
+   * 1- and 2- vote overstatements; and 0 indicates a discrepancy that does not 
+   * count as either an under- or overstatement for the RLA algorithm, but 
+   * nonetheless indicates a difference between ballot interpretations.
    * 
    * @param the_cvr_info The CVR info.
    * @param the_acvr_info The ACVR info.
-   * @return the discrepancy.
+   * @return an optional int that is present if there is a discrepancy and absent
+   * otherwise.
    */
-  @SuppressWarnings({"PMD.ModifiedCyclomaticComplexity", "PMD.StdCyclomaticComplexity"})
-  private Integer computeAuditedBallotDiscrepancy(final CVRContestInfo the_cvr_info,
-                                                  final CVRContestInfo the_acvr_info) {
-    // we want to get the minimum pairwise update delta, because that's the "worst"
+  @SuppressWarnings({"PMD.ModifiedCyclomaticComplexity", "PMD.StdCyclomaticComplexity",
+                     "PMD.NPathComplexity"})
+  private OptionalInt computeAuditedBallotDiscrepancy(final CVRContestInfo the_cvr_info,
+                                                      final CVRContestInfo the_acvr_info) {
+    // we want to get the maximum pairwise update delta, because that's the "worst"
     // change in a pairwise margin, and the discrepancy we record; we start with
-    // Integer.MAX_VALUE so our minimization algorithm works
+    // Integer.MAX_VALUE so our maximization algorithm works. it is also the case 
+    // that _every_ pairwise margin must be increased for an understatement to be
+    // reported
     
-    int result = Integer.MAX_VALUE;
+    int raw_result = Integer.MIN_VALUE;
     
     // check for overvotes
     final Set<String> acvr_choices = new HashSet<>();
@@ -575,15 +658,21 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
       acvr_choices.addAll(the_acvr_info.choices());
     } // else overvote so don't count the votes
     
-    // now, find the minimum pairwise update delta
+    // now, find the maximum pairwise update delta
+    
+    boolean possible_understatement = true;
+    boolean discrepancy_found = false;
+    
     for (final String winner : my_contest_result.winners()) {
       final int winner_change;
       if (!the_cvr_info.choices().contains(winner) && acvr_choices.contains(winner)) {
         // the winner gained a vote
         winner_change = 1;
+        discrepancy_found = true;
       } else if (the_cvr_info.choices().contains(winner) && !acvr_choices.contains(winner)) {
         // the winner lost a vote
         winner_change = -1;
+        discrepancy_found = true;
       } else {
         // the winner's votes didn't change
         winner_change = 0;
@@ -591,33 +680,60 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
       if (my_contest_result.losers().isEmpty()) {
         // if there are no losers, we'll just negate this number - even though in 
         // real life, we wouldn't be auditing the contest at all
-        result = Math.min(result, -winner_change);
+        raw_result = Math.min(raw_result, -winner_change);
       } else {
         for (final String loser : my_contest_result.losers()) {
           final int loser_change;
           if (!the_cvr_info.choices().contains(loser) && acvr_choices.contains(loser)) {
             // the loser gained a vote
             loser_change = 1;
+            discrepancy_found = true;
           } else if (the_cvr_info.choices().contains(loser) && !acvr_choices.contains(loser)) {
             // the loser lost a vote
             loser_change = -1;
+            discrepancy_found = true;
           } else {
             // the loser's votes didn't change
             loser_change = 0;
           }
           // the discrepancy is the loser change minus the winner change (i.e., if the loser 
           // lost a vote (-1) and the winner gained a vote (1), that's a 2-vote 
-          // understatement (-1 - 1 = -2). 
-          result = Math.min(result, loser_change - winner_change);
+          // understatement (-1 - 1 = -2). Overstatements are worse than understatements,
+          // as far as the audit is concerned, so we keep the highest discrepancy
+          final int discrepancy = loser_change - winner_change;
+          // taking the max here does not cause a loss of information even if the
+          // discrepancy is 0; if the discrepancy is 0 we can no longer report an
+          // understatement, and we still know about any actual discrepancy from the flag
+          raw_result = Math.max(raw_result, discrepancy);
+          
+          // if this discrepancy indicates a narrowing of, or no change in, this pairwise 
+          // margin, then an understatement is no longer possible because that would require 
+          // widening _every_ pairwise margin
+          if (discrepancy >= 0) {
+            possible_understatement = false;
+          }
         }
       }
     }
     
-    if (result == Integer.MAX_VALUE) {
+    if (raw_result == Integer.MIN_VALUE) {
       // this should only be possible if something went horribly wrong (like the contest
       // has no winners)
       throw new IllegalStateException("unable to compute discrepancy in contest " + 
                                       contest().name());
+    }
+    
+    final OptionalInt result;
+    
+    if (discrepancy_found && possible_understatement) {
+      // we return the raw result unmodified
+      result = OptionalInt.of(raw_result);
+    } else if (discrepancy_found) {
+      // we return the result with a floor of 0, because we can't report understatements
+      result = OptionalInt.of(Math.max(0, raw_result));
+    } else {
+      // there was no discrepancy
+      result = OptionalInt.empty();
     }
     
     return result;
