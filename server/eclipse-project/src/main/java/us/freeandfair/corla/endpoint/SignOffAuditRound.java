@@ -141,8 +141,9 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
               }
               if (audit_complete) {
                 notifyAuditComplete(cdb);
+              } else {
+                notifyRoundComplete(cdb.id());
               }
-              notifyRoundComplete(cdb.id());
             }
           }
         }
