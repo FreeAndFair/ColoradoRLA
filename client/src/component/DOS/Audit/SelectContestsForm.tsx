@@ -113,7 +113,7 @@ class SelectContestsForm extends React.Component<any, any> {
         return (
             <div>
                 <div className='pt-card'>
-                    According to Colorado statute, at least one statewide conteset and
+                    According to Colorado statute, at least one statewide contest and
                     one countywide contest must be chosen for audit. The Secretary of State
                     will select other ballot contests for audit if in any particular election
                     there is no statewide contest or a countywide contest in any county. Once
