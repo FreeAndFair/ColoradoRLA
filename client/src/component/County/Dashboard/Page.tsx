@@ -82,7 +82,7 @@ const Main = (props: any) => {
                     onClick={ boardSignIn }>
                     <span className='pt-icon-standard pt-icon-people' />
                     <span> </span>
-                    Audit Board Sign-In
+                    Audit Board
                 </button>
                 <button
                     className='pt-button pt-intent-primary'

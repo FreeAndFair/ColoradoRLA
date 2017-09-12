@@ -10,7 +10,7 @@ const SignedInPage = ({ auditBoard, countyName }: any) => {
         <div>
             <CountyNav />
             <div>
-                <h2>Audit Board Sign-in</h2>
+                <h2>Audit Board</h2>
                 <div className='pt-card'>
                     Enter the full names and party affiliations of each member of
                     the { countyName } County Audit Board who will be conducting this
