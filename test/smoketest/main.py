@@ -57,8 +57,10 @@ date -Is
 
 # Parallel auditing
 (
-./main.py -C 1 -c 1 -c 2 -c 3 -c 4 -c 5 -c 6 -c 7 -c 8 -c 9 -c 10 reset dos_init county_setup dos_start
+./main.py -C 1 -c 1 -c 2 -c 3 -c 4 -c 5 -c 6 -c 7 -c 8 -c 9 -c 10 -f d0-n1000-fix1.csv reset dos_init county_setup dos_start
+wait
 for c in 1 2 3 4 5 6 7 8 9 10; do ./main.py -c $c county_audit &  done
+wait
 ) | tee parallelaudit.out
 
 # Parallel uploads of bigger CVRs
@@ -150,6 +152,8 @@ parser.add_argument('-C, --contest', dest='contests', metavar='CONTEST', action=
                     type=int,
                     help='numeric contest_index for the given command, e.g. 0 '
                     'for first one from the CVRs. May be specified multiple times.')
+parser.add_argument('-l, --loser', dest='loser', default="Distant Loser",
+                    help='Loser to use for -p, default "Distant Loser"')
 parser.add_argument('-p, --discrepancy-plan', dest='plan', default="2 17",
                     help='Planned discrepancies. Default is "2 17", i.e. '
                     'Every 17 ACVR upload, upload a possible discrepancy once, '
@@ -429,7 +433,7 @@ def upload_files(ac, s):
 
     predefined_cvrs = (
         ("../e-1/arapahoe-regent-3-clear-CVR_Export.csv",
-                    "413befb5bc3e577e637bd789a92da425d0309310c51cfe796e57c01a1987f4bf"),
+                    "49bd5d56e6107ff6b7381a6f563121e3b1d5d967bba1c29e6ffe31583d646e6d"),
         ("../dominion-2017-CVR_Export_20170310104116.csv",
                     "4e3844b0dabfcea64a499d65bc1cdc00d139cd5cdcaf502f20dd2beaa3d518d2"),
         ("../Denver2016Test/CVR_Export_20170804111144.csv",
@@ -653,9 +657,10 @@ def county_audit(ac, county_id):
         if (total_audited % ac.discrepancy_cycle == ac.discrepancy_remainder
             and  total_audited <= ac.args.plan_limit):
 
-            print('Possible discrepancy: blindly setting choices for first contest to ["Distant Loser"]')
+            loser=ac.args.loser
+            print('Possible discrepancy: blindly setting choices for first contest to [%s]' % loser)
             # TODO: use contest info to look for the contests and add votes for losers 
-            acvr['contest_info'][0]['choices'] = ["Distant Loser"]
+            acvr['contest_info'][0]['choices'] = [loser]
             # acvr['contest_info'][0]['choices'] = ["No/Against"]  # for Denver election contest 0
 
         elif False:
@@ -718,14 +723,14 @@ def county_wrapup(ac, county_id):
 
     to_go = county_dashboard['estimated_ballots_to_audit']
     audited = county_dashboard['audited_ballot_count']
-    cast = county_dashboard['cast_ballot_count']
+    cvr_count = county_dashboard['cvr_export_count']
 
     if to_go > 0:
-        print("\nCounty %d audit incomplete, ended after %d ballots (of %d cast) and %d rounds, %d to go" %
-              (county_id, audited, cast, rounds, to_go))
+        print("\nCounty %d audit incomplete, ended after %d ballots (of %d exported) and %d rounds, %d to go" %
+              (county_id, audited, cvr_count, rounds, to_go))
     else:
-        print("\nCounty %d audit complete, ended after %d ballots (of %d cast) and %d rounds" %
-              (county_id, audited, cast, rounds))
+        print("\nCounty %d audit complete, ended after %d ballots (of %d exported) and %d rounds" %
+              (county_id, audited, cvr_count, rounds))
 
     # TODO: where/how to test this?  r = test_endpoint_json(ac, county_s, "/intermediate-audit-report", {})
     #  and avoid   "result": "/intermediate-audit-report attempted to apply illegal event SUBMIT_INTERMEDIATE_AUDIT_REPORT_EVENT from state AUDIT_COMPLETE"
