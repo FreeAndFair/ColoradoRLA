@@ -11,6 +11,8 @@
 
 package us.freeandfair.corla.util;
 
+import static us.freeandfair.corla.util.EqualsHashcodeHelper.*;
+
 /**
  * A pair of objects, potentially of different types.
  * 
@@ -61,5 +63,32 @@ public class Pair<A, B> {
    */
   public B second() {
     return my_second;
+  }
+  
+  /**
+   * Compares this pair with another for equivalence.
+   * 
+   * @param the_other The other pair.
+   * @return true if the two pairs are equivalent, false otherwise.
+   */
+  public boolean equals(final Object the_other) {
+    final boolean result;
+    
+    if (the_other instanceof Pair) {
+      final Pair<?, ?> other_pair = (Pair<?, ?>) the_other;
+      result = nullableEquals(other_pair.first(), first()) &&
+               nullableEquals(other_pair.second(), second());
+    } else {
+      result = false;
+    }
+    
+    return result;
+  }
+  
+  /**
+   * @return a hash code for this pair.
+   */
+  public int hashCode() {
+    return nullableHashCode(first()) + 7 * nullableHashCode(second());
   }
 }
