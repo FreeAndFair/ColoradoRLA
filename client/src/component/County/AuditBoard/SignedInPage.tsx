@@ -21,9 +21,8 @@ const SignedInPage = (props: any) => {
             <div>
                 <h2>Audit Board</h2>
                 <div className='pt-card'>
-                    Enter the full names and party affiliations of each member of
-                    the { countyName } County Audit Board who will be conducting this
-                    audit today.
+                    The Audit Board members below are signed in.
+                    To sign the Audit Board out, click the "Sign Out" button below.
                 </div>
             </div>
             <div className='pt-card'>
