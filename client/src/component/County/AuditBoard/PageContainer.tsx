@@ -15,7 +15,13 @@ class AuditBoardSignInContainer extends React.Component<any, any> {
         const { auditBoard, auditBoardSignedIn, countyName } = this.props;
 
         if (auditBoardSignedIn) {
-            return <SignedInPage auditBoard={ auditBoard } countyName={ countyName } />;
+            const auditBoardStartOrContinue = () =>
+                history.push('/county/audit');
+
+            return (
+                <SignedInPage auditBoard={ auditBoard }
+                              auditBoardStartOrContinue={ auditBoardStartOrContinue }
+                              countyName={ countyName } />
         }
 
         return <AuditBoardPage { ...this.props } />;

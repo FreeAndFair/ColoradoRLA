@@ -5,7 +5,11 @@ import CountyNav from '../Nav';
 import auditBoardSignOut from 'corla/action/county/auditBoardSignOut';
 
 
-const SignedInPage = ({ auditBoard, countyName }: any) => {
+const SignedInPage = (props: any) => {
+    const { auditBoard, auditBoardStartOrContinue, countyName } = props;
+
+    const startOrContinueText = 'Start Audit';
+
     return (
         <div>
             <CountyNav />
@@ -46,6 +50,11 @@ const SignedInPage = ({ auditBoard, countyName }: any) => {
                 className='pt-button pt-intent-primary'
                 onClick={ auditBoardSignOut }>
                 Sign Out
+            </button>
+            <button
+                className='pt-button pt-intent-primary'
+                onClick={ auditBoardStartOrContinue }>
+                { startOrContinueText }
             </button>
         </div>
     );
