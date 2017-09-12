@@ -138,7 +138,7 @@ const ContestInfo = ({ contests }: any): any => {
 
     return (
         <div className='contest-info pt-card'>
-            <h3>Contest info</h3>
+            <h3>Contest Info</h3>
             <div>
                 { contestTables }
             </div>
@@ -167,7 +167,7 @@ const CountyInfo = ({ county, info }: any) => {
 
     return (
         <div className='county-info pt-card'>
-            <h3>County info</h3>
+            <h3>County Info</h3>
             <div className='pt-card'>
                 <table className='pt-table pt-condensed'>
                     <tbody>{ rows }</tbody>
