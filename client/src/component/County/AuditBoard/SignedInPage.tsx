@@ -6,9 +6,14 @@ import auditBoardSignOut from 'corla/action/county/auditBoardSignOut';
 
 
 const SignedInPage = (props: any) => {
-    const { auditBoard, auditBoardStartOrContinue, countyName } = props;
+    const {
+        auditBoard,
+        auditBoardStartOrContinue,
+        countyName,
+        hasAuditedAnyBallot,
+    } = props;
 
-    const startOrContinueText = 'Start Audit';
+    const startOrContinueText = hasAuditedAnyBallot ? 'Continue Audit' : 'Start Audit';
 
     return (
         <div>
