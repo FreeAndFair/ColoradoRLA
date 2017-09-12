@@ -6,6 +6,8 @@ import Nav from '../Nav';
 
 import SelectContestsForm from './SelectContestsForm';
 
+import counties from 'corla/data/counties';
+
 
 const Breadcrumb = () => (
     <ul className='pt-breadcrumbs'>
@@ -41,9 +43,11 @@ const SelectedContests = (props: any) => {
     const rows = _.map(props.auditedContests, (auditedContest: any) => {
         const contest = _.find(contests, (c: any) => c.id === auditedContest.id);
 
+        const countyName = counties[contest.countyId].name;
+
         return (
             <tr key={ contest.id }>
-                <td>{ contest.id }</td>
+                <td>{ countyName }</td>
                 <td>{ contest.name }</td>
                 <td>{ formatReason(auditedContest.reason) }</td>
             </tr>
@@ -56,7 +60,7 @@ const SelectedContests = (props: any) => {
             <table className='pt-table pt-bordered pt-condensed'>
                 <thead>
                     <tr>
-                        <th>ID</th>
+                        <th>County</th>
                         <th>Name</th>
                         <th>Reason</th>
                     </tr>
