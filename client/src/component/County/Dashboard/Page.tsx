@@ -9,6 +9,8 @@ import FileUploadContainer from './FileUploadContainer';
 
 import fetchReport from 'corla/action/county/fetchReport';
 
+import { formatCountyAsmState } from 'corla/format';
+
 
 const AuditBoardInfo = ({ signedIn }: any) => {
     const icon = signedIn
@@ -152,12 +154,11 @@ const CountyInfo = ({ county, info }: any) => {
 
     const rows = [
         ['County:', info.name],
-        ['Status:', county.status],
+        ['Status:', formatCountyAsmState(county.asm.county.currentState)],
         ['# Ballots to audit:', unauditedBallotCount],
         ['# Ballots audited:', county.auditedBallotCount],
         ['# Disagreements:', county.disagreementCount],
         ['# Discrepancies:', county.discrepancyCount],
-
     ].map(([k, v]: any) => (
         <tr key={ k }>
             <td><strong>{ k }</strong></td>
