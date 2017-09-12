@@ -76,7 +76,7 @@ const makeRoute = (store: any) => (def: RouteDef) => {
 const routes: RouteDef[] = [
     ['/', RootRedirectContainer],
     ['/county', CountyDashboardPageContainer],
-    ['/county/sign-in', AuditBoardPageContainer],
+    ['/county/board', AuditBoardPageContainer],
     ['/county/audit', CountyAuditPageContainer],
     ['/help', HelpRootContainer],
     ['/help/glossary', GlossaryContainer],

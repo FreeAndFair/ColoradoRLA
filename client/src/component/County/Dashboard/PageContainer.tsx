@@ -29,7 +29,7 @@ class CountyDashboardContainer extends React.Component<any, any> {
         } = this.props;
 
         const countyInfo = county.id ? counties[county.id] : {};
-        const boardSignIn = () => history.push('/county/sign-in');
+        const boardSignIn = () => history.push('/county/board');
         const startAudit = () => history.push('/county/audit');
 
         const props = {
