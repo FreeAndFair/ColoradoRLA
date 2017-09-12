@@ -6,36 +6,8 @@ import { Tooltip } from '@blueprintjs/core';
 
 import counties from 'corla/data/counties';
 
+import { formatCountyAsmState } from 'corla/format';
 
-function formatStatus(asmState: any) {
-    switch (asmState) {
-        case 'COUNTY_INITIAL_STATE':
-            return 'Not started';
-        case 'COUNTY_AUTHENTICATED':
-            return 'Logged in';
-        case 'AUDIT_BOARD_OK':
-            return 'Audit board established';
-        case 'BALLOT_MANIFEST_OK':
-            return 'Ballot manifest uploaded';
-        case 'CVRS_OK':
-            return 'CVR export uploaded';
-        case 'AUDIT_BOARD_AND_BALLOT_MANIFEST_OK':
-            return 'Ballot manifest uploaded';
-        case 'AUDIT_BOARD_AND_CVRS_OK':
-            return 'CVR export uploaded';
-        case 'BALLOT_MANIFEST_AND_CVRS_OK':
-            return 'Ballot manifest and CVR export uploaded';
-        case 'AUDIT_BOARD_BALLOT_MANIFEST_AND_CVRS_OK':
-            return 'Ballot manifest and CVR export uploaded';
-        case 'COUNTY_AUDIT_UNDERWAY':
-            return 'Audit underway';
-        case 'COUNTY_AUDIT_COMPLETE':
-            return 'Audit complete';
-        case 'DEADLINE_MISSED':
-            return 'File upload deadline missed';
-        default: return '';
-    }
-}
 
 const RemainingInRoundHeader = () => {
     const content =
@@ -75,7 +47,7 @@ const CountyUpdates = ({ countyStatus }: any) => {
     const countyStatusRows = _.map(countyStatus, (c: any) => {
         const county = _.find(counties, (x: any) => x.id === c.id);
 
-        const status = formatStatus(c.asmState);
+        const status = formatCountyAsmState(c.asmState);
 
         return (
             <tr key={ c.id }>
