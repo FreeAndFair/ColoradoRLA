@@ -33,20 +33,10 @@ const ContestUpdates = ({ contests, seed, sos }: any) => {
 
         const county = counties[c.countyId];
 
-        const status = sos.auditedContests[c.id]
-                     ? 'Under audit'
-                     : 'Not selected for audit';
-
-        const riskLimitPercent = sos.riskLimit
-                               ? `${sos.riskLimit * 100}%`
-                               : '—';
-
         return (
             <tr key={ c.id}>
                 <td>{ county.name }</td>
                 <td>{ c.name }</td>
-                <td>{ status }</td>
-                <td>{ riskLimitPercent }</td>
             </tr>
         );
     });
@@ -60,8 +50,6 @@ const ContestUpdates = ({ contests, seed, sos }: any) => {
                         <tr>
                             <td>County</td>
                             <td>Name</td>
-                            <td>Audit Status</td>
-                            <td>Target Risk Limit</td>
                         </tr>
                     </thead>
                     <tbody>
