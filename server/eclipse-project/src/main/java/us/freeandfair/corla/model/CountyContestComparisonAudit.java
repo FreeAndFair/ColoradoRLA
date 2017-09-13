@@ -613,9 +613,10 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
     final CVRContestInfo acvr_info =
         the_acvr.contestInfoForContest(my_contest_result.contest());
 
-    if (cvr_info != null && acvr_info != null) {
-      if (the_acvr.recordType() == RecordType.PHANTOM_BALLOT ||
-          acvr_info.consensus() == ConsensusValue.NO) {
+    if (the_acvr.recordType() == RecordType.PHANTOM_BALLOT) {
+      result = OptionalInt.of(computePhantomBallotDiscrepancy(cvr_info));
+    } else if (cvr_info != null && acvr_info != null) {
+      if (acvr_info.consensus() == ConsensusValue.NO) {
         // a lack of consensus for this contest is treated
         // identically to a phantom ballot
         result = OptionalInt.of(computePhantomBallotDiscrepancy(cvr_info));
@@ -748,17 +749,23 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
    */
   private Integer computePhantomBallotDiscrepancy(final CVRContestInfo the_info) {
     final int result;    
-    final Set<String> winner_votes = new HashSet<>(the_info.choices());
 
     // if the ACVR is a phantom ballot, we need to assume that it was a vote
     // for all the losers; so if any winners had votes on the original CVR 
     // it's a 2-vote overstatement, otherwise a 1-vote overstatement
     
-    winner_votes.removeAll(my_contest_result.losers());
-    if (winner_votes.isEmpty()) {
-      result = 1;
-    } else { 
+    if (the_info == null) {
+      // this contest doesn't appear in the CVR, so we assume the worst
       result = 2;
+    } else {
+      // this contest does appear in the CVR, so we can actually check
+      final Set<String> winner_votes = new HashSet<>(the_info.choices());    
+      winner_votes.removeAll(my_contest_result.losers());
+      if (winner_votes.isEmpty()) {
+        result = 1;
+      } else { 
+        result = 2;
+      }
     }
     
     return result;
