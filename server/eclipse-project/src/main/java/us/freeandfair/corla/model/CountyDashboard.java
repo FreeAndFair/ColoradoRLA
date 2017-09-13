@@ -518,7 +518,7 @@ public class CountyDashboard implements PersistentEntity, Serializable {
       for (final CountyContestComparisonAudit ca : comparisonAudits()) {
         audit_reasons.put(ca.contest(), ca.auditReason());
         if (!discrepancies.contains(ca.auditReason()) && 
-            ca.computeDiscrepancy(cvrai.cvr(), cvrai.acvr()) != 0) {
+            ca.computeDiscrepancy(cvrai.cvr(), cvrai.acvr()).isPresent()) {
           discrepancies.add(ca.auditReason());
         }
       }
