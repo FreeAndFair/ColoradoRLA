@@ -35,6 +35,7 @@ const Main = (props: any) => {
         auditStarted,
         boardSignIn,
         canRenderReport,
+        currentRound,
         name,
         signInButtonDisabled,
         startAudit,
@@ -46,7 +47,7 @@ const Main = (props: any) => {
         if (auditButtonDisabled) {
             directions = 'Please stand by for the state to begin the audit.';
         } else {
-            directions = 'You may proceed with the audit.';
+            directions = `You may proceed with Round ${currentRound} of the audit.`;
         }
     } else {
         if (!signInButtonDisabled) {
@@ -148,13 +149,14 @@ const ContestInfo = ({ contests }: any): any => {
     );
 };
 
-const CountyInfo = ({ county, info }: any) => {
+const CountyInfo = ({ county, currentRound, info }: any) => {
     const { ballotsToAudit } = county;
     const unauditedBallotCount = ballotsToAudit ? ballotsToAudit.length : '';
 
     const rows = [
         ['County:', info.name],
         ['Status:', formatCountyAsmState(county.asm.county.currentState)],
+        ['Current Round:', currentRound],
         ['# Ballots to audit:', unauditedBallotCount],
         ['# Ballots audited:', county.auditedBallotCount],
         ['# Disagreements:', county.disagreementCount],
@@ -178,9 +180,9 @@ const CountyInfo = ({ county, info }: any) => {
     );
 };
 
-const Info = ({ info, contests, county }: any) => (
+const Info = ({ info, contests, county, currentRound }: any) => (
     <div className='info pt-card'>
-        <CountyInfo county={ county } info={ info } />
+        <CountyInfo county={ county } info={ info } currentRound={ currentRound } />
         <ContestInfo contests={ contests } />
     </div>
 );
@@ -199,6 +201,7 @@ const CountyDashboardPage = (props: any) => {
         county,
         countyInfo,
         countyDashboardRefresh,
+        currentRound,
         finishAudit,
         startAudit,
     } = props;
@@ -224,13 +227,15 @@ const CountyDashboardPage = (props: any) => {
                       auditBoardSignedIn={ auditBoardSignedIn }
                       boardSignIn={ boardSignIn }
                       canRenderReport={ canRenderReport }
+                      currentRound={ currentRound }
                       auditButtonDisabled={ auditButtonDisabled }
                       name={ countyInfo.name }
                       signInButtonDisabled={ signInButtonDisabled }
                       startAudit={ startAudit } />
                 <Info info={ countyInfo }
                       contests={ contests }
-                      county={ county } />
+                      county={ county }
+                      currentRound={ currentRound }/>
             </div>
         </div>
     );
