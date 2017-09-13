@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 
 import counties from 'corla/data/counties';
 
+import MissedDeadlinePage from './MissedDeadlinePage';
 import CountyDashboardPage from './Page';
 
 import finishAudit from 'corla/action/county/finishAudit';
@@ -14,6 +15,7 @@ import auditStartedSelector from 'corla/selector/county/auditStarted';
 import canAuditSelector from 'corla/selector/county/canAudit';
 import canRenderReportSelector from 'corla/selector/county/canRenderReport';
 import canSignInSelector from 'corla/selector/county/canSignIn';
+import missedDeadlineSelector from 'corla/selector/county/missedDeadline';
 
 
 class CountyDashboardContainer extends React.Component<any, any> {
@@ -26,7 +28,12 @@ class CountyDashboardContainer extends React.Component<any, any> {
             canSignIn,
             county,
             history,
+            missedDeadline,
         } = this.props;
+
+        if (missedDeadline) {
+            return <MissedDeadlinePage county={ county } />;
+        }
 
         const countyInfo = county.id ? counties[county.id] : {};
         const boardSignIn = () => history.push('/county/board');
@@ -63,6 +70,7 @@ const mapStateToProps = (state: any) => {
         canSignIn: canSignInSelector(state),
         contests: contestDefs,
         county,
+        missedDeadline: missedDeadlineSelector(state),
     };
 };
 
