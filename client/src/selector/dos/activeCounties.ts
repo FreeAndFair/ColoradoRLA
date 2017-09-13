@@ -16,7 +16,9 @@ function activeCounties(state: any): any[] {
     }
 
     const deadlineMissed = (c: any) => c.asmState === 'DEADLINE_MISSED';
-    return _.reject(countyStatus, deadlineMissed);
+    const complete = (c: any) => c.asmState === 'COUNTY_AUDIT_COMPLETE';
+
+    return _.reject(countyStatus, (c: any) => complete(c) || deadlineMissed(c));
 }
 
 

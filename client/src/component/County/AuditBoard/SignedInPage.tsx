@@ -5,16 +5,24 @@ import CountyNav from '../Nav';
 import auditBoardSignOut from 'corla/action/county/auditBoardSignOut';
 
 
-const SignedInPage = ({ auditBoard, countyName }: any) => {
+const SignedInPage = (props: any) => {
+    const {
+        auditBoard,
+        auditBoardStartOrContinue,
+        countyName,
+        hasAuditedAnyBallot,
+    } = props;
+
+    const startOrContinueText = hasAuditedAnyBallot ? 'Continue Audit' : 'Start Audit';
+
     return (
         <div>
             <CountyNav />
             <div>
-                <h2>Audit Board Sign-in</h2>
+                <h2>Audit Board</h2>
                 <div className='pt-card'>
-                    Enter the full names and party affiliations of each member of
-                    the { countyName } County Audit Board who will be conducting this
-                    audit today.
+                    The Audit Board members below are signed in.
+                    To sign the Audit Board out, click the "Sign Out" button below.
                 </div>
             </div>
             <div className='pt-card'>
@@ -46,6 +54,11 @@ const SignedInPage = ({ auditBoard, countyName }: any) => {
                 className='pt-button pt-intent-primary'
                 onClick={ auditBoardSignOut }>
                 Sign Out
+            </button>
+            <button
+                className='pt-button pt-intent-primary'
+                onClick={ auditBoardStartOrContinue }>
+                { startOrContinueText }
             </button>
         </div>
     );

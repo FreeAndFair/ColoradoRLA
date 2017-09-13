@@ -16,3 +16,7 @@ export const timezone = 'America/Denver';
 export const defaultElectionDate = '2017-11-07';
 
 export const defaultPublicMeetingDate = '2017-11-17';
+
+export const helpEmail = 'help@example.com';
+
+export const helpTel = '555-555-5555';

@@ -5,6 +5,8 @@ import * as _ from 'lodash';
 import { Button, Checkbox, Classes, MenuItem } from '@blueprintjs/core';
 import { Select } from '@blueprintjs/labs';
 
+import counties from 'corla/data/counties';
+
 
 interface FormState {
     contests: any;
@@ -60,9 +62,11 @@ const ContestRow = (props: any) => {
     const { handCount } = auditStatus;
     const toAudit = !handCount && auditStatus.audit;
 
+    const countyName = counties[contest.countyId].name;
+
     return (
         <tr>
-            <td>{ contest.id }</td>
+            <td>{ countyName }</td>
             <td>{ contest.name }</td>
             <td>
                 <Checkbox
@@ -113,7 +117,7 @@ class SelectContestsForm extends React.Component<any, any> {
         return (
             <div>
                 <div className='pt-card'>
-                    According to Colorado statute, at least one statewide conteset and
+                    According to Colorado statute, at least one statewide contest and
                     one countywide contest must be chosen for audit. The Secretary of State
                     will select other ballot contests for audit if in any particular election
                     there is no statewide contest or a countywide contest in any county. Once
@@ -124,7 +128,7 @@ class SelectContestsForm extends React.Component<any, any> {
                 <table className='pt-table pt-bordered pt-condensed'>
                     <thead>
                         <tr>
-                            <th>Contest ID</th>
+                            <th>County</th>
                             <th>Contest Name</th>
                             <th>Audit?</th>
                             <th>Reason</th>

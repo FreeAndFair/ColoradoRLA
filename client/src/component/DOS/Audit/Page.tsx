@@ -101,9 +101,11 @@ const ReadOnlyPage = (props: any) => {
 
             <div className='pt-card'>
                 <h3>Election Info</h3>
-                <div>Election Date: { electionDate }</div>
-                <div>Election Type: { electionType }</div>
-                <div>Public Meeting Date: { publicMeetingDate }</div>
+                <div className='pt-card'>
+                    <div>Election Date: { electionDate }</div>
+                    <div>Election Type: { electionType }</div>
+                    <div>Public Meeting Date: { publicMeetingDate }</div>
+                </div>
             </div>
 
             <div className='pt-card'>
@@ -173,7 +175,7 @@ const AuditPage = (props: any) => {
                 <div className='pt-card'>
                     <span className='pt-icon pt-intent-warning pt-icon-warning-sign' />
                     <span> </span>
-                    Once entered, this risk limit cannot be modified.
+                    Once saved, this risk limit cannot be modified.
                 </div>
                 <SaveButton
                     disabled={ disableButton }

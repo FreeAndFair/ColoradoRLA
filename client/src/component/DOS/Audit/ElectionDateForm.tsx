@@ -6,6 +6,8 @@ import { DateInput } from '@blueprintjs/datetime';
 
 import { defaultElectionDate } from 'corla/config';
 
+import corlaDate from 'corla/date';
+
 
 class ElectionDateForm extends React.Component<any, any> {
     public state = { date: defaultElectionDate };
@@ -24,7 +26,7 @@ class ElectionDateForm extends React.Component<any, any> {
     }
 
     private onDateChange = (dateObj: Date) => {
-        const date = moment(dateObj).format('YYYY-MM-DD');
+        const date = corlaDate.format(dateObj);
 
         this.setState({ date });
     }

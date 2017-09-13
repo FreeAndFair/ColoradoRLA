@@ -19,6 +19,7 @@ const BallotListStage = (props: any) => {
                 <td>{ cvr.batch_id }</td>
                 <td>{ cvr.record_id }</td>
                 <td>{ cvr.storage_location }</td>
+                <td>{ cvr.ballot_type }</td>
                 <td>{ audited }</td>
             </tr>
         );
@@ -36,8 +37,8 @@ const BallotListStage = (props: any) => {
     });
 
     return (
-        <div>
-            <h3>Ballot cards to audit</h3>
+        <div className='rla-page'>
+            <h3>Ballot Cards to Audit</h3>
             <div className='pt-card'>
                 <div>
                     The Secretary of State has established the following risk limit(s) for
@@ -64,6 +65,7 @@ const BallotListStage = (props: any) => {
                         <th>Batch #</th>
                         <th>Ballot Position #</th>
                         <th>Storage Bin</th>
+                        <th>Ballot Type</th>
                         <th>Audited</th>
                     </tr>
                 </thead>

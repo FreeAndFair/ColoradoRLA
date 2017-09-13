@@ -4,20 +4,29 @@ import startNextRound from 'corla/action/dos/startNextRound';
 
 
 const Control = (props: any) => {
-    const { currentRound } = props;
+    const { canStartNextRound, currentRound } = props;
+
+    const buttonDisabled = !canStartNextRound;
 
     return (
         <div className='pt-card'>
             <h4>Start next round</h4>
             <div className='pt-card'>
-                Round #{ currentRound } has completed.
-                Start round #{ currentRound + 1 }?
+                Round { currentRound } completed.
             </div>
-            <button
-                className='pt-button pt-intent-primary'
-                onClick={ startNextRound }>
-                Start Round
-            </button>
+            <div className='pt-card'>
+                <div>
+                    Start Round { currentRound + 1 }?
+                </div>
+                <div>
+                    <button
+                        className='pt-button pt-intent-primary'
+                        disabled={ buttonDisabled }
+                        onClick={ startNextRound }>
+                        Start Round
+                    </button>
+                </div>
+            </div>
         </div>
     );
 };

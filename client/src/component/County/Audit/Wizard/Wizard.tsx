@@ -49,6 +49,8 @@ class CountyAuditWizard extends React.Component<any, CountyAuditWizardState> {
         const stage = t[this.state.stage];
 
         this.setState({ stage });
+
+        window.scrollTo(0, 0);
     }
 
     private prevStage = () => {
@@ -63,6 +65,8 @@ class CountyAuditWizard extends React.Component<any, CountyAuditWizardState> {
         const stage = t[this.state.stage];
 
         this.setState({ stage });
+
+        window.scrollTo(0, 0);
     }
 }
 

@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import * as _ from 'lodash';
 
-import { Checkbox, EditableText, MenuDivider, Radio, RadioGroup } from '@blueprintjs/core';
+import { Checkbox, EditableText, MenuDivider } from '@blueprintjs/core';
 
 import BackButton from './BackButton';
 
@@ -15,9 +15,9 @@ const BallotNotFoundForm = ({ ballotNotFound, currentBallot }: any) => {
     return (
         <div>
             <div>
-                If the ballot card corresponding to the above Ballot ID, Ballot
-                Type, and Imprinted ID cannot be found, select the "Ballot Card
-                Not Found" button and you will be given a new ballot card to audit.
+                If the ballot card corresponding to the above Ballot Type cannot be found,
+                select the "Ballot Card Not Found" button and you will be given a new ballot
+                card to audit.
             </div>
             <button className='pt-button pt-intent-primary' onClick={ onClick }>
                 Ballot Card Not Found
@@ -65,10 +65,10 @@ const AuditInstructions = (props: any) => {
                     </div>
                 </div>
                 <div className='pt-card'>
-                    Ballot card #{ currentBallotNumber } has Ballot
-                    Type #{ currentBallot.ballotType } and ID { currentBallot.imprintedId }.
+                    Ballot card #{ currentBallotNumber } has
+                    Ballot Type <span> { currentBallot.ballotType } </span>.
                     Please ensure that the paper ballot you are examining is the same Ballot
-                    Type/ID.
+                    Type.
                 </div>
                 <div className='pt-card'>
                     <div>
@@ -77,7 +77,7 @@ const AuditInstructions = (props: any) => {
                         need to be recorded. Replicate on this page all <strong> valid votes </strong> in
                         each ballot contest contained on this paper ballot card. Or, in case of an
                         <strong> overvote</strong>, record all final voter choices that contribute to
-                        the overvote. Please include notes in the comments field.
+        the overvote. Please include notes in the comments field.
                     </div>
                     <MenuDivider />
                     <BallotNotFoundForm
@@ -115,6 +115,7 @@ const ContestChoices = (props: any) => {
 
         return (
             <Checkbox
+                className='rla-contest-choice'
                 key={ choice.name }
                 disabled={ noConsensus }
                 checked={ checked || false }
@@ -218,8 +219,8 @@ const BallotAuditStage = (props: any) => {
     };
 
     return (
-        <div>
-            <h2>Ballot verification</h2>
+        <div className='rla-page'>
+            <h2>Ballot Card Verification</h2>
             <AuditInstructions
                 ballotNotFound={ notFound }
                 county={ county }

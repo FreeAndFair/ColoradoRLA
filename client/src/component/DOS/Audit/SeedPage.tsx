@@ -64,7 +64,7 @@ const AuditSeedPage = (props: any) => {
                 <div className='pt-card'>
                     <span className='pt-icon pt-intent-warning pt-icon-warning-sign' />
                     <span> </span>
-                    Once entered, this random seed cannot be modified.
+                    Once saved, this random seed cannot be modified.
                 </div>
                 <div className='pt-card'>
                     { seedForm }

@@ -34,8 +34,8 @@ export default class CountyNavMenu extends React.Component<any, any> {
                 />
                 <li className='pt-menu-divider' />
                 <MenuItem
-                    text='Audit Board Sign-in'
-                    path='/county/sign-in'
+                    text='Audit Board'
+                    path='/county/board'
                     icon='pt-icon-people'
                 />
                 <MenuItem

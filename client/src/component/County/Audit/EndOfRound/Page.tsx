@@ -18,7 +18,7 @@ const PreviousRoundSignedOff = (props: any) => {
             <CountyNav />
             <h3> End of Round { roundNumber }</h3>
             <div className='pt-card'>
-                The current round, Round #{ roundNumber } is complete.
+                The current round, Round { roundNumber }, is complete.
                 Please wait for the Department of State to begin the next round.
             </div>
         </div>
@@ -89,7 +89,7 @@ const EndOfRoundPage = (props: any) => {
                     <li>
                         Personally located and retrieved, or personally observed a county staff
                         member locate and retrieve, each paper ballot randomly selected for
-                        Audit Round <span> #{ currentRound } </span> of the <span> { countyName }
+                        Audit Round <span> { currentRound } </span> of the <span> { countyName }
                         </span> County <span> { electionDate } </span> <span> { electionType }
                         </span>.
                     </li>

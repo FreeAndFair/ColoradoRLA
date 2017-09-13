@@ -51,3 +51,37 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.pt-breadcrumb {
+    margin: 10px;
+}
+
+h2 {
+    padding: 10px;
+}
+
+h3 {
+    padding: 10px;
+}
+
+.rla-page {
+    margin: 0 auto;
+    max-width: 800px;
+}
+
+.rla-page .pt-card {
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+.rla-page table {
+    margin: 0 auto;
+}
+
+.rla-radio-group {
+    width: fit-content;
+}
+
+.rla-contest-choice {
+    width: fit-content;
+}
