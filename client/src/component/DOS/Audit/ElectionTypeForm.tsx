@@ -32,6 +32,7 @@ class ElectionTypeForm extends React.Component<any, FormState> {
         return (
             <div className='pt-card'>
                 <RadioGroup
+                    className='rla-radio-group'
                     selectedValue={ type }
                     onChange={ this.onFormChange }
                     label='Election Type'>

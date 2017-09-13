@@ -115,6 +115,7 @@ const ContestChoices = (props: any) => {
 
         return (
             <Checkbox
+                className='rla-contest-choice'
                 key={ choice.name }
                 disabled={ noConsensus }
                 checked={ checked || false }

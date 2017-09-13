@@ -37,6 +37,7 @@ const SignInForm = (props: any) => {
             </div>
             <div className='pt-card'>
                 <RadioGroup
+                    className='rla-radio-group'
                     label='Party Affiliation'
                     onChange={ onPartyChange }
                     selectedValue={ party }

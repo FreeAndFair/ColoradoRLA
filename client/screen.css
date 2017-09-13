@@ -77,3 +77,11 @@ h3 {
 .rla-page table {
     margin: 0 auto;
 }
+
+.rla-radio-group {
+    width: fit-content;
+}
+
+.rla-contest-choice {
+    width: fit-content;
+}
