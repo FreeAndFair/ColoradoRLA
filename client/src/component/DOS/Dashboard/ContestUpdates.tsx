@@ -34,7 +34,7 @@ const ContestUpdates = ({ contests, seed, sos }: any) => {
         const county = counties[c.countyId];
 
         return (
-            <tr key={ c.id}>
+            <tr key={ c.id }>
                 <td>{ county.name }</td>
                 <td>{ c.name }</td>
             </tr>
