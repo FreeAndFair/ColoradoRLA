@@ -4,28 +4,35 @@
 Examples. Note that 'crtest' and/or corla_test should be defined
 as an alias for main.py.
 
-Smoketest:
+# Smoketest:
 
 ./main.py
 
-Simple loading of some data, for audit by the web client:
+# Simple loading of some data, for audit by the web client:
 
 crtest reset
 crtest dos_init
 crtest county_setup
 
+# Test ballot-not-found
+
+crtest -C 1 -n "8 15"
+
 # Check whether the /cvr-to-audit responses match the other lists, and also remove audited ballots
+
 crtest reset dos_init county_setup dos_start
 crtest -E "/cvr-to-audit-list?start=0&ballot_count=9&include_duplicates=true"
 crtest county_audit
 crtest -E "/cvr-to-audit-list?start=0&ballot_count=1&include_duplicates=true"
 crtest -E "/cvr-to-audit-list?start=0&ballot_count=9&include_duplicates=true"
 
+# Test two county audits in parallel
 (
 ./main.py reset
 ./main.py dos_init
-./main.py -c 3 -v 0 county_setup
-./main.py -c 5 -v 2 county_setup
+./main.py -c 3 -v 0 county_setup &
+./main.py -c 5 -v 2 county_setup &
+wait
 ./main.py dos_start -C 3
 ./main.py -c 5 county_audit &
 ./main.py -c 3 county_audit &
@@ -33,13 +40,30 @@ wait
 ./main.py dos_wrapup
 ) > multi.out
 
-Parallel auditing
+# Test two counties, one of which doesn't have a contest to audit
 (
-./main.py -C 1 -c 1 -c 2 -c 3 -c 4 -c 5 -c 6 -c 7 -c 8 -c 9 -c 10 reset dos_init county_setup dos_start
+date -Is
+./main.py reset dos_init
+for c in 1 2; do
+ ./main.py -c $c county_setup &
+done
+wait
+./main.py dos_start
+for c in 1 2; do ./main.py -c $c county_audit &
+wait
+done
+date -Is
+) 2>&1 | tee 2-counties-one-contest.out
+
+# Parallel auditing
+(
+./main.py -C 1 -c 1 -c 2 -c 3 -c 4 -c 5 -c 6 -c 7 -c 8 -c 9 -c 10 -f d0-n1000-fix1.csv reset dos_init county_setup dos_start
+wait
 for c in 1 2 3 4 5 6 7 8 9 10; do ./main.py -c $c county_audit &  done
+wait
 ) | tee parallelaudit.out
 
-Parallel uploads
+# Parallel uploads of bigger CVRs
 
 (
 date -Is
@@ -55,60 +79,21 @@ done
 date -Is
 ) 2>&1 | tee parallelcvr50000x10.out
 
-2017-08-30T07:03:36-0600 finished
- 1127  ( ./main.py reset dos_init; for c in 1 2 3 4 5 6 7 8 9 10; do  ./main.py -c $c -f neal_ignore/d0-n50000.csv county_setup & done; ./main.py dos_start -C 1 ; for c in 1 2 3 4 5 6 7 8 9 10; do ./main.py -c $c county_audit &  done; ) 2>&1 | tee parallelcvr50000x10.out
- 1128  cp -p $sl $sl-50000x10
-$sl-50000x10
+# Miscellaneous of specific server endpoint paths
 
-./main.py -C 1 -c 1 -c 2 -f neal_ignore/d0-n50000.csv county_setup
-for c in 1 2 ; do ./main.py -c $c county_audit &  done
-
-
+crtest -e /acvr
 crtest -e /contest
 crtest -e /contest/id/52253
 crtest -e /contest/county?3
 crtest -E /contest/county?3 -c 3
 
-Not working:
+# Not working - minor missing feature:
+
 crtest -e /acvr/county/3
 
 TODO later:
 
-Perhaps finer grained control, via custom POST commands:
-
-corla_test audit-board
-corla_test -c 2 -m arapahoe-manifest.csv upload-ballot-manifest
-corla_test -c 2 -v arapahoe-regent-3-clear-CVR_Export.csv upload-cvr-export
-corla_test contest
-corla_test -l "1 14" select-contests
-corla_test publish-data-to-audit
-corla_test -s 01234567890123456789 random-seed
-corla_test publish_ballots-to-audit
-
--p 3r # pause for about 3 seconds after each aCVR
--D debug level
-
-corla_test dos-dashboard
-corla_test county-dashboard
-
-looping:
-corla_test -d "2 17" run_audit   # discrepancy for 2nd of every set of 17 ballots
-corla_test -d "n 1 17" run_audit # ballot not found for 1st of every set of 17 ballots
-
-corla_test intermediate-audit-report
-corla_test audit-report
-corla_test publish-report
-
-TODO:
 /hand-count  IndicateHandCount
-
-corla_test contest_county
-
-corla_test upload-audit-cvr
-corla_test ballot-not-found {'id': cvr['id']}
-
-Perhaps mix multiple actions in a single command line
-Perhaps mix multiple roles in a single command line
 
  GET /ballot-manifest (BallotManifestDownload)
  GET /acvr/county (ACVRDownloadByCounty)
@@ -131,6 +116,7 @@ TODO: to help human testers using web client, display CVRs corresponding to sele
 from __future__ import print_function
 import sys
 import os 
+import operator
 import argparse
 from argparse import Namespace
 import json
@@ -166,6 +152,8 @@ parser.add_argument('-C, --contest', dest='contests', metavar='CONTEST', action=
                     type=int,
                     help='numeric contest_index for the given command, e.g. 0 '
                     'for first one from the CVRs. May be specified multiple times.')
+parser.add_argument('-l, --loser', dest='loser', default="Distant Loser",
+                    help='Loser to use for -p, default "Distant Loser"')
 parser.add_argument('-p, --discrepancy-plan', dest='plan', default="2 17",
                     help='Planned discrepancies. Default is "2 17", i.e. '
                     'Every 17 ACVR upload, upload a possible discrepancy once, '
@@ -174,8 +162,11 @@ parser.add_argument('-p, --discrepancy-plan', dest='plan', default="2 17",
 parser.add_argument('-P, --discrepancy-end', dest='plan_limit', type=int, default=sys.maxint,
                     help='Last upload with possible discrepancy is # PLAN_LIMIT')
 
+parser.add_argument('-n, --notfound-plan', dest='notfound_plan', default="-1 1",
+                    help='Planned rate of ballot-not-found discrepancies. Default is "-1 1", i.e. never')
+
 parser.add_argument('-R, --rounds', type=int, default=-1, dest='rounds',
-  help='Set maximum number of rounds, -1 runs until completion')
+  help='Set maximum number of rounds. Default is all rounds.')
 
 parser.add_argument('-r, --risk-limit', type=float, dest='risk_limit', default=0.1,
                     help='risk limit, e.g. 0.1')
@@ -213,10 +204,10 @@ def state_login(ac, s):
     path = "/auth-state-admin"
     r = s.post(ac.base + path,
                data={'username': 'stateadmin1', 'password': '', 'second_factor': ''})
-    print(r, "POST", path)
     r = s.post(ac.base + path,
                data={'username': 'stateadmin1', 'password': '', 'second_factor': ''})
     print(r, "POST", path)
+
 
 def county_login(ac, s, county_id):
     "Login as county admin in given requests session"
@@ -224,10 +215,10 @@ def county_login(ac, s, county_id):
     path = "/auth-county-admin"
     r = s.post(ac.base + path,
                data={'username': 'countyadmin%d' % county_id, 'password': '', 'second_factor': ''})
-    print(r, "POST", path)
     r = s.post(ac.base + path,
                data={'username': 'countyadmin%d' % county_id, 'password': '', 'second_factor': ''})
     print(r, "POST", path)
+
 
 def test_endpoint_json(ac, s, path, data, show=True):
     "Do a generic test of an endpoint that posts the given data to the given path"
@@ -442,7 +433,7 @@ def upload_files(ac, s):
 
     predefined_cvrs = (
         ("../e-1/arapahoe-regent-3-clear-CVR_Export.csv",
-                    "413befb5bc3e577e637bd789a92da425d0309310c51cfe796e57c01a1987f4bf"),
+                    "49bd5d56e6107ff6b7381a6f563121e3b1d5d967bba1c29e6ffe31583d646e6d"),
         ("../dominion-2017-CVR_Export_20170310104116.csv",
                     "4e3844b0dabfcea64a499d65bc1cdc00d139cd5cdcaf502f20dd2beaa3d518d2"),
         ("../Denver2016Test/CVR_Export_20170804111144.csv",
@@ -470,12 +461,13 @@ def get_county_dashboard(ac, county_s, i=0, acvr={'id': -1}, show=True):
     r = test_endpoint_get(ac, county_s, "/county-dashboard", show=False)
     county_dashboard = r.json()
 
-    total_audited = i + 1 + county_dashboard['rounds'][-1]['previous_ballots_audited']
+    total_audited = 1 + county_dashboard['audited_ballot_count']
 
-    if show and acvr['id'] != -1:
+    if show:
         logging.debug("county-dashboard: %s" % r.text)
-        print("Round %d, county %d, upload %d: aCVR %d; ballots_remaining_in_round: %d, estimated_ballots_to_audit: %s" %
-              (ac.round, county_id, total_audited, acvr['id'], county_dashboard['ballots_remaining_in_round'], county_dashboard['estimated_ballots_to_audit']))
+        print("Round %d, county %d, upload %d, prefix %d: aCVR %d; ballots_remaining_in_round: %d, estimated_ballots_to_audit: %s" %
+              (ac.round, county_id, total_audited, county_dashboard.get('audited_prefix_length', -1), acvr['id'],  # FIXME
+               county_dashboard['ballots_remaining_in_round'], county_dashboard['estimated_ballots_to_audit']))
 
         """ TODO: drop this assuming it isn't helpful any more.
         print("Round %d, county %d, upload %d: aCVR %d; ballots_remaining_in_round: %d, audited_ballot_count: %d, estimated_ballots_to_audit: %s" %
@@ -508,13 +500,11 @@ def reset(ac):
 def dos_init(ac):
     'Run initial Dept of State steps: reset, risk_limit etc.'
 
-    # TODO: /set-election-info", { "election_type": string, "election_date": string that is hopefully parseable as a date }
-    r = test_endpoint_json(ac, ac.state_s, "/set-election-info",
-                           { "election_type": "coordinated", "election_date": "2017-11-09T02:00:00Z"})
-
-    r = test_endpoint_json(ac, ac.state_s, "/risk-limit-comp-audits",
-                           {"risk_limit": ac.args.risk_limit})
-
+    r = test_endpoint_json(ac, ac.state_s, "/update-audit-info",
+                           { "election_type": "coordinated",
+                             "election_date": "2017-11-09T02:00:00Z",
+                             "public_meeting_date": "2017-11-19T02:00:00Z",
+                             "risk_limit": ac.args.risk_limit } )
 
 def county_setup(ac, county_id):
 
@@ -542,7 +532,7 @@ def dos_start(ac):
     'Run DOS steps to start the audit, enabling county auditing to begin: contest selection, seed, etc.'
 
     r = test_endpoint_get(ac, ac.state_s, "/contest")
-    contests = r.json()
+    contests = sorted(r.json(), key=operator.itemgetter("id"))
     if len(contests) <= 0:
         print("No contests to audit, status_code = %d" % r.status_code)
         return
@@ -580,10 +570,10 @@ def dos_start(ac):
         dos_dashboard = r.json()
         for contest_id, reason in dos_dashboard['audited_contests'].items():
             r = test_endpoint_get(ac, ac.state_s, "/contest/id/%s" % contest_id)
-            print("Audited contest: vote for {votes_allowed} in {name}".format(**r.json()))
+            print("Audited contest {id}: vote for {votes_allowed} in {name}".format(**r.json()))
         for county_id, status in dos_dashboard['county_status'].items():
             if status['estimated_ballots_to_audit'] != 0:
-                print("County %s has initial sample size of %s ballot cards" % 
+                print("County %s has initial sample size of %s sample interpretations" % 
                       (county_id, status['estimated_ballots_to_audit']))
                 print("ballots_remaining_in_round %d: %d" %
                       (ac.round, status['ballots_remaining_in_round']))
@@ -595,6 +585,7 @@ def county_audit(ac, county_id):
     county_s = requests.Session()
     county_login(ac, county_s, county_id)
 
+    # Note: we take advantage of a side effect of this also: print where we're at....
     county_dashboard = get_county_dashboard(ac, county_s, -1)
 
     # audit over detection:
@@ -626,7 +617,9 @@ def county_audit(ac, county_id):
 
     # r = test_endpoint_get(ac, county_s, "/audit-board-asm-state")
 
-    selected = county_dashboard.get("ballots_to_audit", [])
+    round = len(county_dashboard['rounds'])
+    r = test_endpoint_get(ac, county_s, "/cvr-to-audit-list?round=%d" % round)
+    selected = r.json()
 
     print("Retrieved ballots_to_audit, got %d" % len(selected))
     if len(selected) != county_dashboard['ballots_remaining_in_round']:
@@ -652,34 +645,39 @@ def county_audit(ac, county_id):
             r = test_endpoint_get(ac, county_s, "/audit-board-asm-state")
             # print(r.text)
 
-        r = test_endpoint_get(ac, county_s, "/cvr/id/%d" % selected[i], show=False)
+        r = test_endpoint_get(ac, county_s, "/cvr/id/%d" % selected[i]['db_id'], show=False)
         acvr = r.json()
         logging.debug("Original CVR: %s" % json.dumps(acvr))
         acvr['record_type'] = 'AUDITOR_ENTERED'
 
-        if False:
-            r = test_endpoint_json(ac, county_s, "/ballot-not-found", {'id': acvr['id']})
-
-        total_audited = i + county_dashboard['rounds'][-1]['previous_ballots_audited']
+        total_audited = county_dashboard['audited_ballot_count']
         # print("total_audited: %d" % total_audited)
 
         # Modify the aCVR sometimes.
-        # TODO: provide command-line parameters for discrepancy rates?
         if (total_audited % ac.discrepancy_cycle == ac.discrepancy_remainder
             and  total_audited <= ac.args.plan_limit):
-            print('Possible discrepancy: blindly setting choices for first contest to ["Distant Loser"]')
-            acvr['contest_info'][0]['choices'] = ["Distant Loser"]
+
+            loser=ac.args.loser
+            print('Possible discrepancy: blindly setting choices for first contest to [%s]' % loser)
+            # TODO: use contest info to look for the contests and add votes for losers 
+            acvr['contest_info'][0]['choices'] = [loser]
             # acvr['contest_info'][0]['choices'] = ["No/Against"]  # for Denver election contest 0
 
-        if False:
+        elif False:
             # Test: make uploaded cvr not match
             # TODO: Decide what API should be for mismatch in contests between CVR and paper
             if len(acvr['contest_info']) > 0:
                 del acvr['contest_info'][0]
 
-        logging.debug("Submitting aCVR: %s" % json.dumps(acvr))
-        test_endpoint_json(ac, county_s, "/upload-audit-cvr",
-                           {'cvr_id': selected[i], 'audit_cvr': acvr}, show=False)
+        # Either submit a not-found discrepancy, or submit the aCVR
+        if (total_audited % ac.nf_discrepancy_cycle == ac.nf_discrepancy_remainder
+            and  total_audited <= ac.args.plan_limit):
+            print('ballot-not-found for %s' % acvr['contest_info'])
+            r = test_endpoint_json(ac, county_s, "/ballot-not-found", {'id': acvr['id']})
+        else:
+            logging.debug("Submitting aCVR: %s" % json.dumps(acvr))
+            test_endpoint_json(ac, county_s, "/upload-audit-cvr",
+                               {'cvr_id': selected[i]['db_id'], 'audit_cvr': acvr}, show=False)
 
         county_dashboard = get_county_dashboard(ac, county_s, i, acvr)
         if county_dashboard['estimated_ballots_to_audit'] <= 0:
@@ -695,15 +693,58 @@ def county_audit(ac, county_id):
 
     return(remaining)
 
+
+def download_report(ac, s, path, extension):
+    "Download and save the given report, adding the given extension"
+
+    r = test_endpoint_get(ac, s, "/%s" % path)
+    name = "%s.%s" % (path, extension)
+    with open(name, "wb") as f:
+        f.write(r.content)
+        print("/%s report saved as %s" % (path, name))
+
+
+def county_wrapup(ac, county_id):
+    'Audit board summary, wrapup, audit-report'
+
+    county_s = requests.Session()
+    county_login(ac, county_s, county_id)
+
+    county_dashboard = get_county_dashboard(ac, county_s)
+    logging.info("county-dashboard: %s" % county_dashboard)
+
+    rounds = len(county_dashboard['rounds'])
+
+    print("Rounds: %s " % json.dumps(county_dashboard['rounds'], indent=2))
+
+    if (rounds > 1)  and  county_dashboard['rounds'][rounds - 1]['actual_count'] == 0:
+        # we didn't actually start the last round
+        rounds -= 1
+
+    to_go = county_dashboard['estimated_ballots_to_audit']
+    audited = county_dashboard['audited_ballot_count']
+    cvr_count = county_dashboard['cvr_export_count']
+
+    if to_go > 0:
+        print("\nCounty %d audit incomplete, ended after %d ballots (of %d exported) and %d rounds, %d to go" %
+              (county_id, audited, cvr_count, rounds, to_go))
+    else:
+        print("\nCounty %d audit complete, ended after %d ballots (of %d exported) and %d rounds" %
+              (county_id, audited, cvr_count, rounds))
+
+    # TODO: where/how to test this?  r = test_endpoint_json(ac, county_s, "/intermediate-audit-report", {})
+    #  and avoid   "result": "/intermediate-audit-report attempted to apply illegal event SUBMIT_INTERMEDIATE_AUDIT_REPORT_EVENT from state AUDIT_COMPLETE"
+
+    download_report(ac, county_s, "county-report", "xlsx")
+
 def dos_wrapup(ac):
 
     r = test_endpoint_get(ac, ac.state_s, "/dos-dashboard")
+    logging.info("dos-dashboard: %s" % r.text)
 
     r = test_endpoint_json(ac, ac.state_s, "/publish-report", {})
 
-    # server_sequence()
-
-    sys.exit(0)
+    download_report(ac, ac.state_s, "state-report", "xlsx")
 
 
 if __name__ == "__main__":
@@ -731,6 +772,9 @@ if __name__ == "__main__":
 
     fields = [int(f) for f in ac.args.plan.split()]
     ac.discrepancy_remainder, ac.discrepancy_cycle = fields
+
+    fields = [int(f) for f in ac.args.notfound_plan.split()]
+    ac.nf_discrepancy_remainder, ac.nf_discrepancy_cycle = fields
 
     print("Arguments: %s" % ac.args)
 
@@ -771,46 +815,36 @@ if __name__ == "__main__":
 
     print()
 
-    if "county_audit" in ac.args.commands:   
+    if "county_audit" in ac.args.commands:
         round = 0
         alldone = False
-        
-        while ((ac.args.rounds == -1) or (round < ac.args.rounds)):
+
+        while (ac.args.rounds == -1) or (round < ac.args.rounds):
             r = test_endpoint_get(ac, ac.state_s, "/dos-asm-state")
-            if (r.json()['current_state'] == "DOS_AUDIT_COMPLETE"):
+            current_state = r.json()['current_state']
+            if current_state == "DOS_AUDIT_COMPLETE":
                 alldone = True
+                break
+            elif current_state != "DOS_AUDIT_ONGOING":
+                print("Not in DOS_AUDIT_ONGOING state, can't audit")
                 break
             round += 1
             print("Start Round %d" % round)
             for county_id in ac.args.counties:
-                county_audit(ac, county_id)
-                
+                # TODO: really needs to track each individual county for being done....
+                remaining = county_audit(ac, county_id)
+
             print()
             ac.round += 1
+            # Note, may get Illegal transition on ASM... (DOS_AUDIT_COMPLETE, DOS_START_ROUND_EVENT)
             r = test_endpoint_json(ac, ac.state_s, "/start-audit-round",
                                    { "multiplier": 1.0, "use_estimates": True})
 
         if alldone:
             print("State audit complete")
-            
+
         for county_id in ac.args.counties:
-            county_s = requests.Session()
-            county_login(ac, county_s, county_id)
-            county_dashboard = get_county_dashboard(ac, county_s)
-            rounds = len(county_dashboard['rounds'])
-            if (county_dashboard['rounds'][rounds - 1]['actual_count'] == 0):
-                # we didn't actually start the last round
-                rounds -= 1
-            to_go = county_dashboard['estimated_ballots_to_audit']
-            audited = county_dashboard['audited_ballot_count']
-            cast = county_dashboard['cast_ballot_count']
-            
-            if to_go > 0:
-                print("\nCounty %d audit incomplete, ended after %d ballots (of %d cast) and %d rounds, %d to go" %
-                      (county_id, audited, cast, rounds, to_go))
-            else:
-                print("\nCounty %d audit complete, ended after %d ballots (of %d cast) and %d rounds" %
-                      (county_id, audited, cast, rounds))
+            county_wrapup(ac, county_id)
 
     if "dos_wrapup" in ac.args.commands:
         dos_wrapup(ac)
