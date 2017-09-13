@@ -663,27 +663,24 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
     
     // we want to get the maximum pairwise update delta, because that's the "worst"
     // change in a pairwise margin, and the discrepancy we record; we start with
-    // Integer.MAX_VALUE so our maximization algorithm works. it is also the case 
+    // Integer.MIN_VALUE so our maximization algorithm works. it is also the case 
     // that _every_ pairwise margin must be increased for an understatement to be
     // reported
     
     int raw_result = Integer.MIN_VALUE;
     
     boolean possible_understatement = true;
-    boolean discrepancy_found = false;
     
     for (final String winner : my_contest_result.winners()) {
       final int winner_change;
       if (!cvr_choices.contains(winner) && acvr_choices.contains(winner)) {
-        // the winner gained a vote
+        // this winner gained a vote
         winner_change = 1;
-        discrepancy_found = true;
       } else if (cvr_choices.contains(winner) && !acvr_choices.contains(winner)) {
-        // the winner lost a vote
+        // this winner lost a vote
         winner_change = -1;
-        discrepancy_found = true;
       } else {
-        // the winner's votes didn't change
+        // this winner's votes didn't change
         winner_change = 0;
       }
       if (my_contest_result.losers().isEmpty()) {
@@ -694,25 +691,25 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
         for (final String loser : my_contest_result.losers()) {
           final int loser_change;
           if (!cvr_choices.contains(loser) && acvr_choices.contains(loser)) {
-            // the loser gained a vote
+            // this loser gained a vote
             loser_change = 1;
-            discrepancy_found = true;
           } else if (cvr_choices.contains(loser) && !acvr_choices.contains(loser)) {
-            // the loser lost a vote
+            // this loser lost a vote
             loser_change = -1;
-            discrepancy_found = true;
           } else {
-            // the loser's votes didn't change
+            // this loser's votes didn't change
             loser_change = 0;
           }
-          // the discrepancy is the loser change minus the winner change (i.e., if the loser 
-          // lost a vote (-1) and the winner gained a vote (1), that's a 2-vote 
+          // the discrepancy is the loser change minus the winner change (i.e., if this 
+          // loser lost a vote (-1) and this winner gained a vote (1), that's a 2-vote 
           // understatement (-1 - 1 = -2). Overstatements are worse than understatements,
           // as far as the audit is concerned, so we keep the highest discrepancy
           final int discrepancy = loser_change - winner_change;
+          
           // taking the max here does not cause a loss of information even if the
           // discrepancy is 0; if the discrepancy is 0 we can no longer report an
-          // understatement, and we still know about any actual discrepancy from the flag
+          // understatement, and we still know there was a discrepancy because we
+          // didn't short circuit earlier
           raw_result = Math.max(raw_result, discrepancy);
           
           // if this discrepancy indicates a narrowing of, or no change in, this pairwise 
@@ -734,15 +731,13 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
     
     final OptionalInt result;
     
-    if (discrepancy_found && possible_understatement) {
+    if (possible_understatement) {
       // we return the raw result unmodified
       result = OptionalInt.of(raw_result);
-    } else if (discrepancy_found) {
-      // we return the result with a floor of 0, because we can't report understatements
-      result = OptionalInt.of(Math.max(0, raw_result));
     } else {
-      // there was no discrepancy
-      result = OptionalInt.empty();
+      // we return the raw result with a floor of 0, because we can't report an
+      // understatement
+      result = OptionalInt.of(Math.max(0, raw_result));
     }
     
     return result;
