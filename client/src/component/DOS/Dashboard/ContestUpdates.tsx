@@ -24,7 +24,9 @@ const RemainingToAuditHeader = () => {
 };
 
 const ContestUpdates = ({ contests, seed, sos }: any) => {
-    const contestStatuses = _.map(contests, (c: any) => {
+    const selectedContests = _.pick(contests, _.keys(sos.auditedContests));
+
+    const contestStatuses = _.map(selectedContests, (c: any) => {
         if (!sos.auditedContests) {
             return <tr key={ c.id }><td /><td /><td /><td /><td /></tr>;
         }
