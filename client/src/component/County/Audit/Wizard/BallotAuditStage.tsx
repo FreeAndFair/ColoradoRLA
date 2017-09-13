@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import * as _ from 'lodash';
 
-import { Checkbox, EditableText, MenuDivider, Radio, RadioGroup } from '@blueprintjs/core';
+import { Checkbox, EditableText, MenuDivider } from '@blueprintjs/core';
 
 import BackButton from './BackButton';
 
