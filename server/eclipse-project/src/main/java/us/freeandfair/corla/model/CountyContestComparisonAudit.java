@@ -642,9 +642,25 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
    * otherwise.
    */
   @SuppressWarnings({"PMD.ModifiedCyclomaticComplexity", "PMD.StdCyclomaticComplexity",
-                     "PMD.NPathComplexity"})
+                     "PMD.NPathComplexity", "PMD.ExcessiveMethodLength",
+                     "checkstyle:methodlength"})
   private OptionalInt computeAuditedBallotDiscrepancy(final CVRContestInfo the_cvr_info,
                                                       final CVRContestInfo the_acvr_info) {
+    // check for overvotes
+    final Set<String> acvr_choices = new HashSet<>();
+    if (the_acvr_info.choices().size() <= my_contest_result.votesAllowed()) {
+      acvr_choices.addAll(the_acvr_info.choices());
+    } // else overvote so don't count the votes
+    
+    // avoid linear searches on CVR choices
+    final Set<String> cvr_choices = new HashSet<>(the_cvr_info.choices());
+    
+    // if the choices in the CVR and ACVR are identical now, we can simply return the
+    // fact that there's no discrepancy
+    if (cvr_choices.equals(acvr_choices)) {
+      return OptionalInt.empty();
+    }
+    
     // we want to get the maximum pairwise update delta, because that's the "worst"
     // change in a pairwise margin, and the discrepancy we record; we start with
     // Integer.MAX_VALUE so our maximization algorithm works. it is also the case 
@@ -653,24 +669,16 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
     
     int raw_result = Integer.MIN_VALUE;
     
-    // check for overvotes
-    final Set<String> acvr_choices = new HashSet<>();
-    if (the_acvr_info.choices().size() <= my_contest_result.votesAllowed()) {
-      acvr_choices.addAll(the_acvr_info.choices());
-    } // else overvote so don't count the votes
-    
-    // now, find the maximum pairwise update delta
-    
     boolean possible_understatement = true;
     boolean discrepancy_found = false;
     
     for (final String winner : my_contest_result.winners()) {
       final int winner_change;
-      if (!the_cvr_info.choices().contains(winner) && acvr_choices.contains(winner)) {
+      if (!cvr_choices.contains(winner) && acvr_choices.contains(winner)) {
         // the winner gained a vote
         winner_change = 1;
         discrepancy_found = true;
-      } else if (the_cvr_info.choices().contains(winner) && !acvr_choices.contains(winner)) {
+      } else if (cvr_choices.contains(winner) && !acvr_choices.contains(winner)) {
         // the winner lost a vote
         winner_change = -1;
         discrepancy_found = true;
@@ -685,11 +693,11 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
       } else {
         for (final String loser : my_contest_result.losers()) {
           final int loser_change;
-          if (!the_cvr_info.choices().contains(loser) && acvr_choices.contains(loser)) {
+          if (!cvr_choices.contains(loser) && acvr_choices.contains(loser)) {
             // the loser gained a vote
             loser_change = 1;
             discrepancy_found = true;
-          } else if (the_cvr_info.choices().contains(loser) && !acvr_choices.contains(loser)) {
+          } else if (cvr_choices.contains(loser) && !acvr_choices.contains(loser)) {
             // the loser lost a vote
             loser_change = -1;
             discrepancy_found = true;
