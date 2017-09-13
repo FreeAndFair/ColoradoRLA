@@ -4,7 +4,7 @@ import { timezone } from 'corla/config';
 
 
 export function format(dob: Date): string {
-    return moment.utc(dob).format('YYYY-M-D');
+    return moment.utc(dob).format('M/D/YYYY');
 }
 
 export function parse(ds: string): Date {
