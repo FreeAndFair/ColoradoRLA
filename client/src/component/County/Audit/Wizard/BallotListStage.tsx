@@ -19,6 +19,7 @@ const BallotListStage = (props: any) => {
                 <td>{ cvr.batch_id }</td>
                 <td>{ cvr.record_id }</td>
                 <td>{ cvr.storage_location }</td>
+                <td>{ cvr.ballot_type }</td>
                 <td>{ audited }</td>
             </tr>
         );
@@ -64,6 +65,7 @@ const BallotListStage = (props: any) => {
                         <th>Batch #</th>
                         <th>Ballot Position #</th>
                         <th>Storage Bin</th>
+                        <th>Ballot Type</th>
                         <th>Audited</th>
                     </tr>
                 </thead>
