@@ -184,8 +184,11 @@ public final class ComparisonAuditController {
       final List<CastVoteRecord> new_cvrs = getCVRsInAuditSequence(the_cdb, start, end);
       for (int i = 0; i < new_cvrs.size(); i++) {
         final CastVoteRecord cvr = new_cvrs.get(i);
+        if (!cvr_set.contains(cvr)) {
+          cvr.setAuditFlag(audited(the_cdb, cvr));
+        }
         if ((the_duplicates || !cvr_set.contains(cvr)) && 
-            (the_audited || !audited(the_cdb, cvr))) {
+            (the_audited || !cvr.auditFlag())) {
           cvr_to_audit_list.add(cvr);
         }
         cvr_set.add(cvr);
