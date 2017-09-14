@@ -2,6 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 
 import BallotManifestForm from './Form';
+import Uploading from './Uploading';
 
 import uploadBallotManifest from 'corla/action/county/uploadBallotManifest';
 
@@ -30,7 +31,11 @@ class BallotManifestFormContainer extends React.Component<any, any> {
     };
 
     public render() {
-        const { auditStarted, county, fileUploaded } = this.props;
+        const { auditStarted, county, fileUploaded, uploadingFile } = this.props;
+
+        if (uploadingFile) {
+            return <Uploading />;
+        }
 
         if (fileUploaded && !this.state.reupload) {
             return (
@@ -74,11 +79,20 @@ class BallotManifestFormContainer extends React.Component<any, any> {
         this.setState(s);
     }
 
+    private setFileTimestamp = (fileTimestamp: string) => {
+        this.setState({
+            ...this.state,
+            fileTimestamp,
+        });
+    }
+
+    private fileIsNew = () => {
+        return this.state.fileTimestamp !== this.props.fileTimestamp;
+    }
+
     private upload = () => {
         const { county } = this.props;
         const { file, hash } = this.state.form;
-
-        this.setUploading(true);
 
         uploadBallotManifest(county.id, file, hash);
 
@@ -89,10 +103,13 @@ class BallotManifestFormContainer extends React.Component<any, any> {
 const mapStateToProps = (state: any) => {
     const { county } = state;
 
+    const uploadingFile = !!county.uploadingBallotManifest;
+
     return {
         auditStarted: !!county.ballotUnderAuditId,
         county,
         fileUploaded: ballotManifestUploadedSelector(state),
+        uploadingFile,
     };
 };
 
