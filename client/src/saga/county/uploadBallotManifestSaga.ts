@@ -1,7 +1,7 @@
 import {
     put,
     select,
-    takeEvery,
+    takeLatest,
 } from 'redux-saga/effects';
 
 import notice from 'corla/notice';
@@ -75,14 +75,14 @@ const UPLOADING_TRUE = [
 
 
 export default function* fileUploadSaga() {
-    yield takeEvery('IMPORT_BALLOT_MANIFEST_OK', importBallotManifestOk);
-    yield takeEvery('IMPORT_BALLOT_MANIFEST_FAIL', importBallotManifestFail);
-    yield takeEvery('IMPORT_BALLOT_MANIFEST_NETWORK_FAIL', importBallotManifestNetworkFail);
+    yield takeLatest('IMPORT_BALLOT_MANIFEST_OK', importBallotManifestOk);
+    yield takeLatest('IMPORT_BALLOT_MANIFEST_FAIL', importBallotManifestFail);
+    yield takeLatest('IMPORT_BALLOT_MANIFEST_NETWORK_FAIL', importBallotManifestNetworkFail);
 
-    yield takeEvery('UPLOAD_BALLOT_MANIFEST_OK', uploadBallotManifestOk);
-    yield takeEvery('UPLOAD_BALLOT_MANIFEST_FAIL', uploadBallotManifestFail);
-    yield takeEvery('UPLOAD_BALLOT_MANIFEST_NETWORK_FAIL', uploadBallotManifestNetworkFail);
+    yield takeLatest('UPLOAD_BALLOT_MANIFEST_OK', uploadBallotManifestOk);
+    yield takeLatest('UPLOAD_BALLOT_MANIFEST_FAIL', uploadBallotManifestFail);
+    yield takeLatest('UPLOAD_BALLOT_MANIFEST_NETWORK_FAIL', uploadBallotManifestNetworkFail);
 
-    yield takeEvery(UPLOADING_FALSE, createUploadingBallotManifest(false));
-    yield takeEvery(UPLOADING_TRUE, createUploadingBallotManifest(true));
+    yield takeLatest(UPLOADING_FALSE, createUploadingBallotManifest(false));
+    yield takeLatest(UPLOADING_TRUE, createUploadingBallotManifest(true));
 }
