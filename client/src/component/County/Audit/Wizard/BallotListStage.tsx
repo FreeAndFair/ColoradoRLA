@@ -6,6 +6,8 @@ import * as _ from 'lodash';
 const BallotListStage = (props: any) => {
     const { county, countyInfo, cvrsToAudit, nextStage } = props;
 
+    const roundNumber = county.currentRound.number;
+
     if (!cvrsToAudit) {
         return <div />;
     }
@@ -50,8 +52,8 @@ const BallotListStage = (props: any) => {
             </div>
             <div className='pt-card'>
                 The Secretary of State has randomly selected { cvrsToAudit.length } ballot cards
-                for the { countyInfo.name } County Audit Board to examine to satisfy the
-                risk limit(s) for the audited contest(s).
+                for the { countyInfo.name } County Audit Board to examine in Round
+                <span> { roundNumber } </span> to satisfy the risk limit(s) for the audited contest(s).
             </div>
             <div className='pt-card'>
                 The Audit Board must locate and retrieve, or observe a county staff member
