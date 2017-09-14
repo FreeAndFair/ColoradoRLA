@@ -11,7 +11,7 @@ import ballotManifestUploadedSelector from 'corla/selector/county/ballotManifest
 
 const UploadedBallotManifest = ({ filename, hash, enableReupload }: any) => (
     <div className='pt-card'>
-        <div>Ballot manifest <strong>uploaded</strong>.</div>
+        <div>Ballot Manifest <strong>uploaded</strong>.</div>
         <div>File name: "{ filename }"</div>
         <div>SHA-256 hash: { hash }</div>
         <button className='pt-button' onClick={ enableReupload }>

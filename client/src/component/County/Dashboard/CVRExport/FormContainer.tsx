@@ -11,7 +11,7 @@ import cvrExportUploadedSelector from 'corla/selector/county/cvrExportUploaded';
 
 const UploadedCVRExport = ({ enableReupload, filename, hash }: any) => (
     <div className='pt-card'>
-        <div>CVR export <strong>uploaded</strong>.</div>
+        <div>CVR Export <strong>uploaded</strong>.</div>
         <div>File name: "{ filename }"</div>
         <div>SHA-256 hash: { hash }</div>
         <button className='pt-button' onClick={ enableReupload }>
