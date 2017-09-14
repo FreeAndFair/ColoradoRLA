@@ -26,7 +26,7 @@ sos_runbook.docx: 24_sos_runbook.md
 	pandoc 24_sos_runbook.md --variable linkcolor --table-of-contents --reference-docx=reference_fandf_pages.docx -f markdown -t docx -o sos_runbook.docx 
 
 user_manual.docx: user_manual.md
-	pandoc user_manual.md 89_glossary.md --variable --reference-docx=reference_fandf_pages.docx linkcolor -f markdown -t docx -o user_manual.docx
+	pandoc user_manual.md 89_glossary.md --variable linkcolor --reference-docx=reference_fandf_pages.docx -f markdown -t docx -o user_manual.docx
 
 clean:
 	rm -f book.pdf book.html runbook.docx county_runbook.docx sos_runbook.docx user_manual.docx
