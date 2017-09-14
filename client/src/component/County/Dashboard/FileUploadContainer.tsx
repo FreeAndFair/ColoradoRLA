@@ -26,6 +26,10 @@ const MatchStatus = (props: any) => {
                 <span className='pt-icon pt-intent-danger pt-icon-error' />
                 <span> </span>
                 CVR Export and Ballot Manifest record counts <strong>do not match.</strong>
+                <div className='pt-card' >
+                    <div>Ballot Manifest count: { ballotManifestCount }</div>
+                    <div>CVR Export count: { cvrExportCount }</div>
+                </div>
             </div>
         );
     }
