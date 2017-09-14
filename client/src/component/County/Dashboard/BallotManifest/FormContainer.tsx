@@ -32,14 +32,6 @@ class BallotManifestFormContainer extends React.Component<any, any> {
     public render() {
         const { auditStarted, county, fileUploaded } = this.props;
 
-        const upload = () => {
-            const { file, hash } = this.state.form;
-
-            uploadBallotManifest(county.id, file, hash);
-
-            this.disableReupload();
-        };
-
         if (fileUploaded && !this.state.reupload) {
             return (
                 <UploadedBallotManifest enableReupload={ this.enableReupload }
@@ -54,7 +46,7 @@ class BallotManifestFormContainer extends React.Component<any, any> {
                                 form={ this.state.form }
                                 onFileChange={ this.onFileChange }
                                 onHashChange={ this.onHashChange }
-                                upload={ upload } />
+                                upload={ this.upload } />
         );
     }
 
@@ -80,6 +72,17 @@ class BallotManifestFormContainer extends React.Component<any, any> {
         s.form.hash = hash;
 
         this.setState(s);
+    }
+
+    private upload = () => {
+        const { county } = this.props;
+        const { file, hash } = this.state.form;
+
+        this.setUploading(true);
+
+        uploadBallotManifest(county.id, file, hash);
+
+        this.disableReupload();
     }
 }
 
