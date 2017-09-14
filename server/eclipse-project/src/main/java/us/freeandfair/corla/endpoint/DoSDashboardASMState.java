@@ -11,6 +11,8 @@
 
 package us.freeandfair.corla.endpoint;
 
+import org.apache.log4j.Level;
+
 import spark.Request;
 import spark.Response;
 
@@ -41,6 +43,14 @@ public class DoSDashboardASMState extends AbstractDoSDashboardEndpoint {
     return "/dos-asm-state";
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Level logLevel() {
+    return Level.DEBUG;
+  }
+  
   /**
    * {@inheritDoc}
    */

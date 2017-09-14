@@ -13,6 +13,8 @@ package us.freeandfair.corla.endpoint;
 
 import javax.persistence.PersistenceException;
 
+import org.apache.log4j.Level;
+
 import spark.Request;
 import spark.Response;
 
@@ -44,6 +46,14 @@ public class DoSDashboardRefresh extends AbstractDoSDashboardEndpoint {
   @Override
   public String endpointName() {
     return "/dos-dashboard";
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Level logLevel() {
+    return Level.DEBUG;
   }
   
   /**

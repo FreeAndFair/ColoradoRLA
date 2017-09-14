@@ -396,7 +396,8 @@ public abstract class AbstractEndpoint implements Endpoint {
   public void before(final Request the_request, final Response the_response) {
     reset();
     my_log_entries.set(new ArrayList<LogEntry>());
-    Main.LOGGER.info("endpoint " + endpointName() + " hit by " + the_request.host());
+    Main.LOGGER.log(logLevel(), 
+                    "endpoint " + endpointName() + " hit by " + the_request.host());
     // make sure we get all the HTTP post parameters, if there are any, before
     // anything has a chance to read the request body before Spark
     the_request.queryParams();
@@ -442,13 +443,15 @@ public abstract class AbstractEndpoint implements Endpoint {
    */
   private void sendToLogger(final LogEntry the_log_entry) {
     if (the_log_entry.resultCode() == null) {
-      Main.LOGGER.info(the_log_entry.information() + " by " + 
-                       the_log_entry.authenticationData() + " from " + 
-                       the_log_entry.clientHost());
+      Main.LOGGER.log(logLevel(), 
+                      the_log_entry.information() + " by " + 
+                      the_log_entry.authenticationData() + " from " + 
+                      the_log_entry.clientHost());
     } else if (HttpStatus.isSuccess(the_log_entry.resultCode())) {
-      Main.LOGGER.info("successful " + the_log_entry.information() + " by " + 
-                       the_log_entry.authenticationData() + " from " + 
-                       the_log_entry.clientHost());
+      Main.LOGGER.log(logLevel(), 
+                      "successful " + the_log_entry.information() + " by " + 
+                      the_log_entry.authenticationData() + " from " + 
+                      the_log_entry.clientHost());
     } else {
       Main.LOGGER.error("error " + the_log_entry.resultCode() + " " + 
                         the_log_entry.information() + " by " + 
