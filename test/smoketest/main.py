@@ -28,8 +28,7 @@ crtest -E "/cvr-to-audit-list?start=0&ballot_count=9&include_duplicates=true"
 
 # Test two county audits in parallel
 (
-./main.py reset
-./main.py dos_init
+./main.py reset dos_init
 ./main.py -c 3 -v 0 county_setup &
 ./main.py -c 5 -v 2 county_setup &
 wait
@@ -588,12 +587,7 @@ def county_audit(ac, county_id):
     # Note: we take advantage of a side effect of this also: print where we're at....
     county_dashboard = get_county_dashboard(ac, county_s, -1)
 
-    # audit over detection:
-    #  the DOS dashboard can infer this fact, so we can stop showing the "start next round" button
-    #  by the conjunction of estimated_ballots_to_audit <= 0 for all counties
-    #  After all counties submit their audit report, the DOS ASM _should_ change to DOS_AUDIT_COMPLETE.
-
-    if county_dashboard['estimated_ballots_to_audit'] <= 0:
+    if county_dashboard['asm_state'] == "COUNTY_AUDIT_COMPLETE":
         return(True)
 
     audit_board_set = [{"first_name": "Mary",
@@ -680,7 +674,7 @@ def county_audit(ac, county_id):
                                {'cvr_id': selected[i]['db_id'], 'audit_cvr': acvr}, show=False)
 
         county_dashboard = get_county_dashboard(ac, county_s, i, acvr)
-        if county_dashboard['estimated_ballots_to_audit'] <= 0:
+        if county_dashboard['asm_state'] == "COUNTY_AUDIT_COMPLETE":
             break
 
     r = test_endpoint_json(ac, county_s, "/sign-off-audit-round", audit_board_set)
