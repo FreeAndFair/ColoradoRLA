@@ -19,6 +19,7 @@ import java.util.List;
 
 import javax.persistence.PersistenceException;
 
+import org.apache.log4j.Level;
 import org.eclipse.jetty.http.HttpStatus;
 
 import spark.Request;
@@ -565,8 +566,18 @@ public abstract class AbstractEndpoint implements Endpoint {
    * @return the type of authorization required to use this endpoint.
    * The default is NONE.
    */
+  @Override
   public AuthorizationType requiredAuthorization() {
     return AuthorizationType.NONE;
+  }
+  
+  /**
+   * @return the priority level at which the endpoint's activity will be
+   * logged. The default is Priority.INFO.
+   */
+  @Override
+  public Level logLevel() {
+    return Level.INFO;
   }
   
   /**
