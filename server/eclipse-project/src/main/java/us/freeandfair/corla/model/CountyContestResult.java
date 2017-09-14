@@ -254,16 +254,22 @@ public class CountyContestResult implements PersistentEntity, Serializable {
    */
   public List<String> rankedChoices() {
     final List<String> result = new ArrayList<String>();
-    final SortedMap<Integer, String> sorted_totals = 
-        new TreeMap<Integer, String>(new ReverseIntegerComparator());
+    
+    final SortedMap<Integer, List<String>> sorted_totals = 
+        new TreeMap<Integer, List<String>>(new ReverseIntegerComparator());
     for (final Entry<String, Integer> e : my_vote_totals.entrySet()) {
-      sorted_totals.put(e.getValue(), e.getKey());
+      final List<String> list = sorted_totals.get(e.getValue());
+      if (list == null) {
+        sorted_totals.put(e.getValue(), new ArrayList<>());
+      }
+      sorted_totals.get(e.getValue()).add(e.getKey());
     }
-    final Iterator<Entry<Integer, String>> iterator = 
+    
+    final Iterator<Entry<Integer, List<String>>> iterator = 
         sorted_totals.entrySet().iterator();
     while (iterator.hasNext()) {
-      final Entry<Integer, String> entry = iterator.next();
-      result.add(entry.getValue());
+      final Entry<Integer, List<String>> entry = iterator.next();
+      result.addAll(entry.getValue());
     }
     return result;
   }
@@ -477,33 +483,37 @@ public class CountyContestResult implements PersistentEntity, Serializable {
    */
   public void updateResults() {
     // first, sort the vote totals
-    final SortedMap<Integer, String> sorted_totals = 
-        new TreeMap<Integer, String>(new ReverseIntegerComparator());
+    final SortedMap<Integer, List<String>> sorted_totals = 
+        new TreeMap<Integer, List<String>>(new ReverseIntegerComparator());
     for (final Entry<String, Integer> e : my_vote_totals.entrySet()) {
-      sorted_totals.put(e.getValue(), e.getKey());
+      final List<String> list = sorted_totals.get(e.getValue());
+      if (list == null) {
+        sorted_totals.put(e.getValue(), new ArrayList<>());
+      }
+      sorted_totals.get(e.getValue()).add(e.getKey());
     }
     // next, get the winners and losers
     // TODO: this probably needs work to deal properly with ties in 
     // races where only one winner is allowed
     // TODO: this needs to be revised once we save number of winners in addition
     // to votes allowed
-    final Iterator<Entry<Integer, String>> iterator = 
+    final Iterator<Entry<Integer, List<String>>> vote_total_iterator = 
         sorted_totals.entrySet().iterator();
-    Entry<Integer, String> entry = null;
+    Entry<Integer, List<String>> entry = null;
     int votes = 0;
-    while (iterator.hasNext() && my_winners.size() < my_votes_allowed) {
-      entry = iterator.next();
+    while (vote_total_iterator.hasNext() && my_winners.size() < my_votes_allowed) {
+      entry = vote_total_iterator.next();
       votes = entry.getKey();
-      my_winners.add(entry.getValue());
+      my_winners.addAll(entry.getValue());
     }
-    while (iterator.hasNext()) {
+    while (vote_total_iterator.hasNext()) {
       // all the other choices that have the same number of votes as the last
       // winner count as winners
-      entry = iterator.next();
+      entry = vote_total_iterator.next();
       if (entry.getKey() == votes) {
-        my_winners.add(entry.getValue());
+        my_winners.addAll(entry.getValue());
       } else {
-        my_losers.add(entry.getValue());
+        my_losers.addAll(entry.getValue());
       }
     }
     

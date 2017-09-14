@@ -53,7 +53,8 @@ import us.freeandfair.corla.persistence.PersistentEntity;
        indexes = { @Index(name = "idx_ccca_dashboard", columnList = "dashboard_id") })
 
 @SuppressWarnings({"PMD.ImmutableField", "PMD.CyclomaticComplexity", "PMD.GodClass",
-    "PMD.ModifiedCyclomaticComplexity", "PMD.StdCyclomaticComplexity", "PMD.TooManyFields"})
+    "PMD.ModifiedCyclomaticComplexity", "PMD.StdCyclomaticComplexity", "PMD.TooManyFields",
+    "PMD.TooManyMethods"})
 public class CountyContestComparisonAudit implements PersistentEntity, Serializable {
   /**
    * The database stored precision for decimal types.
@@ -229,11 +230,18 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
   private Integer my_other = 0;
   
   /**
-   * A flag that indicates whether the ballots to audit need to be 
-   * recalculated.
+   * A flag that indicates whether the optimistic ballots to audit 
+   * estimate needs to be recalculated.
    */
   @Column(nullable = false)
-  private Boolean my_recalculate_needed = true;
+  private Boolean my_optimistic_recalculate_needed = true; 
+  
+  /**
+   * A flag that indicates whether the non-optimistic ballots to 
+   * audit estimate needs to be recalculated
+   */
+  @Column(nullable = false)
+  private Boolean my_estimated_recalculate_needed = true;
   
   /**
    * Constructs a new, empty CountyContestAudit (solely for persistence).
@@ -343,9 +351,8 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
    * further overstatements occur.
    */
   public Integer optimisticBallotsToAudit() {
-    if (my_recalculate_needed) {
+    if (my_optimistic_recalculate_needed) {
       recalculateBallotsToAudit();
-      my_recalculate_needed = false;
     }
     return my_optimistic_ballots_to_audit;
   }
@@ -355,9 +362,8 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
    * overstatements continue to occur at the current rate.
    */
   public Integer estimatedBallotsToAudit() {
-    if (my_recalculate_needed) {
+    if (my_estimated_recalculate_needed) {
       recalculateBallotsToAudit();
-      my_recalculate_needed = false;
     }
     return my_estimated_ballots_to_audit;
   }
@@ -366,11 +372,15 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
    * Recalculates the overall numbers of ballots to audit.
    */
   private void recalculateBallotsToAudit() {
-    final BigDecimal optimistic = computeOptimisticBallotsToAudit(my_two_vote_under, 
-                                                                  my_one_vote_under,
-                                                                  my_one_vote_over,
-                                                                  my_two_vote_over);
-    my_optimistic_ballots_to_audit = optimistic.intValue();
+    if (my_optimistic_recalculate_needed) {
+      final BigDecimal optimistic = computeOptimisticBallotsToAudit(my_two_vote_under, 
+                                                                    my_one_vote_under,
+                                                                    my_one_vote_over,
+                                                                    my_two_vote_over);
+      my_optimistic_ballots_to_audit = optimistic.intValue();
+      my_optimistic_recalculate_needed = false;
+    }
+    
     if (my_one_vote_over + my_two_vote_over == 0) {
       my_estimated_ballots_to_audit = my_optimistic_ballots_to_audit;
     } else {
@@ -381,9 +391,10 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
       final BigDecimal fudge_factor =
           BigDecimal.ONE.add(overstatements.divide(prefix_length, MathContext.DECIMAL128));
       final BigDecimal estimated =
-          optimistic.multiply(fudge_factor);
+          BigDecimal.valueOf(my_optimistic_ballots_to_audit).multiply(fudge_factor);
       my_estimated_ballots_to_audit = estimated.setScale(0, RoundingMode.CEILING).intValue();
     }
+    my_estimated_recalculate_needed = false;
   }
   
   /**
@@ -443,6 +454,14 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
   }
   
   /**
+   * Signals that a new ballot has been audited. This ensures that estimates
+   * are recalculated correctly.
+   */
+  public void signalBallotAudited() {
+    my_estimated_recalculate_needed = true;
+  }
+  
+  /**
    * Records the specified discrepancy (the valid range is -2 .. 2: -2 and -1 are
    * understatements, 0 is a discrepancy that doesn't affect the RLA calculations,
    * and 1 and 2 are overstatements).
@@ -453,30 +472,33 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
    */
   @SuppressWarnings("checkstyle:magicnumber")
   public void recordDiscrepancy(final int the_type) {
+    // we never trigger an estimated recalculate here; it is
+    // triggered by signalBallotAudited() regardless of whether there is 
+    // a discrepancy or not
     switch (the_type) {
       case -2: 
         my_two_vote_under = my_two_vote_under + 1;
-        my_recalculate_needed = true;
+        my_optimistic_recalculate_needed = true;
         break;
        
       case -1:
         my_one_vote_under = my_one_vote_under + 1;
-        my_recalculate_needed = true;
+        my_optimistic_recalculate_needed = true;
         break;
         
       case 0:
         my_other = my_other + 1;
-        // no recalculate needed
+        // no optimistic recalculate needed
         break;
         
       case 1: 
         my_one_vote_over = my_one_vote_over + 1;
-        my_recalculate_needed = true;
+        my_optimistic_recalculate_needed = true;
         break;
         
       case 2:
         my_two_vote_over = my_two_vote_over + 1;
-        my_recalculate_needed = true;
+        my_optimistic_recalculate_needed = true;
         break;
         
       default:
@@ -497,15 +519,18 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
    */
   @SuppressWarnings("checkstyle:magicnumber")
   public void removeDiscrepancy(final int the_type) {
+    // we never trigger an estimated recalculate here; it is
+    // triggered by signalBallotAudited() regardless of whether there is 
+    // a discrepancy or not
     switch (the_type) {
       case -2: 
         my_two_vote_under = my_two_vote_under - 1;
-        my_recalculate_needed = true;
+        my_optimistic_recalculate_needed = true;
         break;
 
       case -1:
         my_one_vote_under = my_one_vote_under - 1;
-        my_recalculate_needed = true;
+        my_optimistic_recalculate_needed = true;
         break;
 
       case 0:
@@ -515,12 +540,12 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
         
       case 1: 
         my_one_vote_over = my_one_vote_over - 1;
-        my_recalculate_needed = true;
+        my_optimistic_recalculate_needed = true;
         break;
 
       case 2:
         my_two_vote_over = my_two_vote_over - 1;
-        my_recalculate_needed = true;
+        my_optimistic_recalculate_needed = true;
         break;
 
       default:
