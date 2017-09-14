@@ -9,7 +9,6 @@ import Main from './Main';
 
 const CountyDashboardPage = (props: any) => {
     const {
-        allRoundsComplete,
         auditBoardSignedIn,
         auditComplete,
         auditStarted,
@@ -20,20 +19,11 @@ const CountyDashboardPage = (props: any) => {
         contests,
         county,
         countyInfo,
-        countyDashboardRefresh,
         currentRoundNumber,
-        finishAudit,
         startAudit,
     } = props;
-    const {
-        ballots,
-        ballotManifestHash,
-        cvrExportHash,
-        startTimestamp,
-        status,
-    } = county;
 
-    const info = { auditDate: startTimestamp };
+    const info = { auditDate: county.startTimestamp };
 
     const auditButtonDisabled = !canAudit || auditComplete;
     const signInButtonDisabled = !canSignIn;
