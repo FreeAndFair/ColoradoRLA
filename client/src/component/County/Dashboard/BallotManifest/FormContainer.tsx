@@ -21,40 +21,66 @@ const UploadedBallotManifest = ({ filename, hash, enableReupload }: any) => (
 
 
 class BallotManifestFormContainer extends React.Component<any, any> {
-    public state = { reupload: false };
+    public state: any = {
+        form: {
+            file: null,
+            hash: '',
+        },
+        reupload: false,
+    };
 
     public render() {
         const { auditStarted, county, fileUploaded } = this.props;
-        const forms: any = {};
 
         const upload = () => {
-            const { file, hash } = forms.ballotManifestForm;
+            const { file, hash } = this.state.form;
 
             uploadBallotManifest(county.id, file, hash);
+
             this.disableReupload();
         };
 
         if (fileUploaded && !this.state.reupload) {
             return (
-                <UploadedBallotManifest
-                    enableReupload={ this.enableReupload }
-                    filename={ county.ballotManifestFilename }
-                    hash={ county.ballotManifestHash } />
+                <UploadedBallotManifest enableReupload={ this.enableReupload }
+                                        filename={ county.ballotManifestFilename }
+                                        hash={ county.ballotManifestHash } />
             );
         }
 
         return (
-            <BallotManifestForm
-                disableReupload={ this.disableReupload }
-                fileUploaded={ fileUploaded }
-                upload={ upload }
-                forms={ forms } />
+            <BallotManifestForm disableReupload={ this.disableReupload }
+                                fileUploaded={ fileUploaded }
+                                form={ this.state.form }
+                                onFileChange={ this.onFileChange }
+                                onHashChange={ this.onHashChange }
+                                upload={ upload } />
         );
     }
 
-    private disableReupload = () => this.setState({ reupload: false });
+    private disableReupload = () => {
+        this.setState({ reupload: false });
+    }
 
-    private enableReupload = () => this.setState({ reupload: true });
+    private enableReupload = () => {
+        this.setState({ reupload: true });
+    }
+
+    private onFileChange = (e: any) => {
+        const s = { ...this.state };
+
+        s.form.file = e.target.files[0];
+
+        this.setState(s);
+    }
+
+    private onHashChange = (hash: any) => {
+        const s = { ...this.state };
+
+        s.form.hash = hash;
+
+        this.setState(s);
+    }
 }
 
 const mapStateToProps = (state: any) => {
@@ -66,5 +92,6 @@ const mapStateToProps = (state: any) => {
         fileUploaded: ballotManifestUploadedSelector(state),
     };
 };
+
 
 export default connect(mapStateToProps)(BallotManifestFormContainer);
