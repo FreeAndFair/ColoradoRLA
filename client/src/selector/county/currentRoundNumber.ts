@@ -1,4 +1,4 @@
-function currentRound(state: any): number {
+function currentRoundNumber(state: any): number {
     const { county } = state;
 
     if (!county.currentRound) {
@@ -9,4 +9,4 @@ function currentRound(state: any): number {
 }
 
 
-export default currentRound;
+export default currentRoundNumber;

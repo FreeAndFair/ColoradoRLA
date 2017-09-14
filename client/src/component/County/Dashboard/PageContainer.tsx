@@ -15,7 +15,7 @@ import auditStartedSelector from 'corla/selector/county/auditStarted';
 import canAuditSelector from 'corla/selector/county/canAudit';
 import canRenderReportSelector from 'corla/selector/county/canRenderReport';
 import canSignInSelector from 'corla/selector/county/canSignIn';
-import currentRoundSelector from 'corla/selector/county/currentRound';
+import currentRoundNumberSelector from 'corla/selector/county/currentRoundNumber';
 import missedDeadlineSelector from 'corla/selector/county/missedDeadline';
 
 
@@ -71,7 +71,7 @@ const mapStateToProps = (state: any) => {
         canSignIn: canSignInSelector(state),
         contests: contestDefs,
         county,
-        currentRound: currentRoundSelector(state),
+        currentRoundNumber: currentRoundNumberSelector(state),
         missedDeadline: missedDeadlineSelector(state),
     };
 };

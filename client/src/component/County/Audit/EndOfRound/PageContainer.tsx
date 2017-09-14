@@ -5,7 +5,7 @@ import EndOfRoundPage from './Page';
 
 import allRoundsCompleteSelector from 'corla/selector/county/allRoundsComplete';
 import countyInfoSelector from 'corla/selector/county/countyInfo';
-import currentRoundSelector from 'corla/selector/county/currentRound';
+import currentRoundNumberSelector from 'corla/selector/county/currentRoundNumber';
 import previousRoundSelector from 'corla/selector/county/previousRound';
 
 
@@ -35,7 +35,7 @@ const mapStateToProps = (state: any) => {
     return {
         allRoundsComplete: allRoundsCompleteSelector(state),
         countyInfo: countyInfoSelector(state),
-        currentRound: currentRoundSelector(state),
+        currentRoundNumber: currentRoundNumberSelector(state),
         election: state.county.election,
         estimatedBallotsToAudit: state.county.estimatedBallotsToAudit,
         previousRound,
