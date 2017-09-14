@@ -2,13 +2,14 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 
 import CVRExportForm from './Form';
+import Uploading from './Uploading';
 
 import uploadCvrExport from 'corla/action/county/uploadCvrExport';
 
 import cvrExportUploadedSelector from 'corla/selector/county/cvrExportUploaded';
 
 
-const UploadedCvrExport = ({ enableReupload, filename, hash }: any) => (
+const UploadedCVRExport = ({ enableReupload, filename, hash }: any) => (
     <div className='pt-card'>
         <div>CVR export <strong>uploaded</strong>.</div>
         <div>File name: "{ filename }"</div>
@@ -20,49 +21,94 @@ const UploadedCvrExport = ({ enableReupload, filename, hash }: any) => (
 );
 
 class CVRExportFormContainer extends React.Component<any, any> {
-    public state = { reupload: false };
+    public state: any = {
+        form: {
+            file: null,
+            hash: '',
+        },
+        reupload: false,
+    };
 
     public render() {
-        const { auditStarted, county, fileUploaded } = this.props;
-        const forms: any = {};
+        const { auditStarted, county, fileUploaded, uploadingFile } = this.props;
 
-        const upload = () => {
-            const { file, hash } = forms.cvrExportForm;
-
-            uploadCvrExport(county.id, file, hash);
-            this.disableReupload();
-        };
+        if (uploadingFile) {
+            return <Uploading />;
+        }
 
         if (fileUploaded && !this.state.reupload) {
             return (
-                <UploadedCvrExport
-                    enableReupload={ this.enableReupload }
-                    filename={ county.cvrExportFilename }
-                    hash={ county.cvrExportHash } />
+                <UploadedCVRExport enableReupload={ this.enableReupload }
+                                   filename={ county.ballotManifestFilename }
+                                   hash={ county.ballotManifestHash } />
             );
         }
 
         return (
-            <CVRExportForm
-                disableReupload={ this.disableReupload }
-                fileUploaded={ fileUploaded }
-                upload={ upload }
-                forms={ forms } />
+            <CVRExportForm disableReupload={ this.disableReupload }
+                           fileUploaded={ fileUploaded }
+                           form={ this.state.form }
+                           onFileChange={ this.onFileChange }
+                           onHashChange={ this.onHashChange }
+                           upload={ this.upload } />
         );
     }
 
-    private disableReupload = () => this.setState({ reupload: false });
+    private disableReupload = () => {
+        this.setState({ reupload: false });
+    }
 
-    private enableReupload = () => this.setState({ reupload: true });
+    private enableReupload = () => {
+        this.setState({ reupload: true });
+    }
+
+    private onFileChange = (e: any) => {
+        const s = { ...this.state };
+
+        s.form.file = e.target.files[0];
+
+        this.setState(s);
+    }
+
+    private onHashChange = (hash: any) => {
+        const s = { ...this.state };
+
+        s.form.hash = hash;
+
+        this.setState(s);
+    }
+
+    private setFileTimestamp = (fileTimestamp: string) => {
+        this.setState({
+            ...this.state,
+            fileTimestamp,
+        });
+    }
+
+    private fileIsNew = () => {
+        return this.state.fileTimestamp !== this.props.fileTimestamp;
+    }
+
+    private upload = () => {
+        const { county } = this.props;
+        const { file, hash } = this.state.form;
+
+        uploadCvrExport(county.id, file, hash);
+
+        this.disableReupload();
+    }
 }
 
 const mapStateToProps = (state: any) => {
     const { county } = state;
 
+    const uploadingFile = !!county.uploadingCvrExport;
+
     return {
         auditStarted: !!county.ballotUnderAuditId,
         county,
         fileUploaded: cvrExportUploadedSelector(state),
+        uploadingFile,
     };
 };
 
