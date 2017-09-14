@@ -11,6 +11,7 @@ import updateAcvrForm from './county/updateAcvrForm';
 import uploadAcvrOk from './county/uploadAcvrOk';
 import uploadBallotManifestOk from './county/uploadBallotManifestOk';
 import uploadCvrExportOk from './county/uploadCvrExportOk';
+import uploadingBallotManifest from './county/uploadingBallotManifest';
 
 import dosContestFetchOk from './dos/contestFetchOk';
 import dosDashboardRefreshOk from './dos/dashboardRefreshOk';
@@ -109,6 +110,10 @@ export default function root(state: AppState = defaultState, action: any) {
 
     case 'UPLOAD_RANDOM_SEED_OK': {
         return uploadRandomSeedOk(state, action);
+    }
+
+    case 'UPLOADING_BALLOT_MANIFEST': {
+        return uploadingBallotManifest(state, action);
     }
 
     default:
