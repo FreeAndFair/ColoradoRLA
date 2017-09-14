@@ -48,14 +48,25 @@ const CountyUpdates = ({ countyStatus }: any) => {
         const county = _.find(counties, (x: any) => x.id === c.id);
 
         const status = formatCountyAsmState(c.asmState);
+        const auditedDiscrepancyCount = c.discrepancyCount
+                                      ? c.discrepancyCount.audited
+                                      : '—';
+        const opportunisticDisrepancyCount = c.discrepancyCount
+                                           ? c.discrepancyCount.opportunistic
+                                           : '—';
+
+        const disagreementCount = _.isNil(c.disagreementCount)
+                                ? '—'
+                                : c.disagreementCount;
 
         return (
             <tr key={ c.id }>
                 <td>{ county.name }</td>
                 <td>{ status }</td>
                 <td>{ c.auditedBallotCount }</td>
-                <td>{ c.discrepancyCount }</td>
-                <td>{ c.disagreementCount }</td>
+                <td>{ auditedDiscrepancyCount }</td>
+                <td>{ opportunisticDisrepancyCount }</td>
+                <td>{ disagreementCount }</td>
                 <td>{ c.ballotsRemainingInRound }</td>
                 <td>{ Math.max(0, c.estimatedBallotsToAudit) }</td>
             </tr>
@@ -72,7 +83,8 @@ const CountyUpdates = ({ countyStatus }: any) => {
                             <td>Name</td>
                             <td>Status</td>
                             <td>Submitted</td>
-                            <td>Discrepancies</td>
+                            <td>Audited Contest Discrepancies</td>
+                            <td>Non-audited Contest Discrepancies</td>
                             <td>Disagreements</td>
                             <td>
                                 <RemainingInRoundHeader />
