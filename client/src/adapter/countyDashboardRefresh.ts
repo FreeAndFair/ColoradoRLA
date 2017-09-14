@@ -134,8 +134,8 @@ function parseRounds(rounds: Round[]) {
 
 function parseElection(data: any): any {
     return {
-        date: new Date(data.election_date),
-        type: data.election_type,
+        date: new Date(data.audit_info.election_date),
+        type: data.audit_info.election_type,
     };
 }
 
