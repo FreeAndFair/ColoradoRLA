@@ -114,6 +114,76 @@ public class CVRToAuditResponse {
   }
   
   /**
+   * @return the audit sequence number.
+   */
+  public int auditSequenceNumber() {
+    return my_audit_sequence_number;
+  }
+  
+  /**
+   * @return the scanner ID.
+   */
+  public int scannerID() {
+    return my_scanner_id;
+  }
+  
+  /**
+   * @return the batch ID.
+   */
+  public int batchID() {
+    return my_batch_id;
+  }
+  
+  /**
+   * @return the record ID.
+   */
+  public int recordID() {
+    return my_record_id;
+  }
+  
+  /**
+   * @return the imprinted ID.
+   */
+  public String imprintedID() {
+    return my_imprinted_id;
+  }
+  
+  /**
+   * @return the CVR number.
+   */
+  public int cvrNumber() {
+    return my_cvr_number;
+  }
+  
+  /**
+   * @return the database ID.
+   */
+  public long dbID() {
+    return my_db_id;
+  }
+  
+  /**
+   * @return the ballot type.
+   */
+  public String ballotType() {
+    return my_ballot_type;
+  }
+  
+  /**
+   * @return the storage location.
+   */
+  public String storageLocation() {
+    return my_storage_location;
+  }
+  
+  /**
+   * @return the audited flag.
+   */
+  public boolean audited() {
+    return my_audited;
+  }
+  
+  /**
    * A comparator to sort CVRLocationResponse objects by scanner ID, then batch ID,
    * then record ID.
    */
