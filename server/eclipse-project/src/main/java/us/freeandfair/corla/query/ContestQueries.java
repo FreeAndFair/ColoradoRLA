@@ -64,7 +64,7 @@ public final class ContestQueries {
       }
       cq.select(root);
       cq.where(cb.or(disjuncts.toArray(new Predicate[disjuncts.size()])));
-      cq.orderBy(cb.asc(root.get("my_county").get("my_name")), 
+      cq.orderBy(cb.asc(root.get("my_county").get("my_id")), 
                  cb.asc(root.get("my_sequence_number")));
       final TypedQuery<Contest> query = s.createQuery(cq);
       result = query.getResultList();  

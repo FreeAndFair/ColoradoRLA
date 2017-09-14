@@ -41,7 +41,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.AuditReason;
 import us.freeandfair.corla.model.CVRAuditInfo;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
@@ -129,7 +128,6 @@ public class StateReport {
     workbook.write(baos);
     baos.flush();
     baos.close();
-    Main.LOGGER.info("output stream size: " + baos.size());
     workbook.close();
     return baos.toByteArray();
   }
