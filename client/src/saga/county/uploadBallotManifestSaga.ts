@@ -1,6 +1,5 @@
 import {
     put,
-    select,
     takeLatest,
 } from 'redux-saga/effects';
 
