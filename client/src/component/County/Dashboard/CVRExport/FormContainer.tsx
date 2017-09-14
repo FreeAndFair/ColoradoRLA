@@ -30,7 +30,7 @@ class CVRExportFormContainer extends React.Component<any, any> {
     };
 
     public render() {
-        const { auditStarted, county, fileUploaded, uploadingFile } = this.props;
+        const { county, fileUploaded, uploadingFile } = this.props;
 
         if (uploadingFile) {
             return <Uploading />;
@@ -105,7 +105,6 @@ const mapStateToProps = (state: any) => {
     const uploadingFile = !!county.uploadingCvrExport;
 
     return {
-        auditStarted: !!county.ballotUnderAuditId,
         county,
         fileUploaded: cvrExportUploadedSelector(state),
         uploadingFile,
