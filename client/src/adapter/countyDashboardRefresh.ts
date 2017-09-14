@@ -29,6 +29,7 @@ interface CountyDashboard {
     audited_prefix_length: number;
     ballot_manifest_filename: string;
     ballot_manifest_hash: string;
+    ballot_manifest_timestamp: string;
     ballot_under_audit_id: number;
     ballots_remaining_in_round: number;
     current_round: Round;
@@ -155,6 +156,7 @@ export const parse = (data: CountyDashboard, state: any): any => {
         auditedPrefixLength: data.audited_prefix_length,
         ballotManifestFilename: data.ballot_manifest_filename,
         ballotManifestHash: data.ballot_manifest_hash,
+        ballotManifestTimestamp: data.ballot_manifest_timestamp,
         ballotUnderAuditId: data.ballot_under_audit_id,
         ballotsRemainingInRound: data.ballots_remaining_in_round,
         contests: parseContests(data.contests, state),
