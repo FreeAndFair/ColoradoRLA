@@ -531,6 +531,10 @@ public final class Main {
    * server does not start.
    */
   public static void main(final String... the_args) {
+    // set headless mode - this prevents Apache POI from starting a GUI when
+    // generating Excel files
+    System.setProperty("java.awt.headless", "true");
+    
     final Properties default_properties = defaultProperties();
     Properties properties = new Properties(default_properties);
     if (the_args.length > 0) {

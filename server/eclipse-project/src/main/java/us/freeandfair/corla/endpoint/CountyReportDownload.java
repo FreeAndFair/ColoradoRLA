@@ -14,8 +14,11 @@ package us.freeandfair.corla.endpoint;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 
 import javax.persistence.PersistenceException;
+
+import org.apache.cxf.attachment.Rfc5987Util;
 
 import spark.Request;
 import spark.Response;
@@ -64,22 +67,41 @@ public class CountyReportDownload extends AbstractEndpoint {
   @SuppressWarnings("PMD.ExceptionAsFlowControl")
   public String endpoint(final Request the_request, final Response the_response) {
     final boolean pdf = "pdf".equalsIgnoreCase(the_request.queryParams("file_type"));
+    final CountyReport cr = 
+        new CountyReport(Main.authentication().authenticatedCounty(the_request));
+    byte[] file = new byte[0];
+    String filename = "";
+    
+    if (pdf) {
+      the_response.type("application/pdf");
+      filename = cr.filenamePDF();
+      file = cr.generatePDF();
+    } else {
+      the_response.type("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+      filename = cr.filenameExcel();
+      try {
+        file = cr.generateExcel();
+      } catch (final IOException e) {
+        serverError(the_response, "Unable to generate Excel file");
+      }
+    }
+    
+    try {
+      the_response.raw().setHeader("Content-Disposition", "attachment; filename=\"" + 
+          Rfc5987Util.encode(filename, "UTF-8") + "\"");
+    } catch (final UnsupportedEncodingException e) {
+      serverError(the_response, "UTF-8 is unsupported (this should never happen)");
+    }
+    
     try (OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
          BufferedOutputStream bos = new BufferedOutputStream(os)) {
-      final CountyReport cr = 
-          new CountyReport(Main.authentication().authenticatedCounty(the_request));
-      if (pdf) {
-        the_response.type("application/pdf");
-        bos.write(cr.generatePDF());
-      } else {
-        the_response.type("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        bos.write(cr.generateExcel());
-      }
+      bos.write(file);
       bos.flush();
       ok(the_response);
     } catch (final IOException | PersistenceException e) {
       serverError(the_response, "Unable to stream response");
     }
+    
     return my_endpoint_result.get();
   }
 }
