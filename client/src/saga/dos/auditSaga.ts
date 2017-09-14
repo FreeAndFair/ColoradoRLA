@@ -20,8 +20,11 @@ function* setAuditInfoOk(): IterableIterator<void> {
     notice.ok('Audit info is now set.');
 }
 
-function* setAuditInfoFail(): IterableIterator<void> {
-    notice.danger('Unable to set audit info.');
+function* setAuditInfoFail(action: any): IterableIterator<void> {
+    const { data } = action;
+    const { result } = data;
+
+    notice.danger(`Unable to set audit info: ${result}`);
 }
 
 function* setAuditInfoNetworkFail(): IterableIterator<void> {
