@@ -128,6 +128,11 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
     try {
       final List<CountyDashboard> cdbs = Persistence.getAll(CountyDashboard.class);
       
+      // this flag starts off true if we're going to conjoin it with all the ASM
+      // states, and false otherwise as we just assume audit reasonableness in the 
+      // absence of ASMs
+      boolean audit_complete = !DISABLE_ASM;
+      
       for (final CountyDashboard cdb : cdbs) {
         try {
           if (cdb.cvrUploadTimestamp() == null) {
@@ -175,6 +180,9 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
             ASMUtilities.step(audit_event, AuditBoardDashboardASM.class,
                               String.valueOf(cdb.id()));
             ASMUtilities.save(asm);
+            
+            // figure out whether this county is done, or whether there's an audit to run
+            audit_complete &= asm.isInFinalState();
           }
         } catch (final IllegalArgumentException e) {
           e.printStackTrace(System.out);
@@ -186,7 +194,12 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
         }
       }
       
-      ok(the_response, "round 1 started");
+      if (audit_complete) {
+        my_event.set(DOS_AUDIT_COMPLETE_EVENT);
+        ok(the_response, "audit complete");
+      } else {
+        ok(the_response, "round 1 started");
+      }
     } catch (final PersistenceException e) {
       serverError(the_response, "could not start round 1");
     }
