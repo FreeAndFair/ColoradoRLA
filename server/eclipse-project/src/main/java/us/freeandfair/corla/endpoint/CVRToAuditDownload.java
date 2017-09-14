@@ -222,8 +222,8 @@ public class CVRToAuditDownload extends AbstractEndpoint {
       // generate a CSV file from the response list
       the_response.type("text/csv");
       
-      // the file name should be constructed from the election type and date, and
-      // the county name and round
+      // the file name should be constructed from the county name and round
+      // or start/count
       final StringBuilder sb = new StringBuilder(32);
       sb.append("ballot-list-");
       sb.append(county.name().toLowerCase(Locale.getDefault()).replace(" ", "_"));

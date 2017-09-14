@@ -16,11 +16,15 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.OptionalInt;
 
@@ -647,5 +651,38 @@ public class CountyReport {
    */
   public byte[] generatePDF() {
     return new byte[0];
+  }
+  
+  /**
+   * @return the filename for the Excel version of this report.
+   */
+  public String filenameExcel() {
+    // the file name should be constructed from the county name, election
+    // type and date, and report generation time
+    final LocalDateTime election_datetime = 
+        LocalDateTime.ofInstant(my_dosdb.auditInfo().electionDate(), ZoneId.systemDefault());
+    final LocalDateTime report_datetime = 
+        LocalDateTime.ofInstant(my_timestamp, ZoneId.systemDefault()).
+        truncatedTo(ChronoUnit.SECONDS);
+    final StringBuilder sb = new StringBuilder(32);
+    
+    sb.append(my_county.name().toLowerCase(Locale.getDefault()).replace(" ", "_"));
+    sb.append('-');
+    sb.append(my_dosdb.auditInfo().electionType().
+              toLowerCase(Locale.getDefault()).replace(" ", "_"));
+    sb.append('-');
+    sb.append(DateTimeFormatter.ISO_LOCAL_DATE.format(election_datetime));
+    sb.append("-report-");
+    sb.append(DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(report_datetime).replace(":", "_"));
+    sb.append(".xlsx");
+    
+    return sb.toString();
+  }
+  
+  /**
+   * @return the filename for the PDF version of this report.
+   */
+  public String filenamePDF() {
+    return filenameExcel().replaceAll(".xlsx$", ".pdf");
   }
 }
