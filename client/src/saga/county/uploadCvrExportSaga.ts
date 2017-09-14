@@ -1,4 +1,4 @@
-import { takeEvery } from 'redux-saga/effects';
+import { takeLatest } from 'redux-saga/effects';
 
 import notice from 'corla/notice';
 
@@ -49,11 +49,12 @@ function* uploadCvrExportNetworkFail(): IterableIterator<any> {
 
 
 export default function* uploadCvrExportSaga() {
-    yield takeEvery('IMPORT_CVR_EXPORT_OK', importCvrExportOk);
-    yield takeEvery('IMPORT_CVR_EXPORT_FAIL', importCvrExportFail);
-    yield takeEvery('IMPORT_CVR_EXPORT_NETWORK_FAIL', importCvrExportNetworkFail);
+    yield takeLatest('IMPORT_CVR_EXPORT_OK', importCvrExportOk);
+    yield takeLatest('IMPORT_CVR_EXPORT_FAIL', importCvrExportFail);
+    yield takeLatest('IMPORT_CVR_EXPORT_NETWORK_FAIL', importCvrExportNetworkFail);
 
-    yield takeEvery('UPLOAD_CVR_EXPORT_OK', uploadCvrExportOk);
-    yield takeEvery('UPLOAD_CVR_EXPORT_FAIL', uploadCvrExportFail);
-    yield takeEvery('UPLOAD_CVR_EXPORT_NETWORK_FAIL', uploadCvrExportNetworkFail);
+    yield takeLatest('UPLOAD_CVR_EXPORT_OK', uploadCvrExportOk);
+    yield takeLatest('UPLOAD_CVR_EXPORT_FAIL', uploadCvrExportFail);
+    yield takeLatest('UPLOAD_CVR_EXPORT_NETWORK_FAIL', uploadCvrExportNetworkFail);
+
 }
