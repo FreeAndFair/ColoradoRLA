@@ -151,13 +151,12 @@ const ContestInfo = ({ contests }: any): any => {
 
 const CountyInfo = ({ county, currentRound, info }: any) => {
     const { ballotsToAudit } = county;
-    const unauditedBallotCount = ballotsToAudit ? ballotsToAudit.length : '';
 
     const rows = [
         ['County:', info.name],
         ['Status:', formatCountyAsmState(county.asm.county.currentState)],
         ['Current Round:', currentRound],
-        ['# Ballots to audit:', unauditedBallotCount],
+        ['# Ballots to audit:', county.ballotsRemainingInRound],
         ['# Ballots audited:', county.auditedBallotCount],
         ['# Disagreements:', county.disagreementCount],
         ['# Discrepancies:', county.discrepancyCount],
