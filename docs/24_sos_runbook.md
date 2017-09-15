@@ -44,33 +44,33 @@ Department of State users must log in to the RLA Tool by pointing
 their browser to the URL designated by the Department of State. 
 County users can use the same URL.
 
-![Login](./screenshots/100_login_screen_1.png)
+![Login](./screenshots/dos/v1a2_login_screen.png)
 
 Successful entry of username and password will lead to 
 a two-factor authentication grid challenge.
 
-![Grid Challenge](./screenshots/101_login_screen_2.png)
+![Grid Challenge](./screenshots/dos/v1a2_login_login_screen_2.png)
 
 The RLA Tool will direct users to the Department of State home
 page. At the start of the audit process, this page will contain no
 information. Note the logout button, in the upper right of this (and
 every) page.
 
-![Logout Button](./screenshots/LogoutButton.png)
+![Logout Button](./screenshots/dos/v1a2_logout_button.png)
 
-![Secretary of State Home Screenshot](./screenshots/2-sos_initial_landing_page.png)
+![Secretary of State Home Screenshot](./screenshots/dos/v1a2_sos_home.png)
 
 ### Navigation
 
 Note the navigation menu in the upper left corner.
 
-![Secretary of State Navigation Screenshot](./screenshots/2-sos_nav.png)
+![Secretary of State Navigation Screenshot](./screenshots/dos/v1a2_sos_nav.png)
 
 ### Audit Status
 
 Text indicating the status of the audit is near the top of the page. 
 
-![Audit Status Message Screenshot](./screenshots/2-sos_audit_status.png)
+![Audit Status Message Screenshot](./screenshots/dos/v1a2_audit_status1.png)
 
 ### 25.2.2 (A), Entering the Risk Limit
 
@@ -79,7 +79,7 @@ the type of election, and the Risk Limit. Note that once these
 selections are entered they cannot be modified. To continue, click the
 "Save & Next" button.
 
-![State Risk Limit Entry Screenshot](./screenshots/5-sos_define_audit_save_and_next1.png)
+![State Risk Limit Entry Screenshot](./screenshots/dos/v1a2_enter_date_risk_limit.png)
 
 <!-- The County Update table allows the Secretary of State to see which -->
 <!-- Counties have uploaded which files. -->
@@ -92,13 +92,13 @@ selections are entered they cannot be modified. To continue, click the
 The County Update table allows the Secretary of State to see which
 Counties have uploaded which files. 
 
-![Waiting For Counties to Upload Contest Data](./screenshots/6-comparison_risk_limit_now_set.png)
+![Waiting For Counties to Upload Contest Data](./screenshots/dos/v1a2_waiting_for_counties.png)
 
 When the Counties have uploaded the necessary files, the Secretary of
 State can proceed to define the audit—by choosing contests and setting
 the risk limit—using the dropdown menu on the upper left.
 
-![Define the Audit Button](./screenshots/3-sos_define_audit_button_in_dropdown.png)
+![Define the Audit Button](./screenshots/dos/v1a2_sos_nav.png)
 
 ### 25.2.2 (I) Selecting Contests
 
@@ -109,25 +109,25 @@ of the RLA Tool, each contest is considered to be within a single
 County.  Calculations of audit round sizes and risk levels are based
 on single County contests.
 
-![State Contest Selection Screenshot](./screenshots/8-sos_selects_contest_reason_why_dropdown.png)
+![State Contest Selection Screenshot](./screenshots/dos/v1a2_select_contests_selected.png)
 
 ### 25.2.2 (H), Entering the Random Seed
 
 The Secretary of State enters the random seed. Note that once the seed
 is entered, it cannot be changed.
 
-![State Random Seed Entry Screenshot](./screenshots/12-enter_random_seed_about_to_click.png)
+![State Random Seed Entry Screenshot](./screenshots/dos/v1a2_enter_random_seed.png)
 
 If the random seed is not at least 20 digits long, the system shows a
 red error message. User will have to click the "Back" button and try
 again.
 
-![State Random Seed Entry Incorrect](./screenshots/13-entered_incorrect_random_seed1.png)
+![State Random Seed Entry Incorrect](./screenshots/dos/v1a2_random_seed_incorrect.png)
 
 Once the random seed is entered the Secretary of State can launch the
 audit by clicking the "Launch Audit" button.
 
-![Audit Has Begun](./screenshots/15-the_audit_is_launched.png)
+![Audit Has Begun](./screenshots/dos/v1a2_random_seed_entered_launch_audit.png)
 
 ### Audit Rounds
 
@@ -145,7 +145,7 @@ The RLA Tool permits the Secretary of State to see the progress of
 audit for selected contests and the estimated number of ballot cards
 remaining to be audited to meet the risk limit.
 
-![Secretary of State Mid-Audit Screen](./screenshots/16-audit_status.png)
+![Secretary of State Mid-Audit Screen](./screenshots/dos/v1a2_audit_status.png)
 
 <!--- The RLA Tool also allows the Secretary of State to designate a contest
 for hand counting at any time.
@@ -157,13 +157,15 @@ round by clicking the "Start Round" button. This button will work only
 if each and every County Audit Board has not only finished the audit
 round, but also signed off on the audit round.
 
-![Launch New Round Screenshot](./screenshots/sos_launch_round.png)
+![Launch New Round Screenshot](./screenshots/dos/v1a2_start_next_round.png)
 
 ### Concluding the Audit
 
 Once the final round concludes, the audit board are congratulated and
 asked to sign an audit report for the county. County administrators
 can download that report in Microsoft Excel format.
+
+![Audit Complete](./screenshots/dos/v1a2_audit_complete.png)
 
 <!--- ### Exports
 --->
