@@ -61,10 +61,10 @@ const CountyInfo = ({ county, currentRoundNumber, info }: any) => {
         ['County:', info.name],
         ['Status:', formatCountyAsmState(county.asm.county.currentState)],
         ['Current Round:', currentRoundNumber],
-        ['# Ballots to audit:', county.ballotsRemainingInRound],
-        ['# Ballots audited:', county.auditedBallotCount],
-        ['# Disagreements:', county.disagreementCount],
-        ['# Discrepancies:', county.discrepancyCount],
+        ['Ballot cards remaining in round:', county.ballotsRemainingInRound],
+        ['Ballot cards audited (all rounds):', county.auditedBallotCount],
+        ['Disagreements (all rounds):', county.disagreementCount],
+        ['Discrepancies (all rounds):', county.discrepancyCount],
     ].map(([k, v]: any) => (
         <tr key={ k }>
             <td><strong>{ k }</strong></td>
