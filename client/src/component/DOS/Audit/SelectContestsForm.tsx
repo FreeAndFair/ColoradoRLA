@@ -130,7 +130,7 @@ class SelectContestsForm extends React.Component<any, any> {
         });
 
         const keyFunc = (d: any[]) => {
-            const i = this.state.sort === 'contest' ? 0 : 1;
+            const i = this.state.sort === 'contest' ? 1 : 0;
             return d[i];
         };
         const sortedData = _.sortBy(contestData, keyFunc);
