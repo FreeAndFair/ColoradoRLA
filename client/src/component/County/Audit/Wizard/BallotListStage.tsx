@@ -2,9 +2,13 @@ import * as React from 'react';
 
 import * as _ from 'lodash';
 
+import downloadCvrsToAuditCsv from 'corla/action/county/downloadCvrsToAuditCsv';
+
 
 const BallotListStage = (props: any) => {
     const { county, countyInfo, cvrsToAudit, nextStage } = props;
+
+    const roundNumber = county.currentRound.number;
 
     if (!cvrsToAudit) {
         return <div />;
@@ -36,6 +40,8 @@ const BallotListStage = (props: any) => {
         );
     });
 
+    const downloadCsv = () => downloadCvrsToAuditCsv(roundNumber);
+
     return (
         <div className='rla-page'>
             <h3>Ballot Cards to Audit</h3>
@@ -50,29 +56,36 @@ const BallotListStage = (props: any) => {
             </div>
             <div className='pt-card'>
                 The Secretary of State has randomly selected { cvrsToAudit.length } ballot cards
-                for the { countyInfo.name } County Audit Board to examine to satisfy the
-                risk limit(s) for the audited contest(s).
+                for the { countyInfo.name } County Audit Board to examine in Round
+                <span> { roundNumber } </span> to satisfy the risk limit(s) for the audited contest(s).
             </div>
             <div className='pt-card'>
                 The Audit Board must locate and retrieve, or observe a county staff member
                 locate and retrieve, the following randomly selected ballot cards for the initial
                 round of this risk-limiting audit:
             </div>
-            <table className='pt-table pt-bordered pt-condensed'>
-                <thead>
-                    <tr>
-                        <th>Scanner #</th>
-                        <th>Batch #</th>
-                        <th>Ballot Position #</th>
-                        <th>Storage Bin</th>
-                        <th>Ballot Type</th>
-                        <th>Audited</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    { ballotListRows }
-                </tbody>
-            </table>
+            <div className='pt-card'>
+                <div className='pt-card'>
+                    <table className='pt-table pt-bordered pt-condensed'>
+                        <thead>
+                            <tr>
+                                <th>Scanner #</th>
+                                <th>Batch #</th>
+                                <th>Ballot Position #</th>
+                                <th>Storage Bin</th>
+                                <th>Ballot Type</th>
+                                <th>Audited</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            { ballotListRows }
+                        </tbody>
+                    </table>
+                </div>
+                <button className='pt-button' onClick={ downloadCsv } >
+                    Download as CSV
+                </button>
+            </div>
             <div className='pt-card'>
                 Audit Board: Click Next to start reporting the votes you observe on each
                 of the above ballot cards.

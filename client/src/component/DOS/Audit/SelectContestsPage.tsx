@@ -57,18 +57,20 @@ const SelectedContests = (props: any) => {
     return (
         <div className='pt-card'>
             <h3>Selected Contests</h3>
-            <table className='pt-table pt-bordered pt-condensed'>
-                <thead>
-                    <tr>
-                        <th>County</th>
-                        <th>Name</th>
-                        <th>Reason</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    { rows }
-                </tbody>
-            </table>
+            <div className='pt-card'>
+                <table className='pt-table pt-bordered pt-condensed'>
+                    <thead>
+                        <tr>
+                            <th>County</th>
+                            <th>Name</th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        { rows }
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 };

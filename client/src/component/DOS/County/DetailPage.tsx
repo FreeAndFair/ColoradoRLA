@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import * as _ from 'lodash';
+
 import Nav from '../Nav';
 
 
@@ -25,8 +27,10 @@ const Breadcrumb = ({ county }: any) => (
 
 const CountyDetails = ({ county, status }: any) => {
     const started = status !== 'NO_DATA' ? '✔' : '';
-    const submitted = '';
-    const discrepancies = '';
+    const submitted = status.auditedBallotCount;
+
+    const auditedCount = _.get(status, 'discrepancyCount.audited') || '—';
+    const oppCount = _.get(status, 'discrepancyCount.opportunistic') || '—';
 
     return (
         <div className='pt-card'>
@@ -45,17 +49,15 @@ const CountyDetails = ({ county, status }: any) => {
                         <td>{ submitted }</td>
                     </tr>
                     <tr>
-                        <td>Discrepancies:</td>
-                        <td>{ discrepancies }</td>
+                        <td>Audited Contest Discrepancies:</td>
+                        <td>{ auditedCount }</td>
+                    </tr>
+                    <tr>
+                        <td>Non-audited Contest Discrepancies:</td>
+                        <td>{ oppCount }</td>
                     </tr>
                 </tbody>
             </table>
-            <div className='pt-card'>Audit board:
-                <ul>
-                    <li>John Doe (Democratic Party)</li>
-                    <li>Jane Smith (RepublicanParty)</li>
-                </ul>
-            </div>
         </div>
     );
 };

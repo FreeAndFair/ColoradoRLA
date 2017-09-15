@@ -48,8 +48,8 @@ const ContestUpdates = ({ contests, seed, sos }: any) => {
                 <table className='pt-table'>
                     <thead>
                         <tr>
-                            <td>County</td>
-                            <td>Name</td>
+                            <th>County</th>
+                            <th>Name</th>
                         </tr>
                     </thead>
                     <tbody>

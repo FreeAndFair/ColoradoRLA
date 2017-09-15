@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import * as _ from 'lodash';
 
-import { Button, Checkbox, Classes, MenuItem } from '@blueprintjs/core';
+import { Button, Checkbox, Classes, EditableText, MenuItem } from '@blueprintjs/core';
 import { Select } from '@blueprintjs/labs';
 
 import counties from 'corla/data/counties';
@@ -81,14 +81,23 @@ const ContestRow = (props: any) => {
     );
 };
 
+type SortKey = 'contest' | 'county';
+
+type SortOrder = 'asc' | 'desc';
+
 class SelectContestsForm extends React.Component<any, any> {
     constructor(props: any) {
         super(props);
 
-        this.state = {};
+        this.state = {
+            filter: '',
+            form: {},
+            order: 'asc',
+            sort: 'county',
+        };
 
         _.forEach(props.contests, (c, _) => {
-            this.state[c.id] = {
+            this.state.form[c.id] = {
                 audit: false,
                 handCount: false,
                 reason: { ...auditReasons[0] },
@@ -99,11 +108,11 @@ class SelectContestsForm extends React.Component<any, any> {
     public render() {
         const { contests } = this.props;
 
-        this.props.forms.selectContestsForm = this.state;
+        this.props.forms.selectContestsForm = this.state.form;
 
-        const contestRows = _.map(contests, (c: any) => {
+        const contestData = _.map(contests, (c: any) => {
             const props = {
-                auditStatus: this.state[c.id],
+                auditStatus: this.state.form[c.id],
                 contest: c,
                 key: c.id,
                 onAuditChange: this.onAuditChange(c),
@@ -111,8 +120,37 @@ class SelectContestsForm extends React.Component<any, any> {
                 onReasonChange: this.onReasonChange(c),
             };
 
-            return <ContestRow { ...props } />;
+            const countyName = counties[c.countyId].name;
+
+            return [
+                countyName,
+                c.name,
+                props,
+            ];
         });
+
+        const keyFunc = (d: any[]) => {
+            const i = this.state.sort === 'contest' ? 1 : 0;
+            return d[i];
+        };
+        const sortedData = _.sortBy(contestData, keyFunc);
+
+        if (this.state.order === 'desc') {
+            _.reverse(sortedData);
+        }
+
+        const filterFunc = (d: any[]) => {
+            const [countyName, contestName, ...props] = d;
+
+            const str = this.state.filter.toLowerCase();
+
+            return contestName.toLowerCase().includes(str)
+                || countyName.toLowerCase().includes(str);
+
+        };
+        const filteredData = _.filter(sortedData, filterFunc);
+
+        const contestRows = _.map(filteredData, (d: any[]) => <ContestRow { ...d[2] } />);
 
         return (
             <div>
@@ -125,19 +163,34 @@ class SelectContestsForm extends React.Component<any, any> {
                     changed. The Secretary of State can decide that a contest must witness a
                     full hand count at any time.
                 </div>
-                <table className='pt-table pt-bordered pt-condensed'>
-                    <thead>
-                        <tr>
-                            <th>County</th>
-                            <th>Contest Name</th>
-                            <th>Audit?</th>
-                            <th>Reason</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        { contestRows }
-                    </tbody>
-                </table>
+                <div className='pt-card'>
+                    Filter by County or Contest Name:
+                    <span> </span>
+                    <EditableText
+                        className='pt-input'
+                        minWidth={ 200 }
+                        value={ this.state.filter }
+                        onChange={ this.onFilterChange } />
+                </div>
+                <div className='pt-card'>
+                    <table className='pt-table pt-bordered pt-condensed'>
+                        <thead>
+                            <tr>
+                                <th onClick={ this.sortBy('county') }>
+                                    County
+                                </th>
+                                <th onClick={ this.sortBy('contest') }>
+                                    Contest Name
+                                </th>
+                                <th>Audit?</th>
+                                <th>Reason</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            { contestRows }
+                        </tbody>
+                    </table>
+                </div>
             </div>
         );
     }
@@ -145,17 +198,21 @@ class SelectContestsForm extends React.Component<any, any> {
     private onAuditChange = (contest: any) => () => {
         const s = { ...this.state };
 
-        const { audit } = s[contest.id];
-        s[contest.id].audit = !audit;
+        const { audit } = s.form[contest.id];
+        s.form[contest.id].audit = !audit;
 
         this.setState(s);
+    }
+
+    private onFilterChange = (filter: any) => {
+        this.setState({ filter });
     }
 
     private onHandCountChange = (contest: any) => () => {
         const s = { ...this.state };
 
-        const { handCount } = s[contest.id];
-        s[contest.id].handCount = !handCount;
+        const { handCount } = s.form[contest.id];
+        s.form[contest.id].handCount = !handCount;
 
         this.setState(s);
     }
@@ -163,9 +220,28 @@ class SelectContestsForm extends React.Component<any, any> {
     private onReasonChange = (contest: any) => (item: any) => {
         const s = { ...this.state };
 
-        s[contest.id].reason = { ...item };
+        s.form[contest.id].reason = { ...item };
 
         this.setState(s);
+    }
+
+    private reverseOrder() {
+        const order = this.state.order === 'asc'
+                    ? 'desc'
+                    : 'asc';
+
+        this.setState({ order });
+    }
+
+    private sortBy(sort: SortKey) {
+        return () => {
+            if (this.state.sort === sort) {
+                this.reverseOrder();
+            } else {
+                const order = 'asc';
+                this.setState({ sort, order });
+            }
+        };
     }
 }
 

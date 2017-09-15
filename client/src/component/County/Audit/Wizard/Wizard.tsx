@@ -3,9 +3,10 @@ import * as React from 'react';
 import BallotAuditStageContainer from './BallotAuditStageContainer';
 import BallotListStageContainer from './BallotListStageContainer';
 import ReviewStageContainer from './ReviewStageContainer';
+import StartStageContainer from './StartStageContainer';
 
 
-type WizardStage = 'ballot-audit' | 'list' | 'review';
+type WizardStage = 'ballot-audit' | 'list' | 'review' | 'start';
 
 interface CountyAuditWizardState {
     stage: WizardStage;
@@ -15,7 +16,7 @@ class CountyAuditWizard extends React.Component<any, CountyAuditWizardState> {
     constructor(props: any) {
         super(props);
 
-        this.state = { stage: 'list' };
+        this.state = { stage: 'start' };
     }
 
     public render() {
@@ -34,12 +35,15 @@ class CountyAuditWizard extends React.Component<any, CountyAuditWizardState> {
                 return <BallotListStageContainer { ...props } />;
             case 'review':
                 return <ReviewStageContainer { ...props } />;
+            case 'start':
+                return <StartStageContainer { ...props } />;
         }
     }
 
     private nextStage = () => {
         // tslint:disable
         const t: any = {
+            'start': 'list',
             'list': 'ballot-audit',
             'ballot-audit': 'review',
             'review': 'ballot-audit',
@@ -56,7 +60,8 @@ class CountyAuditWizard extends React.Component<any, CountyAuditWizardState> {
     private prevStage = () => {
         // tslint:disable
         const t: any = {
-            'list': 'list',
+            'start': 'start',
+            'list': 'start',
             'ballot-audit': 'list',
             'review': 'ballot-audit',
         };
@@ -69,5 +74,6 @@ class CountyAuditWizard extends React.Component<any, CountyAuditWizardState> {
         window.scrollTo(0, 0);
     }
 }
+
 
 export default CountyAuditWizard;

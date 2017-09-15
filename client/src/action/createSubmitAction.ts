@@ -39,7 +39,9 @@ function createSubmitAction(config: CreateSubmitConfig) {
             const r = await fetch(url, init);
 
             if (!r.ok) {
-                action(failType);
+                const err = await r.json();
+
+                action(failType, err);
 
                 if (r.status === 401) {
                     action('NOT_AUTHORIZED');

@@ -27,11 +27,14 @@ interface CountyDashboard {
     audit_board: any;
     audited_ballot_count: number;
     audited_prefix_length: number;
+    ballot_manifest_count: number;
     ballot_manifest_filename: string;
     ballot_manifest_hash: string;
+    ballot_manifest_timestamp: string;
     ballot_under_audit_id: number;
     ballots_remaining_in_round: number;
     current_round: Round;
+    cvr_export_count: number;
     cvr_export_filename: string;
     cvr_export_hash: string;
     contests: number[];
@@ -131,8 +134,8 @@ function parseRounds(rounds: Round[]) {
 
 function parseElection(data: any): any {
     return {
-        date: new Date(data.election_date),
-        type: data.election_type,
+        date: new Date(data.audit_info.election_date),
+        type: data.audit_info.election_type,
     };
 }
 
@@ -153,13 +156,16 @@ export const parse = (data: CountyDashboard, state: any): any => {
         auditTime: data.audit_time ? parseTimestamp(data.audit_time) : null,
         auditedBallotCount: data.audited_ballot_count,
         auditedPrefixLength: data.audited_prefix_length,
+        ballotManifestCount: data.ballot_manifest_count,
         ballotManifestFilename: data.ballot_manifest_filename,
         ballotManifestHash: data.ballot_manifest_hash,
+        ballotManifestTimestamp: data.ballot_manifest_timestamp,
         ballotUnderAuditId: data.ballot_under_audit_id,
         ballotsRemainingInRound: data.ballots_remaining_in_round,
         contests: parseContests(data.contests, state),
         contestsUnderAudit: parseContestsUnderAudit(data.contests_under_audit, state),
         currentRound: parseRound(data.current_round),
+        cvrExportCount: data.cvr_export_count,
         cvrExportFilename: data.cvr_export_filename,
         cvrExportHash: data.cvr_export_hash,
         disagreementCount: parseDisCount(data.disagreement_count),

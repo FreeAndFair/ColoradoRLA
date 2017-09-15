@@ -25,8 +25,24 @@ function parseRounds(rounds: any[]) {
     return rounds.map(parseRound);
 }
 
-function parseDisCount(data: any): number {
+function parseDisagreementCount(data: any): number {
+    if (_.isEmpty(data)) {
+        return null;
+    }
+
     return _.sum(_.values(data));
+}
+
+function parseDiscrepancyCounts(data: any): any {
+    if (_.isEmpty(data)) {
+        return null;
+    }
+
+    const total = _.sum(_.values(data));
+    const opportunistic = data.OPPORTUNISTIC_BENEFITS || 0;
+    const audited = total - opportunistic;
+
+    return { audited, opportunistic };
 }
 
 function parseCountyStatus(countyStatus: any) {
@@ -42,8 +58,8 @@ function parseCountyStatus(countyStatus: any) {
             currentRound: parseRound(c.current_round),
             cvrExportHash: c.cvr_export_hash,
             cvrTimestamp: c.cvr_export_timestamp,
-            disagreementCount: parseDisCount(c.disagreement_count),
-            discrepancyCount: parseDisCount(c.discrepancy_count),
+            disagreementCount: parseDisagreementCount(c.disagreement_count),
+            discrepancyCount: parseDiscrepancyCounts(c.discrepancy_count),
             estimatedBallotsToAudit: c.estimated_ballots_to_audit,
             id: c.id,
             manifestTimestamp: c.ballot_manifest_timestamp,
@@ -110,5 +126,5 @@ export const parse = (data: any) => ({
     handCountContests: data.hand_count_contests,
     publicMeetingDate: parsePublicMeetingDate(data),
     riskLimit: parseRiskLimit(data),
-    seed: data.random_seed,
+    seed: _.get(data, 'audit_info.seed'),
 });
