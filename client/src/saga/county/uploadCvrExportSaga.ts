@@ -18,18 +18,21 @@ function* importCvrExportFail(action: any): IterableIterator<any> {
     const { data } = action;
     const { received, sent } = data;
 
-    switch (sent.hash_status) {
-    case 'MISMATCH': {
-        notice.danger('Failed to import CVR export.');
+    notice.danger('Failed to import CVR export.');
+
+    if (sent.hash_status === 'MISMATCH') {
         notice.warning('Please verify that the hash matches the file to be uploaded.');
-        break;
+        return null;
     }
-    default: {
-        notice.danger('Failed to import CVR export.');
-        notice.warning('Please verify that the uploaded file is a valid CVR export.');
-        break;
+
+    if (received.result && received.result.includes('prohibited header CountingGroup')) {
+        notice.danger('The CVR export contained the prohibited "CountingGroup" column.');
+        return null;
     }
-    }
+
+    notice.warning('Please verify that the uploaded file is a valid CVR export.');
+
+    return null;
 }
 
 function* importCvrExportNetworkFail(): IterableIterator<any> {
