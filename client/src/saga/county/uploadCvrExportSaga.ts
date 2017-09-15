@@ -26,7 +26,7 @@ function* importCvrExportFail(action: any): IterableIterator<any> {
     }
 
     if (received.result && received.result.includes('prohibited header CountingGroup')) {
-        notice.danger('The CVR export contained the prohibited "CountingGroup" column.');
+        notice.danger('The CVR export contained the prohibited "CountingGroup" column.', 10000);
         return null;
     }
 
