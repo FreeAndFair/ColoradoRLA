@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import * as _ from 'lodash';
+
 import Nav from '../Nav';
 
 
@@ -27,6 +29,9 @@ const CountyDetails = ({ county, status }: any) => {
     const started = status !== 'NO_DATA' ? '✔' : '';
     const submitted = status.auditedBallotCount;
 
+    const auditedCount = _.get(status, 'discrepancyCount.audited') || '—';
+    const oppCount = _.get(status, 'discrepancyCount.opportunistic') || '—';
+
     return (
         <div className='pt-card'>
             <table className='pt-table pt-bordered pt-condensed'>
@@ -45,11 +50,11 @@ const CountyDetails = ({ county, status }: any) => {
                     </tr>
                     <tr>
                         <td>Audited Contest Discrepancies:</td>
-                        <td>{ status.discrepancyCount.audited }</td>
+                        <td>{ auditedCount }</td>
                     </tr>
                     <tr>
                         <td>Non-audited Contest Discrepancies:</td>
-                        <td>{ status.discrepancyCount.opportunistic }</td>
+                        <td>{ oppCount }</td>
                     </tr>
                 </tbody>
             </table>
