@@ -1,7 +1,7 @@
 2016 Arapahoe General Election,5.2.13.9,,,,,,,,,,
 ,,,,,,,,Regent of the University of Colorado - At Large (Vote For=1),Regent of the University of Colorado - At Large (Vote For=1),COUNTY COMMISSIONER DISTRICT 3 (Vote For=1),COUNTY COMMISSIONER DISTRICT 3 (Vote For=1)
 ,,,,,,,,Clear Winner,Distant Loser,Jeff Baker,Janet Lee Cook
-CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,CountingGroup,PrecinctPortion,BallotType,DEM,REP,REP,DEM
+CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,NotCountingGroup,PrecinctPortion,BallotType,DEM,REP,REP,DEM
 1,3,800,1,3-800-1,Mail,1260303104-51 (104-51),51,1,0,,
 2,3,800,2,3-800-2,Mail,1260303104-51 (104-51),51,1,0,,
 3,3,800,3,3-800-3,Mail,1260303113-52 (113-52),52,0,0,,
