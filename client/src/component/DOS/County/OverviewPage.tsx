@@ -24,8 +24,10 @@ const Breadcrumb = () => (
 
 const CountyTableRow = ({ county, status }: any) => {
     const started = status !== 'NO_DATA' ? '✔' : '';
-    const submitted = '';
-    const discrepancies = '';
+    const submitted = status.auditedBallotCount;
+
+    const auditedCount = _.get(status, 'discrepancyCount.audited') || '—';
+    const oppCount = _.get(status, 'discrepancyCount.opportunistic') || '—';
 
     return (
         <tr>
@@ -36,14 +38,19 @@ const CountyTableRow = ({ county, status }: any) => {
             </td>
             <td>{ started }</td>
             <td>{ submitted }</td>
-            <td>{ discrepancies }</td>
+            <td>{ auditedCount }</td>
+            <td>{ oppCount }</td>
         </tr>
     );
 };
 
 const CountyTable = ({ counties, countyStatus }: any) => {
-    const countyRows = _.map(counties, (c: any) => {
+    const countyRows: any = _.map(counties, (c: any) => {
         const status = countyStatus[c.id];
+
+        if (!status) {
+            return <div key={ c.id } />;
+        }
 
         return <CountyTableRow key={ c.id } county={ c } status={ status } />;
     });
@@ -55,7 +62,8 @@ const CountyTable = ({ counties, countyStatus }: any) => {
                     <td>Name</td>
                     <td>Audit Started</td>
                     <td># Ballots Submitted</td>
-                    <td># Discrepancies</td>
+                    <td>Audited Contest Discrepancies</td>
+                    <td>Non-audited Contest Discrepancies</td>
                 </tr>
             </thead>
             <tbody>
