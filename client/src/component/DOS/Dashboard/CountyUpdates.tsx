@@ -82,18 +82,18 @@ class CountyUpdates extends React.Component<any, any> {
                     <table className='pt-table pt-bordered pt-condensed '>
                         <thead>
                             <tr>
-                                <td>Name</td>
-                                <td>Status</td>
-                                <td>Submitted</td>
-                                <td>Audited Contest Discrepancies</td>
-                                <td>Non-audited Contest Discrepancies</td>
-                                <td>Disagreements</td>
-                                <td>
+                                <th>Name</th>
+                                <th>Status</th>
+                                <th>Submitted</th>
+                                <th>Audited Contest Discrepancies</th>
+                                <th>Non-audited Contest Discrepancies</th>
+                                <th>Disagreements</th>
+                                <th>
                                     <RemainingInRoundHeader />
-                                </td>
-                                <td>
+                                </th>
+                                <th>
                                     <EstRemainingHeader />
-                                </td>
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
