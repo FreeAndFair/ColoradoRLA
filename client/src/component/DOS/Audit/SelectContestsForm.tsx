@@ -85,10 +85,12 @@ class SelectContestsForm extends React.Component<any, any> {
     constructor(props: any) {
         super(props);
 
-        this.state = {};
+        this.state = {
+            form: {},
+        };
 
         _.forEach(props.contests, (c, _) => {
-            this.state[c.id] = {
+            this.state.form[c.id] = {
                 audit: false,
                 handCount: false,
                 reason: { ...auditReasons[0] },
@@ -103,7 +105,7 @@ class SelectContestsForm extends React.Component<any, any> {
 
         const contestRows = _.map(contests, (c: any) => {
             const props = {
-                auditStatus: this.state[c.id],
+                auditStatus: this.state.form[c.id],
                 contest: c,
                 key: c.id,
                 onAuditChange: this.onAuditChange(c),
@@ -145,8 +147,8 @@ class SelectContestsForm extends React.Component<any, any> {
     private onAuditChange = (contest: any) => () => {
         const s = { ...this.state };
 
-        const { audit } = s[contest.id];
-        s[contest.id].audit = !audit;
+        const { audit } = s.form[contest.id];
+        s.form[contest.id].audit = !audit;
 
         this.setState(s);
     }
@@ -154,8 +156,8 @@ class SelectContestsForm extends React.Component<any, any> {
     private onHandCountChange = (contest: any) => () => {
         const s = { ...this.state };
 
-        const { handCount } = s[contest.id];
-        s[contest.id].handCount = !handCount;
+        const { handCount } = s.form[contest.id];
+        s.form[contest.id].handCount = !handCount;
 
         this.setState(s);
     }
@@ -163,7 +165,7 @@ class SelectContestsForm extends React.Component<any, any> {
     private onReasonChange = (contest: any) => (item: any) => {
         const s = { ...this.state };
 
-        s[contest.id].reason = { ...item };
+        s.form[contest.id].reason = { ...item };
 
         this.setState(s);
     }
