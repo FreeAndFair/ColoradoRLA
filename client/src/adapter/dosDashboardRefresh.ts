@@ -126,5 +126,5 @@ export const parse = (data: any) => ({
     handCountContests: data.hand_count_contests,
     publicMeetingDate: parsePublicMeetingDate(data),
     riskLimit: parseRiskLimit(data),
-    seed: data.random_seed,
+    seed: _.get(data, 'audit_info.seed'),
 });
