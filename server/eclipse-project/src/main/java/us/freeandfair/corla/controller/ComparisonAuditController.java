@@ -542,7 +542,7 @@ public final class ComparisonAuditController {
                        the_audit_cvr.id() + " for county " + the_cdb.id() + 
                        ", cvr " + the_cvr_under_audit.id());
     }
-
+    Persistence.flush();
     updateCVRUnderAudit(the_cdb);
     the_cdb.
         setEstimatedBallotsToAudit(computeEstimatedBallotsToAudit(the_cdb) -
@@ -648,8 +648,10 @@ public final class ComparisonAuditController {
         for (int i = 0; i < the_count; i++) {
           ca.recordDiscrepancy(discrepancy.getAsInt());
         }
+        discrepancies.add(ca.auditReason());
       }
-      discrepancies.add(ca.auditReason());
+      ca.signalBallotAudited();
+      Persistence.saveOrUpdate(ca);
     }
     
     for (final CVRContestInfo ci : the_audit_cvr.contestInfo()) {
@@ -698,8 +700,10 @@ public final class ComparisonAuditController {
         for (int i = 0; i < the_count; i++) {
           ca.removeDiscrepancy(discrepancy.getAsInt());
         }
+        discrepancies.remove(ca.auditReason());
       }
-      discrepancies.remove(ca.auditReason());
+      ca.signalBallotAudited();
+      Persistence.saveOrUpdate(ca);
     }
     
     for (final CVRContestInfo ci : the_audit_cvr.contestInfo()) {
