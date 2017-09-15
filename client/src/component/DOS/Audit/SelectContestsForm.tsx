@@ -103,7 +103,7 @@ class SelectContestsForm extends React.Component<any, any> {
 
         this.props.forms.selectContestsForm = this.state;
 
-        const contestRows = _.map(contests, (c: any) => {
+        const contestData = _.map(contests, (c: any) => {
             const props = {
                 auditStatus: this.state.form[c.id],
                 contest: c,
@@ -113,8 +113,16 @@ class SelectContestsForm extends React.Component<any, any> {
                 onReasonChange: this.onReasonChange(c),
             };
 
-            return <ContestRow { ...props } />;
+            const countyName = counties[c.countyId].name;
+
+            return [
+                countyName,
+                c.name,
+                props,
+            ];
         });
+
+        const contestRows = _.map(contestData, (d: any[]) => <ContestRow { ...d[2] } />);
 
         return (
             <div>
