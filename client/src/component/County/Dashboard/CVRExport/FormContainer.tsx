@@ -39,8 +39,8 @@ class CVRExportFormContainer extends React.Component<any, any> {
         if (fileUploaded && !this.state.reupload) {
             return (
                 <UploadedCVRExport enableReupload={ this.enableReupload }
-                                   filename={ county.ballotManifestFilename }
-                                   hash={ county.ballotManifestHash } />
+                                   filename={ county.cvrExportFilename }
+                                   hash={ county.cvrExportHash } />
             );
         }
 
