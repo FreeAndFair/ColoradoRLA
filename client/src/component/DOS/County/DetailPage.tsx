@@ -25,8 +25,7 @@ const Breadcrumb = ({ county }: any) => (
 
 const CountyDetails = ({ county, status }: any) => {
     const started = status !== 'NO_DATA' ? '✔' : '';
-    const submitted = '';
-    const discrepancies = '';
+    const submitted = status.auditedBallotCount;
 
     return (
         <div className='pt-card'>
@@ -45,8 +44,12 @@ const CountyDetails = ({ county, status }: any) => {
                         <td>{ submitted }</td>
                     </tr>
                     <tr>
-                        <td>Discrepancies:</td>
-                        <td>{ discrepancies }</td>
+                        <td>Audited Contest Discrepancies:</td>
+                        <td>{ status.discrepancyCount.audited }</td>
+                    </tr>
+                    <tr>
+                        <td>Non-audited Contest Discrepancies:</td>
+                        <td>{ status.discrepancyCount.opportunistic }</td>
                     </tr>
                 </tbody>
             </table>
