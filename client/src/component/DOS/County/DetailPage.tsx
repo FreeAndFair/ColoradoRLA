@@ -53,12 +53,6 @@ const CountyDetails = ({ county, status }: any) => {
                     </tr>
                 </tbody>
             </table>
-            <div className='pt-card'>Audit board:
-                <ul>
-                    <li>John Doe (Democratic Party)</li>
-                    <li>Jane Smith (RepublicanParty)</li>
-                </ul>
-            </div>
         </div>
     );
 };
