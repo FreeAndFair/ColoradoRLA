@@ -92,9 +92,15 @@ class CountyUpdates extends React.Component<any, any> {
                                                ? c.discrepancyCount.opportunistic
                                                : '—';
 
-            const disagreementCount = _.isNil(c.disagreementCount)
-                                    ? '—'
-                                    : c.disagreementCount;
+            let disagreementCount: any = c.disagreementCount;
+
+            if (_.isNil(c.disagreementCount)) {
+                if (auditedDiscrepancyCount === '—') {
+                    disagreementCount = '—';
+                } else {
+                    disagreementCount = 0;
+                }
+            }
 
             return [
                 c.id,
