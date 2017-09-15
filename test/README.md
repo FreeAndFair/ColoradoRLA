@@ -10,7 +10,11 @@ Contents:
     * Regent contest has a very wide margin of 123-14 out of 165 ballots = 66.1%
  and appears on all CVRs
 
-        `Sample size = 15 for margin 66.1%, risk 10%, gamma 1.1, or1 0.01, or2 0.01, ur1 0.01, ur2 0.01, roundUp1 1, roundUp2 1`
+  	`Sample size =  8 for margin 66.1%, risk 10%, gamma 1.03905, o1 0, o2 0, u1 0, u2 0`
+	`Sample size = 10 for margin 66.1%, risk 10%, gamma 1.03905, o1 1, o2 0, u1 0, u2 0`
+	`Sample size = 18 for margin 66.1%, risk 10%, gamma 1.03905, o1 0, o2 1, u1 0, u2 0`
+	`Sample size =  7 for margin 66.1%, risk 10%, gamma 1.03905, o1 0, o2 0, u1 1, u2 0`
+	`Sample size =  6 for margin 66.1%, risk 10%, gamma 1.03905, o1 0, o2 0, u1 0, u2 1`
 
     * COUNTY COMMISSIONER DISTRICT 3 has a wide margin of (27-12)/46 = 32.6% 
     and does not appear on all the CVRs.
