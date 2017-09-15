@@ -43,10 +43,44 @@ const EstRemainingHeader = () => {
     );
 };
 
+type SortKey = 'name'
+             | 'status'
+             | 'submitted'
+             | 'auditedDisc'
+             | 'oppDisc'
+             | 'disagreements'
+             | 'remRound'
+             | 'remTotal';
+
+function sortIndex(sort: SortKey): number {
+    // tslint:disable
+    const index: any = {
+        name: 1,
+        status: 2,
+        submitted: 3,
+        auditedDisc: 4,
+        oppDisc: 5,
+        disagreements: 6,
+        remRound: 7,
+        remTotal: 8,
+    };
+    // tslint:enable
+
+    return index[sort];
+}
+
+type SortOrder = 'asc' | 'desc';
+
 class CountyUpdates extends React.Component<any, any> {
+    public state: any = {
+        order: 'asc',
+        sort: 'name',
+    };
+
     public render() {
         const { countyStatus } = this.props;
-        const countyStatusRows = _.map(countyStatus, (c: any) => {
+
+        const countyData = _.map(countyStatus, (c: any) => {
             const county = _.find(counties, (x: any) => x.id === c.id);
 
             const status = formatCountyAsmState(c.asmState);
@@ -61,16 +95,37 @@ class CountyUpdates extends React.Component<any, any> {
                                     ? '—'
                                     : c.disagreementCount;
 
+            return [
+                c.id,
+                county.name,
+                status,
+                c.auditedBallotCount,
+                auditedDiscrepancyCount,
+                opportunisticDisrepancyCount,
+                disagreementCount,
+                c.ballotsRemainingInRound,
+                Math.max(0, c.estimatedBallotsToAudit),
+            ];
+        });
+
+        const keyFunc = (d: any[]) => d[sortIndex(this.state.sort)];
+        const sortedCountyData = _.sortBy(countyData, keyFunc);
+
+        if (this.state.order === 'desc') {
+            _.reverse(sortedCountyData);
+        }
+
+        const countyStatusRows = _.map(sortedCountyData, (x: any) => {
             return (
-                <tr key={ c.id }>
-                    <td>{ county.name }</td>
-                    <td>{ status }</td>
-                    <td>{ c.auditedBallotCount }</td>
-                    <td>{ auditedDiscrepancyCount }</td>
-                    <td>{ opportunisticDisrepancyCount }</td>
-                    <td>{ disagreementCount }</td>
-                    <td>{ c.ballotsRemainingInRound }</td>
-                    <td>{ Math.max(0, c.estimatedBallotsToAudit) }</td>
+                <tr key={ x[0] }>
+                    <td>{ x[1] }</td>
+                    <td>{ x[2] }</td>
+                    <td>{ x[3] }</td>
+                    <td>{ x[4] }</td>
+                    <td>{ x[5] }</td>
+                    <td>{ x[6] }</td>
+                    <td>{ x[7] }</td>
+                    <td>{ x[8] }</td>
                 </tr>
             );
         });
@@ -82,16 +137,28 @@ class CountyUpdates extends React.Component<any, any> {
                     <table className='pt-table pt-bordered pt-condensed '>
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Status</th>
-                                <th>Submitted</th>
-                                <th>Audited Contest Discrepancies</th>
-                                <th>Non-audited Contest Discrepancies</th>
-                                <th>Disagreements</th>
-                                <th>
+                                <th onClick={ this.sortBy('name') }>
+                                    Name
+                                </th>
+                                <th onClick={ this.sortBy('status') }>
+                                    Status
+                                </th>
+                                <th onClick={ this.sortBy('submitted') }>
+                                    Submitted
+                                </th>
+                                <th onClick={ this.sortBy('auditedDisc') }>
+                                    Audited Contest Discrepancies
+                                </th>
+                                <th onClick={ this.sortBy('oppDisc') }>
+                                    Non-audited Contest Discrepancies
+                                </th>
+                                <th onClick={ this.sortBy('disagreements') }>
+                                    Disagreements
+                                </th>
+                                <th onClick={ this.sortBy('remRound') }>
                                     <RemainingInRoundHeader />
                                 </th>
-                                <th>
+                                <th onClick={ this.sortBy('remTotal') }>
                                     <EstRemainingHeader />
                                 </th>
                             </tr>
@@ -104,7 +171,26 @@ class CountyUpdates extends React.Component<any, any> {
             </div>
         );
     }
-};
+
+    private sortBy(sort: SortKey) {
+        return () => {
+            if (this.state.sort === sort) {
+                this.reverseOrder();
+            } else {
+                const order = 'asc';
+                this.setState({ sort, order });
+            }
+        };
+    }
+
+    private reverseOrder() {
+        const order = this.state.order === 'asc'
+                    ? 'desc'
+                    : 'asc';
+
+        this.setState({ order });
+    }
+}
 
 
 export default CountyUpdates;
