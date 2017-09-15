@@ -56,6 +56,10 @@ const Main = (props: any) => {
                               ? <div />
                               : <FileUploadContainer />;
 
+    const reportType = auditComplete
+                     ? 'final'
+                     : 'intermediate';
+
     return (
         <div className='county-main pt-card'>
             <h1>Hello, { name } County!</h1>
@@ -64,7 +68,7 @@ const Main = (props: any) => {
                 { fileUploadContainer }
                 <AuditBoardInfo signedIn={ auditBoardSignedIn } />
                 <div className='pt-card'>
-                    <div>Click to download intermediate audit report.</div>
+                    <div>Click to download { reportType} audit report.</div>
                     <button
                         className='pt-button'
                         disabled={ !canRenderReport }
