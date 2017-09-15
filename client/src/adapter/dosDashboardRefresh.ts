@@ -39,7 +39,7 @@ function parseDiscrepancyCounts(data: any): any {
     }
 
     const total = _.sum(_.values(data));
-    const opportunistic = data.OPPORTUNISTIC_BENEFITS;
+    const opportunistic = data.OPPORTUNISTIC_BENEFITS || 0;
     const audited = total - opportunistic;
 
     return { audited, opportunistic };
