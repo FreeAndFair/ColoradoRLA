@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import * as _ from 'lodash';
 
-import { Tooltip } from '@blueprintjs/core';
+import { EditableText, Tooltip } from '@blueprintjs/core';
 
 import counties from 'corla/data/counties';
 
@@ -73,6 +73,7 @@ type SortOrder = 'asc' | 'desc';
 
 class CountyUpdates extends React.Component<any, any> {
     public state: any = {
+        filter: '',
         order: 'asc',
         sort: 'name',
     };
@@ -115,7 +116,10 @@ class CountyUpdates extends React.Component<any, any> {
             _.reverse(sortedCountyData);
         }
 
-        const countyStatusRows = _.map(sortedCountyData, (x: any) => {
+        const filterName = (d: any) => d[1].includes(this.state.filter);
+        const filteredCountyData = _.filter(sortedCountyData, filterName);
+
+        const countyStatusRows = _.map(filteredCountyData, (x: any) => {
             return (
                 <tr key={ x[0] }>
                     <td>{ x[1] }</td>
@@ -133,6 +137,15 @@ class CountyUpdates extends React.Component<any, any> {
         return (
             <div className='pt-card'>
                 <h3>County Updates</h3>
+                <div className='pt-card'>
+                    Filter by County Name:
+                    <span> </span>
+                    <EditableText
+                        className='pt-input'
+                        minWidth={ 200 }
+                        value={ this.state.filter }
+                        onChange={ this.onFilterChange } />
+                </div>
                 <div className='pt-card'>
                     <table className='pt-table pt-bordered pt-condensed '>
                         <thead>
@@ -170,6 +183,10 @@ class CountyUpdates extends React.Component<any, any> {
                 </div>
             </div>
         );
+    }
+
+    private onFilterChange = (filter: any) => {
+        this.setState({ filter });
     }
 
     private sortBy(sort: SortKey) {
