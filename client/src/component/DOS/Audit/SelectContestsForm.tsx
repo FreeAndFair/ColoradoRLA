@@ -127,19 +127,21 @@ class SelectContestsForm extends React.Component<any, any> {
                     changed. The Secretary of State can decide that a contest must witness a
                     full hand count at any time.
                 </div>
-                <table className='pt-table pt-bordered pt-condensed'>
-                    <thead>
-                        <tr>
-                            <th>County</th>
-                            <th>Contest Name</th>
-                            <th>Audit?</th>
-                            <th>Reason</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        { contestRows }
-                    </tbody>
-                </table>
+                <div className='pt-card'>
+                    <table className='pt-table pt-bordered pt-condensed'>
+                        <thead>
+                            <tr>
+                                <th>County</th>
+                                <th>Contest Name</th>
+                                <th>Audit?</th>
+                                <th>Reason</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            { contestRows }
+                        </tbody>
+                    </table>
+                </div>
             </div>
         );
     }
