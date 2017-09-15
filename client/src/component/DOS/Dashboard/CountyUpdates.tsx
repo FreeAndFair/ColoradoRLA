@@ -43,64 +43,67 @@ const EstRemainingHeader = () => {
     );
 };
 
-const CountyUpdates = ({ countyStatus }: any) => {
-    const countyStatusRows = _.map(countyStatus, (c: any) => {
-        const county = _.find(counties, (x: any) => x.id === c.id);
+class CountyUpdates extends React.Component<any, any> {
+    public render() {
+        const { countyStatus } = this.props;
+        const countyStatusRows = _.map(countyStatus, (c: any) => {
+            const county = _.find(counties, (x: any) => x.id === c.id);
 
-        const status = formatCountyAsmState(c.asmState);
-        const auditedDiscrepancyCount = c.discrepancyCount
-                                      ? c.discrepancyCount.audited
-                                      : '—';
-        const opportunisticDisrepancyCount = c.discrepancyCount
-                                           ? c.discrepancyCount.opportunistic
-                                           : '—';
+            const status = formatCountyAsmState(c.asmState);
+            const auditedDiscrepancyCount = c.discrepancyCount
+                                          ? c.discrepancyCount.audited
+                                          : '—';
+            const opportunisticDisrepancyCount = c.discrepancyCount
+                                               ? c.discrepancyCount.opportunistic
+                                               : '—';
 
-        const disagreementCount = _.isNil(c.disagreementCount)
-                                ? '—'
-                                : c.disagreementCount;
+            const disagreementCount = _.isNil(c.disagreementCount)
+                                    ? '—'
+                                    : c.disagreementCount;
+
+            return (
+                <tr key={ c.id }>
+                    <td>{ county.name }</td>
+                    <td>{ status }</td>
+                    <td>{ c.auditedBallotCount }</td>
+                    <td>{ auditedDiscrepancyCount }</td>
+                    <td>{ opportunisticDisrepancyCount }</td>
+                    <td>{ disagreementCount }</td>
+                    <td>{ c.ballotsRemainingInRound }</td>
+                    <td>{ Math.max(0, c.estimatedBallotsToAudit) }</td>
+                </tr>
+            );
+        });
 
         return (
-            <tr key={ c.id }>
-                <td>{ county.name }</td>
-                <td>{ status }</td>
-                <td>{ c.auditedBallotCount }</td>
-                <td>{ auditedDiscrepancyCount }</td>
-                <td>{ opportunisticDisrepancyCount }</td>
-                <td>{ disagreementCount }</td>
-                <td>{ c.ballotsRemainingInRound }</td>
-                <td>{ Math.max(0, c.estimatedBallotsToAudit) }</td>
-            </tr>
-        );
-    });
-
-    return (
-        <div className='pt-card'>
-            <h3>County Updates</h3>
             <div className='pt-card'>
-                <table className='pt-table pt-bordered pt-condensed '>
-                    <thead>
-                        <tr>
-                            <td>Name</td>
-                            <td>Status</td>
-                            <td>Submitted</td>
-                            <td>Audited Contest Discrepancies</td>
-                            <td>Non-audited Contest Discrepancies</td>
-                            <td>Disagreements</td>
-                            <td>
-                                <RemainingInRoundHeader />
-                            </td>
-                            <td>
-                                <EstRemainingHeader />
-                            </td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        { ...countyStatusRows }
-                    </tbody>
-                </table>
+                <h3>County Updates</h3>
+                <div className='pt-card'>
+                    <table className='pt-table pt-bordered pt-condensed '>
+                        <thead>
+                            <tr>
+                                <td>Name</td>
+                                <td>Status</td>
+                                <td>Submitted</td>
+                                <td>Audited Contest Discrepancies</td>
+                                <td>Non-audited Contest Discrepancies</td>
+                                <td>Disagreements</td>
+                                <td>
+                                    <RemainingInRoundHeader />
+                                </td>
+                                <td>
+                                    <EstRemainingHeader />
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            { ...countyStatusRows }
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
-    );
+        );
+    }
 };
 
 
