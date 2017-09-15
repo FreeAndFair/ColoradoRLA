@@ -108,7 +108,7 @@ class SelectContestsForm extends React.Component<any, any> {
     public render() {
         const { contests } = this.props;
 
-        this.props.forms.selectContestsForm = this.state;
+        this.props.forms.selectContestsForm = this.state.form;
 
         const contestData = _.map(contests, (c: any) => {
             const props = {
