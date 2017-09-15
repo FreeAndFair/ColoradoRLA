@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import * as _ from 'lodash';
 
-import { Button, Checkbox, Classes, MenuItem } from '@blueprintjs/core';
+import { Button, Checkbox, Classes, EditableText, MenuItem } from '@blueprintjs/core';
 import { Select } from '@blueprintjs/labs';
 
 import counties from 'corla/data/counties';
@@ -90,6 +90,7 @@ class SelectContestsForm extends React.Component<any, any> {
         super(props);
 
         this.state = {
+            filter: '',
             form: {},
             order: 'asc',
             sort: 'county',
@@ -138,7 +139,18 @@ class SelectContestsForm extends React.Component<any, any> {
             _.reverse(sortedData);
         }
 
-        const contestRows = _.map(sortedData, (d: any[]) => <ContestRow { ...d[2] } />);
+        const filterFunc = (d: any[]) => {
+            const [countyName, contestName, ...props] = d;
+
+            const str = this.state.filter.toLowerCase();
+
+            return contestName.toLowerCase().includes(str)
+                || countyName.toLowerCase().includes(str);
+
+        };
+        const filteredData = _.filter(sortedData, filterFunc);
+
+        const contestRows = _.map(filteredData, (d: any[]) => <ContestRow { ...d[2] } />);
 
         return (
             <div>
@@ -150,6 +162,15 @@ class SelectContestsForm extends React.Component<any, any> {
                     these contests for audit have been selected and published, they cannot be
                     changed. The Secretary of State can decide that a contest must witness a
                     full hand count at any time.
+                </div>
+                <div className='pt-card'>
+                    Filter by County or Contest Name:
+                    <span> </span>
+                    <EditableText
+                        className='pt-input'
+                        minWidth={ 200 }
+                        value={ this.state.filter }
+                        onChange={ this.onFilterChange } />
                 </div>
                 <div className='pt-card'>
                     <table className='pt-table pt-bordered pt-condensed'>
@@ -181,6 +202,10 @@ class SelectContestsForm extends React.Component<any, any> {
         s.form[contest.id].audit = !audit;
 
         this.setState(s);
+    }
+
+    private onFilterChange = (filter: any) => {
+        this.setState({ filter });
     }
 
     private onHandCountChange = (contest: any) => () => {
