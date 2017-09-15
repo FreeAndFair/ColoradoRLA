@@ -81,12 +81,18 @@ const ContestRow = (props: any) => {
     );
 };
 
+type SortKey = 'contest' | 'county';
+
+type SortOrder = 'asc' | 'desc';
+
 class SelectContestsForm extends React.Component<any, any> {
     constructor(props: any) {
         super(props);
 
         this.state = {
             form: {},
+            order: 'asc',
+            sort: 'county',
         };
 
         _.forEach(props.contests, (c, _) => {
@@ -122,7 +128,17 @@ class SelectContestsForm extends React.Component<any, any> {
             ];
         });
 
-        const contestRows = _.map(contestData, (d: any[]) => <ContestRow { ...d[2] } />);
+        const keyFunc = (d: any[]) => {
+            const i = this.state.sort === 'contest' ? 0 : 1;
+            return d[i];
+        };
+        const sortedData = _.sortBy(contestData, keyFunc);
+
+        if (this.state.order === 'desc') {
+            _.reverse(sortedData);
+        }
+
+        const contestRows = _.map(sortedData, (d: any[]) => <ContestRow { ...d[2] } />);
 
         return (
             <div>
@@ -139,8 +155,12 @@ class SelectContestsForm extends React.Component<any, any> {
                     <table className='pt-table pt-bordered pt-condensed'>
                         <thead>
                             <tr>
-                                <th>County</th>
-                                <th>Contest Name</th>
+                                <th onClick={ this.sortBy('county') }>
+                                    County
+                                </th>
+                                <th onClick={ this.sortBy('contest') }>
+                                    Contest Name
+                                </th>
                                 <th>Audit?</th>
                                 <th>Reason</th>
                             </tr>
@@ -178,6 +198,25 @@ class SelectContestsForm extends React.Component<any, any> {
         s.form[contest.id].reason = { ...item };
 
         this.setState(s);
+    }
+
+    private reverseOrder() {
+        const order = this.state.order === 'asc'
+                    ? 'desc'
+                    : 'asc';
+
+        this.setState({ order });
+    }
+
+    private sortBy(sort: SortKey) {
+        return () => {
+            if (this.state.sort === sort) {
+                this.reverseOrder();
+            } else {
+                const order = 'asc';
+                this.setState({ sort, order });
+            }
+        };
     }
 }
 
