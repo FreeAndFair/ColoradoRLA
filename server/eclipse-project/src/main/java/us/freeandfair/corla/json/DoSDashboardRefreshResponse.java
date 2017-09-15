@@ -163,8 +163,10 @@ public class DoSDashboardRefreshResponse {
                 Math.max(estimated, 
                          Math.max(0, ccca.estimatedBallotsToAudit() - 
                                      ccca.dashboard().auditedPrefixLength()));
+            
+            // possible discrepancy types range from -2 to 2 inclusive,
+            // and we provide them all in the refresh response
             for (int i = -2; i <= 2; i++) {
-              // get the discrepancy counts of various types
               if (discrepancy.get(i) == null) {
                 discrepancy.put(i,  0);
               }
