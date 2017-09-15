@@ -337,6 +337,9 @@ public class StateReport {
           cell.setCellValue("Diluted Margin %");
 
           for (final String choice : ccr.rankedChoices()) {
+            if ("Write-in".equals(choice)) {
+              continue;
+            }
             row = summary_sheet.createRow(row_number++);
             max_cell_number = Math.max(max_cell_number, cell_number);
             cell_number = 0;

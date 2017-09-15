@@ -76,6 +76,7 @@ public final class ContestJsonAdapter extends TypeAdapter<Contest> {
    * @param the_info The object to write.
    */ 
   @Override
+  @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
   public void write(final JsonWriter the_writer, 
                     final Contest the_contest) 
       throws IOException {
@@ -87,7 +88,9 @@ public final class ContestJsonAdapter extends TypeAdapter<Contest> {
     the_writer.name(CHOICES);
     the_writer.beginArray();
     for (final Choice c : the_contest.choices()) {
-      the_writer.jsonValue(Main.GSON.toJson(Persistence.unproxy(c)));
+      if (!"Write-in".equals(c.name())) {
+        the_writer.jsonValue(Main.GSON.toJson(Persistence.unproxy(c)));
+      }
     }
     the_writer.endArray();
     the_writer.name(VOTES_ALLOWED).value(the_contest.votesAllowed());
