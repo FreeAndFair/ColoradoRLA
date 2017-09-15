@@ -116,7 +116,12 @@ class CountyUpdates extends React.Component<any, any> {
             _.reverse(sortedCountyData);
         }
 
-        const filterName = (d: any) => d[1].includes(this.state.filter);
+        const filterName = (d: any) => {
+            const name = d[1].toLowerCase();
+            const str = this.state.filter.toLowerCase();
+
+            return name.includes(str);
+        };
         const filteredCountyData = _.filter(sortedCountyData, filterName);
 
         const countyStatusRows = _.map(filteredCountyData, (x: any) => {
