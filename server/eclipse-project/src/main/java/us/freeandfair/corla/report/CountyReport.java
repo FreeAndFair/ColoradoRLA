@@ -39,7 +39,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import us.freeandfair.corla.Main;
 import us.freeandfair.corla.controller.ComparisonAuditController;
 import us.freeandfair.corla.model.AuditReason;
 import us.freeandfair.corla.model.CVRAuditInfo;
@@ -131,7 +130,6 @@ public class CountyReport {
     my_driving_contest_results = new ArrayList<CountyContestResult>();
     my_cdb = 
         Persistence.getByID(my_county.id(), CountyDashboard.class);
-    Main.LOGGER.info("driving contests: " + my_cdb.drivingContests());
     for (final CountyContestResult ccr : 
          CountyContestResultQueries.forCounty(my_county)) {
       if (my_cdb.drivingContests().contains(ccr.contest())) {
@@ -144,7 +142,6 @@ public class CountyReport {
       final List<CVRAuditInfo> cvrs_to_audit = 
           ComparisonAuditController.cvrsToAuditInRound(my_cdb, r.number());
       cvrs_to_audit.sort(new CVRAuditInfo.BallotOrderComparator());
-      Main.LOGGER.info("cvrs to audit: " + cvrs_to_audit);
       my_cvrs_to_audit_by_round.put(r.number(), cvrs_to_audit);
     }
     my_dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
@@ -202,7 +199,6 @@ public class CountyReport {
     workbook.write(baos);
     baos.flush();
     baos.close();
-    Main.LOGGER.info("output stream size: " + baos.size());
     workbook.close();
     return baos.toByteArray();
   }

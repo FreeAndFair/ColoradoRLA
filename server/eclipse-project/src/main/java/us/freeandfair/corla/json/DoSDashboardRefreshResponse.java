@@ -11,11 +11,13 @@
 
 package us.freeandfair.corla.json;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import javax.persistence.PersistenceException;
 
@@ -24,7 +26,6 @@ import us.freeandfair.corla.asm.ASMUtilities;
 import us.freeandfair.corla.asm.DoSDashboardASM;
 import us.freeandfair.corla.model.AuditInfo;
 import us.freeandfair.corla.model.AuditReason;
-import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.ContestToAudit;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyContestComparisonAudit;
@@ -32,7 +33,6 @@ import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CountyContestComparisonAuditQueries;
-import us.freeandfair.corla.util.Pair;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
@@ -56,27 +56,32 @@ public class DoSDashboardRefreshResponse {
   /**
    * A map from audited contests to audit reasons.
    */
-  private final Map<Long, AuditReason> my_audited_contests;
+  private final SortedMap<Long, AuditReason> my_audited_contests;
   
   /**
    * A map from audited contests to estimated ballots left to audit.
    */
-  private final Map<Long, Integer> my_estimated_ballots_to_audit;
+  private final SortedMap<Long, Integer> my_estimated_ballots_to_audit;
   
   /**
    * A map from audited contests to optimistic ballots left to audit.
    */
-  private final Map<Long, Integer> my_optimistic_ballots_to_audit;
+  private final SortedMap<Long, Integer> my_optimistic_ballots_to_audit;
+  
+  /**
+   * A map from audited contests to discrepancy count maps.
+   */
+  private final SortedMap<Long, Map<Integer, Integer>> my_discrepancy_count;
   
   /**
    * A map from county IDs to county status.
    */
-  private final Map<Long, CountyDashboardRefreshResponse> my_county_status;
+  private final SortedMap<Long, CountyDashboardRefreshResponse> my_county_status;
   
   /**
    * A set of contests selected for full hand count.
    */
-  private final Set<Long> my_hand_count_contests;
+  private final List<Long> my_hand_count_contests;
   
   /**
    * The audit info.
@@ -88,25 +93,35 @@ public class DoSDashboardRefreshResponse {
    * 
    * @param the_asm_state The ASM state.
    * @param the_audited_contests The audited contests.
+   * @param the_estimated_ballots_to_audit The estimated ballots to audit, 
+   * by contest.
+   * @param the_optimistic_ballots_to_audit The optimistic ballots to audit, 
+   * by contest.
+   * @param the_discrepancy_count The discrepancy count for each discrepancy type,
+   * by contest.
    * @param the_county_status The county statuses.
    * @param the_hand_count_contests The hand count contests.
    * @param the_audit_info The election info.
    */
   @SuppressWarnings("PMD.ExcessiveParameterList")
   protected DoSDashboardRefreshResponse(final ASMState the_asm_state,
-                                        final Map<Long, AuditReason> the_audited_contests,
-                                        final Map<Long, Integer> 
+                                        final SortedMap<Long, AuditReason> 
+                                           the_audited_contests,
+                                        final SortedMap<Long, Integer> 
                                            the_estimated_ballots_to_audit,
-                                        final Map<Long, Integer>
+                                        final SortedMap<Long, Integer>
                                            the_optimistic_ballots_to_audit,
-                                        final Map<Long, CountyDashboardRefreshResponse> 
+                                        final SortedMap<Long, Map<Integer, Integer>>
+                                           the_discrepancy_counts,
+                                        final SortedMap<Long, CountyDashboardRefreshResponse> 
                                            the_county_status,
-                                        final Set<Long> the_hand_count_contests,
+                                        final List<Long> the_hand_count_contests,
                                         final AuditInfo the_audit_info) {
     my_asm_state = the_asm_state;
     my_audited_contests = the_audited_contests;
     my_estimated_ballots_to_audit = the_estimated_ballots_to_audit;
     my_optimistic_ballots_to_audit = the_optimistic_ballots_to_audit;
+    my_discrepancy_count = the_discrepancy_counts;
     my_county_status = the_county_status;
     my_hand_count_contests = the_hand_count_contests;
     my_audit_info = the_audit_info;
@@ -120,22 +135,47 @@ public class DoSDashboardRefreshResponse {
    * @exception NullPointerException if necessary information to construct the
    * response does not exist.
    */
+  @SuppressWarnings("checkstyle:magicnumber")
   public static DoSDashboardRefreshResponse 
       createResponse(final DoSDashboard the_dashboard) {
     // construct the various audit info from the contests to audit in the dashboard
-    final Map<Long, AuditReason> audited_contests = 
-        new HashMap<Long, AuditReason>();
-    final Map<Long, Integer> estimated_ballots_to_audit = new HashMap<Long, Integer>();
-    final Map<Long, Integer> optimistic_ballots_to_audit = new HashMap<Long, Integer>();
-    final Set<Long> hand_count_contests = new HashSet<Long>();
+    final SortedMap<Long, AuditReason> audited_contests = 
+        new TreeMap<Long, AuditReason>();
+    final SortedMap<Long, Integer> estimated_ballots_to_audit = new TreeMap<Long, Integer>();
+    final SortedMap<Long, Integer> optimistic_ballots_to_audit = new TreeMap<Long, Integer>();
+    final SortedMap<Long, Map<Integer, Integer>> discrepancy_count = new TreeMap<>();
+    final List<Long> hand_count_contests = new ArrayList<Long>();
     
     for (final ContestToAudit cta : the_dashboard.contestsToAudit()) {
       switch (cta.audit()) {
         case COMPARISON:
           audited_contests.put(cta.contest().id(), cta.reason());
-          final Pair<Integer, Integer> estimates = ballotsToAudit(cta.contest());
-          estimated_ballots_to_audit.put(cta.contest().id(), estimates.first());
-          optimistic_ballots_to_audit.put(cta.contest().id(), estimates.second());
+          final Map<Integer, Integer> discrepancy = new HashMap<>();
+          int optimistic = Integer.MIN_VALUE;
+          int estimated = Integer.MIN_VALUE;
+          for (final CountyContestComparisonAudit ccca : 
+               CountyContestComparisonAuditQueries.matching(cta.contest())) {
+            optimistic = 
+                Math.max(optimistic, 
+                         Math.max(0, ccca.optimisticBallotsToAudit() - 
+                                     ccca.dashboard().auditedPrefixLength()));
+            estimated = 
+                Math.max(estimated, 
+                         Math.max(0, ccca.estimatedBallotsToAudit() - 
+                                     ccca.dashboard().auditedPrefixLength()));
+            
+            // possible discrepancy types range from -2 to 2 inclusive,
+            // and we provide them all in the refresh response
+            for (int i = -2; i <= 2; i++) {
+              if (discrepancy.get(i) == null) {
+                discrepancy.put(i,  0);
+              }
+              discrepancy.put(i, discrepancy.get(i) + ccca.discrepancyCount(i));
+            }
+          }
+          estimated_ballots_to_audit.put(cta.contest().id(), optimistic);
+          optimistic_ballots_to_audit.put(cta.contest().id(), estimated);
+          discrepancy_count.put(cta.contest().id(), discrepancy);
           break;
           
         case HAND_COUNT:
@@ -145,6 +185,9 @@ public class DoSDashboardRefreshResponse {
         default:
       }
     }
+    
+    Collections.sort(hand_count_contests);
+    
     // status
     final DoSDashboardASM asm = 
         ASMUtilities.asmFor(DoSDashboardASM.class, DoSDashboardASM.IDENTITY);
@@ -154,32 +197,10 @@ public class DoSDashboardRefreshResponse {
                                            audited_contests,
                                            estimated_ballots_to_audit,
                                            optimistic_ballots_to_audit,
+                                           discrepancy_count,
                                            countyStatusMap(),
                                            hand_count_contests,
                                            the_dashboard.auditInfo());
-  }
-  
-  /**
-   * Gets the estimated and optimistic ballots to audit for a contest under audit.
-   * 
-   * @param the_contest The contest
-   * @return a pair <estimated, optimistic> of numbers of ballots to audit.
-   */
-  private static Pair<Integer, Integer> ballotsToAudit(final Contest the_contest) {
-    int optimistic = Integer.MIN_VALUE;
-    int estimated = Integer.MIN_VALUE;
-    for (final CountyContestComparisonAudit ccca : 
-         CountyContestComparisonAuditQueries.matching(the_contest)) {
-      optimistic = 
-          Math.max(optimistic, 
-                   Math.max(0, ccca.optimisticBallotsToAudit() - 
-                               ccca.dashboard().auditedPrefixLength()));
-      estimated = 
-          Math.max(estimated, 
-                   Math.max(0, ccca.estimatedBallotsToAudit() - 
-                               ccca.dashboard().auditedPrefixLength()));    
-    }
-    return new Pair<Integer, Integer>(Math.max(0, estimated), Math.max(0, optimistic));
   }
   
   /**
@@ -187,9 +208,9 @@ public class DoSDashboardRefreshResponse {
    * 
    * @return a map from county identifiers to statuses.
    */
-  private static Map<Long, CountyDashboardRefreshResponse> countyStatusMap() {
-    final Map<Long, CountyDashboardRefreshResponse> status_map = 
-        new HashMap<Long, CountyDashboardRefreshResponse>();
+  private static SortedMap<Long, CountyDashboardRefreshResponse> countyStatusMap() {
+    final SortedMap<Long, CountyDashboardRefreshResponse> status_map = 
+        new TreeMap<Long, CountyDashboardRefreshResponse>();
     final List<County> counties = Persistence.getAll(County.class);
     
     for (final County c : counties) {

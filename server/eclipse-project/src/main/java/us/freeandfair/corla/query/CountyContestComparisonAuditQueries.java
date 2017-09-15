@@ -11,12 +11,9 @@
 
 package us.freeandfair.corla.query;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.PersistenceException;
-import javax.persistence.RollbackException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -26,9 +23,7 @@ import org.hibernate.Session;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.Contest;
-import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyContestComparisonAudit;
-import us.freeandfair.corla.model.CountyContestResult;
 import us.freeandfair.corla.persistence.Persistence;
 
 /**
@@ -62,6 +57,8 @@ public final class CountyContestComparisonAuditQueries {
       final Root<CountyContestComparisonAudit> root = 
           cq.from(CountyContestComparisonAudit.class);
       cq.select(root).where(cb.equal(root.get("my_contest"), the_contest));
+      cq.orderBy(cb.asc(root.get("my_dashboard").get("my_county").get("my_id")), 
+                 cb.asc(root.get("my_contest").get("my_sequence_number")));
       final TypedQuery<CountyContestComparisonAudit> query = s.createQuery(cq);
       result = query.getResultList();
     } catch (final PersistenceException e) {
@@ -72,40 +69,6 @@ public final class CountyContestComparisonAuditQueries {
     } else {
       Main.LOGGER.debug("found county comparison audits " + result);
     }
-    return result;
-  }
-  
-  /**
-   * Gets CountyContestResults that are in the specified county.
-   * 
-   * @param the_county The county.
-   * @return the matching CountyContestResults, or null if the query fails.
-   */
-  public static Set<CountyContestResult> forCounty(final County the_county) {
-    Set<CountyContestResult> result = null;
-    
-    try {
-      final boolean transaction = Persistence.beginTransaction();
-      final Session s = Persistence.currentSession();
-      final CriteriaBuilder cb = s.getCriteriaBuilder();
-      final CriteriaQuery<CountyContestResult> cq = 
-          cb.createQuery(CountyContestResult.class);
-      final Root<CountyContestResult> root = cq.from(CountyContestResult.class);
-      cq.select(root);
-      cq.where(cb.equal(root.get("my_county"), the_county));
-      final TypedQuery<CountyContestResult> query = s.createQuery(cq);
-      result = new HashSet<CountyContestResult>(query.getResultList());
-      if (transaction) {
-        try {
-          Persistence.commitTransaction();
-        } catch (final RollbackException e) {
-          Persistence.rollbackTransaction();
-        }
-      }
-    } catch (final PersistenceException e) {
-      Main.LOGGER.error("Exception when reading contests from database: " + e);
-    }
-
     return result;
   }
 }

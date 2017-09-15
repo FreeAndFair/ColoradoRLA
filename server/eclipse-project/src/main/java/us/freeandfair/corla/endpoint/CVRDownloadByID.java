@@ -11,6 +11,8 @@
 
 package us.freeandfair.corla.endpoint;
 
+import org.apache.log4j.Level;
+
 import spark.Request;
 import spark.Response;
 
@@ -50,6 +52,14 @@ public class CVRDownloadByID extends AbstractEndpoint {
     return AuthorizationType.EITHER;
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Level logLevel() {
+    return Level.DEBUG;
+  }
+  
   /**
    * {@inheritDoc}
    */

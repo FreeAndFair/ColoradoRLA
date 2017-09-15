@@ -13,11 +13,12 @@
 package us.freeandfair.corla.json;
 
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import javax.persistence.PersistenceException;
 
@@ -73,7 +74,7 @@ public class CountyDashboardRefreshResponse {
    * The general information.
    * @todo this needs to be connected to something
    */
-  private final Map<String, String> my_general_information;
+  private final SortedMap<String, String> my_general_information;
   
   /**
    * The audit board members.
@@ -113,12 +114,12 @@ public class CountyDashboardRefreshResponse {
   /**
    * The contests on the ballot (by ID).
    */
-  private final Set<Long> my_contests;
+  private final List<Long> my_contests;
   
   /**
    * The contests under audit, with reasons.
    */
-  private final Map<Long, String> my_contests_under_audit;
+  private final SortedMap<Long, String> my_contests_under_audit;
   
   /**
    * The date and time of the audit. 
@@ -229,7 +230,8 @@ public class CountyDashboardRefreshResponse {
   protected CountyDashboardRefreshResponse(final Long the_id,
                                            final ASMState the_asm_state,
                                            final ASMState the_audit_board_asm_state,
-                                           final Map<String, String> the_general_information,
+                                           final SortedMap<String, String> 
+                                               the_general_information,
                                            final AuditBoard the_audit_board, 
                                            final String the_ballot_manifest_hash,
                                            final Instant the_ballot_manifest_timestamp,
@@ -237,8 +239,9 @@ public class CountyDashboardRefreshResponse {
                                            final String the_cvr_export_hash,
                                            final Instant the_cvr_export_timestamp,
                                            final String the_cvr_export_filename,
-                                           final Set<Long> the_contests,
-                                           final Map<Long, String> the_contests_under_audit,
+                                           final List<Long> the_contests,
+                                           final SortedMap<Long, String> 
+                                               the_contests_under_audit,
                                            final Instant the_audit_time,
                                            final Integer the_estimated_ballots_to_audit,
                                            final Integer the_optimistic_ballots_to_audit,
@@ -307,7 +310,7 @@ public class CountyDashboardRefreshResponse {
     final Long county_id = county.id();
 
     // general information doesn't exist yet
-    final Map<String, String> general_information = new HashMap<String, String>();
+    final SortedMap<String, String> general_information = new TreeMap<String, String>();
 
     final UploadedFile manifest = 
         UploadedFileQueries.matching(county_id, 
@@ -332,8 +335,8 @@ public class CountyDashboardRefreshResponse {
     }
     
     // contests and contests under audit
-    final Set<Long> contests = new HashSet<Long>();
-    final Map<Long, String> contests_under_audit = new HashMap<Long, String>();
+    final List<Long> contests = new ArrayList<Long>();
+    final SortedMap<Long, String> contests_under_audit = new TreeMap<Long, String>();
     if (the_dashboard.cvrUploadTimestamp() != null &&
         the_dashboard.manifestUploadTimestamp() != null) {
       // only add contests if uploads are done
@@ -348,6 +351,8 @@ public class CountyDashboardRefreshResponse {
         }
       }
     }
+    
+    Collections.sort(contests);
     
     // ASM states
     final CountyDashboardASM asm = ASMUtilities.asmFor(CountyDashboardASM.class, 

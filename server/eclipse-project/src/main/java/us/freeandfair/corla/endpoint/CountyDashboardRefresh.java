@@ -13,6 +13,8 @@ package us.freeandfair.corla.endpoint;
 
 import javax.persistence.PersistenceException;
 
+import org.apache.log4j.Level;
+
 import spark.Request;
 import spark.Response;
 
@@ -45,6 +47,14 @@ public class CountyDashboardRefresh extends AbstractCountyDashboardEndpoint {
   @Override
   public String endpointName() {
     return "/county-dashboard";
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Level logLevel() {
+    return Level.DEBUG;
   }
   
   /**

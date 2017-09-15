@@ -11,6 +11,8 @@
 
 package us.freeandfair.corla.endpoint;
 
+import org.apache.log4j.Level;
+
 import spark.Request;
 import spark.Response;
 
@@ -77,6 +79,12 @@ public interface Endpoint {
    * @return the required authorization type for this endpoint.
    */
   AuthorizationType requiredAuthorization();
+  
+  /**
+   * @return the priority level at which the activity of this endpoint should
+   * be logged.
+   */
+  Level logLevel(); 
   
   /**
    * The authorization types.
