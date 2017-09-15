@@ -243,7 +243,7 @@ public class CVRAuditInfo implements PersistentEntity, Serializable {
    * as a disagreement in a contest audited for that reason.
    */
   public Set<AuditReason> disagreement() {
-    return Collections.unmodifiableSet(my_discrepancy);
+    return Collections.unmodifiableSet(my_disagreement);
   }
   
   /**

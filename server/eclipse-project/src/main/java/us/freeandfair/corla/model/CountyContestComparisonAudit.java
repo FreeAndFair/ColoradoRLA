@@ -711,7 +711,7 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
       if (my_contest_result.losers().isEmpty()) {
         // if there are no losers, we'll just negate this number - even though in 
         // real life, we wouldn't be auditing the contest at all
-        raw_result = Math.min(raw_result, -winner_change);
+        raw_result = Math.max(raw_result, -winner_change);
       } else {
         for (final String loser : my_contest_result.losers()) {
           final int loser_change;
