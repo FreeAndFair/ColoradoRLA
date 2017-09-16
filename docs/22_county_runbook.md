@@ -1,26 +1,20 @@
 % County Run Book
-% Colorado Risk Limiting Audit Tool v1.0.0 alpha-1
+% Colorado Risk Limiting Audit Tool v1.0.0 alpha-2
 % 2017
 
 
 # Introduction
 
-This Run Book guides County election administrators in Colorado who
+This Run Book guides County election administrators 
+who
 will be implementing a Risk Limiting Audit (RLA) with a comparison
 audit.  The RLA Tool, developed by Free & Fair for the Colorado
 Department of State for use in elections in November 2017 and later,
 supports running a Risk-Limiting Audit as required by Colorado statute
-and as described in
+and as specified in
 the
 [Colorado Secretary of State's Rule 25](http://www.sos.state.co.us/pubs/rule_making/CurrentRules/8CCR1505-1/ElectionRules.pdf) for
 elections.
-
-The RLA Tool helps each County fulfill the requirements of Rule 25.2.2
-and Rule 25.2.3.  First the County uploads verified ballot manifests
-and cast vote record (CVR) files. For each round of the RLA, the RLA
-Tool tells the County which ballot cards to audit, allows the County
-to enter Audit Board's interpretations of the ballot cards and allows
-the Audit Board to sign off on the round.
 
 Orange arrows on the screenshots indicate features described in the
 text of the Run Book.
@@ -32,54 +26,39 @@ text of the Run Book.
 A County user can launch the RLA Tool by pointing a browser to the
 URL provided by the Colorado Department of State.
 
-![Login](./screenshots/county/v1a2_login_screen.png)
+![Login](./screenshots/100_login_screen_1.png)
 
 Successful entry of username and password will lead to 
 a two-factor authentication grid challenge.
 
-![Grid Challenge](./screenshots/county/v1a2_login_login_screen_2.png)
+![Grid Challenge](./screenshots/101_login_screen_2.png)
 
-## County Home Page
+## Navigation
 
 Once two-factor authentication is complete, County users will see the County Home Page
 and can enter the information to set up the audit.
 
-![County Home Page at Start](./screenshots/county/v1a2_county_home_before.png)
+![County Home Page at Start](./screenshots/county/200_County_Home_Before.png)
 
-After Ballot Manifest file and CVR file have been uploaded, the Contest Info
-table on the County Home Page
-will show the contests from the CVR file.
-While the audit is on-going, the County Info table shows how many Ballot Cards
-are required for the current round, and how many have already been
-audited. The number of "disagreements" is the number of ballot cards
-on which the Audit Board could not come to complete consensus. The
-number of "discrepancies" is the number of ballot cards where the
-Audit Board's interpretation differs from the interpretation in the
-uploaded CVR file, or where the ballot card in question could not be
-found.
-
-![County Home Page During Audit](./screenshots/county/v1a2_county_home_mid_round.png)
-
-## Navigation
 
 In the upper left corner of every page the County site has a menu that
 can be used to navigate to the County Home Page, the Audit Board
 Sign-In/Out pages or the Audit (Ballot Review) pages. Click on the
 navigation icon to bring up the navigation menu.
 
-![Navigation Icon](./screenshots/000_main_nav.png)
+![Navigation Icon](./screenshots/county/000_main_nav.png)
 
-![Navigation Menu](./screenshots/county/v1a2_menu_choices.png)
+![Navigation Menu](./screenshots/county/001_menu_choices.png)
 
 In the upper right corner of each page is a button to return to 
 the County Home Page 
 
-![Home Button](./screenshots/county/v1a2_home_icon.png)
+![Home Button](./screenshots/000_home_icon.png)
 
 and a button to log out of the system 
 altogether.
 
-![Logout Button](./screenshots/county/v1a2_logout_button.png)
+![Logout Button](./screenshots/000_logout_button.png)
 
 
 ## Ballot Manifest and CVR File Uploads
@@ -97,18 +76,18 @@ multiple Ballot Manifest files, only the data from the last file will
 be used. Similarly, if a County uploads multiple CVR files, only the
 data from the last file will be used. To upload the ballot manifest:
 
-![To upload the CVRs:](./screenshots/county/v1a2_upload_proper_ballot_manifest.png)
+![To upload the CVRs:](./screenshots/county/100_upload_proper_ballot_manifest.png)
 
 ***
 
-![](./screenshots/county/v1a2_upload_proper_CVR.png)
+![](./screenshots/county/102_upload_proper_CVR.png)
 
 If the hash does not match the file (either because the wrong hash was
 entered, or because the file was changed as it traveled over the
 network), the data from the file will be uploaded but the data will
 not be imported. The user will see the following messages.
 
-![Hash Mismatch Error](./screenshots/county/v1a2_hash_mismatch.png)
+![Hash Mismatch Error](./screenshots/county/104_hash_mismatch.png)
 
 **Remedies and Mitigations**
 
@@ -121,19 +100,20 @@ If the hash matches the file but the file is not in the proper format,
 the data from the file will not be imported. The user will see the
 following messages.
 
-![Format Error](./screenshots/county/v1a2_bad_format.png)
+![Format Error](./screenshots/county/225_bad_format.png)
 
 If the hash matches and the file format is correct, the system will
 import the data from the file. The user will see the following
 messages.
 
-![File Uploads Successful](./screenshots/county/v1a2_successfully_uploaded.png)
+![File Uploads Successful](./screenshots/county/106_successfully_uploaded.png)
 
 **Remedies and Mitigations**
 
 In this situation, please double-check that you have: (a) chosen and
-uploaded the correct file, (b) not edited or tamper with the file in
-any fashion, and (c) are uploading a CSV file, not a JSON file.
+uploaded the correct file, (b) removed the "CountingGroup" column 
+from the CVR file, (c) not edited or tampered with the file in
+any other fashion, and (d) are uploading a CSV file, not a JSON file.
 
 The time required for data import depends on the size of the
 file. Import time for the CVR file will depend on the number of ballot
@@ -151,7 +131,7 @@ the CVR files, the Contest Info table near the bottom of the County
 Home Page lists all contests from the CVR file. The user may have to
 scroll down to see all contests.
 
-![Contest Info Displayed on Home Page](./screenshots/county/v1a2_contest_info.png)
+![Contest Info Displayed on Home Page](./screenshots/county/202_contest_info.png)
 
 At this stage in the audit process the County must wait for the
 Department of State to choose which contests to audit and what the
@@ -159,58 +139,79 @@ risk limits will be on those contests.  Once the Department of State
 has started the audit, the County may continue to the next step of the
 audit process.
 
+## Monitoring the Audit
+
+While the audit is on-going, the County Info table shows how many Ballot Cards
+are required for the current round, and how many have already been
+audited. The number of "disagreements" is the number of ballot cards
+on which the Audit Board could not come to complete consensus. The
+number of "discrepancies" is the number of ballot cards where the
+Audit Board's interpretation differs from the interpretation in the
+uploaded CVR file, or where the ballot card in question could not be
+found.
+
+![County Home Page During Audit](./screenshots/county/201_County_Home_Mid_Round.png)
+
 # Audit Board Functions
 
-## Audit Board Identity Page
+To sign the Audit Board in or out, click the "Audit Board" button on the County
+home page.
+
+![Audit Board Sign-In Button](./screenshots/county/248_nav_to_AB_page.png)
+
+Another way is to use the navigation menu.
+
+![Navigation to Audit Board Identification Page](./screenshots/county/002_menu_choices_ab.png)
+
+Either method will take the user to the Audit Board page.
+
+![Audit Board page](./screenshots/county/250_AB_sign_in.png)
+
+## Audit Board Sign In
 
 The Audit Board does not log directly into the RLA Tool with usernames
 and passwords. However, whenever the Audit Board begins to interact
 with the RLA Tool, either at the beginning of an audit round or after
 taking a break, there is an informal sign-in process.
-
-To allow the Audit Board to sign in, use the button on the County
-home page.
-
-![Audit Board Sign-In Button](./screenshots/county/v1a2_ab_sign_in_button.png)
-
-Another way to reach the Audit Board Sign-In page is to use the navigation menu.
-
-![Navigation to Audit Board Identification Page](./screenshots/county/v1a2_ab_sign_in_button1.png)
-
-Either method will take the user to the Audit Board Sign-In page.
-
-![Audit Board Sign In](./screenshots/county/v1a2_ab_sign_in.png)
-
-After the Audit Board has signed in, the Audit Board Sign-In Screen
-will show the names and party affiliations. Note that all audit board
+Note that all audit board
 members must input first and last names as well as party affiliation.
 If an audit board member has only a single name, include it as they
-normally would on any digital input form and put a "N/A" in the unused
+normally would on any digital input form and put "N/A" in the unused
 field.
 
-![Audit Board Identity](./screenshots/county/v1a2_ab_signed_in_start_audit1.png)
+After the Audit Board has signed in, the Audit Board Screen
+will show the names and party affiliations. 
 
-## Ballot Card Review
+![Audit Board Identity](./screenshots/county/251_AB_members.png)
 
-To start the process of finding and reviewing ballot cards, use the navigation menu at the top left
-of the screen. 
+## Ballot Card Retrieval
 
-![Navigation to Ballot Card Review](./screenshots/county/v1a2_nav_to_ballot_review.png)
+After the Audit Board has signed in, they can start the audit process.
+Use the 
+"Start Audit" button on the Audit Board screen. Or
+use the navigation menu at the top left. 
 
-Once the Audit Board has been established you can start the audit.
+![Navigation to Ballot Card Review](./screenshots/county/003_menu_choices_audit.png)
 
-![Launch Audit](./screenshots/county/v1a2_start_audit.png)
+There is a welcome screen for the audit. Click "Next" to proceed.
 
-Once the Secretary of State launches a round of the audit the County
+![Welcome Screen](./screenshots/county/260_Audit_Screen_1.png)
+
+
+If the Secretary of State has launched a round of the audit the County
 user will see a list of ballot cards to be audited in the current
 round. The list includes the Scanner, Batch, and Ballot Position
-numbers, and (if available) the Storage Bin.
+numbers, and (if available) the Storage Bin. As the round progresses the rightmost 
+column will contain check marks for ballots that have been reviewed. 
 
-![Ballot Cards to Audit](./screenshots/county/v1a2_ballots_to_audit.png)
+![Ballot Cards to Audit](./screenshots/county/262_Cards_to_Audit.png)
 
-You may download a CSV file with a list of the ballots.
+This page has  a button to download a csv file that can be saved or printed, containing 
+the list of ballots.
 
-![Download CSV](./screenshots/county/v1a2_download_csv.png)
+![Download CSV](./screenshots/county/263_download_csv.png)
+
+## Ballot Card Review
 
 Once the ballot cards have been retrieved, click the "Next" button to
 start reviewing.
@@ -220,44 +221,46 @@ individual ballot card.  Before recording voter intent, please
 double-check that the Ballot Type on the paper ballot card matches the
 Ballot Type listed on the screen.
 
-![Ballot Type](./screenshots/county/v1a2_ballot_type.png)
+![Ballot Type](./screenshots/county/265_ballot_type.png)
 
 If a ballot card is not found click the "Ballot Card Not Found" button.
 
-![Ballot Card Not Found](./screenshots/county/v1a2_ballot_not_found.png)
+![Ballot Card Not Found](./screenshots/county/264_ballot_not_found.png)
 
 Otherwise record on the screen all final voter intent marked on
 the paper ballot card. 
 
-![Recording Voter Intent](./screenshots/county/v1a2_voter_intent.png)
+![Recording Voter Intent](./screenshots/county/264_Voter_Intent.png)
+
+The list of candidates includes qualified write-in candidates.
 
 In case of an overvote, mark each of the (too many) choices the voter
 intended; as the user will see on the next screen, the RLA Tool will recognize
 the overvote.  
 
-![Marking an Overvote](./screenshots/county/v1a2_overvote.png)
+![Marking an Overvote](./screenshots/county/264_overvote.png)
 
 If the Audit Board cannot reach consensus, mark the "No Consensus" box
 on the screen. There is a text box for any comments the audit board
 might wish to add in this circumstance.
 
-![No Consensus](./screenshots/county/v1a2_no_consensus.png)
+![No Consensus](./screenshots/county/264_no_consensus.png)
 
 After entering the interpretation of the markings from any one ballot
-card, the Audit Board clicks "Review" button.
+card, the Audit Board clicks the "Review" button.
 
-![Review Button](./screenshots/county/v1a2_ballot_interpretations_entered.png)
+![Review Button](./screenshots/county/265_ballot_interpretations_entered.png)
 
 On the Review screen, check that the information shown
 reflects the Audit Board's interpretation of the ballot. 
 
-![Review Screen](./screenshots/county/v1a2_review_screen.png)
+![Review Screen](./screenshots/county/266_review_screen.png)
 
 Note that in
 case of an overvote, the review screen will say "Overvote for this
 contest".
 
-![Overvote Review](./screenshots/county/v1a2_overvote_review.png)
+![Overvote Review](./screenshots/county/267_overvote_review.png)
 
 If the review screen does not match the Audit Board's interpretation,
 click the "Back" button and correct the interpretation.  If the
@@ -268,37 +271,60 @@ This submission is
 final. There is no way to revise a ballot interpretation once it has
 been submitted from the Review Screen.
 
-![Submitting](./screenshots/county/v1a2_submit_interpretation.png)
+![Submitting](./screenshots/county/267_submit_interpretation.png)
 
 The screen for the next ballot card will then be displayed. Review of
 ballot cards will continue until the Audit Board has reviewed all the
-ballot cards assigned to that County for that round. After the last
-ballot card has been reviewed, the end-of-round page will appear.
-with boxes for the Audit Board to "sign" their approval of the round
-by entering their names as indicated. Audit board members need not
-sign their approval in the same order that they were originally
-entered.
+ballot cards assigned to that County for that round. 
 
 ## End of Round
 
-![End of Round](./screenshots/county/v1a2_end_of_round_one.png)
-
-The Audit Board certifies the round by entering their names in the End of Round form.
-Clicking the "Submit" button on this page ends the County's work for the 
+After the last
+ballot card has been reviewed, the end-of-round page will appear.
+with boxes for the Audit Board to certify the round
+by entering their names as indicated. The order of the names
+does not matter. Clicking the "Submit" button on this page ends the County's work for the 
 audit round. 
+
+![Certification](./screenshots/county/268_certification.png)
+
+After certification, until a new round starts, the end of round page appears.
+
+![End of Round](./screenshots/county/268_end_of_round.png)
 
 ## Signing out the Audit Board for Breaks
 
 If the Audit Board needs to take a break, go to lunch, head home for
 the night, or pause their work for any reason, then the Audit Board
-must use the Sign Out button on the Audit Board Sign-in Page.
+must use the Sign Out button on the Audit Board Page.
 
-![Audit Board Sign Out](./screenshots/county/v1a2_sign_out_of_audit_board.png)
+![Audit Board Sign Out](./screenshots/county/275_sign_out_of_audit_board.png)
+
+Whenever the Audit Board is signed out, the Audit Board page will display 
+the sign-in form. 
 
 # Ending the Audit
 
 When the County has completed the entire audit, including all rounds
-of ballot card review required by the State, the End of Audit page
-will appear.
+of ballot card review required by the State, the County Home Page
+will appear. The page will state that "the audit is complete".
 
-![End of Audit](./screenshots/county/v1a2_audit_complete.png)
+![End of Audit](./screenshots/county/270_end_of_audit.png)
+
+# Audit Reports
+
+The "Download" button on the County Home page will download an Intermediate Audit Report if 
+the audit is still in progress and a Final Audit Report if the audit is complete.
+
+
+<!-- ## Hand Counts ##
+-->
+
+
+
+
+
+
+
+
+

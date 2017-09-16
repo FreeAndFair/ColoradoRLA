@@ -1,9 +1,11 @@
-# Colorado Risk Limiting Audit 
-# Secretary of State Run Book 
+% Secretary of State Run Book
+% Colorado Risk Limiting Audit Tool v1.0.0 alpha-2
+% 2017
 
 ## Introduction
 
-This Run Book guides State election administrators in Colorado who
+This Run Book guides State election administrators 
+who
 will be implementing a Risk Limiting Audit (RLA). There is a separate
 book for County election administrators.
 
@@ -36,7 +38,9 @@ contests.
 
 This version of the RLA Tool requires Cast Vote Record and Ballot
 Manifest files in the format exported from the Dominion Democracy
-Suite.
+Suite. In order to achieve transparency of the audit while respecting
+voter privacy, Column F (the "CountingGroup") column must be deleted from 
+the Cast Vote Record files.
  
 ### Launching and Logging In
 
@@ -44,92 +48,117 @@ Department of State users must log in to the RLA Tool by pointing
 their browser to the URL designated by the Department of State. 
 County users can use the same URL.
 
-![Login](./screenshots/dos/v1a2_login_screen.png)
+![Login](./screenshots/100_login_screen_1.png)
 
 Successful entry of username and password will lead to 
 a two-factor authentication grid challenge.
 
-![Grid Challenge](./screenshots/dos/v1a2_login_login_screen_2.png)
+![Grid Challenge](./screenshots/101_login_screen_2.png)
 
 The RLA Tool will direct users to the Department of State home
 page. At the start of the audit process, this page will contain no
-information. Note the logout button, in the upper right of this (and
-every) page.
-
-![Logout Button](./screenshots/dos/v1a2_logout_button.png)
-
-![Secretary of State Home Screenshot](./screenshots/dos/v1a2_sos_home.png)
+information. 
+![Secretary of State Home Page](./screenshots/dos/200_sos_home.png)
 
 ### Navigation
 
-Note the navigation menu in the upper left corner.
+In the upper left corner of every page the Secretary of State site has a menu that
+can be used to navigate to the Home Page, the Counties Page, the Contests page or the 
+Define Audit wizard. Click on the
+navigation icon to bring up the navigation menu.
 
-![Secretary of State Navigation Screenshot](./screenshots/dos/v1a2_sos_nav.png)
+![Secretary of State Navigation Screenshot](./screenshots/dos/218_nav_to_define.png)
 
-### Audit Status
+In the upper right corner of each page is a button to return to 
+the Home Page 
 
-Text indicating the status of the audit is near the top of the page. 
+![Home Button](./screenshots/000_home_icon.png)
 
-![Audit Status Message Screenshot](./screenshots/dos/v1a2_audit_status1.png)
+and a button to log out of the system 
+altogether.
 
-### 25.2.2 (A), Entering the Risk Limit
+![Logout Button](./screenshots/000_logout_button.png)
 
-The Secretary of State will enter date the election will take place,
-the type of election, and the Risk Limit. Note that once these
-selections are entered they cannot be modified. To continue, click the
-"Save & Next" button.
+## Audit Definition
 
-![State Risk Limit Entry Screenshot](./screenshots/dos/v1a2_enter_date_risk_limit.png)
+To define the audit -- to specify the risk limit and other choices -- 
+use the navigation menu to navigate  to the Define Audit section. 
+On this page, enter the date of the election, the type of election, 
+the date of the public meeting to choose the random seed and the risk limit.
+Note that once these selections are saved they cannot be modified.
 
-<!-- The County Update table allows the Secretary of State to see which -->
-<!-- Counties have uploaded which files. -->
+![Audit Definition](./screenshots/dos/210_enter_date_risk_limit.png)
 
-<!-- ![County Uploads Screenshot]() -->
+Clicking the "Save" button brings up a page summarizing the 
+choices made on the previous screen. 
 
-<!-- Note the change in the status message now that the Risk Limit has been -->
-<!-- entered. -->
+![Audit Definition Summary](./screenshots/dos/212_summary.png)
 
-The County Update table allows the Secretary of State to see which
-Counties have uploaded which files. 
+Clicking "Next" brings up the contest selection screen. This step cannot be completed until 
+after the Counties have uploaded the contest data, i.e., the ballot manifest and cast vote record files.
 
-![Waiting For Counties to Upload Contest Data](./screenshots/dos/v1a2_waiting_for_counties.png)
 
-When the Counties have uploaded the necessary files, the Secretary of
-State can proceed to define the audit—by choosing contests and setting
-the risk limit—using the dropdown menu on the upper left.
+### Monitoring County Uploads
 
-![Define the Audit Button](./screenshots/dos/v1a2_sos_nav.png)
+![Empty Contest Selection Screen](./screenshots/dos/214_contest_selection_null.png)
 
-### 25.2.2 (I) Selecting Contests
+To monitor the status of the County uploads, navigate to the Home Page.
+The County Update table Status column allows the Secretary of State to see the status of each individual 
+County's file uploads. 
+
+
+![County Uploads Status](./screenshots/dos/216_upload_status.png)
+
+When the Counties have uploaded the necessary files, the Secretary of State
+can continue defining the audit using the dropdown menu on the upper left.
+
+![Define the Audit Button](./screenshots/dos/218_nav_to_define.png)
+
+### Selecting Contests
 
 The Secretary of State will then select the contests that will drive
-the sample size and stop/go decisions for each round.  Rule Rule 25
-calls these "contests to be audited". Note that in the current version
-of the RLA Tool, each contest is considered to be within a single
-County.  Calculations of audit round sizes and risk levels are based
-on single County contests.
+the sample size and stop/go decisions for each round.  Rule 25
+calls these "contests to be audited". 
 
-![State Contest Selection Screenshot](./screenshots/dos/v1a2_select_contests_selected.png)
+![Contest Selection](./screenshots/dos/220_select_contests_selected.png)
 
-### 25.2.2 (H), Entering the Random Seed
+Calculations of audit round sizes and risk levels are based
+on single County contests. Note that in the current version
+of the RLA Tool, all contests are considered to be single-county contests.
+For example, in the context of the audit, the contest for votes for US Senator in Boulder County 
+has nothing to do with the contest for US Senator in Pueblo County 
+(even though in the real world the winner of the US Senate race is determined by combining vote totals from all Counties).
 
-The Secretary of State enters the random seed. Note that once the seed
-is entered, it cannot be changed.
+### The Random Seed
 
-![State Random Seed Entry Screenshot](./screenshots/dos/v1a2_enter_random_seed.png)
+The Secretary of State enters the random seed determined at the public meeting. Note that once the 
+"Save & Next" button is clicked, the random seed cannot be changed.
+
+![Random Seed Entry](./screenshots/dos/222_enter_random_seed.png)
 
 If the random seed is not at least 20 digits long, the system shows a
 red error message. User will have to click the "Back" button and try
 again.
 
-![State Random Seed Entry Incorrect](./screenshots/dos/v1a2_random_seed_incorrect.png)
+![Random Seed Error Messages](./screenshots/dos/224_random_seed_incorrect.png)
 
-Once the random seed is entered the Secretary of State can launch the
+Once the random seed has been successfully entered, the Secretary of State can launch the
 audit by clicking the "Launch Audit" button.
 
-![Audit Has Begun](./screenshots/dos/v1a2_random_seed_entered_launch_audit.png)
+![Ready to Launch Audit](./screenshots/dos/226_launch_audit.png)
+
+## Auditing
 
 ### Audit Rounds
+
+The audit is organized into rounds. The first round begins
+when the Secretary of State launches the audit. 
+The RLA Tool gives lists each County a list of ballot cards to be 
+reviewed by the County Audit Board. As the Audit Boards 
+proceed, the Secretary of State can monitor progress. 
+
+When each County Audit Board has reviewed all assigned ballot cards and
+certified its review, the Secretary of State will have the option to begin the next round.
 
 Once the audit is launched, the first round of the audit begins. In
 each round, the tool shows each County a list of ballot cards to be
@@ -141,31 +170,58 @@ ballot cards on which the audit board disagreed, and the number of
 ballot cards yet to be reviewed in the current round in the County
 Update table.
 
+### Monitoring County Audit Activity
+
 The RLA Tool permits the Secretary of State to see the progress of
 audit for selected contests and the estimated number of ballot cards
 remaining to be audited to meet the risk limit.
 
-![Secretary of State Mid-Audit Screen](./screenshots/dos/v1a2_audit_status.png)
+In this example, contests have been chosen for audit in Alamosa and Arapahoe 
+Counties. These contests are listed in the Contest Update table.
 
-<!--- The RLA Tool also allows the Secretary of State to designate a contest
-for hand counting at any time.
-![Full Hand Count Screen](./screenshots/9-sos_chooses_full_hand_count.png)
---->
+![County Update and Contest Update Tables at Start of Round 1](./screenshots/dos/230_audit_start.png)
 
-At the end of each round the Secretary of State can launch the next
+#### County Update Table ####
+
+The County Update Table has several columns.
+
+	 *  Status - The Status of the County's audit 
+	 *  Submitted - The number of ballot cards already reviewed by the Audit Board
+	 *  Audited Contest Discrepancies - the number of cast vote records whose corresponding ballot card either could not be found, or contains at least one race selected for audit for which the Audit Board's interpretation differs from the cast vote record
+	 *  Non-audited Contest Discrepancies - the number of cast vote records whose corresponding ballot card either could not be found, or contains at least one race not selected for audit for which the Audit Board's interpretation differs from the cast vote record 
+	*  Disagreements - the number of ballot cards on which the Audit Board could not come to consensus in at least one race
+	*  Remaining in Round - the number of ballot cards remaining for the Audit Board to review in order to complete the current round
+	*  Est. Remaining Ballots - the estimated size of the statistical random sequence of cast vote records that will be required to finish the audit (with duplicates) minus the size of the longest prefix of that sequence consisting of cast vote records whose corresponding ballot cards have already been reviewed by the Audit Board.
+	
+![State Home Page Mid-Round](./screenshots/dos/240_county_updates_mid_round.png)
+	 
+The County Update Table can be filtered by County name.
+
+![Filter by County](./screenshots/dos/232_filter_by_county.png)
+
+
+#### Launching a New Round ####
+
+At the end of each round, if the 
+Risk Limit has not been met yet, the Secretary of State can launch the next
 round by clicking the "Start Round" button. This button will work only
 if each and every County Audit Board has not only finished the audit
 round, but also signed off on the audit round.
 
-![Launch New Round Screenshot](./screenshots/dos/v1a2_start_next_round.png)
+![Launch New Round Screenshot](./screenshots/dos/245_start_next_round.png)
 
-### Concluding the Audit
+### Ending the Audit
 
-Once the final round concludes, the audit board are congratulated and
-asked to sign an audit report for the county. County administrators
-can download that report in Microsoft Excel format.
+Once the risk limit is met and the final round concludes, as shown on the State home page.
 
-![Audit Complete](./screenshots/dos/v1a2_audit_complete.png)
+250_SoS_Home_End_of_Audit.png
+![End of Audit](./screenshots/dos/250_SoS_Home_End_of_Audit.png)
 
-<!--- ### Exports
+<!-- ## Hand Counts 
+-->
+
+<!--- ## Exports
 --->
+
+
+
