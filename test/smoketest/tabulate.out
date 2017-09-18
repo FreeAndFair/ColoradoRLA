@@ -1,17 +1,10 @@
- id  | contest_ballot_count | county_ballot_count |      losers       | max_margin | min_margin | version | votes_allowed |      winners       | contest_id | county_id 
------+----------------------+---------------------+-------------------+------------+------------+---------+---------------+--------------------+------------+-----------
- 145 |                  165 |                 165 | ["Distant Loser"] |        109 |        109 |       3 |             1 | ["Clear Winner"]   |        144 |         3
- 147 |                   46 |                 165 | ["Jeff Baker"]    |         15 |         15 |       3 |             1 | ["Janet Lee Cook"] |        146 |         3
- 149 |                   95 |                 165 | ["YES"]           |          1 |          1 |       3 |             1 | ["NO"]             |        148 |         3
-(3 rows)
-
- result_id | vote_total |     choice     
------------+------------+----------------
-       145 |         14 | Distant Loser
-       147 |         12 | Jeff Baker
-       149 |         30 | YES
-       145 |        123 | Clear Winner
-       147 |         27 | Janet Lee Cook
-       149 |         31 | NO
+ county_name |                  contest_name                   |     choice     | votes | votes_allowed |      winners       | min_margin | county_ballot_count | contest_ballot_count 
+-------------+-------------------------------------------------+----------------+-------+---------------+--------------------+------------+---------------------+----------------------
+ Arapahoe    | Regent of the University of Colorado - At Large | Clear Winner   |   123 |             1 | ["Clear Winner"]   |        109 |                 165 |                  165
+ Arapahoe    | Regent of the University of Colorado - At Large | Distant Loser  |    14 |             1 | ["Clear Winner"]   |        109 |                 165 |                  165
+ Arapahoe    | COUNTY COMMISSIONER DISTRICT 3                  | Janet Lee Cook |    27 |             1 | ["Janet Lee Cook"] |         15 |                 165 |                   46
+ Arapahoe    | COUNTY COMMISSIONER DISTRICT 3                  | Jeff Baker     |    12 |             1 | ["Janet Lee Cook"] |         15 |                 165 |                   46
+ Arapahoe    | Proposition 107 (Statutory)                     | NO             |    31 |             1 | ["NO"]             |          1 |                 165 |                   95
+ Arapahoe    | Proposition 107 (Statutory)                     | YES            |    30 |             1 | ["NO"]             |          1 |                 165 |                   95
 (6 rows)
 
