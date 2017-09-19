@@ -1,5 +1,5 @@
 import { delay } from 'redux-saga';
-import { takeLatest } from 'redux-saga/effects';
+import { cancel, fork, take, takeLatest } from 'redux-saga/effects';
 
 import dashboardRefresh from 'corla/action/dos/dashboardRefresh';
 import fetchAsmState from 'corla/action/dos/fetchAsmState';
@@ -20,5 +20,15 @@ function* pollTask() {
 
 
 export default function* pollSaga() {
-    yield takeLatest('DOS_DASHBOARD_POLL', pollTask);
+    let poll = yield take('DOS_DASHBOARD_POLL_START')
+
+    while (poll) {
+        const t = yield fork(pollTask);
+
+        yield take('DOS_DASHBOARD_POLL_STOP');
+
+        yield cancel(t);
+
+        poll = yield take('DOS_DASHBOARD_POLL_START')
+    }
 }
