@@ -4,6 +4,8 @@ import { Redirect } from 'react-router-dom';
 
 import StartPage from './StartPage';
 
+import withSync from 'corla/component/withSync';
+
 
 class StartPageContainer extends React.Component<any, any> {
     public state: any = {
@@ -34,11 +36,16 @@ class StartPageContainer extends React.Component<any, any> {
     }
 }
 
-
-const mapStateToProps = ({ sos }: any) => {
+const select = (state: any) => {
+    const { sos } = state;
     const { election, publicMeetingDate, riskLimit } = sos;
 
     return { election, riskLimit, publicMeetingDate, sos };
 };
 
-export default connect(mapStateToProps)(StartPageContainer);
+
+export default withSync(
+    StartPageContainer,
+    'DOS_DEFINE_AUDIT_SYNC',
+    select,
+);
