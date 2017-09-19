@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { connect } from 'react-redux';
+
+import withPoll from 'corla/component/withPoll';
 
 import counties from 'corla/data/counties';
 
@@ -32,6 +33,10 @@ class CountyDashboardContainer extends React.Component<any, any> {
             missedDeadline,
         } = this.props;
 
+        if (!county) {
+            return <div />;
+        }
+
         if (missedDeadline) {
             return <MissedDeadlinePage county={ county } />;
         }
@@ -57,8 +62,13 @@ class CountyDashboardContainer extends React.Component<any, any> {
     }
 }
 
-const mapStateToProps = (state: any) => {
+const select = (state: any) => {
     const { county } = state;
+
+    if (!county) {
+        return {};
+    }
+
     const { contestDefs } = county;
 
     return {
@@ -76,4 +86,9 @@ const mapStateToProps = (state: any) => {
     };
 };
 
-export default connect(mapStateToProps)(CountyDashboardContainer);
+export default withPoll(
+    CountyDashboardContainer,
+    'COUNTY_DASHBOARD_POLL_START',
+    'COUNTY_DASHBOARD_POLL_STOP',
+    select,
+);
