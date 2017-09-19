@@ -1,4 +1,4 @@
-import { all, select } from 'redux-saga/effects';
+import { all, select, takeLatest } from 'redux-saga/effects';
 
 import createPollSaga from 'corla/saga/createPollSaga';
 
@@ -7,6 +7,14 @@ import fetchAuditBoardAsmState from 'corla/action/county/fetchAuditBoardAsmState
 import fetchContests from 'corla/action/county/fetchContests';
 import fetchCountyAsmState from 'corla/action/county/fetchCountyAsmState';
 
+
+function* boardSignInSaga() {
+    yield takeLatest('COUNTY_BOARD_SIGN_IN_SYNC', () => {
+        dashboardRefresh();
+        fetchAuditBoardAsmState();
+        fetchCountyAsmState();
+    });
+}
 
 function* dashboardPoll() {
     dashboardRefresh();
@@ -32,6 +40,7 @@ const dashboardPollSaga = createPollSaga(
 
 export default function* pollSaga() {
     yield all([
+        boardSignInSaga(),
         dashboardPollSaga(),
     ]);
 }
