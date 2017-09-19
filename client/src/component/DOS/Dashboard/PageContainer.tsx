@@ -3,18 +3,10 @@ import { connect } from 'react-redux';
 
 import DOSDashboardPage from './Page';
 
-import action from 'corla/action';
+import withPoll from 'corla/component/withPoll';
 
 
 class DOSDashboardContainer extends React.Component<any, any> {
-    public componentDidMount() {
-        action('DOS_DASHBOARD_POLL_START');
-    }
-
-    public componentWillUnmount() {
-        action('DOS_DASHBOARD_POLL_STOP');
-    }
-
     public render() {
         return <DOSDashboardPage { ...this.props } />;
     }
@@ -32,4 +24,9 @@ const select = (state: any) => {
 };
 
 
-export default connect(select)(DOSDashboardContainer);
+export default withPoll(
+    DOSDashboardContainer,
+    'DOS_DASHBOARD_POLL_START',
+    'DOS_DASHBOARD_POLL_STOP',
+    select,
+);
