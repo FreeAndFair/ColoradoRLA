@@ -2,10 +2,10 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 
-import AuditPage from './Page';
+import StartPage from './StartPage';
 
 
-class AuditPageContainer extends React.Component<any, any> {
+class StartPageContainer extends React.Component<any, any> {
     public state: any = {
         formValid: false,
     };
@@ -26,7 +26,7 @@ class AuditPageContainer extends React.Component<any, any> {
             setFormValid: this.setFormValid,
         };
 
-        return <AuditPage { ...props } />;
+        return <StartPage { ...props } />;
     }
 
     private setFormValid = (formValid: boolean) => {
@@ -41,4 +41,4 @@ const mapStateToProps = ({ sos }: any) => {
     return { election, riskLimit, publicMeetingDate, sos };
 };
 
-export default connect(mapStateToProps)(AuditPageContainer);
+export default connect(mapStateToProps)(StartPageContainer);
