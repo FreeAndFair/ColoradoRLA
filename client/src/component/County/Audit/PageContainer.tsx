@@ -16,14 +16,14 @@ import roundInProgressSelector from 'corla/selector/county/roundInProgress';
 
 class CountyAuditContainer extends React.Component<any, any> {
     public render() {
-        if (!this.props.canAudit) {
-            notice.danger('Not ready to begin audit.');
+        if (this.props.auditComplete) {
+            notice.ok('The audit is complete.');
 
             return <Redirect to={ '/county' } />;
         }
 
-        if (this.props.auditComplete) {
-            notice.ok('The audit is complete.');
+        if (!this.props.canAudit) {
+            notice.danger('Not ready to begin audit.');
 
             return <Redirect to={ '/county' } />;
         }
