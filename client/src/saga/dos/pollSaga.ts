@@ -1,9 +1,5 @@
 import { delay } from 'redux-saga';
-import {
-    call,
-    select,
-    takeLatest,
-} from 'redux-saga/effects';
+import { takeLatest } from 'redux-saga/effects';
 
 import dashboardRefresh from 'corla/action/dos/dashboardRefresh';
 import fetchAsmState from 'corla/action/dos/fetchAsmState';
@@ -14,11 +10,6 @@ const DOS_POLL_DELAY = 1000 * 5;
 
 function* pollTask() {
     while (true) {
-        const { dashboard, loggedIn } = yield select();
-
-        if (!loggedIn) { return null; }
-        if (dashboard !== 'sos') { return null; }
-
         dashboardRefresh();
         fetchAsmState();
         fetchContests();
@@ -29,5 +20,5 @@ function* pollTask() {
 
 
 export default function* pollSaga() {
-    yield takeLatest('DOS_POLL', pollTask);
+    yield takeLatest('DOS_DASHBOARD_POLL', pollTask);
 }
