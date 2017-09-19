@@ -1,4 +1,4 @@
-import { all } from 'redux-saga/effects';
+import { all, takeLatest } from 'redux-saga/effects';
 
 import createPollSaga from 'corla/saga/createPollSaga';
 
@@ -15,9 +15,18 @@ const dashboardPollSaga = createPollSaga(
     'DOS_DASHBOARD_POLL_STOP',
 );
 
+function* defineAuditSync(): IterableIterator<void> {
+    dashboardRefresh();
+}
+
+function* defineAuditSaga() {
+    yield takeLatest('DOS_DEFINE_AUDIT_SYNC', defineAuditSync);
+}
+
 
 export default function* pollSaga() {
     yield all([
         dashboardPollSaga(),
+        defineAuditSaga(),
     ]);
 }
