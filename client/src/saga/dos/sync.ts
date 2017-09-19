@@ -38,10 +38,19 @@ function* randomSeedSaga() {
     yield takeLatest('DOS_DEFINE_AUDIT_RANDOM_SEED_SYNC', randomSeedSync);
 }
 
+function* defineAuditReviewSync(): IterableIterator<void> {
+    dashboardRefresh();
+}
+
+function* defineAuditReviewSaga() {
+    yield takeLatest('DOS_DEFINE_AUDIT_REVIEW_SYNC', defineAuditReviewSync);
+}
+
 
 export default function* pollSaga() {
     yield all([
         dashboardPollSaga(),
+        defineAuditReviewSaga(),
         defineAuditSaga(),
         randomSeedSaga(),
         selectContestsPollSaga(),
