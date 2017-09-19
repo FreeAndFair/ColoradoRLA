@@ -1,5 +1,4 @@
-import { delay } from 'redux-saga';
-import { all, cancel, fork, take, takeLatest } from 'redux-saga/effects';
+import { all } from 'redux-saga/effects';
 
 import createPollSaga from 'corla/saga/createPollSaga';
 
