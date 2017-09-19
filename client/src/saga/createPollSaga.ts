@@ -11,7 +11,7 @@ function createPollSaga(
     function* pollTask() {
         while (true) {
             for (const a of pollActions) {
-                a();
+                yield a();
             }
 
             yield delay(pollDelay);
