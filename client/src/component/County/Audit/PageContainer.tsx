@@ -1,16 +1,17 @@
 import * as React from 'react';
-import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
+
+import withSync from 'corla/component/withSync';
 
 import EndOfRoundPageContainer from './EndOfRound/PageContainer';
 import CountyAuditPage from './Page';
 
 import notice from 'corla/notice';
 
-import allRoundsComplete from 'corla/selector/county/allRoundsComplete';
-import auditComplete from 'corla/selector/county/auditComplete';
-import canAudit from 'corla/selector/county/canAudit';
-import roundInProgress from 'corla/selector/county/roundInProgress';
+import allRoundsCompleteSelector from 'corla/selector/county/allRoundsComplete';
+import auditCompleteSelector from 'corla/selector/county/auditComplete';
+import canAuditSelector from 'corla/selector/county/canAudit';
+import roundInProgressSelector from 'corla/selector/county/roundInProgress';
 
 
 class CountyAuditContainer extends React.Component<any, any> {
@@ -35,16 +36,20 @@ class CountyAuditContainer extends React.Component<any, any> {
     }
 }
 
-const mapStateToProps = (state: any) => {
-    const showEndOfRoundPage = (!roundInProgress(state) && !allRoundsComplete(state))
-                            || allRoundsComplete(state);
+const select = (state: any) => {
+    const showEndOfRoundPage = allRoundsCompleteSelector(state)
+                            || !roundInProgressSelector(state);
 
     return {
-        auditComplete: auditComplete(state),
-        canAudit: canAudit(state),
+        auditComplete: auditCompleteSelector(state),
+        canAudit: canAuditSelector(state),
         showEndOfRoundPage,
     };
 };
 
 
-export default connect(mapStateToProps)(CountyAuditContainer);
+export default withSync(
+    CountyAuditContainer,
+    'COUNTY_AUDIT_SYNC',
+    select,
+);

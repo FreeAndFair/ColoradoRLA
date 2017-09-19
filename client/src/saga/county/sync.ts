@@ -8,6 +8,14 @@ import fetchContests from 'corla/action/county/fetchContests';
 import fetchCountyAsmState from 'corla/action/county/fetchCountyAsmState';
 
 
+function* auditSaga() {
+    yield takeLatest('COUNTY_AUDIT_SYNC', () => {
+        dashboardRefresh();
+        fetchAuditBoardAsmState();
+        fetchCountyAsmState();
+    });
+}
+
 function* boardSignInSaga() {
     yield takeLatest('COUNTY_BOARD_SIGN_IN_SYNC', () => {
         dashboardRefresh();
@@ -40,6 +48,7 @@ const dashboardPollSaga = createPollSaga(
 
 export default function* pollSaga() {
     yield all([
+        auditSaga(),
         boardSignInSaga(),
         dashboardPollSaga(),
     ]);
