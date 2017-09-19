@@ -13,6 +13,13 @@ function* contestOverviewSaga() {
     });
 }
 
+function* contestDetailSaga() {
+    yield takeLatest('DOS_COUNTY_DETAIL_SYNC', () => {
+        fetchContests();
+        dashboardRefresh();
+    });
+}
+
 function* countyDetailSaga() {
     yield takeLatest('DOS_COUNTY_DETAIL_SYNC', () => dashboardRefresh());
 }
