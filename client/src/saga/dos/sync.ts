@@ -30,11 +30,20 @@ const selectContestsPollSaga = createPollSaga(
     'DOS_SELECT_CONTESTS_POLL_STOP',
 );
 
+function* randomSeedSync(): IterableIterator<void> {
+    dashboardRefresh();
+}
+
+function* randomSeedSaga() {
+    yield takeLatest('DOS_DEFINE_AUDIT_RANDOM_SEED_SYNC', randomSeedSync);
+}
+
 
 export default function* pollSaga() {
     yield all([
         dashboardPollSaga(),
         defineAuditSaga(),
+        randomSeedSaga(),
         selectContestsPollSaga(),
     ]);
 }
