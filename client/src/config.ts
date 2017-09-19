@@ -1,4 +1,4 @@
-export const debug = true;  // Inlined by Webpack
+export const debug = DEBUG;  // Inlined by Webpack
 
 const scheme = 'http';
 const hostname = 'localhost';
