@@ -8,7 +8,11 @@ import action from 'corla/action';
 
 class DOSDashboardContainer extends React.Component<any, any> {
     public componentDidMount() {
-        action('DOS_DASHBOARD_POLL');
+        action('DOS_DASHBOARD_POLL_START');
+    }
+
+    public componentWillUnmount() {
+        action('DOS_DASHBOARD_POLL_STOP');
     }
 
     public render() {
