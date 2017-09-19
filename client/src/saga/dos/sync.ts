@@ -15,12 +15,8 @@ const dashboardPollSaga = createPollSaga(
     'DOS_DASHBOARD_POLL_STOP',
 );
 
-function* defineAuditSync(): IterableIterator<void> {
-    dashboardRefresh();
-}
-
 function* defineAuditSaga() {
-    yield takeLatest('DOS_DEFINE_AUDIT_SYNC', defineAuditSync);
+    yield takeLatest('DOS_DEFINE_AUDIT_SYNC', () => dashboardRefresh());
 }
 
 const selectContestsPollSaga = createPollSaga(
@@ -30,20 +26,12 @@ const selectContestsPollSaga = createPollSaga(
     'DOS_SELECT_CONTESTS_POLL_STOP',
 );
 
-function* randomSeedSync(): IterableIterator<void> {
-    dashboardRefresh();
-}
-
 function* randomSeedSaga() {
-    yield takeLatest('DOS_DEFINE_AUDIT_RANDOM_SEED_SYNC', randomSeedSync);
-}
-
-function* defineAuditReviewSync(): IterableIterator<void> {
-    dashboardRefresh();
+    yield takeLatest('DOS_DEFINE_AUDIT_RANDOM_SEED_SYNC', () => dashboardRefresh());
 }
 
 function* defineAuditReviewSaga() {
-    yield takeLatest('DOS_DEFINE_AUDIT_REVIEW_SYNC', defineAuditReviewSync);
+    yield takeLatest('DOS_DEFINE_AUDIT_REVIEW_SYNC', () => dashboardRefresh());
 }
 
 
