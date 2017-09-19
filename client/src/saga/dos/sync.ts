@@ -8,7 +8,7 @@ import fetchContests from 'corla/action/dos/fetchContests';
 
 const DOS_POLL_DELAY = 1000 * 5;
 
-const dosDashboardPollSaga = createPollSaga(
+const dashboardPollSaga = createPollSaga(
     [dashboardRefresh, fetchContests],
     DOS_POLL_DELAY,
     'DOS_DASHBOARD_POLL_START',
@@ -18,6 +18,6 @@ const dosDashboardPollSaga = createPollSaga(
 
 export default function* pollSaga() {
     yield all([
-        dosDashboardPollSaga(),
+        dashboardPollSaga(),
     ]);
 }
