@@ -16,7 +16,7 @@ import uploadCvrExportSaga from './county/uploadCvrExportSaga';
 import debugSaga from './debugSaga';
 
 import dosAuditSaga from './dos/auditSaga';
-import dosPollSaga from './dos/pollSaga';
+import dosSyncSaga from './dos/sync';
 
 import loginSaga from './loginSaga';
 import logoutSaga from './logoutSaga';
@@ -33,7 +33,7 @@ export default function* rootSaga() {
         countyLoginSaga(),
         countyPollSaga(),
         dosAuditSaga(),
-        dosPollSaga(),
+        dosSyncSaga(),
         loginSaga(),
         logoutSaga(),
         refreshSaga(),
