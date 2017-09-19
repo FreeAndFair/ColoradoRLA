@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
+
+import withPoll from 'corla/component/withPoll';
 
 import SelectContestsPage from './SelectContestsPage';
 
@@ -32,11 +33,20 @@ class SelectContestsPageContainer extends React.Component<any, any> {
     }
 }
 
+const select = (state: any) => {
+    const { sos } = state;
 
-const mapStateToProps = ({ sos }: any) => ({
-    auditedContests: sos.auditedContests,
-    contests: sos.contests,
-    sos,
-});
+    return {
+        auditedContests: sos.auditedContests,
+        contests: sos.contests,
+        sos,
+    };
+};
 
-export default connect(mapStateToProps)(SelectContestsPageContainer);
+
+export default withPoll(
+    SelectContestsPageContainer,
+    'DOS_SELECT_CONTESTS_POLL_START',
+    'DOS_SELECT_CONTESTS_POLL_STOP',
+    select,
+);

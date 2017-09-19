@@ -23,10 +23,18 @@ function* defineAuditSaga() {
     yield takeLatest('DOS_DEFINE_AUDIT_SYNC', defineAuditSync);
 }
 
+const selectContestsPollSaga = createPollSaga(
+    [dashboardRefresh, fetchContests],
+    DOS_POLL_DELAY,
+    'DOS_SELECT_CONTESTS_POLL_START',
+    'DOS_SELECT_CONTESTS_POLL_STOP',
+);
+
 
 export default function* pollSaga() {
     yield all([
         dashboardPollSaga(),
         defineAuditSaga(),
+        selectContestsPollSaga(),
     ]);
 }
