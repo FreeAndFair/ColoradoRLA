@@ -1,5 +1,7 @@
 import { all, takeLatest } from 'redux-saga/effects';
 
+import * as config from 'corla/config';
+
 import createPollSaga from 'corla/saga/createPollSaga';
 
 import dashboardRefresh from 'corla/action/dos/dashboardRefresh';
@@ -28,7 +30,7 @@ function* countyOverviewSaga() {
     yield takeLatest('DOS_COUNTY_OVERVIEW_SYNC', () => dashboardRefresh());
 }
 
-const DOS_POLL_DELAY = 1000 * 5;
+const DOS_POLL_DELAY = config.pollDelay;
 
 const dashboardPollSaga = createPollSaga(
     [dashboardRefresh, fetchContests],

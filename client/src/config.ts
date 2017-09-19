@@ -20,3 +20,8 @@ export const defaultPublicMeetingDate = '2017-11-17';
 export const helpEmail = 'help@example.com';
 
 export const helpTel = '555-555-5555';
+
+export const pollDelay
+    = debug
+    ? 1000 * 5
+    : 1000 * 30;
