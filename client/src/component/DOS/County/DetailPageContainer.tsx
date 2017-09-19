@@ -1,11 +1,10 @@
 import * as React from 'react';
-import { connect } from 'react-redux';
+
+import withSync from 'corla/component/withSync';
 
 import counties from 'corla/data/counties';
 
 import CountyDetailPage from './DetailPage';
-
-import dosDashboardRefresh from 'corla/action/dos/dashboardRefresh';
 
 
 class CountyDetailContainer extends React.Component<any, any> {
@@ -16,17 +15,29 @@ class CountyDetailContainer extends React.Component<any, any> {
         const county: any = counties[countyId];
 
         if (!county) {
-            dosDashboardRefresh();
             return <div />;
         }
 
         const status = countyStatus[countyId];
 
+        if (!status) {
+            return <div />;
+        }
+
         return <CountyDetailPage county={ county } status={ status } />;
     }
 }
 
-const mapStateToProps = ({ sos }: any) => ({ countyStatus: sos.countyStatus });
+const select = (state: any) => {
+    const { sos } = state;
+    const { countyStatus } = sos;
+
+    return { countyStatus };
+};
 
 
-export default connect(mapStateToProps)(CountyDetailContainer);
+export default withSync(
+    CountyDetailContainer,
+    'DOS_COUNTY_DETAIL_SYNC',
+    select,
+);
