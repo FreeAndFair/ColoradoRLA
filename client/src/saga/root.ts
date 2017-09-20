@@ -7,7 +7,6 @@ import auditBoardSignInSaga from './county/auditBoardSignInSaga';
 import ballotNotFoundOkSaga from './county/ballotNotFoundOkSaga';
 import countyCvrsToAuditSaga from './county/cvrsToAuditSaga';
 import countyDashboardRefreshOkSaga from './county/dashboardRefreshOkSaga';
-import countyLoginSaga from './county/loginSaga';
 import countySyncSaga from './county/sync';
 import uploadAcvrOkSaga from './county/uploadAcvrOkSaga';
 import uploadBallotManifestSaga from './county/uploadBallotManifestSaga';
@@ -30,7 +29,6 @@ export default function* rootSaga() {
         ballotNotFoundOkSaga(),
         countyCvrsToAuditSaga(),
         countyDashboardRefreshOkSaga(),
-        countyLoginSaga(),
         countySyncSaga(),
         dosAuditSaga(),
         dosSyncSaga(),
