@@ -17,6 +17,10 @@ class SelectContestsPageContainer extends React.Component<any, any> {
             sos,
         } = this.props;
 
+        if (!sos) {
+            return <div />;
+        }
+
         if (sos.asm.currentState === 'DOS_AUDIT_ONGOING') {
             return <Redirect to='/sos' />;
         }
@@ -35,6 +39,8 @@ class SelectContestsPageContainer extends React.Component<any, any> {
 
 const select = (state: any) => {
     const { sos } = state;
+
+    if (!sos) { return {}; }
 
     return {
         auditedContests: sos.auditedContests,

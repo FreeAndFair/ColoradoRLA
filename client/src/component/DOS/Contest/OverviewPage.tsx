@@ -62,6 +62,10 @@ const ContestTable = ({ contests }: any) => {
 const ContestOverviewPage = (props: any) => {
     const { contests } = props;
 
+    if (!contests) {
+        return <div />;
+    }
+
     return (
         <div>
             <Nav />
