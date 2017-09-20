@@ -3,14 +3,16 @@ import { connect } from 'react-redux';
 
 import { Redirect } from 'react-router-dom';
 
+import session from 'corla/session';
+
 import LoginPage from './Page';
 
 
 export class LoginContainer extends React.Component<any, any> {
     public render() {
-        const { location, loggedIn } = this.props;
+        const { location } = this.props;
 
-        if (loggedIn) {
+        if (session.active()) {
             const to = location.state
                      ? location.state.from
                      : '/';
@@ -22,7 +24,5 @@ export class LoginContainer extends React.Component<any, any> {
     }
 }
 
-const mapStateToProps = ({ loggedIn }: any) => ({ loggedIn });
 
-
-export default connect(mapStateToProps)(LoginContainer);
+export default LoginContainer;

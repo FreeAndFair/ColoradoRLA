@@ -10,5 +10,4 @@ export default (state: any) => ({
         contests: {},
     },
     dashboard: 'county',
-    loggedIn: true,
 });
