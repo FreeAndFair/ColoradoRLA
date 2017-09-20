@@ -4,6 +4,7 @@ import {
 } from 'redux-saga/effects';
 
 import notice from 'corla/notice';
+import session from 'corla/session';
 
 
 function* login1FOk(action: any) {
@@ -19,8 +20,10 @@ function* login2FOk(action: any) {
     const { role } = action.data.received;
 
     if (role === 'STATE') {
+        session.save({ type: 'dos' });
         yield put({ type: 'DOS_LOGIN_OK' });
     } else {
+        session.save({ type: 'county' });
         yield put({ type: 'COUNTY_LOGIN_OK' });
     }
 }
