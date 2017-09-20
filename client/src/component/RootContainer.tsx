@@ -7,6 +7,7 @@ import {
     Switch,
 } from 'react-router-dom';
 
+import LoginRoute from './LoginRoute';
 import RootRedirectContainer from './RootRedirectContainer';
 
 import AuditBoardPageContainer from './County/AuditBoard/PageContainer';
@@ -36,27 +37,6 @@ import DOSDashboardContainer from './DOS/Dashboard/PageContainer';
 export interface RootContainerProps {
     store: Store<any>;
 }
-
-const UnconnectedLoginRoute = ({ loggedIn, page: Page, ...rest }: any) => {
-    const render = (props: any) => {
-        if (loggedIn) {
-            return <Page { ...props } />;
-        }
-
-        const from  = props.location.pathname || '/';
-        const to = {
-            pathname: '/login',
-            state: { from },
-        };
-        return <Redirect to={ to } />;
-    };
-
-    return <Route render={ render } { ...rest } />;
-};
-
-const LoginRoute: any = connect(
-    ({ loggedIn }: any) => ({ loggedIn }),
-)(UnconnectedLoginRoute);
 
 type RouteDef = [string, React.ComponentClass];
 
