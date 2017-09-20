@@ -30,7 +30,7 @@ const ContestRow = (props: any) => {
     } = props;
 
     if (!auditStatus) {
-        return <div />;
+        return null;
     }
 
     const renderItem = ({ handleClick, item, isActive }: any) => {
