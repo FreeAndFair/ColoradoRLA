@@ -15,6 +15,10 @@ class StartPageContainer extends React.Component<any, any> {
     public render() {
         const { election, history, publicMeetingDate, riskLimit, sos } = this.props;
 
+        if (!sos) {
+            return <div />;
+        }
+
         if (sos.asm.currentState === 'DOS_AUDIT_ONGOING') {
             return <Redirect to='/sos' />;
         }
@@ -38,6 +42,9 @@ class StartPageContainer extends React.Component<any, any> {
 
 const select = (state: any) => {
     const { sos } = state;
+
+    if (!sos) { return {}; }
+
     const { election, publicMeetingDate, riskLimit } = sos;
 
     return { election, riskLimit, publicMeetingDate, sos };

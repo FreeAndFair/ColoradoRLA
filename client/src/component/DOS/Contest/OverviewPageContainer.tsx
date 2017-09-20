@@ -8,6 +8,10 @@ import OverviewPage from './OverviewPage';
 const select = (state: any) => {
     const { sos } = state;
 
+    if (!sos) {
+        return {};
+    }
+
     return {
         contests: sos.contests,
         sos,

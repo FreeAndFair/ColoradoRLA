@@ -26,6 +26,11 @@ class ContestDetailContainer extends React.Component<any, any> {
 
 const select = (state: any) => {
     const { sos } = state;
+
+    if (!sos) {
+        return {};
+    }
+
     const { contests } = sos;
 
     return { contests };

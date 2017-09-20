@@ -13,6 +13,10 @@ class ReviewPageContainer extends React.Component<any, any> {
     public render() {
         const { history, sos } = this.props;
 
+        if (!sos) {
+            return <div />;
+        }
+
         if (sos.asm.currentState === 'DOS_AUDIT_ONGOING') {
             return <Redirect to='/sos' />;
         }
