@@ -22,9 +22,11 @@ function* login2FOk(action: any) {
     if (role === 'STATE') {
         session.save({ type: 'dos' });
         yield put({ type: 'DOS_LOGIN_OK' });
+        window.location.replace('/sos');
     } else {
         session.save({ type: 'county' });
         yield put({ type: 'COUNTY_LOGIN_OK' });
+        window.location.replace('/county');
     }
 }
 
