@@ -61,11 +61,11 @@ const CountyTable = ({ counties, countyStatus }: any) => {
         <table className='pt-table pt-bordered pt-condensed'>
             <thead>
                 <tr>
-                    <td>Name</td>
-                    <td>Status</td>
-                    <td># Ballots Submitted</td>
-                    <td>Audited Contest Discrepancies</td>
-                    <td>Non-audited Contest Discrepancies</td>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th># Ballots Submitted</th>
+                    <th>Audited Contest Discrepancies</th>
+                    <th>Non-audited Contest Discrepancies</th>
                 </tr>
             </thead>
             <tbody>
