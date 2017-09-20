@@ -8,12 +8,18 @@ import withPoll from 'corla/component/withPoll';
 
 class DOSDashboardContainer extends React.Component<any, any> {
     public render() {
+        if (!this.props.sos) {
+            return <div />;
+        }
+
         return <DOSDashboardPage { ...this.props } />;
     }
 }
 
 const select = (state: any) => {
     const { sos } = state;
+
+    if (!sos) { return {}; }
 
     return {
         contests: sos.contests,
