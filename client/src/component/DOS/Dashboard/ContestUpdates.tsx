@@ -32,11 +32,13 @@ const ContestUpdates = ({ contests, seed, sos }: any) => {
         }
 
         const county = counties[c.countyId];
+        const discrepancyCount = _.sum(_.values(sos.discrepancyCounts[c.id]));
 
         return (
             <tr key={ c.id }>
                 <td>{ county.name }</td>
                 <td>{ c.name }</td>
+                <td>{ discrepancyCount }</td>
             </tr>
         );
     });
@@ -50,6 +52,7 @@ const ContestUpdates = ({ contests, seed, sos }: any) => {
                         <tr>
                             <th>County</th>
                             <th>Name</th>
+                            <th>Discrepancies</th>
                         </tr>
                     </thead>
                     <tbody>
