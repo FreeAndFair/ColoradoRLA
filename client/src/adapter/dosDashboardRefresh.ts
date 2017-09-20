@@ -124,6 +124,7 @@ export const parse = (data: any) => ({
     auditStage: data.audit_stage,
     auditedContests: parseAuditedContests(data.audited_contests),
     countyStatus: parseCountyStatus(data.county_status),
+    discrepancyCounts: data.discrepancy_count,
     election: parseElection(data),
     estimatedBallotsToAudit: data.estimated_ballots_to_audit,
     handCountContests: data.hand_count_contests,
