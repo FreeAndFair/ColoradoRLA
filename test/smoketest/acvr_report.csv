@@ -1,0 +1,27 @@
+selection,county,imprinted_id,record_type,timestamp,counted,disagreement,discrepancy,comment,consensus,contest_id,cvr_id,choices,acvr_id,choices
+0,3,3-800-20,AUDITOR_ENTERED,2017-09-20 09:43:40.685,t,[],[],,,151,176,"[""Clear Winner""]",355,"[""Clear Winner""]"
+0,3,3-800-20,AUDITOR_ENTERED,2017-09-20 09:43:40.685,t,[],[],,,155,176,[],355,[]
+1,3,9-3200-11,AUDITOR_ENTERED,2017-09-20 09:43:42.933,t,[],[],,,151,255,"[""Clear Winner""]",379,"[""Clear Winner""]"
+1,3,9-3200-11,AUDITOR_ENTERED,2017-09-20 09:43:42.933,t,[],[],,,153,255,"[""Janet Lee Cook""]",379,"[""Janet Lee Cook""]"
+2,3,4-1200-3,AUDITOR_ENTERED,2017-09-20 09:43:41.283,t,[],[],,,151,199,"[""Clear Winner""]",361,"[""Clear Winner""]"
+2,3,4-1200-3,AUDITOR_ENTERED,2017-09-20 09:43:41.283,t,[],[],,,153,199,"[""Jeff Baker""]",361,"[""Jeff Baker""]"
+3,3,10-2-16,AUDITOR_ENTERED,2017-09-20 09:43:44.316,t,[],[],,,151,312,"[""Clear Winner""]",397,"[""Clear Winner""]"
+3,3,10-2-16,AUDITOR_ENTERED,2017-09-20 09:43:44.316,t,[],[],,,153,312,"[""Janet Lee Cook""]",397,"[""Janet Lee Cook""]"
+3,3,10-2-16,AUDITOR_ENTERED,2017-09-20 09:43:44.316,t,[],[],,,155,312,"[""YES""]",397,"[""YES""]"
+4,3,10-2-4,AUDITOR_ENTERED,2017-09-20 09:43:43.8,t,[],[],,,151,300,"[""Clear Winner""]",391,"[""Clear Winner""]"
+4,3,10-2-4,AUDITOR_ENTERED,2017-09-20 09:43:43.8,t,[],[],,,153,300,"[""Janet Lee Cook""]",391,"[""Janet Lee Cook""]"
+4,3,10-2-4,AUDITOR_ENTERED,2017-09-20 09:43:43.8,t,[],[],,,155,300,[],391,[]
+5,3,10-2-4,AUDITOR_ENTERED,2017-09-20 09:43:43.8,t,[],[],,,151,300,"[""Clear Winner""]",391,"[""Clear Winner""]"
+5,3,10-2-4,AUDITOR_ENTERED,2017-09-20 09:43:43.8,t,[],[],,,153,300,"[""Janet Lee Cook""]",391,"[""Janet Lee Cook""]"
+5,3,10-2-4,AUDITOR_ENTERED,2017-09-20 09:43:43.8,t,[],[],,,155,300,[],391,[]
+6,3,4-1200-14,AUDITOR_ENTERED,2017-09-20 09:43:41.844,t,[],"[""COUNTY_WIDE_CONTEST""]",,,151,209,"[""Clear Winner""]",367,[]
+6,3,4-1200-14,AUDITOR_ENTERED,2017-09-20 09:43:41.844,t,[],"[""COUNTY_WIDE_CONTEST""]",,,155,209,"[""NO""]",367,"[""NO""]"
+7,3,4-1200-35,AUDITOR_ENTERED,2017-09-20 09:43:42.465,t,[],[],,,151,229,"[""Clear Winner""]",373,"[""Clear Winner""]"
+8,3,4-1200-44,AUDITOR_ENTERED,2017-09-20 09:43:45.732,t,[],[],,,151,237,"[""Clear Winner""]",418,"[""Clear Winner""]"
+8,3,4-1200-44,AUDITOR_ENTERED,2017-09-20 09:43:45.732,t,[],[],,,155,237,"[""YES""]",418,"[""YES""]"
+9,3,9-3200-22,AUDITOR_ENTERED,2017-09-20 09:43:46.585,t,[],[],,,151,265,"[""Clear Winner""]",424,"[""Clear Winner""]"
+9,3,9-3200-22,AUDITOR_ENTERED,2017-09-20 09:43:46.585,t,[],[],,,153,265,[],424,[]
+10,3,4-1200-44,AUDITOR_ENTERED,2017-09-20 09:43:45.732,t,[],[],,,151,237,"[""Clear Winner""]",418,"[""Clear Winner""]"
+10,3,4-1200-44,AUDITOR_ENTERED,2017-09-20 09:43:45.732,t,[],[],,,155,237,"[""YES""]",418,"[""YES""]"
+11,3,9-3200-44,AUDITOR_ENTERED,2017-09-20 09:43:47.04,t,[],[],,,151,295,"[""Clear Winner""]",430,"[""Clear Winner""]"
+11,3,9-3200-44,AUDITOR_ENTERED,2017-09-20 09:43:47.04,t,[],[],,,155,295,[],430,[]
