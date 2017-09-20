@@ -115,9 +115,12 @@ function parseRiskLimit(data: any): number {
     return info.risk_limit;
 }
 
+function parseAsmState(data: any): any {
+    return { currentState: data.asm_state };
+}
 
 export const parse = (data: any) => ({
-    asmState: data.asm_state,
+    asm: parseAsmState(data),
     auditStage: data.audit_stage,
     auditedContests: parseAuditedContests(data.audited_contests),
     countyStatus: parseCountyStatus(data.county_status),
