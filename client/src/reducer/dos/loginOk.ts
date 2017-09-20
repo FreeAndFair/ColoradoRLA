@@ -21,6 +21,5 @@ const sosInitialState = (): any => ({
 export default (state: any) => ({
     ...state,
     dashboard: 'sos',
-    loggedIn: true,
     sos: sosInitialState(),
 });

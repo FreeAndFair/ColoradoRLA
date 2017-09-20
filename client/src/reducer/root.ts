@@ -25,7 +25,6 @@ import login1FOk from './login1FOk';
 
 
 interface AppState {
-    loggedIn: boolean;
     loginChallenge: any;
     dashboard?: Dashboard;
     county?: any;
@@ -33,7 +32,6 @@ interface AppState {
 }
 
 const defaultState: AppState = {
-    loggedIn: false,
     loginChallenge: null,
 };
 
