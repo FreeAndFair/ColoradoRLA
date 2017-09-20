@@ -5,9 +5,9 @@ import { connect } from 'react-redux';
 import Control from './Round/Control';
 import Status from './Round/Status';
 
-import activeCountiesSelector from 'corla/selector/dos/activeCounties';
 import auditStartedSelector from 'corla/selector/dos/auditStarted';
 import canStartNextRoundSelector from 'corla/selector/dos/canStartNextRound';
+import countiesWithRoundSelector from 'corla/selector/dos/countiesWithRound';
 import currentRoundSelector from 'corla/selector/dos/currentRound';
 
 
@@ -28,11 +28,13 @@ class RoundContainer extends React.Component<any, any> {
 const mapStateToProps = (state: any) => {
     const { sos } = state;
 
+    const currentRound = currentRoundSelector(state);
+
     return {
-        activeCounties: activeCountiesSelector(state),
         auditStarted: auditStartedSelector(state),
         canStartNextRound: canStartNextRoundSelector(state),
-        currentRound: currentRoundSelector(state),
+        countiesWithRound: countiesWithRoundSelector(state, currentRound),
+        currentRound,
         sos,
     };
 };
