@@ -7,10 +7,11 @@ import notice from 'corla/notice';
 
 
 function* login1FOk(action: any) {
-    const { stage } = action.data.received;
+    const { data } = action;
+    const { stage } = data.received;
 
     if (stage === 'SECOND_FACTOR_AUTHENTICATED') {
-        yield put({ type: 'LOGIN_2F_OK', data: action.data });
+        yield put({ type: 'LOGIN_2F_OK', data });
     }
 }
 
