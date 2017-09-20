@@ -50,6 +50,14 @@ const Main = (props: any) => {
                 <div className='pt-card'>
                     Congratulations! The audit is complete.
                 </div>
+                <div className='pt-card'>
+                    <div>Click to download final audit report.</div>
+                    <button
+                        className='pt-button'
+                        onClick={ fetchReport }>
+                        Download
+                    </button>
+                </div>
             </div>
         );
     }
