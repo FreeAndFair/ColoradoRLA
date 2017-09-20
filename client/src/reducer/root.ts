@@ -31,8 +31,27 @@ interface AppState {
     sos?: any;
 }
 
+const defaultCountyState = (): any => ({
+    acvrs: {},
+    asm: {
+        auditBoard: {},
+        county: {},
+    },
+    auditBoard: [],
+    contests: {},
+});
+
+const defaultDosState = (): any => ({
+    asm: {},
+    auditStage: 'PRE_AUDIT',
+    auditedContests: {},
+    countyStatus: {},
+});
+
 const defaultState: AppState = {
+    county: defaultCountyState(),
     loginChallenge: null,
+    sos: defaultDosState(),
 };
 
 
