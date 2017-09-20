@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 
 import * as _ from 'lodash';
 
+import { formatCountyAsmState } from 'corla/format';
+
 import Nav from '../Nav';
 
 
@@ -23,7 +25,7 @@ const Breadcrumb = () => (
 );
 
 const CountyTableRow = ({ county, status }: any) => {
-    const started = status !== 'NO_DATA' ? '✔' : '';
+    const countyState = formatCountyAsmState(status.asmState);
     const submitted = status.auditedBallotCount;
 
     const auditedCount = _.get(status, 'discrepancyCount.audited') || '—';
@@ -36,7 +38,7 @@ const CountyTableRow = ({ county, status }: any) => {
                     { county.name }
                 </Link>
             </td>
-            <td>{ started }</td>
+            <td>{ countyState }</td>
             <td>{ submitted }</td>
             <td>{ auditedCount }</td>
             <td>{ oppCount }</td>
@@ -60,7 +62,7 @@ const CountyTable = ({ counties, countyStatus }: any) => {
             <thead>
                 <tr>
                     <td>Name</td>
-                    <td>Audit Started</td>
+                    <td>Status</td>
                     <td># Ballots Submitted</td>
                     <td>Audited Contest Discrepancies</td>
                     <td>Non-audited Contest Discrepancies</td>
