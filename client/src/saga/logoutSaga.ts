@@ -13,6 +13,7 @@ export default function* logoutSaga() {
     const REDIRECT_ACTIONS = [
         'LOGOUT',
         'NOT_AUTHORIZED',
+        'RESET_DATABASE_OK',
     ];
 
     yield takeLatest(REDIRECT_ACTIONS, logoutRedirect);
