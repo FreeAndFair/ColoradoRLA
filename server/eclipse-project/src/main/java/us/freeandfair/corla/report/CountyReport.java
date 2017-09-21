@@ -355,7 +355,8 @@ public class CountyReport {
         cell.setCellType(CellType.NUMERIC);
         int discrepancies = 0;
         for (final Entry<AuditReason, Integer> entry : round.discrepancies().entrySet()) {
-          if (entry.getKey() != AuditReason.OPPORTUNISTIC_BENEFITS) {
+          if (entry.getKey() != AuditReason.OPPORTUNISTIC_BENEFITS && 
+              entry.getValue() != null) {
             discrepancies = discrepancies + entry.getValue();
           }
         }
@@ -372,7 +373,11 @@ public class CountyReport {
         cell = row.createCell(cell_number++);
         cell.setCellStyle(standard_style);
         cell.setCellType(CellType.NUMERIC);
-        cell.setCellValue(round.discrepancies().get(AuditReason.OPPORTUNISTIC_BENEFITS));
+        if (round.discrepancies().containsKey(AuditReason.OPPORTUNISTIC_BENEFITS)) {
+          cell.setCellValue(round.discrepancies().get(AuditReason.OPPORTUNISTIC_BENEFITS));
+        } else {
+          cell.setCellValue(0);
+        }
       }
       
       row = summary_sheet.createRow(row_number++);
@@ -404,7 +409,11 @@ public class CountyReport {
         cell = row.createCell(cell_number++);
         cell.setCellStyle(standard_style);
         cell.setCellType(CellType.NUMERIC);
-        cell.setCellValue(round.disagreements().get(AuditReason.OPPORTUNISTIC_BENEFITS));
+        if (round.disagreements().containsKey(AuditReason.OPPORTUNISTIC_BENEFITS)) {
+          cell.setCellValue(round.disagreements().get(AuditReason.OPPORTUNISTIC_BENEFITS));
+        } else {
+          cell.setCellValue(0);
+        }
       }
     }
     
