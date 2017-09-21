@@ -499,13 +499,6 @@ public class CountyReport {
     }
     
     max_cell_number = Math.max(max_cell_number, cell_number);
-
-    row_number++;
-    row = summary_sheet.createRow(row_number++);
-    cell_number = 0;
-    cell = row.createCell(cell_number++);
-    cell.setCellStyle(bold_style);
-    cell.setCellValue("Audited Contests");
     row_number = row_number - 1; // don't skip a line for the first contest
     for (final CountyContestResult ccr : my_driving_contest_results) {
       row_number++;
