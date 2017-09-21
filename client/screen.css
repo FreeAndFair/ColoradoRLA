@@ -89,3 +89,11 @@ h3 {
     width: -moz-fit-content;
     width: -webkit-fit-content;
 }
+
+table.rla-county-contest-info {
+    width: 100%;
+}
+
+table.rla-county-contest-info td, th {
+    width: 50%;
+}

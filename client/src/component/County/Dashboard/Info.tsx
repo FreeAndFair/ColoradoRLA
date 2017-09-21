@@ -20,7 +20,7 @@ const ContestInfoTable = ({ contest }: any) => {
     return (
         <div className='pt-card'>
             <span>{ contest.name }</span>
-            <table className='pt-table'>
+            <table className='pt-table rla-county-contest-info'>
                 <thead>
                     <tr>
                         <th>Name</th>
