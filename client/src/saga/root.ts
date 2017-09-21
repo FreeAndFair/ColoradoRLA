@@ -19,7 +19,7 @@ import dosSyncSaga from './dos/sync';
 
 import loginSaga from './loginSaga';
 import logoutSaga from './logoutSaga';
-import refreshSaga from './refreshSaga';
+import syncSaga from './sync';
 
 
 export default function* rootSaga() {
@@ -34,7 +34,7 @@ export default function* rootSaga() {
         dosSyncSaga(),
         loginSaga(),
         logoutSaga(),
-        refreshSaga(),
+        syncSaga(),
         uploadAcvrOkSaga(),
         uploadBallotManifestSaga(),
         uploadCvrExportSaga(),
