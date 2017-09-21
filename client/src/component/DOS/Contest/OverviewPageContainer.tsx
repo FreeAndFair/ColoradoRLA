@@ -1,19 +1,26 @@
 import * as React from 'react';
-import { connect } from 'react-redux';
 
-import ContestOverviewPage from './OverviewPage';
+import withSync from 'corla/component/withSync';
+
+import OverviewPage from './OverviewPage';
 
 
-class ContestOverviewContainer extends React.Component<any, any> {
-    public render() {
-        return <ContestOverviewPage { ...this.props } />;
+const select = (state: any) => {
+    const { sos } = state;
+
+    if (!sos) {
+        return {};
     }
-}
 
-const mapStateToProps = ({ sos }: any) => ({
-    contests: sos.contests,
-    sos,
-});
+    return {
+        contests: sos.contests,
+        sos,
+    };
+};
 
 
-export default connect(mapStateToProps)(ContestOverviewContainer);
+export default withSync(
+    OverviewPage,
+    'DOS_CONTEST_OVERVIEW_SYNC',
+    select,
+);

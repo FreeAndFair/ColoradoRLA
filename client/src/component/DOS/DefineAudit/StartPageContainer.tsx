@@ -2,16 +2,22 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 
-import AuditPage from './Page';
+import StartPage from './StartPage';
+
+import withSync from 'corla/component/withSync';
 
 
-class AuditPageContainer extends React.Component<any, any> {
+class StartPageContainer extends React.Component<any, any> {
     public state: any = {
         formValid: false,
     };
 
     public render() {
         const { election, history, publicMeetingDate, riskLimit, sos } = this.props;
+
+        if (!sos) {
+            return <div />;
+        }
 
         if (sos.asm.currentState === 'DOS_AUDIT_ONGOING') {
             return <Redirect to='/sos' />;
@@ -26,7 +32,7 @@ class AuditPageContainer extends React.Component<any, any> {
             setFormValid: this.setFormValid,
         };
 
-        return <AuditPage { ...props } />;
+        return <StartPage { ...props } />;
     }
 
     private setFormValid = (formValid: boolean) => {
@@ -34,11 +40,19 @@ class AuditPageContainer extends React.Component<any, any> {
     }
 }
 
+const select = (state: any) => {
+    const { sos } = state;
 
-const mapStateToProps = ({ sos }: any) => {
+    if (!sos) { return {}; }
+
     const { election, publicMeetingDate, riskLimit } = sos;
 
     return { election, riskLimit, publicMeetingDate, sos };
 };
 
-export default connect(mapStateToProps)(AuditPageContainer);
+
+export default withSync(
+    StartPageContainer,
+    'DOS_DEFINE_AUDIT_SYNC',
+    select,
+);

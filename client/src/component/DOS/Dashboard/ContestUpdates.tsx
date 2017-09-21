@@ -6,6 +6,8 @@ import { Tooltip } from '@blueprintjs/core';
 
 import counties from 'corla/data/counties';
 
+import setHandCount from 'corla/action/dos/setHandCount';
+
 
 const RemainingToAuditHeader = () => {
     const content =
@@ -23,6 +25,18 @@ const RemainingToAuditHeader = () => {
     );
 };
 
+const HandCountButton = (props: any) => {
+    const { contest } = props;
+
+    const onClick = () => setHandCount(contest.id);
+
+    return (
+        <button className='pt-button pt-intent-primary' onClick={ onClick }>
+            <span className='pt-icon pt-icon-hand-up' />
+        </button>
+    );
+};
+
 const ContestUpdates = ({ contests, seed, sos }: any) => {
     const selectedContests = _.pick(contests, _.keys(sos.auditedContests));
 
@@ -32,11 +46,16 @@ const ContestUpdates = ({ contests, seed, sos }: any) => {
         }
 
         const county = counties[c.countyId];
+        const discrepancyCount = _.sum(_.values(sos.discrepancyCounts[c.id]));
 
         return (
             <tr key={ c.id }>
+                <td>
+                    <HandCountButton contest={ c } />
+                </td>
                 <td>{ county.name }</td>
                 <td>{ c.name }</td>
+                <td>{ discrepancyCount }</td>
             </tr>
         );
     });
@@ -48,8 +67,10 @@ const ContestUpdates = ({ contests, seed, sos }: any) => {
                 <table className='pt-table'>
                     <thead>
                         <tr>
+                            <th>Hand Count</th>
                             <th>County</th>
                             <th>Name</th>
+                            <th>Discrepancies</th>
                         </tr>
                     </thead>
                     <tbody>

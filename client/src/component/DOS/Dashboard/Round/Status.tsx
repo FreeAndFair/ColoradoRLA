@@ -2,12 +2,12 @@ import * as React from 'react';
 
 
 const Status = (props: any) => {
-    const { activeCounties, currentRound } = props;
+    const { countiesWithRound, currentRound } = props;
 
-    const totalCountiesCount = activeCounties.length;
+    const totalCountiesCount = countiesWithRound.length;
 
-    const finished = (c: any) => c.auditBoardAsmState === 'WAITING_FOR_ROUND_START';
-    const finishedCountiesCount = activeCounties.filter(finished).length;
+    const finished = (c: any) => c.currentRound.number !== currentRound;
+    const finishedCountiesCount = countiesWithRound.filter(finished).length;
 
     return (
         <div className='pt-card'>

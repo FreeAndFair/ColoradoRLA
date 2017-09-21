@@ -2,14 +2,20 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 
-import AuditReviewPage from './ReviewPage';
+import withSync from 'corla/component/withSync';
+
+import ReviewPage from './ReviewPage';
 
 import publishBallotsToAudit from 'corla/action/dos/publishBallotsToAudit';
 
 
-class AuditBallotListContainer extends React.Component<any, any> {
+class ReviewPageContainer extends React.Component<any, any> {
     public render() {
         const { history, sos } = this.props;
+
+        if (!sos) {
+            return <div />;
+        }
 
         if (sos.asm.currentState === 'DOS_AUDIT_ONGOING') {
             return <Redirect to='/sos' />;
@@ -22,11 +28,19 @@ class AuditBallotListContainer extends React.Component<any, any> {
             sos,
         };
 
-        return <AuditReviewPage { ...props } />;
+        return <ReviewPage { ...props } />;
     }
 }
 
+const select = (state: any) => {
+    const { sos } = state;
 
-const mapStateToProps = ({ sos }: any) => ({ sos });
+    return { sos };
+};
 
-export default connect(mapStateToProps)(AuditBallotListContainer);
+
+export default withSync(
+    ReviewPageContainer,
+    'DOS_DEFINE_AUDIT_REVIEW_SYNC',
+    select,
+);

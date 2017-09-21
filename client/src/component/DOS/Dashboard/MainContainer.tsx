@@ -16,6 +16,8 @@ class MainContainer extends React.Component<any, any> {
 const mapStateToProps = (state: any) => {
     const { sos } = state;
 
+    if (!sos) { return {}; }
+
     return {
         auditDefined: auditStarted(state),
         canRenderReport: canRenderReport(state),

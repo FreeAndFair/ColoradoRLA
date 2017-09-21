@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { connect } from 'react-redux';
+
+import withSync from 'corla/component/withSync';
 
 import counties from 'corla/data/counties';
 
@@ -37,7 +38,7 @@ class AuditBoardSignInContainer extends React.Component<any, any> {
     }
 }
 
-const mapStateToProps = (state: any) => {
+const select = (state: any) => {
     const { county } = state;
 
     const countyInfo = countyInfoSelector(state);
@@ -53,4 +54,8 @@ const mapStateToProps = (state: any) => {
 };
 
 
-export default connect(mapStateToProps)(AuditBoardSignInContainer);
+export default withSync(
+    AuditBoardSignInContainer,
+    'COUNTY_BOARD_SIGN_IN_SYNC',
+    select,
+);

@@ -4,13 +4,15 @@ import {
 } from 'redux-saga/effects';
 
 import notice from 'corla/notice';
+import session from 'corla/session';
 
 
 function* login1FOk(action: any) {
-    const { stage } = action.data.received;
+    const { data } = action;
+    const { stage } = data.received;
 
     if (stage === 'SECOND_FACTOR_AUTHENTICATED') {
-        yield put({ type: 'LOGIN_2F_OK', data: action.data });
+        yield put({ type: 'LOGIN_2F_OK', data });
     }
 }
 
@@ -18,9 +20,13 @@ function* login2FOk(action: any) {
     const { role } = action.data.received;
 
     if (role === 'STATE') {
+        session.save({ type: 'dos' });
         yield put({ type: 'DOS_LOGIN_OK' });
+        window.location.replace('/sos');
     } else {
+        session.save({ type: 'county' });
         yield put({ type: 'COUNTY_LOGIN_OK' });
+        window.location.replace('/county');
     }
 }
 

@@ -7,6 +7,7 @@ import {
     Switch,
 } from 'react-router-dom';
 
+import LoginRoute from './LoginRoute';
 import RootRedirectContainer from './RootRedirectContainer';
 
 import AuditBoardPageContainer from './County/AuditBoard/PageContainer';
@@ -20,10 +21,10 @@ import ManualContainer from './Help/ManualContainer';
 
 import NextLoginContainer from './Login/Container';
 
-import DOSAuditPageContainer from './DOS/Audit/PageContainer';
-import DOSAuditReviewPageContainer from './DOS/Audit/ReviewPageContainer';
-import DOSAuditSeedPageContainer from './DOS/Audit/SeedPageContainer';
-import DOSSelectContestsPageContainer from './DOS/Audit/SelectContestsPageContainer';
+import DOSDefineAuditReviewPageContainer from './DOS/DefineAudit/ReviewPageContainer';
+import DOSDefineAuditSeedPageContainer from './DOS/DefineAudit/SeedPageContainer';
+import DOSDefineAduitSelectContestsPageContainer from './DOS/DefineAudit/SelectContestsPageContainer';
+import DOSDefineAuditStartPageContainer from './DOS/DefineAudit/StartPageContainer';
 
 import DOSContestDetailPageContainer from './DOS/Contest/DetailPageContainer';
 import DOSContestOverviewPageContainer from './DOS/Contest/OverviewPageContainer';
@@ -36,27 +37,6 @@ import DOSDashboardContainer from './DOS/Dashboard/PageContainer';
 export interface RootContainerProps {
     store: Store<any>;
 }
-
-const UnconnectedLoginRoute = ({ loggedIn, page: Page, ...rest }: any) => {
-    const render = (props: any) => {
-        if (loggedIn) {
-            return <Page { ...props } />;
-        }
-
-        const from  = props.location.pathname || '/';
-        const to = {
-            pathname: '/login',
-            state: { from },
-        };
-        return <Redirect to={ to } />;
-    };
-
-    return <Route render={ render } { ...rest } />;
-};
-
-const LoginRoute: any = connect(
-    ({ loggedIn }: any) => ({ loggedIn }),
-)(UnconnectedLoginRoute);
 
 type RouteDef = [string, React.ComponentClass];
 
@@ -82,10 +62,10 @@ const routes: RouteDef[] = [
     ['/help/glossary', GlossaryContainer],
     ['/help/manual', ManualContainer],
     ['/sos', DOSDashboardContainer],
-    ['/sos/audit', DOSAuditPageContainer],
-    ['/sos/audit/seed', DOSAuditSeedPageContainer],
-    ['/sos/audit/select-contests', DOSSelectContestsPageContainer],
-    ['/sos/audit/review', DOSAuditReviewPageContainer],
+    ['/sos/audit', DOSDefineAuditStartPageContainer],
+    ['/sos/audit/seed', DOSDefineAuditSeedPageContainer],
+    ['/sos/audit/select-contests', DOSDefineAduitSelectContestsPageContainer],
+    ['/sos/audit/review', DOSDefineAuditReviewPageContainer],
     ['/sos/contest', DOSContestOverviewPageContainer],
     ['/sos/contest/:contestId', DOSContestDetailPageContainer],
     ['/sos/county', DOSCountyOverviewPageContainer],

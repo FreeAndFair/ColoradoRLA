@@ -34,7 +34,7 @@ const Main = (props: any) => {
         startAudit,
     } = props;
 
-    let directions = 'Please upload your Ballot Manifest and Cast Vote Records.';
+    let directions = 'You may now upload the Ballot Manifest and Cast Vote Records.';
 
     if (auditBoardSignedIn) {
         if (auditButtonDisabled) {

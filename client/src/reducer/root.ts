@@ -25,16 +25,33 @@ import login1FOk from './login1FOk';
 
 
 interface AppState {
-    loggedIn: boolean;
     loginChallenge: any;
     dashboard?: Dashboard;
     county?: any;
     sos?: any;
 }
 
+const defaultCountyState = (): any => ({
+    acvrs: {},
+    asm: {
+        auditBoard: {},
+        county: {},
+    },
+    auditBoard: [],
+    contests: {},
+});
+
+const defaultDosState = (): any => ({
+    asm: {},
+    auditStage: 'PRE_AUDIT',
+    auditedContests: {},
+    countyStatus: {},
+});
+
 const defaultState: AppState = {
-    loggedIn: false,
+    county: defaultCountyState(),
     loginChallenge: null,
+    sos: defaultDosState(),
 };
 
 

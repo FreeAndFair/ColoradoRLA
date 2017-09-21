@@ -1,3 +1,5 @@
+import { has } from 'lodash';
+
 import {
     select,
     takeLatest,
@@ -20,8 +22,8 @@ function* countyRefreshOk({ data }: any): any {
         countyFetchContests(county.id);
     }
 
-    if (county.currentRound) {
-        fetchCvrsToAudit(county.currentRound);
+    if (has(county, 'currentRound.number')) {
+        fetchCvrsToAudit(county.currentRound.number);
     }
 }
 

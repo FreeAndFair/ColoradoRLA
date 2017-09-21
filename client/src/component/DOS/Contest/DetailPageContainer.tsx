@@ -1,9 +1,8 @@
 import * as React from 'react';
-import { connect } from 'react-redux';
+
+import withSync from 'corla/component/withSync';
 
 import ContestDetailPage from './DetailPage';
-
-import dosFetchContests from 'corla/action/dos/fetchContests';
 
 
 class ContestDetailContainer extends React.Component<any, any> {
@@ -11,7 +10,6 @@ class ContestDetailContainer extends React.Component<any, any> {
         const { contests } = this.props;
 
         if (!contests) {
-            dosFetchContests();
             return <div />;
         }
 
@@ -19,8 +17,6 @@ class ContestDetailContainer extends React.Component<any, any> {
         const contest = this.props.contests[contestId];
 
         if (!contest) {
-            // This might only ever be evidence of a bug.
-            dosFetchContests();
             return <div />;
         }
 
@@ -28,7 +24,21 @@ class ContestDetailContainer extends React.Component<any, any> {
     }
 }
 
-const mapStateToProps = ({ sos }: any) => ({ contests: sos.contests });
+const select = (state: any) => {
+    const { sos } = state;
+
+    if (!sos) {
+        return {};
+    }
+
+    const { contests } = sos;
+
+    return { contests };
+};
 
 
-export default connect(mapStateToProps)(ContestDetailContainer);
+export default withSync(
+    ContestDetailContainer,
+    'DOS_CONTEST_DETAIL_SYNC',
+    select,
+);

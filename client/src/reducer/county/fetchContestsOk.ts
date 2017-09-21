@@ -21,9 +21,9 @@ const parse = (data: any, state: any) => {
 
 
 export default (state: any, action: any) => {
-    const county = merge({}, state.county);
+    const nextState = { ...state };
 
-    county.contestDefs = merge({}, parse(action.data, state));
+    nextState.county.contestDefs = merge({}, parse(action.data, state));
 
-    return merge({}, state, { county });
+    return nextState;
 };

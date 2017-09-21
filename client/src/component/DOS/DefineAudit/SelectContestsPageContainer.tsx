@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
+
+import withPoll from 'corla/component/withPoll';
 
 import SelectContestsPage from './SelectContestsPage';
 
@@ -15,6 +16,10 @@ class SelectContestsPageContainer extends React.Component<any, any> {
             history,
             sos,
         } = this.props;
+
+        if (!sos) {
+            return <div />;
+        }
 
         if (sos.asm.currentState === 'DOS_AUDIT_ONGOING') {
             return <Redirect to='/sos' />;
@@ -32,11 +37,22 @@ class SelectContestsPageContainer extends React.Component<any, any> {
     }
 }
 
+const select = (state: any) => {
+    const { sos } = state;
 
-const mapStateToProps = ({ sos }: any) => ({
-    auditedContests: sos.auditedContests,
-    contests: sos.contests,
-    sos,
-});
+    if (!sos) { return {}; }
 
-export default connect(mapStateToProps)(SelectContestsPageContainer);
+    return {
+        auditedContests: sos.auditedContests,
+        contests: sos.contests,
+        sos,
+    };
+};
+
+
+export default withPoll(
+    SelectContestsPageContainer,
+    'DOS_SELECT_CONTESTS_POLL_START',
+    'DOS_SELECT_CONTESTS_POLL_STOP',
+    select,
+);

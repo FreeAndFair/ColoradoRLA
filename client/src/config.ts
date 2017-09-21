@@ -1,4 +1,4 @@
-export const debug = true;  // Inlined by Webpack
+export const debug = DEBUG;  // Inlined by Webpack
 
 const scheme = 'http';
 const hostname = 'localhost';
@@ -20,3 +20,8 @@ export const defaultPublicMeetingDate = '2017-11-17';
 export const helpEmail = 'help@example.com';
 
 export const helpTel = '555-555-5555';
+
+export const pollDelay
+    = debug
+    ? 1000 * 5
+    : 1000 * 30;

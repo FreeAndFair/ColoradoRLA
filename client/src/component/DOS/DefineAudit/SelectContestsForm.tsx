@@ -30,7 +30,7 @@ const ContestRow = (props: any) => {
     } = props;
 
     if (!auditStatus) {
-        return <div />;
+        return null;
     }
 
     const renderItem = ({ handleClick, item, isActive }: any) => {
@@ -103,6 +103,12 @@ class SelectContestsForm extends React.Component<any, any> {
                 reason: { ...auditReasons[0] },
             };
         });
+    }
+
+    public componentWillReceiveProps(nextProps: any) {
+        if (!_.isEqual(nextProps.contests, this.props.contests)) {
+            this.resetForm(nextProps.contests);
+        }
     }
 
     public render() {
@@ -193,6 +199,26 @@ class SelectContestsForm extends React.Component<any, any> {
                 </div>
             </div>
         );
+    }
+
+    private setContests() {
+        const { contests } = this.props;
+
+        this.setState({ contests });
+    }
+
+    private resetForm(contests: any) {
+        const form: any = {};
+
+        _.forEach(contests, (c, _) => {
+            form[c.id] = {
+                audit: false,
+                handCount: false,
+                reason: { ...auditReasons[0] },
+            };
+        });
+
+        this.setState({ form });
     }
 
     private onAuditChange = (contest: any) => () => {

@@ -10,7 +10,7 @@ const REPORT_STATES = [
 ];
 
 function canRenderReport(state: any) {
-    const { currentState } = state.sos.asm;
+    const currentState = _.get(state, 'sos.asm.currentState');
 
     return _.includes(REPORT_STATES, currentState);
 }

@@ -8,7 +8,6 @@ import fetchAuditBoardAsmState from 'corla/action/county/fetchAuditBoardAsmState
 import fetchCountyAsmState from 'corla/action/county/fetchCountyAsmState';
 
 import dosDashboardRefresh from 'corla/action/dos/dashboardRefresh';
-import dosFetchAsmState from 'corla/action/dos/fetchAsmState';
 import dosFetchContests from 'corla/action/dos/fetchContests';
 
 
@@ -20,7 +19,6 @@ function countyRefresh() {
 
 function dosRefresh() {
     dosDashboardRefresh();
-    dosFetchAsmState();
     dosFetchContests();
 }
 
@@ -29,8 +27,12 @@ export default function* dosLoginSaga() {
     const countyRefreshActions = [
         'AUDIT_BOARD_SIGN_IN_OK',
         'AUDIT_BOARD_SIGN_OUT_OK',
-        'ESTABLISH_AUDIT_BOARD_OK',
+        'BALLOT_NOT_FOUND_FAIL',
+        'BALLOT_NOT_FOUND_NETWORK_FAIL',
+        'BALLOT_NOT_FOUND_OK',
         'SUBMIT_ROUND_SIGN_OFF_OK',
+        'UPLOAD_ACVR_FAIL',
+        'UPLOAD_ACVR_NETWORK_FAIL',
         'UPLOAD_ACVR_OK',
         'UPDATE_ACVR_FORM',
         'UPLOAD_BALLOT_MANIFEST_OK',
@@ -45,6 +47,7 @@ export default function* dosLoginSaga() {
         'PUBLISH_BALLOTS_TO_AUDIT_OK',
         'SELECT_CONTESTS_FOR_AUDIT_OK',
         'SET_AUDIT_INFO_OK',
+        'SET_HAND_COUNT_OK',
         'UPLOAD_RANDOM_SEED_OK',
     ];
     yield takeLatest(dosRefreshActions, dosRefresh);
