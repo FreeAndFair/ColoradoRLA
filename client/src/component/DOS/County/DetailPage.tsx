@@ -125,7 +125,7 @@ const CountyDetailPage = ({ county, status }: any) => {
         <div>
             <Nav />
             <Breadcrumb county={ county } />
-            <h3>{ county.name }</h3>
+            <h3>{ county.name } Name</h3>
             <CountyDetails county={ county } status={ status } />
         </div>
     );
