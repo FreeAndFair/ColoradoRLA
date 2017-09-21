@@ -51,6 +51,7 @@ function parseCountyStatus(countyStatus: any) {
     _.forEach(countyStatus, c => {
         result[c.id] = {
             asmState: c.asm_state,
+            auditBoard: parseAuditBoard(c.audit_board),
             auditBoardAsmState: c.audit_board_asm_state,
             auditedBallotCount: c.audited_ballot_count,
             ballotManifestHash: c.ballot_manifest_hash,
@@ -117,6 +118,28 @@ function parseRiskLimit(data: any): number {
 
 function parseAsmState(data: any): any {
     return { currentState: data.asm_state };
+}
+
+function parseMember(member: any): any {
+    return {
+        firstName: member.first_name,
+        lastName: member.last_name,
+        party: member.political_party,
+    };
+}
+
+function parseAuditBoard(data: any): any {
+    if (!data) {
+        return null;
+    }
+
+    const members = data.members.map(parseMember);
+    const signIn = new Date(data.sign_in_time);
+
+    return {
+        members,
+        signIn,
+    };
 }
 
 export const parse = (data: any) => ({
