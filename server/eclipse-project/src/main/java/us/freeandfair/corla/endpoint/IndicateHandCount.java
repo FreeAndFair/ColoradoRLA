@@ -142,6 +142,7 @@ public class IndicateHandCount extends AbstractDoSDashboardEndpoint {
    */
   private void updateStateMachines(final Response the_response, 
                                    final Set<County> the_counties) {
+    boolean aborted_audit = false;
     // for each county, if the audit is actually running, abort it
     for (final County c : the_counties) {
       final AbstractStateMachine county_asm = 
@@ -155,8 +156,10 @@ public class IndicateHandCount extends AbstractDoSDashboardEndpoint {
         audit_asm.stepEvent(ABORT_AUDIT_EVENT);
         ASMUtilities.save(county_asm);
         ASMUtilities.save(audit_asm);
-      } else {
-        // this was done in an invalid state
+        aborted_audit = true;
+      } else if (!county_asm.isInFinalState() || !audit_asm.isInFinalState()) {
+        // this was done in an invalid state - it can only happen if the audit is
+        // either underway, or over
         illegalTransition(the_response,
                           "attempt to change contest to hand count for county " + 
                           c.id() + " in invalid state (" + county_asm.currentState() +
@@ -166,18 +169,25 @@ public class IndicateHandCount extends AbstractDoSDashboardEndpoint {
       }
     }
    
-    // the DoS dashboard event is either DOS_COUNTY_AUDIT_COMPLETE_EVENT or 
-    // DOS_AUDIT_COMPLETE_EVENT, depending on whether all counties are done
+    // the DoS dashboard event is either null, DOS_COUNTY_AUDIT_COMPLETE_EVENT or 
+    // DOS_AUDIT_COMPLETE_EVENT, depending on whether a county state changed and
+    // whether all counties are done
     
-    boolean all_done = true;
-    for (final County c : Persistence.getAll(County.class)) {
-      all_done &= 
-          ASMUtilities.asmFor(CountyDashboardASM.class, c.id().toString()).isInFinalState();
-    }
-    if (all_done) {
-      my_event.set(DOS_AUDIT_COMPLETE_EVENT);
+    if (aborted_audit) {
+      boolean all_done = true;
+      for (final County c : Persistence.getAll(County.class)) {
+        all_done &= 
+            ASMUtilities.asmFor(CountyDashboardASM.class, c.id().toString()).isInFinalState();
+      }
+      if (all_done) {
+        my_event.set(DOS_AUDIT_COMPLETE_EVENT);
+      } else {
+        my_event.set(DOS_COUNTY_AUDIT_COMPLETE_EVENT);
+      }
     } else {
-      my_event.set(DOS_COUNTY_AUDIT_COMPLETE_EVENT);
+      // no county's audit was actually aborted, so from the DoS dashboard ASM 
+      // perspective, this is a no-op
+      my_event.set(null);
     }
   }
 }
