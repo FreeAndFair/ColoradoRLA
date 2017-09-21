@@ -37,23 +37,23 @@ const CountyDetails = ({ county, status }: any) => {
             <table className='pt-table pt-bordered pt-condensed'>
                 <tbody>
                     <tr>
-                        <td>Name:</td>
+                        <td><strong>Name:</strong></td>
                         <td>{ county.name }</td>
                     </tr>
                     <tr>
-                        <td>Started:</td>
+                        <td><strong>Started:</strong></td>
                         <td>{ started }</td>
                     </tr>
                     <tr>
-                        <td>Ballots Submitted:</td>
+                        <td><strong>Ballots Submitted:</strong></td>
                         <td>{ submitted }</td>
                     </tr>
                     <tr>
-                        <td>Audited Contest Discrepancies:</td>
+                        <td><strong>Audited Contest Discrepancies:</strong></td>
                         <td>{ auditedCount }</td>
                     </tr>
                     <tr>
-                        <td>Non-audited Contest Discrepancies:</td>
+                        <td><strong>Non-audited Contest Discrepancies:</strong></td>
                         <td>{ oppCount }</td>
                     </tr>
                 </tbody>
