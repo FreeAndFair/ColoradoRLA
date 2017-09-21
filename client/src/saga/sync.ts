@@ -27,8 +27,13 @@ export default function* dosLoginSaga() {
     const countyRefreshActions = [
         'AUDIT_BOARD_SIGN_IN_OK',
         'AUDIT_BOARD_SIGN_OUT_OK',
+        'BALLOT_NOT_FOUND_FAIL',
+        'BALLOT_NOT_FOUND_NETWORK_FAIL',
+        'BALLOT_NOT_FOUND_OK',
         'ESTABLISH_AUDIT_BOARD_OK',
         'SUBMIT_ROUND_SIGN_OFF_OK',
+        'UPLOAD_ACVR_FAIL',
+        'UPLOAD_ACVR_NETWORK_FAIL',
         'UPLOAD_ACVR_OK',
         'UPDATE_ACVR_FORM',
         'UPLOAD_BALLOT_MANIFEST_OK',
