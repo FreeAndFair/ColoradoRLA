@@ -29,7 +29,6 @@ public interface ASMEvent extends Event {
     DOS_START_ROUND_EVENT, // public inbound event
     DOS_ROUND_COMPLETE_EVENT, // private internal event
     AUDIT_EVENT, // private internal event
-    INDICATE_FULL_HAND_COUNT_CONTEST_EVENT, // public inbound event
     DOS_COUNTY_AUDIT_COMPLETE_EVENT, // private internal event
     DOS_AUDIT_COMPLETE_EVENT, // private internal event
     PUBLISH_AUDIT_REPORT_EVENT // public inbound event

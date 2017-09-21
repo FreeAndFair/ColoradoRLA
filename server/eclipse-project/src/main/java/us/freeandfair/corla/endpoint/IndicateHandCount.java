@@ -12,7 +12,13 @@
 
 package us.freeandfair.corla.endpoint;
 
-import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.INDICATE_FULL_HAND_COUNT_CONTEST_EVENT;
+import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.ABORT_AUDIT_EVENT;
+import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.COUNTY_AUDIT_COMPLETE_EVENT;
+import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.*;
+import static us.freeandfair.corla.asm.ASMState.CountyDashboardState.COUNTY_AUDIT_UNDERWAY;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.PersistenceException;
 
@@ -23,7 +29,13 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
+import us.freeandfair.corla.asm.ASMUtilities;
+import us.freeandfair.corla.asm.AbstractStateMachine;
+import us.freeandfair.corla.asm.AuditBoardDashboardASM;
+import us.freeandfair.corla.asm.CountyDashboardASM;
 import us.freeandfair.corla.model.ContestToAudit;
+import us.freeandfair.corla.model.ContestToAudit.AuditType;
+import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 
@@ -35,6 +47,11 @@ import us.freeandfair.corla.persistence.Persistence;
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
 public class IndicateHandCount extends AbstractDoSDashboardEndpoint {
+  /**
+   * The event to return for this endpoint.
+   */
+  private final ThreadLocal<ASMEvent> my_event = new ThreadLocal<ASMEvent>();
+  
   /**
    * {@inheritDoc}
    */
@@ -63,9 +80,17 @@ public class IndicateHandCount extends AbstractDoSDashboardEndpoint {
    */
   @Override
   protected ASMEvent endpointEvent() {
-    return INDICATE_FULL_HAND_COUNT_CONTEST_EVENT;
+    return my_event.get();
   }
-  
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void reset() {
+    my_event.set(null);
+  }
+
   /**
    * Indicate that a contest must be hand-counted.
    * 
@@ -75,29 +100,84 @@ public class IndicateHandCount extends AbstractDoSDashboardEndpoint {
   @Override
   public synchronized String endpoint(final Request the_request, 
                                       final Response the_response) {
-    ok(the_response, "Contests selected");
     try {
       final ContestToAudit[] contests = 
           Main.GSON.fromJson(the_request.body(), ContestToAudit[].class);
       final DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
       if (dosdb == null) {
-        Main.LOGGER.error("could not get department of state dashboard");
         serverError(the_response, "Could not select contests");
       } else {
+        boolean hand_count = false;
+        final Set<County> hand_count_counties = new HashSet<>();
         for (final ContestToAudit c : contests) {
-          Main.LOGGER.info("updating contest audit status: " + c);
-          dosdb.updateContestToAudit(c);
+          if (c.audit() == AuditType.HAND_COUNT && dosdb.updateContestToAudit(c)) {
+            hand_count = true;
+            hand_count_counties.add(c.contest().county());
+          }
+        }
+        if (hand_count) {
+          updateStateMachines(the_response, hand_count_counties);
+        } else {
+          // bad data was submitted for hand count selection
+          badDataContents(the_response, "Invalid contest selection data");
         }
       }
       Persistence.saveOrUpdate(dosdb);
-      ok(the_response);
+      ok(the_response, "Contests selected for hand count");
     } catch (final JsonParseException e) {
-      Main.LOGGER.error("malformed contest selection");
       badDataContents(the_response, "Invalid contest selection data");
     } catch (final PersistenceException e) {
-      Main.LOGGER.error("could not save contest selection");
       serverError(the_response, "Unable to save contest selection");
     }
     return my_endpoint_result.get();
+  }
+  
+  /**
+   * Updates the ASMs of the counties where a contest is selected for hand count.
+   * Currently, this aborts the audit entirely in those counties 
+   * (if it is still running). This may also end the audit on the DoS dashboard.
+   * 
+   * @param the_response The response (for error reporting).
+   * @param the_counties The counties.
+   */
+  private void updateStateMachines(final Response the_response, 
+                                   final Set<County> the_counties) {
+    // for each county, if the audit is actually running, abort it
+    for (final County c : the_counties) {
+      final AbstractStateMachine county_asm = 
+          ASMUtilities.asmFor(CountyDashboardASM.class, c.id().toString());
+      final AbstractStateMachine audit_asm =
+          ASMUtilities.asmFor(AuditBoardDashboardASM.class, c.id().toString());
+      
+      if (county_asm.currentState() == COUNTY_AUDIT_UNDERWAY &&
+          !audit_asm.isInFinalState()) {
+        county_asm.stepEvent(COUNTY_AUDIT_COMPLETE_EVENT);
+        audit_asm.stepEvent(ABORT_AUDIT_EVENT);
+        ASMUtilities.save(county_asm);
+        ASMUtilities.save(audit_asm);
+      } else {
+        // this was done in an invalid state
+        illegalTransition(the_response,
+                          "attempt to change contest to hand count for county " + 
+                          c.id() + " in invalid state (" + county_asm.currentState() +
+                          ", " + audit_asm.currentState() + ")");
+        // must halt explicitly on an illegal transition call
+        halt(the_response);
+      }
+    }
+   
+    // the DoS dashboard event is either DOS_COUNTY_AUDIT_COMPLETE_EVENT or 
+    // DOS_AUDIT_COMPLETE_EVENT, depending on whether all counties are done
+    
+    boolean all_done = true;
+    for (final County c : Persistence.getAll(County.class)) {
+      all_done &= 
+          ASMUtilities.asmFor(CountyDashboardASM.class, c.id().toString()).isInFinalState();
+    }
+    if (all_done) {
+      my_event.set(DOS_AUDIT_COMPLETE_EVENT);
+    } else {
+      my_event.set(DOS_COUNTY_AUDIT_COMPLETE_EVENT);
+    }
   }
 }

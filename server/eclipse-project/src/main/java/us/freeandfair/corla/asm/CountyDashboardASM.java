@@ -20,7 +20,7 @@ import javax.persistence.Entity;
 
 import us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent;
 import us.freeandfair.corla.asm.ASMState.CountyDashboardState;
-import us.freeandfair.corla.asm.ASMTransitionFunction.CountyDashboardTransitionFunction;
+import us.freeandfair.corla.asm.ASMTransitionFunction.DoSDashboardTransitionFunction.CountyDashboardTransitionFunction;
 import us.freeandfair.corla.util.SetCreator;
 
 /**
