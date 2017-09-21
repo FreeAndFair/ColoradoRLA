@@ -29,7 +29,7 @@ import us.freeandfair.corla.util.FileHelper;
 import us.freeandfair.corla.util.SparkHelper;
 
 /**
- * The file upload endpoint.
+ * The file download endpoint.
  * 
  * @author Daniel M. Zimmerman
  * @version 0.0.1
@@ -37,12 +37,12 @@ import us.freeandfair.corla.util.SparkHelper;
 @SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.ExcessiveImports"})
 public class FileDownload extends AbstractEndpoint {
   /**
-   * The upload buffer size, in bytes.
+   * The download buffer size, in bytes.
    */
   private static final int BUFFER_SIZE = 1048576; // 1 MB
 
   /**
-   * The maximum upload size, in bytes.
+   * The maximum download size, in bytes.
    */
   private static final int MAX_DOWNLOAD_SIZE = 1073741824; // 1 GB
 
