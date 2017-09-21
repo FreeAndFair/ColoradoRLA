@@ -31,6 +31,21 @@ function* setAuditInfoNetworkFail(): IterableIterator<void> {
     notice.danger('Unable to set audit info: network failure.');
 }
 
+function* setHandCountOk(action: any): IterableIterator<void> {
+    notice.ok('Contest selected for hand count.');
+}
+
+function* setHandCountFail(action: any): IterableIterator<void> {
+    const { data } = action;
+    const { result } = data;
+
+    notice.danger(`Unable to set contest for hand count: ${result}`);
+}
+
+function* setHandCountNetworkFail(): IterableIterator<void> {
+    notice.danger('Unable to set contest for hand count: network failure.');
+}
+
 function* uploadRandomSeedFail(): IterableIterator<void> {
     notice.danger('Unable to set random number generator seed.');
     notice.danger('Please verify that the seed is a numeral at least 20 digits long.');
@@ -66,6 +81,10 @@ export default function* dosLoginSaga() {
     yield takeLatest('SET_AUDIT_INFO_FAIL', setAuditInfoFail);
     yield takeLatest('SET_AUDIT_INFO_NETWORK_FAIL', setAuditInfoNetworkFail);
     yield takeLatest('SET_AUDIT_INFO_OK', setAuditInfoOk);
+
+    yield takeLatest('SET_HAND_COUNT_FAIL', setHandCountFail);
+    yield takeLatest('SET_HAND_COUNT_NETWORK_FAIL', setHandCountNetworkFail);
+    yield takeLatest('SET_HAND_COUNT_OK', setHandCountOk);
 
     yield takeLatest('UPLOAD_RANDOM_SEED_FAIL', uploadRandomSeedFail);
     yield takeLatest('UPLOAD_RANDOM_SEED_NETWORK_FAIL', uploadRandomSeedNetworkFail);
