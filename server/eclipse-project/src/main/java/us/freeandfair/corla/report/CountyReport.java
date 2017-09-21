@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.OptionalInt;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -58,7 +59,7 @@ import us.freeandfair.corla.query.CountyContestResultQueries;
  * @version 0.0.1
  */
 @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.StdCyclomaticComplexity",
-                   "PMD.ModifiedCyclomaticComplexity", "PMD.ExcessiveImports"})
+    "PMD.ModifiedCyclomaticComplexity", "PMD.ExcessiveImports", "PMD.GodClass"})
 public class CountyReport {
   /**
    * The affirmation statement.
@@ -341,7 +342,72 @@ public class CountyReport {
         cell.setCellType(CellType.NUMERIC);
         cell.setCellValue(round.actualCount());
       }
+      
+      row = summary_sheet.createRow(row_number++);
+      cell_number = 0;
+      cell = row.createCell(cell_number++);
+      cell.setCellType(CellType.STRING);
+      cell.setCellStyle(bold_style);
+      cell.setCellValue("Discrepancies by Round (Audited Contests)");
+      for (final Round round : my_rounds) {
+        cell = row.createCell(cell_number++);
+        cell.setCellStyle(standard_style);
+        cell.setCellType(CellType.NUMERIC);
+        int discrepancies = 0;
+        for (final Entry<AuditReason, Integer> entry : round.discrepancies().entrySet()) {
+          if (entry.getKey() != AuditReason.OPPORTUNISTIC_BENEFITS) {
+            discrepancies = discrepancies + entry.getValue();
+          }
+        }
+        cell.setCellValue(discrepancies);
+      }
+
+      row = summary_sheet.createRow(row_number++);
+      cell_number = 0;
+      cell = row.createCell(cell_number++);
+      cell.setCellType(CellType.STRING);
+      cell.setCellStyle(bold_style);
+      cell.setCellValue("Discrepancies by Round (Non-Audited Contests)");
+      for (final Round round : my_rounds) {
+        cell = row.createCell(cell_number++);
+        cell.setCellStyle(standard_style);
+        cell.setCellType(CellType.NUMERIC);
+        cell.setCellValue(round.discrepancies().get(AuditReason.OPPORTUNISTIC_BENEFITS));
+      }
+      
+      row = summary_sheet.createRow(row_number++);
+      cell_number = 0;
+      cell = row.createCell(cell_number++);
+      cell.setCellType(CellType.STRING);
+      cell.setCellStyle(bold_style);
+      cell.setCellValue("Disagreements by Round (Audited Contests)");
+      for (final Round round : my_rounds) {
+        cell = row.createCell(cell_number++);
+        cell.setCellStyle(standard_style);
+        cell.setCellType(CellType.NUMERIC);
+        int disagreements = 0;
+        for (final Entry<AuditReason, Integer> entry : round.disagreements().entrySet()) {
+          if (entry.getKey() != AuditReason.OPPORTUNISTIC_BENEFITS) {
+            disagreements = disagreements + entry.getValue();
+          }
+        }
+        cell.setCellValue(disagreements);
+      }
+      
+      row = summary_sheet.createRow(row_number++);
+      cell_number = 0;
+      cell = row.createCell(cell_number++);
+      cell.setCellType(CellType.STRING);
+      cell.setCellStyle(bold_style);
+      cell.setCellValue("Disagreements by Round (Non-Audited Contests)");
+      for (final Round round : my_rounds) {
+        cell = row.createCell(cell_number++);
+        cell.setCellStyle(standard_style);
+        cell.setCellType(CellType.NUMERIC);
+        cell.setCellValue(round.disagreements().get(AuditReason.OPPORTUNISTIC_BENEFITS));
+      }
     }
+    
     row_number++;
     row = summary_sheet.createRow(row_number++);
     cell_number = 0;
@@ -413,7 +479,7 @@ public class CountyReport {
         cell = row.createCell(cell_number++);
         cell.setCellStyle(integer_style);
         cell.setCellType(CellType.NUMERIC);
-        final OptionalInt margin = ccr.marginToNext(choice);
+        final OptionalInt margin = ccr.marginToNearestLoser(choice);
         if (margin.isPresent()) {
           cell.setCellValue(margin.getAsInt());
         }
@@ -421,7 +487,7 @@ public class CountyReport {
         cell = row.createCell(cell_number++);
         cell.setCellStyle(decimal_style);
         cell.setCellType(CellType.NUMERIC);
-        final BigDecimal diluted_margin = ccr.countyDilutedMarginToNext(choice);
+        final BigDecimal diluted_margin = ccr.countyDilutedMarginToNearestLoser(choice);
         if (diluted_margin != null) {
           cell.setCellValue(diluted_margin.doubleValue() * 100);
         }

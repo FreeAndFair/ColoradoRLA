@@ -360,7 +360,7 @@ public class StateReport {
             cell = row.createCell(cell_number++);
             cell.setCellStyle(integer_style);
             cell.setCellType(CellType.NUMERIC);
-            final OptionalInt margin = ccr.marginToNext(choice);
+            final OptionalInt margin = ccr.marginToNearestLoser(choice);
             if (margin.isPresent()) {
               cell.setCellValue(margin.getAsInt());
             }
@@ -368,7 +368,7 @@ public class StateReport {
             cell = row.createCell(cell_number++);
             cell.setCellStyle(decimal_style);
             cell.setCellType(CellType.NUMERIC);
-            final BigDecimal diluted_margin = ccr.countyDilutedMarginToNext(choice);
+            final BigDecimal diluted_margin = ccr.countyDilutedMarginToNearestLoser(choice);
             if (diluted_margin != null) {
               cell.setCellValue(diluted_margin.doubleValue() * 100);
             }
