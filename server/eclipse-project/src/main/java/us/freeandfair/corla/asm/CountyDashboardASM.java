@@ -20,7 +20,7 @@ import javax.persistence.Entity;
 
 import us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent;
 import us.freeandfair.corla.asm.ASMState.CountyDashboardState;
-import us.freeandfair.corla.asm.ASMTransitionFunction.DoSDashboardTransitionFunction.CountyDashboardTransitionFunction;
+import us.freeandfair.corla.asm.ASMTransitionFunction.CountyDashboardTransitionFunction;
 import us.freeandfair.corla.util.SetCreator;
 
 /**
@@ -35,15 +35,15 @@ public class CountyDashboardASM extends AbstractStateMachine {
   /**
    * The serialVersionUID.
    */
-  private static final long serialVersionUID = 1; 
+  private static final long serialVersionUID = 1;
 
   /**
    * The final states of this ASM.
    */
-  private static final ASMState[] FINAL_STATES = 
+  private static final ASMState[] FINAL_STATES =
       {CountyDashboardState.DEADLINE_MISSED,
        CountyDashboardState.COUNTY_AUDIT_COMPLETE};
-  
+
   /**
    * Create the County Dashboard ASM.
    * 
@@ -59,5 +59,5 @@ public class CountyDashboardASM extends AbstractStateMachine {
           CountyDashboardState.COUNTY_INITIAL_STATE,
           SetCreator.setOf(FINAL_STATES),
           the_county_id);
-  } 
+  }
 }

@@ -69,13 +69,13 @@ public interface ASMTransitionFunction {
     I(new ASMTransition(DOS_AUDIT_COMPLETE, 
                         PUBLISH_AUDIT_REPORT_EVENT,
                         AUDIT_RESULTS_PUBLISHED));
-    
+
     /**
      * A single transition.
      */
     @SuppressWarnings("PMD.ConstantsInInterface")
     private final transient ASMTransition my_transition;
-    
+
     /**
      * Create a transition.
      * @param the_pair the (current state, event) pair.
@@ -84,77 +84,77 @@ public interface ASMTransitionFunction {
     DoSDashboardTransitionFunction(final ASMTransition the_transition) {
       my_transition = the_transition;
     }
-    
+
     /**
      * @return the pair encoding this enumeration.
      */
     public ASMTransition value() {
       return my_transition;
     }
+  }
+
+  /**
+   * The County Board Dashboard's transition function.
+   * @trace asm.county_dashboard_next_state
+   */
+  enum CountyDashboardTransitionFunction implements ASMTransitionFunction {
+    A(new ASMTransition(COUNTY_INITIAL_STATE,
+                        UPLOAD_BALLOT_MANIFEST_EVENT,
+                        BALLOT_MANIFEST_OK)),
+    B(new ASMTransition(COUNTY_INITIAL_STATE,
+                        UPLOAD_CVRS_EVENT,
+                        CVRS_OK)),
+    C(new ASMTransition(BALLOT_MANIFEST_OK, 
+                        UPLOAD_CVRS_EVENT,
+                        BALLOT_MANIFEST_AND_CVRS_OK)),
+    D(new ASMTransition(BALLOT_MANIFEST_OK,
+                        UPLOAD_BALLOT_MANIFEST_EVENT,
+                        BALLOT_MANIFEST_OK)),
+    E(new ASMTransition(CVRS_OK,
+                        UPLOAD_BALLOT_MANIFEST_EVENT,
+                        BALLOT_MANIFEST_AND_CVRS_OK)),
+    F(new ASMTransition(CVRS_OK,
+                        UPLOAD_CVRS_EVENT,
+                        CVRS_OK)),
+    G(new ASMTransition(BALLOT_MANIFEST_AND_CVRS_OK,
+                        SetCreator.setOf(UPLOAD_BALLOT_MANIFEST_EVENT, 
+                                         UPLOAD_CVRS_EVENT),
+                        BALLOT_MANIFEST_AND_CVRS_OK)),
+    H(new ASMTransition(BALLOT_MANIFEST_AND_CVRS_OK,
+                        COUNTY_START_AUDIT_EVENT,
+                        COUNTY_AUDIT_UNDERWAY)),
+    I(new ASMTransition(COUNTY_AUDIT_UNDERWAY, 
+                        COUNTY_AUDIT_COMPLETE_EVENT,
+                        COUNTY_AUDIT_COMPLETE)),
+    J(new ASMTransition(SetCreator.setOf(COUNTY_INITIAL_STATE,
+                                         BALLOT_MANIFEST_OK,
+                                         CVRS_OK),
+                        COUNTY_START_AUDIT_EVENT,
+                        DEADLINE_MISSED));
 
     /**
-     * The County Board Dashboard's transition function.
-     * @trace asm.county_dashboard_next_state
+     * A single transition.
      */
-    enum CountyDashboardTransitionFunction implements ASMTransitionFunction {
-      A(new ASMTransition(COUNTY_INITIAL_STATE,
-                          UPLOAD_BALLOT_MANIFEST_EVENT,
-                          BALLOT_MANIFEST_OK)),
-      B(new ASMTransition(COUNTY_INITIAL_STATE,
-                          UPLOAD_CVRS_EVENT,
-                          CVRS_OK)),
-      C(new ASMTransition(BALLOT_MANIFEST_OK, 
-                          UPLOAD_CVRS_EVENT,
-                          BALLOT_MANIFEST_AND_CVRS_OK)),
-      D(new ASMTransition(BALLOT_MANIFEST_OK,
-                          UPLOAD_BALLOT_MANIFEST_EVENT,
-                          BALLOT_MANIFEST_OK)),
-      E(new ASMTransition(CVRS_OK,
-                          UPLOAD_BALLOT_MANIFEST_EVENT,
-                          BALLOT_MANIFEST_AND_CVRS_OK)),
-      F(new ASMTransition(CVRS_OK,
-                          UPLOAD_CVRS_EVENT,
-                          CVRS_OK)),
-      G(new ASMTransition(BALLOT_MANIFEST_AND_CVRS_OK,
-                          SetCreator.setOf(UPLOAD_BALLOT_MANIFEST_EVENT, 
-                                           UPLOAD_CVRS_EVENT),
-                          BALLOT_MANIFEST_AND_CVRS_OK)),
-      H(new ASMTransition(BALLOT_MANIFEST_AND_CVRS_OK,
-                          COUNTY_START_AUDIT_EVENT,
-                          COUNTY_AUDIT_UNDERWAY)),
-      I(new ASMTransition(COUNTY_AUDIT_UNDERWAY, 
-                          COUNTY_AUDIT_COMPLETE_EVENT,
-                          COUNTY_AUDIT_COMPLETE)),
-      J(new ASMTransition(SetCreator.setOf(COUNTY_INITIAL_STATE,
-                                           BALLOT_MANIFEST_OK,
-                                           CVRS_OK),
-                          COUNTY_START_AUDIT_EVENT,
-                          DEADLINE_MISSED));
-    
-      /**
-       * A single transition.
-       */
-      @SuppressWarnings("PMD.ConstantsInInterface")
-      private final transient ASMTransition my_transition;
-      
-      /**
-       * Create a transition.
-       * @param the_pair the (current state, event) pair.
-       * @param the_state the state transitioned to when the pair is witnessed.
-       */
-      CountyDashboardTransitionFunction(final ASMTransition the_transition) {
-        my_transition = the_transition;
-      }
-      
-      /**
-       * @return the pair encoding this enumeration.
-       */
-      public ASMTransition value() {
-        return my_transition;
-      }
+    @SuppressWarnings("PMD.ConstantsInInterface")
+    private final transient ASMTransition my_transition;
+
+    /**
+     * Create a transition.
+     * @param the_pair the (current state, event) pair.
+     * @param the_state the state transitioned to when the pair is witnessed.
+     */
+    CountyDashboardTransitionFunction(final ASMTransition the_transition) {
+      my_transition = the_transition;
+    }
+
+    /**
+     * @return the pair encoding this enumeration.
+     */
+    public ASMTransition value() {
+      return my_transition;
     }
   }
-  
+
   /**
    * The Audit Board Dashboard's transition function.
    * @trace asm.audit_board_dashboard_next_state

@@ -248,10 +248,9 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   private Integer my_audited_prefix_length;
   
   /**
-   * The number of records in the audit sequence that have actually
-   * been audited so far.
+   * The number of samples that have been audited so far.
    */
-  private Integer my_audited_record_count;
+  private Integer my_audited_sample_count;
   
   /**
    * The number of discrepancies found in the audit so far.
@@ -873,21 +872,21 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   }
 
   /**
-   * @return the number of audited records that have been counted in the
+   * @return the number of samples that have been included in the
    * audit calculations so far.
    */
-  public Integer auditedRecordCount() {
-    return my_audited_record_count;
+  public Integer auditedSampleCount() {
+    return my_audited_sample_count;
   }
   
   /**
-   * Sets the number of audited records that have been counted in the
+   * Sets the number of samples that have been included in the
    * audit calculations so far.
    * 
-   * @param the_audited_record_count The audited record count.
+   * @param the_audited_sample_count The audited sample count.
    */
-  public void setAuditedRecordCount(final int the_audited_record_count) {
-    my_audited_record_count = the_audited_record_count;
+  public void setAuditedSampleCount(final int the_audited_sample_count) {
+    my_audited_sample_count = the_audited_sample_count;
   }
 
   /**
