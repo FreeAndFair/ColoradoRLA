@@ -222,7 +222,7 @@ public class CountyReport {
    */
   @SuppressWarnings({"checkstyle:magicnumber", "checkstyle:executablestatementcount",
       "checkstyle:methodlength", "PMD.ExcessiveMethodLength", "PMD.NcssMethodCount",
-      "PMD.NPathComplexity"})
+      "PMD.NPathComplexity", "PMD.AvoidLiteralsInIfCondition"})
   public Workbook generateExcelWorkbook() {
     final Workbook workbook = new XSSFWorkbook();
 
@@ -290,7 +290,7 @@ public class CountyReport {
         my_dosdb.auditInfo().electionDate() == null) {
       cell.setCellValue("ELECTION TYPE/DATE NOT SET");
     } else {
-      cell.setCellValue(my_dosdb.auditInfo().electionType() + " - " +
+      cell.setCellValue(my_dosdb.auditInfo().capitalizedElectionType() + " Election - " +
                         DATE_FORMATTER.
                         format(LocalDateTime.ofInstant(my_dosdb.auditInfo().electionDate(), 
                                                        ZoneOffset.UTC)));
