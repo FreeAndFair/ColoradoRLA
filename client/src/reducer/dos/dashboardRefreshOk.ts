@@ -4,7 +4,11 @@ import { parse } from 'corla/adapter/dosDashboardRefresh';
 
 
 export default (state: any, action: any) => {
-    const sos = merge({}, parse(action.data));
+    const nextState = { ...state };
 
-    return merge({}, state, { sos });
+    const sos = merge({}, parse(action.data));
+    nextState.sos = merge({}, nextState.sos, sos);
+    nextState.sos.auditedContests = sos.auditedContests;
+
+    return nextState;
 };
