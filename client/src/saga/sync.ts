@@ -30,7 +30,6 @@ export default function* dosLoginSaga() {
         'BALLOT_NOT_FOUND_FAIL',
         'BALLOT_NOT_FOUND_NETWORK_FAIL',
         'BALLOT_NOT_FOUND_OK',
-        'ESTABLISH_AUDIT_BOARD_OK',
         'SUBMIT_ROUND_SIGN_OFF_OK',
         'UPLOAD_ACVR_FAIL',
         'UPLOAD_ACVR_NETWORK_FAIL',
