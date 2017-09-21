@@ -65,6 +65,18 @@ public class StateReport {
    */
   @SuppressWarnings("PMD.AvoidUsingShortType")
   public static final short FONT_SIZE = 12;
+
+  /**
+   * The date formatter.
+   */
+  private static final DateTimeFormatter DATE_FORMATTER = 
+      DateTimeFormatter.ofPattern("MM/dd/yyyy");
+  
+  /**
+   * The date/time formatter.
+   */
+  private static final DateTimeFormatter DATE_TIME_FORMATTER = 
+      DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm a");
   
   /**
    * The date and time this report was generated.
@@ -186,8 +198,9 @@ public class StateReport {
     cell.setCellType(CellType.STRING);
     cell.setCellStyle(bold_style);
     cell.setCellValue("Generated " + 
-                      LocalDateTime.ofInstant(my_timestamp,
-                                              ZoneOffset.systemDefault()).toString());
+                      DATE_TIME_FORMATTER.
+                      format(LocalDateTime.ofInstant(my_timestamp,
+                                                     ZoneOffset.systemDefault())));
     
     row = summary_sheet.createRow(row_number++);
     cell_number = 0;
@@ -199,8 +212,9 @@ public class StateReport {
       cell.setCellValue("ELECTION TYPE/DATE NOT SET");
     } else {
       cell.setCellValue(my_dosdb.auditInfo().electionType() + " - " +
-                        LocalDateTime.ofInstant(my_dosdb.auditInfo().electionDate(), 
-                                                ZoneOffset.UTC).toLocalDate().toString());
+                        DATE_FORMATTER.
+                        format(LocalDateTime.ofInstant(my_dosdb.auditInfo().electionDate(), 
+                                                       ZoneOffset.UTC)));
     }
     
     row_number++;
@@ -556,7 +570,7 @@ public class StateReport {
     // the file name should be constructed from the county name, election
     // type and date, and report generation time
     final LocalDateTime election_datetime = 
-        LocalDateTime.ofInstant(my_dosdb.auditInfo().electionDate(), ZoneId.systemDefault());
+        LocalDateTime.ofInstant(my_dosdb.auditInfo().electionDate(), ZoneOffset.UTC);
     final LocalDateTime report_datetime = 
         LocalDateTime.ofInstant(my_timestamp, ZoneId.systemDefault()).
         truncatedTo(ChronoUnit.SECONDS);
@@ -566,9 +580,9 @@ public class StateReport {
     sb.append(my_dosdb.auditInfo().electionType().
               toLowerCase(Locale.getDefault()).replace(" ", "_"));
     sb.append('-');
-    sb.append(DateTimeFormatter.ISO_LOCAL_DATE.format(election_datetime));
+    sb.append(DATE_FORMATTER.format(election_datetime).replace("/", "-"));
     sb.append("-report-");
-    sb.append(DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(report_datetime).replace(":", "_"));
+    sb.append(DATE_TIME_FORMATTER.format(report_datetime).replace("/", "-").replace(":", "_"));
     sb.append(".xlsx");
     
     return sb.toString();
