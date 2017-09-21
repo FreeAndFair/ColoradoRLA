@@ -385,11 +385,11 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
       my_estimated_ballots_to_audit = my_optimistic_ballots_to_audit;
     } else {
       // compute the "fudge factor" for the estimate
-      final BigDecimal prefix_length = BigDecimal.valueOf(my_dashboard.auditedPrefixLength());
+      final BigDecimal audited_samples = BigDecimal.valueOf(my_dashboard.auditedSampleCount());
       final BigDecimal overstatements = 
           BigDecimal.valueOf(my_one_vote_over + my_two_vote_over);
       final BigDecimal fudge_factor =
-          BigDecimal.ONE.add(overstatements.divide(prefix_length, MathContext.DECIMAL128));
+          BigDecimal.ONE.add(overstatements.divide(audited_samples, MathContext.DECIMAL128));
       final BigDecimal estimated =
           BigDecimal.valueOf(my_optimistic_ballots_to_audit).multiply(fudge_factor);
       my_estimated_ballots_to_audit = estimated.setScale(0, RoundingMode.CEILING).intValue();

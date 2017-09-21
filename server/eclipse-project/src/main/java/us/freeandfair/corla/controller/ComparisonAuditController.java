@@ -134,7 +134,7 @@ public final class ComparisonAuditController {
     final Round round = the_cdb.currentRound();
     if (round != null) {
       result = 
-          CVRAuditInfoQueries.unauditedCVRIDsInRange(the_cdb, the_cdb.auditedPrefixLength(),
+          CVRAuditInfoQueries.unauditedCVRIDsInRange(the_cdb, round.startAuditedPrefixLength(),
                                                      round.expectedAuditedPrefixLength());
     }
     return result;
@@ -307,6 +307,7 @@ public final class ComparisonAuditController {
     }
     
     the_cdb.setAuditedPrefixLength(0);
+    the_cdb.setAuditedSampleCount(0);
     for (final CountyContestResult ccr : 
          CountyContestResultQueries.forCounty(the_cdb.county())) {
       AuditReason reason = contest_reasons.get(ccr.contest());
@@ -506,13 +507,21 @@ public final class ComparisonAuditController {
       // audited yet, we can just process it
       final CastVoteRecord old_audit_cvr = info.get(0).acvr();
       if (old_audit_cvr == null) {
+        // this audits all instances of the ballot in our current sequence; 
+        // they might be out of order, but that's OK because we have strong
+        // requirements about finishing rounds before looking at results as
+        // final and valid
+        the_cdb.addAuditedBallot();
+        final Pair<Set<AuditReason>, Set<AuditReason>> audit_results = 
+            audit(the_cdb, the_cvr_under_audit, the_audit_cvr, info.size(), true);
+        the_cdb.setAuditedSampleCount(the_cdb.auditedSampleCount() + info.size());
         for (final CVRAuditInfo c : info) {
           c.setACVR(the_audit_cvr);
+          c.setCounted(true);
+          c.setDiscrepancy(audit_results.first());
+          c.setDisagreement(audit_results.second());
           Persistence.saveOrUpdate(c);
         }
-        // this just updates the counters; the actual "audit" happens later
-        the_cdb.addAuditedBallot();
-        audit(the_cdb, the_cvr_under_audit, the_audit_cvr, 0, true);
       } else {
         // the record has been audited before, so we need to "unaudit" it 
         // this requires a linear search over the matching records to see
@@ -546,10 +555,10 @@ public final class ComparisonAuditController {
     updateCVRUnderAudit(the_cdb);
     the_cdb.
         setEstimatedBallotsToAudit(computeEstimatedBallotsToAudit(the_cdb) -
-                                   the_cdb.auditedPrefixLength());
+                                   the_cdb.auditedSampleCount());
     the_cdb.
         setOptimisticBallotsToAudit(computeOptimisticBallotsToAudit(the_cdb) -
-                                    the_cdb.auditedPrefixLength());
+                                    the_cdb.auditedSampleCount());
     return result;
   }
   
@@ -742,13 +751,16 @@ public final class ComparisonAuditController {
     for (final CVRAuditInfo cai : cvr_audit_info) {
       if (cai.acvr() == null) {
         break;
-      } else {
+      } else if (!cai.counted()) {
+        // we only count this CVRAuditInfo if we didn't count it before, 
+        // because it might have been counted earlier in its round
         final Pair<Set<AuditReason>, Set<AuditReason>> audit_results = 
             audit(the_cdb, cai.cvr(), cai.acvr(), 1, false);
         cai.setCounted(true);
         cai.setDiscrepancy(audit_results.first());
         cai.setDisagreement(audit_results.second());
         Persistence.saveOrUpdate(cai);
+        the_cdb.setAuditedSampleCount(the_cdb.auditedSampleCount() + 1);
       }
       index = index + 1;
     }

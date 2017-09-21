@@ -443,7 +443,7 @@ public class CountyDashboardRefreshResponse {
                                               asm.currentState(),
                                               audit_board_asm.currentState(),
                                               null,
-                                              null,
+                                              the_dashboard.currentAuditBoard(),
                                               manifest_digest,
                                               the_dashboard.manifestUploadTimestamp(),
                                               manifest_filename,

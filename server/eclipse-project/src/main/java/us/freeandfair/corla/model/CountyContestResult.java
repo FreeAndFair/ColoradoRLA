@@ -185,7 +185,9 @@ public class CountyContestResult implements PersistentEntity, Serializable {
     my_contest = the_contest;
     my_votes_allowed = the_contest.votesAllowed();
     for (final Choice c : the_contest.choices()) {
-      my_vote_totals.put(c.name(), 0);
+      if (!c.fictitious()) {
+        my_vote_totals.put(c.name(), 0);
+      }
     }
   }
  

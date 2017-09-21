@@ -88,7 +88,7 @@ public final class ContestJsonAdapter extends TypeAdapter<Contest> {
     the_writer.name(CHOICES);
     the_writer.beginArray();
     for (final Choice c : the_contest.choices()) {
-      if (!"Write-in".equals(c.name())) {
+      if (!c.fictitious()) {
         the_writer.jsonValue(Main.GSON.toJson(Persistence.unproxy(c)));
       }
     }

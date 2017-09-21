@@ -47,7 +47,7 @@ import us.freeandfair.corla.query.CountyContestResultQueries;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-@SuppressWarnings("PMD.GodClass")
+@SuppressWarnings({"PMD.GodClass", "PMD.CyclomaticComplexity"})
 public class DominionCVRExportParser implements CVRExportParser {
   /**
    * The interval at which to report progress.
@@ -286,10 +286,19 @@ public class DominionCVRExportParser implements CVRExportParser {
     for (final String cn : the_contest_names) {
       final List<Choice> choices = new ArrayList<Choice>();
       final int end = index + the_choice_counts.get(cn); 
+      boolean write_in = false;
       while (index < end) {
         final String ch = the_choice_line.get(index).trim();
         final String ex = the_expl_line.get(index).trim();
-        choices.add(new Choice(ch, ex));
+        // "Write-in" is a fictitious candidate that denotes the beginning of
+        // the list of qualified write-in candidates
+        final boolean fictitious = "Write-in".equals(ch);
+        choices.add(new Choice(ch, ex, write_in, fictitious));
+        if (fictitious) {
+          // consider all subsequent choices in this contest to be qualified 
+          // write-in candidates
+          write_in = true;
+        }
         index = index + 1;
       }
       // now that we have all the choices, we can create a Contest object for 
@@ -332,6 +341,7 @@ public class DominionCVRExportParser implements CVRExportParser {
    * @param the_timestamp The import timestamp.
    * @return the resulting CVR.
    */
+  @SuppressWarnings("PMD.CyclomaticComplexity")
   private CastVoteRecord extractCVR(final CSVRecord the_line) {
     try {
       final int cvr_id =
@@ -360,7 +370,7 @@ public class DominionCVRExportParser implements CVRExportParser {
           final boolean p = !mark_string.isEmpty();
           final boolean mark = "1".equals(mark_string);
           present |= p;
-          if (p && mark) {
+          if (!ch.fictitious() && p && mark) {
             votes.add(ch.name());
           }
           index = index + 1;

@@ -52,7 +52,6 @@ public interface ASMTransitionFunction {
                         DOS_AUDIT_ONGOING)),
     E(new ASMTransition(DOS_AUDIT_ONGOING, 
                         SetCreator.setOf(AUDIT_EVENT,
-                                         INDICATE_FULL_HAND_COUNT_CONTEST_EVENT, 
                                          DOS_COUNTY_AUDIT_COMPLETE_EVENT,
                                          DOS_START_ROUND_EVENT),
                         DOS_AUDIT_ONGOING)),
@@ -70,13 +69,13 @@ public interface ASMTransitionFunction {
     I(new ASMTransition(DOS_AUDIT_COMPLETE, 
                         PUBLISH_AUDIT_REPORT_EVENT,
                         AUDIT_RESULTS_PUBLISHED));
-    
+
     /**
      * A single transition.
      */
     @SuppressWarnings("PMD.ConstantsInInterface")
     private final transient ASMTransition my_transition;
-    
+
     /**
      * Create a transition.
      * @param the_pair the (current state, event) pair.
@@ -85,7 +84,7 @@ public interface ASMTransitionFunction {
     DoSDashboardTransitionFunction(final ASMTransition the_transition) {
       my_transition = the_transition;
     }
-    
+
     /**
      * @return the pair encoding this enumeration.
      */
@@ -93,7 +92,7 @@ public interface ASMTransitionFunction {
       return my_transition;
     }
   }
-  
+
   /**
    * The County Board Dashboard's transition function.
    * @trace asm.county_dashboard_next_state
@@ -138,7 +137,7 @@ public interface ASMTransitionFunction {
      */
     @SuppressWarnings("PMD.ConstantsInInterface")
     private final transient ASMTransition my_transition;
-    
+
     /**
      * Create a transition.
      * @param the_pair the (current state, event) pair.
@@ -147,7 +146,7 @@ public interface ASMTransitionFunction {
     CountyDashboardTransitionFunction(final ASMTransition the_transition) {
       my_transition = the_transition;
     }
-    
+
     /**
      * @return the pair encoding this enumeration.
      */
@@ -155,7 +154,7 @@ public interface ASMTransitionFunction {
       return my_transition;
     }
   }
-  
+
   /**
    * The Audit Board Dashboard's transition function.
    * @trace asm.audit_board_dashboard_next_state

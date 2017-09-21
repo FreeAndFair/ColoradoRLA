@@ -66,9 +66,6 @@ public class ASMEventToEndpointRelation {
         DOS_START_ROUND_EVENT,
         UNIMPLEMENTED));
     my_relation.add(new Pair<ASMEvent, String>(
-        INDICATE_FULL_HAND_COUNT_CONTEST_EVENT,
-        UNIMPLEMENTED));
-    my_relation.add(new Pair<ASMEvent, String>(
         PUBLISH_AUDIT_REPORT_EVENT,
         UNIMPLEMENTED));
   }

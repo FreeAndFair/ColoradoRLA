@@ -179,21 +179,28 @@ public class DoSDashboard implements PersistentEntity, Serializable {
    * Update the audit status of a contest. 
    * 
    * @param the_contest_to_audit The new status of the contest to audit.
+   * @return true if the contest was already being audited or hand counted, 
+   * false otherwise.
    */
   //@ requires the_contest_to_audit != null;
-  public void updateContestToAudit(final ContestToAudit the_contest_to_audit) {
+  public boolean updateContestToAudit(final ContestToAudit the_contest_to_audit) {
+    boolean result = false;
+    
     // check to see if the contest is in our set
     final Set<ContestToAudit> contests_to_remove = new HashSet<>();
     for (final ContestToAudit c : my_contests_to_audit) {
       if (c.contest().equals(the_contest_to_audit.contest())) {
         // flag the entry for removal
         contests_to_remove.add(c);
+        result = true;
       }
     }
     my_contests_to_audit.removeAll(contests_to_remove);
     if (the_contest_to_audit.audit() != AuditType.NONE) {
       my_contests_to_audit.add(the_contest_to_audit);
     }
+    
+    return result;
   }
   
   /**
