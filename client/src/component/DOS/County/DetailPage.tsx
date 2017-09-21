@@ -2,6 +2,8 @@ import * as React from 'react';
 
 import * as _ from 'lodash';
 
+import { formatCountyAsmState } from 'corla/format';
+
 import Nav from '../Nav';
 
 
@@ -26,7 +28,7 @@ const Breadcrumb = ({ county }: any) => (
 );
 
 const CountyDetails = ({ county, status }: any) => {
-    const started = status !== 'NO_DATA' ? '✔' : '';
+    const countyState = formatCountyAsmState(status.asmState);
     const submitted = status.auditedBallotCount;
 
     const auditedCount = _.get(status, 'discrepancyCount.audited') || '—';
@@ -41,8 +43,8 @@ const CountyDetails = ({ county, status }: any) => {
                         <td>{ county.name }</td>
                     </tr>
                     <tr>
-                        <td><strong>Started:</strong></td>
-                        <td>{ started }</td>
+                        <td><strong>Status:</strong></td>
+                        <td>{ countyState }</td>
                     </tr>
                     <tr>
                         <td><strong>Ballots Submitted:</strong></td>
