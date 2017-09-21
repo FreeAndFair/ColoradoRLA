@@ -134,7 +134,7 @@ public final class ComparisonAuditController {
     final Round round = the_cdb.currentRound();
     if (round != null) {
       result = 
-          CVRAuditInfoQueries.unauditedCVRIDsInRange(the_cdb, the_cdb.auditedPrefixLength(),
+          CVRAuditInfoQueries.unauditedCVRIDsInRange(the_cdb, round.startAuditedPrefixLength(),
                                                      round.expectedAuditedPrefixLength());
     }
     return result;
@@ -307,6 +307,7 @@ public final class ComparisonAuditController {
     }
     
     the_cdb.setAuditedPrefixLength(0);
+    the_cdb.setAuditedRecordCount(0);
     for (final CountyContestResult ccr : 
          CountyContestResultQueries.forCounty(the_cdb.county())) {
       AuditReason reason = contest_reasons.get(ccr.contest());
@@ -513,6 +514,7 @@ public final class ComparisonAuditController {
         the_cdb.addAuditedBallot();
         final Pair<Set<AuditReason>, Set<AuditReason>> audit_results = 
             audit(the_cdb, the_cvr_under_audit, the_audit_cvr, info.size(), true);
+        the_cdb.setAuditedRecordCount(the_cdb.auditedRecordCount() + info.size());
         for (final CVRAuditInfo c : info) {
           c.setACVR(the_audit_cvr);
           c.setCounted(true);
@@ -553,10 +555,10 @@ public final class ComparisonAuditController {
     updateCVRUnderAudit(the_cdb);
     the_cdb.
         setEstimatedBallotsToAudit(computeEstimatedBallotsToAudit(the_cdb) -
-                                   the_cdb.auditedPrefixLength());
+                                   the_cdb.auditedRecordCount());
     the_cdb.
         setOptimisticBallotsToAudit(computeOptimisticBallotsToAudit(the_cdb) -
-                                    the_cdb.auditedPrefixLength());
+                                    the_cdb.auditedRecordCount());
     return result;
   }
   
@@ -758,6 +760,7 @@ public final class ComparisonAuditController {
         cai.setDiscrepancy(audit_results.first());
         cai.setDisagreement(audit_results.second());
         Persistence.saveOrUpdate(cai);
+        the_cdb.setAuditedRecordCount(the_cdb.auditedRecordCount() + 1);
       }
       index = index + 1;
     }

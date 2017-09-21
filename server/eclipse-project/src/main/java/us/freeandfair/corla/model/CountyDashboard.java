@@ -248,6 +248,12 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   private Integer my_audited_prefix_length;
   
   /**
+   * The number of records in the audit sequence that have actually
+   * been audited so far.
+   */
+  private Integer my_audited_record_count;
+  
+  /**
    * The number of discrepancies found in the audit so far.
    */
   @Column(nullable = false, name = "discrepancies", columnDefinition = "text")
@@ -865,6 +871,25 @@ public class CountyDashboard implements PersistentEntity, Serializable {
           setActualAuditedPrefixLength(the_audited_prefix_length);
     }
   }
+
+  /**
+   * @return the number of audited records that have been counted in the
+   * audit calculations so far.
+   */
+  public Integer auditedRecordCount() {
+    return my_audited_record_count;
+  }
+  
+  /**
+   * Sets the number of audited records that have been counted in the
+   * audit calculations so far.
+   * 
+   * @param the_audited_record_count The audited record count.
+   */
+  public void setAuditedRecordCount(final int the_audited_record_count) {
+    my_audited_record_count = the_audited_record_count;
+  }
+
   /**
    * @return a String representation of this contest.
    */
