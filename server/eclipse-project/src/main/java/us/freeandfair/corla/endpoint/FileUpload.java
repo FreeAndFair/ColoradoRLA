@@ -45,13 +45,13 @@ import us.freeandfair.corla.util.FileHelper;
 import us.freeandfair.corla.util.SparkHelper;
 
 /**
- * The "upload file" endpoint.
+ * The file upload endpoint.
  * 
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
 @SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.ExcessiveImports"})
-public class UploadFile extends AbstractEndpoint {
+public class FileUpload extends AbstractEndpoint {
   /**
    * The upload buffer size, in bytes.
    */

@@ -82,7 +82,7 @@ public class CVRToAuditDownload extends AbstractEndpoint {
    */
   private static final String[] CSV_HEADERS = {
       "scanner_id", "batch_id", "record_id", "imprinted_id", "ballot_type",
-      "storage_location", "cvr_number", "audit_sequence_number", "audited"
+      "storage_location", "cvr_number", "audited"
   };
   
   /**
@@ -273,7 +273,7 @@ public class CVRToAuditDownload extends AbstractEndpoint {
       for (final CVRToAuditResponse cvr : the_cvrs) {
         csvp.printRecord(cvr.scannerID(), cvr.batchID(), cvr.recordID(), cvr.imprintedID(),
                          cvr.ballotType(), cvr.storageLocation(), cvr.cvrNumber(), 
-                         cvr.auditSequenceNumber(), cvr.audited());
+                         cvr.audited());
       }
     } 
   }

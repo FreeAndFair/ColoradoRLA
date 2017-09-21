@@ -16,6 +16,7 @@ import static us.freeandfair.corla.util.EqualsHashcodeHelper.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Locale;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -105,6 +106,25 @@ public class AuditInfo implements Serializable {
    */
   public String electionType() {
     return my_election_type;
+  }
+  
+  /**
+   * @return a capitalized string for the election type.
+   */
+  @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
+  public String capitalizedElectionType() {
+    final String result;
+    
+    if (my_election_type == null) {
+      result = null; 
+    } else if (my_election_type.length() > 1) {
+      result = my_election_type.substring(0, 1).toUpperCase(Locale.getDefault()) +
+               my_election_type.substring(1).toLowerCase(Locale.getDefault());
+    } else {
+      result = my_election_type.toUpperCase(Locale.getDefault());
+    }
+    
+    return result;
   }
   
   /**
