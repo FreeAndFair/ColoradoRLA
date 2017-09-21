@@ -37,6 +37,11 @@ import us.freeandfair.corla.util.SparkHelper;
 @SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.ExcessiveImports"})
 public class FileDownload extends AbstractEndpoint {
   /**
+   * The query parameter name.
+   */
+  public static final String QUERY_PARAMETER = "file_info";
+  
+  /**
    * The download buffer size, in bytes.
    */
   private static final int BUFFER_SIZE = 1048576; // 1 MB
@@ -51,7 +56,7 @@ public class FileDownload extends AbstractEndpoint {
    */
   @Override
   public EndpointType endpointType() {
-    return EndpointType.POST;
+    return EndpointType.GET;
   }
 
   /**
@@ -74,6 +79,15 @@ public class FileDownload extends AbstractEndpoint {
   }
   
   /**
+   * Validates the parameters of this request. The only requirement is that there be
+   * a parameter with the name in QUERY_PARAMETER; its parsing happens later.
+   */
+  @Override
+  public boolean validateParameters(final Request the_request) {
+    return the_request.queryParams().contains(QUERY_PARAMETER);
+  }
+  
+  /**
    * {@inheritDoc}
    */
   @Override
@@ -84,7 +98,7 @@ public class FileDownload extends AbstractEndpoint {
 
     try {
       final UploadedFile file =
-          Main.GSON.fromJson(the_request.body(), UploadedFile.class);
+          Main.GSON.fromJson(the_request.queryParams(QUERY_PARAMETER), UploadedFile.class);
       if (file == null) {
         badDataContents(the_response, "nonexistent file requested");
       } else if (county == null || county.id().equals(file.countyID())) {
