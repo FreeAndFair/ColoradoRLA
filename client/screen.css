@@ -90,10 +90,15 @@ h3 {
     width: -webkit-fit-content;
 }
 
-table.rla-county-contest-info {
+.rla-county-contest-info {
+    table-layout: fixed;
     width: 100%;
 }
 
-table.rla-county-contest-info td, th {
+td.rla-county-contest-info {
+    width: 50%;
+}
+
+th.rla-county-contest-info {
     width: 50%;
 }
