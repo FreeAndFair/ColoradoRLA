@@ -244,7 +244,7 @@ public class Contest implements PersistentEntity, Serializable {
            my_description + ", choices=" + choices() + 
            ", votes_allowed=" + my_votes_allowed + "]";
   }
-
+  
   /**
    * Compare this object with another for equivalence.
    * 
