@@ -23,8 +23,6 @@ class CountyAuditContainer extends React.Component<any, any> {
         }
 
         if (!this.props.canAudit) {
-            notice.danger('Not ready to begin audit.');
-
             return <Redirect to={ '/county' } />;
         }
 
