@@ -198,6 +198,9 @@ parser.add_argument('-E, --county-endpoint', dest='county_endpoint',
                     help='do an HTTP GET from the given endpoint, authenticated as a county.')
 parser.add_argument('--hand-count', dest='hand_counts', type=int, metavar='CONTEST', action='append',
                     help='Declare a hand-count for the given numeric contest_index')
+parser.add_argument('--download-file', dest='download_file', type=int, metavar='FILE_ID',
+                    help='Just download file with given FILE_ID')
+                    # help='Just list files and download selected ones')
 
 # TODO: get rid of this and associated old code when /upload-cvr-export and /upload-cvr-export go away
 parser.add_argument('-Y, --ye-olde-upload', type=bool, dest='ye_olde_upload',
@@ -299,7 +302,9 @@ def test_endpoint_post(ac, s, path, data):
 
 
 def upload_file(ac, s, import_path, filename, sha256):
-    "Upload a file and confirm its sha256 hash"
+    """Upload the named file, specifying the given sha256 hash.
+    import_path is either '/import-cvr-export' or '/import-ballot-manifest'
+    """
 
     # Obtain test directory, i.e. where this script is.
     # Filenames can be absolute or relative to this directory.
@@ -334,6 +339,22 @@ Alternate approaches that have worked:
     print("import_handle: %s" % import_handle)
     print("response text: %s" % r.text)
 """
+
+def download_file(ac, s, file_id, filename):
+    "Download the previously-uploaded file with the given file_id to the given filename"
+
+    with open(filename, 'wb') as f:
+        path = "/download-file"
+        r = s.get(ac.base + path, params={'file_info': json.dumps({'file_id': "%d" % file_id})})
+
+    if r.status_code != 200:
+        print(r, "GET", path, r.text)
+
+    logging.debug("%s %s" % (r, path))
+
+    with open(filename, "wb") as f:
+        f.write(r.content)
+        print("file_id %d saved as %s" % (file_id, filename))
 
 def upload_cvrs(ac, s, filename, sha256):
     "Upload cvrs"
@@ -854,6 +875,11 @@ def main():
                          "reason": "COUNTY_WIDE_CONTEST",
                          "audit": "HAND_COUNT"}])
         sys.exit(0)
+
+    if ac.args.download_file:
+        download_file(ac, ac.state_s, ac.args.download_file, "/tmp/testdownload.csv")
+        sys.exit(0)
+
 
     if "reset" in ac.args.commands:
         reset(ac)
