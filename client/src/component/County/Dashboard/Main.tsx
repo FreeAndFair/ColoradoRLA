@@ -40,7 +40,11 @@ const Main = (props: any) => {
         if (auditButtonDisabled) {
             directions = 'Please stand by for the state to begin the audit.';
         } else {
-            directions = `You may proceed with Round ${currentRoundNumber} of the audit.`;
+            if (currentRoundNumber) {
+                directions = `You may proceed with Round ${currentRoundNumber} of the audit.`;
+            } else {
+                directions = 'Please wait for the next round to start.';
+            }
         }
     } else {
         if (!signInButtonDisabled) {
