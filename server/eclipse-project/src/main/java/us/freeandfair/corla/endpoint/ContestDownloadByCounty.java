@@ -77,8 +77,8 @@ public class ContestDownloadByCounty extends AbstractEndpoint {
         // only get contests for counties that have finished their uploads
         if (cdb == null) {
           dataNotFound(the_response, "Nonexistent county ID specified");
-        } else if (cdb.manifestUploadTimestamp() != null &&
-                   cdb.cvrUploadTimestamp() != null) {
+        } else if (cdb.manifestFile() != null &&
+                   cdb.cvrFile() != null) {
           county_set.add(Persistence.getByID(county_id, County.class));
         }
       }

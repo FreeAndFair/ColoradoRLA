@@ -37,10 +37,8 @@ import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.model.Round;
 import us.freeandfair.corla.model.UploadedFile;
-import us.freeandfair.corla.model.UploadedFile.FileStatus;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.ContestQueries;
-import us.freeandfair.corla.query.UploadedFileQueries;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
@@ -283,22 +281,12 @@ public class CountyDashboardRefreshResponse {
 
     // general information doesn't exist yet
     final SortedMap<String, String> general_information = new TreeMap<String, String>();
-
-    final UploadedFile manifest = 
-        UploadedFileQueries.matching(county_id, 
-                                     the_dashboard.manifestUploadTimestamp(),
-                                     FileStatus.IMPORTED_AS_BALLOT_MANIFEST);
-    
-    final UploadedFile cvr_export =
-        UploadedFileQueries.matching(county_id, 
-                                     the_dashboard.cvrUploadTimestamp(),
-                                     FileStatus.IMPORTED_AS_CVR_EXPORT);
     
     // contests and contests under audit
     final List<Long> contests = new ArrayList<Long>();
     final SortedMap<Long, String> contests_under_audit = new TreeMap<Long, String>();
-    if (the_dashboard.cvrUploadTimestamp() != null &&
-        the_dashboard.manifestUploadTimestamp() != null) {
+    if (the_dashboard.cvrFile() != null &&
+        the_dashboard.manifestFile() != null) {
       // only add contests if uploads are done
       for (final Contest c : ContestQueries.forCounty(county)) {
         contests.add(c.id());
@@ -325,8 +313,8 @@ public class CountyDashboardRefreshResponse {
                                               audit_board_asm.currentState(),
                                               general_information,
                                               the_dashboard.currentAuditBoard(),
-                                              manifest,
-                                              cvr_export,
+                                              the_dashboard.manifestFile(),
+                                              the_dashboard.cvrFile(),
                                               contests,
                                               contests_under_audit,
                                               the_dashboard.auditTimestamp(),
@@ -367,16 +355,6 @@ public class CountyDashboardRefreshResponse {
       throw new PersistenceException("unable to read county dashboard state");
     }
 
-    final UploadedFile manifest = 
-        UploadedFileQueries.matching(county_id, 
-                                     the_dashboard.manifestUploadTimestamp(),
-                                     FileStatus.IMPORTED_AS_BALLOT_MANIFEST);
-
-    final UploadedFile cvr_export =
-        UploadedFileQueries.matching(county_id, 
-                                     the_dashboard.cvrUploadTimestamp(),
-                                     FileStatus.IMPORTED_AS_CVR_EXPORT);
-
     // ASM states
     final CountyDashboardASM asm = ASMUtilities.asmFor(CountyDashboardASM.class, 
                                                        county_id.toString());
@@ -388,8 +366,8 @@ public class CountyDashboardRefreshResponse {
                                               audit_board_asm.currentState(),
                                               null,
                                               the_dashboard.currentAuditBoard(),
-                                              manifest,
-                                              cvr_export,
+                                              the_dashboard.manifestFile(),
+                                              the_dashboard.cvrFile(),
                                               null,
                                               null,
                                               the_dashboard.auditTimestamp(),

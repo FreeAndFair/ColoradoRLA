@@ -14,7 +14,6 @@ package us.freeandfair.corla.model;
 
 import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 
-import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,7 +58,7 @@ import us.freeandfair.corla.persistence.PersistentEntity;
 @SuppressWarnings({"PMD.ImmutableField", "PMD.TooManyMethods", "PMD.TooManyFields",
     "PMD.GodClass", "PMD.ExcessiveImports", "checkstyle:methodcount",
     "PMD.ExcessivePublicCount", "PMD.CyclomaticComplexity"})
-public class CountyDashboard implements PersistentEntity, Serializable {
+public class CountyDashboard implements PersistentEntity {
   /**
    * The minimum number of members on an audit board.
    */
@@ -96,11 +95,6 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   private static final String DASHBOARD_ID = "dashboard_id";
   
   /**
-   * The serialVersionUID.
-   */
-  private static final long serialVersionUID = 1; 
-  
-  /**
    * The database ID; this is always the county ID.
    */
   @Id
@@ -120,9 +114,11 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   private Long my_version;
 
   /**
-   * The timestamp of the most recent set of uploaded CVRs.
+   * The file containing the most recent set of uploaded CVRs.
    */
-  private Instant my_cvr_upload_timestamp;
+  @OneToOne(fetch = FetchType.EAGER)
+  @JoinColumn
+  private UploadedFile my_cvr_file;
   
   /**
    * The number of CVRs imported.
@@ -133,7 +129,9 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   /**
    * The timestamp of the most recent uploaded ballot manifest. 
    */
-  private Instant my_manifest_upload_timestamp;
+  @OneToOne(fetch = FetchType.EAGER)
+  @JoinColumn
+  private UploadedFile my_manifest_file;
   
   /**
    * The number of ballots described in the ballot manifest.
@@ -321,37 +319,37 @@ public class CountyDashboard implements PersistentEntity, Serializable {
   }
   
   /**
-   * @return the CVR upload timestamp. A return value of null means
+   * @return the CVR file. A return value of null means
    * that no CVRs have been uploaded for this county.
    */
-  public Instant cvrUploadTimestamp() {
-    return my_cvr_upload_timestamp;
+  public UploadedFile cvrFile() {
+    return my_cvr_file;
   }
   
   /**
-   * Sets a new CVR upload timestamp, replacing the previous one.
+   * Sets a new CVR file, replacing the previous one.
    * 
-   * @param the_timestamp The new upload timestamp.
+   * @param the_file The CVR file.
    */
-  public void setCVRUploadTimestamp(final Instant the_timestamp) {
-    my_cvr_upload_timestamp = the_timestamp;
+  public void setCVRFile(final UploadedFile the_file) {
+    my_cvr_file = the_file;
   }  
   
   /**
-   * @return the ballot manifest upload timestamp. A return value of null means
+   * @return the ballot manifest file. A return value of null means
    * that no ballot manifest has been uploaded for this county.
    */
-  public Instant manifestUploadTimestamp() {
-    return my_manifest_upload_timestamp;
+  public UploadedFile manifestFile() {
+    return my_manifest_file;
   }
   
   /**
-   * Sets a new CVR upload timestamp, replacing the previous one.
+   * Sets a new ballot manifest file, replacing the previous one.
    * 
-   * @param the_timestamp The new upload timestamp.
+   * @param the_file The manifest file.
    */
-  public void setManifestUploadTimestamp(final Instant the_timestamp) {
-    my_manifest_upload_timestamp = the_timestamp;
+  public void setManifestFile(final UploadedFile the_file) {
+    my_manifest_file = the_file;
   }  
   
   /**

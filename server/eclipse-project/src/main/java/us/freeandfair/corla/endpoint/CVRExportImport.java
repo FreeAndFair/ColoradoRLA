@@ -15,7 +15,6 @@ import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.UPLOAD_CVRS
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -94,19 +93,18 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
    * CVR export upload.
    * 
    * @param the_response The response object (for error reporting).
-   * @param the_county_id The county ID.
-   * @param the_timestamp The timestamp.
+   * @param the_file The uploaded CVR file.
    * @param the_ballots_cast The number of ballots in the CVR export.
    */
   private void updateCountyDashboard(final Response the_response, 
-                                     final Long the_county_id, 
-                                     final Instant the_timestamp,
+                                     final UploadedFile the_file,
                                      final Integer the_ballots_cast) {
-    final CountyDashboard cdb = Persistence.getByID(the_county_id, CountyDashboard.class);
+    final CountyDashboard cdb = 
+        Persistence.getByID(the_file.countyID(), CountyDashboard.class);
     if (cdb == null) {
       serverError(the_response, "could not locate county dashboard");
     } else {
-      cdb.setCVRUploadTimestamp(the_timestamp);
+      cdb.setCVRFile(the_file);
       cdb.setCVRsImported(the_ballots_cast);
       try {
         Persistence.saveOrUpdate(cdb);
@@ -146,8 +144,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
       if (parser.parse()) {
         final int imported = parser.recordCount().getAsInt();
         Main.LOGGER.info(imported + " CVRs parsed from file " + the_file.id());
-        updateCountyDashboard(the_response, the_file.countyID(), 
-                              the_file.timestamp(), imported);
+        updateCountyDashboard(the_response, the_file, imported);
         the_file.setStatus(FileStatus.IMPORTED_AS_CVR_EXPORT);
         Persistence.saveOrUpdate(the_file);
         final Map<String, Integer> response = new HashMap<String, Integer>();
@@ -215,7 +212,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
         CastVoteRecordQueries.deleteMatching(the_county_id, RecordType.UPLOADED);
     CountyContestResultQueries.deleteForCounty(the_county_id);
     final CountyDashboard cdb = Persistence.getByID(the_county_id, CountyDashboard.class);
-    cdb.setCVRUploadTimestamp(null);
+    cdb.setCVRFile(null);
     Persistence.commitTransaction();
     Persistence.beginTransaction();
     return result;
