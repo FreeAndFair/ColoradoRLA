@@ -80,15 +80,14 @@ public class BallotManifestImport extends AbstractCountyDashboardEndpoint {
    * Updates the appropriate county dashboard to reflect a new 
    * ballot manifest upload.
    * @param the_response The response object (for error reporting).
-   * @param the_county_id The county ID.
    * @param the_file The uploaded file.
    * @param the_ballot_count The ballot count from the manifest.
    */
   private void updateCountyDashboard(final Response the_response, 
-                                     final Long the_county_id, 
                                      final UploadedFile the_file,
                                      final int the_ballot_count) {
-    final CountyDashboard cdb = Persistence.getByID(the_county_id, CountyDashboard.class);
+    final CountyDashboard cdb = 
+        Persistence.getByID(the_file.countyID(), CountyDashboard.class);
     if (cdb == null) {
       serverError(the_response, "could not locate county dashboard");
     } else {
@@ -121,7 +120,7 @@ public class BallotManifestImport extends AbstractCountyDashboardEndpoint {
         final int imported = parser.recordCount().getAsInt();
         Main.LOGGER.info(imported + " ballot manifest records parsed from file " + 
                          the_file.filename() + PAREN_ID + the_file.id() + ")");
-        updateCountyDashboard(the_response, the_file.countyID(), the_file,
+        updateCountyDashboard(the_response, the_file,
                               parser.ballotCount().getAsInt());
         the_file.setStatus(FileStatus.IMPORTED_AS_BALLOT_MANIFEST);
         Persistence.saveOrUpdate(the_file);
