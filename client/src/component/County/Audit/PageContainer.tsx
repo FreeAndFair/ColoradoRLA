@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Redirect } from 'react-router-dom';
 
-import withSync from 'corla/component/withSync';
+import withPoll from 'corla/component/withPoll';
 
 import EndOfRoundPageContainer from './EndOfRound/PageContainer';
 import CountyAuditPage from './Page';
@@ -46,8 +46,9 @@ const select = (state: any) => {
 };
 
 
-export default withSync(
+export default withPoll(
     CountyAuditContainer,
-    'COUNTY_AUDIT_SYNC',
+    'COUNTY_AUDIT_POLL_START',
+    'COUNTY_AUDIT_POLL_STOP',
     select,
 );
