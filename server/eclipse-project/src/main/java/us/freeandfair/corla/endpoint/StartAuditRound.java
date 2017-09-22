@@ -135,7 +135,7 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
       
       for (final CountyDashboard cdb : cdbs) {
         try {
-          if (cdb.cvrUploadTimestamp() == null) {
+          if (cdb.cvrFile() == null || cdb.manifestFile() == null) {
             Main.LOGGER.info(COUNTY + cdb.id() + " missed the file upload deadline");
           } else {
             // find the initial window

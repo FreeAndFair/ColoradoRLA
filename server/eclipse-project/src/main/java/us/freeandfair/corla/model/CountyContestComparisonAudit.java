@@ -11,7 +11,6 @@
 
 package us.freeandfair.corla.model;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -51,11 +50,12 @@ import us.freeandfair.corla.persistence.PersistentEntity;
 @Cacheable(true)
 @Table(name = "county_contest_comparison_audit",
        indexes = { @Index(name = "idx_ccca_dashboard", columnList = "dashboard_id") })
-
 @SuppressWarnings({"PMD.ImmutableField", "PMD.CyclomaticComplexity", "PMD.GodClass",
     "PMD.ModifiedCyclomaticComplexity", "PMD.StdCyclomaticComplexity", "PMD.TooManyFields",
     "PMD.TooManyMethods"})
-public class CountyContestComparisonAudit implements PersistentEntity, Serializable {
+// note: CountyContestComparisionAudit is not serializable because it references
+// CountyDashboard, which is not serializable.
+public class CountyContestComparisonAudit implements PersistentEntity {
   /**
    * The database stored precision for decimal types.
    */
@@ -123,11 +123,6 @@ public class CountyContestComparisonAudit implements PersistentEntity, Serializa
    * The initial rounding up of 2-vote over/understatements.
    */
   public static final boolean ROUND_TWOS_UP = false;
-  
-  /**
-   * The serialVersionUID.
-   */
-  private static final long serialVersionUID = 1L;
   
   /**
    * The ID number.

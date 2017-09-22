@@ -61,6 +61,11 @@ public final class UploadedFileJsonAdapter
   private static final String TIMESTAMP = "timestamp";
   
   /**
+   * The "hash" string (for JSON serializaton).
+   */
+  private static final String HASH = "hash";
+  
+  /**
    * The "hash_status" string (for JSON serialization).
    */
   private static final String HASH_STATUS = "hash_status";
@@ -86,6 +91,7 @@ public final class UploadedFileJsonAdapter
     the_writer.name(FILENAME).value(the_file.filename());
     the_writer.name(SIZE).value(the_file.size());
     the_writer.name(TIMESTAMP).value(the_file.timestamp().toString());
+    the_writer.name(HASH).value(the_file.hash());
     the_writer.name(HASH_STATUS).value(the_file.hashStatus().toString());
     the_writer.name(STATUS).value(the_file.status().toString());
     the_writer.endObject();
@@ -115,6 +121,7 @@ public final class UploadedFileJsonAdapter
         case FILENAME:
         case SIZE:
         case TIMESTAMP:
+        case HASH:
         case HASH_STATUS:
         case STATUS:
           the_reader.skipValue();
