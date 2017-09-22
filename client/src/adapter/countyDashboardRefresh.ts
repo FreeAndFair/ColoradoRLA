@@ -28,15 +28,12 @@ interface CountyDashboard {
     audited_ballot_count: number;
     audited_prefix_length: number;
     ballot_manifest_count: number;
-    ballot_manifest_filename: string;
-    ballot_manifest_hash: string;
-    ballot_manifest_timestamp: string;
+    ballot_manifest_file: any;
     ballot_under_audit_id: number;
     ballots_remaining_in_round: number;
     current_round: Round;
     cvr_export_count: number;
-    cvr_export_filename: string;
-    cvr_export_hash: string;
+    cvr_export_file: any;
     contests: number[];
     contests_under_audit: number[];
     disagreement_count: number;
@@ -147,6 +144,21 @@ function parseDisCount(data: any): number {
     return _.sum(_.values(data));
 }
 
+function parseFile(file: any): any {
+    if (!file) { return null; }
+
+    return {
+        countyId: file.county_id,
+        hash: file.hash,
+        hashStatus: file.hash_status,
+        id: file.file_id,
+        name: file.filename,
+        size: file.size,
+        status: file.status,
+        timestamp: new Date(file.timestamp),
+    };
+}
+
 export const parse = (data: CountyDashboard, state: any): any => {
     const findContest = (id: any) => state.county.contestDefs[id];
 
@@ -156,18 +168,15 @@ export const parse = (data: CountyDashboard, state: any): any => {
         auditTime: data.audit_time ? parseTimestamp(data.audit_time) : null,
         auditedBallotCount: data.audited_ballot_count,
         auditedPrefixLength: data.audited_prefix_length,
+        ballotManifest: parseFile(data.ballot_manifest_file),
         ballotManifestCount: data.ballot_manifest_count,
-        ballotManifestFilename: data.ballot_manifest_filename,
-        ballotManifestHash: data.ballot_manifest_hash,
-        ballotManifestTimestamp: data.ballot_manifest_timestamp,
         ballotUnderAuditId: data.ballot_under_audit_id,
         ballotsRemainingInRound: data.ballots_remaining_in_round,
         contests: parseContests(data.contests, state),
         contestsUnderAudit: parseContestsUnderAudit(data.contests_under_audit, state),
         currentRound: parseRound(data.current_round),
+        cvrExport: parseFile(data.cvr_export_file),
         cvrExportCount: data.cvr_export_count,
-        cvrExportFilename: data.cvr_export_filename,
-        cvrExportHash: data.cvr_export_hash,
         disagreementCount: parseDisCount(data.disagreement_count),
         discrepancyCount: parseDisCount(data.discrepancy_count),
         election: parseElection(data),

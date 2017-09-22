@@ -9,11 +9,11 @@ import uploadBallotManifest from 'corla/action/county/uploadBallotManifest';
 import ballotManifestUploadedSelector from 'corla/selector/county/ballotManifestUploaded';
 
 
-const UploadedBallotManifest = ({ filename, hash, enableReupload }: any) => (
+const UploadedBallotManifest = ({ enableReupload, file }: any) => (
     <div className='pt-card'>
         <div>Ballot Manifest <strong>uploaded</strong>.</div>
-        <div>File name: "{ filename }"</div>
-        <div>SHA-256 hash: { hash }</div>
+        <div>File name: "{ file.name }"</div>
+        <div>SHA-256 hash: { file.hash }</div>
         <button className='pt-button' onClick={ enableReupload }>
             Re-upload
         </button>
@@ -37,11 +37,10 @@ class BallotManifestFormContainer extends React.Component<any, any> {
             return <Uploading />;
         }
 
-        if (fileUploaded && !this.state.reupload) {
+        if (fileUploaded && !this.state.reupload && county.ballotManifest) {
             return (
                 <UploadedBallotManifest enableReupload={ this.enableReupload }
-                                        filename={ county.ballotManifestFilename }
-                                        hash={ county.ballotManifestHash } />
+                                        file={ county.ballotManifest } />
             );
         }
 

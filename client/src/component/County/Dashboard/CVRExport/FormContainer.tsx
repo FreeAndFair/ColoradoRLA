@@ -9,11 +9,11 @@ import uploadCvrExport from 'corla/action/county/uploadCvrExport';
 import cvrExportUploadedSelector from 'corla/selector/county/cvrExportUploaded';
 
 
-const UploadedCVRExport = ({ enableReupload, filename, hash }: any) => (
+const UploadedCVRExport = ({ enableReupload, file }: any) => (
     <div className='pt-card'>
         <div>CVR Export <strong>uploaded</strong>.</div>
-        <div>File name: "{ filename }"</div>
-        <div>SHA-256 hash: { hash }</div>
+        <div>File name: "{ file.name }"</div>
+        <div>SHA-256 hash: { file.hash }</div>
         <button className='pt-button' onClick={ enableReupload }>
             Re-upload
         </button>
@@ -36,11 +36,10 @@ class CVRExportFormContainer extends React.Component<any, any> {
             return <Uploading />;
         }
 
-        if (fileUploaded && !this.state.reupload) {
+        if (fileUploaded && !this.state.reupload && county.cvrExport) {
             return (
                 <UploadedCVRExport enableReupload={ this.enableReupload }
-                                   filename={ county.cvrExportFilename }
-                                   hash={ county.cvrExportHash } />
+                                   file={ county.cvrExport } />
             );
         }
 
