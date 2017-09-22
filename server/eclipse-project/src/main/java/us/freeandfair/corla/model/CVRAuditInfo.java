@@ -54,13 +54,10 @@ import us.freeandfair.corla.persistence.PersistentEntity;
                           columnList = "dashboard_id, cvr_id, index")})
 //this class has many fields that would normally be declared final, but
 //cannot be for compatibility with Hibernate and JPA.
+// note: CVRAuditInfo is not serializable because it references CountyDashboard,
+// which is not serializable
 @SuppressWarnings("PMD.ImmutableField")
-public class CVRAuditInfo implements PersistentEntity, Serializable {
-  /**
-   * The serialVersionUID.
-   */
-  private static final long serialVersionUID = 1L;
-  
+public class CVRAuditInfo implements PersistentEntity {
   /**
    * The ID number.
    */

@@ -58,6 +58,7 @@ import us.freeandfair.corla.persistence.PersistentEntity;
 @SuppressWarnings({"PMD.ImmutableField", "PMD.TooManyMethods", "PMD.TooManyFields",
     "PMD.GodClass", "PMD.ExcessiveImports", "checkstyle:methodcount",
     "PMD.ExcessivePublicCount", "PMD.CyclomaticComplexity"})
+// note: county dashboard is not serializable because it contains an uploaded file
 public class CountyDashboard implements PersistentEntity {
   /**
    * The minimum number of members on an audit board.
