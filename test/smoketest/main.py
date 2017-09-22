@@ -165,8 +165,8 @@ parser.add_argument('-F, --manifestfile', dest='manifestfile',
 # TODO: allow a way to specify CVRs and contests per county.
 parser.add_argument('-C, --contest', dest='contests', metavar='CONTEST', action='append',
                     type=int,
-                    help='numeric contest_index for the given command, e.g. 0 '
-                    'for first one from the CVRs. May be specified multiple times.')
+                    help='numeric contest_index of contest to use for the given audit commands '
+                    'E.g. 0 for first one from the CVRs. May be specified multiple times.')
 parser.add_argument('-l, --loser', dest='loser', default="UNDERVOTE",
                     help='Loser to use for -p, default "UNDERVOTE"')
 parser.add_argument('-p, --discrepancy-plan', dest='plan', default="2 17",
@@ -192,10 +192,12 @@ parser.add_argument('-s, --seed', dest='seed',
 parser.add_argument('-u, --url', dest='url',
                     default='http://localhost:8888',
                     help='base url of corla server. Defaults to http://localhost:8888')
-parser.add_argument('-e, --endpoint', dest='endpoint',
+parser.add_argument('-e, --dos-endpoint', dest='dos_endpoint',
                     help='do an HTTP GET from the given endpoint, authenticated as state admin.')
 parser.add_argument('-E, --county-endpoint', dest='county_endpoint',
                     help='do an HTTP GET from the given endpoint, authenticated as a county.')
+parser.add_argument('--hand-count', dest='hand_counts', type=int, metavar='CONTEST', action='append',
+                    help='Declare a hand-count for the given numeric contest_index')
 
 # TODO: get rid of this and associated old code when /upload-cvr-export and /upload-cvr-export go away
 parser.add_argument('-Y, --ye-olde-upload', type=bool, dest='ye_olde_upload',
@@ -480,9 +482,9 @@ def get_county_dashboard(ac, county_s, county_id, i=0, acvr={'id': -1}, show=Tru
 
     if show:
         logging.debug("county-dashboard: %s" % r.text)
-        print("Round %d, county %d, upload %d, prefix %d: aCVR %d; ballots_remaining_in_round: %d, optimistic_ballots_to_audit: %s" %
+        print("Round %d, county %d, upload %d, prefix %d: aCVR %d; ballots_remaining_in_round: %d, optimistic_ballots_to_audit: %s est %s" %
               (ac.round, county_id, total_audited, county_dashboard.get('audited_prefix_length', -1), acvr['id'],  # FIXME
-               county_dashboard['ballots_remaining_in_round'], county_dashboard['optimistic_ballots_to_audit']))
+               county_dashboard['ballots_remaining_in_round'], county_dashboard['optimistic_ballots_to_audit'], county_dashboard['estimated_ballots_to_audit']))
 
 
         """ Put this back in when estimated_ballots_to_audit makes sense again
@@ -549,7 +551,7 @@ def dos_start(ac):
     'Run DOS steps to start the audit, enabling county auditing to begin: contest selection, seed, etc.'
 
     r = test_endpoint_get(ac, ac.state_s, "/contest")
-    contests = sorted(r.json(), key=operator.itemgetter("id"))
+    contests = r.json()
     if len(contests) <= 0:
         print("No contests to audit, status_code = %d" % r.status_code)
         return
@@ -562,7 +564,7 @@ def dos_start(ac):
     ac.audited_contests = []
 
     for contest_index in ac.args.contests:
-        if contest_index > len(contests):
+        if contest_index >= len(contests):
             logging.error("Contest_index %d out of range: only %d contests in election" %
                           (contest_index, len(contests)))
 
@@ -597,7 +599,7 @@ def dos_start(ac):
 
         for county_id, status in dos_dashboard['county_status'].items():
             if status['estimated_ballots_to_audit'] != 0:
-                print("County %s has initial sample size of %s sample interpretations" % 
+                print("County %s has initial sample size of %s sample interpretations, including duplicates" % 
                       (county_id, status['estimated_ballots_to_audit']))
                 print("ballots_remaining_in_round %d: %d" %
                       (ac.round, status['ballots_remaining_in_round']))
@@ -822,19 +824,35 @@ def main():
     ac.state_s = requests.Session()
     state_login(ac, ac.state_s)
 
-    if not ac.args.endpoint is None:
-        r = test_endpoint_get(ac, ac.state_s, ac.args.endpoint)
-        print(r, "GET", ac.args.endpoint, r.text)
+    # These options imply exit after running a single action
+    if ac.args.dos_endpoint is not None:
+        r = test_endpoint_get(ac, ac.state_s, ac.args.dos_endpoint)
+        print(r, "GET", ac.args.dos_endpoint, r.text)
         sys.exit(0)
 
-    if not ac.args.county_endpoint is None:
+    if ac.args.county_endpoint is not None:
         for county_id in ac.args.counties:
             county_s = requests.Session()
             county_login(ac, county_s, county_id)
 
             r = test_endpoint_get(ac, county_s, ac.args.county_endpoint)
-            print(r, "GET", ac.args.endpoint, r.text)
+            print(r, "GET", ac.args.county_endpoint, r.text)
 
+        sys.exit(0)
+
+    if ac.args.hand_counts:
+        r = test_endpoint_get(ac, ac.state_s, "/contest")
+        contests = r.json()
+
+        for contest_index in ac.args.hand_counts:
+            if contest_index >= len(contests):
+                logging.error("Contest_index %d out of range: only %d contests in election" %
+                              (contest_index, len(contests)))
+                sys.exit(1)
+            r = test_endpoint_json(ac, ac.state_s, "/hand-count",
+                       [{"contest": contests[contest_index]['id'],
+                         "reason": "COUNTY_WIDE_CONTEST",
+                         "audit": "HAND_COUNT"}])
         sys.exit(0)
 
     if "reset" in ac.args.commands:
