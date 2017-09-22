@@ -45,8 +45,6 @@ Work.
 * **start-up period** - The period starting on the Effective Date and
 ending on the Operational Start Date.
 
-% @todo kiniry Does the ballot manifest list ballots or ballot cards?
-
 * **ballot manifest** - A document that describes how ballot cards are
 organized and stored, and relates a Cast Vote Records to the physical
 location in which the tabulated ballot card is stored. The ballot
@@ -128,7 +126,7 @@ into election results. @review NIST Election Modeling group
 separates interpretation, tally and tabulation. 
 
 * **tabulated ballots** - Paper ballot cards that have been scanned on
-a ballot scanning device, and the voter’s markings on which have been
+a ballot scanning device, and the voter markings on which have been
 interpreted by the voting system as valid votes, undervotes, or
 overvotes.  Tabulated ballots may be duplicates of original
 ballots. @review this means ballots counted by hand weren't
@@ -259,7 +257,10 @@ non-uniformly in order to target non-county-wide contests.
 * **uncontested contest** A Contest for which the number of choices is 
 less than or equal to the number of winners @review Consider a contest
 with three winners where each voter can vote for two. Are we OK calling
-that an "uncontested contest"?
+that an "uncontested contest"? Or a contest (such as Republican Committeperson
+in Philadelphia) with a minimum number of votes required for a write-in candidate?
+And in jurisdictions without qualification or other restrictions on counting write-in votes, 
+how can we be sure that any contest is uncontested?
 
 * **bayesian audits** @review Neal McBurnett
 
