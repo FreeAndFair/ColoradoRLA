@@ -1,7 +1,5 @@
 import { endpoint } from 'corla/config';
 
-import createFetchAction from 'corla/action/createFetchAction';
-
 
 export default (round: number) => {
     const params = `round=${round}&include_audited`;
