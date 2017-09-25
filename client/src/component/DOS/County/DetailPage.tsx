@@ -6,6 +6,8 @@ import { formatCountyAsmState } from 'corla/format';
 
 import Nav from '../Nav';
 
+import downloadFile from 'corla/action/downloadFile';
+
 
 const Breadcrumb = ({ county }: any) => (
     <ul className='pt-breadcrumbs'>
@@ -71,12 +73,14 @@ const NoAuditBoard = (props: any) => {
 };
 
 const UploadedFile = ({ description, file }: any) => {
+    const onClick = () => downloadFile(file.id);
+
     return (
         <div className='pt-card'>
             <h4>{ description }</h4>
             <div><strong>File name:</strong> "{ file.name }"</div>
             <div><strong>SHA-256 hash:</strong> { file.hash }</div>
-            <button className='pt-button pt-intent-primary'>
+            <button className='pt-button pt-intent-primary' onClick={ onClick }>
                 Download
             </button>
         </div>
