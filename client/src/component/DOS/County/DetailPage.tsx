@@ -4,9 +4,9 @@ import * as _ from 'lodash';
 
 import { formatCountyAsmState } from 'corla/format';
 
-import Nav from '../Nav';
+import FileDownloadButtons from 'corla/component/FileDownloadButtons';
 
-import downloadFile from 'corla/action/downloadFile';
+import Nav from '../Nav';
 
 
 const Breadcrumb = ({ county }: any) => (
@@ -68,42 +68,6 @@ const NoAuditBoard = (props: any) => {
             <div className='pt-card'>
                 Audit Board not signed in.
             </div>
-        </div>
-    );
-};
-
-const UploadedFile = ({ description, file }: any) => {
-    const onClick = () => downloadFile(file.id);
-
-    return (
-        <div className='pt-card'>
-            <h4>{ description }</h4>
-            <div><strong>File name:</strong> "{ file.name }"</div>
-            <div><strong>SHA-256 hash:</strong> { file.hash }</div>
-            <button className='pt-button pt-intent-primary' onClick={ onClick }>
-                Download
-            </button>
-        </div>
-    );
-};
-
-const FileDownloadButtons = (props: any) => {
-    const { status } = props;
-
-    if (!status) {
-        return <div />;
-    }
-
-    const { ballotManifest, cvrExport } = status;
-
-    if (!ballotManifest || !cvrExport) {
-        return <div />;
-    }
-
-    return (
-        <div className='pt-card'>
-            <UploadedFile description='Ballot Manifest' file={ ballotManifest } />
-            <UploadedFile description='CVR Export' file={ cvrExport } />
         </div>
     );
 };
