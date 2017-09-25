@@ -70,6 +70,40 @@ const NoAuditBoard = (props: any) => {
     );
 };
 
+const UploadedFile = ({ description, file }: any) => {
+    return (
+        <div className='pt-card'>
+            <h4>{ description }</h4>
+            <div><strong>File name:</strong> "{ file.name }"</div>
+            <div><strong>SHA-256 hash:</strong> { file.hash }</div>
+            <button className='pt-button pt-intent-primary'>
+                Download
+            </button>
+        </div>
+    );
+};
+
+const FileDownloadButtons = (props: any) => {
+    const { status } = props;
+
+    if (!status) {
+        return <div />;
+    }
+
+    const { ballotManifest, cvrExport } = status;
+
+    if (!ballotManifest || !cvrExport) {
+        return <div />;
+    }
+
+    return (
+        <div className='pt-card'>
+            <UploadedFile description='Ballot Manifest' file={ ballotManifest } />
+            <UploadedFile description='CVR Export' file={ cvrExport } />
+        </div>
+    );
+};
+
 const CountyDetails = (props: any) => {
     const { county, status } = props;
     const { auditBoard } = status;
@@ -114,6 +148,7 @@ const CountyDetails = (props: any) => {
                     </tbody>
                 </table>
             </div>
+            <FileDownloadButtons status={ status } />
             { auditBoardSection }
         </div>
     );
