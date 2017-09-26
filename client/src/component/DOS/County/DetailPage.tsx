@@ -4,6 +4,8 @@ import * as _ from 'lodash';
 
 import { formatCountyAsmState } from 'corla/format';
 
+import FileDownloadButtons from 'corla/component/FileDownloadButtons';
+
 import Nav from '../Nav';
 
 
@@ -114,6 +116,7 @@ const CountyDetails = (props: any) => {
                     </tbody>
                 </table>
             </div>
+            <FileDownloadButtons status={ status } />
             { auditBoardSection }
         </div>
     );

@@ -4,6 +4,8 @@ import FileUploadContainer from './FileUploadContainer';
 
 import fetchReport from 'corla/action/county/fetchReport';
 
+import FileDownloadButtons from 'corla/component/FileDownloadButtons';
+
 
 const AuditBoardInfo = ({ signedIn }: any) => {
     const icon = signedIn
@@ -28,6 +30,7 @@ const Main = (props: any) => {
         auditStarted,
         boardSignIn,
         canRenderReport,
+        county,
         currentRoundNumber,
         name,
         signInButtonDisabled,
@@ -60,6 +63,10 @@ const Main = (props: any) => {
                               ? <div />
                               : <FileUploadContainer />;
 
+    const fileDownloadButtons = auditStarted
+                              ? <FileDownloadButtons status={ county } />
+                              : <div />;
+
     const reportType = auditComplete
                      ? 'final'
                      : 'intermediate';
@@ -70,6 +77,7 @@ const Main = (props: any) => {
             <div>
                 <div className='pt-card'>{ directions }</div>
                 { fileUploadContainer }
+                { fileDownloadButtons }
                 <AuditBoardInfo signedIn={ auditBoardSignedIn } />
                 <div className='pt-card'>
                     <div>Click to download { reportType} audit report.</div>

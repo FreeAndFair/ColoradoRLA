@@ -45,6 +45,21 @@ function parseDiscrepancyCounts(data: any): any {
     return { audited, opportunistic };
 }
 
+function parseFile(file: any): any {
+    if (!file) { return null; }
+
+    return {
+        countyId: file.county_id,
+        hash: file.hash,
+        hashStatus: file.hash_status,
+        id: file.file_id,
+        name: file.filename,
+        size: file.size,
+        status: file.status,
+        timestamp: new Date(file.timestamp),
+    };
+}
+
 function parseCountyStatus(countyStatus: any) {
     const result: any = {};
 
@@ -54,11 +69,10 @@ function parseCountyStatus(countyStatus: any) {
             auditBoard: parseAuditBoard(c.audit_board),
             auditBoardAsmState: c.audit_board_asm_state,
             auditedBallotCount: c.audited_ballot_count,
-            ballotManifestHash: c.ballot_manifest_hash,
+            ballotManifest: parseFile(c.ballot_manifest_file),
             ballotsRemainingInRound: c.ballots_remaining_in_round,
             currentRound: parseRound(c.current_round),
-            cvrExportHash: c.cvr_export_hash,
-            cvrTimestamp: c.cvr_export_timestamp,
+            cvrExport: parseFile(c.cvr_export_file),
             disagreementCount: parseDisagreementCount(c.disagreement_count),
             discrepancyCount: parseDiscrepancyCounts(c.discrepancy_count),
             estimatedBallotsToAudit: c.estimated_ballots_to_audit,
