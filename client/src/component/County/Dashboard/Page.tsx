@@ -37,6 +37,7 @@ const CountyDashboardPage = (props: any) => {
                       auditBoardSignedIn={ auditBoardSignedIn }
                       boardSignIn={ boardSignIn }
                       canRenderReport={ canRenderReport }
+                      county={ county }
                       currentRoundNumber={ currentRoundNumber }
                       auditButtonDisabled={ auditButtonDisabled }
                       name={ countyInfo.name }
