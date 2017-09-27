@@ -252,9 +252,10 @@ public class DominionCVRExportParser implements CVRExportParser {
         index = index + 1;
         count = count + 1;
       }
-      // get the "(Vote For=" number from the contest name and clean up the name
+      // get the contest name and "(Vote For=" number
       String cn = c.substring(0, c.indexOf("(Vote For="));
       final String vf = c.replace(cn, "").replace("(Vote For=", "").replace(")", "");
+      // clean up the contest name (we used it to get the number, before cleaning)
       cn = cn.trim();
       int ms = 1; // this is our default maximum selections
       try {
