@@ -510,12 +510,10 @@ public class CountyContestResult implements PersistentEntity, Serializable {
     final Iterator<Entry<Integer, List<String>>> vote_total_iterator = 
         sorted_totals.entrySet().iterator();
     Entry<Integer, List<String>> entry = null;
-    int votes = 0;
     while (vote_total_iterator.hasNext() && my_winners.size() < my_winners_allowed) {
       entry = vote_total_iterator.next();
-      votes = entry.getKey();
       final List<String> choices = entry.getValue();
-      if (choices.size() + my_winners.size() < my_winners_allowed) {
+      if (choices.size() + my_winners.size() <= my_winners_allowed) {
         my_winners.addAll(choices);
       } else {
         // we are arbitrarily making the first choices in the list "winners" and
@@ -527,14 +525,8 @@ public class CountyContestResult implements PersistentEntity, Serializable {
       }
     }
     while (vote_total_iterator.hasNext()) {
-      // all the other choices that have the same number of votes as the last
-      // winner count as winners
-      entry = vote_total_iterator.next();
-      if (entry.getKey() == votes) {
-        my_winners.addAll(entry.getValue());
-      } else {
-        my_losers.addAll(entry.getValue());
-      }
+      // all the other choices count as losers
+      my_losers.addAll(vote_total_iterator.next().getValue());
     }
     
     calculateMargins();
