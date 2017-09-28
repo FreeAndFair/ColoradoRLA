@@ -207,7 +207,7 @@ public class DoSDashboard implements PersistentEntity, Serializable {
   //@ requires the_contest_to_audit != null;
   public boolean updateContestToAudit(final ContestToAudit the_contest_to_audit) {
     boolean found = false;
-    boolean auditable = false;
+    boolean auditable = true;
     
     // check to see if the contest is in our set
     final Set<ContestToAudit> contests_to_remove = new HashSet<>();
