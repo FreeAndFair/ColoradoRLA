@@ -212,8 +212,8 @@ public class DoSDashboard implements PersistentEntity, Serializable {
     ContestToAudit contest_to_remove = null;
     for (final ContestToAudit c : my_contests_to_audit) {
       if (c.contest().equals(the_contest_to_audit.contest())) {
+        // check if the entry is auditable; if so, it will be removed later
         auditable = !c.audit().equals(AuditType.NOT_AUDITABLE);
-        // flag the entry for removal, only if it is auditable
         contest_to_remove = c;
         break;
       }
