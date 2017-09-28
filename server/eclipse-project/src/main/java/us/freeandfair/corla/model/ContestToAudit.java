@@ -151,6 +151,6 @@ public class ContestToAudit implements Serializable {
    * The possible audit types.
    */
   public enum AuditType {
-    COMPARISON, HAND_COUNT, NONE;
+    COMPARISON, HAND_COUNT, NOT_AUDITABLE, NONE;
   }
 }

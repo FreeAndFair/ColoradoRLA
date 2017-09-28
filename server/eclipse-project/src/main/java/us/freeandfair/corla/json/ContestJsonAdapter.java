@@ -65,6 +65,11 @@ public final class ContestJsonAdapter extends TypeAdapter<Contest> {
   private static final String VOTES_ALLOWED = "votes_allowed";
   
   /**
+   * The "winners allowed" string (for JSON serialization).
+   */
+  private static final String WINNERS_ALLOWED = "winners_allowed";
+  
+  /**
    * The "sequence number" string (for JSON serialization).
    */
   private static final String SEQUENCE_NUMBER = "sequence_number";
@@ -94,6 +99,7 @@ public final class ContestJsonAdapter extends TypeAdapter<Contest> {
     }
     the_writer.endArray();
     the_writer.name(VOTES_ALLOWED).value(the_contest.votesAllowed());
+    the_writer.name(WINNERS_ALLOWED).value(the_contest.winnersAllowed());
     the_writer.name(SEQUENCE_NUMBER).value(the_contest.sequenceNumber());
     the_writer.endObject();
   }
@@ -114,6 +120,7 @@ public final class ContestJsonAdapter extends TypeAdapter<Contest> {
     String description = null;
     Choice[] choices = null;
     Integer votes_allowed = null;
+    Integer winners_allowed = null;
     Integer sequence_number = null;
     
     the_reader.beginObject();
@@ -144,6 +151,10 @@ public final class ContestJsonAdapter extends TypeAdapter<Contest> {
           votes_allowed = the_reader.nextInt();
           break;
           
+        case WINNERS_ALLOWED:
+          winners_allowed = the_reader.nextInt();
+          break;
+          
         case SEQUENCE_NUMBER:
           sequence_number = the_reader.nextInt();
           break;
@@ -158,7 +169,7 @@ public final class ContestJsonAdapter extends TypeAdapter<Contest> {
     // check if an identically-numbered contest exists
     
     if (error || contest_id == null || county == null || description == null ||
-        choices == null || votes_allowed == null) {
+        choices == null || votes_allowed == null || winners_allowed == null) {
       throw new JsonParseException("invalid data in contest");
     }
     
@@ -171,7 +182,7 @@ public final class ContestJsonAdapter extends TypeAdapter<Contest> {
       // we don't use the ID because it might conflict with something else
       result = new Contest(contest_name, county, description, 
                            Arrays.asList(choices), votes_allowed,
-                           sequence_number);
+                           winners_allowed, sequence_number);
     } else {
       result = existing;
     }

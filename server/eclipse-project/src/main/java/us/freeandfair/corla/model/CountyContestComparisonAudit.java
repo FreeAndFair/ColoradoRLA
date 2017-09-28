@@ -14,12 +14,16 @@ package us.freeandfair.corla.model;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.OptionalInt;
 import java.util.Set;
 
 import javax.persistence.Cacheable;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -29,7 +33,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
@@ -52,7 +59,7 @@ import us.freeandfair.corla.persistence.PersistentEntity;
        indexes = { @Index(name = "idx_ccca_dashboard", columnList = "dashboard_id") })
 @SuppressWarnings({"PMD.ImmutableField", "PMD.CyclomaticComplexity", "PMD.GodClass",
     "PMD.ModifiedCyclomaticComplexity", "PMD.StdCyclomaticComplexity", "PMD.TooManyFields",
-    "PMD.TooManyMethods"})
+    "PMD.TooManyMethods", "PMD.ExcessiveImports"})
 // note: CountyContestComparisionAudit is not serializable because it references
 // CountyDashboard, which is not serializable.
 public class CountyContestComparisonAudit implements PersistentEntity {
@@ -197,32 +204,38 @@ public class CountyContestComparisonAudit implements PersistentEntity {
    * The number of two-vote understatements recorded so far.
    */
   @Column(nullable = false)
-  private Integer my_two_vote_under = 0;
+  private Integer my_two_vote_under_count = 0;
   
   /**
    * The number of one-vote understatements recorded so far.
    */
   @Column(nullable = false)
-  private Integer my_one_vote_under = 0;
+  private Integer my_one_vote_under_count = 0;
   
   /**
    * The number of one-vote overstatements recorded so far.
    */
   @Column(nullable = false)
-  private Integer my_one_vote_over = 0;
+  private Integer my_one_vote_over_count = 0;
   
   /**
    * The number of two-vote overstatements recorded so far.
    */
   @Column(nullable = false)
-  private Integer my_two_vote_over = 0;
+  private Integer my_two_vote_over_count = 0;
   
   /**
    * The number of discrepancies recorded so far that are neither 
    * understatements nor overstatements.
    */
   @Column(nullable = false)
-  private Integer my_other = 0;
+  private Integer my_other_count = 0;
+  
+  /**
+   * The number of disagreements.
+   */
+  @Column(nullable = false)
+  private Integer my_disagreement_count = 0;
   
   /**
    * A flag that indicates whether the optimistic ballots to audit 
@@ -237,6 +250,30 @@ public class CountyContestComparisonAudit implements PersistentEntity {
    */
   @Column(nullable = false)
   private Boolean my_estimated_recalculate_needed = true;
+  
+  /**
+   * A map from CVRAuditInfo objects to their discrepancy values for this
+   * audited contest.
+   */
+  @ElementCollection
+  @CollectionTable(name = "county_contest_comparison_audit_discrepancy",
+                   joinColumns = @JoinColumn(name = "county_contest_comparison_audit_id", 
+                                             referencedColumnName = "my_id"))
+  @MapKeyJoinColumn(name = "cvr_audit_info_id")
+  @Column(name = "discrepancy")
+  private Map<CVRAuditInfo, Integer> my_discrepancies = new HashMap<>();
+  
+  /**
+   * A map from CVRAuditInfo objects to their discrepancy values for this
+   * audited contest.
+   */
+  @ManyToMany
+  @JoinTable(name = "county_contest_comparison_audit_disagreement",
+             joinColumns = @JoinColumn(name = "county_contest_comparison_audit_id", 
+                                       referencedColumnName = "my_id"),
+             inverseJoinColumns = @JoinColumn(name = "cvr_audit_info_id", 
+                                              referencedColumnName = "my_id"))
+  private Set<CVRAuditInfo> my_disagreements = new HashSet<>();
   
   /**
    * Constructs a new, empty CountyContestAudit (solely for persistence).
@@ -368,21 +405,21 @@ public class CountyContestComparisonAudit implements PersistentEntity {
    */
   private void recalculateBallotsToAudit() {
     if (my_optimistic_recalculate_needed) {
-      final BigDecimal optimistic = computeOptimisticBallotsToAudit(my_two_vote_under, 
-                                                                    my_one_vote_under,
-                                                                    my_one_vote_over,
-                                                                    my_two_vote_over);
+      final BigDecimal optimistic = computeOptimisticBallotsToAudit(my_two_vote_under_count, 
+                                                                    my_one_vote_under_count,
+                                                                    my_one_vote_over_count,
+                                                                    my_two_vote_over_count);
       my_optimistic_ballots_to_audit = optimistic.intValue();
       my_optimistic_recalculate_needed = false;
     }
     
-    if (my_one_vote_over + my_two_vote_over == 0) {
+    if (my_one_vote_over_count + my_two_vote_over_count == 0) {
       my_estimated_ballots_to_audit = my_optimistic_ballots_to_audit;
     } else {
       // compute the "fudge factor" for the estimate
       final BigDecimal audited_samples = BigDecimal.valueOf(my_dashboard.auditedSampleCount());
       final BigDecimal overstatements = 
-          BigDecimal.valueOf(my_one_vote_over + my_two_vote_over);
+          BigDecimal.valueOf(my_one_vote_over_count + my_two_vote_over_count);
       final BigDecimal fudge_factor =
           BigDecimal.ONE.add(overstatements.divide(audited_samples, MathContext.DECIMAL128));
       final BigDecimal estimated =
@@ -457,48 +494,79 @@ public class CountyContestComparisonAudit implements PersistentEntity {
   }
   
   /**
+   * Records a disagreement with the specified CVRAuditInfo.
+   * 
+   * @param the_record The CVRAuditInfo record that generated the disagreement.
+   */
+  public void recordDisagreement(final CVRAuditInfo the_record) {
+    my_disagreements.add(the_record);
+    my_disagreement_count = my_disagreement_count + 1;
+  }
+  
+  /**
+   * Removes a disagreement with the specified CVRAuditInfo.
+   * 
+   * @param the_record The CVRAuditInfo record that generated the disagreement.
+   */
+  public void removeDisagreement(final CVRAuditInfo the_record) {
+    my_disagreements.remove(the_record);
+    my_disagreement_count = my_disagreement_count - 1;
+  }
+  
+  /**
+   * @return the disagreement count.
+   */
+  public int disagreementCount() {
+    return my_disagreement_count;
+  }
+  
+  /**
    * Records the specified discrepancy (the valid range is -2 .. 2: -2 and -1 are
    * understatements, 0 is a discrepancy that doesn't affect the RLA calculations,
    * and 1 and 2 are overstatements).
    * 
+   * @param the_record The CVRAuditInfo record that generated the discrepancy.
    * @param the_type The type of discrepancy to add.
    * @exception IllegalArgumentException if an invalid discrepancy type is 
    * specified.
    */
   @SuppressWarnings("checkstyle:magicnumber")
-  public void recordDiscrepancy(final int the_type) {
+  public void recordDiscrepancy(final CVRAuditInfo the_record,
+                                final int the_type) {
     // we never trigger an estimated recalculate here; it is
     // triggered by signalBallotAudited() regardless of whether there is 
     // a discrepancy or not
     switch (the_type) {
       case -2: 
-        my_two_vote_under = my_two_vote_under + 1;
+        my_two_vote_under_count = my_two_vote_under_count + 1;
         my_optimistic_recalculate_needed = true;
         break;
        
       case -1:
-        my_one_vote_under = my_one_vote_under + 1;
+        my_one_vote_under_count = my_one_vote_under_count + 1;
         my_optimistic_recalculate_needed = true;
         break;
         
       case 0:
-        my_other = my_other + 1;
+        my_other_count = my_other_count + 1;
         // no optimistic recalculate needed
         break;
         
       case 1: 
-        my_one_vote_over = my_one_vote_over + 1;
+        my_one_vote_over_count = my_one_vote_over_count + 1;
         my_optimistic_recalculate_needed = true;
         break;
         
       case 2:
-        my_two_vote_over = my_two_vote_over + 1;
+        my_two_vote_over_count = my_two_vote_over_count + 1;
         my_optimistic_recalculate_needed = true;
         break;
         
       default:
         throw new IllegalArgumentException("invalid discrepancy type: " + the_type);
     }
+    
+    my_discrepancies.put(the_record, the_type);
   }
     
   /**
@@ -508,44 +576,47 @@ public class CountyContestComparisonAudit implements PersistentEntity {
    * when a new interpretation is submitted for a ballot that had already been
    * interpreted.
    * 
-   * @param the_type The type of discrepancy to add.
+   * @param the_record The CVRAuditInfo record that generated the discrepancy.
+   * @param the_type The type of discrepancy to remove.
    * @exception IllegalArgumentException if an invalid discrepancy type is 
    * specified.
    */
   @SuppressWarnings("checkstyle:magicnumber")
-  public void removeDiscrepancy(final int the_type) {
+  public void removeDiscrepancy(final CVRAuditInfo the_record, final int the_type) {
     // we never trigger an estimated recalculate here; it is
     // triggered by signalBallotAudited() regardless of whether there is 
     // a discrepancy or not
     switch (the_type) {
       case -2: 
-        my_two_vote_under = my_two_vote_under - 1;
+        my_two_vote_under_count = my_two_vote_under_count - 1;
         my_optimistic_recalculate_needed = true;
         break;
 
       case -1:
-        my_one_vote_under = my_one_vote_under - 1;
+        my_one_vote_under_count = my_one_vote_under_count - 1;
         my_optimistic_recalculate_needed = true;
         break;
 
       case 0:
-        my_other = my_other - 1;
+        my_other_count = my_other_count - 1;
         // no recalculate needed
         break;
         
       case 1: 
-        my_one_vote_over = my_one_vote_over - 1;
+        my_one_vote_over_count = my_one_vote_over_count - 1;
         my_optimistic_recalculate_needed = true;
         break;
 
       case 2:
-        my_two_vote_over = my_two_vote_over - 1;
+        my_two_vote_over_count = my_two_vote_over_count - 1;
         my_optimistic_recalculate_needed = true;
         break;
 
       default:
         throw new IllegalArgumentException("invalid discrepancy type: " + the_type);
     }
+    
+    my_discrepancies.remove(the_record);
   }
   
   /**
@@ -563,23 +634,23 @@ public class CountyContestComparisonAudit implements PersistentEntity {
     
     switch (the_type) {
       case -2: 
-        result = my_two_vote_under;
+        result = my_two_vote_under_count;
         break;
 
       case -1:
-        result = my_one_vote_under;
+        result = my_one_vote_under_count;
         break;
 
       case 0:
-        result = my_other;
+        result = my_other_count;
         break;
         
       case 1: 
-        result = my_one_vote_over;
+        result = my_one_vote_over_count;
         break;
 
       case 2:
-        result = my_two_vote_over;
+        result = my_two_vote_over_count;
         break;
 
       default:
@@ -668,7 +739,7 @@ public class CountyContestComparisonAudit implements PersistentEntity {
                                                       final CVRContestInfo the_acvr_info) {
     // check for overvotes
     final Set<String> acvr_choices = new HashSet<>();
-    if (the_acvr_info.choices().size() <= my_contest_result.votesAllowed()) {
+    if (the_acvr_info.choices().size() <= my_contest.votesAllowed()) {
       acvr_choices.addAll(the_acvr_info.choices());
     } // else overvote so don't count the votes
     

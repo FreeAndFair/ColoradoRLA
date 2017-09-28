@@ -115,10 +115,10 @@ public class CountyContestResult implements PersistentEntity, Serializable {
   private Contest my_contest;
 
   /**
-   * The votes allowed.
+   * The winners allowed.
    */
   @Column(updatable = false, nullable = false)
-  private Integer my_votes_allowed;
+  private Integer my_winners_allowed;
   
   /**
    * The set of contest winners.
@@ -183,7 +183,7 @@ public class CountyContestResult implements PersistentEntity, Serializable {
     super();
     my_county = the_county;
     my_contest = the_contest;
-    my_votes_allowed = the_contest.votesAllowed();
+    my_winners_allowed = the_contest.winnersAllowed();
     for (final Choice c : the_contest.choices()) {
       if (!c.fictitious()) {
         my_vote_totals.put(c.name(), 0);
@@ -381,10 +381,10 @@ public class CountyContestResult implements PersistentEntity, Serializable {
   }
   
   /**
-   * @return the number of votes allowed in this contest.
+   * @return the number of winners allowed in this contest.
    */
-  public Integer votesAllowed() {
-    return my_votes_allowed;
+  public Integer winnersAllowed() {
+    return my_winners_allowed;
   }
   
   /**
@@ -507,28 +507,26 @@ public class CountyContestResult implements PersistentEntity, Serializable {
       sorted_totals.get(e.getValue()).add(e.getKey());
     }
     // next, get the winners and losers
-    // TODO: this probably needs work to deal properly with ties in 
-    // races where only one winner is allowed
-    // TODO: this needs to be revised once we save number of winners in addition
-    // to votes allowed
     final Iterator<Entry<Integer, List<String>>> vote_total_iterator = 
         sorted_totals.entrySet().iterator();
     Entry<Integer, List<String>> entry = null;
-    int votes = 0;
-    while (vote_total_iterator.hasNext() && my_winners.size() < my_votes_allowed) {
+    while (vote_total_iterator.hasNext() && my_winners.size() < my_winners_allowed) {
       entry = vote_total_iterator.next();
-      votes = entry.getKey();
-      my_winners.addAll(entry.getValue());
+      final List<String> choices = entry.getValue();
+      if (choices.size() + my_winners.size() <= my_winners_allowed) {
+        my_winners.addAll(choices);
+      } else {
+        // we are arbitrarily making the first choices in the list "winners" and
+        // the last choices in the list "losers", but since it's a tie, it really
+        // doesn't matter
+        final int to_add = my_winners_allowed - my_winners.size();
+        my_winners.addAll(choices.subList(0, to_add));
+        my_losers.addAll(choices.subList(to_add, choices.size()));
+      }
     }
     while (vote_total_iterator.hasNext()) {
-      // all the other choices that have the same number of votes as the last
-      // winner count as winners
-      entry = vote_total_iterator.next();
-      if (entry.getKey() == votes) {
-        my_winners.addAll(entry.getValue());
-      } else {
-        my_losers.addAll(entry.getValue());
-      }
+      // all the other choices count as losers
+      my_losers.addAll(vote_total_iterator.next().getValue());
     }
     
     calculateMargins();

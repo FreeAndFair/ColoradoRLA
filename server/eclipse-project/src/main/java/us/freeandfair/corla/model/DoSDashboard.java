@@ -176,6 +176,28 @@ public class DoSDashboard implements PersistentEntity, Serializable {
   }
   
   /**
+   * Removes all contests to audit for the specified county. This is 
+   * typically done if the county re-uploads their CVRs (generating new
+   * contest information).
+   * 
+   * @param the_county The county.
+   * @return true if any contests to audit were removed, false otherwise.
+   */
+  public boolean removeContestsToAuditForCounty(final County the_county) {
+    boolean result = false;
+    
+    final Set<ContestToAudit> contests_to_remove = new HashSet<>();
+    for (final ContestToAudit c : my_contests_to_audit) {
+      if (c.contest().county().equals(the_county)) {
+        contests_to_remove.add(c);
+        result = true;
+      }
+    }
+    my_contests_to_audit.removeAll(contests_to_remove);
+    
+    return result;
+  }
+  /**
    * Update the audit status of a contest. 
    * 
    * @param the_contest_to_audit The new status of the contest to audit.
@@ -184,23 +206,27 @@ public class DoSDashboard implements PersistentEntity, Serializable {
    */
   //@ requires the_contest_to_audit != null;
   public boolean updateContestToAudit(final ContestToAudit the_contest_to_audit) {
-    boolean result = false;
+    boolean auditable = true;
     
     // check to see if the contest is in our set
-    final Set<ContestToAudit> contests_to_remove = new HashSet<>();
+    ContestToAudit contest_to_remove = null;
     for (final ContestToAudit c : my_contests_to_audit) {
       if (c.contest().equals(the_contest_to_audit.contest())) {
-        // flag the entry for removal
-        contests_to_remove.add(c);
-        result = true;
+        // check if the entry is auditable; if so, it will be removed later
+        auditable = !c.audit().equals(AuditType.NOT_AUDITABLE);
+        contest_to_remove = c;
+        break;
       }
     }
-    my_contests_to_audit.removeAll(contests_to_remove);
-    if (the_contest_to_audit.audit() != AuditType.NONE) {
-      my_contests_to_audit.add(the_contest_to_audit);
+    
+    if (auditable) {
+      my_contests_to_audit.remove(contest_to_remove);
+      if (the_contest_to_audit.audit() != AuditType.NONE) {
+        my_contests_to_audit.add(the_contest_to_audit);
+      }
     }
     
-    return result;
+    return auditable;
   }
   
   /**
