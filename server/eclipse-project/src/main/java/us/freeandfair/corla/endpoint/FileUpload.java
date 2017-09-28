@@ -93,12 +93,12 @@ public class FileUpload extends AbstractEndpoint {
    * 
    * @param the_response The response object (for error reporting).
    * @param the_info The upload info about the file and hash.
-   * @param the_county_id The county that uploaded the file.
+   * @param the_county The county that uploaded the file.
    * @return the resulting entity if successful, null otherwise
    */
   private UploadedFile attemptFilePersistence(final Response the_response, 
                                               final UploadInformation the_info,
-                                              final Long the_county_id) {
+                                              final County the_county) {
     UploadedFile result = null;
     
     try (FileInputStream is = new FileInputStream(the_info.my_file)) {
@@ -111,11 +111,13 @@ public class FileUpload extends AbstractEndpoint {
       } else {
         hash_status = HashStatus.MISMATCH;
       }
-      result = new UploadedFile(the_info.my_timestamp, the_county_id,
+      result = new UploadedFile(the_info.my_timestamp, 
+                                the_county,
                                 the_info.my_filename,
                                 FileStatus.NOT_IMPORTED, 
                                 the_info.my_uploaded_hash,
-                                hash_status, blob, the_info.my_file.length());
+                                hash_status, blob, 
+                                the_info.my_file.length());
       Persistence.save(result);
       Persistence.flush();
     } catch (final PersistenceException | IOException e) {
@@ -208,7 +210,7 @@ public class FileUpload extends AbstractEndpoint {
       info.my_computed_hash = HashChecker.hashFile(info.my_file);
       info.my_uploaded_hash = 
           info.my_form_fields.get("hash").toUpperCase(Locale.US).trim();
-      uploaded_file = attemptFilePersistence(the_response, info, county.id());
+      uploaded_file = attemptFilePersistence(the_response, info, county);
     }
 
     // delete the temp file, if it exists

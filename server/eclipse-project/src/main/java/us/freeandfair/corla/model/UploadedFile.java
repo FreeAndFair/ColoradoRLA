@@ -21,11 +21,14 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
@@ -73,8 +76,9 @@ public class UploadedFile implements PersistentEntity {
   /**
    * The county that uploaded the file.
    */
-  @Column(name = "county_id", updatable = false, nullable = false)
-  private Long my_county_id;
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
+  @JoinColumn  
+  private County my_county;
   
   /**
    * The status of the file.
@@ -126,7 +130,7 @@ public class UploadedFile implements PersistentEntity {
    * Constructs an uploaded file with the specified information.
    * 
    * @param the_timestamp The timestamp.
-   * @param the_county_id The county that uploaded the file.
+   * @param the_county The county that uploaded the file.
    * @param the_filename The original filename.
    * @param the_status The file status.
    * @param the_hash The hash entered at upload time.
@@ -136,7 +140,7 @@ public class UploadedFile implements PersistentEntity {
    * @param the_size The file size (in bytes).
    */
   public UploadedFile(final Instant the_timestamp,
-                      final Long the_county_id,
+                      final County the_county,
                       final String the_filename,
                       final FileStatus the_status,
                       final String the_hash,
@@ -145,7 +149,7 @@ public class UploadedFile implements PersistentEntity {
                       final Long the_size) {
     super();
     my_timestamp = the_timestamp;
-    my_county_id = the_county_id;
+    my_county = the_county;
     my_filename = the_filename;
     my_status = the_status;
     my_hash = the_hash;
@@ -186,10 +190,10 @@ public class UploadedFile implements PersistentEntity {
   }
   
   /**
-   * @return the county ID that uploaded this file.
+   * @return the county that uploaded this file.
    */
-  public Long countyID() {
-    return my_county_id;
+  public County county() {
+    return my_county;
   }
   
   /**
@@ -249,7 +253,7 @@ public class UploadedFile implements PersistentEntity {
   @Override
   public String toString() {
     return "UploadedFile [id=" + my_id + ", timestamp=" +
-           my_timestamp + ", county_id=" + my_county_id + 
+           my_timestamp + ", county=" + my_county + 
            ", status=" + my_status + ", filename=" +
            my_filename + ", hash=" + my_hash + ", hash_status=" + 
            my_hash_status + ", size=" + my_size + "]";
@@ -267,7 +271,7 @@ public class UploadedFile implements PersistentEntity {
     if (the_other instanceof UploadedFile) {
       final UploadedFile other_file = (UploadedFile) the_other;
       result &= nullableEquals(other_file.timestamp(), timestamp());
-      result &= nullableEquals(other_file.countyID(), countyID());
+      result &= nullableEquals(other_file.county(), county());
       result &= nullableEquals(other_file.filename(), filename());
       result &= nullableEquals(other_file.status(), status());
       result &= nullableEquals(other_file.hash(), hash());

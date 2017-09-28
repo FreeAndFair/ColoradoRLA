@@ -116,6 +116,12 @@ public class Contest implements PersistentEntity, Serializable {
   private Integer my_votes_allowed;
   
   /**
+   * The maximum number of winners in this contest.
+   */
+  @Column(name = "winners_allowed", updatable = false, nullable = false)
+  private Integer my_winners_allowed;
+  
+  /**
    * The import sequence number.
    */
   @Column(updatable = false, nullable = false)
@@ -138,19 +144,23 @@ public class Contest implements PersistentEntity, Serializable {
    * @param the_choices The set of contest choices.
    * @param the_votes_allowed The maximum number of votes that can
    * be made in this contest.
+   * @param the_winners_allowed The maximum number of winners for
+   * this contest.
    * @param the_sequence_number The sequence number.
    */
   //@ requires 1 <= the_votes_allowed;
   //@ requires the_votes_allowed <= the_choices.size();
   public Contest(final String the_name, final County the_county, 
                  final String the_description, final List<Choice> the_choices, 
-                 final int the_votes_allowed, final int the_sequence_number)  {
+                 final int the_votes_allowed, final int the_winners_allowed,
+                 final int the_sequence_number)  {
     super();
     my_name = the_name;
     my_county = the_county;
     my_description = the_description;
     my_choices.addAll(the_choices);
     my_votes_allowed = the_votes_allowed;
+    my_winners_allowed = the_winners_allowed;
     my_sequence_number = the_sequence_number;
   }
 
@@ -226,6 +236,13 @@ public class Contest implements PersistentEntity, Serializable {
    */
   public Integer votesAllowed() {
     return my_votes_allowed;
+  }
+
+  /**
+   * @return the maximum number of winners in this contest.
+   */
+  public Integer winnersAllowed() {
+    return my_winners_allowed;
   }
   
   /**

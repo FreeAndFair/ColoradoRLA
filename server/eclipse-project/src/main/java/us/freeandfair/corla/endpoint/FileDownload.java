@@ -101,7 +101,7 @@ public class FileDownload extends AbstractEndpoint {
           Main.GSON.fromJson(the_request.queryParams(QUERY_PARAMETER), UploadedFile.class);
       if (file == null) {
         badDataContents(the_response, "nonexistent file requested");
-      } else if (county == null || county.id().equals(file.countyID())) {
+      } else if (county == null || county.id().equals(file.county().id())) {
         the_response.type("text/csv");
         try {
           the_response.raw().setHeader("Content-Disposition", "attachment; filename=\"" + 
@@ -122,7 +122,7 @@ public class FileDownload extends AbstractEndpoint {
       } else {
         unauthorized(the_response, "county " + county.id() + " attempted to download " + 
                                    "file " + file.filename() + " uploaded by county " + 
-                                   file.countyID());
+                                   file.county().id());
       }
     } catch (final JsonParseException e) {
       badDataContents(the_response, "malformed request: " + e.getMessage());

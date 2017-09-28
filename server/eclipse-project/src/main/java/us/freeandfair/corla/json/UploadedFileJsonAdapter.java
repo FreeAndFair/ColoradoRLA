@@ -87,7 +87,7 @@ public final class UploadedFileJsonAdapter
       throws IOException {
     the_writer.beginObject();
     the_writer.name(FILE_ID).value(the_file.id());
-    the_writer.name(COUNTY_ID).value(the_file.countyID());
+    the_writer.name(COUNTY_ID).value(the_file.county().id());
     the_writer.name(FILENAME).value(the_file.filename());
     the_writer.name(SIZE).value(the_file.size());
     the_writer.name(TIMESTAMP).value(the_file.timestamp().toString());

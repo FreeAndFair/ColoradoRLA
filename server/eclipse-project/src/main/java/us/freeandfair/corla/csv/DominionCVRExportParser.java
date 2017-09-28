@@ -306,8 +306,12 @@ public class DominionCVRExportParser implements CVRExportParser {
       // now that we have all the choices, we can create a Contest object for 
       // this contest (note the empty contest description at the moment, below, 
       // as that's not in the CVR files and may not actually be used)
+      // note that we're using the "Vote For" number as the number of winners
+      // allowed as well, because the Dominion format doesn't give us that
+      // separately
       final Contest c = new Contest(cn, my_county, "", choices, 
-                                    the_votes_allowed.get(cn), contest_count);
+                                    the_votes_allowed.get(cn), the_votes_allowed.get(cn),
+                                    contest_count);
       contest_count = contest_count + 1;
       Persistence.saveOrUpdate(c);
       final CountyContestResult r = 

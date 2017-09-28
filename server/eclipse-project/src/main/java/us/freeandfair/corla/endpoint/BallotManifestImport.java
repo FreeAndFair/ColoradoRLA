@@ -87,7 +87,7 @@ public class BallotManifestImport extends AbstractCountyDashboardEndpoint {
                                      final UploadedFile the_file,
                                      final int the_ballot_count) {
     final CountyDashboard cdb = 
-        Persistence.getByID(the_file.countyID(), CountyDashboard.class);
+        Persistence.getByID(the_file.county().id(), CountyDashboard.class);
     if (cdb == null) {
       serverError(the_response, "could not locate county dashboard");
     } else {
@@ -114,8 +114,8 @@ public class BallotManifestImport extends AbstractCountyDashboardEndpoint {
       final InputStreamReader bmi_isr = new InputStreamReader(bmi_is, "UTF-8");
       final BallotManifestParser parser = 
           new ColoradoBallotManifestParser(bmi_isr, 
-                                           the_file.countyID());
-      final int deleted = BallotManifestInfoQueries.deleteMatching(the_file.countyID());
+                                           the_file.county().id());
+      final int deleted = BallotManifestInfoQueries.deleteMatching(the_file.county().id());
       if (parser.parse()) {
         final int imported = parser.recordCount().getAsInt();
         Main.LOGGER.info(imported + " ballot manifest records parsed from file " + 
@@ -167,10 +167,10 @@ public class BallotManifestImport extends AbstractCountyDashboardEndpoint {
           Main.GSON.fromJson(the_request.body(), UploadedFile.class);
       if (file == null) {
         badDataContents(the_response, "nonexistent file");
-      } else if (!file.countyID().equals(county.id())) {
+      } else if (!file.county().equals(county)) {
         unauthorized(the_response, "county " + county.id() + " attempted to import " + 
                                    "file " + file.filename() + " uploaded by county " + 
-                                   file.countyID());
+                                   file.county().id());
       } else if (file.hashStatus() == HashStatus.VERIFIED) {
         parseFile(the_response, file);
       } else {

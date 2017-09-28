@@ -13,6 +13,7 @@ package us.freeandfair.corla.controller;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -41,7 +42,6 @@ import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CVRAuditInfoQueries;
 import us.freeandfair.corla.query.CastVoteRecordQueries;
 import us.freeandfair.corla.query.CountyContestResultQueries;
-import us.freeandfair.corla.util.Pair;
 
 /**
  * Controller methods relevant to comparison audits.
@@ -49,7 +49,8 @@ import us.freeandfair.corla.util.Pair;
  * @author Daniel M. Zimmerman
  * @version 0.0.1
  */
-@SuppressWarnings({"PMD.GodClass", "PMD.CyclomaticComplexity", "PMD.ExcessiveImports"})
+@SuppressWarnings({"PMD.GodClass", "PMD.CyclomaticComplexity", "PMD.ExcessiveImports",
+    "PMD.ModifiedCyclomaticComplexity", "PMD.StdCyclomaticComplexity"})
 public final class ComparisonAuditController {
   /**
    * Private constructor to prevent instantiation.
@@ -512,38 +513,27 @@ public final class ComparisonAuditController {
         // requirements about finishing rounds before looking at results as
         // final and valid
         the_cdb.addAuditedBallot();
-        final Pair<Set<AuditReason>, Set<AuditReason>> audit_results = 
-            audit(the_cdb, the_cvr_under_audit, the_audit_cvr, info.size(), true);
-        the_cdb.setAuditedSampleCount(the_cdb.auditedSampleCount() + info.size());
         for (final CVRAuditInfo c : info) {
           c.setACVR(the_audit_cvr);
-          c.setCounted(true);
-          c.setDiscrepancy(audit_results.first());
-          c.setDisagreement(audit_results.second());
-          Persistence.saveOrUpdate(c);
         }
+        audit(the_cdb, info, true);
+        the_cdb.setAuditedSampleCount(the_cdb.auditedSampleCount() + info.size());
       } else {
         // the record has been audited before, so we need to "unaudit" it 
         // this requires a linear search over the matching records to see
         // how many have been counted, since we don't know what order our
         // query returned them in and we can't order them by list index
-        int undo_count = 0;
+        final List<CVRAuditInfo> info_to_undo = new ArrayList<>();
         for (final CVRAuditInfo c : info) {
           if (c.counted()) {
-            undo_count = undo_count + 1;
+            info_to_undo.add(c);
           }
+        }
+        unaudit(the_cdb, info_to_undo);
+        for (final CVRAuditInfo c : info) {
           c.setACVR(the_audit_cvr);
-          Persistence.saveOrUpdate(c);
         }
-        unaudit(the_cdb, the_cvr_under_audit, old_audit_cvr, undo_count);
-        final Pair<Set<AuditReason>, Set<AuditReason>> audit_results = 
-            audit(the_cdb, the_cvr_under_audit, the_audit_cvr, undo_count, true);
-        for (final CVRAuditInfo c : info) {
-          if (c.counted()) {
-            c.setDiscrepancy(audit_results.first());
-            c.setDisagreement(audit_results.second());
-          }
-        }
+        audit(the_cdb, info, true);
       }
       result = true;
     }  else {
@@ -629,47 +619,57 @@ public final class ComparisonAuditController {
    * This also updates the local audit counters, as appropriate.
    * 
    * @param the_cdb The dashboard.
-   * @param the_cvr_under_audit The CVR under audit.
-   * @param the_audit_cvr The audit CVR.
+   * @param the_info The CVRAuditInfo records to audit; it is assumed that
+   * they are all identical with respect to CVR/ACVR pairs.
    * @param the_count The number of times to count this ballot in the
    * audit.
    * @param the_update_counters true to update the county dashboard 
    * counters, false otherwise; false is used when this ballot 
    * has already been audited once.
-   * @return a pair of sets, (discrepancy, disagreement), indicating
-   * for which audit types a discrepancy or disagreement was registered.
    */
-  private static Pair<Set<AuditReason>, Set<AuditReason>> 
-      audit(final CountyDashboard the_cdb,
-            final CastVoteRecord the_cvr_under_audit,
-            final CastVoteRecord the_audit_cvr, 
-            final int the_count,
-            final boolean the_update_counters) {
-    final Map<Contest, AuditReason> audit_reasons = new HashMap<>();
+  @SuppressWarnings({"PMD.ModifiedCyclomaticComplexity", "PMD.StdCyclomaticComplexity",
+      "PMD.NPathComplexity"})
+  private static void audit(final CountyDashboard the_cdb,
+                            final List<CVRAuditInfo> the_info, 
+                            final boolean the_update_counters) {
+    final Set<Contest> contest_disagreements = new HashSet<>();
     final Set<AuditReason> discrepancies = new HashSet<>();
     final Set<AuditReason> disagreements = new HashSet<>();
+    final CastVoteRecord cvr_under_audit = the_info.get(0).cvr();
+    final CastVoteRecord audit_cvr = the_info.get(0).acvr();
+    
+    for (final CVRContestInfo ci : audit_cvr.contestInfo()) {
+      if (ci.consensus() == ConsensusValue.NO) {
+        contest_disagreements.add(ci.contest());
+      }
+    }
     
     for (final CountyContestComparisonAudit ca : the_cdb.comparisonAudits()) {
-      audit_reasons.put(ca.contest(), ca.auditReason());
       final OptionalInt discrepancy = 
-          ca.computeDiscrepancy(the_cvr_under_audit, the_audit_cvr);
+          ca.computeDiscrepancy(cvr_under_audit, audit_cvr);
       if (discrepancy.isPresent()) {
-        for (int i = 0; i < the_count; i++) {
-          ca.recordDiscrepancy(discrepancy.getAsInt());
+        for (final CVRAuditInfo cvrai : the_info) {
+          ca.recordDiscrepancy(cvrai, discrepancy.getAsInt());
         }
         discrepancies.add(ca.auditReason());
+      }
+      if (contest_disagreements.contains(ca.contest())) {
+        for (final CVRAuditInfo cvrai : the_info) {
+          ca.recordDisagreement(cvrai);
+        }
+        disagreements.add(ca.auditReason());
       }
       ca.signalBallotAudited();
       Persistence.saveOrUpdate(ca);
     }
     
-    for (final CVRContestInfo ci : the_audit_cvr.contestInfo()) {
-      final AuditReason reason = audit_reasons.get(ci.contest());
-      if (ci.consensus() == ConsensusValue.NO) {
-        disagreements.add(reason);
-      }
+    for (final CVRAuditInfo cvrai : the_info) {
+      cvrai.setDiscrepancy(discrepancies);
+      cvrai.setDisagreement(disagreements);
+      cvrai.setCounted(true);
+      Persistence.saveOrUpdate(cvrai);
     }
-      
+    
     if (the_update_counters) {
       for (final AuditReason r : discrepancies) {
         the_cdb.addDiscrepancy(r);
@@ -679,8 +679,6 @@ public final class ComparisonAuditController {
         the_cdb.addDisagreement(r);
       }
     }
-    
-    return new Pair<Set<AuditReason>, Set<AuditReason>>(discrepancies, disagreements);
   }
   
   /**
@@ -689,39 +687,50 @@ public final class ComparisonAuditController {
    * dashboard's counters as appropriate.
    *
    * @param the_cdb The county dashboard.
-   * @param the_cvr_under_audit The CVR under audit.
-   * @param the_audit_cvr The audit CVR.
-   * @param the_count The number of times to remove this ballot from the audit.
+   * @param the_info The list of CVRAuditInfo to unaudit. It is assumed
+   * they are all identical with respect to CVR/ACVR.
    */
+  @SuppressWarnings("PMD.NPathComplexity")
   private static void unaudit(final CountyDashboard the_cdb,
-                              final CastVoteRecord the_cvr_under_audit,
-                              final CastVoteRecord the_audit_cvr,
-                              final int the_count) {
-    final Map<Contest, AuditReason> audit_reasons = new HashMap<>();
+                              final List<CVRAuditInfo> the_info) {
+    final Set<Contest> contest_disagreements = new HashSet<>();
     final Set<AuditReason> discrepancies = new HashSet<>();
     final Set<AuditReason> disagreements = new HashSet<>();
+    final CastVoteRecord cvr_under_audit = the_info.get(0).cvr();
+    final CastVoteRecord audit_cvr = the_info.get(0).acvr();
+    
+    for (final CVRContestInfo ci : audit_cvr.contestInfo()) {
+      if (ci.consensus() == ConsensusValue.NO) {
+        contest_disagreements.add(ci.contest());
+      }
+    }
     
     for (final CountyContestComparisonAudit ca : the_cdb.comparisonAudits()) {
-      audit_reasons.put(ca.contest(), ca.auditReason());
       final OptionalInt discrepancy = 
-          ca.computeDiscrepancy(the_cvr_under_audit, the_audit_cvr);
+          ca.computeDiscrepancy(cvr_under_audit, audit_cvr);
       if (discrepancy.isPresent()) {
-        for (int i = 0; i < the_count; i++) {
-          ca.removeDiscrepancy(discrepancy.getAsInt());
+        for (int i = 0; i < the_info.size(); i++) {
+          ca.removeDiscrepancy(the_info.get(i), discrepancy.getAsInt());
         }
-        discrepancies.remove(ca.auditReason());
+        discrepancies.add(ca.auditReason());
+      }
+      if (contest_disagreements.contains(ca.contest())) {
+        for (final CVRAuditInfo cvrai : the_info) {
+          ca.removeDisagreement(cvrai);
+        }
+        disagreements.add(ca.auditReason());
       }
       ca.signalBallotAudited();
       Persistence.saveOrUpdate(ca);
     }
     
-    for (final CVRContestInfo ci : the_audit_cvr.contestInfo()) {
-      final AuditReason reason = audit_reasons.get(ci.contest());
-      if (ci.consensus() == ConsensusValue.NO) {
-        disagreements.add(reason);
-      }
+    for (final CVRAuditInfo cvrai : the_info) {
+      cvrai.setDisagreement(null);
+      cvrai.setDiscrepancy(null);
+      cvrai.setCounted(false);
+      Persistence.saveOrUpdate(cvrai);
     }
-      
+    
     for (final AuditReason r : discrepancies) {
       the_cdb.removeDiscrepancy(r);
     }
@@ -754,12 +763,7 @@ public final class ComparisonAuditController {
       } else if (!cai.counted()) {
         // we only count this CVRAuditInfo if we didn't count it before, 
         // because it might have been counted earlier in its round
-        final Pair<Set<AuditReason>, Set<AuditReason>> audit_results = 
-            audit(the_cdb, cai.cvr(), cai.acvr(), 1, false);
-        cai.setCounted(true);
-        cai.setDiscrepancy(audit_results.first());
-        cai.setDisagreement(audit_results.second());
-        Persistence.saveOrUpdate(cai);
+        audit(the_cdb, Arrays.asList(new CVRAuditInfo[]{cai}), false);
         the_cdb.setAuditedSampleCount(the_cdb.auditedSampleCount() + 1);
       }
       index = index + 1;
