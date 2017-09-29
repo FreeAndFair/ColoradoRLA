@@ -391,18 +391,26 @@ public class CountyContestComparisonAudit implements PersistentEntity {
   
   /**
    * Updates the audit status based on the current risk limit. If the audit
-   * has already been ended, this method has no effect on its state.
+   * has already been ended, this method has no effect on its status.
    */
   public void updateAuditStatus() {
-    if (my_audit_status != AuditStatus.ENDED && 
-        my_optimistic_samples_to_audit - my_audited_sample_count <= 0) {
+    if (my_audit_status == AuditStatus.ENDED) {
+      return;
+    }
+    
+    if (my_optimistic_samples_to_audit - my_audited_sample_count <= 0) {
       my_audit_status = AuditStatus.RISK_LIMIT_ACHIEVED;
+    } else {
+      // risk limit has not been achieved
+      // note that it _is_ possible to go from RISK_LIMIT_ACHIEVED to
+      // IN_PROGRESS if a sample or set of samples is "unaudited"
+      my_audit_status = AuditStatus.IN_PROGRESS;
     }
   }
   
   /**
    * Ends this audit; if the audit has already reached its risk limit,
-   * this call has no effect on its state.
+   * this call has no effect on its status.
    */
   public void endAudit() {
     if (my_audit_status != AuditStatus.RISK_LIMIT_ACHIEVED) {

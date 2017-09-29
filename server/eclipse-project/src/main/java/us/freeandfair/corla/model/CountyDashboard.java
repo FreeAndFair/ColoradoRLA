@@ -231,17 +231,17 @@ public class CountyDashboard implements PersistentEntity {
   private Integer my_ballots_audited = 0;
   
   /**
-   * The estimated ballots to audit.
+   * The number of estimated samples remaining to audit.
    */
-  private Integer my_estimated_ballots_to_audit = 0;
+  private Integer my_estimated_samples_to_audit = 0;
 
   /**
-   * The optimistic ballots to audit.
+   * The number of optimistic samples remaining to audit.
    */
-  private Integer my_optimistic_ballots_to_audit = 0;
+  private Integer my_optimistic_samples_to_audit = 0;
   
   /**
-   * The length of the audited prefix of the list of ballots to audit;
+   * The length of the audited prefix of the list of samples to audit;
    * equivalent to the index of the CVR currently under audit.
    */
   private Integer my_audited_prefix_length;
@@ -815,36 +815,36 @@ public class CountyDashboard implements PersistentEntity {
   }
   
   /**
-   * @return the estimated number of ballots to audit.
+   * @return the estimated number of samples to audit.
    */
-  public Integer estimatedBallotsToAudit() {
-    return my_estimated_ballots_to_audit;
+  public Integer estimatedSamplesToAudit() {
+    return my_estimated_samples_to_audit;
   }
   
   /**
-   * Sets the estimated number of ballots to audit. 
+   * Sets the estimated number of samples to audit. 
    * 
-   * @param the_estimated_ballots_to_audit The estimated number of ballots to audit.
+   * @param the_estimated_samples_to_audit The estimated number of samples to audit.
    */
-  public void setEstimatedBallotsToAudit(final int the_estimated_ballots_to_audit) {
-    my_estimated_ballots_to_audit = the_estimated_ballots_to_audit;
+  public void setEstimatedSamplesToAudit(final int the_estimated_samples_to_audit) {
+    my_estimated_samples_to_audit = the_estimated_samples_to_audit;
   }
   
   /**
-   * @return the optimistic number of ballots to audit.
+   * @return the optimistic number of samples to audit.
    */
-  public Integer optimisticBallotsToAudit() {
-    return my_optimistic_ballots_to_audit;
+  public Integer optimisticSamplesToAudit() {
+    return my_optimistic_samples_to_audit;
   }
   
   /**
-   * Sets the optimistic number of ballots to audit. 
+   * Sets the optimistic number of samples to audit. 
    * 
-   * @param the_optimistic_ballots_to_audit The optimistic number of ballots 
+   * @param the_optimistic_samples_to_audit The optimistic number of samples 
    * to audit.
    */
-  public void setOptimisticBallotsToAudit(final int the_optimistic_ballots_to_audit) {
-    my_optimistic_ballots_to_audit = the_optimistic_ballots_to_audit;
+  public void setOptimisticSamplesToAudit(final int the_optimistic_samples_to_audit) {
+    my_optimistic_samples_to_audit = the_optimistic_samples_to_audit;
   }
   
   /**

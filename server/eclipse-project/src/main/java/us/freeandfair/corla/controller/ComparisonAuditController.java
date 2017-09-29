@@ -327,8 +327,8 @@ public final class ComparisonAuditController {
     the_cdb.setComparisonAudits(comparison_audits);
     Main.LOGGER.info("driving contests setting: " + county_driving_contests);
     the_cdb.setDrivingContests(county_driving_contests);
-    the_cdb.setEstimatedBallotsToAudit(Math.max(0,  to_audit));
-    the_cdb.setOptimisticBallotsToAudit(Math.max(0,  to_audit));
+    the_cdb.setEstimatedSamplesToAudit(Math.max(0,  to_audit));
+    the_cdb.setOptimisticSamplesToAudit(Math.max(0,  to_audit));
     if (!county_driving_contests.isEmpty() && 0 < to_audit) {
       the_cdb.setCVRsToAudit(getCVRsInAuditSequence(the_cdb, 0, to_audit - 1));
       the_cdb.startRound(computeBallotOrder(the_cdb, 0, to_audit, false).size(),
@@ -544,10 +544,10 @@ public final class ComparisonAuditController {
     Persistence.flush();
     updateCVRUnderAudit(the_cdb);
     the_cdb.
-        setEstimatedBallotsToAudit(computeEstimatedSamplesToAudit(the_cdb) -
+        setEstimatedSamplesToAudit(computeEstimatedSamplesToAudit(the_cdb) -
                                    the_cdb.auditedSampleCount());
     the_cdb.
-        setOptimisticBallotsToAudit(computeOptimisticSamplesToAudit(the_cdb) -
+        setOptimisticSamplesToAudit(computeOptimisticSamplesToAudit(the_cdb) -
                                     the_cdb.auditedSampleCount());
     the_cdb.updateAuditStatus();
     return result;
