@@ -889,8 +889,8 @@ public class CountyDashboard implements PersistentEntity {
   }
   
   /** 
-   * Aborts all audits in the county. This changes the state of any audits
-   * that have not achieved their risk limit to ABORTED.
+   * Ends all audits in the county. This changes the state of any audits
+   * that have not achieved their risk limit to ENDED.
    */
   public void endAudits() {
     for (final CountyContestComparisonAudit ccca : my_comparison_audits) {
