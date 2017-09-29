@@ -1,13 +1,12 @@
 import { Intent, Position, Toaster } from '@blueprintjs/core';
 
+import { defaultNoticeTimeout } from 'corla/config';
+
 
 const Toast = Toaster.create({ autoFocus: true });
 
 
-const DEFAULT_TIMEOUT = 5000;
-
-
-function danger(message: string, timeout: number = DEFAULT_TIMEOUT) {
+function danger(message: string, timeout: number = defaultNoticeTimeout) {
     Toast.show({
         intent: Intent.DANGER,
         message,
@@ -15,7 +14,7 @@ function danger(message: string, timeout: number = DEFAULT_TIMEOUT) {
     });
 }
 
-function warning(message: string, timeout: number = DEFAULT_TIMEOUT) {
+function warning(message: string, timeout: number = defaultNoticeTimeout) {
     Toast.show({
         intent: Intent.WARNING,
         message,
@@ -23,7 +22,7 @@ function warning(message: string, timeout: number = DEFAULT_TIMEOUT) {
     });
 }
 
-function ok(message: string, timeout: number = DEFAULT_TIMEOUT) {
+function ok(message: string, timeout: number = defaultNoticeTimeout) {
     Toast.show({
         intent: Intent.SUCCESS,
         message,
