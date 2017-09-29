@@ -26,4 +26,4 @@ export const pollDelay
     ? 1000 * 5
     : 1000 * 30;
 
-export const defaultNoticeTimeout = 5000;
+export const defaultNoticeTimeout = 0;
