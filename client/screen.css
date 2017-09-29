@@ -102,3 +102,14 @@ td.rla-county-contest-info {
 th.rla-county-contest-info {
     width: 50%;
 }
+
+.rla-license-footer {
+    width: 100%;
+}
+
+.rla-license {
+    margin: 0 auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 500px;
+}
