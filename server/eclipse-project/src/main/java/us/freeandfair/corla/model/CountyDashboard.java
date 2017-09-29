@@ -887,7 +887,27 @@ public class CountyDashboard implements PersistentEntity {
   public void setAuditedSampleCount(final int the_audited_sample_count) {
     my_audited_sample_count = the_audited_sample_count;
   }
-
+  
+  /** 
+   * Aborts all audits in the county. This changes the state of any audits
+   * that have not achieved their risk limit to ABORTED.
+   */
+  public void endAudits() {
+    for (final CountyContestComparisonAudit ccca : my_comparison_audits) {
+      ccca.endAudit();
+    }
+  }
+  
+  /**
+   * Updates the status for all audits in the county. This changes their states
+   * based on whether they have achieved their risk limits.
+   */
+  public void updateAuditStatus() {
+    for (final CountyContestComparisonAudit ccca : my_comparison_audits) {
+      ccca.updateAuditStatus();
+    }
+  }
+  
   /**
    * @return a String representation of this contest.
    */

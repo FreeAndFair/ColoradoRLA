@@ -36,6 +36,7 @@ import us.freeandfair.corla.asm.CountyDashboardASM;
 import us.freeandfair.corla.model.ContestToAudit;
 import us.freeandfair.corla.model.ContestToAudit.AuditType;
 import us.freeandfair.corla.model.County;
+import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 
@@ -145,6 +146,7 @@ public class IndicateHandCount extends AbstractDoSDashboardEndpoint {
     boolean aborted_audit = false;
     // for each county, if the audit is actually running, abort it
     for (final County c : the_counties) {
+      final CountyDashboard cdb = Persistence.getByID(c.id(), CountyDashboard.class);
       final AbstractStateMachine county_asm = 
           ASMUtilities.asmFor(CountyDashboardASM.class, c.id().toString());
       final AbstractStateMachine audit_asm =
@@ -152,10 +154,12 @@ public class IndicateHandCount extends AbstractDoSDashboardEndpoint {
       
       if (county_asm.currentState() == COUNTY_AUDIT_UNDERWAY &&
           !audit_asm.isInFinalState()) {
+        // end the audit in the county
         county_asm.stepEvent(COUNTY_AUDIT_COMPLETE_EVENT);
         audit_asm.stepEvent(ABORT_AUDIT_EVENT);
         ASMUtilities.save(county_asm);
         ASMUtilities.save(audit_asm);
+        cdb.endAudits();
         aborted_audit = true;
       } else if (!county_asm.isInFinalState() || !audit_asm.isInFinalState()) {
         // this was done in an invalid state - it can only happen if the audit is

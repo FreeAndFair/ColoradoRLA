@@ -320,7 +320,7 @@ public final class ComparisonAuditController {
       final Contest contest = audit.contest();
       comparison_audits.add(audit);
       if (all_driving_contests.contains(contest)) {
-        to_audit = Math.max(to_audit, audit.initialBallotsToAudit());
+        to_audit = Math.max(to_audit, audit.initialSamplesToAudit());
         county_driving_contests.add(contest);
       }
     }
@@ -440,7 +440,7 @@ public final class ComparisonAuditController {
       final Set<CastVoteRecord> unique_new_cvrs = new HashSet<>();
       int expected_prefix_length = 0;
       while (unique_new_cvrs.isEmpty()) {
-        expected_prefix_length = computeEstimatedBallotsToAudit(the_cdb);
+        expected_prefix_length = computeEstimatedSamplesToAudit(the_cdb);
         if (the_cdb.auditedPrefixLength() < expected_prefix_length) {
           final List<CastVoteRecord> new_cvrs = 
               getCVRsInAuditSequence(the_cdb, start_index, 
@@ -544,29 +544,30 @@ public final class ComparisonAuditController {
     Persistence.flush();
     updateCVRUnderAudit(the_cdb);
     the_cdb.
-        setEstimatedBallotsToAudit(computeEstimatedBallotsToAudit(the_cdb) -
+        setEstimatedBallotsToAudit(computeEstimatedSamplesToAudit(the_cdb) -
                                    the_cdb.auditedSampleCount());
     the_cdb.
-        setOptimisticBallotsToAudit(computeOptimisticBallotsToAudit(the_cdb) -
+        setOptimisticBallotsToAudit(computeOptimisticSamplesToAudit(the_cdb) -
                                     the_cdb.auditedSampleCount());
+    the_cdb.updateAuditStatus();
     return result;
   }
   
   /**
-   * Computes the estimated total number of ballots to audit on the specified
-   * county dashboard. This uses the minimum ballots to audit calculation, 
+   * Computes the estimated total number of samples to audit on the specified
+   * county dashboard. This uses the minimum samples to audit calculation, 
    * increased by the percentage of discrepancies seen in the audited ballots
    * so far. 
    * 
    * @param the_cdb The dashboard.
    */
   public static int 
-      computeEstimatedBallotsToAudit(final CountyDashboard the_cdb) {
+      computeEstimatedSamplesToAudit(final CountyDashboard the_cdb) {
     int to_audit = Integer.MIN_VALUE;
     final Set<Contest> driving_contests = the_cdb.drivingContests();
     for (final CountyContestComparisonAudit ccca : the_cdb.comparisonAudits()) {
       if (driving_contests.contains(ccca.contest())) {
-        final int bta = ccca.estimatedBallotsToAudit();
+        final int bta = ccca.estimatedSamplesToAudit();
         to_audit = Math.max(to_audit, bta);
       }
     }
@@ -574,18 +575,20 @@ public final class ComparisonAuditController {
   }
   
   /**
-   * Computes the optimistic total number of ballots to audit on the specified
-   * county dashboard. This uses the minimum ballots to audit calculation.
+   * Computes the optimistic total number of samples to audit on the specified
+   * county dashboard. This uses the minimum samples to audit calculation.
    * 
    * @param the_cdb The dashboard.
    */
   public static int 
-      computeOptimisticBallotsToAudit(final CountyDashboard the_cdb) {
+      computeOptimisticSamplesToAudit(final CountyDashboard the_cdb) {
     int to_audit = Integer.MIN_VALUE;
     final Set<Contest> driving_contests = the_cdb.drivingContests();
     for (final CountyContestComparisonAudit ccca : the_cdb.comparisonAudits()) {
+      // we compute this even for non-driving contests, so we can see if their
+      // risk limits were achieved
+      final int bta = ccca.optimisticSamplesToAudit();
       if (driving_contests.contains(ccca.contest())) {
-        final int bta = ccca.optimisticBallotsToAudit();
         to_audit = Math.max(to_audit, bta);
       }
     }
@@ -659,7 +662,7 @@ public final class ComparisonAuditController {
         }
         disagreements.add(ca.auditReason());
       }
-      ca.signalBallotAudited();
+      ca.signalSampleAudited(the_info.size());
       Persistence.saveOrUpdate(ca);
     }
     
@@ -720,7 +723,7 @@ public final class ComparisonAuditController {
         }
         disagreements.add(ca.auditReason());
       }
-      ca.signalBallotAudited();
+      ca.signalSampleUnaudited(the_info.size());
       Persistence.saveOrUpdate(ca);
     }
     
