@@ -314,6 +314,10 @@ public class CountyContestComparisonAudit implements PersistentEntity {
     my_contest = my_contest_result.contest();
     my_risk_limit = the_risk_limit;
     my_audit_reason = the_audit_reason;
+    if (the_contest_result.countyDilutedMargin().equals(BigDecimal.ZERO)) {
+      // the county diluted margin is 0, so this contest is not auditable
+      my_audit_status = AuditStatus.NOT_AUDITABLE;
+    }
   }
   
   /**
@@ -391,10 +395,12 @@ public class CountyContestComparisonAudit implements PersistentEntity {
   
   /**
    * Updates the audit status based on the current risk limit. If the audit
-   * has already been ended, this method has no effect on its status.
+   * has already been ended or the contest is not auditable, this method has 
+   * no effect on its status.
    */
   public void updateAuditStatus() {
-    if (my_audit_status == AuditStatus.ENDED) {
+    if (my_audit_status == AuditStatus.ENDED || 
+        my_audit_status == AuditStatus.NOT_AUDITABLE) {
       return;
     }
     
@@ -410,10 +416,11 @@ public class CountyContestComparisonAudit implements PersistentEntity {
   
   /**
    * Ends this audit; if the audit has already reached its risk limit,
-   * this call has no effect on its status.
+   * or the contest is not auditable, this call has no effect on its status.
    */
   public void endAudit() {
-    if (my_audit_status != AuditStatus.RISK_LIMIT_ACHIEVED) {
+    if (my_audit_status != AuditStatus.RISK_LIMIT_ACHIEVED &&
+        my_audit_status != AuditStatus.NOT_AUDITABLE) {
       my_audit_status = AuditStatus.ENDED;
     }
   }
@@ -470,8 +477,13 @@ public class CountyContestComparisonAudit implements PersistentEntity {
       final BigDecimal audited_samples = BigDecimal.valueOf(my_dashboard.auditedSampleCount());
       final BigDecimal overstatements = 
           BigDecimal.valueOf(my_one_vote_over_count + my_two_vote_over_count);
-      final BigDecimal fudge_factor =
-          BigDecimal.ONE.add(overstatements.divide(audited_samples, MathContext.DECIMAL128));
+      final BigDecimal fudge_factor;
+      if (audited_samples.equals(BigDecimal.ZERO)) {
+        fudge_factor = BigDecimal.ONE;
+      } else {
+        fudge_factor =
+            BigDecimal.ONE.add(overstatements.divide(audited_samples, MathContext.DECIMAL128));
+      }
       final BigDecimal estimated =
           BigDecimal.valueOf(my_optimistic_samples_to_audit).multiply(fudge_factor);
       my_estimated_samples_to_audit = estimated.setScale(0, RoundingMode.CEILING).intValue();
@@ -494,41 +506,48 @@ public class CountyContestComparisonAudit implements PersistentEntity {
    */
   @SuppressWarnings({"checkstyle:magicnumber", "PMD.AvoidDuplicateLiterals"})
   private BigDecimal computeOptimisticSamplesToAudit(final int the_two_under,
-                                           final int the_one_under,
-                                           final int the_one_over,
-                                           final int the_two_over) {
-    final BigDecimal invgamma = BigDecimal.ONE.divide(my_gamma, MathContext.DECIMAL128);
-    final BigDecimal twogamma = BigDecimal.valueOf(2).multiply(my_gamma);
-    final BigDecimal invtwogamma = 
-        BigDecimal.ONE.divide(twogamma, MathContext.DECIMAL128);
-    final BigDecimal two_under_bd = BigDecimal.valueOf(the_two_under);
-    final BigDecimal one_under_bd = BigDecimal.valueOf(the_one_under);
-    final BigDecimal one_over_bd = BigDecimal.valueOf(the_one_over);
-    final BigDecimal two_over_bd = BigDecimal.valueOf(the_two_over);
-    
-    final BigDecimal over_under_sum = 
-        two_under_bd.add(one_under_bd).add(one_over_bd).add(two_over_bd);
-    final BigDecimal two_under = 
-        two_under_bd.multiply(BigDecimalMath.log(BigDecimal.ONE.add(invgamma), 
-                                                 MathContext.DECIMAL128));
-    final BigDecimal one_under =
-        one_under_bd.multiply(BigDecimalMath.log(BigDecimal.ONE.add(invtwogamma), 
-                                                 MathContext.DECIMAL128));
-    final BigDecimal one_over = 
-        one_over_bd.multiply(BigDecimalMath.log(BigDecimal.ONE.subtract(invtwogamma), 
-                                                MathContext.DECIMAL128));
-    final BigDecimal two_over =
-        two_over_bd.multiply(BigDecimalMath.log(BigDecimal.ONE.subtract(invgamma),
-                                                MathContext.DECIMAL128));
-    final BigDecimal numerator =
-        twogamma.negate().
-        multiply(BigDecimalMath.log(my_risk_limit, MathContext.DECIMAL128).
-                 add(two_under.add(one_under).add(one_over).add(two_over)));
-    final BigDecimal ceil =
-        numerator.divide(my_contest_result.countyDilutedMargin(),
-                         MathContext.DECIMAL128).setScale(0, RoundingMode.CEILING);
-    final BigDecimal result = ceil.max(over_under_sum);
+                                                     final int the_one_under,
+                                                     final int the_one_over,
+                                                     final int the_two_over) {
+    final BigDecimal result;
+    if (my_audit_status == AuditStatus.NOT_AUDITABLE) {
+      // the contest is not auditable, so return the number of ballots in the county
+      // (for lack of a better number)
+      result = BigDecimal.valueOf(my_contest_result.countyBallotCount());
+    } else {
+      final BigDecimal invgamma = BigDecimal.ONE.divide(my_gamma, MathContext.DECIMAL128);
+      final BigDecimal twogamma = BigDecimal.valueOf(2).multiply(my_gamma);
+      final BigDecimal invtwogamma = 
+          BigDecimal.ONE.divide(twogamma, MathContext.DECIMAL128);
+      final BigDecimal two_under_bd = BigDecimal.valueOf(the_two_under);
+      final BigDecimal one_under_bd = BigDecimal.valueOf(the_one_under);
+      final BigDecimal one_over_bd = BigDecimal.valueOf(the_one_over);
+      final BigDecimal two_over_bd = BigDecimal.valueOf(the_two_over);
 
+      final BigDecimal over_under_sum = 
+          two_under_bd.add(one_under_bd).add(one_over_bd).add(two_over_bd);
+      final BigDecimal two_under = 
+          two_under_bd.multiply(BigDecimalMath.log(BigDecimal.ONE.add(invgamma), 
+                                                   MathContext.DECIMAL128));
+      final BigDecimal one_under =
+          one_under_bd.multiply(BigDecimalMath.log(BigDecimal.ONE.add(invtwogamma), 
+                                                   MathContext.DECIMAL128));
+      final BigDecimal one_over = 
+          one_over_bd.multiply(BigDecimalMath.log(BigDecimal.ONE.subtract(invtwogamma), 
+                                                  MathContext.DECIMAL128));
+      final BigDecimal two_over =
+          two_over_bd.multiply(BigDecimalMath.log(BigDecimal.ONE.subtract(invgamma),
+                                                  MathContext.DECIMAL128));
+      final BigDecimal numerator =
+          twogamma.negate().
+          multiply(BigDecimalMath.log(my_risk_limit, MathContext.DECIMAL128).
+                   add(two_under.add(one_under).add(one_over).add(two_over)));
+      final BigDecimal ceil =
+          numerator.divide(my_contest_result.countyDilutedMargin(),
+                           MathContext.DECIMAL128).setScale(0, RoundingMode.CEILING);
+      result = ceil.max(over_under_sum);
+    }
+    
     Main.LOGGER.info("estimate for contest " + contest().name() + 
                      ", diluted margin " + contestResult().countyDilutedMargin() + 
                      ": " + result);
@@ -546,7 +565,8 @@ public class CountyContestComparisonAudit implements PersistentEntity {
     my_estimated_recalculate_needed = true;
     my_audited_sample_count = my_audited_sample_count + the_count;
     
-    if (my_audit_status != AuditStatus.ENDED) {
+    if (my_audit_status != AuditStatus.ENDED && 
+        my_audit_status != AuditStatus.NOT_AUDITABLE) {
       my_audit_status = AuditStatus.IN_PROGRESS;
     }
   }
@@ -562,7 +582,8 @@ public class CountyContestComparisonAudit implements PersistentEntity {
     my_estimated_recalculate_needed = true;
     my_audited_sample_count = my_audited_sample_count - the_count;
     
-    if (my_audit_status != AuditStatus.ENDED) {
+    if (my_audit_status != AuditStatus.ENDED &&
+        my_audit_status != AuditStatus.NOT_AUDITABLE) {
       my_audit_status = AuditStatus.IN_PROGRESS;
     }
   }

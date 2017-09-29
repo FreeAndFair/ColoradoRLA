@@ -19,7 +19,8 @@ package us.freeandfair.corla.model;
  */
 public enum AuditStatus {
     NOT_STARTED,
+    NOT_AUDITABLE,
     IN_PROGRESS,
     RISK_LIMIT_ACHIEVED,
-    ENDED
+    ENDED;
 }
