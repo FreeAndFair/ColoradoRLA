@@ -889,7 +889,7 @@ public class CountyDashboard implements PersistentEntity {
   }
   
   /** 
-   * Ends all audits in the county. This changes the state of any audits
+   * Ends all audits in the county. This changes the status of any audits
    * that have not achieved their risk limit to ENDED.
    */
   public void endAudits() {
@@ -899,7 +899,7 @@ public class CountyDashboard implements PersistentEntity {
   }
   
   /**
-   * Updates the status for all audits in the county. This changes their states
+   * Updates the status for all audits in the county. This changes their statuses
    * based on whether they have achieved their risk limits.
    */
   public void updateAuditStatus() {
