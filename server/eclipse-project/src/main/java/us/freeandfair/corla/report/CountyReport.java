@@ -256,7 +256,7 @@ public class CountyReport {
     integer_style.setDataFormat(format.getFormat("0"));
     final CellStyle decimal_style = workbook.createCellStyle();
     decimal_style.setFont(standard_font);
-    decimal_style.setDataFormat(format.getFormat("0.######"));
+    decimal_style.setDataFormat(format.getFormat("0.000#####"));
     final CellStyle box_style = workbook.createCellStyle();
     box_style.setBorderBottom(BorderStyle.THICK);
     box_style.setBorderTop(BorderStyle.THICK);
