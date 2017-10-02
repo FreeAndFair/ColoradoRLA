@@ -65,6 +65,11 @@ public class CVRToAuditList extends AbstractEndpoint {
   public static final String ROUND = "round";
   
   /**
+   * The "county" parameter.
+   */
+  public static final String COUNTY = "county";
+  
+  /**
    * {@inheritDoc}
    */
   @Override
@@ -85,7 +90,7 @@ public class CVRToAuditList extends AbstractEndpoint {
    */
   @Override
   public AuthorizationType requiredAuthorization() {
-    return AuthorizationType.COUNTY;
+    return AuthorizationType.EITHER;
   }
 
   /**
@@ -99,6 +104,7 @@ public class CVRToAuditList extends AbstractEndpoint {
     final String start = the_request.queryParams(START);
     final String ballot_count = the_request.queryParams(BALLOT_COUNT);
     final String round = the_request.queryParams(ROUND);
+    final String county = the_request.queryParams(COUNTY);
     
     boolean result = start != null && ballot_count != null ||
                      round != null;
@@ -116,6 +122,10 @@ public class CVRToAuditList extends AbstractEndpoint {
           final int r = Integer.parseInt(round);
           result &= r > 0;
         }
+        
+        if (county != null) {
+          Long.parseLong(county);
+        }
       } catch (final NumberFormatException e) {
         result = false;
       }
@@ -130,6 +140,20 @@ public class CVRToAuditList extends AbstractEndpoint {
   @Override
   @SuppressWarnings("PMD.NPathComplexity")
   public String endpoint(final Request the_request, final Response the_response) {
+    // we know we have either state or county authentication; this will be null
+    // for state authentication
+    County county = Main.authentication().authenticatedCounty(the_request);
+
+    if (county == null) {
+      county = 
+          Persistence.getByID(Long.parseLong(the_request.queryParams(COUNTY)), County.class);
+      if (county == null) {
+        badDataContents(the_response, "county " + the_request.queryParams(COUNTY) +
+                                      " does not exist");
+      }
+      assert county != null; // makes FindBugs happy
+    }
+    
     try {
       // get the request parameters
       final String start_param = the_request.queryParams(START);
@@ -159,7 +183,6 @@ public class CVRToAuditList extends AbstractEndpoint {
         audited = true;
       }
       // get other things we need
-      final County county = Main.authentication().authenticatedCounty(the_request);
       final CountyDashboard cdb = Persistence.getByID(county.id(), CountyDashboard.class);
       final List<CastVoteRecord> cvr_to_audit_list;      
       final List<CVRToAuditResponse> response_list = new ArrayList<>();
