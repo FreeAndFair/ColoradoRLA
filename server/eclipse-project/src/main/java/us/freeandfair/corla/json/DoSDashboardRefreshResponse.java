@@ -26,6 +26,7 @@ import us.freeandfair.corla.asm.ASMUtilities;
 import us.freeandfair.corla.asm.DoSDashboardASM;
 import us.freeandfair.corla.model.AuditInfo;
 import us.freeandfair.corla.model.AuditReason;
+import us.freeandfair.corla.model.AuditType;
 import us.freeandfair.corla.model.ContestToAudit;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyContestComparisonAudit;
@@ -89,6 +90,16 @@ public class DoSDashboardRefreshResponse {
   private final AuditInfo my_audit_info;
   
   /**
+   * The audit reasons for the contests under audit.
+   */
+  private final SortedMap<Long, AuditReason> my_audit_reasons;
+  
+  /**
+   * The audit types for the contests under audit.
+   */
+  private final SortedMap<Long, AuditType> my_audit_types;
+  
+  /**
    * Constructs a new DosDashboardRefreshResponse.
    * 
    * @param the_asm_state The ASM state.
@@ -116,7 +127,9 @@ public class DoSDashboardRefreshResponse {
                                         final SortedMap<Long, CountyDashboardRefreshResponse> 
                                            the_county_status,
                                         final List<Long> the_hand_count_contests,
-                                        final AuditInfo the_audit_info) {
+                                        final AuditInfo the_audit_info,
+                                        final SortedMap<Long, AuditReason> the_audit_reasons,
+                                        final SortedMap<Long, AuditType> the_audit_types) {
     my_asm_state = the_asm_state;
     my_audited_contests = the_audited_contests;
     my_estimated_ballots_to_audit = the_estimated_ballots_to_audit;
@@ -125,6 +138,8 @@ public class DoSDashboardRefreshResponse {
     my_county_status = the_county_status;
     my_hand_count_contests = the_hand_count_contests;
     my_audit_info = the_audit_info;
+    my_audit_reasons = the_audit_reasons;
+    my_audit_types = the_audit_types;
   }
   
   /**
@@ -145,14 +160,22 @@ public class DoSDashboardRefreshResponse {
     final SortedMap<Long, Integer> optimistic_ballots_to_audit = new TreeMap<Long, Integer>();
     final SortedMap<Long, Map<Integer, Integer>> discrepancy_count = new TreeMap<>();
     final List<Long> hand_count_contests = new ArrayList<Long>();
+    final SortedMap<Long, AuditReason> audit_reasons = 
+        new TreeMap<Long, AuditReason>();
+    final SortedMap<Long, AuditType> audit_types = 
+        new TreeMap<Long, AuditType>();
     
     for (final ContestToAudit cta : the_dashboard.contestsToAudit()) {
+      if (cta.audit() != AuditType.NONE) {
+        audit_reasons.put(cta.contest().id(), cta.reason());
+        audit_types.put(cta.contest().id(), cta.audit());
+      }
       switch (cta.audit()) {
         case COMPARISON:
-          audited_contests.put(cta.contest().id(), cta.reason());
           final Map<Integer, Integer> discrepancy = new HashMap<>();
           int optimistic = Integer.MIN_VALUE;
           int estimated = Integer.MIN_VALUE;
+          audited_contests.put(cta.contest().id(), cta.reason());
           for (final CountyContestComparisonAudit ccca : 
                CountyContestComparisonAuditQueries.matching(cta.contest())) {
             optimistic = 
@@ -179,6 +202,7 @@ public class DoSDashboardRefreshResponse {
           break;
           
         case HAND_COUNT:
+          // we list these separately for some reason
           hand_count_contests.add(cta.contest().id());
           break;
           
@@ -200,7 +224,9 @@ public class DoSDashboardRefreshResponse {
                                            discrepancy_count,
                                            countyStatusMap(),
                                            hand_count_contests,
-                                           the_dashboard.auditInfo());
+                                           the_dashboard.auditInfo(),
+                                           audit_reasons,
+                                           audit_types);
   }
   
   /**

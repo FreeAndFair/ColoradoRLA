@@ -146,11 +146,4 @@ public class ContestToAudit implements Serializable {
   public int hashCode() {
     return nullableHashCode(contest());
   }
-
-  /**
-   * The possible audit types.
-   */
-  public enum AuditType {
-    COMPARISON, HAND_COUNT, NOT_AUDITABLE, NONE;
-  }
 }
