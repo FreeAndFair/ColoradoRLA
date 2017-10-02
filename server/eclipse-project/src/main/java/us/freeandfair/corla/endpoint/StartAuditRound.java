@@ -142,11 +142,11 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
             final boolean started = ComparisonAuditController.initializeAuditData(cdb);
             if (started) {
               Main.LOGGER.info(COUNTY + cdb.id() + " estimated to audit " + 
-                               cdb.estimatedBallotsToAudit() + " ballots in round 1");
+                               cdb.estimatedSamplesToAudit() + " ballots in round 1");
             } else if (cdb.drivingContests().isEmpty()) {
               Main.LOGGER.info(COUNTY + cdb.id() + " has no driving contests, its " +
                                "audit is complete.");
-            } else if (cdb.estimatedBallotsToAudit() == 0) {
+            } else if (cdb.estimatedSamplesToAudit() == 0) {
               Main.LOGGER.info(COUNTY + cdb.id() + " needs to audit 0 ballots to " +
                                "achieve its risk limit, its audit is complete.");
             } else {
@@ -165,7 +165,7 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
                 // the county made its deadline but was assigned no contests to audit
                 audit_event = NO_CONTESTS_TO_AUDIT_EVENT;
                 asm.stepEvent(COUNTY_AUDIT_COMPLETE_EVENT);
-              } else if (cdb.estimatedBallotsToAudit() <= 0) {
+              } else if (cdb.estimatedSamplesToAudit() <= 0) {
                 // the county made its deadline but has already achieved its risk limit
                 audit_event = RISK_LIMIT_ACHIEVED_EVENT;
                 asm.stepEvent(COUNTY_AUDIT_COMPLETE_EVENT);

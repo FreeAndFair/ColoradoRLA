@@ -157,11 +157,11 @@ public class DoSDashboardRefreshResponse {
                CountyContestComparisonAuditQueries.matching(cta.contest())) {
             optimistic = 
                 Math.max(optimistic, 
-                         Math.max(0, ccca.optimisticBallotsToAudit() - 
+                         Math.max(0, ccca.optimisticSamplesToAudit() - 
                                      ccca.dashboard().auditedPrefixLength()));
             estimated = 
                 Math.max(estimated, 
-                         Math.max(0, ccca.estimatedBallotsToAudit() - 
+                         Math.max(0, ccca.estimatedSamplesToAudit() - 
                                      ccca.dashboard().auditedPrefixLength()));
             
             // possible discrepancy types range from -2 to 2 inclusive,

@@ -126,13 +126,15 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
             // update the ASM state for the county and maybe DoS
             if (!DISABLE_ASM) {
               final boolean audit_complete;
-              if (cdb.estimatedBallotsToAudit() <= 0) {
+              if (cdb.estimatedSamplesToAudit() <= 0) {
                 // we've reached the risk limit, so the county is done
                 my_event.set(RISK_LIMIT_ACHIEVED_EVENT);
+                cdb.endAudits();
                 audit_complete = true;
               } else if (cdb.cvrsImported() <= cdb.ballotsAudited()) {
                 // there are no more ballots in the county
                 my_event.set(BALLOTS_EXHAUSTED_EVENT);
+                cdb.endAudits();
                 audit_complete = true;
               } else {
                 // the round ended normally
