@@ -347,7 +347,7 @@ public class StateReport {
           }
           cell = row.createCell(cell_number++);
           cell.setCellType(CellType.STRING);
-          cell.setCellStyle(bold_style);
+          cell.setCellStyle(bold_right_style);
           cell.setCellValue("Total");
           
           row = summary_sheet.createRow(row_number++);
