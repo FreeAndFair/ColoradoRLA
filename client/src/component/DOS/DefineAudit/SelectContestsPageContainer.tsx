@@ -14,6 +14,7 @@ class SelectContestsPageContainer extends React.Component<any, any> {
             auditedContests,
             contests,
             history,
+            isAuditable,
             sos,
         } = this.props;
 
@@ -29,6 +30,7 @@ class SelectContestsPageContainer extends React.Component<any, any> {
             auditedContests,
             back: () => history.push('/sos/audit'),
             contests,
+            isAuditable,
             nextPage: () => history.push('/sos/audit/seed'),
             selectContestsForAudit,
         };
@@ -42,9 +44,16 @@ const select = (state: any) => {
 
     if (!sos) { return {}; }
 
+    const isAuditable = (contestId: any): boolean => {
+        const t = sos.auditTypes[contestId];
+
+        return t !== 'HAND_COUNT' && t !== 'NOT_AUDITABLE';
+    };
+
     return {
         auditedContests: sos.auditedContests,
         contests: sos.contests,
+        isAuditable,
         sos,
     };
 };

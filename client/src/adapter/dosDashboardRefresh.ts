@@ -158,7 +158,9 @@ function parseAuditBoard(data: any): any {
 
 export const parse = (data: any) => ({
     asm: parseAsmState(data),
+    auditReasons: data.audit_reasons,
     auditStage: data.audit_stage,
+    auditTypes: data.audit_types,
     auditedContests: parseAuditedContests(data.audited_contests),
     countyStatus: parseCountyStatus(data.county_status),
     discrepancyCounts: data.discrepancy_count,

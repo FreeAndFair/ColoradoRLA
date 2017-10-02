@@ -100,6 +100,7 @@ const SelectContestsPage = (props: any) => {
         auditedContests,
         back,
         contests,
+        isAuditable,
         nextPage,
         selectContestsForAudit,
     } = props;
@@ -120,8 +121,11 @@ const SelectContestsPage = (props: any) => {
     };
 
     const contentDiv = !haveSelectedContests
-                     ? <SelectContestsForm forms={ forms } contests={ contests } />
-                     : <SelectedContests auditedContests={ auditedContests } contests={ contests } />;
+                     ? <SelectContestsForm forms={ forms }
+                                           contests={ contests }
+                                           isAuditable={ isAuditable } />
+                     : <SelectedContests auditedContests={ auditedContests }
+                                         contests={ contests } />;
 
     return (
         <div>
