@@ -102,6 +102,7 @@ const SelectContestsPage = (props: any) => {
         contests,
         nextPage,
         selectContestsForAudit,
+        sos,
     } = props;
 
     if (_.isEmpty(contests)) {
@@ -120,7 +121,7 @@ const SelectContestsPage = (props: any) => {
     };
 
     const contentDiv = !haveSelectedContests
-                     ? <SelectContestsForm forms={ forms } contests={ contests } />
+                     ? <SelectContestsForm forms={ forms } contests={ contests } sos={ sos } />
                      : <SelectedContests auditedContests={ auditedContests } contests={ contests } />;
 
     return (

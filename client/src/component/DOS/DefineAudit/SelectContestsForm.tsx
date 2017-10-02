@@ -20,6 +20,26 @@ const auditReasons = [
 
 const AuditReasonSelect = Select.ofType<any>();
 
+const TiedContestRow = (props: any) => {
+    const { contest } = props;
+
+    const countyName = counties[contest.countyId].name;
+
+    return (
+        <tr>
+            <td>{ countyName }</td>
+            <td>{ contest.name }</td>
+            <td>
+                <Checkbox checked={ false }
+                          disabled={ true } />
+            </td>
+            <td>
+                <em>Contest cannot be audited due to a reported tie.</em>
+            </td>
+        </tr>
+    );
+};
+
 const ContestRow = (props: any) => {
     const {
         auditStatus,
@@ -97,11 +117,15 @@ class SelectContestsForm extends React.Component<any, any> {
         };
 
         _.forEach(props.contests, (c, _) => {
-            this.state.form[c.id] = {
-                audit: false,
-                handCount: false,
-                reason: { ...auditReasons[0] },
-            };
+            const auditable = props.sos.auditTypes[c.id] !== 'NOT_AUDITABLE';
+
+            if (auditable) {
+                this.state.form[c.id] = {
+                    audit: false,
+                    handCount: false,
+                    reason: { ...auditReasons[0] },
+                };
+            }
         });
     }
 
@@ -112,7 +136,7 @@ class SelectContestsForm extends React.Component<any, any> {
     }
 
     public render() {
-        const { contests } = this.props;
+        const { contests, sos } = this.props;
 
         this.props.forms.selectContestsForm = this.state.form;
 
@@ -156,7 +180,18 @@ class SelectContestsForm extends React.Component<any, any> {
         };
         const filteredData = _.filter(sortedData, filterFunc);
 
-        const contestRows = _.map(filteredData, (d: any[]) => <ContestRow { ...d[2] } />);
+        const contestRows = _.map(filteredData, (d: any[]) => {
+            const props = d[2];
+            const { contest } = props;
+
+            const auditable = sos.auditTypes[contest.id] !== 'NOT_AUDITABLE';
+
+            if (auditable) {
+                return <ContestRow { ...props } />;
+            } else {
+                return <TiedContestRow { ...props } />;
+            }
+        });
 
         return (
             <div>
