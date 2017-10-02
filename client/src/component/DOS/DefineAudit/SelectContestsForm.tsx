@@ -117,7 +117,7 @@ class SelectContestsForm extends React.Component<any, any> {
         };
 
         _.forEach(props.contests, (c, _) => {
-            const auditable = props.sos.auditTypes[c.id] !== 'NOT_AUDITABLE';
+            const auditable = props.isAuditable(c.id);
 
             if (auditable) {
                 this.state.form[c.id] = {
@@ -136,7 +136,7 @@ class SelectContestsForm extends React.Component<any, any> {
     }
 
     public render() {
-        const { contests, sos } = this.props;
+        const { contests, isAuditable } = this.props;
 
         this.props.forms.selectContestsForm = this.state.form;
 
@@ -184,7 +184,7 @@ class SelectContestsForm extends React.Component<any, any> {
             const props = d[2];
             const { contest } = props;
 
-            const auditable = sos.auditTypes[contest.id] !== 'NOT_AUDITABLE';
+            const auditable = isAuditable(contest.id);
 
             if (auditable) {
                 return <ContestRow { ...props } />;
