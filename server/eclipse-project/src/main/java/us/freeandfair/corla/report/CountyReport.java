@@ -11,6 +11,8 @@
 
 package us.freeandfair.corla.report;
 
+import static us.freeandfair.corla.util.PrettyPrinter.booleanYesNo;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -244,15 +246,17 @@ public class CountyReport {
     standard_font.setFontHeightInPoints(FONT_SIZE);
     final CellStyle standard_style = workbook.createCellStyle();
     standard_style.setFont(standard_font);
+    standard_style.setDataFormat(format.getFormat("@"));
     final CellStyle standard_right_style = workbook.createCellStyle();
     standard_right_style.setFont(standard_font);
     standard_right_style.setAlignment(HorizontalAlignment.RIGHT);
+    standard_right_style.setDataFormat(format.getFormat("@"));
     final CellStyle integer_style = workbook.createCellStyle();
     integer_style.setFont(standard_font);
     integer_style.setDataFormat(format.getFormat("0"));
     final CellStyle decimal_style = workbook.createCellStyle();
     decimal_style.setFont(standard_font);
-    decimal_style.setDataFormat(format.getFormat("0.0000"));
+    decimal_style.setDataFormat(format.getFormat("0.000#####"));
     final CellStyle box_style = workbook.createCellStyle();
     box_style.setBorderBottom(BorderStyle.THICK);
     box_style.setBorderTop(BorderStyle.THICK);
@@ -295,6 +299,33 @@ public class CountyReport {
                         format(LocalDateTime.ofInstant(my_dosdb.auditInfo().electionDate(), 
                                                        ZoneOffset.UTC)));
     }
+    
+    row_number++;
+    row = summary_sheet.createRow(row_number++);
+    cell_number = 0;
+
+    cell = row.createCell(cell_number++);
+    cell.setCellType(CellType.STRING);
+    cell.setCellStyle(bold_style);
+    cell.setCellValue("Audit Random Seed");
+    
+    cell = row.createCell(cell_number++);
+    cell.setCellType(CellType.STRING);
+    cell.setCellStyle(standard_right_style);
+    cell.setCellValue(my_dosdb.auditInfo().seed());
+    
+    row = summary_sheet.createRow(row_number++);
+    cell_number = 0;
+    
+    cell = row.createCell(cell_number++);
+    cell.setCellType(CellType.STRING);
+    cell.setCellStyle(bold_style);
+    cell.setCellValue("Audit Risk Limit");
+    
+    cell = row.createCell(cell_number++);
+    cell.setCellType(CellType.NUMERIC);
+    cell.setCellStyle(decimal_style);
+    cell.setCellValue(my_dosdb.auditInfo().riskLimit().doubleValue());
     
     row_number++;
     row = summary_sheet.createRow(row_number++);
@@ -620,7 +651,12 @@ public class CountyReport {
       for (final AuditReason r : listed_reasons) {
         cell = row.createCell(cell_number++);
         cell.setCellStyle(bold_right_style);
-        cell.setCellValue(r.toString());
+        if (r == AuditReason.OPPORTUNISTIC_BENEFITS) {
+          // Colorado has an aversion to the phrase "opportunistic benefits"
+          cell.setCellValue("Unaudited Contest");
+        } else {
+          cell.setCellValue(r.prettyString());
+        }
       }
       
       row = round_sheet.createRow(row_number++);
@@ -709,21 +745,22 @@ public class CountyReport {
         cell.setCellStyle(standard_style);
         cell.setCellValue(audit_info.cvr().imprintedID());
         cell = row.createCell(cell_number++);
-        cell.setCellType(CellType.BOOLEAN);
+        cell.setCellType(CellType.STRING);
         cell.setCellStyle(standard_right_style);
         if (audit_info.acvr() == null) {
-          cell.setCellValue(false);
+          cell.setCellValue(booleanYesNo(false));
         } else {
-          cell.setCellValue(audit_info.acvr().recordType() == RecordType.AUDITOR_ENTERED);
+          cell.setCellValue(booleanYesNo(audit_info.acvr().recordType() == 
+                                         RecordType.AUDITOR_ENTERED));
         }
         cell = row.createCell(cell_number++);
-        cell.setCellType(CellType.BOOLEAN);
+        cell.setCellType(CellType.STRING);
         cell.setCellStyle(standard_right_style);
-        cell.setCellValue(!audit_info.discrepancy().isEmpty());
+        cell.setCellValue(booleanYesNo(!audit_info.discrepancy().isEmpty()));
         cell = row.createCell(cell_number++);
-        cell.setCellType(CellType.BOOLEAN);
+        cell.setCellType(CellType.STRING);
         cell.setCellStyle(standard_right_style);
-        cell.setCellValue(!audit_info.disagreement().isEmpty());
+        cell.setCellValue(booleanYesNo(!audit_info.disagreement().isEmpty()));
       }
       
       for (int i = 0; i < max_cell_number; i++) {
