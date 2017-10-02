@@ -3,6 +3,8 @@ import * as React from 'react';
 import { Popover, Position } from '@blueprintjs/core';
 import { Link } from 'react-router-dom';
 
+import * as config from 'corla/config';
+
 import NavMenu from './NavMenu';
 
 import resetDatabase from 'corla/action/dos/resetDatabase';
@@ -44,7 +46,7 @@ const ResetDatabaseButton = ({ reset }: any) => (
 
 
 export default function withNav(Menu: any, path: any): any {
-    const resetSection = path === '/sos'
+    const resetSection = path === '/sos' && config.debug
                        ? <ResetDatabaseButton reset={ resetDatabase } />
                        : <div />;
 
