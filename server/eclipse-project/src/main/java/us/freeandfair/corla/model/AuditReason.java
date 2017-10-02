@@ -18,12 +18,33 @@ package us.freeandfair.corla.model;
  * @version 0.0.1
  */
 public enum AuditReason {
-    STATE_WIDE_CONTEST,
-    COUNTY_WIDE_CONTEST,
-    CLOSE_CONTEST,
-    TIED_CONTEST,
-    GEOGRAPHICAL_SCOPE,
-    CONCERN_REGARDING_ACCURACY,
-    OPPORTUNISTIC_BENEFITS,
-    COUNTY_CLERK_ABILITY;
+  STATE_WIDE_CONTEST("Statewide Contest"),
+  COUNTY_WIDE_CONTEST("Countywide Contest"),
+  CLOSE_CONTEST("Close Contest"),
+  TIED_CONTEST("Tied Contest"),
+  GEOGRAPHICAL_SCOPE("Geographical Scope"),
+  CONCERN_REGARDING_ACCURACY("Concern Regarding Accuracy"),
+  OPPORTUNISTIC_BENEFITS("Opportunistic Benefits"),
+  COUNTY_CLERK_ABILITY("County Clerk Ability");
+
+  /**
+   * The pretty printing string for this enum value.
+   */
+  private final String my_pretty_string;
+
+  /**
+   * Constructs a new AuditReason.
+   * 
+   * @param the_pretty_string The pretty printing string.
+   */
+  AuditReason(final String the_pretty_string) {
+    my_pretty_string = the_pretty_string;
+  }
+  
+  /**
+   * @return the pretty printing string for this enum value.
+   */
+  public String prettyString() {
+    return my_pretty_string;
+  }
 }

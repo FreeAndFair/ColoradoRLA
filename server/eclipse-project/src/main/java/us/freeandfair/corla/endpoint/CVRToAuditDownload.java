@@ -11,6 +11,8 @@
 
 package us.freeandfair.corla.endpoint;
 
+import static us.freeandfair.corla.util.PrettyPrinter.booleanYesNo;
+
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -273,7 +275,7 @@ public class CVRToAuditDownload extends AbstractEndpoint {
       for (final CVRToAuditResponse cvr : the_cvrs) {
         csvp.printRecord(cvr.scannerID(), cvr.batchID(), cvr.recordID(), cvr.imprintedID(),
                          cvr.ballotType(), cvr.storageLocation(), cvr.cvrNumber(), 
-                         cvr.audited());
+                         booleanYesNo(cvr.audited()));
       }
     } 
   }
