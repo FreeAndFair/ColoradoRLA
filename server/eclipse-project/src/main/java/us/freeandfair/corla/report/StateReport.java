@@ -58,7 +58,7 @@ import us.freeandfair.corla.persistence.Persistence;
  * All the data required for a state audit report.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.StdCyclomaticComplexity",
     "PMD.ModifiedCyclomaticComplexity", "PMD.ExcessiveImports", "PMD.GodClass"})

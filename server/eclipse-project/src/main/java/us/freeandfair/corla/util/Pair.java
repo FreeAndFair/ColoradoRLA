@@ -17,7 +17,7 @@ import static us.freeandfair.corla.util.EqualsHashcodeHelper.*;
  * A pair of objects, potentially of different types.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 public class Pair<A, B> {
   /**

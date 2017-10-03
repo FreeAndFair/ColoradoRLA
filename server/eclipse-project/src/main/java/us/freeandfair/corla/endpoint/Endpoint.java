@@ -20,7 +20,7 @@ import spark.Response;
  * An interface implemented by all our Spark endpoints.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 public interface Endpoint {
   /**

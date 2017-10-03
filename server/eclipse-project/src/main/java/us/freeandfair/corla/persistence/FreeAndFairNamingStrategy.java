@@ -23,7 +23,7 @@ import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
  * column names without the "my_".
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 // we suppress this PMD warning because this class, despite being
 // stateless (and thus ideally being a utility class), is required by the

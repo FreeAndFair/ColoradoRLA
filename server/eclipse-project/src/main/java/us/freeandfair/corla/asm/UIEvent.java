@@ -18,7 +18,7 @@ package us.freeandfair.corla.asm;
  * 
  * @author Joseph R. Kiniry
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 public enum UIEvent implements Event {
   LOGIN,

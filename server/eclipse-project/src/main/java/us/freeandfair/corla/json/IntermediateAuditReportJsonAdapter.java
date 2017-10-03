@@ -26,7 +26,7 @@ import us.freeandfair.corla.model.IntermediateAuditReportInfo;
  * JSON adapter for audit investigation reports.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 // the default constructor suffices for type adapters
 @SuppressWarnings("PMD.AtLeastOneConstructor")

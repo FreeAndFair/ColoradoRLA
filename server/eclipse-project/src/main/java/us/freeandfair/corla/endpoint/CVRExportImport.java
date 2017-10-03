@@ -51,7 +51,7 @@ import us.freeandfair.corla.util.UploadedFileStreamer;
  * The "CVR export import" endpoint.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 @SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.ExcessiveImports",
     "PMD.CyclomaticComplexity", "PMD.ModifiedCyclomaticComplexity",

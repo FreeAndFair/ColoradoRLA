@@ -27,7 +27,7 @@ import com.google.gson.JsonSerializer;
  * A Gson type converter for java.time.Instant.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
 public class InstantTypeAdapter 

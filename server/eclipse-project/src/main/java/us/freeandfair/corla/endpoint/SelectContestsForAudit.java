@@ -31,7 +31,7 @@ import us.freeandfair.corla.persistence.Persistence;
  * The endpoint for selecting the contests to audit.
  * 
  * @author Daniel M Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
 public class SelectContestsForAudit extends AbstractDoSDashboardEndpoint {

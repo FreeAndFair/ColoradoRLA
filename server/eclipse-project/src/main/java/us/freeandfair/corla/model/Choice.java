@@ -6,7 +6,7 @@
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
  * @author Joey Dodds <jdodds@galois.com>
- * @model_review Joe Kiniry <kiniry@freeandfair.us>
+ * @model_review Joseph R. Kiniry <kiniry@freeandfair.us>
  * @design In the formal model this concept is currently called "option".
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
@@ -23,7 +23,7 @@ import javax.persistence.Embeddable;
  * A contest choice; has a name and a description.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 @Embeddable
 public class Choice implements Serializable {

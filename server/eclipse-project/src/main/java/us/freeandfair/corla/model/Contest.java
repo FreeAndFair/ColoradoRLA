@@ -6,7 +6,7 @@
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
  * @author Joey Dodds <jdodds@galois.com>
- * @model_review Joe Kiniry <kiniry@freeandfair.us>
+ * @model_review Joseph R. Kiniry <kiniry@freeandfair.us>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
@@ -46,7 +46,7 @@ import us.freeandfair.corla.persistence.PersistentEntity;
  * possible choices.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 @Entity
 @Cacheable(true)

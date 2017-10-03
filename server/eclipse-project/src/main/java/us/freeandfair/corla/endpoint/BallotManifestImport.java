@@ -43,7 +43,7 @@ import us.freeandfair.corla.query.BallotManifestInfoQueries;
  * The "ballot manifest import" endpoint.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 @SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.ExcessiveImports"})
 public class BallotManifestImport extends AbstractCountyDashboardEndpoint {

@@ -15,7 +15,7 @@ package us.freeandfair.corla.persistence;
  * A persistable entity with an ID number.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 public interface PersistentEntity {
   /**

@@ -5,7 +5,7 @@
  * @created Aug 12, 2017
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
- * @creator Joe Kiniry <kiniry@freeandfair.us>
+ * @creator Joseph R. Kiniry <kiniry@freeandfair.us>
  * @description A system to assist in conducting statewide
  * risk-limiting audits.
  */
@@ -43,8 +43,8 @@ import us.freeandfair.corla.persistence.Persistence;
 /**
  * The endpoint for indicating that a contest must be hand-counted.
  * 
- * @author Joe Kiniry <kiniry@freeandfair.us>
- * @version 0.0.1
+ * @author Joseph R. Kiniry <kiniry@freeandfair.us>
+ * @version 1.0.0
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
 public class IndicateHandCount extends AbstractDoSDashboardEndpoint {

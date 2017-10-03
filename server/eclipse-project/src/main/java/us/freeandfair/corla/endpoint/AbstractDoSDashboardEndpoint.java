@@ -5,7 +5,7 @@
  * @created Aug 12, 2017
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
- * @creator Joe Kiniry <kiniry@freeandfair.us>
+ * @creator Joseph R. Kiniry <kiniry@freeandfair.us>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
@@ -17,6 +17,10 @@ import us.freeandfair.corla.asm.DoSDashboardASM;
 
 /**
  * Functionality that spans endpoints on the Department of State Dashboard.
+ * 
+ * @author Joseph R. Kiniry <kiniry@freeandfair.us>
+ * @author Daniel M. Zimmerman <dmz@freeandfair.us>
+ * @version 1.0.0
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
 public abstract class AbstractDoSDashboardEndpoint extends AbstractEndpoint {

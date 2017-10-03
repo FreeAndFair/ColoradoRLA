@@ -24,7 +24,7 @@ import us.freeandfair.corla.json.SubmittedCredentials;
  * 
  * @author Daniel M Zimmerman
  * @author Joseph R. Kiniry
- * @version 0.0.1
+ * @version 1.0.0
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
 public class AuthenticateAdministrator extends AbstractEndpoint {

@@ -26,8 +26,8 @@ import us.freeandfair.corla.model.Administrator;
  * The endpoint for authenticating a state administrator.
  * 
  * @author Daniel M Zimmerman
- * @author Joe Kiniry <kiniry@freeandfair.us>
- * @version 0.0.1
+ * @author Joseph R. Kiniry <kiniry@freeandfair.us>
+ * @version 1.0.0
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
 public class AuthenticateStateAdministrator extends AbstractEndpoint {

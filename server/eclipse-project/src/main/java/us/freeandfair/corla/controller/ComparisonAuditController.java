@@ -47,7 +47,7 @@ import us.freeandfair.corla.query.CountyContestResultQueries;
  * Controller methods relevant to comparison audits.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 @SuppressWarnings({"PMD.GodClass", "PMD.CyclomaticComplexity", "PMD.ExcessiveImports",
     "PMD.ModifiedCyclomaticComplexity", "PMD.StdCyclomaticComplexity"})

@@ -5,7 +5,7 @@
  * @created Aug 13, 2017
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
- * @creator Joe Kiniry <kiniry@freeandfair.us>
+ * @creator Joseph R. Kiniry <kiniry@freeandfair.us>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
@@ -25,6 +25,10 @@ import us.freeandfair.corla.Main;
 
 /**
  * Generate a SHA-256 hash of a given file.
+ * 
+ * @author Joseph R. Kiniry <kiniry@freeandfair.us>
+ * @author Daniel M. Zimmerman <dmz@freeandfair.us>
+ * @version 1.0.0
  */
 public final class HashChecker {
   /**

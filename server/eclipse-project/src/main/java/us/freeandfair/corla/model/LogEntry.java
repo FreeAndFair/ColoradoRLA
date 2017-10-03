@@ -41,7 +41,7 @@ import us.freeandfair.corla.persistence.PersistentEntity;
  * A log entry that is stored in the database.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 @Entity
 @Immutable // this is a Hibernate-specific annotation, but there is no JPA alternative

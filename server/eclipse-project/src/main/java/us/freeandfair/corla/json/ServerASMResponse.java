@@ -5,7 +5,7 @@
  * @created Aug 10, 2017
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
- * @author Joe Kiniry <kiniry@freeandfair.us>
+ * @author Joseph R. Kiniry <kiniry@freeandfair.us>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
@@ -22,7 +22,7 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
  * server's ASM and what UI events are next permitted.
  * @trace endpoints.server_response
  * @author Joseph R. Kiniry <kiniry@freeandfair.us>
- * @version 0.0.1
+ * @version 1.0.0
  */
 @SuppressWarnings({"unused", "PMD.UnusedPrivateField", "PMD.SingularField"})
 @SuppressFBWarnings(value = {"URF_UNREAD_FIELD"}, justification = "Field is read by Gson.")

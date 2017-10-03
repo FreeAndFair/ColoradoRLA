@@ -5,7 +5,7 @@
  * @created Aug 12, 2017
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
- * @creator Joe Kiniry <kiniry@freeandfair.us>
+ * @creator Joseph R. Kiniry <kiniry@freeandfair.us>
  * @description A system to assist in conducting statewide
  * risk-limiting audits.
  */
@@ -30,7 +30,7 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
  * Signs out the audit board for a county.
  * 
  * @author Daniel M. Zimmerman <dmz@freeandFair.us>
- * @version 0.0.1
+ * @version 1.0.0
  */
 @SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.ExcessiveImports"})
 public class AuditBoardSignOut extends AbstractAuditBoardDashboardEndpoint {

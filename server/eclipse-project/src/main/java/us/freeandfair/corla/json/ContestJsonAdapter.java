@@ -29,7 +29,7 @@ import us.freeandfair.corla.persistence.Persistence;
  * JSON adapter for contest.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 @SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.CyclomaticComplexity",
                    "PMD.StdCyclomaticComplexity", "PMD.NPathComplexity"})

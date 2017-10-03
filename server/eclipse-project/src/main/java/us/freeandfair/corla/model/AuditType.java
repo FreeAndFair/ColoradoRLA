@@ -15,7 +15,7 @@ package us.freeandfair.corla.model;
  * The possible types for an audit.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 public enum AuditType {
   COMPARISON, HAND_COUNT, NOT_AUDITABLE, NONE;

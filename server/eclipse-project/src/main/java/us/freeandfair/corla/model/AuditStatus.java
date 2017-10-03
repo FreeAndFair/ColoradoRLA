@@ -15,7 +15,7 @@ package us.freeandfair.corla.model;
  * The possible statuses for an audit.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 public enum AuditStatus {
     NOT_STARTED,

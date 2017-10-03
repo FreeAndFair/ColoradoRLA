@@ -68,12 +68,10 @@ import us.freeandfair.corla.query.PersistentASMStateQueries;
  * The main executable for the ColoradoRLA server. 
  * 
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
- * @version 0.0.1
+ * @author Joseph R. Kiniry <kiniry@freeandfair.us>
+ * @version 1.0.0
  */
-// the endpoints are excessive imports, but this may be dealt with differently
-// later, as for example by making a list of classes somewhere and instantiating
-// the endpoints dynamically
-@SuppressWarnings({"PMD.ExcessiveImports", "PMD.GodClass", "PMD.ExcessiveImports"})
+@SuppressWarnings({"PMD.GodClass", "PMD.ExcessiveImports"})
 public final class Main {
   /**
    * The path to the default properties resource.

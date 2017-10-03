@@ -28,9 +28,10 @@ import us.freeandfair.corla.model.BallotManifestInfo;
 import us.freeandfair.corla.persistence.Persistence;
 
 /**
- * @description <description>
- * @explanation <explanation>
- * @bon OPTIONAL_BON_TYPENAME
+ * The parser for Colorado ballot manifests.
+ * 
+ * @author Daniel M. Zimmerman <dmz@freeandfair.us>
+ * @version 1.0.0
  */
 public class ColoradoBallotManifestParser implements BallotManifestParser {
   /**

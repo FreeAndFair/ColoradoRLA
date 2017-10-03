@@ -5,7 +5,7 @@
  * @created Aug 27, 2017
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
- * @author Joe Kiniry <kiniry@freeandfair.us>
+ * @author Joseph R. Kiniry <kiniry@freeandfair.us>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
@@ -24,9 +24,11 @@ import us.freeandfair.corla.model.Administrator.AdministratorType;
 import us.freeandfair.corla.model.County;
 
 /**
- * @description <description>
- * @explanation <explanation>
- * @bon OPTIONAL_BON_TYPENAME
+ * The interface to authentication providers.
+ * 
+ * @author Joseph R. Kiniry <kiniry@freeandfair.us>
+ * @author Daniel M. Zimmerman <dmz@freeandfair.us>
+ * @version 1.0.0
  */
 public interface AuthenticationInterface {
   /**

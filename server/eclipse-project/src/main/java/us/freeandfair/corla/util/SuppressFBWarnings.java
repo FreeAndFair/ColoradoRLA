@@ -23,7 +23,7 @@ import java.lang.annotation.RetentionPolicy;
  * Annotation to suppress FindBugs warnings.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 @Retention(RetentionPolicy.CLASS)
 public @interface SuppressFBWarnings {

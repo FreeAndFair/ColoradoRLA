@@ -5,7 +5,7 @@
  * @created Aug 30, 2017
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
- * @author Joe Kiniry <kiniry@freeandfair.us>
+ * @author Joseph R. Kiniry <kiniry@freeandfair.us>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
@@ -19,8 +19,10 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
  * This particular response class is general purpose, encoding a generic 
  * string challenge used by most two-factor authentication systems. The client
  * UI will simply print the challenge with little adornment.
+ * 
  * @trace authentication.two_factor_challenge
- * @author Joseph R. Kiniry
+ * @author Joseph R. Kiniry <kiniry@freeandfair.us>
+ * @version 1.0.0
  */
 @SuppressWarnings({"unused", "PMD.UnusedPrivateField", "PMD.SingularField"})
 @SuppressFBWarnings(value = {"URF_UNREAD_FIELD"}, 

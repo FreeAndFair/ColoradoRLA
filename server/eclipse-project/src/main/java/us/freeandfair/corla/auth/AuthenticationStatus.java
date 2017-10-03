@@ -5,7 +5,7 @@
  * @created Aug 30, 2017
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
- * @author Joe Kiniry <kiniry@freeandfair.us>
+ * @author Joseph R. Kiniry <kiniry@freeandfair.us>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
@@ -20,8 +20,10 @@ import us.freeandfair.corla.model.Administrator.AdministratorType;
  * authentication which indicates what kind of user just authenticated. This 
  * particular response class is general purpose, encoding generic role used by the 
  * CORLA system.
- * @author Joseph R. Kiniry
- * @author Daniel M. Zimmerman
+ * 
+ * @author Joseph R. Kiniry <kiniry@freeandfair.us>
+ * @author Daniel M. Zimmerman <dmz@freeandfair.us>
+ * @version 1.0.0
  */
 public class AuthenticationStatus {
   /**

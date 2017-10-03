@@ -43,7 +43,7 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
  * The endpoint for reporting ballots that could not be found by auditors.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 @SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.CyclomaticComplexity",
     "PMD.ModifiedCyclomaticComplexity", "PMD.StdCyclomaticComplexity"})

@@ -31,8 +31,8 @@ import java.util.List;
  * https://www.stat.berkeley.edu/~stark/Java/Html/sha256Rand.htm</a>.
  * 
  * @author Joey Dodds <jdodds@freeandfair.us>
- * @author Joe Kiniry <kiniry@freeandfair.us>
- * 
+ * @author Joseph R. Kiniry <kiniry@freeandfair.us>
+ * @version 1.0.0
  * @review kiniry Why is this not just a static class?
  */
 public class PseudoRandomNumberGenerator {

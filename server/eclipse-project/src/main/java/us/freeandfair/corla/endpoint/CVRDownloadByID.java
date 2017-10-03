@@ -24,7 +24,7 @@ import us.freeandfair.corla.persistence.Persistence;
  * The CVR by ID download endpoint.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
 public class CVRDownloadByID extends AbstractEndpoint {

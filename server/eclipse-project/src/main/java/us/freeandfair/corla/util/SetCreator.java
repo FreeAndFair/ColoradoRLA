@@ -18,8 +18,8 @@ import java.util.Set;
 /**
  * Utility class that creates a set from a sequence.
  * 
- * @author Daniel M. Zimmerman
- * @verson 0.0.1
+ * @author Daniel M. Zimmerman <dmz@freeandfair.us>
+ * @version 1.0.0
  */
 public final class SetCreator {
   /**

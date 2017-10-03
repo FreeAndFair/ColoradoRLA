@@ -5,7 +5,7 @@
  * @created Aug 11, 2017
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
- * @author Joe Kiniry <kiniry@freeandfair.us>
+ * @author Joseph R. Kiniry <kiniry@freeandfair.us>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
@@ -45,7 +45,7 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
  * @trace endpoint
  * @author Joseph R. Kiniry <kiniry@freeandfair.us>
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
- * @version 0.0.1
+ * @version 1.0.0
  */
 @SuppressFBWarnings({"UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", 
 // Justification: False positive because we are weaving in behavior
