@@ -123,7 +123,10 @@ public class CVRToAuditList extends AbstractEndpoint {
           result &= r > 0;
         }
         
-        if (county != null) {
+        if (county == null && Main.authentication().authenticatedCounty(the_request) == null) {
+          // it's a DoS user, but they didn't specify a county
+          result = false;
+        } else if (county != null) {
           Long.parseLong(county);
         }
       } catch (final NumberFormatException e) {
