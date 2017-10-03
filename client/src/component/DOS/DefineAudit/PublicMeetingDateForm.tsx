@@ -4,13 +4,16 @@ import * as moment from 'moment-timezone';
 
 import { DateInput } from '@blueprintjs/datetime';
 
-import { defaultPublicMeetingDate } from 'corla/config';
-
+import { timezone } from 'corla/config';
 import corlaDate from 'corla/date';
 
 
+function defaultPublicMeetingDate(): string {
+    return moment.tz(timezone).add(7, 'days').format('YYYY-MM-DD');
+}
+
 class PublicMeetingDateForm extends React.Component<any, any> {
-    public state = { date: defaultPublicMeetingDate };
+    public state = { date: defaultPublicMeetingDate() };
 
     public render() {
         this.props.forms.publicMeetingDateForm = this.state;

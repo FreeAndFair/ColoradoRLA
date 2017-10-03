@@ -13,8 +13,6 @@ export const endpoint = (path: string) => `${endpointPrefix}/${path}`;
 
 export const timezone = 'America/Denver';
 
-export const defaultPublicMeetingDate = '2017-11-17';
-
 export const helpEmail = 'help@example.com';
 
 export const helpTel = '555-555-5555';
