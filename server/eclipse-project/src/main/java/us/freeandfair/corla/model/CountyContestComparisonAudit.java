@@ -51,7 +51,7 @@ import us.freeandfair.corla.persistence.PersistentEntity;
  * a single county.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 @Entity
 @Cacheable(true)

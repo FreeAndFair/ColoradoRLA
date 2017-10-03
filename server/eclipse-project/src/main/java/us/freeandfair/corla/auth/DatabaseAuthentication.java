@@ -5,7 +5,7 @@
  * @created Aug 27, 2017
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
- * @author Joe Kiniry <kiniry@freeandfair.us>
+ * @author Joseph R. Kiniry <kiniry@freeandfair.us>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
@@ -24,6 +24,10 @@ import us.freeandfair.corla.query.AdministratorQueries;
 /**
  * A demonstration implementation of AuthenticationInterface used during
  * development to mock an actual back-end authentication system.
+ * 
+ * @author Joseph R. Kiniry <kiniry@freeandfair.us>
+ * @author Daniel M. Zimmerman <dmz@freeandfair.us>
+ * @version 1.0.0
  * @trace authentication
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")

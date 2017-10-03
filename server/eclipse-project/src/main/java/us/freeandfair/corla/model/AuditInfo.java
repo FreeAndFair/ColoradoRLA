@@ -25,7 +25,7 @@ import javax.persistence.Embeddable;
  * Election information.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 @Embeddable
 //this class has many fields that would normally be declared final, but

@@ -5,7 +5,7 @@
  * @created Aug 31, 2017
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
- * @author Joe Kiniry <kiniry@freeandfair.us>
+ * @author Joseph R. Kiniry <kiniry@freeandfair.us>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
@@ -21,7 +21,7 @@ package us.freeandfair.corla.auth;
  * AuthenticationInterface.AUTH_STAGE attribute.
  * 
  * @author Joseph R. Kiniry
- * @version 0.0.1
+ * @version 1.0.0
  */
 public enum AuthenticationStage {
   NOT_AUTHENTICATED,

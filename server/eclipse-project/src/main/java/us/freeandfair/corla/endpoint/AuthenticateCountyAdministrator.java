@@ -24,7 +24,7 @@ import us.freeandfair.corla.model.Administrator;
  * The endpoint for authenticating a county administrator.
  * 
  * @author Daniel M Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
 public class AuthenticateCountyAdministrator extends AbstractEndpoint {  

@@ -29,7 +29,7 @@ import us.freeandfair.corla.model.Elector;
  * of AuditBoard objects, for database efficiency.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 @Converter
 @SuppressWarnings("PMD.AtLeastOneConstructor")

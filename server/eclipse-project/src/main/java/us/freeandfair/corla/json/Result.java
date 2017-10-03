@@ -15,7 +15,7 @@ package us.freeandfair.corla.json;
  * A result returned by the server.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 public class Result {
   /**

@@ -17,7 +17,7 @@ package us.freeandfair.corla.json;
  * 
  * @author Daniel M. Zimmerman
  * @author Joseph R. Kiniry
- * @version 0.0.1
+ * @version 1.0.0
  */
 public class SubmittedCredentials {
   /**

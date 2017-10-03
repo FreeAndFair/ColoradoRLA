@@ -56,7 +56,7 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
  * A class representing the results for a single contest for a single county.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 @Entity
 @Cacheable(true)

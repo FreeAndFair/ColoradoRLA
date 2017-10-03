@@ -41,7 +41,7 @@ import us.freeandfair.corla.persistence.PersistentEntity;
  * An uploaded file, kept in persistent storage for archival.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 // note that unlike our other entities, uploaded files are not Serializable
 @Entity

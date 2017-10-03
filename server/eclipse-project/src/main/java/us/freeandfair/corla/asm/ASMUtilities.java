@@ -24,7 +24,7 @@ import us.freeandfair.corla.query.PersistentASMStateQueries;
  * Utility classes that are generally useful for working with ASMs.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 public final class ASMUtilities {
   /**

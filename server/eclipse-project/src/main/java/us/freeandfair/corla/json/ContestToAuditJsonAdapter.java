@@ -28,7 +28,7 @@ import us.freeandfair.corla.persistence.Persistence;
  * JSON adapter for contest to audit information.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 // the default constructor suffices for type adapters
 @SuppressWarnings("PMD.AtLeastOneConstructor")

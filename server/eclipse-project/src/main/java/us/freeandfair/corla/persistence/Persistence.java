@@ -50,7 +50,7 @@ import us.freeandfair.corla.Main;
  * Manages persistence through Hibernate, and provides several utility methods.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 @SuppressWarnings({"PMD.ExcessiveImports", "PMD.GodClass"})
 public final class Persistence {

@@ -24,7 +24,7 @@ import spark.Response;
  * "afterAfterFilter".
  * 
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
- * @version 0.0.1
+ * @version 1.0.0
  */
 public class CORSFilter implements Filter {
   /**

@@ -5,7 +5,7 @@
  * @created Aug 12, 2017
  * @copyright 2017 Free & Fair
  * @license GNU General Public License 3.0
- * @creator Joe Kiniry <kiniry@freeandfair.us>
+ * @creator Joseph R. Kiniry <kiniry@freeandfair.us>
  * @description A system to assist in conducting statewide
  * risk-limiting audits.
  */
@@ -33,7 +33,7 @@ import us.freeandfair.corla.query.PersistentASMStateQueries;
  * code).
  * 
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
- * @version 0.0.1
+ * @version 1.0.0
  */
 // the endpoint method here is long and has lots of loops, but is not
 // at all difficult to understand

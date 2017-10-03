@@ -27,7 +27,7 @@ import us.freeandfair.corla.persistence.Persistence;
  * The endpoint for refreshing the Department of State dashboard status.
  * 
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
- * @version 0.0.1
+ * @version 1.0.0
  */
 // endpoints don't need constructors
 @SuppressWarnings("PMD.AtLeastOneConstructor")

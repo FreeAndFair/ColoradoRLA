@@ -23,7 +23,7 @@ import us.freeandfair.corla.json.ServerASMResponse;
  * An endpoint to provide the state of an audit board dashboard ASM to the client.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
 public class AuditBoardDashboardASMState extends AbstractAuditBoardDashboardEndpoint {

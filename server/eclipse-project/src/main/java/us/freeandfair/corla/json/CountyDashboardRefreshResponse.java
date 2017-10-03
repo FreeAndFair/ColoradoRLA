@@ -46,8 +46,8 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
  * dashboards.
  * 
  * @author Daniel M. Zimmerman
- * @author Joe Kiniry <kiniry@freeandfair.us>
- * @version 0.0.1
+ * @author Joseph R. Kiniry <kiniry@freeandfair.us>
+ * @version 1.0.0
  */
 @SuppressWarnings({"unused", "PMD.UnusedPrivateField", "PMD.SingularField",
     "PMD.CyclomaticComplexity", "PMD.TooManyFields"})

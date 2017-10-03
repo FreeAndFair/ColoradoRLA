@@ -19,7 +19,7 @@ import java.util.Map;
  * Data submitted to start an audit round.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 public class SubmittedAuditRoundStart {
   /**

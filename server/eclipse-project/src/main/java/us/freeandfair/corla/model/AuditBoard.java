@@ -28,6 +28,9 @@ import us.freeandfair.corla.persistence.ElectorListConverter;
 /**
  * An audit board. Contains a set of electors, a timestamp when the board
  * signed in, and a timestamp when the board signed out.
+ * 
+ * @author Daniel M. Zimmerman <dmz@freeandfair.us>
+ * @version 1.0.0
  */
 @Embeddable
 // this class has many fields that would normally be declared final, but

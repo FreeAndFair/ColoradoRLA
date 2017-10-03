@@ -36,7 +36,7 @@ import us.freeandfair.corla.persistence.Persistence;
  * Queries having to do with CountyContestResult entities.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 public final class CountyContestResultQueries {
   /**

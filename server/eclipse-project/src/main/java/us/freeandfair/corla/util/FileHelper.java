@@ -19,7 +19,7 @@ import java.io.OutputStream;
  * A class of helper methods for dealing with files.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 public final class FileHelper {
   /**

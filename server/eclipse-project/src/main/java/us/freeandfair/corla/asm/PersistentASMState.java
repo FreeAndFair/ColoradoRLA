@@ -31,7 +31,7 @@ import us.freeandfair.corla.persistence.PersistentEntity;
  * reconstruct the state machine it belongs to.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 @Entity
 @Table(name = "asm_state")

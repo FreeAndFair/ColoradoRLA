@@ -15,7 +15,7 @@ package us.freeandfair.corla.model;
  * The possible reasons for an audit.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 public enum AuditReason {
   STATE_WIDE_CONTEST("Statewide Contest"),

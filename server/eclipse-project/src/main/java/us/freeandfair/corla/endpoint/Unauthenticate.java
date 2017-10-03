@@ -22,7 +22,7 @@ import us.freeandfair.corla.asm.AbstractStateMachine;
  * The endpoint for unauthenticating an administrator.
  *  
  * @author Daniel M Zimmerman <dmz@freeandfair.us>
- * @version 0.0.1
+ * @version 1.0.0
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
 public class Unauthenticate extends AbstractEndpoint {

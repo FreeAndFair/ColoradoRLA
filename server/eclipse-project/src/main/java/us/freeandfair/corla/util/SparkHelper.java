@@ -27,7 +27,7 @@ import spark.Response;
  * A class of helper methods for use with Spark.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 public final class SparkHelper {
   /**

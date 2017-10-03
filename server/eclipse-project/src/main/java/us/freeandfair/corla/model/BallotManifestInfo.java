@@ -33,7 +33,7 @@ import us.freeandfair.corla.persistence.PersistentEntity;
  * Information about the locations of specific batches of ballots.
  * 
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
- * @version 0.0.1
+ * @version 1.0.0
  */
 @Entity
 @Immutable // this is a Hibernate-specific annotation, but there is no JPA alternative

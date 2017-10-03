@@ -24,7 +24,7 @@ import us.freeandfair.corla.persistence.Persistence;
  * A Runnable class that provides streaming read access to an UploadedFile.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 @SuppressWarnings("PMD.DoNotUseThreads")
 public class UploadedFileStreamer implements Runnable {

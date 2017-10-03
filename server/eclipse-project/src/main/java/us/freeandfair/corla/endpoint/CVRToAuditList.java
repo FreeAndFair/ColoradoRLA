@@ -34,7 +34,7 @@ import us.freeandfair.corla.query.BallotManifestInfoQueries;
  * The CVR to audit list endpoint.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 @SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.CyclomaticComplexity",
     "PMD.ModifiedCyclomaticComplexity", "PMD.StdCyclomaticComplexity"})

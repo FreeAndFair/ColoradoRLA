@@ -17,7 +17,7 @@ import java.util.OptionalInt;
  * A common interface to parsers for ballot manifest info in various formats.
  * 
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
- * @version 0.0.1
+ * @version 1.0.0
  */
 public interface BallotManifestParser {
   /**

@@ -31,7 +31,7 @@ import us.freeandfair.corla.persistence.Persistence;
  * Queries having to do with persistent ASM state.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 public final class PersistentASMStateQueries {
   /**

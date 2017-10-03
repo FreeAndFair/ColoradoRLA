@@ -45,7 +45,7 @@ import us.freeandfair.corla.query.CountyContestResultQueries;
  * Parser for Dominion CVR export files.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 @SuppressWarnings({"PMD.GodClass", "PMD.CyclomaticComplexity"})
 public class DominionCVRExportParser implements CVRExportParser {

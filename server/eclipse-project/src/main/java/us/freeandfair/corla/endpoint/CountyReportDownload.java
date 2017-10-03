@@ -31,7 +31,7 @@ import us.freeandfair.corla.util.SparkHelper;
  * The county report download endpoint.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
 public class CountyReportDownload extends AbstractEndpoint {

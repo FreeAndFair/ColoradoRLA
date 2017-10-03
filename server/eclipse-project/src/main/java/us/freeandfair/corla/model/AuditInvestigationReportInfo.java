@@ -29,7 +29,7 @@ import us.freeandfair.corla.json.AuditInvestigationReportInfoJsonAdapter;
  * An audit investigation report.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 @Embeddable
 @Immutable // this is a Hibernate-specific annotation, but there is no JPA alternative

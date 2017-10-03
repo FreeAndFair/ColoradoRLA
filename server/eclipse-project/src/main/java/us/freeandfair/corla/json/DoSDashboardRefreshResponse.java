@@ -40,7 +40,7 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
  * The response generated on a refresh of the DoS dashboard.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 @SuppressWarnings({"unused", "PMD.UnusedPrivateField", "PMD.SingularField"})
 @SuppressFBWarnings({"URF_UNREAD_FIELD",

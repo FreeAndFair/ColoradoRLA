@@ -33,7 +33,7 @@ import us.freeandfair.corla.persistence.Persistence;
  * The endpoint for setting the election information.
  * 
  * @author Daniel M Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 @SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.CyclomaticComplexity"})
 public class UpdateAuditInfo extends AbstractDoSDashboardEndpoint {

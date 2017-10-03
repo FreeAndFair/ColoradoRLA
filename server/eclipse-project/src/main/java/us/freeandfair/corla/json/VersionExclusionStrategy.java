@@ -21,7 +21,7 @@ import com.google.gson.FieldAttributes;
  * serialization.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
 public class VersionExclusionStrategy implements ExclusionStrategy {

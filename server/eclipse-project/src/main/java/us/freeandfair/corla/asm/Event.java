@@ -15,7 +15,7 @@ package us.freeandfair.corla.asm;
  * An event in the system. This is effectively a marker interface.
  * 
  * @author Daniel M. Zimmerman
- * @version 0.0.1
+ * @version 1.0.0
  */
 public interface Event {
   // no methods or fields

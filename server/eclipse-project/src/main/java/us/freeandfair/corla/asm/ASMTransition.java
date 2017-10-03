@@ -23,7 +23,7 @@ import us.freeandfair.corla.util.SetCreator;
  * A single transition of an abstract state machine.
  * 
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
- * @version 0.0.1
+ * @version 1.0.0
  */
 public class ASMTransition implements Serializable {
   /**
