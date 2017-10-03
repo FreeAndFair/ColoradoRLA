@@ -277,6 +277,7 @@ public class CVRToAuditDownload extends AbstractEndpoint {
       try (OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"))) {
         writeCSV(response_list, bw);
+        ok(the_response);
       } catch (final IOException e) {
         serverError(the_response, "Unable to stream response");
       }
