@@ -17,7 +17,9 @@ import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.COUNTY_AUDI
 import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.*;
 import static us.freeandfair.corla.asm.ASMState.CountyDashboardState.COUNTY_AUDIT_UNDERWAY;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.PersistenceException;
@@ -34,6 +36,7 @@ import us.freeandfair.corla.asm.AbstractStateMachine;
 import us.freeandfair.corla.asm.AuditBoardDashboardASM;
 import us.freeandfair.corla.asm.CountyDashboardASM;
 import us.freeandfair.corla.model.AuditType;
+import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.ContestToAudit;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
@@ -102,7 +105,7 @@ public class IndicateHandCount extends AbstractDoSDashboardEndpoint {
   public synchronized String endpoint(final Request the_request, 
                                       final Response the_response) {
     try {
-      final ContestToAudit[] contests = 
+      final ContestToAudit[] supplied_ctas = 
           Main.GSON.fromJson(the_request.body(), ContestToAudit[].class);
       final DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
       if (dosdb == null) {
@@ -110,8 +113,9 @@ public class IndicateHandCount extends AbstractDoSDashboardEndpoint {
       } else {
         boolean hand_count = false;
         final Set<County> hand_count_counties = new HashSet<>();
-        for (final ContestToAudit c : contests) {
-          if (c.audit() == AuditType.HAND_COUNT && dosdb.updateContestToAudit(c)) {
+        for (final ContestToAudit c : fixReasons(dosdb, supplied_ctas)) {
+          if (c.audit() == AuditType.HAND_COUNT &&
+              dosdb.updateContestToAudit(c)) {
             hand_count = true;
             hand_count_counties.add(c.contest().county());
           }
@@ -131,6 +135,40 @@ public class IndicateHandCount extends AbstractDoSDashboardEndpoint {
       serverError(the_response, "Unable to save contest selection");
     }
     return my_endpoint_result.get();
+  }
+  
+  /**
+   * Updates the supplied CTAs with the reasons that were originally specified 
+   * on the DoS dashboard.
+   * 
+   * @param the_dosdb The DoS dashboard.
+   * @param the_supplied_ctas The supplied CTAs. 
+   */
+  @SuppressWarnings("PMD.UseVarargs")
+  private Set<ContestToAudit> fixReasons(final DoSDashboard the_dosdb,
+                                         final ContestToAudit[] the_supplied_ctas) {
+    final Set<ContestToAudit> result = new HashSet<>();
+    final Set<ContestToAudit> existing_ctas = the_dosdb.contestsToAudit();
+    final Map<Contest, ContestToAudit> contest_cta = new HashMap<>();
+    
+    // let's iterate over these only once, instead of once for each array element in 
+    // the_supplied_ctas
+    for (final ContestToAudit c : existing_ctas) {
+      contest_cta.put(c.contest(), c);
+    }
+    
+    // update the supplied CTAs with the dashboard reasons
+    for (final ContestToAudit c : the_supplied_ctas) {
+      ContestToAudit real_cta = c;
+      if (contest_cta.containsKey(c.contest())) {
+        real_cta = new ContestToAudit(c.contest(), 
+                                      contest_cta.get(c.contest()).reason(), 
+                                      c.audit());
+      }
+      result.add(real_cta);
+    }
+    
+    return result;
   }
   
   /**
