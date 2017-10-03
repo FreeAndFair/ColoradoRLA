@@ -174,6 +174,10 @@ public abstract class AbstractEndpoint implements Endpoint {
       return true;
     }
     try {
+      // this asmFor() will be a no-op in nearly all cases, but in multi-transaction
+      // endpoint hits like uploading large CVR imports, it is possible for the
+      // state to change out from underneath us
+      my_asm.set(ASMUtilities.asmFor(asmClass(), my_asm.get().identity()));
       my_asm.get().stepEvent(endpointEvent());
     } catch (final IllegalStateException e) {
       illegalTransition(the_response, e.getMessage(), false);
