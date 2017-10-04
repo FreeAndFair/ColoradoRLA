@@ -37,7 +37,10 @@ const select = (state: any) => {
 
     const totalCountiesCount = countiesWithRound.length;
 
-    const finished = (c: any) => c.currentRound.number !== currentRound;
+    const finished = (c: any) => {
+        return c.currentRound.number !== currentRound
+            || c.asmState === 'COUNTY_AUDIT_COMPLETE';
+    };
     const finishedCountiesCount = countiesWithRound.filter(finished).length;
 
     return {
