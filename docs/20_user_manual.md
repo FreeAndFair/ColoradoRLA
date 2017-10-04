@@ -62,7 +62,7 @@ URL provided by the Colorado Department of State.
 On this page authorized users can enter their login
 credentials to access the RLA Tool Dashboards.
 
-![Login](./screenshots/100_login_screen_1.png)
+![Login](./screenshots/100a_login_screen_1.pdf)
 
 Successful entry of username and password will lead to 
 a two-factor authentication grid challenge.
