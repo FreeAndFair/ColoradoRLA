@@ -53,6 +53,16 @@ import us.freeandfair.corla.util.SparkHelper;
 @SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.ExcessiveImports"})
 public class FileUpload extends AbstractEndpoint {
   /**
+   * The "hash" form data field name.
+   */
+  public static final String HASH = "hash";
+  
+  /**
+   * The "file" form data field name.
+   */
+  public static final String FILE = "file";
+  
+  /**
    * The upload buffer size, in bytes.
    */
   private static final int BUFFER_SIZE = 1048576; // 1 MB
@@ -155,7 +165,7 @@ public class FileUpload extends AbstractEndpoint {
 
           if (item.isFormField()) {
             the_info.my_form_fields.put(item.getFieldName(), Streams.asString(stream));
-          } else if ("file".equals(name)) {
+          } else if (FILE.equals(name)) {
             // save the file
             the_info.my_filename = item.getName();
             the_info.my_file = File.createTempFile("upload", ".csv");
@@ -176,9 +186,19 @@ public class FileUpload extends AbstractEndpoint {
           }
         }
       }
+      
+      if (the_info.my_file == null) {
+        // no file was actually uploaded
+        the_info.my_ok = false;
+        badDataContents(the_response, "No file was uploaded");
+      } else if (!the_info.my_form_fields.containsKey(HASH)) {
+        // no hash was provided
+        the_info.my_ok = false;
+        badDataContents(the_response, "No hash was provided with the uploaded file");
+      }
     } catch (final IOException | FileUploadException e) {
-      badDataContents(the_response, "Upload Failed");
       the_info.my_ok = false;
+      badDataContents(the_response, "Upload Failed");
     }
   }
   
@@ -209,7 +229,7 @@ public class FileUpload extends AbstractEndpoint {
     if (info.my_ok) {
       info.my_computed_hash = HashChecker.hashFile(info.my_file);
       info.my_uploaded_hash = 
-          info.my_form_fields.get("hash").toUpperCase(Locale.US).trim();
+          info.my_form_fields.get(HASH).toUpperCase(Locale.US).trim();
       uploaded_file = attemptFilePersistence(the_response, info, county);
     }
 
