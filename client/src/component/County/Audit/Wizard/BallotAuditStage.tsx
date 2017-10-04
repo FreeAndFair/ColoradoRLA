@@ -36,6 +36,10 @@ const AuditInstructions = (props: any) => {
 
     const { currentRound } = county;
 
+    const isCurrentCvr = (cvr: any) => cvr.db_id === currentBallot.id;
+    const fullCvr = _.find(county.cvrsToAudit, isCurrentCvr);
+    const storageBin = fullCvr ? fullCvr.storage_location : '—';
+
     return (
         <div className='pt-card'>
             <div className='pt-card'>
@@ -52,6 +56,7 @@ const AuditInstructions = (props: any) => {
                                     <th>Scanner #</th>
                                     <th>Batch #</th>
                                     <th>Ballot Position #</th>
+                                    <th>Storage Bin</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -59,6 +64,7 @@ const AuditInstructions = (props: any) => {
                                     <td>{ currentBallot.scannerId }</td>
                                     <td>{ currentBallot.batchId }</td>
                                     <td>{ currentBallot.recordId }</td>
+                                    <td>{ storageBin }</td>
                                 </tr>
                             </tbody>
                         </table>

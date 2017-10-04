@@ -4,13 +4,16 @@ import * as moment from 'moment-timezone';
 
 import { DateInput } from '@blueprintjs/datetime';
 
-import { defaultElectionDate } from 'corla/config';
-
+import { timezone } from 'corla/config';
 import corlaDate from 'corla/date';
 
 
+function defaultElectionDate(): string {
+    return moment.tz(timezone).format('YYYY-MM-DD');
+}
+
 class ElectionDateForm extends React.Component<any, any> {
-    public state = { date: defaultElectionDate };
+    public state = { date: defaultElectionDate() };
 
     public render() {
         this.props.forms.electionDateForm = this.state;
