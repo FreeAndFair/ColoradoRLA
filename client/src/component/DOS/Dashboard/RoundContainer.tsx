@@ -25,19 +25,31 @@ class RoundContainer extends React.Component<any, any> {
     }
 }
 
-const mapStateToProps = (state: any) => {
+const select = (state: any) => {
     const { sos } = state;
 
+    if (!sos) {
+        return {};
+    }
+
     const currentRound = currentRoundSelector(state);
+    const countiesWithRound = countiesWithRoundSelector(state, currentRound);
+
+    const totalCountiesCount = countiesWithRound.length;
+
+    const finished = (c: any) => c.currentRound.number !== currentRound;
+    const finishedCountiesCount = countiesWithRound.filter(finished).length;
 
     return {
         auditStarted: auditStartedSelector(state),
         canStartNextRound: canStartNextRoundSelector(state),
-        countiesWithRound: countiesWithRoundSelector(state, currentRound),
+        countiesWithRound,
         currentRound,
+        finishedCountiesCount,
         sos,
+        totalCountiesCount,
     };
 };
 
 
-export default connect(mapStateToProps)(RoundContainer);
+export default connect(select)(RoundContainer);

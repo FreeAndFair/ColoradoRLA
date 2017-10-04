@@ -2,12 +2,7 @@ import * as React from 'react';
 
 
 const Status = (props: any) => {
-    const { countiesWithRound, currentRound } = props;
-
-    const totalCountiesCount = countiesWithRound.length;
-
-    const finished = (c: any) => c.currentRound.number !== currentRound;
-    const finishedCountiesCount = countiesWithRound.filter(finished).length;
+    const { currentRound, finishedCountiesCount, totalCountiesCount } = props;
 
     return (
         <div className='pt-card'>
