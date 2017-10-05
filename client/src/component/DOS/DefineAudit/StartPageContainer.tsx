@@ -9,8 +9,8 @@ import withSync from 'corla/component/withSync';
 
 class StartPageContainer extends React.Component<any, any> {
     public state: any = {
-        riskLimit: false,
-        type: true,
+        riskLimit: true,
+        type: false,
     };
 
     public render() {
