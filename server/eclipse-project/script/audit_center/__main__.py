@@ -4,7 +4,10 @@ Audit_Center: Export ColoradoRLA data for publication on Audit Center web site
 ~~~~~~~~
 
 TODO:
-  Export ballot manifest files
+  Pass in default.properties file, Get it working with production environment for db access
+  Export ballot manifest files, CVR files
+    outcomes, vote counts and margins
+
   Export it all as csv also
   Export zip of all csv files
 
@@ -26,7 +29,8 @@ ballots_to_audit_per_county.json:
    Number of ballots to be audited overall in each county
 
 prefix_length.json:
-   
+   The number of ballots 
+
 discrepancies.json:
    Details on each audited contest including ballot cards to audit, discrepancies
 
@@ -58,6 +62,8 @@ import argparse
 from argparse import Namespace
 import json
 from datetime import datetime
+import re
+import urlparse # import urllib.parse for python 3+
 import psycopg2
 import psycopg2.extras
 
@@ -152,7 +158,43 @@ def main(parser):
     # Establish an audit_center context for passing state around
     ac = Namespace()
 
-    ac.con = psycopg2.connect("dbname='corla'")
+    # ac.con = psycopg2.connect("dbname='corla'")
+
+    # TODO: parse default.properties file
+    user = 'corla'
+    password = 'corla'
+    # uri = 'jdbc:postgresql://localhost:5432/corla?reWriteBatchedInserts=true&disableColumnSantiser=true'
+    # works: uri = 'postgresql://localhost:5432/corla'
+    # works: uri = 'postgresql://localhost:5432,192.168.24.76:5432,192.168.24.77:5432/corla'
+    uri = 'jdbc:postgresql://localhost:5432,192.168.24.76:5432,192.168.24.77:5432/corla?reWriteBatchedInserts=true&disableColumnSantiser=true'
+
+    # Note: in ColoradoRLA, the uri property is used to specify the host and port, but not user and password
+
+    validuri = re.sub(r'\?.*', '', uri.replace('jdbc:postgresql', 'postgresql'))
+
+    # If present, deal with colon in scheme identifier which is not valid in
+    # an RFC3986 uri
+    # And remove all but the first ("master") host:port comma-separated values
+    # to produce a valid 'netloc' specification
+    # validuri = re.sub(r',[^/]*/', '/', uri.replace('jdbc:postgresql', 'jdbc-postgresql'))
+
+    """ TODO drop 
+    validuri = re.sub(r'(?is)</html>.+', '</html>', article)
+    validuri = (uri.replace('jdbc:postgresql', 'jdbc-postgresql')
+                .replace(',192.168.24.76:5432,192.168.24.77:5432', ''))
+    """
+
+    logging.debug("validuri: %s\n uri: %s" % (validuri, uri))
+
+    """
+    r = urlparse.urlparse(validuri)
+    dbname = r.path[1:]  # remove leading '/'
+    logging.debug("result r: %s, dbname: %s, host: %s, port: %s" % (r, dbname, r.hostname, r.port))
+    """
+
+    # ac.con = psycopg2.connect(dbname=dbname, user=user, password=password, host=r.hostname, port=r.port)
+    ac.con = psycopg2.connect(validuri, user=user, password=password)
+
     ac.cur = ac.con.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
     for queryfile in args.queryfiles:
