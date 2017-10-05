@@ -10,9 +10,9 @@ TODO:
 
 %InsertOptionParserUsage%
 
-Usage:
+Abbreviated usage:
 
- ./audit_center.py
+ audit_center [-e export_directory] [file.sql]...
 
 Exports for the public dashboard are produced in these files:
 
@@ -23,7 +23,15 @@ __:
    Random ballot order
 
 ballots_to_audit_per_county.json:
-   Number of ballots to be audited overall in each audited contest in each county
+   Number of ballots to be audited overall in each county
+
+prefix_length.json:
+   
+discrepancies.json:
+   Details on each audited contest including ballot cards to audit, discrepancies
+
+acvrs.json:
+   Details about each ACVR entry
 
 d. List of Audit Rounds (number of ballots, status by County, download links). Links shouldl be to all the finalized ballot-level interpretations and comparison details, in sufficient detail to independently verify the calculated risk levels. [as allowable by CORA]
 
@@ -59,9 +67,9 @@ __date__ = "2017-10-03"
 __copyright__ = "Copyright (c) 2017 Free & Fair"
 __license__ = "AGPLv3"
 
-parser = argparse.ArgumentParser(description='Gather ColoradoRLA data for publication on Audit Center')
+parser = argparse.ArgumentParser(description='Export ColoradoRLA data for publication on Audit Center web site')
 
-parser.add_argument('queryfiles', metavar="QUERYFILE", nargs='+',
+parser.add_argument('queryfiles', metavar="QUERYFILE", nargs='*',
                     help='name of file with an SQL query to execute, relative to $SQL_DIR')
 
 parser.add_argument("-d, --debuglevel", type=int, default=logging.WARNING, dest="debuglevel",
@@ -74,6 +82,7 @@ parser.add_argument('-e, --export-dir', dest='export_dir',
 parser.add_argument('--test',
   action="store_true", default=False,
   help="Run tests")
+
 
 # incorporate ArgParser usage documentation in our docstring
 __doc__ = __doc__.replace("%InsertOptionParserUsage%\n", parser.format_help())
@@ -92,6 +101,8 @@ def _test():
     return doctest.testmod()
 
 
+# To get query result in json format, substitute the query in this string
+# and execute the result.
 json_query_wrapper = """
 SELECT row_to_json(r) FROM (
 %s
@@ -115,7 +126,7 @@ def query_to_json(ac, queryfile):
 def sqlfile(filename):
     "Return full path for the named sql file"
 
-    return os.path.join(os.environ['SQL_DIR'], filename)
+    return os.path.join(os.environ.get('SQL_DIR', ''), filename)
 
 
 def query_to_csv(ac, queryfile):
@@ -138,38 +149,17 @@ def main(parser):
         _test()
         sys.exit(0)
 
+    # Establish an audit_center context for passing state around
     ac = Namespace()
 
     ac.con = psycopg2.connect("dbname='corla'")
-
-    acvrs_query = """
-    -- Show information about all ACVR entries. In particular:
-    --  For all random selections, compare ACVRs with their CVRs, by contest
-    -- Note that a "discrepancy" column entry appears if ANY of the contests on the ACVR have a discrepancy
-    -- Note that some CVRs may be selected multiple times, and each selection shows up here.
-    --  The RLA algorithm takes matches and discrepancies into account for each selection.
-
-    SELECT cai.index as selection, dashboard_id AS county, imprinted_id, record_type, timestamp, counted, disagreement,
-       discrepancy, cci_a.comment, cci_a.consensus, cci_s.contest_id, cai.cvr_id, cci_s.choices, acvr_id, cci_a.choices
-     FROM cvr_audit_info AS cai
-     LEFT JOIN cast_vote_record AS cvr
-       ON cai.acvr_id = cvr.id
-     LEFT JOIN cvr_contest_info AS cci_s
-       ON cai.cvr_id = cci_s.cvr_id
-     LEFT JOIN cvr_contest_info AS cci_a
-       ON cai.acvr_id = cci_a.cvr_id
-         AND cci_a.contest_id = cci_s.contest_id
-     ORDER BY cai.index, cci_s.contest_id 
-    """
-
     ac.cur = ac.con.cursor(cursor_factory=psycopg2.extras.DictCursor)
-
-    # print("seed result: %s" % query_to_json(ac, sqlfile("seed.sql")))
 
     for queryfile in args.queryfiles:
         resultfile = os.path.join(args.export_dir, os.path.splitext(queryfile)[0] + '.json')
         with open(resultfile, 'w') as f:
             f.write(query_to_json(ac, sqlfile(queryfile)))
+
 
 if __name__ == "__main__":
     main(parser)
