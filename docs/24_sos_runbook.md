@@ -50,15 +50,22 @@ County users can use the same URL.
 
 ![Login](./screenshots/100_login_screen_1.png)
 
+![Login](./screenshots/1000_login_screen_1.pdf)
+
 Successful entry of username and password will lead to 
 a two-factor authentication grid challenge.
 
 ![Grid Challenge](./screenshots/101_login_screen_2.png)
 
+![Grid Challenge](./screenshots/1010_login_screen_2.pdf)
+
 The RLA Tool will direct users to the Department of State home
 page. At the start of the audit process, this page will contain no
 information. 
+
 ![Secretary of State Home Page](./screenshots/dos/200_sos_home.png)
+
+![Secretary of State Home Page](./screenshots/dos/2000_sos_home.pdf)
 
 ### Navigation
 
@@ -69,15 +76,21 @@ navigation icon to bring up the navigation menu.
 
 ![Secretary of State Navigation Screenshot](./screenshots/dos/218_nav_to_define.png)
 
+![Secretary of State Navigation Screenshot](./screenshots/dos/2180_nav_to_define.pdf)
+
 In the upper right corner of each page is a button to return to 
 the Home Page 
 
 ![Home Button](./screenshots/000_home_icon.png)
 
+![Home Button](./screenshots/0000_home_icon.pdf)
+
 and a button to log out of the system 
 altogether.
 
 ![Logout Button](./screenshots/000_logout_button.png)
+
+![Logout Button](./screenshots/0000_logout_button.pdf)
 
 ## Audit Definition
 
@@ -89,10 +102,14 @@ Note that once these selections are saved they cannot be modified.
 
 ![Audit Definition](./screenshots/dos/210_enter_date_risk_limit.png)
 
+![Audit Definition](./screenshots/dos/2100_enter_date_risk_limit.pdf)
+
 Clicking the "Save" button brings up a page summarizing the 
 choices made on the previous screen. 
 
 ![Audit Definition Summary](./screenshots/dos/212_summary.png)
+
+![Audit Definition Summary](./screenshots/dos/2120_summary.pdf)
 
 Clicking "Next" brings up the contest selection screen. This step cannot be completed until 
 after the Counties have uploaded the contest data, i.e., the ballot manifest and cast vote record files.
@@ -102,17 +119,22 @@ after the Counties have uploaded the contest data, i.e., the ballot manifest and
 
 ![Empty Contest Selection Screen](./screenshots/dos/214_contest_selection_null.png)
 
+![Empty Contest Selection Screen](./screenshots/dos/2140_contest_selection_null.pdf)
+
 To monitor the status of the County uploads, navigate to the Home Page.
 The County Update table Status column allows the Secretary of State to see the status of each individual 
-County's file uploads. 
-
+County's file uploads.
 
 ![County Uploads Status](./screenshots/dos/216_upload_status.png)
+
+![County Uploads Status](./screenshots/dos/2160_upload_status.pdf)
 
 When the Counties have uploaded the necessary files, the Secretary of State
 can continue defining the audit using the dropdown menu on the upper left.
 
 ![Define the Audit Button](./screenshots/dos/218_nav_to_define.png)
+
+![Define the Audit Button](./screenshots/dos/2180_nav_to_define.pdf)
 
 ### Selecting Contests
 
@@ -121,6 +143,8 @@ the sample size and stop/go decisions for each round.  Rule 25
 calls these "contests to be audited". 
 
 ![Contest Selection](./screenshots/dos/220_select_contests_selected.png)
+
+![Contest Selection](./screenshots/dos/2200_select_contests_selected.pdf)
 
 Calculations of audit round sizes and risk levels are based
 on single County contests. Note that in the current version
@@ -136,16 +160,22 @@ The Secretary of State enters the random seed determined at the public meeting. 
 
 ![Random Seed Entry](./screenshots/dos/222_enter_random_seed.png)
 
+![Random Seed Entry](./screenshots/dos/2220_enter_random_seed.pdf)
+
 If the random seed is not at least 20 digits long, the system shows a
 red error message. User will have to click the "Back" button and try
 again.
 
 ![Random Seed Error Messages](./screenshots/dos/224_random_seed_incorrect.png)
 
+![Random Seed Error Messages](./screenshots/dos/2240_random_seed_incorrect.pdf)
+
 Once the random seed has been successfully entered, the Secretary of State can launch the
 audit by clicking the "Launch Audit" button.
 
 ![Ready to Launch Audit](./screenshots/dos/226_launch_audit.png)
+
+![Ready to Launch Audit](./screenshots/dos/2260_launch_audit.pdf)
 
 ## Auditing
 
@@ -181,6 +211,8 @@ Counties. These contests are listed in the Contest Update table.
 
 ![County Update and Contest Update Tables at Start of Round 1](./screenshots/dos/230_audit_start.png)
 
+![County Update and Contest Update Tables at Start of Round 1](./screenshots/dos/2300_audit_start.pdf)
+
 #### County Update Table ####
 
 The County Update Table has several columns.
@@ -194,10 +226,14 @@ The County Update Table has several columns.
 	*  Est. Remaining Ballots - the estimated size of the statistical random sequence of cast vote records that will be required to finish the audit (with duplicates) minus the size of the longest prefix of that sequence consisting of cast vote records whose corresponding ballot cards have already been reviewed by the Audit Board.
 	
 ![State Home Page Mid-Round](./screenshots/dos/240_county_updates_mid_round.png)
+
+![State Home Page Mid-Round](./screenshots/dos/2400_county_updates_mid_round.pdf)
 	 
 The County Update Table can be filtered by County name.
 
 ![Filter by County](./screenshots/dos/232_filter_by_county.png)
+
+![Filter by County](./screenshots/dos/2320_filter_by_county.pdf)
 
 
 #### Launching a New Round ####
@@ -210,12 +246,16 @@ round, but also signed off on the audit round.
 
 ![Launch New Round Screenshot](./screenshots/dos/245_start_next_round.png)
 
+![Launch New Round Screenshot](./screenshots/dos/2450_start_next_round.pdf)
+
 ### Ending the Audit
 
 Once the risk limit is met and the final round concludes, as shown on the State home page.
 
-250_SoS_Home_End_of_Audit.png
 ![End of Audit](./screenshots/dos/250_SoS_Home_End_of_Audit.png)
+
+![End of Audit](./screenshots/dos/2500_SoS_Home_End_of_Audit.pdf)
+
 
 <!-- ## Hand Counts 
 -->
