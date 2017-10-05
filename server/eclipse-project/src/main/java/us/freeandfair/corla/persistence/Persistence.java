@@ -300,7 +300,19 @@ public final class Persistence {
       }
     }
   }
-
+  
+  /**
+   * @return true if a session is open on this thread, false otherwise.
+   * @exception IllegalStateException if the database isn't running.
+   */
+  public static boolean isSessionOpen() 
+      throws PersistenceException {
+    checkForDatabase();
+    
+    final Session session = session_info.get();
+    return session != null && session.isOpen();
+  }
+  
   /**
    * @return true if a long-lived transaction is running in this thread, 
    * false otherwise.
@@ -359,11 +371,16 @@ public final class Persistence {
     checkForDatabase();
 
     boolean result = true;
-    final Session session = currentSession();
+    Session session = currentSession();
+    
     if (isTransactionActive()) {
       result = false;
     } else if (canTransactionRollback()) {
       rollbackTransaction();
+      // session is explicitly closed by rollback
+      // interesting note: isOpen() on the session _still returns true_ even though 
+      // it is closed!
+      session = openSession();
       session.beginTransaction();
     } else {
       // we don't have an active or rollback-able transaction, so we just

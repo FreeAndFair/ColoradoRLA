@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.PersistenceException;
-import javax.persistence.RollbackException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -106,7 +105,6 @@ public final class CountyContestResultQueries {
     Set<CountyContestResult> result = null;
     
     try {
-      final boolean transaction = Persistence.beginTransaction();
       final Session s = Persistence.currentSession();
       final CriteriaBuilder cb = s.getCriteriaBuilder();
       final CriteriaQuery<CountyContestResult> cq = 
@@ -116,13 +114,6 @@ public final class CountyContestResultQueries {
       cq.where(cb.equal(root.get("my_county"), the_county));
       final TypedQuery<CountyContestResult> query = s.createQuery(cq);
       result = new HashSet<CountyContestResult>(query.getResultList());
-      if (transaction) {
-        try {
-          Persistence.commitTransaction();
-        } catch (final RollbackException e) {
-          Persistence.rollbackTransaction();
-        }
-      }
     } catch (final PersistenceException e) {
       Main.LOGGER.error("Exception when reading contests from database: " + e);
     }
