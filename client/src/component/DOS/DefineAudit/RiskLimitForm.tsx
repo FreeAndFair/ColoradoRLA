@@ -137,6 +137,11 @@ class RiskLimitForm extends React.Component<FormProps & any, FormState> {
         s.comparisonField = field;
 
         this.setState(s);
+
+        // Tell parent component if it should disable the "Save" button.
+        const parsedComparisonField = parseFloat(s.comparisonField);
+        const fieldValid = isValidRiskLimit(parsedComparisonField);
+        this.props.setFormValid({ riskLimit: fieldValid });
     }
 }
 

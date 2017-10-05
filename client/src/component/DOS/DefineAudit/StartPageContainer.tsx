@@ -9,6 +9,7 @@ import withSync from 'corla/component/withSync';
 
 class StartPageContainer extends React.Component<any, any> {
     public state: any = {
+        riskLimit: false,
         type: true,
     };
 
@@ -36,7 +37,7 @@ class StartPageContainer extends React.Component<any, any> {
     }
 
     private formIsValid = () => {
-        return !!this.state.type;
+        return this.state.riskLimit && this.state.type;
     }
 
     private setFormValid = (s: any) => {
