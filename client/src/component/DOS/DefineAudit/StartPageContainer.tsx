@@ -9,7 +9,7 @@ import withSync from 'corla/component/withSync';
 
 class StartPageContainer extends React.Component<any, any> {
     public state: any = {
-        formValid: false,
+        type: true,
     };
 
     public render() {
@@ -25,7 +25,7 @@ class StartPageContainer extends React.Component<any, any> {
 
         const props = {
             election,
-            formValid: this.state.formValid,
+            formValid: this.formIsValid(),
             nextPage: () => history.push('/sos/audit/select-contests'),
             publicMeetingDate,
             riskLimit,
@@ -35,8 +35,12 @@ class StartPageContainer extends React.Component<any, any> {
         return <StartPage { ...props } />;
     }
 
-    private setFormValid = (formValid: boolean) => {
-        this.setState({ formValid });
+    private formIsValid = () => {
+        return !!this.state.type;
+    }
+
+    private setFormValid = (s: any) => {
+        this.setState(s);
     }
 }
 
