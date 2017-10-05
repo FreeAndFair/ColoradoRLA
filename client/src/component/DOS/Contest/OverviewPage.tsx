@@ -52,10 +52,10 @@ const ContestTable = ({ contests }: any) => {
         <table className='pt-table pt-bordered pt-condensed'>
             <thead>
                 <tr>
-                    <td>County</td>
-                    <td>Name</td>
-                    <td>Choices</td>
-                    <td>Vote For</td>
+                    <th>County</th>
+                    <th>Name</th>
+                    <th>Choices</th>
+                    <th>Vote For</th>
                 </tr>
             </thead>
             <tbody>
