@@ -92,7 +92,7 @@ data from the last file will be used. To upload the ballot manifest:
 
 ![To upload the CVRs:](./screenshots/county/1000_upload_proper_ballot_manifest.pdf)
 
-***
+To upload the CVRs:
 
 ![](./screenshots/county/102_upload_proper_CVR.png)
 
