@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 
 import * as _ from 'lodash';
 
+import counties from 'corla/data/counties';
+
 import Nav from '../Nav';
 
 
@@ -24,18 +26,22 @@ const Breadcrumb = () => (
     </ul>
 );
 
-const ContestTableRow = ({ contest }: any) => (
-    <tr>
-        <td>{ contest.id }</td>
-        <td>
-            <Link to={ `/sos/contest/${contest.id}` }>
-                { contest.name }
-            </Link>
-        </td>
-        <td>{ contest.choices.length }</td>
-        <td>{ contest.votesAllowed }</td>
-    </tr>
-);
+const ContestTableRow = ({ contest }: any) => {
+    const county = counties[contest.countyId];
+
+    return (
+        <tr>
+            <td>{ county.name }</td>
+            <td>
+                <Link to={ `/sos/contest/${contest.id}` }>
+                    { contest.name }
+                </Link>
+            </td>
+            <td>{ contest.choices.length }</td>
+            <td>{ contest.votesAllowed }</td>
+        </tr>
+    );
+};
 
 const ContestTable = ({ contests }: any) => {
     const contestRows = _.map(contests, (c: any) => (
@@ -46,7 +52,7 @@ const ContestTable = ({ contests }: any) => {
         <table className='pt-table pt-bordered pt-condensed'>
             <thead>
                 <tr>
-                    <td>ID</td>
+                    <td>County</td>
                     <td>Name</td>
                     <td>Choices</td>
                     <td>Vote For</td>
