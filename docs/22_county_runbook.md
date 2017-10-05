@@ -88,15 +88,15 @@ multiple Ballot Manifest files, only the data from the last file will
 be used. Similarly, if a County uploads multiple CVR files, only the
 data from the last file will be used. To upload the ballot manifest:
 
-![To upload the CVRs:](./screenshots/county/100_upload_proper_ballot_manifest.png)
+![To upload the ballot manifest:](./screenshots/county/100_upload_proper_ballot_manifest.png)
 
-![To upload the CVRs:](./screenshots/county/1000_upload_proper_ballot_manifest.pdf)
+![To upload the ballot manifest:](./screenshots/county/1000_upload_proper_ballot_manifest.pdf)
 
 To upload the CVRs:
 
-![](./screenshots/county/102_upload_proper_CVR.png)
+![To upload the CVRs](./screenshots/county/102_upload_proper_CVR.png)
 
-![](./screenshots/county/1020_upload_proper_CVR.pdf)
+![To upload the CVRs](./screenshots/county/1020_upload_proper_CVR.pdf)
 
 If the hash does not match the file (either because the wrong hash was
 entered, or because the file was changed as it traveled over the
