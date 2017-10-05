@@ -3,55 +3,22 @@
 Audit_Center: Export ColoradoRLA data for publication on Audit Center web site
 ~~~~~~~~
 
-TODO:
-  Pass in default.properties file, Get it working with production environment for db access
-  Export ballot manifest files, CVR files
-    outcomes, vote counts and margins
-
-  Export it all as csv also
-  Export zip of all csv files
-
-%InsertOptionParserUsage%
-
 Abbreviated usage:
 
- audit_center [-e export_directory] [file.sql]...
+This will run queries using all the .sql files in the $SQL_DIR
+environmental variable, which is the current directory by default:
 
-Exports for the public dashboard are produced in these files:
+ audit_center [-e export_directory]
 
-seed.json:
-   Seed for randomization
+Export a query on selected sql files:
 
-__:
-   Random ballot order
+ audit_center [-e export_directory] file.sql ...
 
-ballots_to_audit_per_county.json:
-   Number of ballots to be audited overall in each county
+Full command line usage synopsis:
 
-prefix_length.json:
-   The number of ballots 
+ audit_center -h
 
-discrepancies.json:
-   Details on each audited contest including ballot cards to audit, discrepancies
-
-acvrs.json:
-   Details about each ACVR entry
-
-d. List of Audit Rounds (number of ballots, status by County, download links). Links shouldl be to all the finalized ballot-level interpretations and comparison details, in sufficient detail to independently verify the calculated risk levels. [as allowable by CORA]
-
-e. Status (audit required, audit in progress, audit complete, hand count required,, hand count complete) by audited contest (i.e., contest "selected for audit" by SoS
-
-f. Link to Final Audit Report
-
-g. Audit Board names and political parties by County
-
-manifest_hash.json:
-  County Ballot Manifests and Hashes
-
-Environmental variables:
-
-$SQL_DIR: directory with .sql files
-
+See README.md for documentation.
 """
 
 import string
@@ -61,9 +28,8 @@ import logging
 import argparse
 from argparse import Namespace
 import json
-from datetime import datetime
+import glob
 import re
-import urlparse # import urllib.parse for python 3+
 import psycopg2
 import psycopg2.extras
 
@@ -103,6 +69,8 @@ def totest(n):
 
 
 def _test():
+    "Run all doctests in this file"
+
     import doctest
     return doctest.testmod()
 
@@ -119,25 +87,26 @@ def query_to_json(ac, queryfile):
     """Get output in JSON format based on given query, as an array of rows.
     Removes a trailing semicolon from query if there.
     """
-    
+
     with open(queryfile, "r") as query_f:
         pure_query = query_f.read().rstrip(';' + string.whitespace)
 
         full_query = json_query_wrapper % pure_query
-        ac.cur.execute(full_query)
+        try:
+            ac.cur.execute(full_query)
+        except psycopg2.Error as e:
+            message = ("audit_center query error on %s:\n %s\nQuery: \n%s" %
+                          (queryfile, e, full_query))
+            logging.error(message)
+            return message
+
         rows = ac.cur.fetchall()
         return "[" + ','.join(json.dumps(r['row_to_json'], indent=2) for r in rows) + "]"
-        
-
-def sqlfile(filename):
-    "Return full path for the named sql file"
-
-    return os.path.join(os.environ.get('SQL_DIR', ''), filename)
 
 
 def query_to_csv(ac, queryfile):
+    "Export query result as csv file. FIXME: fill in arguments etc"
 
-    # FIXME: fill in arguments etc
     with open("acvr_report.csv", "w") as f:
         cur.copy_expert("COPY ({}) TO STDOUT WITH CSV HEADER".format(acvrs_query), f)
 
@@ -167,7 +136,8 @@ def main(parser):
     # uri = 'jdbc:postgresql://localhost:5432/corla?reWriteBatchedInserts=true&disableColumnSantiser=true'
     uri = 'jdbc:postgresql://localhost:5432,192.168.24.76:5432,192.168.24.77:5432/corla?reWriteBatchedInserts=true&disableColumnSantiser=true'
 
-    # Note: in ColoradoRLA, the uri property is used to specify the host and port, but not user and password
+    # Note: in ColoradoRLA, the uri property is used to specify the host and port,
+    # but not user and password
 
     # Remove hibernate-specific query strings and 'scheme' value
     pguri = re.sub(r'\?.*', '', uri.replace('jdbc:postgresql', 'postgresql'))
@@ -182,10 +152,18 @@ def main(parser):
 
     ac.cur = ac.con.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
-    for queryfile in args.queryfiles:
-        resultfile = os.path.join(args.export_dir, os.path.splitext(queryfile)[0] + '.json')
+    queryfiles = args.queryfiles
+    if not queryfiles:
+        sql_dir = os.environ.get('SQL_DIR', '.')
+        queryfiles = [filename for filename in glob.glob(sql_dir + "/*.sql")]
+
+    for queryfile in queryfiles:
+        resultfile = os.path.join(args.export_dir,
+                                  os.path.basename(
+                                      os.path.splitext(queryfile)[0] + '.json'))
         with open(resultfile, 'w') as f:
-            f.write(query_to_json(ac, sqlfile(queryfile)))
+            logging.debug("Export query from %s as json in %s" % (queryfile, resultfile))
+            f.write(query_to_json(ac, queryfile))
 
 
 if __name__ == "__main__":
