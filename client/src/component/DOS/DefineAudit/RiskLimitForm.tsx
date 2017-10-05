@@ -101,7 +101,7 @@ class RiskLimitForm extends React.Component<FormProps & any, FormState> {
         s.comparisonLimit = fromPercent(parsedComparisonField);
 
         this.setState(s);
-        this.syncParent();
+        this.syncParent(s);
     }
 
     private onBlur = () => {
@@ -122,7 +122,7 @@ class RiskLimitForm extends React.Component<FormProps & any, FormState> {
         }
 
         this.setState(s);
-        this.syncParent();
+        this.syncParent(s);
     }
 
     private onBallotPollingValueChange = (_: number, field: string) => {
@@ -131,7 +131,7 @@ class RiskLimitForm extends React.Component<FormProps & any, FormState> {
         s.ballotPollingField = field;
 
         this.setState(s);
-        this.syncParent();
+        this.syncParent(s);
     }
 
     private onComparisonValueChange = (_: number, field: string) => {
@@ -140,12 +140,12 @@ class RiskLimitForm extends React.Component<FormProps & any, FormState> {
         s.comparisonField = field;
 
         this.setState(s);
-        this.syncParent();
+        this.syncParent(s);
     }
 
-    private syncParent = () => {
+    private syncParent = (s: any) => {
         // Tell parent component if it should disable the "Save" button.
-        const parsedComparisonField = parseFloat(this.state.comparisonField);
+        const parsedComparisonField = parseFloat(s.comparisonField);
         const fieldValid = isValidRiskLimit(parsedComparisonField);
         this.props.setFormValid({ riskLimit: fieldValid });
     }
