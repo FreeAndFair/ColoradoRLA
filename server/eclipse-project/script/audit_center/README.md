@@ -1,4 +1,7 @@
-# Audit_Center: Export ColoradoRLA data for publication on Audit Center web site
+# Audit_Center Documentation
+
+The `audit_center` Python module exports ColoradoRLA data for publication on
+the Audit Center web site.
 
 ## Abbreviated usage:
 
@@ -15,7 +18,7 @@ environmental variable, which is the current directory by default:
 
 `audit_center -h`
 
-Exports for the public dashboard are produced in these files:
+## Exports for the public dashboard are produced in these files:
 
 Done:
 
