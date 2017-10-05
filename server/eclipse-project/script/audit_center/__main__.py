@@ -158,42 +158,27 @@ def main(parser):
     # Establish an audit_center context for passing state around
     ac = Namespace()
 
+    # This works locally when logged in as special linux user:
     # ac.con = psycopg2.connect("dbname='corla'")
 
     # TODO: parse default.properties file
     user = 'corla'
     password = 'corla'
     # uri = 'jdbc:postgresql://localhost:5432/corla?reWriteBatchedInserts=true&disableColumnSantiser=true'
-    # works: uri = 'postgresql://localhost:5432/corla'
-    # works: uri = 'postgresql://localhost:5432,192.168.24.76:5432,192.168.24.77:5432/corla'
     uri = 'jdbc:postgresql://localhost:5432,192.168.24.76:5432,192.168.24.77:5432/corla?reWriteBatchedInserts=true&disableColumnSantiser=true'
 
     # Note: in ColoradoRLA, the uri property is used to specify the host and port, but not user and password
 
-    validuri = re.sub(r'\?.*', '', uri.replace('jdbc:postgresql', 'postgresql'))
+    # Remove hibernate-specific query strings and 'scheme' value
+    pguri = re.sub(r'\?.*', '', uri.replace('jdbc:postgresql', 'postgresql'))
 
-    # If present, deal with colon in scheme identifier which is not valid in
-    # an RFC3986 uri
-    # And remove all but the first ("master") host:port comma-separated values
-    # to produce a valid 'netloc' specification
-    # validuri = re.sub(r',[^/]*/', '/', uri.replace('jdbc:postgresql', 'jdbc-postgresql'))
+    logging.debug("pguri: %s\n uri: %s" % (pguri, uri))
 
-    """ TODO drop 
-    validuri = re.sub(r'(?is)</html>.+', '</html>', article)
-    validuri = (uri.replace('jdbc:postgresql', 'jdbc-postgresql')
-                .replace(',192.168.24.76:5432,192.168.24.77:5432', ''))
-    """
-
-    logging.debug("validuri: %s\n uri: %s" % (validuri, uri))
-
-    """
-    r = urlparse.urlparse(validuri)
-    dbname = r.path[1:]  # remove leading '/'
-    logging.debug("result r: %s, dbname: %s, host: %s, port: %s" % (r, dbname, r.hostname, r.port))
-    """
-
-    # ac.con = psycopg2.connect(dbname=dbname, user=user, password=password, host=r.hostname, port=r.port)
-    ac.con = psycopg2.connect(validuri, user=user, password=password)
+    try:
+        ac.con = psycopg2.connect(pguri, user=user, password=password)
+    except psycopg2.Error as e:
+        logging.error(e)
+        sys.exit(1)
 
     ac.cur = ac.con.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
