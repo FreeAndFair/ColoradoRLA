@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 
 import * as _ from 'lodash';
 
+import counties from 'corla/data/counties';
+
 import Nav from '../Nav';
 
 
@@ -49,10 +51,12 @@ const ContestDetailPage = (props: any) => {
 
     const row = (k: any, v: any) => (
         <tr key={ k } >
-            <td>{ k }</td>
+            <td><strong>{ k }</strong></td>
             <td>{ v }</td>
         </tr>
     );
+
+    const county = counties[contest.countyId];
 
     return (
         <div>
@@ -63,7 +67,7 @@ const ContestDetailPage = (props: any) => {
                 <h3>Contest Data</h3>
                 <table className='pt-table pt-bordered pt-condensed'>
                     <tbody>
-                        { row('ID', contest.id) }
+                        { row('County', county.name) }
                         { row('Name', contest.name) }
                         { row('Description', contest.description) }
                         { row('Vote For', contest.votesAllowed) }

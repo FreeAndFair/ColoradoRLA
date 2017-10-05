@@ -171,7 +171,9 @@ const AuditPage = (props: any) => {
                 <div>
                     Enter the risk limit for comparison audits as a percentage.
                 </div>
-                <RiskLimitForm forms={ forms } riskLimit={ riskLimit } />
+                <RiskLimitForm forms={ forms }
+                               riskLimit={ riskLimit }
+                               setFormValid={ setFormValid } />
                 <div className='pt-card'>
                     <span className='pt-icon pt-intent-warning pt-icon-warning-sign' />
                     <span> </span>
