@@ -51,7 +51,7 @@ const ContestDetailPage = (props: any) => {
 
     const row = (k: any, v: any) => (
         <tr key={ k } >
-            <td>{ k }</td>
+            <td><strong>{ k }</strong></td>
             <td>{ v }</td>
         </tr>
     );
