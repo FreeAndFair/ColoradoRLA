@@ -22,6 +22,7 @@ export TRAVIS_BUILD_DIR=`git rev-parse --show-toplevel`
 export CLIENT_DIR="${TRAVIS_BUILD_DIR}/client"
 export SERVER_DIR="${TRAVIS_BUILD_DIR}/server/eclipse-project"
 export TEST_DIR="${TRAVIS_BUILD_DIR}/test"
+export SQL_DIR=${SERVER_DIR}/script/sql
 
 
 # Exit early if there were no server changes.
@@ -54,7 +55,7 @@ psql -d corla -a -f ../corla-test-credentials.psql > credentials.stdout
 
 # Compare tabulation results and vote totals
 echo "Run tabulation test: psql -d corla -f tabulate.sql | diff tabulate.out -"
-psql -d corla -f tabulate.sql | diff tabulate.out - && echo "Success: tabulation test"
+psql -d corla -f $SQL_DIR/tabulate.sql | diff tabulate.out - && echo "Success: tabulation test"
 
 echo "Run manifest vs cvr test: psql -d corla -f ../corla-compare-manifest-cvr.psql | diff manifest-vs-cvr.out -"
 psql -d corla -f ../corla-compare-manifest-cvr.psql | diff manifest-vs-cvr.out - && echo "Success: manifest vs cvr"
