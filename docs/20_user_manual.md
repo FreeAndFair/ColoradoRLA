@@ -64,19 +64,27 @@ credentials to access the RLA Tool Dashboards.
 
 ![Login](./screenshots/100_login_screen_1.png)
 
+![Login](./screenshots/1000_login_screen_1.pdf)
+
 Successful entry of username and password will lead to 
 a two-factor authentication grid challenge.
 
 ![Grid Challenge](./screenshots/101_login_screen_2.png)
+
+![Grid Challenge](./screenshots/1010_login_screen_2.pdf)
 
 After two-factor authentication,  users associated with the Department of State will see the
 Department of State home page. 
 
 ![Secretary of State Home Screenshot](./screenshots/dos/200_sos_home.png)
 
+![Secretary of State Home Screenshot](./screenshots/dos/2000_sos_home.pdf)
+
 Authenticated users associated with a County see a home page tailored to that County.
 
 ![County Home Screenshot](./screenshots/county/200_County_Home_Before.png)
+
+![County Home Screenshot](./screenshots/county/2000_County_Home_Before.pdf)
 
 ---
 
@@ -87,15 +95,21 @@ navigation icon to bring up the navigation menu.
 
 ![Navigation Icon](./screenshots/county/000_main_nav.png)
 
+![Navigation Icon](./screenshots/county/0000_main_nav.pdf)
+
 In the upper right corner of each page is a button to return to 
 the Home Page 
 
 ![Home Button](./screenshots/000_home_icon.png)
 
+![Home Button](./screenshots/0000_home_icon.pdf)
+
 and a button to log out of the system 
 altogether.
 
 ![Logout Button](./screenshots/000_logout_button.png)
+
+![Logout Button](./screenshots/0000_logout_button.pdf)
 
 ---
 
@@ -113,10 +127,13 @@ the date of the public meeting to choose the random seed and the risk limit.
 
 ![Audit Definition](./screenshots/dos/210_enter_date_risk_limit.png)
 
+![Audit Definition](./screenshots/dos/2100_enter_date_risk_limit.pdf)
+
 These choices are summarized on the next page.
 
 ![Audit Definition Summary](./screenshots/dos/212_summary.png)
 
+![Audit Definition Summary](./screenshots/dos/2120_summary.pdf)
 
 \newpage
 ## County File Uploads
@@ -142,6 +159,8 @@ calls these "contests to be audited".
 
 ![Contest Selection](./screenshots/dos/220_select_contests_selected.png)
 
+![Contest Selection](./screenshots/dos/2200_select_contests_selected.pdf)
+
 ## Random Seed
 
 After all Counties have uploaded the required files, the Department of State holds a public meeting to determine
@@ -152,6 +171,8 @@ the Pseudo-Random Number Generator using SHA-256 cited in Rule 25.
 
 ![Random Seed Entry](./screenshots/dos/222_enter_random_seed.png)
 
+![Random Seed Entry](./screenshots/dos/2220_enter_random_seed.pdf)
+
 \newpage
 ## Audit Definition Review
 
@@ -160,6 +181,7 @@ be used to define the list of ballot cards to audit for each county.
 
 ![Random Seed Review](./screenshots/dos/226_launch_audit.png)
 
+![Random Seed Review](./screenshots/dos/2260_launch_audit.pdf)
 
 \newpage
 # Auditing
@@ -206,6 +228,8 @@ will show the names and party affiliations.
 
 ![Audit Board Identity](./screenshots/county/251_AB_members.png)
 
+![Audit Board Identity](./screenshots/county/2510_AB_members.pdf)
+
 After the Audit Board has signed in, they can use the RLA Tool to review ballot cards.
 If there is a round in progress for the County,
 the
@@ -216,15 +240,21 @@ column will contain check marks for ballot cards that have been reviewed.
 
 ![Ballot Cards to Audit](./screenshots/county/262_Cards_to_Audit.png)
 
+![Ballot Cards to Audit](./screenshots/county/2620_Cards_to_Audit.pdf)
+
 This page has  a button to download a csv file that can be saved or printed, containing 
 the list of ballot cards.
 
 ![Download CSV](./screenshots/county/263_download_csv.png)
 
+![Download CSV](./screenshots/county/2630_download_csv.pdf)
+
 Once the ballot cards have been retrieved,  Audit Board members can report the markings on each
 individual ballot card.  .
 
 ![Recording Voter Intent](./screenshots/county/264_Voter_Intent.png)
+
+![Recording Voter Intent](./screenshots/county/2640_Voter_Intent.pdf)
 
 After entering the interpretation of the markings from any one ballot
 card, the Audit Board uses the
@@ -235,14 +265,20 @@ and the RLA Tool presents contests from the next ballot card.
 
 ![Review Screen](./screenshots/county/266_review_screen.png)
 
+![Review Screen](./screenshots/county/2660_review_screen.pdf)
+
 After the last
 ballot card has been reviewed,  the Audit Board is asked to certify the round.
 
 ![Certification](./screenshots/county/268_certification.png)
 
+![Certification](./screenshots/county/2680_certification.pdf)
+
 After certification, until a new round starts, the end of round page appears.
 
 ![End of Round](./screenshots/county/268_end_of_round.png)
+
+![End of Round](./screenshots/county/2680_end_of_round.pdf)
 
 
 ## Monitoring the Audit in Progress
@@ -254,11 +290,15 @@ On the State home page, in addition to the risk limit and the random seed
 there is a brief statement of the status of the round. 
 
 ![State Home Page Mid-Round](./screenshots/dos/240_county_updates_mid_round.png)
+
+![State Home Page Mid-Round](./screenshots/dos/2400_county_updates_mid_round.pdf)
 	 
 The State home page also has a detailed County Update table and a list of the contests that 
 have been chosen to drive the audit.
 
 ![County Update and Contest Update Tables at Start of Round 1](./screenshots/dos/230_audit_start.png)
+
+![County Update and Contest Update Tables at Start of Round 1](./screenshots/dos/2300_audit_start.pdf)
 
 The County Update Table has several columns.
 
@@ -283,6 +323,8 @@ uploaded CVR file, or where the ballot card in question could not be
 found.
 
 ![County Home Page During Audit](./screenshots/county/201_County_Home_Mid_Round.png)
+
+![County Home Page During Audit](./screenshots/county/2010_County_Home_Mid_Round.pdf)
 
 <!-- ## Hand Counts 
 -->
