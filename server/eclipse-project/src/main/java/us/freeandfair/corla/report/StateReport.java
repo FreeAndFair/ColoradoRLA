@@ -382,8 +382,7 @@ public class StateReport {
             cell.setCellType(CellType.NUMERIC);
             int discrepancies = 0;
             for (final Entry<AuditReason, Integer> entry : round.discrepancies().entrySet()) {
-              if (entry.getKey() != AuditReason.OPPORTUNISTIC_BENEFITS && 
-                  entry.getValue() != null) {
+              if (entry.getKey().isAudited() && entry.getValue() != null) {
                 discrepancies = discrepancies + entry.getValue();
               }
             }
@@ -406,13 +405,14 @@ public class StateReport {
             cell = row.createCell(cell_number++);
             cell.setCellStyle(integer_style);
             cell.setCellType(CellType.NUMERIC);
-            if (round.discrepancies().containsKey(AuditReason.OPPORTUNISTIC_BENEFITS)) {
-              cell.setCellValue(round.discrepancies().get(AuditReason.OPPORTUNISTIC_BENEFITS));
-              accumulator = accumulator + 
-                            round.discrepancies().get(AuditReason.OPPORTUNISTIC_BENEFITS);
-            } else {
-              cell.setCellValue(0);
+            int discrepancies = 0;
+            for (final Entry<AuditReason, Integer> entry : round.discrepancies().entrySet()) {
+              if (entry.getKey().isUnaudited() && entry.getValue() != null) {
+                discrepancies = discrepancies + entry.getValue();
+              }
             }
+            cell.setCellValue(discrepancies);
+            accumulator = accumulator + discrepancies;
           }
           cell = row.createCell(cell_number++);
           cell.setCellStyle(integer_style);
@@ -432,7 +432,7 @@ public class StateReport {
             cell.setCellType(CellType.NUMERIC);
             int disagreements = 0;
             for (final Entry<AuditReason, Integer> entry : round.disagreements().entrySet()) {
-              if (entry.getKey() != AuditReason.OPPORTUNISTIC_BENEFITS) {
+              if (entry.getKey().isAudited() && entry.getValue() != null) {
                 disagreements = disagreements + entry.getValue();
               }
             }
@@ -455,13 +455,14 @@ public class StateReport {
             cell = row.createCell(cell_number++);
             cell.setCellStyle(integer_style);
             cell.setCellType(CellType.NUMERIC);
-            if (round.disagreements().containsKey(AuditReason.OPPORTUNISTIC_BENEFITS)) {
-              cell.setCellValue(round.disagreements().get(AuditReason.OPPORTUNISTIC_BENEFITS));
-              accumulator = accumulator + 
-                            round.disagreements().get(AuditReason.OPPORTUNISTIC_BENEFITS);
-            } else {
-              cell.setCellValue(0);
+            int disagreements = 0;
+            for (final Entry<AuditReason, Integer> entry : round.disagreements().entrySet()) {
+              if (entry.getKey().isUnaudited() && entry.getValue() != null) {
+                disagreements = disagreements + entry.getValue();
+              }
             }
+            accumulator = accumulator + disagreements;
+            cell.setCellValue(disagreements);
           }
           cell = row.createCell(cell_number++);
           cell.setCellStyle(integer_style);
