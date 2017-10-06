@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import * as _ from 'lodash';
 
-import { Tooltip } from '@blueprintjs/core';
+import { EditableText, Tooltip } from '@blueprintjs/core';
 
 import counties from 'corla/data/counties';
 
@@ -55,6 +55,7 @@ function sortIndex(sort: SortKey): number {
 
 class ContestUpdates extends React.Component<any, any> {
     public state: any = {
+        filter: '',
         order: 'asc',
         sort: 'name',
     };
@@ -78,7 +79,16 @@ class ContestUpdates extends React.Component<any, any> {
             _.reverse(sortedData);
         }
 
-        const contestStatuses = _.map(sortedData, (row: any) => {
+        const filterName = (d: any) => {
+            const countyName = d[0].toLowerCase();
+            const contestName = d[1].toLowerCase();
+            const str = this.state.filter.toLowerCase();
+
+            return countyName.includes(str) || contestName.includes(str);
+        };
+        const filteredData = _.filter(sortedData, filterName);
+
+        const contestStatuses = _.map(filteredData, (row: any) => {
             const [countyName, contestName, discrepancyCount, c] = row;
 
             if (!sos.auditedContests) {
@@ -114,6 +124,15 @@ class ContestUpdates extends React.Component<any, any> {
             <div className='pt-card'>
                 <h3>Contest Updates</h3>
                 <div className='pt-card'>
+                    Filter by County or Contest Name:
+                    <span> </span>
+                    <EditableText
+                        className='pt-input'
+                        minWidth={ 200 }
+                        value={ this.state.filter }
+                        onChange={ this.onFilterChange } />
+                </div>
+                <div className='pt-card'>
                     <table className='pt-table'>
                         <thead>
                             <tr>
@@ -142,6 +161,10 @@ class ContestUpdates extends React.Component<any, any> {
                 </div>
             </div>
         );
+    }
+
+    private onFilterChange = (filter: any) => {
+        this.setState({ filter });
     }
 
     private sortBy(sort: SortKey) {
