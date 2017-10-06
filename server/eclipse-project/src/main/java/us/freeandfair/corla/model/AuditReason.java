@@ -47,4 +47,20 @@ public enum AuditReason {
   public String prettyString() {
     return my_pretty_string;
   }
+  
+  /**
+   * @return true if this reason indicates an "unaudited" contest,
+   * false otherwise.
+   */
+  public boolean isUnaudited() {
+    return this.equals(TIED_CONTEST) || this.equals(OPPORTUNISTIC_BENEFITS);
+  }
+  
+  /**
+   * @return true if this reason indicates an "audited" contest,
+   * false otherwise.
+   */
+  public boolean isAudited() {
+    return !isUnaudited();
+  }
 }
