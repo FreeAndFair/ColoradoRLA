@@ -193,6 +193,19 @@ class SelectContestsForm extends React.Component<any, any> {
             }
         });
 
+        const sortAscIcon = <span className='pt-icon-standard pt-icon-sort-asc' />;
+        const sortDescIcon = <span className='pt-icon-standard pt-icon-sort-desc' />;
+
+        const sortIconForCol = (col: string) => {
+            if (col !== this.state.sort) {
+                return null;
+            }
+
+            return this.state.order === 'asc'
+                 ? sortAscIcon
+                 : sortDescIcon;
+        };
+
         return (
             <div>
                 <div className='pt-card'>
@@ -219,9 +232,11 @@ class SelectContestsForm extends React.Component<any, any> {
                             <tr>
                                 <th onClick={ this.sortBy('county') }>
                                     County
+                                    { sortIconForCol('county') }
                                 </th>
                                 <th onClick={ this.sortBy('contest') }>
                                     Contest Name
+                                    { sortIconForCol('contest') }
                                 </th>
                                 <th>Audit?</th>
                                 <th>Reason</th>
