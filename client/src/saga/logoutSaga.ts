@@ -5,7 +5,10 @@ import session from 'corla/session';
 
 function* logoutRedirect(): IterableIterator<void> {
     session.expire();
-    window.location.replace('/login');
+
+    if (window.location.pathname !== '/login') {
+        window.location.replace('/login');
+    }
 }
 
 
