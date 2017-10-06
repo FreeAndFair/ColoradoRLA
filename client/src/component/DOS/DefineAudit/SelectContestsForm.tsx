@@ -236,10 +236,12 @@ class SelectContestsForm extends React.Component<any, any> {
                             <tr>
                                 <th onClick={ this.sortBy('county') }>
                                     County
+                                    <span> </span>
                                     { sortIconForCol('county') }
                                 </th>
                                 <th onClick={ this.sortBy('contest') }>
                                     Contest Name
+                                    <span> </span>
                                     { sortIconForCol('contest') }
                                 </th>
                                 <th>Audit?</th>
