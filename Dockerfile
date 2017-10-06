@@ -1,4 +1,4 @@
-FROM centos
+FROM centos:7
 MAINTAINER Neal McBurnett <nealmcb@freeandfair.us>
 ENV container docker
 RUN yum -y update; yum clean all
@@ -26,8 +26,9 @@ RUN yum -y install ./epel-release-latest-*.noarch.rpm
 RUN yum -y update
 RUN yum -y install python-pip
 RUN yum -y install tmux
+RUN yum -y install python-psycopg2.x86_64
 
-EXPOSE 8888 80 443
+EXPOSE 80 443
 # TODO PostgreSQL port for debugging only
 EXPOSE 5432
 

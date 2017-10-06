@@ -1,24 +1,32 @@
-# Audit_Center Documentation
+# Documentation for `audit_center`
 
 The `audit_center` Python module exports ColoradoRLA data for publication on
 the Audit Center web site.
 
-## Abbreviated usage:
+## Install
+
+Installing required packages:
+
+* `yum install python-psycopg2.x86_64`
+
+* Python `requests` package
+
+## Abbreviated usage
 
 This will run queries using all the .sql files in the `$SQL_DIR`
 environmental variable, which is the current directory by default:
 
 `audit_center [-e export_directory]`
 
-## Export a query on selected sql files:
+## Export a query on selected sql files
 
 `audit_center [-e export_directory] file.sql ...`
 
-## Full command line usage synopsis:
+## Full command line usage synopsis
 
 `audit_center -h`
 
-## Exports for the public dashboard are produced in these files:
+## Exports for the public dashboard are produced in these files
 
 Done:
 
@@ -40,7 +48,7 @@ Done:
 
 Not done:
 
-* b: random ballot order
+* b. random ballot order
   * via crtest including all audited and dups (plus some?)
 * d. List of Audit Rounds (number of ballots, status by County, download links). Links should be to all the finalized ballot-level interpretations and comparison details, in sufficient detail to independently verify the calculated risk levels. [as allowable by CORA]
 * e. Status (audit required, audit in progress, audit complete, hand count required,, hand count complete) by audited contest (i.e., contest "selected for audit" by SoS
