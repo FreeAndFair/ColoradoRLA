@@ -21,7 +21,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
-import us.freeandfair.corla.model.AuditReason;
+import us.freeandfair.corla.model.AuditSelection;
 
 /**
  * A converter between maps from audit reasons to integers and JSON 
@@ -32,13 +32,13 @@ import us.freeandfair.corla.model.AuditReason;
  */
 @Converter
 @SuppressWarnings("PMD.AtLeastOneConstructor")
-public class AuditReasonIntegerMapConverter 
-    implements AttributeConverter<Map<AuditReason, Integer>, String> {
+public class AuditSelectionIntegerMapConverter 
+    implements AttributeConverter<Map<AuditSelection, Integer>, String> {
   /**
-   * The type information for a map from AuditReason to Integer.
+   * The type information for a map from AuditSelection to Integer.
    */
-  private static final Type AUDIT_REASON_INTEGER_MAP = 
-      new TypeToken<Map<AuditReason, Integer>>() { }.getType();
+  private static final Type AUDIT_SELECTION_INTEGER_MAP = 
+      new TypeToken<Map<AuditSelection, Integer>>() { }.getType();
   
   /**
    * Our Gson instance, which does not do pretty-printing (unlike the global
@@ -53,7 +53,7 @@ public class AuditReasonIntegerMapConverter
    * @param the_set The list of Strings.
    */
   @Override
-  public String convertToDatabaseColumn(final Map<AuditReason, Integer> the_map) {
+  public String convertToDatabaseColumn(final Map<AuditSelection, Integer> the_map) {
     return GSON.toJson(the_map); 
   }
 
@@ -63,7 +63,7 @@ public class AuditReasonIntegerMapConverter
    * @param the_column The column entry.
    */
   @Override
-  public Map<AuditReason, Integer> convertToEntityAttribute(final String the_column) {
-    return GSON.fromJson(the_column, AUDIT_REASON_INTEGER_MAP);
+  public Map<AuditSelection, Integer> convertToEntityAttribute(final String the_column) {
+    return GSON.fromJson(the_column, AUDIT_SELECTION_INTEGER_MAP);
   }
 }

@@ -17,15 +17,9 @@ package us.freeandfair.corla.model;
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 1.0.0
  */
-public enum AuditReason {
-  STATE_WIDE_CONTEST("Statewide Contest"),
-  COUNTY_WIDE_CONTEST("Countywide Contest"),
-  CLOSE_CONTEST("Close Contest"),
-  TIED_CONTEST("Tied Contest"),
-  GEOGRAPHICAL_SCOPE("Geographical Scope"),
-  CONCERN_REGARDING_ACCURACY("Concern Regarding Accuracy"),
-  OPPORTUNISTIC_BENEFITS("Opportunistic Benefits"),
-  COUNTY_CLERK_ABILITY("County Clerk Ability");
+public enum AuditSelection {
+  AUDITED_CONTEST("Audited Contest"),
+  UNAUDITED_CONTEST("Unaudited Contest");
 
   /**
    * The pretty printing string for this enum value.
@@ -37,7 +31,7 @@ public enum AuditReason {
    * 
    * @param the_pretty_string The pretty printing string.
    */
-  AuditReason(final String the_pretty_string) {
+  AuditSelection(final String the_pretty_string) {
     my_pretty_string = the_pretty_string;
   }
   
@@ -46,16 +40,5 @@ public enum AuditReason {
    */
   public String prettyString() {
     return my_pretty_string;
-  }
-  
-  /**
-   * @return the audit selection corresponding to this audit reason.
-   */
-  public AuditSelection selection() {
-    if (this.equals(TIED_CONTEST) || this.equals(OPPORTUNISTIC_BENEFITS)) {
-      return AuditSelection.UNAUDITED_CONTEST;
-    } else {
-      return AuditSelection.AUDITED_CONTEST;
-    }
   }
 }
