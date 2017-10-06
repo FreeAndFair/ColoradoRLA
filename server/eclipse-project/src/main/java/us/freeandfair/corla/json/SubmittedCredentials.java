@@ -3,9 +3,9 @@
  * 
  * @title ColoradoRLA
  * @created Aug 13, 2017
- * @copyright 2017 Free & Fair
- * @license GNU General Public License 3.0
- * @author Daniel M. Zimmerman <dmz@freeandfair.us>
+ * @copyright 2017 Colorado Department of State
+ * @license GNU Affero General Public License v3 with Classpath Exception
+ * @creator Daniel M. Zimmerman <dmz@freeandfair.us>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
@@ -15,8 +15,8 @@ package us.freeandfair.corla.json;
  * A submitted set of credentials, usually either a (username, password)
  * pair or a (username, second factor) pair.
  * 
- * @author Daniel M. Zimmerman
- * @author Joseph R. Kiniry
+ * @author Daniel M. Zimmerman <dmz@freeandfair.us>
+ * @author Joseph R. Kiniry <kiniry@freeandfair.us>
  * @version 1.0.0
  */
 public class SubmittedCredentials {

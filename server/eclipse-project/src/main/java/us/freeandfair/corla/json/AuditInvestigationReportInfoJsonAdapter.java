@@ -3,9 +3,9 @@
  * 
  * @title ColoradoRLA
  * @created Jul 28, 2017
- * @copyright 2017 Free & Fair
- * @license GNU General Public License 3.0
- * @author Daniel M. Zimmerman <dmz@freeandfair.us>
+ * @copyright 2017 Colorado Department of State
+ * @license GNU Affero General Public License v3 with Classpath Exception
+ * @creator Daniel M. Zimmerman <dmz@freeandfair.us>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
@@ -25,7 +25,7 @@ import us.freeandfair.corla.model.AuditInvestigationReportInfo;
 /**
  * JSON adapter for audit investigation reports.
  * 
- * @author Daniel M. Zimmerman
+ * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 1.0.0
  */
 // the default constructor suffices for type adapters

@@ -5,9 +5,9 @@
  * 
  * @created Jul 28, 2017
  * 
- * @copyright 2017 Free & Fair
+ * @copyright 2017 Colorado Department of State
  * 
- * @license GNU General Public License 3.0
+ * @license GNU Affero General Public License v3 with Classpath Exception
  * 
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * 
@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Annotation to suppress FindBugs warnings.
  * 
- * @author Daniel M. Zimmerman
+ * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 1.0.0
  */
 @Retention(RetentionPolicy.CLASS)

@@ -3,9 +3,9 @@
  * 
  * @title ColoradoRLA
  * @created Aug 31, 2017
- * @copyright 2017 Free & Fair
- * @license GNU General Public License 3.0
- * @author Joseph R. Kiniry <kiniry@freeandfair.us>
+ * @copyright 2017 Colorado Department of State
+ * @license GNU Affero General Public License v3 with Classpath Exception
+ * @creator Joseph R. Kiniry <kiniry@freeandfair.us>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
@@ -20,7 +20,7 @@ package us.freeandfair.corla.auth;
  * state of the state machine is encoded in the HTTP session's 
  * AuthenticationInterface.AUTH_STAGE attribute.
  * 
- * @author Joseph R. Kiniry
+ * @author Joseph R. Kiniry <kiniry@freeandfair.us>
  * @version 1.0.0
  */
 public enum AuthenticationStage {

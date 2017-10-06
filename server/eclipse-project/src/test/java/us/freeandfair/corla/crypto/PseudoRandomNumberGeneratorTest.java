@@ -2,15 +2,10 @@
  * Free & Fair Colorado RLA System
  * 
  * @title ColoradoRLA
- * 
  * @created Jul 26, 2017
- * 
- * @copyright 2017 Free & Fair
- * 
- * @license GNU General Public License 3.0
- * 
- * @author Joey Dodds <jdodds@galois.com>
- * 
+ * @copyright 2017 Colorado Department of State
+ * @license GNU Affero General Public License v3 with Classpath Exception
+ * @creator Joey Dodds <jdodds@galois.com>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 
@@ -24,6 +19,9 @@ import org.testng.annotations.Test;
 
 /**
  * A test case for the PseudoRandomNumberGenerator.
+ * 
+ * @author Joey Dodds <jdodds@galois.com>
+ * @version 1.0.0
  */
 // TestNG classes do not need constructors
 @SuppressWarnings("PMD.AtLeastOneConstructor")

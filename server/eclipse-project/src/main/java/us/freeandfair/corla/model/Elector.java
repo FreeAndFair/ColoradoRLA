@@ -3,8 +3,8 @@
  * 
  * @title ColoradoRLA
  * @created Jul 25, 2017
- * @copyright 2017 Free & Fair
- * @license GNU General Public License 3.0
+ * @copyright 2017 Colorado Department of State
+ * @license GNU Affero General Public License v3 with Classpath Exception
  * @author Joey Dodds <jdodds@galois.com>
  * @model_review Joseph R. Kiniry <kiniry@freeandfair.us>
  * @description A system to assist in conducting statewide risk-limiting audits.
@@ -24,7 +24,7 @@ import org.hibernate.annotations.Immutable;
 /**
  * An elector; has a first name, a last name, and a political party.
  * 
- * @author Daniel M. Zimmerman
+ * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 1.0.0
  */
 @Embeddable
