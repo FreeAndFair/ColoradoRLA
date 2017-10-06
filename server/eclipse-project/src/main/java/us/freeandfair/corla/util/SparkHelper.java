@@ -3,8 +3,8 @@
  * 
  * @title ColoradoRLA
  * @created Aug 4, 2017
- * @copyright 2017 Free & Fair
- * @license GNU General Public License 3.0
+ * @copyright 2017 Colorado Department of State
+ * @license GNU Affero General Public License v3 with Classpath Exception
  * @author Daniel M. Zimmerman <dmz@galois.com>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
@@ -26,7 +26,7 @@ import spark.Response;
 /**
  * A class of helper methods for use with Spark.
  * 
- * @author Daniel M. Zimmerman
+ * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 1.0.0
  */
 public final class SparkHelper {

@@ -3,8 +3,8 @@
  * 
  * @title ColoradoRLA
  * @created Aug 12, 2017
- * @copyright 2017 Free & Fair
- * @license GNU General Public License 3.0
+ * @copyright 2017 Colorado Department of State
+ * @license GNU Affero General Public License v3 with Classpath Exception
  * @created Daniel M. Zimmerman <dmz@freeandfair.us>
  * @description A system to assist in conducting statewide
  * risk-limiting audits.
@@ -45,7 +45,7 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
  * The response generated on a refresh of the County and Audit Board
  * dashboards.
  * 
- * @author Daniel M. Zimmerman
+ * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @author Joseph R. Kiniry <kiniry@freeandfair.us>
  * @version 1.0.0
  */

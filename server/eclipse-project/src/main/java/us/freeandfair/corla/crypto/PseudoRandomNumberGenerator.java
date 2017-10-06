@@ -5,9 +5,9 @@
  * 
  * @created Jul 25, 2017
  * 
- * @copyright 2017 Free & Fair
+ * @copyright 2017 Colorado Department of State
  * 
- * @license GNU General Public License 3.0
+ * @license GNU Affero General Public License v3 with Classpath Exception
  * 
  * @author Joey Dodds <jdodds@freeandfair.us>
  * @author Joseph Kiniry <kiniry@freeandfair.us>

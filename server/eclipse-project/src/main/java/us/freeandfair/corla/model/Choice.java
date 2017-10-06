@@ -3,8 +3,8 @@
  * 
  * @title ColoradoRLA
  * @created Jul 25, 2017
- * @copyright 2017 Free & Fair
- * @license GNU General Public License 3.0
+ * @copyright 2017 Colorado Department of State
+ * @license GNU Affero General Public License v3 with Classpath Exception
  * @author Joey Dodds <jdodds@galois.com>
  * @model_review Joseph R. Kiniry <kiniry@freeandfair.us>
  * @design In the formal model this concept is currently called "option".
@@ -22,7 +22,7 @@ import javax.persistence.Embeddable;
 /**
  * A contest choice; has a name and a description.
  * 
- * @author Daniel M. Zimmerman
+ * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 1.0.0
  */
 @Embeddable

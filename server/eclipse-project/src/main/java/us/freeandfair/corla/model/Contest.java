@@ -3,8 +3,8 @@
  * 
  * @title ColoradoRLA
  * @created Jul 25, 2017
- * @copyright 2017 Free & Fair
- * @license GNU General Public License 3.0
+ * @copyright 2017 Colorado Department of State
+ * @license GNU Affero General Public License v3 with Classpath Exception
  * @author Joey Dodds <jdodds@galois.com>
  * @model_review Joseph R. Kiniry <kiniry@freeandfair.us>
  * @description A system to assist in conducting statewide risk-limiting audits.
@@ -45,7 +45,7 @@ import us.freeandfair.corla.persistence.PersistentEntity;
  * The definition of a contest; comprises a contest name and a set of
  * possible choices.
  * 
- * @author Daniel M. Zimmerman
+ * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 1.0.0
  */
 @Entity

@@ -3,8 +3,8 @@
  * 
  * @title ColoradoRLA
  * @created Aug 1, 2017
- * @copyright 2017 Free & Fair
- * @license GNU General Public License 3.0
+ * @copyright 2017 Colorado Department of State
+ * @license GNU Affero General Public License v3 with Classpath Exception
  * @author Daniel M. Zimmerman <dmz@galois.com>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
@@ -40,7 +40,7 @@ import us.freeandfair.corla.persistence.PersistentEntity;
 /**
  * An uploaded file, kept in persistent storage for archival.
  * 
- * @author Daniel M. Zimmerman
+ * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 1.0.0
  */
 // note that unlike our other entities, uploaded files are not Serializable
