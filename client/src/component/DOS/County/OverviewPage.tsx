@@ -29,7 +29,7 @@ const CountyTableRow = ({ county, status }: any) => {
     const submitted = status.auditedBallotCount;
 
     const auditedCount = _.get(status, 'discrepancyCount.audited') || '—';
-    const oppCount = _.get(status, 'discrepancyCount.opportunistic') || '—';
+    const unauditedCount = _.get(status, 'discrepancyCount.unaudited') || '—';
 
     return (
         <tr>
@@ -41,7 +41,7 @@ const CountyTableRow = ({ county, status }: any) => {
             <td>{ countyState }</td>
             <td>{ submitted }</td>
             <td>{ auditedCount }</td>
-            <td>{ oppCount }</td>
+            <td>{ unauditedCount }</td>
         </tr>
     );
 };

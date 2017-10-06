@@ -88,9 +88,9 @@ class CountyUpdates extends React.Component<any, any> {
             const auditedDiscrepancyCount = c.discrepancyCount
                                           ? c.discrepancyCount.audited
                                           : '—';
-            const opportunisticDisrepancyCount = c.discrepancyCount
-                                               ? c.discrepancyCount.opportunistic
-                                               : '—';
+            const unauditedDiscrepancyCount = c.discrepancyCount
+                                            ? c.discrepancyCount.unaudited
+                                            : '—';
 
             let disagreementCount: any = c.disagreementCount;
 
@@ -108,7 +108,7 @@ class CountyUpdates extends React.Component<any, any> {
                 status,
                 c.auditedBallotCount,
                 auditedDiscrepancyCount,
-                opportunisticDisrepancyCount,
+                unauditedDiscrepancyCount,
                 disagreementCount,
                 c.ballotsRemainingInRound,
                 Math.max(0, c.estimatedBallotsToAudit),

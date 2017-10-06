@@ -40,9 +40,11 @@ function parseDiscrepancyCounts(data: any): any {
 
     const total = _.sum(_.values(data));
     const opportunistic = data.OPPORTUNISTIC_BENEFITS || 0;
-    const audited = total - opportunistic;
+    const tied = data.TIED_CONTEST || 0;
+    const unaudited = opportunistic + tied;
+    const audited = total - unaudited;
 
-    return { audited, opportunistic };
+    return { audited, unaudited };
 }
 
 function parseFile(file: any): any {
