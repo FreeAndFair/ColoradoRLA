@@ -123,7 +123,7 @@ after the Counties have uploaded the contest data, i.e., the ballot manifest and
 
 To monitor the status of the County uploads, navigate to the Home Page.
 The County Update table Status column allows the Secretary of State to see the status of each individual 
-County's file uploads.
+County's file uploads. Click on a column name to sort by that column’s data. To reverse sort, click on the column again.
 
 ![County Uploads Status](./screenshots/dos/216_upload_status.png)
 
