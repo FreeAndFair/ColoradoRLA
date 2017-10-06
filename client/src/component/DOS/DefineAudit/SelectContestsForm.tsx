@@ -226,6 +226,10 @@ class SelectContestsForm extends React.Component<any, any> {
                         value={ this.state.filter }
                         onChange={ this.onFilterChange } />
                 </div>
+                <div className='pt-card' >
+                    Click on the "County" or "Contest" column name to sort by that
+                    column's data. To reverse sort, click on the column name again.
+                </div>
                 <div className='pt-card'>
                     <table className='pt-table pt-bordered pt-condensed'>
                         <thead>
