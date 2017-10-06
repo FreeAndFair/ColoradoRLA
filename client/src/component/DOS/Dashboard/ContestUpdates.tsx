@@ -97,6 +97,19 @@ class ContestUpdates extends React.Component<any, any> {
             );
         });
 
+        const sortAscIcon = <span className='pt-icon-standard pt-icon-sort-asc' />;
+        const sortDescIcon = <span className='pt-icon-standard pt-icon-sort-desc' />;
+
+        const sortIconForCol = (col: string) => {
+            if (col !== this.state.sort) {
+                return null;
+            }
+
+            return this.state.order === 'asc'
+                 ? sortAscIcon
+                 : sortDescIcon;
+        };
+
         return (
             <div className='pt-card'>
                 <h3>Contest Updates</h3>
@@ -107,12 +120,18 @@ class ContestUpdates extends React.Component<any, any> {
                                 <th>Hand Count</th>
                                 <th onClick={ this.sortBy('county') }>
                                     County
+                                    <span> </span>
+                                    { sortIconForCol('county') }
                                 </th>
                                 <th onClick={ this.sortBy('name') }>
                                     Name
+                                    <span> </span>
+                                    { sortIconForCol('name') }
                                 </th>
                                 <th onClick={ this.sortBy('discrepancyCount') }>
                                     Discrepancies
+                                    <span> </span>
+                                    { sortIconForCol('discrepancyCount') }
                                 </th>
                             </tr>
                         </thead>
