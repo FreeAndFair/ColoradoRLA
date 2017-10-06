@@ -180,34 +180,42 @@ class CountyUpdates extends React.Component<any, any> {
                             <tr>
                                 <th onClick={ this.sortBy('name') }>
                                     Name
+                                    <span> </span>
                                     { sortIconForCol('name') }
                                 </th>
                                 <th onClick={ this.sortBy('status') }>
                                     Status
+                                    <span> </span>
                                     { sortIconForCol('status') }
                                 </th>
                                 <th onClick={ this.sortBy('submitted') }>
                                     Submitted
+                                    <span> </span>
                                     { sortIconForCol('submitted') }
                                 </th>
                                 <th onClick={ this.sortBy('auditedDisc') }>
                                     Audited Contest Discrepancies
+                                    <span> </span>
                                     { sortIconForCol('auditedDisc') }
                                 </th>
                                 <th onClick={ this.sortBy('oppDisc') }>
                                     Non-audited Contest Discrepancies
+                                    <span> </span>
                                     { sortIconForCol('oppDisc') }
                                 </th>
                                 <th onClick={ this.sortBy('disagreements') }>
                                     Disagreements
+                                    <span> </span>
                                     { sortIconForCol('disagreements') }
                                 </th>
                                 <th onClick={ this.sortBy('remRound') }>
                                     <RemainingInRoundHeader />
+                                    <span> </span>
                                     { sortIconForCol('remRound') }
                                 </th>
                                 <th onClick={ this.sortBy('remTotal') }>
                                     <EstRemainingHeader />
+                                    <span> </span>
                                     { sortIconForCol('remTotal') }
                                 </th>
                             </tr>
