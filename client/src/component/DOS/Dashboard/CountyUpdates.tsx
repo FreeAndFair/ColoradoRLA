@@ -145,6 +145,19 @@ class CountyUpdates extends React.Component<any, any> {
             );
         });
 
+        const sortAscIcon = <span className='pt-icon-standard pt-icon-sort-asc' />;
+        const sortDescIcon = <span className='pt-icon-standard pt-icon-sort-desc' />;
+
+        const sortIconForCol = (col: string) => {
+            if (col !== this.state.sort) {
+                return null;
+            }
+
+            return this.state.order === 'asc'
+                 ? sortAscIcon
+                 : sortDescIcon;
+        };
+
         return (
             <div className='pt-card'>
                 <h3>County Updates</h3>
@@ -163,27 +176,35 @@ class CountyUpdates extends React.Component<any, any> {
                             <tr>
                                 <th onClick={ this.sortBy('name') }>
                                     Name
+                                    { sortIconForCol('name') }
                                 </th>
                                 <th onClick={ this.sortBy('status') }>
                                     Status
+                                    { sortIconForCol('status') }
                                 </th>
                                 <th onClick={ this.sortBy('submitted') }>
                                     Submitted
+                                    { sortIconForCol('submitted') }
                                 </th>
                                 <th onClick={ this.sortBy('auditedDisc') }>
                                     Audited Contest Discrepancies
+                                    { sortIconForCol('auditedDisc') }
                                 </th>
                                 <th onClick={ this.sortBy('oppDisc') }>
                                     Non-audited Contest Discrepancies
+                                    { sortIconForCol('oppDisc') }
                                 </th>
                                 <th onClick={ this.sortBy('disagreements') }>
                                     Disagreements
+                                    { sortIconForCol('disagreements') }
                                 </th>
                                 <th onClick={ this.sortBy('remRound') }>
                                     <RemainingInRoundHeader />
+                                    { sortIconForCol('remRound') }
                                 </th>
                                 <th onClick={ this.sortBy('remTotal') }>
                                     <EstRemainingHeader />
+                                    { sortIconForCol('remTotal') }
                                 </th>
                             </tr>
                         </thead>
