@@ -80,7 +80,7 @@ const CountyDetails = (props: any) => {
     const submitted = status.auditedBallotCount;
 
     const auditedCount = _.get(status, 'discrepancyCount.audited') || '—';
-    const oppCount = _.get(status, 'discrepancyCount.opportunistic') || '—';
+    const unauditedCount = _.get(status, 'discrepancyCount.unaudited') || '—';
 
 
     const auditBoardSection = auditBoard
@@ -111,7 +111,7 @@ const CountyDetails = (props: any) => {
                         </tr>
                         <tr>
                             <td><strong>Non-audited Contest Discrepancies:</strong></td>
-                            <td>{ oppCount }</td>
+                            <td>{ unauditedCount }</td>
                         </tr>
                     </tbody>
                 </table>
