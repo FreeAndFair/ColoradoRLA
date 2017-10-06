@@ -142,7 +142,7 @@ The Secretary of State will then select the contests that will drive
 the sample size and stop/go decisions for each round.  Rule 25
 calls these "contests to be audited". Click on the “County” or “Contest” 
 column name to sort by that column’s data. To reverse sort, click on the 
-column again. 
+column name again. 
 
 ![Contest Selection](./screenshots/dos/220_select_contests_selected.png)
 
