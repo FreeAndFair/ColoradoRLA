@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>us.freeandfair.production</groupId>
 	<artifactId>colorado_rla</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	<name>ColoradoRLA</name>
 	<description>A risk-limiting audit system for the State of Colorado</description>
 	<properties>
@@ -197,6 +197,11 @@
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-core</artifactId>
 			<version>3.1.12</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-model</artifactId>
+			<version>3.5.0</version>
 		</dependency>
 	</dependencies>
 </project>

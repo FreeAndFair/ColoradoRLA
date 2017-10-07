@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -31,6 +32,9 @@ import javax.persistence.PersistenceException;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.Server;
 
@@ -138,7 +142,12 @@ public final class Main {
       setFieldNamingStrategy(new FreeAndFairNamingStrategy()).
       setExclusionStrategies(new VersionExclusionStrategy()).
       setPrettyPrinting().create();
-
+  
+  /**
+   * The version string.
+   */
+  public static final String VERSION;
+  
   /**
    * Which authentication subsystem implementation are we to use?
    */
@@ -148,6 +157,21 @@ public final class Main {
    * The properties loaded from the properties file.
    */
   private final Properties my_properties;
+  
+  // Version Initializer
+  
+  static {
+    String version = "UNKNOWN";
+    try (InputStreamReader isr = 
+         new InputStreamReader(new FileInputStream("pom.xml"), "UTF-8")) {
+      final MavenXpp3Reader reader = new MavenXpp3Reader();
+      final Model model = reader.read(isr);
+      version = model.getVersion();
+    } catch (final IOException | XmlPullParserException e) {
+      // version is already set to "UNKNOWN"
+    }
+    VERSION = version;
+  }
   
   // Constructors
 
@@ -161,6 +185,13 @@ public final class Main {
   }
   
   // Instance Methods
+  
+  /**
+   * @return the version string of the system.
+   */
+  public static String version() {
+    return VERSION;
+  }
   
   /**
    * @return the implementation of `AuthenticationInterface` demanded by
@@ -414,7 +445,7 @@ public final class Main {
    * Starts a ColoradoRLA server.
    */
   public void start() {
-    LOGGER.info("starting server with properties: " + my_properties);
+    LOGGER.info("starting server version " + VERSION + " with properties: " + my_properties);
 
     // provide properties to the persistence engine
     Persistence.setProperties(my_properties);
