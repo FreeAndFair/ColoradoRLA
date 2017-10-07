@@ -724,20 +724,7 @@ public class CountyDashboard implements PersistentEntity {
   public void setBallotsInManifest(final Integer the_ballots_in_manifest) {
     my_ballots_in_manifest = the_ballots_in_manifest;
   }
-  
-  /**
-   * Ensures that a counter exists in the specified map for the specified key.
-   * 
-   * @param the_map The map.
-   * @param the_key The key.
-   */
-  private void ensureCounterExists(final Map<AuditSelection, Integer> the_map,
-                                   final AuditSelection the_key) {
-    if (!the_map.containsKey(the_key)) {
-      the_map.put(the_key, 0);
-    }
-  }
-  
+
   /**
    * @return the numbers of discrepancies found in the audit so far, 
    * categorized by contest audit selection.
@@ -758,8 +745,7 @@ public class CountyDashboard implements PersistentEntity {
       selections.add(r.selection());
     }
     for (final AuditSelection s : selections) {
-      ensureCounterExists(my_discrepancies, s);
-      my_discrepancies.put(s, my_discrepancies.get(s) + 1);
+      my_discrepancies.put(s, my_discrepancies.getOrDefault(s, 0) + 1);
     }
     if (my_current_round_index != null) {
       my_rounds.get(my_current_round_index).addDiscrepancy(the_reasons);
@@ -779,8 +765,7 @@ public class CountyDashboard implements PersistentEntity {
       selections.add(r.selection());
     }
     for (final AuditSelection s : selections) {
-      ensureCounterExists(my_discrepancies, s);
-      my_discrepancies.put(s, my_discrepancies.get(s) - 1);
+      my_discrepancies.put(s, my_discrepancies.getOrDefault(s, 0) - 1);
     }
     if (my_current_round_index != null) {
       my_rounds.get(my_current_round_index).removeDiscrepancy(the_reasons);
@@ -808,8 +793,7 @@ public class CountyDashboard implements PersistentEntity {
       selections.add(r.selection());
     }
     for (final AuditSelection s : selections) {
-      ensureCounterExists(my_disagreements, s);
-      my_disagreements.put(s, my_disagreements.get(s) + 1);
+      my_disagreements.put(s, my_disagreements.getOrDefault(s, 0) + 1);
     }
     if (my_current_round_index != null) {
       my_rounds.get(my_current_round_index).addDisagreement(the_reasons);
@@ -829,8 +813,7 @@ public class CountyDashboard implements PersistentEntity {
       selections.add(r.selection());
     }
     for (final AuditSelection s : selections) {
-      ensureCounterExists(my_disagreements, s);
-      my_disagreements.put(s, my_disagreements.get(s) - 1);
+      my_disagreements.put(s, my_disagreements.getOrDefault(s, 0) - 1);
     }
     if (my_current_round_index != null) {
       my_rounds.get(my_current_round_index).removeDisagreement(the_reasons);

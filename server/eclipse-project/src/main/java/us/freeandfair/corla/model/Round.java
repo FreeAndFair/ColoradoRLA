@@ -260,19 +260,6 @@ public class Round implements Serializable {
   }
   
   /**
-   * Ensures that a counter exists in the specified map for the specified key.
-   * 
-   * @param the_map The map.
-   * @param the_key The key.
-   */
-  private void ensureCounterExists(final Map<AuditSelection, Integer> the_map,
-                                   final AuditSelection the_key) {
-    if (!the_map.containsKey(the_key)) {
-      the_map.put(the_key, 0);
-    }
-  }
-  
-  /**
    * @return the numbers of discrepancies found in the audit so far, 
    * categorized by contest audit selection.
    */
@@ -292,8 +279,7 @@ public class Round implements Serializable {
       selections.add(r.selection());
     }
     for (final AuditSelection s : selections) {
-      ensureCounterExists(my_discrepancies, s);
-      my_discrepancies.put(s, my_discrepancies.get(s) + 1);
+      my_discrepancies.put(s, my_discrepancies.getOrDefault(s, 0) + 1);
     }
   }
   
@@ -309,8 +295,7 @@ public class Round implements Serializable {
       selections.add(r.selection());
     }
     for (final AuditSelection s : selections) {
-      ensureCounterExists(my_discrepancies, s);
-      my_discrepancies.put(s, my_discrepancies.get(s) - 1);
+      my_discrepancies.put(s, my_discrepancies.getOrDefault(s, 0) - 1);
     }
   }
   
@@ -334,8 +319,7 @@ public class Round implements Serializable {
       selections.add(r.selection());
     }
     for (final AuditSelection s : selections) {
-      ensureCounterExists(my_disagreements, s);
-      my_disagreements.put(s, my_disagreements.get(s) + 1);
+      my_disagreements.put(s, my_disagreements.getOrDefault(s, 0) + 1);
     }
   }
   
@@ -351,8 +335,7 @@ public class Round implements Serializable {
       selections.add(r.selection());
     }
     for (final AuditSelection s : selections) {
-      ensureCounterExists(my_disagreements, s);
-      my_disagreements.put(s, my_disagreements.get(s) - 1);
+      my_disagreements.put(s, my_disagreements.getOrDefault(s, 0) - 1);
     }
   }
   

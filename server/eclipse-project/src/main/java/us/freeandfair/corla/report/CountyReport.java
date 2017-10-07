@@ -480,7 +480,7 @@ public class CountyReport {
         cell.setCellType(CellType.NUMERIC);
         final int disagreements;
         if (round.disagreements().containsKey(AuditSelection.AUDITED_CONTEST)) {
-          disagreements = round.discrepancies().get(AuditSelection.AUDITED_CONTEST);
+          disagreements = round.disagreements().get(AuditSelection.AUDITED_CONTEST);
         } else {
           disagreements = 0;
         }
@@ -505,7 +505,7 @@ public class CountyReport {
         cell.setCellType(CellType.NUMERIC);
         final int disagreements;
         if (round.disagreements().containsKey(AuditSelection.UNAUDITED_CONTEST)) {
-          disagreements = round.discrepancies().get(AuditSelection.UNAUDITED_CONTEST);
+          disagreements = round.disagreements().get(AuditSelection.UNAUDITED_CONTEST);
         } else {
           disagreements = 0;
         }
