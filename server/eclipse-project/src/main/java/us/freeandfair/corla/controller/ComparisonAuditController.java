@@ -674,13 +674,8 @@ public final class ComparisonAuditController {
     }
     
     if (the_update_counters) {
-      for (final AuditReason r : discrepancies) {
-        the_cdb.addDiscrepancy(r);
-      }
-      
-      for (final AuditReason r : disagreements) {
-        the_cdb.addDisagreement(r);
-      }
+      the_cdb.addDiscrepancy(discrepancies);
+      the_cdb.addDisagreement(disagreements);
     }
   }
   
@@ -734,13 +729,8 @@ public final class ComparisonAuditController {
       Persistence.saveOrUpdate(cvrai);
     }
     
-    for (final AuditReason r : discrepancies) {
-      the_cdb.removeDiscrepancy(r);
-    }
-    
-    for (final AuditReason r : disagreements) {
-      the_cdb.removeDiscrepancy(r);
-    }
+    the_cdb.removeDiscrepancy(discrepancies);
+    the_cdb.removeDisagreement(disagreements);
   }
   
   /**

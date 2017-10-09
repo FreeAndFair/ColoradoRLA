@@ -573,7 +573,8 @@ public class DominionCVRExportParser implements CVRExportParser {
           } else {
             my_record_count = my_record_count + 1;
             if (my_record_count % PROGRESS_INTERVAL == 0) {
-              Main.LOGGER.info("parsed " + my_record_count + " CVRs");
+              Main.LOGGER.info("parsed " + my_record_count + 
+                               " CVRs for county " + my_county.id());
             }
           }
         }

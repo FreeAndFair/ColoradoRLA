@@ -43,7 +43,7 @@ import javax.persistence.Table;
 import javax.persistence.Version;
 
 import us.freeandfair.corla.model.CVRContestInfo.ConsensusValue;
-import us.freeandfair.corla.persistence.AuditReasonIntegerMapConverter;
+import us.freeandfair.corla.persistence.AuditSelectionIntegerMapConverter;
 import us.freeandfair.corla.persistence.PersistentEntity;
 
 /**
@@ -255,15 +255,15 @@ public class CountyDashboard implements PersistentEntity {
    * The number of discrepancies found in the audit so far.
    */
   @Column(nullable = false, name = "discrepancies", columnDefinition = "text")
-  @Convert(converter = AuditReasonIntegerMapConverter.class)
-  private Map<AuditReason, Integer> my_discrepancies = new HashMap<>();
+  @Convert(converter = AuditSelectionIntegerMapConverter.class)
+  private Map<AuditSelection, Integer> my_discrepancies = new HashMap<>();
   
   /**
    * The number of disagreements found in the audit so far.
    */
   @Column(nullable = false, name = "disagreements", columnDefinition = "text")
-  @Convert(converter = AuditReasonIntegerMapConverter.class)
-  private Map<AuditReason, Integer> my_disagreements = new HashMap<>();
+  @Convert(converter = AuditSelectionIntegerMapConverter.class)
+  private Map<AuditSelection, Integer> my_disagreements = new HashMap<>();
   
   /**
    * Constructs an empty county dashboard, solely for persistence.
@@ -533,12 +533,8 @@ public class CountyDashboard implements PersistentEntity {
         }
       }
       the_round.addAuditedBallot();
-      for (final AuditReason r : discrepancies) {
-        the_round.addDiscrepancy(r);
-      }
-      for (final AuditReason r : disagreements) {
-        the_round.addDisagreement(r);
-      }
+      the_round.addDiscrepancy(discrepancies);
+      the_round.addDisagreement(disagreements);
       index = index + 1;
     }
   }
@@ -728,89 +724,99 @@ public class CountyDashboard implements PersistentEntity {
   public void setBallotsInManifest(final Integer the_ballots_in_manifest) {
     my_ballots_in_manifest = the_ballots_in_manifest;
   }
-  
-  /**
-   * Ensures that a counter exists in the specified map for the specified key.
-   * 
-   * @param the_map The map.
-   * @param the_key The key.
-   */
-  private void ensureCounterExists(final Map<AuditReason, Integer> the_map,
-                                   final AuditReason the_key) {
-    if (!the_map.containsKey(the_key)) {
-      the_map.put(the_key, 0);
-    }
-  }
-  
+
   /**
    * @return the numbers of discrepancies found in the audit so far, 
-   * categorized by contest audit reason.
+   * categorized by contest audit selection.
    */
-  public Map<AuditReason, Integer> discrepancies() {
+  public Map<AuditSelection, Integer> discrepancies() {
     return Collections.unmodifiableMap(my_discrepancies);
   }
   
   /**
-   * Adds a discrepancy for the specified audit reason. This adds it both to the 
+   * Adds a discrepancy for the specified audit reasons. This adds it both to the 
    * total and to the current audit round, if one is ongoing.
    * 
-   * @param the_reason The reason.
+   * @param the_reasons The reasons.
    */
-  public void addDiscrepancy(final AuditReason the_reason) {
-    ensureCounterExists(my_discrepancies, the_reason);
-    my_discrepancies.put(the_reason, my_discrepancies.get(the_reason) + 1); 
+  public void addDiscrepancy(final Set<AuditReason> the_reasons) {
+    final Set<AuditSelection> selections = new HashSet<>();
+    for (final AuditReason r : the_reasons) {
+      selections.add(r.selection());
+    }
+    for (final AuditSelection s : selections) {
+      my_discrepancies.put(s, my_discrepancies.getOrDefault(s, 0) + 1);
+    }
     if (my_current_round_index != null) {
-      my_rounds.get(my_current_round_index).addDiscrepancy(the_reason);
+      my_rounds.get(my_current_round_index).addDiscrepancy(the_reasons);
     } 
   }
   
   /**
-   * Removes a discrepancy for the specified audit reason. This removes it 
+   * Removes a discrepancy for the specified audit reasons. This removes it 
    * both from the total and from the current audit round, if one is ongoing.
    * 
-   * @param the_reason The reason.
+   * 
+   * @param the_reasons The reasons.
    */
-  public void removeDiscrepancy(final AuditReason the_reason) {
-    ensureCounterExists(my_discrepancies, the_reason);
-    my_discrepancies.put(the_reason, my_discrepancies.get(the_reason) - 1);
-    if (my_current_round_index != null) {
-      my_rounds.get(my_current_round_index).removeDiscrepancy(the_reason);
+  public void removeDiscrepancy(final Set<AuditReason> the_reasons) {
+    final Set<AuditSelection> selections = new HashSet<>();
+    for (final AuditReason r : the_reasons) {
+      selections.add(r.selection());
     }
+    for (final AuditSelection s : selections) {
+      my_discrepancies.put(s, my_discrepancies.getOrDefault(s, 0) - 1);
+    }
+    if (my_current_round_index != null) {
+      my_rounds.get(my_current_round_index).removeDiscrepancy(the_reasons);
+    } 
   }
+  
   
   /**
    * @return the numbers of disagreements found in the audit so far,
-   * categorized by contest audit reason.
+   * categorized by contest audit selection.
    */
-  public Map<AuditReason, Integer> disagreements() {
+  public Map<AuditSelection, Integer> disagreements() {
     return my_disagreements;
   }
   
   /**
-   * Adds a disagreement for the specified audit reason. This adds it both to the 
+   * Adds a disagreement for the specified audit reasons. This adds it both to the 
    * total and to the current audit round, if one is ongoing.
    * 
-   * @param the_reason The reason.
+   * @param the_reasons The reasons.
    */
-  public void addDisagreement(final AuditReason the_reason) {
-    ensureCounterExists(my_disagreements, the_reason);
-    my_disagreements.put(the_reason, my_disagreements.get(the_reason) + 1);
+  public void addDisagreement(final Set<AuditReason> the_reasons) {
+    final Set<AuditSelection> selections = new HashSet<>();
+    for (final AuditReason r : the_reasons) {
+      selections.add(r.selection());
+    }
+    for (final AuditSelection s : selections) {
+      my_disagreements.put(s, my_disagreements.getOrDefault(s, 0) + 1);
+    }
     if (my_current_round_index != null) {
-      my_rounds.get(my_current_round_index).addDisagreement(the_reason);
+      my_rounds.get(my_current_round_index).addDisagreement(the_reasons);
     } 
   }
   
   /**
-   * Removes a disagreement for the specified audit reason. This removes it 
+   * Removes a disagreement for the specified audit reasons. This removes it 
    * both from the total and from the current audit round, if one is ongoing.
    * 
-   * @param the_reason The reason.
+   * 
+   * @param the_reasons The reasons.
    */
-  public void removeDisagreement(final AuditReason the_reason) {
-    ensureCounterExists(my_disagreements, the_reason);
-    my_disagreements.put(the_reason, my_disagreements.get(the_reason) - 1);
+  public void removeDisagreement(final Set<AuditReason> the_reasons) {
+    final Set<AuditSelection> selections = new HashSet<>();
+    for (final AuditReason r : the_reasons) {
+      selections.add(r.selection());
+    }
+    for (final AuditSelection s : selections) {
+      my_disagreements.put(s, my_disagreements.getOrDefault(s, 0) - 1);
+    }
     if (my_current_round_index != null) {
-      my_rounds.get(my_current_round_index).removeDisagreement(the_reason);
+      my_rounds.get(my_current_round_index).removeDisagreement(the_reasons);
     } 
   }
   

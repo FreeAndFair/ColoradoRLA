@@ -28,7 +28,7 @@ import us.freeandfair.corla.asm.AuditBoardDashboardASM;
 import us.freeandfair.corla.asm.CountyDashboardASM;
 import us.freeandfair.corla.model.AuditBoard;
 import us.freeandfair.corla.model.AuditInfo;
-import us.freeandfair.corla.model.AuditReason;
+import us.freeandfair.corla.model.AuditSelection;
 import us.freeandfair.corla.model.AuditType;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.ContestToAudit;
@@ -135,14 +135,14 @@ public class CountyDashboardRefreshResponse {
   private final Integer my_audited_ballot_count;
   
   /**
-   * The numbers of discrepancies found, mapped by audit reason.
+   * The numbers of discrepancies found, mapped by audit selection.
    */
-  private final Map<AuditReason, Integer> my_discrepancy_count;
+  private final Map<AuditSelection, Integer> my_discrepancy_count;
   
   /**
-   * The number of disagreements found, mapped by audit reason.
+   * The number of disagreements found, mapped by audit selection.
    */
-  private final Map<AuditReason, Integer> my_disagreement_count;
+  private final Map<AuditSelection, Integer> my_disagreement_count;
 
   /**
    * The current ballot under audit.
@@ -223,9 +223,9 @@ public class CountyDashboardRefreshResponse {
                                            final Integer the_ballot_manifest_count,
                                            final Integer the_cvr_export_count,
                                            final Integer the_audited_ballot_count,
-                                           final Map<AuditReason, Integer> 
+                                           final Map<AuditSelection, Integer> 
                                                the_discrepancy_count, 
-                                           final Map<AuditReason, Integer> 
+                                           final Map<AuditSelection, Integer> 
                                                the_disagreement_count,
                                            final Long the_ballot_under_audit_id,
                                            final Integer the_audited_prefix_length,

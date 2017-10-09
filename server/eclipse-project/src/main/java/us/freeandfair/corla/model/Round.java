@@ -19,14 +19,16 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Embeddable;
 
-import us.freeandfair.corla.persistence.AuditReasonIntegerMapConverter;
+import us.freeandfair.corla.persistence.AuditSelectionIntegerMapConverter;
 import us.freeandfair.corla.persistence.ElectorListConverter;
 
 /**
@@ -101,15 +103,15 @@ public class Round implements Serializable {
    * The number of discrepancies found in the audit so far.
    */
   @Column(nullable = false, name = "discrepancies", columnDefinition = "text")
-  @Convert(converter = AuditReasonIntegerMapConverter.class)
-  private Map<AuditReason, Integer> my_discrepancies = new HashMap<>();
+  @Convert(converter = AuditSelectionIntegerMapConverter.class)
+  private Map<AuditSelection, Integer> my_discrepancies = new HashMap<>();
   
   /**
    * The number of disagreements found in the audit so far.
    */
   @Column(nullable = false, name = "disagreements", columnDefinition = "text")
-  @Convert(converter = AuditReasonIntegerMapConverter.class)
-  private Map<AuditReason, Integer> my_disagreements = new HashMap<>();
+  @Convert(converter = AuditSelectionIntegerMapConverter.class)
+  private Map<AuditSelection, Integer> my_disagreements = new HashMap<>();
   
   /**
    * The signatories for round sign-off
@@ -258,76 +260,83 @@ public class Round implements Serializable {
   }
   
   /**
-   * Ensures that a counter exists in the specified map for the specified key.
-   * 
-   * @param the_map The map.
-   * @param the_key The key.
-   */
-  private void ensureCounterExists(final Map<AuditReason, Integer> the_map,
-                                   final AuditReason the_key) {
-    if (!the_map.containsKey(the_key)) {
-      the_map.put(the_key, 0);
-    }
-  }
-  
-  /**
    * @return the numbers of discrepancies found in the audit so far, 
-   * categorized by contest audit reason.
+   * categorized by contest audit selection.
    */
-  public Map<AuditReason, Integer> discrepancies() {
+  public Map<AuditSelection, Integer> discrepancies() {
     return Collections.unmodifiableMap(my_discrepancies);
   }
   
   /**
-   * Adds a discrepancy for the specified audit reason. This adds it both to the 
+   * Adds a discrepancy for the specified audit reasons. This adds it both to the 
    * total and to the current audit round, if one is ongoing.
    * 
-   * @param the_reason The reason.
+   * @param the_reasons The reasons.
    */
-  public void addDiscrepancy(final AuditReason the_reason) {
-    ensureCounterExists(my_discrepancies, the_reason);
-    my_discrepancies.put(the_reason, my_discrepancies.get(the_reason) + 1); 
+  public void addDiscrepancy(final Set<AuditReason> the_reasons) {
+    final Set<AuditSelection> selections = new HashSet<>();
+    for (final AuditReason r : the_reasons) {
+      selections.add(r.selection());
+    }
+    for (final AuditSelection s : selections) {
+      my_discrepancies.put(s, my_discrepancies.getOrDefault(s, 0) + 1);
+    }
   }
   
   /**
-   * Removes a discrepancy for the specified audit reason. This removes it 
+   * Removes a discrepancy for the specified audit reasons. This removes it 
    * both from the total and from the current audit round, if one is ongoing.
    * 
-   * @param the_reason The reason.
+   * @param the_reasons The reasons.
    */
-  public void removeDiscrepancy(final AuditReason the_reason) {
-    ensureCounterExists(my_discrepancies, the_reason);
-    my_discrepancies.put(the_reason, my_discrepancies.get(the_reason) - 1);
+  public void removeDiscrepancy(final Set<AuditReason> the_reasons) {
+    final Set<AuditSelection> selections = new HashSet<>();
+    for (final AuditReason r : the_reasons) {
+      selections.add(r.selection());
+    }
+    for (final AuditSelection s : selections) {
+      my_discrepancies.put(s, my_discrepancies.getOrDefault(s, 0) - 1);
+    }
   }
   
   /**
    * @return the numbers of disagreements found in the audit so far,
    * categorized by contest audit reason.
    */
-  public Map<AuditReason, Integer> disagreements() {
+  public Map<AuditSelection, Integer> disagreements() {
     return my_disagreements;
   }
   
   /**
-   * Adds a disagreement for the specified audit reason. This adds it both to the 
+   * Adds a disagreement for the specified audit reasons. This adds it both to the 
    * total and to the current audit round, if one is ongoing.
    * 
-   * @param the_reason The reason.
+   * @param the_reasons The reasons.
    */
-  public void addDisagreement(final AuditReason the_reason) {
-    ensureCounterExists(my_disagreements, the_reason);
-    my_disagreements.put(the_reason, my_disagreements.get(the_reason) + 1);
+  public void addDisagreement(final Set<AuditReason> the_reasons) {
+    final Set<AuditSelection> selections = new HashSet<>();
+    for (final AuditReason r : the_reasons) {
+      selections.add(r.selection());
+    }
+    for (final AuditSelection s : selections) {
+      my_disagreements.put(s, my_disagreements.getOrDefault(s, 0) + 1);
+    }
   }
   
   /**
-   * Removes a disagreement for the specified audit reason. This removes it 
+   * Removes a disagreement for the specified audit reasons. This removes it 
    * both from the total and from the current audit round, if one is ongoing.
    * 
-   * @param the_reason The reason.
+   * @param the_reasons The reasons.
    */
-  public void removeDisagreement(final AuditReason the_reason) {
-    ensureCounterExists(my_disagreements, the_reason);
-    my_disagreements.put(the_reason, my_disagreements.get(the_reason) - 1);
+  public void removeDisagreement(final Set<AuditReason> the_reasons) {
+    final Set<AuditSelection> selections = new HashSet<>();
+    for (final AuditReason r : the_reasons) {
+      selections.add(r.selection());
+    }
+    for (final AuditSelection s : selections) {
+      my_disagreements.put(s, my_disagreements.getOrDefault(s, 0) - 1);
+    }
   }
   
   /**

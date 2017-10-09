@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.OptionalInt;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -44,7 +43,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import us.freeandfair.corla.controller.ComparisonAuditController;
-import us.freeandfair.corla.model.AuditReason;
+import us.freeandfair.corla.model.AuditSelection;
 import us.freeandfair.corla.model.CVRAuditInfo;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.County;
@@ -429,11 +428,11 @@ public class CountyReport {
         cell = row.createCell(cell_number++);
         cell.setCellStyle(integer_style);
         cell.setCellType(CellType.NUMERIC);
-        int discrepancies = 0;
-        for (final Entry<AuditReason, Integer> entry : round.discrepancies().entrySet()) {
-          if (entry.getKey().isAudited() && entry.getValue() != null) {
-            discrepancies = discrepancies + entry.getValue();
-          }
+        final int discrepancies;
+        if (round.discrepancies().containsKey(AuditSelection.AUDITED_CONTEST)) {
+          discrepancies = round.discrepancies().get(AuditSelection.AUDITED_CONTEST);
+        } else {
+          discrepancies = 0;
         }
         cell.setCellValue(discrepancies);
         accumulator = accumulator + discrepancies;
@@ -454,11 +453,11 @@ public class CountyReport {
         cell = row.createCell(cell_number++);
         cell.setCellStyle(integer_style);
         cell.setCellType(CellType.NUMERIC);
-        int discrepancies = 0;
-        for (final Entry<AuditReason, Integer> entry : round.discrepancies().entrySet()) {
-          if (entry.getKey().isUnaudited() && entry.getValue() != null) {
-            discrepancies = discrepancies + entry.getValue();
-          }
+        final int discrepancies;
+        if (round.discrepancies().containsKey(AuditSelection.UNAUDITED_CONTEST)) {
+          discrepancies = round.discrepancies().get(AuditSelection.UNAUDITED_CONTEST);
+        } else {
+          discrepancies = 0;
         }
         cell.setCellValue(discrepancies);
         accumulator = accumulator + discrepancies;
@@ -479,14 +478,14 @@ public class CountyReport {
         cell = row.createCell(cell_number++);
         cell.setCellStyle(integer_style);
         cell.setCellType(CellType.NUMERIC);
-        int disagreements = 0;
-        for (final Entry<AuditReason, Integer> entry : round.disagreements().entrySet()) {
-          if (entry.getKey().isAudited() && entry.getValue() != null) {
-            disagreements = disagreements + entry.getValue();
-          }
+        final int disagreements;
+        if (round.disagreements().containsKey(AuditSelection.AUDITED_CONTEST)) {
+          disagreements = round.disagreements().get(AuditSelection.AUDITED_CONTEST);
+        } else {
+          disagreements = 0;
         }
-        accumulator = accumulator + disagreements;
         cell.setCellValue(disagreements);
+        accumulator = accumulator + disagreements;
       }
       cell = row.createCell(cell_number++);
       cell.setCellStyle(integer_style);
@@ -504,14 +503,14 @@ public class CountyReport {
         cell = row.createCell(cell_number++);
         cell.setCellStyle(integer_style);
         cell.setCellType(CellType.NUMERIC);
-        int disagreements = 0;
-        for (final Entry<AuditReason, Integer> entry : round.disagreements().entrySet()) {
-          if (entry.getKey().isUnaudited() && entry.getValue() != null) {
-            disagreements = disagreements + entry.getValue();
-          }
+        final int disagreements;
+        if (round.disagreements().containsKey(AuditSelection.UNAUDITED_CONTEST)) {
+          disagreements = round.disagreements().get(AuditSelection.UNAUDITED_CONTEST);
+        } else {
+          disagreements = 0;
         }
-        accumulator = accumulator + disagreements;
         cell.setCellValue(disagreements);
+        accumulator = accumulator + disagreements;
       }
       cell = row.createCell(cell_number++);
       cell.setCellStyle(integer_style);
@@ -639,25 +638,23 @@ public class CountyReport {
       
       row = round_sheet.createRow(row_number++);
       cell_number = 1; // these are headers for audit reasons
-      final List<AuditReason> listed_reasons = new ArrayList<>();
-      final Map<AuditReason, Integer> discrepancies = round.discrepancies();
-      final Map<AuditReason, Integer> disagreements = round.disagreements();
+      final List<AuditSelection> listed_selections = new ArrayList<>();
+      final Map<AuditSelection, Integer> discrepancies = round.discrepancies();
+      final Map<AuditSelection, Integer> disagreements = round.disagreements();
       
-      for (final AuditReason r : AuditReason.values()) {
-        if (discrepancies.containsKey(r) && discrepancies.get(r) >= 0 || 
-            disagreements.containsKey(r) && disagreements.get(r) >= 0) {
-          listed_reasons.add(r);
+      for (final AuditSelection s : AuditSelection.values()) {
+        if (discrepancies.containsKey(s) && discrepancies.get(s) >= 0 || 
+            disagreements.containsKey(s) && disagreements.get(s) >= 0) {
+          listed_selections.add(s);
         }
       }
-      for (final AuditReason r : listed_reasons) {
+      
+      Collections.sort(listed_selections);
+      
+      for (final AuditSelection s : listed_selections) {
         cell = row.createCell(cell_number++);
         cell.setCellStyle(bold_right_style);
-        if (r == AuditReason.OPPORTUNISTIC_BENEFITS) {
-          // Colorado has an aversion to the phrase "opportunistic benefits"
-          cell.setCellValue("Unaudited Contest");
-        } else {
-          cell.setCellValue(r.prettyString());
-        }
+        cell.setCellValue(s.prettyString());
       }
       
       row = round_sheet.createRow(row_number++);
@@ -669,14 +666,14 @@ public class CountyReport {
       if (discrepancies.isEmpty()) {
         cell.setCellValue("No Discrepancies Recorded");
       } else {
-        cell.setCellValue("Discrepancies Recorded by Audit Reason");
-        for (final AuditReason r : listed_reasons) {
+        cell.setCellValue("Discrepancies Recorded");
+        for (final AuditSelection s : listed_selections) {
           cell = row.createCell(cell_number++);
           cell.setCellType(CellType.NUMERIC);
           cell.setCellStyle(integer_style);
           final int cell_value;
-          if (discrepancies.containsKey(r)) {
-            cell_value = discrepancies.get(r);
+          if (discrepancies.containsKey(s)) {
+            cell_value = discrepancies.get(s);
           } else {
             cell_value = 0;
           }
@@ -693,14 +690,14 @@ public class CountyReport {
       if (disagreements.isEmpty()) {
         cell.setCellValue("No Disagreements Recorded");
       } else {
-        cell.setCellValue("Disagreements Recorded by Audit Reason");
-        for (final AuditReason r : listed_reasons) {
+        cell.setCellValue("Disagreements Recorded");
+        for (final AuditSelection s : listed_selections) {
           cell = row.createCell(cell_number++);
           cell.setCellType(CellType.NUMERIC);
           cell.setCellStyle(integer_style);
           final int cell_value;
-          if (disagreements.containsKey(r)) {
-            cell_value = disagreements.get(r);
+          if (disagreements.containsKey(s)) {
+            cell_value = disagreements.get(s);
           } else {
             cell_value = 0;
           }
