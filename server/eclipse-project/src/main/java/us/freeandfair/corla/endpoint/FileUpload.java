@@ -219,35 +219,38 @@ public class FileUpload extends AbstractEndpoint {
       return my_endpoint_result.get();
     } 
 
-    handleUpload(the_request, the_response, info);
+    // we can exit in several different ways, so let's make sure we delete
+    // the temp file even if we exit exceptionally
+    try {
+      handleUpload(the_request, the_response, info);
 
-    // now process the temp file, putting it in the database if persistence is
-    // enabled
+      // now process the temp file, putting it in the database if persistence is
+      // enabled
 
-    UploadedFile uploaded_file = null;
+      UploadedFile uploaded_file = null;
     
-    if (info.my_ok) {
-      info.my_computed_hash = HashChecker.hashFile(info.my_file);
-      info.my_uploaded_hash = 
-          info.my_form_fields.get(HASH).toUpperCase(Locale.US).trim();
-      uploaded_file = attemptFilePersistence(the_response, info, county);
-    }
-
-    // delete the temp file, if it exists
-
-    if (info.my_file != null) {
-      try {
-        if (!info.my_file.delete()) {
-          Main.LOGGER.error("Unable to delete temp file " + info.my_file);
-        }
-      } catch (final SecurityException e) {
-        // ignored - should never happen
+      if (info.my_ok) {
+        info.my_computed_hash = HashChecker.hashFile(info.my_file);
+        info.my_uploaded_hash = 
+            info.my_form_fields.get(HASH).toUpperCase(Locale.US).trim();
+        uploaded_file = attemptFilePersistence(the_response, info, county);
       }
-    }
-    
-    if (uploaded_file != null) {
-      okJSON(the_response, Main.GSON.toJson(uploaded_file));
-    } // else another result code has already been set
+
+      if (uploaded_file != null) {
+        okJSON(the_response, Main.GSON.toJson(uploaded_file));
+      } // else another result code has already been set
+    } finally {
+      // delete the temp file, if it exists
+      if (info.my_file != null) {
+        try {
+          if (!info.my_file.delete()) {
+            Main.LOGGER.error("Unable to delete temp file " + info.my_file);
+          }
+        } catch (final SecurityException e) {
+          // ignored - should never happen
+        }
+      }
+    } 
     return my_endpoint_result.get();
   }
   
