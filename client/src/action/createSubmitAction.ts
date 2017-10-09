@@ -55,11 +55,7 @@ function createSubmitAction(config: CreateSubmitConfig) {
 
             action(okType, data);
         } catch (e) {
-            if (e.message === 'Failed to fetch') {
-                action(networkFailType);
-            }
-
-            action('INTERNAL_ERROR');
+            action(networkFailType);
 
             throw e;
         }

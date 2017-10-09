@@ -38,11 +38,7 @@ async function importCvrExport(body: any) {
 
         action('IMPORT_CVR_EXPORT_OK', data);
     } catch (e) {
-        if (e.message === 'Failed to fetch') {
-            action('IMPORT_CVR_EXPORT_NETWORK_FAIL');
-        }
-
-        action('INTERNAL_ERROR');
+        action('IMPORT_CVR_EXPORT_NETWORK_FAIL');
 
         throw e;
     }
@@ -75,11 +71,7 @@ async function uploadCvrExport(countyId: number, file: Blob, hash: string) {
 
         importCvrExport(received);
     } catch (e) {
-        if (e.message === 'Failed to fetch') {
-            action('UPLOAD_CVR_EXPORT_NETWORK_FAIL');
-        }
-
-        action('INTERNAL_ERROR');
+        action('UPLOAD_CVR_EXPORT_NETWORK_FAIL');
 
         throw e;
     }
