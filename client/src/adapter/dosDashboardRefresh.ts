@@ -30,7 +30,7 @@ function parseDisagreementCount(data: any): number {
         return null;
     }
 
-    return _.sum(_.values(data));
+    return data.AUDITED_CONTEST;
 }
 
 function parseDiscrepancyCounts(data: any): any {
@@ -38,11 +38,8 @@ function parseDiscrepancyCounts(data: any): any {
         return null;
     }
 
-    const total = _.sum(_.values(data));
-    const opportunistic = data.OPPORTUNISTIC_BENEFITS || 0;
-    const tied = data.TIED_CONTEST || 0;
-    const unaudited = opportunistic + tied;
-    const audited = total - unaudited;
+    const audited = data.AUDITED_CONTEST;
+    const unaudited = data.UNAUDITED_CONTEST;
 
     return { audited, unaudited };
 }
