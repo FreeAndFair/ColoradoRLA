@@ -305,7 +305,7 @@ def main(parser):
                         "&include_audited&include_duplicates" % (county_id, ballot_count))
                 r = download_content(session, baseuri, query, filename)
 
-                filename = os.path.join(args.export_dir, 'county_report_%d.csv' % county_id)
+                filename = os.path.join(args.export_dir, 'county_report_%d.xlsx' % county_id)
                 download_content(session, baseuri, "county-report?county=%d" % county_id, filename)
 
 
