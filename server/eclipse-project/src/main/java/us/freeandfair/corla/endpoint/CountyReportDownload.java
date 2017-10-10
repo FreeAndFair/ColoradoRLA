@@ -24,6 +24,8 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.model.County;
+import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.report.CountyReport;
 import us.freeandfair.corla.util.SparkHelper;
 
@@ -35,6 +37,11 @@ import us.freeandfair.corla.util.SparkHelper;
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
 public class CountyReportDownload extends AbstractEndpoint {
+  /**
+   * The "county" parameter.
+   */
+  public static final String COUNTY = "county";
+  
   /**
    * {@inheritDoc}
    */
@@ -56,7 +63,32 @@ public class CountyReportDownload extends AbstractEndpoint {
    */
   @Override
   public AuthorizationType requiredAuthorization() {
-    return AuthorizationType.COUNTY;
+    return AuthorizationType.EITHER;
+  }
+  
+  /**
+   * Validate the request parameters. In this case, if the county
+   * parameter exists, it must be parseable as a long.
+   * 
+   * @param the_request The request.
+   */
+  @Override
+  protected boolean validateParameters(final Request the_request) {
+    final String county = the_request.queryParams(COUNTY);
+    boolean result = true;
+    
+    try { 
+      if (county == null && Main.authentication().authenticatedCounty(the_request) == null) {
+        // it's a DoS user, but they didn't specify a county
+        result = false;
+      } else if (county != null) {
+        Long.parseLong(county);
+      }
+    } catch (final NumberFormatException e) {
+      result = false;
+    }
+
+    return result;
   }
   
   /**
@@ -66,9 +98,22 @@ public class CountyReportDownload extends AbstractEndpoint {
   // necessary to break out of the lambda expression in case of IOException
   @SuppressWarnings("PMD.ExceptionAsFlowControl")
   public String endpoint(final Request the_request, final Response the_response) {
+    // we know we have either state or county authentication; this will be null
+    // for state authentication
+    County county = Main.authentication().authenticatedCounty(the_request);
+
+    if (county == null) {
+      county = 
+          Persistence.getByID(Long.parseLong(the_request.queryParams(COUNTY)), County.class);
+      if (county == null) {
+        badDataContents(the_response, "county " + the_request.queryParams(COUNTY) +
+                                      " does not exist");
+      }
+      assert county != null; // makes FindBugs happy
+    }
+
     final boolean pdf = "pdf".equalsIgnoreCase(the_request.queryParams("file_type"));
-    final CountyReport cr = 
-        new CountyReport(Main.authentication().authenticatedCounty(the_request));
+    final CountyReport cr = new CountyReport(county);
     byte[] file = new byte[0];
     String filename = "";
     

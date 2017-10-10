@@ -161,10 +161,11 @@ public final class ComparisonAuditController {
     final OptionalLong county_ballots_found = 
         CastVoteRecordQueries.countMatching(the_cdb.id(), RecordType.UPLOADED);
     final long county_ballots;
-    if (county_ballots_found.isPresent()) {
+    if (county_ballots_found.isPresent() && 0 < county_ballots_found.getAsLong()) {
       county_ballots = county_ballots_found.getAsLong();
     } else {
-      county_ballots = 0;
+      // we can't generate a list for this county
+      return new ArrayList<>();
     }
     final Set<CastVoteRecord> cvr_set = new HashSet<>();
     final List<CastVoteRecord> cvr_to_audit_list = new ArrayList<>();
@@ -211,16 +212,18 @@ public final class ComparisonAuditController {
    * @param the_start_index The start index.
    * @param the_desired_prefix_length The desired prefix length.
    * @param the_audited true to include already-audited ballots, false otherwise.
-   * @exception IllegalArgumentException if 
-   * the_start_index >= the_desired_prefix_length
+   * @return the list of ballot (cards) for audit; if the query does not result
+   * in any ballot (cards), as when the prefix length or start index is invalid,
+   * the returned list is empty.
    */
   @SuppressWarnings("PMD.UselessParentheses")
   public static List<CastVoteRecord> computeBallotOrder(final CountyDashboard the_cdb,
                                                         final int the_start_index,
                                                         final int the_desired_prefix_length,
                                                         final boolean the_audited) {
-    if (the_start_index >= the_desired_prefix_length) {
-      throw new IllegalArgumentException("invalid sequence bounds");
+    if (the_start_index < 0 || the_desired_prefix_length <= the_start_index ||
+        the_cdb.cvrFile() == null) {
+      return new ArrayList<>();
     }
     
     // we need to get the CVRs for the county's sequence, starting at the_start_index,
@@ -262,15 +265,16 @@ public final class ComparisonAuditController {
    * @param the_cdb The dashboard.
    * @param the_round The round number.
    * @param the_audited True to include already-audited ballots, false otherwise.
-   * @exception IllegalArgumentException if the specified dashboard does not have
-   * a round with the specified number, or if a round number <= 0 is specified.
+   * @return the list of ballot (cards) for audit; if the query does not result
+   * in any ballot (cards), as when the round number is invalid, the returned list 
+   * is empty.
    */
   @SuppressWarnings("PMD.UselessParentheses")
   public static List<CastVoteRecord> computeBallotOrder(final CountyDashboard the_cdb,
                                                         final int the_round,
                                                         final boolean the_audited) {
     if (the_round <= 0 || the_cdb.rounds().size() < the_round) {
-      throw new IllegalArgumentException("invalid round number");
+      return new ArrayList<>();
     }
     // round numbers are 1-based, not 0-based
     final Round round = the_cdb.rounds().get(the_round - 1);
