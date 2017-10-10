@@ -194,6 +194,23 @@ def download_content(session, baseuri, path, filename):
                 logging.error('download_content %s: %s' % (baseuri + path, e))
 
 
+def download_file(session, baseuri, file_id, filename):
+    "Download the previously-uploaded file with the given file_id to the given filename"
+
+    try:
+        with open(filename, 'wb') as f:
+            path = "/download-file"
+            r = session.get(baseuri + path, params={'file_info': json.dumps({'file_id': "%d" % file_id})})
+
+        if r.status_code != 200:
+            logging.error('download_file: status_code %d for %s file, file_id %d' % (r.status_code, filename, file_id))
+
+        with open(filename, "wb") as f:
+            f.write(r.content)
+    except (IOError, requests.RequestException) as e:
+        logging.error("download_file for file_id %d: %s" % (file_id, e))
+
+
 def main(parser):
     "Run audit_center with given OptionParser arguments"
 
@@ -268,21 +285,29 @@ def main(parser):
                              os.path.join(args.export_dir, 'state_report.xlsx'))
 
         for county_status in dos_dashboard.county_status.values():
-            # FIXME: no 'current_round' at the end of the audit
-            if not county_status.has_key('current_round'):
+            county_id = county_status.id
+
+            if county_status.has_key('ballot_manifest_file'):
+                filename = os.path.join(args.export_dir, 'county_manifest_%d.csv' % county_id)
+                download_file(session, baseuri, county_status.ballot_manifest_file.file_id, filename)
+
+            if county_status.has_key('cvr_export_file'):
+                filename = os.path.join(args.export_dir, 'county_cvr_%d.csv' % county_id)
+                download_file(session, baseuri, county_status.cvr_export_file.file_id, filename)
+
+            if not county_status.has_key('rounds') or len(county_status.rounds) <= 0:
                 continue
-            ballot_count = (county_status.current_round.expected_audited_prefix_length +
-                            county_status.current_round.previous_ballots_audited)
+
+            ballot_count = county_status.rounds[-1].expected_audited_prefix_length
             if ballot_count > 0:
-                county_id = county_status.id
                 filename = os.path.join(args.export_dir, 'ballot_list_%d.csv' % county_id)
                 query = ("cvr-to-audit-download?county=%d&start=0&ballot_count=%d"
                         "&include_audited&include_duplicates" % (county_id, ballot_count))
                 r = download_content(session, baseuri, query, filename)
 
                 filename = os.path.join(args.export_dir, 'county_report_%d.csv' % county_id)
-                # FIXME: specify county id. can we get county reports via state login?
-                download_content(session, baseuri, "county-report", filename)
+                download_content(session, baseuri, "county-report?county=%d" % county_id, filename)
+
 
 if __name__ == "__main__":
     main(parser)
