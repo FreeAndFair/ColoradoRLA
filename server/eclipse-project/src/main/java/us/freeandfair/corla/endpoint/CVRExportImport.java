@@ -58,6 +58,16 @@ import us.freeandfair.corla.util.UploadedFileStreamer;
     "PMD.StdCyclomaticComplexity"})
 public class CVRExportImport extends AbstractCountyDashboardEndpoint {
   /**
+   * The number of times to retry a DoS dashboard update operation.
+   */
+  private static final int DOS_DASHBOARD_UPDATE_RETRIES = 10;
+  
+  /**
+   * The number of milliseconds to sleep between transaction retries.
+   */
+  private static final long TRANSACTION_SLEEP_MSEC = 1000;
+  
+  /**
    * The " (id " string.
    */
   private static final String PAREN_ID = " (id ";
@@ -141,7 +151,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
                                       true);
       int deleted = 0;
       try {
-        deleted = cleanup(the_file.county());
+        deleted = cleanup(the_response, the_file.county());
       } catch (final PersistenceException ex) {
         transactionFailure(the_response, "unable to delete previously uploaded CVRs");
         // we have to halt manually
@@ -149,20 +159,21 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
       }
       if (parser.parse()) {
         final int imported = parser.recordCount().getAsInt();
-        Main.LOGGER.info(imported + " CVRs parsed from file " + the_file.id());
+        Main.LOGGER.info(imported + " CVRs parsed from file " + the_file.id() + 
+                         " for county " + the_file.county().id());
         updateCountyDashboard(the_response, the_file, imported);
         the_file.setStatus(FileStatus.IMPORTED_AS_CVR_EXPORT);
         Persistence.saveOrUpdate(the_file);
+        handleTies(the_response, the_file.county());
         final Map<String, Integer> response = new HashMap<String, Integer>();
         response.put("records_imported", imported);
         if (deleted > 0) {
           response.put("records_deleted", deleted);
         }
-        handleTies(the_file.county());
         okJSON(the_response, Main.GSON.toJson(response));
       } else {
         try {
-          cleanup(the_file.county());
+          cleanup(the_response, the_file.county());
         } catch (final PersistenceException e) {
           // if we couldn't clean up, there's not much we can do about it
         }
@@ -175,7 +186,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
       Main.LOGGER.info("parse transactions did not complete successfully, " + 
                        "attempting cleanup");
       try {
-        cleanup(the_file.county());
+        cleanup(the_response, the_file.county());
       } catch (final PersistenceException ex) {
         // if we couldn't clean up, there's not much we can do about it
       }
@@ -190,7 +201,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
                        the_file.filename() + PAREN_ID + the_file.id() +
                        "): " + e);
       try {
-        cleanup(the_file.county());
+        cleanup(the_response, the_file.county());
       } catch (final PersistenceException ex) {
         // if we couldn't clean up, there's not much we can do about it
       }
@@ -206,24 +217,63 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
    * transaction, does the delete in its own transaction, and starts a new 
    * transaction so that one is open at all times during endpoint execution.
    * 
+   * @param the_response The HTTP response (for error handling if necessary).
    * @param the_county The county to wipe.
    * @return the number of deleted CVR records, if any were deleted.
    * @exception PersistenceException if the wipe was unsuccessful.
    */
-  private int cleanup(final County the_county) {
+  private int cleanup(final Response the_response, final County the_county) {
     if (Persistence.isTransactionActive()) {
       Persistence.commitTransaction();
     }
+    boolean success = false;
+    int retries = 0;
+    int result = 0;
+    while (!success && retries < DOS_DASHBOARD_UPDATE_RETRIES) {
+      try {
+        retries = retries + 1;
+        Main.LOGGER.debug("updating DoS dashboard, attempt " + retries + 
+                          ", county " + the_county.id());
+        Persistence.beginTransaction();
+        result = 
+            CastVoteRecordQueries.deleteMatching(the_county.id(), RecordType.UPLOADED);
+        CountyContestResultQueries.deleteForCounty(the_county.id());
+        final CountyDashboard cdb = 
+            Persistence.getByID(the_county.id(), CountyDashboard.class);
+        cdb.setCVRFile(null);
+        final DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
+        dosdb.removeContestsToAuditForCounty(the_county);
+        Persistence.commitTransaction();
+        success = true;
+      } catch (final PersistenceException e) {
+        // something went wrong, let's try again
+        if (Persistence.canTransactionRollback()) {
+          try {
+            Persistence.rollbackTransaction();
+          } catch (final PersistenceException ex) {
+            // not much we can do about it
+          }
+        }
+        result = 0;
+        // let's give other transactions time to breathe
+        try {
+          Thread.sleep(calculateTransactionSleep(the_county, retries));
+        } catch (final InterruptedException ex) {
+          // it's OK to be interrupted
+        }
+      }
+    }
+    // we always need a transaction running
     Persistence.beginTransaction();
-    final int result = 
-        CastVoteRecordQueries.deleteMatching(the_county.id(), RecordType.UPLOADED);
-    CountyContestResultQueries.deleteForCounty(the_county.id());
-    final CountyDashboard cdb = Persistence.getByID(the_county.id(), CountyDashboard.class);
-    cdb.setCVRFile(null);
-    final DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
-    dosdb.removeContestsToAuditForCounty(the_county);
-    Persistence.commitTransaction();
-    Persistence.beginTransaction();
+    if (!success) {
+      transactionFailure(the_response, 
+                         "could not update DoS dashboard for county " + the_county.id() + 
+                         " CVR reset after " + DOS_DASHBOARD_UPDATE_RETRIES + " retries");
+      // we have to halt manually because a transaction failure doesn't halt
+      halt(the_response);
+    }
+    Main.LOGGER.info("updated DoS dashboard for county " + the_county.id() + 
+                     " CVR reset in " + retries + " tries");
     return result;
   }
   
@@ -231,27 +281,83 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
    * Registers all tied contests in an uploaded CVR export as non-auditable contests
    * in the DoS dashboard.
    * 
+   * @param the_respone The HTTP response (for error handling).
    * @param the_county The county to handle ties in.
    * @return the number of tied contests detected.
    */
-  private int handleTies(final County the_county) {
+  private int handleTies(final Response the_response, final County the_county) {
+    if (Persistence.isTransactionActive()) {
+      Persistence.commitTransaction();
+    }
+    boolean success = false;
+    int retries = 0;
     int result = 0;
-    final Set<CountyContestResult> contest_results = 
-        CountyContestResultQueries.forCounty(the_county);
-    final DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
-    
-    for (final CountyContestResult ccr : contest_results) {
-      if (ccr.minMargin() == 0) { 
-        // this is a tied contest
-        final ContestToAudit cta = new ContestToAudit(ccr.contest(), 
-                                                      AuditReason.TIED_CONTEST, 
-                                                      AuditType.NOT_AUDITABLE);
-        dosdb.updateContestToAudit(cta);
-        result = result + 1;
+    while (!success && retries < DOS_DASHBOARD_UPDATE_RETRIES) {
+      try {
+        retries = retries + 1;
+        Main.LOGGER.debug("updating DoS dashboard, attempt " + retries + 
+                          ", county " + the_county.id());
+        Persistence.beginTransaction();
+        final Set<CountyContestResult> contest_results = 
+            CountyContestResultQueries.forCounty(the_county);
+        final DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
+
+        for (final CountyContestResult ccr : contest_results) {
+          if (ccr.minMargin() == 0) { 
+            // this is a tied contest
+            final ContestToAudit cta = new ContestToAudit(ccr.contest(), 
+                                                          AuditReason.TIED_CONTEST, 
+                                                          AuditType.NOT_AUDITABLE);
+            dosdb.updateContestToAudit(cta);
+            result = result + 1;
+          }
+        }
+        Persistence.commitTransaction();
+        success = true;
+      } catch (final PersistenceException e) {
+        // something went wrong, let's try again
+        if (Persistence.canTransactionRollback()) {
+          try {
+            Persistence.rollbackTransaction();
+          } catch (final PersistenceException ex) {
+            // not much we can do about it
+          }
+        }
+        result = 0;
+        // let's give other transactions time to breathe
+        try {
+          Thread.sleep(calculateTransactionSleep(the_county, retries));
+        } catch (final InterruptedException ex) {
+          // it's OK to be interrupted
+        }
       }
     }
-
+    // we always need a transaction running
+    Persistence.beginTransaction();
+    if (!success) {
+      transactionFailure(the_response, 
+                         "could not update DoS dashboard for county " + the_county.id() + 
+                         " tied contests after " + DOS_DASHBOARD_UPDATE_RETRIES + " retries");
+      // we have to halt manually because a transaction failure doesn't halt
+      halt(the_response);
+    }
+    Main.LOGGER.info("updated DoS dashboard for county " + the_county.id() + 
+                     " tied contests in " + retries + " tries");
     return result;
+  }
+  
+  /**
+   * Calculates a delay, in milliseconds, to sleep before retrying a transaction.
+   * 
+   * @param the_county The county to retry for.
+   * @param the_retries The number of retries so far.
+   */
+  private long calculateTransactionSleep(final County the_county, final int the_retries) {
+    final int county_id_mod = 4;
+    final int retry_fraction = 2;
+    
+    return (the_county.id() % county_id_mod + the_retries / retry_fraction) * 
+           TRANSACTION_SLEEP_MSEC;
   }
   
   /**
@@ -264,7 +370,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
     final County county = Main.authentication().authenticatedCounty(the_request);
 
     if (county == null) {
-      unauthorized(the_response, "unauthorized administrator for CVR export upload");
+      unauthorized(the_response, "unauthorized administrator for CVR import");
       return my_endpoint_result.get();
     }
     
