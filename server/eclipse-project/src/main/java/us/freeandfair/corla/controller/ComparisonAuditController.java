@@ -161,7 +161,7 @@ public final class ComparisonAuditController {
     final OptionalLong county_ballots_found = 
         CastVoteRecordQueries.countMatching(the_cdb.id(), RecordType.UPLOADED);
     final long county_ballots;
-    if (county_ballots_found.isPresent()) {
+    if (county_ballots_found.isPresent() && 0 < county_ballots_found.getAsLong()) {
       county_ballots = county_ballots_found.getAsLong();
     } else {
       // we can't generate a list for this county
@@ -221,7 +221,7 @@ public final class ComparisonAuditController {
                                                         final int the_start_index,
                                                         final int the_desired_prefix_length,
                                                         final boolean the_audited) {
-    if (the_start_index <= 0 || the_desired_prefix_length <= the_start_index ||
+    if (the_start_index < 0 || the_desired_prefix_length <= the_start_index ||
         the_cdb.cvrFile() == null) {
       return new ArrayList<>();
     }
