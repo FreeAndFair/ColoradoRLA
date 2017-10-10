@@ -61,8 +61,26 @@ parser.add_argument('--test',
 __doc__ = __doc__.replace("%InsertOptionParserUsage%\n", parser.format_help())
 
 
-class RLAToolError(Exception):
-    "Basic exception for errors raised by RLA tool"
+class Dotable(dict):
+    """Make nested python dictionaries (json-like objects) accessable using dot notation.
+    FIXME: Check licensing
+    From Andy Hayden, http://hayd.github.io/2013/dotable-dictionaries
+    """
+
+    __getattr__= dict.__getitem__
+
+    def __init__(self, d):
+        self.update(**dict((k, self.parse(v))
+                           for k, v in d.iteritems()))
+
+    @classmethod
+    def parse(cls, v):
+        if isinstance(v, dict):
+            return cls(v)
+        elif isinstance(v, list):
+            return [cls.parse(i) for i in v]
+        else:
+            return v
 
 
 def totest(n):
@@ -143,11 +161,11 @@ def state_login(uri, username, password):
         session = requests.Session()
         r = session.post(uri + PATH, data)
         if r.status_code != 200:
-            raise RLAToolError("Login failed for %s as %s: status_code %d" % (uri, username, r.status_code))
+            logging.error("Login failed for %s as %s: status_code %d" % (uri, username, r.status_code))
         r = session.post(uri + PATH, data)
         if r.status_code != 200:
-            raise RLAToolError("Login failed for %s as %s: status_code %d" % (uri, username, r.status_code))
-    except (requests.ConnectionError, RLAToolError) as e:
+            logging.error("Login phase 2 failed for %s as %s: status_code %d" % (uri, username, r.status_code))
+    except requests.ConnectionError as e:
         logging.error("state_login: %s" % e)
 
     return session
@@ -158,7 +176,7 @@ def get_endpoint(session, baseuri, path):
 
     r = session.get(baseuri + path)
     if r.status_code != 200:
-        raise RLAToolError('get_endpoint: Status code %d for %s' % (r.status_code, baseuri + path))
+        logging.error('get_endpoint: Status code %d for %s' % (r.status_code, baseuri + path))
 
     return r
 
@@ -167,9 +185,13 @@ def download_content(session, baseuri, path, filename):
     "Download and save the content from the given endpoint to filename"
 
     r = get_endpoint(session, baseuri, "/%s" % path)
-    with open(filename, "wb") as f:
-        f.write(r.content)
-        logging.debug("/%s report saved as %s" % (path, filename))
+    if r.status_code == 200:
+        with open(filename, "wb") as f:
+            try:
+                f.write(r.content)
+                logging.debug("/%s report saved as %s" % (path, filename))
+            except IOError as e:
+                logging.error('download_content %s: %s' % (baseuri + path, e))
 
 
 def main(parser):
@@ -233,14 +255,34 @@ def main(parser):
 
     baseuri = 'http://localhost:8888'
     ac.corla_auth = {'uri': baseuri, 'username': 'stateadmin1', 'password': ''}
+
     with state_login(**ac.corla_auth) as session:
+        r = get_endpoint(session, baseuri, "/dos-dashboard")
+        if r.status_code != 200:
+            logging.error("Can't get dos-dashboard: status_code %d" % (r.status_code))
+            sys.exit(2)
 
-        # FIXME: loop thru all the counties, perhaps make a zip file
-        county_id = 3
-        ballot_list_filename = os.path.join(args.export_dir, 'ballot_list_%d.csv' % county_id)
-        query = "cvr-to-audit-download?county=%d&start=0&ballot_count=%d&include_audited&include_duplicates" % (county_id, 10)
-        r = download_content(session, baseuri, query, ballot_list_filename)
+        dos_dashboard = Dotable(r.json())
 
+        r = download_content(session, baseuri, 'state-report',
+                             os.path.join(args.export_dir, 'state_report.xlsx'))
+
+        for county_status in dos_dashboard.county_status.values():
+            # FIXME: no 'current_round' at the end of the audit
+            if not county_status.has_key('current_round'):
+                continue
+            ballot_count = (county_status.current_round.expected_audited_prefix_length +
+                            county_status.current_round.previous_ballots_audited)
+            if ballot_count > 0:
+                county_id = county_status.id
+                filename = os.path.join(args.export_dir, 'ballot_list_%d.csv' % county_id)
+                query = ("cvr-to-audit-download?county=%d&start=0&ballot_count=%d"
+                        "&include_audited&include_duplicates" % (county_id, ballot_count))
+                r = download_content(session, baseuri, query, filename)
+
+                filename = os.path.join(args.export_dir, 'county_report_%d.csv' % county_id)
+                # FIXME: specify county id. can we get county reports via state login?
+                download_content(session, baseuri, "county-report", filename)
 
 if __name__ == "__main__":
     main(parser)
