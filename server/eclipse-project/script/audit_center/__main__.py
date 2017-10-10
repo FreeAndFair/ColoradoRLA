@@ -32,6 +32,7 @@ import glob
 import re
 import psycopg2
 import psycopg2.extras
+import requests
 
 __author__ = "Neal McBurnett <nealmcb@freeandfair.us>"
 __version__ = "0.1.0"
@@ -58,6 +59,10 @@ parser.add_argument('--test',
 
 # incorporate ArgParser usage documentation in our docstring
 __doc__ = __doc__.replace("%InsertOptionParserUsage%\n", parser.format_help())
+
+
+class RLAToolError(Exception):
+    "Basic exception for errors raised by RLA tool"
 
 
 def totest(n):
@@ -127,6 +132,46 @@ def query_to_csvfile(ac, queryfile, csvfile):
         return message
 
 
+def state_login(uri, username, password):
+    "Login as state admin in given requests session with given credentials"
+
+    PATH = "/auth-state-admin"
+    data={'username': username, 'password': password, 'second_factor': ''}
+
+    session = None
+    try:
+        session = requests.Session()
+        r = session.post(uri + PATH, data)
+        if r.status_code != 200:
+            raise RLAToolError("Login failed for %s as %s: status_code %d" % (uri, username, r.status_code))
+        r = session.post(uri + PATH, data)
+        if r.status_code != 200:
+            raise RLAToolError("Login failed for %s as %s: status_code %d" % (uri, username, r.status_code))
+    except (requests.ConnectionError, RLAToolError) as e:
+        logging.error("state_login: %s" % e)
+
+    return session
+
+
+def get_endpoint(session, baseuri, path):
+    "Retrieve an endpoint via the given Requests session"
+
+    r = session.get(baseuri + path)
+    if r.status_code != 200:
+        raise RLAToolError('get_endpoint: Status code %d for %s' % (r.status_code, baseuri + path))
+
+    return r
+
+
+def download_content(session, baseuri, path, filename):
+    "Download and save the content from the given endpoint to filename"
+
+    r = get_endpoint(session, baseuri, "/%s" % path)
+    with open(filename, "wb") as f:
+        f.write(r.content)
+        logging.debug("/%s report saved as %s" % (path, filename))
+
+
 def main(parser):
     "Run audit_center with given OptionParser arguments"
 
@@ -148,6 +193,8 @@ def main(parser):
     password = 'corla'
     # uri = 'jdbc:postgresql://localhost:5432/corla?reWriteBatchedInserts=true&disableColumnSantiser=true'
     uri = 'jdbc:postgresql://localhost:5432,192.168.24.76:5432,192.168.24.77:5432/corla?reWriteBatchedInserts=true&disableColumnSantiser=true'
+    # FIXME: temporarily use test database until config file parsing is done
+    uri = 'jdbc:postgresql://localhost:5432,192.168.24.76:5432,192.168.24.77:5432/corla_auditall?reWriteBatchedInserts=true&disableColumnSantiser=true'
 
     # Note: in ColoradoRLA, the uri property is used to specify the host and port,
     # but not user and password
@@ -183,6 +230,16 @@ def main(parser):
             break
 
         query_to_csvfile(ac, queryfile, resultfilebase + '.csv')
+
+    baseuri = 'http://localhost:8888'
+    ac.corla_auth = {'uri': baseuri, 'username': 'stateadmin1', 'password': ''}
+    with state_login(**ac.corla_auth) as session:
+
+        # FIXME: loop thru all the counties, perhaps make a zip file
+        county_id = 3
+        ballot_list_filename = os.path.join(args.export_dir, 'ballot_list_%d.csv' % county_id)
+        query = "cvr-to-audit-download?county=%d&start=0&ballot_count=%d&include_audited&include_duplicates" % (county_id, 10)
+        r = download_content(session, baseuri, query, ballot_list_filename)
 
 
 if __name__ == "__main__":
