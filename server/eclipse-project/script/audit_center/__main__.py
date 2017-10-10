@@ -35,9 +35,8 @@ import psycopg2.extras
 import requests
 
 __author__ = "Neal McBurnett <nealmcb@freeandfair.us>"
-__version__ = "0.1.0"
 __date__ = "2017-10-03"
-__copyright__ = "Copyright (c) 2017 Free & Fair"
+__copyright__ = "Copyright (c) 2017 Colorado Department of State"
 __license__ = "AGPLv3"
 
 parser = argparse.ArgumentParser(description='Export ColoradoRLA data for publication on Audit Center web site')
