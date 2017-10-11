@@ -13,8 +13,10 @@ package us.freeandfair.corla.endpoint;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.LineNumberReader;
 import java.io.OutputStream;
 import java.sql.Blob;
 import java.time.Instant;
@@ -111,9 +113,15 @@ public class FileUpload extends AbstractEndpoint {
                                               final County the_county) {
     UploadedFile result = null;
     
-    try (FileInputStream is = new FileInputStream(the_info.my_file)) {
+    try (FileInputStream is = new FileInputStream(the_info.my_file);
+         LineNumberReader lnr = new LineNumberReader(new FileReader(the_info.my_file))) {
       final Blob blob = Persistence.blobFor(is, the_info.my_file.length());
       final HashStatus hash_status;
+      
+      // first, compute the approximate number of records in the file
+      lnr.skip(Integer.MAX_VALUE);
+      final int approx_records = lnr.getLineNumber();
+      
       if (the_info.my_computed_hash == null) {
         hash_status = HashStatus.NOT_CHECKED;
       } else if (the_info.my_computed_hash.equals(the_info.my_uploaded_hash)) {
@@ -127,7 +135,8 @@ public class FileUpload extends AbstractEndpoint {
                                 FileStatus.NOT_IMPORTED, 
                                 the_info.my_uploaded_hash,
                                 hash_status, blob, 
-                                the_info.my_file.length());
+                                the_info.my_file.length(),
+                                approx_records);
       Persistence.save(result);
       Persistence.flush();
     } catch (final PersistenceException | IOException e) {

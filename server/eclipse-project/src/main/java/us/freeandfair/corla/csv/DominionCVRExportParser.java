@@ -38,6 +38,7 @@ import us.freeandfair.corla.model.Choice;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyContestResult;
+import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CountyContestResultQueries;
 
@@ -335,6 +336,16 @@ public class DominionCVRExportParser implements CVRExportParser {
     }
     
     if (my_multi_transaction && my_parsed_cvrs.size() % TRANSACTION_SIZE == 0) {
+      // update the count on the county dashboard
+      final CountyDashboard cdb = 
+          Persistence.getByID(my_county.id(), CountyDashboard.class);
+      // if we can't get a reference to the county dashboard, we've got problems -
+      // but we'll deal with them elsewhere
+      if (cdb != null) {
+        cdb.setCVRsImported(my_record_count);
+        Persistence.saveOrUpdate(cdb);
+      }
+      
       Persistence.commitTransaction();
       Persistence.beginTransaction();
     }
