@@ -266,6 +266,8 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
         Main.LOGGER.debug("updating DoS dashboard, attempt " + retries + 
                           ", county " + the_county.id());
         Persistence.beginTransaction();
+        final DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
+        dosdb.removeContestsToAuditForCounty(the_county);
         result = 
             CastVoteRecordQueries.deleteMatching(the_county.id(), RecordType.UPLOADED);
         CountyContestResultQueries.deleteForCounty(the_county.id());
@@ -276,8 +278,6 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
         if (the_failure_flag) {
           cdb.setCVRImportStatus(ImportStatus.FAILED);
         }
-        final DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
-        dosdb.removeContestsToAuditForCounty(the_county);
         Persistence.commitTransaction();
         success = true;
       } catch (final PersistenceException e) {
