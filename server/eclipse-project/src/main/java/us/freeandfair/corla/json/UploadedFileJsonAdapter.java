@@ -74,6 +74,11 @@ public final class UploadedFileJsonAdapter
    * The "status" string (for JSON serialization).
    */
   private static final String STATUS = "status";
+
+  /**
+   * The "approximate_record_count" string (for JSON serialization).
+   */
+  private static final String APPROXIMATE_RECORD_COUNT = "approximate_record_count";
   
   /**
    * Writes an uploaded file object.
@@ -94,6 +99,7 @@ public final class UploadedFileJsonAdapter
     the_writer.name(HASH).value(the_file.hash());
     the_writer.name(HASH_STATUS).value(the_file.hashStatus().toString());
     the_writer.name(STATUS).value(the_file.status().toString());
+    the_writer.name(APPROXIMATE_RECORD_COUNT).value(the_file.approximateRecordCount());
     the_writer.endObject();
   }
   
@@ -124,6 +130,7 @@ public final class UploadedFileJsonAdapter
         case HASH:
         case HASH_STATUS:
         case STATUS:
+        case APPROXIMATE_RECORD_COUNT:
           the_reader.skipValue();
           break;
           
