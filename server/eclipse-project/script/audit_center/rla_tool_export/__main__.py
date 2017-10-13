@@ -30,6 +30,8 @@ from argparse import Namespace
 import json
 import glob
 import re
+import pkg_resources
+import ConfigParser
 import psycopg2
 import psycopg2.extras
 import requests
@@ -39,17 +41,32 @@ __date__ = "2017-10-03"
 __copyright__ = "Copyright (c) 2017 Colorado Department of State"
 __license__ = "AGPLv3"
 
+SQL_PATH = pkg_resources.resource_filename('rla_tool_export', 'sql')
+PROPERTIES_FILE = pkg_resources.resource_filename('rla_tool_export', 'default.properties')
+
 parser = argparse.ArgumentParser(description='Export ColoradoRLA data for publication on Audit Center web site')
 
 parser.add_argument('queryfiles', metavar="QUERYFILE", nargs='*',
                     help='name of file with an SQL query to execute, relative to $SQL_DIR')
 
-parser.add_argument("-d, --debuglevel", type=int, default=logging.WARNING, dest="debuglevel",
-  help="Set logging level to debuglevel: DEBUG=10, INFO=20,\n WARNING=30 (the default), ERROR=40, CRITICAL=50")
+parser.add_argument('-p, --properties', dest='properties',
+                    default=PROPERTIES_FILE,
+                    help='Properties file from which to obtain database connection information. '
+                    'Default: ' + PROPERTIES_FILE)
 
 parser.add_argument('-e, --export-dir', dest='export_dir',
                     default=".",
                     help='Directory in which to put the resulting .json files. Default: . (current directory)')
+parser.add_argument('-c, --cvr-download', type=bool, dest='cvr_download',
+                    help='Download cvrs also - only needed once per audit, before dice are rolled')
+parser.add_argument('-u, --url', dest='url',
+                    default='http://localhost:8888',
+                    help='base url of corla server. Defaults to http://localhost:8888. '
+                    'Use something like http://example.gov/api when running '
+                    'against a full installation.')
+
+parser.add_argument("-d, --debuglevel", type=int, default=logging.WARNING, dest="debuglevel",
+  help="Set logging level to debuglevel: DEBUG=10, INFO=20,\n WARNING=30 (the default), ERROR=40, CRITICAL=50")
 
 parser.add_argument('--test',
   action="store_true", default=False,
@@ -62,8 +79,8 @@ __doc__ = __doc__.replace("%InsertOptionParserUsage%\n", parser.format_help())
 
 class Dotable(dict):
     """Make nested python dictionaries (json-like objects) accessable using dot notation.
-    FIXME: Check licensing
-    From Andy Hayden, http://hayd.github.io/2013/dotable-dictionaries
+
+    MIT License. Copyright 2013 Andy Hayden <http://hayd.github.io/2013/dotable-dictionaries> 
     """
 
     __getattr__= dict.__getitem__
@@ -80,6 +97,26 @@ class Dotable(dict):
             return [cls.parse(i) for i in v]
         else:
             return v
+
+
+class FakeSecHead(object):
+    """Read Java .properties files, a form of .INI file without a 'section header'.
+    From https://stackoverflow.com/a/2819788/507544
+    By [Alex Martelli](https://stackoverflow.com/users/95810/alex-martelli).
+    """
+
+    def __init__(self, fp):
+        self.fp = fp
+        self.sechead = '[p]\n'
+
+    def readline(self):
+        if self.sechead:
+            try: 
+                return self.sechead
+            finally: 
+                self.sechead = None
+        else: 
+            return self.fp.readline()
 
 
 def totest(n):
@@ -149,7 +186,7 @@ def query_to_csvfile(ac, queryfile, csvfile):
         return message
 
 
-def state_login(uri, username, password):
+def state_login(url, username, password):
     "Login as state admin in given requests session with given credentials"
 
     PATH = "/auth-state-admin"
@@ -158,48 +195,48 @@ def state_login(uri, username, password):
     session = None
     try:
         session = requests.Session()
-        r = session.post(uri + PATH, data)
+        r = session.post(url + PATH, data)
         if r.status_code != 200:
-            logging.error("Login failed for %s as %s: status_code %d" % (uri, username, r.status_code))
-        r = session.post(uri + PATH, data)
+            logging.error("Login failed for %s as %s: status_code %d" % (url, username, r.status_code))
+        r = session.post(url + PATH, data)
         if r.status_code != 200:
-            logging.error("Login phase 2 failed for %s as %s: status_code %d" % (uri, username, r.status_code))
+            logging.error("Login phase 2 failed for %s as %s: status_code %d" % (url, username, r.status_code))
     except requests.ConnectionError as e:
         logging.error("state_login: %s" % e)
 
     return session
 
 
-def get_endpoint(session, baseuri, path):
+def get_endpoint(session, baseurl, path):
     "Retrieve an endpoint via the given Requests session"
 
-    r = session.get(baseuri + path)
+    r = session.get(baseurl + path)
     if r.status_code != 200:
-        logging.error('get_endpoint: Status code %d for %s' % (r.status_code, baseuri + path))
+        logging.error('get_endpoint: Status code %d for %s' % (r.status_code, baseurl + path))
 
     return r
 
 
-def download_content(session, baseuri, path, filename):
+def download_content(session, baseurl, path, filename):
     "Download and save the content from the given endpoint to filename"
 
-    r = get_endpoint(session, baseuri, "/%s" % path)
+    r = get_endpoint(session, baseurl, "/%s" % path)
     if r.status_code == 200:
         with open(filename, "wb") as f:
             try:
                 f.write(r.content)
                 logging.debug("/%s report saved as %s" % (path, filename))
             except IOError as e:
-                logging.error('download_content %s: %s' % (baseuri + path, e))
+                logging.error('download_content %s: %s' % (baseurl + path, e))
 
 
-def download_file(session, baseuri, file_id, filename):
+def download_file(session, baseurl, file_id, filename):
     "Download the previously-uploaded file with the given file_id to the given filename"
 
     try:
         with open(filename, 'wb') as f:
             path = "/download-file"
-            r = session.get(baseuri + path, params={'file_info': json.dumps({'file_id': "%d" % file_id})})
+            r = session.get(baseurl + path, params={'file_info': json.dumps({'file_id': "%d" % file_id})})
 
         if r.status_code != 200:
             logging.error('download_file: status_code %d for %s file, file_id %d' % (r.status_code, filename, file_id))
@@ -210,7 +247,7 @@ def download_file(session, baseuri, file_id, filename):
         logging.error("download_file for file_id %d: %s" % (file_id, e))
 
 
-def main(parser):
+def main():
     "Run audit_center with given OptionParser arguments"
 
     args = parser.parse_args()
@@ -226,24 +263,24 @@ def main(parser):
     # Establish an audit_center context for passing state around
     ac = Namespace()
 
-    # TODO: parse default.properties file
-    user = 'corla'
-    password = 'corla'
-    # uri = 'jdbc:postgresql://localhost:5432/corla?reWriteBatchedInserts=true&disableColumnSantiser=true'
-    uri = 'jdbc:postgresql://localhost:5432,192.168.24.76:5432,192.168.24.77:5432/corla?reWriteBatchedInserts=true&disableColumnSantiser=true'
-    # FIXME: temporarily use test database until config file parsing is done
-    uri = 'jdbc:postgresql://localhost:5432,192.168.24.76:5432,192.168.24.77:5432/corla_auditall?reWriteBatchedInserts=true&disableColumnSantiser=true'
+    # Parse properties file
+    cp = ConfigParser.SafeConfigParser()
+    cp.readfp(FakeSecHead(open(args.properties)))
 
-    # Note: in ColoradoRLA, the uri property is used to specify the host and port,
+    # Note: in ColoradoRLA, the url property is used to specify the host and port,
     # but not user and password
 
-    # Remove hibernate-specific query strings and nonstandard 'scheme' value
-    pguri = re.sub(r'\?.*', '', uri.replace('jdbc:postgresql', 'postgresql'))
+    url = cp.get('p', 'hibernate.url')
+    user = cp.get('p', 'hibernate.user')
+    password = cp.get('p', 'hibernate.pass')
 
-    logging.debug("pguri: %s\n uri: %s" % (pguri, uri))
+    # Remove hibernate-specific query strings and nonstandard 'scheme' value
+    pgurl = re.sub(r'\?.*', '', url.replace('jdbc:postgresql', 'postgresql'))
+
+    logging.debug("pgurl: %s\n url: %s" % (pgurl, url))
 
     try:
-        ac.con = psycopg2.connect(pguri, user=user, password=password)
+        ac.con = psycopg2.connect(pgurl, user=user, password=password)
     except psycopg2.Error as e:
         logging.error(e)
         sys.exit(1)
@@ -252,7 +289,8 @@ def main(parser):
 
     queryfiles = args.queryfiles
     if not queryfiles:
-        sql_dir = os.environ.get('SQL_DIR', '.')
+        sql_dir = os.environ.get('SQL_DIR', SQL_PATH)
+        logging.debug('sql_dir = %s, path=%s' % (sql_dir, SQL_PATH))
         queryfiles = [filename for filename in glob.glob(sql_dir + "/*.sql")]
 
     for queryfile in queryfiles:
@@ -269,18 +307,18 @@ def main(parser):
 
         query_to_csvfile(ac, queryfile, resultfilebase + '.csv')
 
-    baseuri = 'http://localhost:8888'
-    ac.corla_auth = {'uri': baseuri, 'username': 'stateadmin1', 'password': ''}
+    baseurl = args.url
+    ac.corla_auth = {'url': baseurl, 'username': 'stateadmin1', 'password': ''}
 
     with state_login(**ac.corla_auth) as session:
-        r = get_endpoint(session, baseuri, "/dos-dashboard")
+        r = get_endpoint(session, baseurl, "/dos-dashboard")
         if r.status_code != 200:
             logging.error("Can't get dos-dashboard: status_code %d" % (r.status_code))
             sys.exit(2)
 
         dos_dashboard = Dotable(r.json())
 
-        r = download_content(session, baseuri, 'state-report',
+        r = download_content(session, baseurl, 'state-report',
                              os.path.join(args.export_dir, 'state_report.xlsx'))
 
         for county_status in dos_dashboard.county_status.values():
@@ -288,11 +326,11 @@ def main(parser):
 
             if county_status.has_key('ballot_manifest_file'):
                 filename = os.path.join(args.export_dir, 'county_manifest_%d.csv' % county_id)
-                download_file(session, baseuri, county_status.ballot_manifest_file.file_id, filename)
+                download_file(session, baseurl, county_status.ballot_manifest_file.file_id, filename)
 
-            if county_status.has_key('cvr_export_file'):
+            if county_status.has_key('cvr_export_file') and args.cvr_download:
                 filename = os.path.join(args.export_dir, 'county_cvr_%d.csv' % county_id)
-                download_file(session, baseuri, county_status.cvr_export_file.file_id, filename)
+                download_file(session, baseurl, county_status.cvr_export_file.file_id, filename)
 
             if not county_status.has_key('rounds') or len(county_status.rounds) <= 0:
                 continue
@@ -302,11 +340,11 @@ def main(parser):
                 filename = os.path.join(args.export_dir, 'ballot_list_%d.csv' % county_id)
                 query = ("cvr-to-audit-download?county=%d&start=0&ballot_count=%d"
                         "&include_audited&include_duplicates" % (county_id, ballot_count))
-                r = download_content(session, baseuri, query, filename)
+                r = download_content(session, baseurl, query, filename)
 
                 filename = os.path.join(args.export_dir, 'county_report_%d.xlsx' % county_id)
-                download_content(session, baseuri, "county-report?county=%d" % county_id, filename)
+                download_content(session, baseurl, "county-report?county=%d" % county_id, filename)
 
 
 if __name__ == "__main__":
-    main(parser)
+    main()
