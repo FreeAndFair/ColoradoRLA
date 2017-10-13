@@ -39,6 +39,7 @@ import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyContestResult;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
+import us.freeandfair.corla.model.ImportStatus;
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.model.UploadedFile.FileStatus;
 import us.freeandfair.corla.model.UploadedFile.HashStatus;
@@ -55,7 +56,7 @@ import us.freeandfair.corla.util.UploadedFileStreamer;
  */
 @SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.ExcessiveImports",
     "PMD.CyclomaticComplexity", "PMD.ModifiedCyclomaticComplexity",
-    "PMD.StdCyclomaticComplexity"})
+    "PMD.StdCyclomaticComplexity", "PMD.GodClass"})
 public class CVRExportImport extends AbstractCountyDashboardEndpoint {
   /**
    * The number of times to retry a DoS dashboard update operation.
@@ -109,18 +110,21 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
    * 
    * @param the_response The response object (for error reporting).
    * @param the_file The uploaded CVR file.
-   * @param the_ballots_cast The number of ballots in the CVR export.
+   * @param the_status The import status.
+   * @param the_cvrs_imported The number of CVRs imported.
    */
   private void updateCountyDashboard(final Response the_response, 
                                      final UploadedFile the_file,
-                                     final Integer the_ballots_cast) {
+                                     final ImportStatus the_status,
+                                     final Integer the_cvrs_imported) {
     final CountyDashboard cdb = 
         Persistence.getByID(the_file.county().id(), CountyDashboard.class);
     if (cdb == null) {
       serverError(the_response, "could not locate county dashboard");
     } else {
       cdb.setCVRFile(the_file);
-      cdb.setCVRsImported(the_ballots_cast);
+      cdb.setCVRImportStatus(the_status);
+      cdb.setCVRsImported(the_cvrs_imported);
       try {
         Persistence.saveOrUpdate(cdb);
       } catch (final PersistenceException e) {
@@ -141,7 +145,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
     @SuppressWarnings("PMD.DoNotUseThreads")
     final Thread thread = new Thread(ufs);
     thread.start();
-    
+      
     try {
       final InputStreamReader bmi_isr = new InputStreamReader(ufs.inputStream(), "UTF-8");
       final DominionCVRExportParser parser = 
@@ -150,18 +154,22 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
                                                           County.class),
                                       true);
       int deleted = 0;
+      
       try {
-        deleted = cleanup(the_response, the_file.county());
+        deleted = cleanup(the_response, the_file.county(), false);
       } catch (final PersistenceException ex) {
         transactionFailure(the_response, "unable to delete previously uploaded CVRs");
         // we have to halt manually
         halt(the_response);
       }
+      
+      updateCountyDashboard(the_response, the_file, ImportStatus.IN_PROGRESS, 0);
+      
       if (parser.parse()) {
         final int imported = parser.recordCount().getAsInt();
         Main.LOGGER.info(imported + " CVRs parsed from file " + the_file.id() + 
                          " for county " + the_file.county().id());
-        updateCountyDashboard(the_response, the_file, imported);
+        updateCountyDashboard(the_response, the_file, ImportStatus.SUCCESSFUL, imported);
         the_file.setStatus(FileStatus.IMPORTED_AS_CVR_EXPORT);
         Persistence.saveOrUpdate(the_file);
         handleTies(the_response, the_file.county());
@@ -173,7 +181,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
         okJSON(the_response, Main.GSON.toJson(response));
       } else {
         try {
-          cleanup(the_response, the_file.county());
+          cleanup(the_response, the_file.county(), true);
         } catch (final PersistenceException e) {
           // if we couldn't clean up, there's not much we can do about it
         }
@@ -186,7 +194,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
       Main.LOGGER.info("parse transactions did not complete successfully, " + 
                        "attempting cleanup");
       try {
-        cleanup(the_response, the_file.county());
+        cleanup(the_response, the_file.county(), true);
       } catch (final PersistenceException ex) {
         // if we couldn't clean up, there's not much we can do about it
       }
@@ -201,7 +209,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
                        the_file.filename() + PAREN_ID + the_file.id() +
                        "): " + e);
       try {
-        cleanup(the_response, the_file.county());
+        cleanup(the_response, the_file.county(), true);
       } catch (final PersistenceException ex) {
         // if we couldn't clean up, there's not much we can do about it
       }
@@ -219,10 +227,13 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
    * 
    * @param the_response The HTTP response (for error handling if necessary).
    * @param the_county The county to wipe.
+   * @param the_failure_flag true to set the CVR import status on the county
+   * dashboard to FAILED, false otherwise.
    * @return the number of deleted CVR records, if any were deleted.
    * @exception PersistenceException if the wipe was unsuccessful.
    */
-  private int cleanup(final Response the_response, final County the_county) {
+  private int cleanup(final Response the_response, final County the_county,
+                      final boolean the_failure_flag) {
     if (Persistence.isTransactionActive()) {
       Persistence.commitTransaction();
     }
@@ -235,14 +246,18 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
         Main.LOGGER.debug("updating DoS dashboard, attempt " + retries + 
                           ", county " + the_county.id());
         Persistence.beginTransaction();
+        final DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
+        dosdb.removeContestsToAuditForCounty(the_county);
         result = 
             CastVoteRecordQueries.deleteMatching(the_county.id(), RecordType.UPLOADED);
         CountyContestResultQueries.deleteForCounty(the_county.id());
         final CountyDashboard cdb = 
             Persistence.getByID(the_county.id(), CountyDashboard.class);
         cdb.setCVRFile(null);
-        final DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
-        dosdb.removeContestsToAuditForCounty(the_county);
+        cdb.setCVRsImported(0);
+        if (the_failure_flag) {
+          cdb.setCVRImportStatus(ImportStatus.FAILED);
+        }
         Persistence.commitTransaction();
         success = true;
       } catch (final PersistenceException e) {

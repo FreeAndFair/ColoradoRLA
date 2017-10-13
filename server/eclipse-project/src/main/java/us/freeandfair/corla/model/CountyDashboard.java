@@ -30,6 +30,8 @@ import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -126,6 +128,13 @@ public class CountyDashboard implements PersistentEntity {
    */
   @Column(nullable = false) 
   private Integer my_cvrs_imported = 0;
+  
+  /**
+   * The CVR import status.
+   */
+  @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
+  private ImportStatus my_cvr_import_status = ImportStatus.NOT_ATTEMPTED;
   
   /**
    * The timestamp of the most recent uploaded ballot manifest. 
@@ -707,6 +716,22 @@ public class CountyDashboard implements PersistentEntity {
    */
   public void setCVRsImported(final Integer the_cvrs_imported) {
     my_cvrs_imported = the_cvrs_imported;
+  }
+  
+  /**
+   * @return the CVR import status.
+   */
+  public ImportStatus cvrImportStatus() {
+    return my_cvr_import_status;
+  }
+  
+  /**
+   * Sets the CVR import status.
+   * 
+   * @param the_cvr_import_status The new status.
+   */
+  public void setCVRImportStatus(final ImportStatus the_cvr_import_status) {
+    my_cvr_import_status = the_cvr_import_status;
   }
   
   /**

@@ -120,6 +120,12 @@ public class UploadedFile implements PersistentEntity {
   private Long my_size;
   
   /**
+   * The approximate number of records in the file.
+   */
+  @Column(updatable = false, nullable = false)
+  private Integer my_approximate_record_count;
+  
+  /**
    * Constructs an empty uploaded file, solely for persistence.
    */
   public UploadedFile() {
@@ -138,6 +144,7 @@ public class UploadedFile implements PersistentEntity {
    * the hash.
    * @param the_file The file (as a Blob).
    * @param the_size The file size (in bytes).
+   * @param the_approximate_record_count The approximate record count.
    */
   public UploadedFile(final Instant the_timestamp,
                       final County the_county,
@@ -146,7 +153,8 @@ public class UploadedFile implements PersistentEntity {
                       final String the_hash,
                       final HashStatus the_hash_status,
                       final Blob the_file,
-                      final Long the_size) {
+                      final Long the_size,
+                      final Integer the_approximate_record_count) {
     super();
     my_timestamp = the_timestamp;
     my_county = the_county;
@@ -156,6 +164,7 @@ public class UploadedFile implements PersistentEntity {
     my_hash_status = the_hash_status;
     my_file = the_file;
     my_size = the_size;
+    my_approximate_record_count = the_approximate_record_count;
   }
   
   /**
@@ -248,6 +257,13 @@ public class UploadedFile implements PersistentEntity {
   }
   
   /**
+   * @return the approximate record count.
+   */
+  public Integer approximateRecordCount() {
+    return my_approximate_record_count;
+  }
+  
+  /**
    * @return a String representation of this elector.
    */
   @Override
@@ -256,7 +272,8 @@ public class UploadedFile implements PersistentEntity {
            my_timestamp + ", county=" + my_county + 
            ", status=" + my_status + ", filename=" +
            my_filename + ", hash=" + my_hash + ", hash_status=" + 
-           my_hash_status + ", size=" + my_size + "]";
+           my_hash_status + ", size=" + my_size + 
+           ", approx_record_count=" + my_approximate_record_count + "]";
   }
 
   /**
@@ -276,6 +293,8 @@ public class UploadedFile implements PersistentEntity {
       result &= nullableEquals(other_file.status(), status());
       result &= nullableEquals(other_file.hash(), hash());
       result &= nullableEquals(other_file.hashStatus(), hash());
+      result &= nullableEquals(other_file.size(), size());
+      result &= nullableEquals(other_file.approximateRecordCount(), approximateRecordCount());
     } else {
       result = false;
     }

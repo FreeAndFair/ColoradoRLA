@@ -35,6 +35,7 @@ import us.freeandfair.corla.model.ContestToAudit;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
+import us.freeandfair.corla.model.ImportStatus;
 import us.freeandfair.corla.model.Round;
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.persistence.Persistence;
@@ -130,6 +131,11 @@ public class CountyDashboardRefreshResponse {
   private final Integer my_cvr_export_count;
   
   /**
+   * The CVR import status.
+   */
+  private final ImportStatus my_cvr_import_status; 
+  
+  /**
    * The number of ballots audited.
    */
   private final Integer my_audited_ballot_count;
@@ -190,6 +196,8 @@ public class CountyDashboardRefreshResponse {
    * @param the_ballot_manifest_count The number of ballots represented by the
    * uploaded ballot manifest.
    * @param the_cvr_export_count The number of CVRs in the uploaded export file.
+   * @param the_cvr_import_status An indication of the status of an ongoing 
+   * CVR import.
    * @param the_audited_ballot_count The number of ballots audited.
    * @param the_discrepancy_count The number of discrepencies found, 
    * mapped by audit reason.
@@ -222,6 +230,7 @@ public class CountyDashboardRefreshResponse {
                                            final Integer the_ballots_remaining_in_round,
                                            final Integer the_ballot_manifest_count,
                                            final Integer the_cvr_export_count,
+                                           final ImportStatus the_cvr_import_status,
                                            final Integer the_audited_ballot_count,
                                            final Map<AuditSelection, Integer> 
                                                the_discrepancy_count, 
@@ -247,6 +256,7 @@ public class CountyDashboardRefreshResponse {
     my_ballots_remaining_in_round = the_ballots_remaining_in_round;
     my_ballot_manifest_count = the_ballot_manifest_count;
     my_cvr_export_count = the_cvr_export_count;
+    my_cvr_import_status = the_cvr_import_status;
     my_audited_ballot_count = the_audited_ballot_count;
     my_discrepancy_count = the_discrepancy_count;
     my_disagreement_count = the_disagreement_count;
@@ -323,6 +333,7 @@ public class CountyDashboardRefreshResponse {
                                               the_dashboard.ballotsRemainingInCurrentRound(),
                                               the_dashboard.ballotsInManifest(),
                                               the_dashboard.cvrsImported(),
+                                              the_dashboard.cvrImportStatus(),
                                               the_dashboard.ballotsAudited(),
                                               the_dashboard.discrepancies(),
                                               the_dashboard.disagreements(),
@@ -376,6 +387,7 @@ public class CountyDashboardRefreshResponse {
                                               the_dashboard.ballotsRemainingInCurrentRound(),
                                               the_dashboard.ballotsInManifest(),
                                               the_dashboard.cvrsImported(),
+                                              the_dashboard.cvrImportStatus(),
                                               the_dashboard.ballotsAudited(),
                                               the_dashboard.discrepancies(),
                                               the_dashboard.disagreements(),
