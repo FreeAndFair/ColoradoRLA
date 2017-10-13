@@ -146,8 +146,6 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
     final Thread thread = new Thread(ufs);
     thread.start();
       
-    updateCountyDashboard(the_response, the_file, ImportStatus.IN_PROGRESS, 0);
-      
     try {
       final InputStreamReader bmi_isr = new InputStreamReader(ufs.inputStream(), "UTF-8");
       final DominionCVRExportParser parser = 
@@ -156,6 +154,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
                                                           County.class),
                                       true);
       int deleted = 0;
+      
       try {
         deleted = cleanup(the_response, the_file.county(), false);
       } catch (final PersistenceException ex) {
@@ -163,6 +162,9 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
         // we have to halt manually
         halt(the_response);
       }
+      
+      updateCountyDashboard(the_response, the_file, ImportStatus.IN_PROGRESS, 0);
+      
       if (parser.parse()) {
         final int imported = parser.recordCount().getAsInt();
         Main.LOGGER.info(imported + " CVRs parsed from file " + the_file.id() + 
