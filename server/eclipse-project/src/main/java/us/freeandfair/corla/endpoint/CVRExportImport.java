@@ -110,42 +110,21 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
    * 
    * @param the_response The response object (for error reporting).
    * @param the_file The uploaded CVR file.
-   * @param the_ballots_cast The number of ballots in the CVR export.
+   * @param the_status The import status.
+   * @param the_cvrs_imported The number of CVRs imported.
    */
   private void updateCountyDashboard(final Response the_response, 
                                      final UploadedFile the_file,
-                                     final Integer the_ballots_cast) {
+                                     final ImportStatus the_status,
+                                     final Integer the_cvrs_imported) {
     final CountyDashboard cdb = 
         Persistence.getByID(the_file.county().id(), CountyDashboard.class);
     if (cdb == null) {
       serverError(the_response, "could not locate county dashboard");
     } else {
       cdb.setCVRFile(the_file);
-      cdb.setCVRsImported(the_ballots_cast);
-      try {
-        Persistence.saveOrUpdate(cdb);
-      } catch (final PersistenceException e) {
-        serverError(the_response, "could not update county dashboard");
-      }
-    }
-  }
-  
-  /**
-   * Updates the CVR import status for the specified county.
-   * 
-   * @param the_response The response object (for error reporting).
-   * @param the_county_id The county ID.
-   * @param the_status The new status.
-   */
-  private void updateImportStatus(final Response the_response, 
-                                  final Long the_county_id,
-                                  final ImportStatus the_status) {
-    final CountyDashboard cdb = 
-        Persistence.getByID(the_county_id, CountyDashboard.class);
-    if (cdb == null) {
-      serverError(the_response, "could not locate county dashboard");
-    } else {
       cdb.setCVRImportStatus(the_status);
+      cdb.setCVRsImported(the_cvrs_imported);
       try {
         Persistence.saveOrUpdate(cdb);
       } catch (final PersistenceException e) {
@@ -167,7 +146,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
     final Thread thread = new Thread(ufs);
     thread.start();
       
-    updateImportStatus(the_response, the_file.county().id(), ImportStatus.IN_PROGRESS);
+    updateCountyDashboard(the_response, the_file, ImportStatus.IN_PROGRESS, 0);
       
     try {
       final InputStreamReader bmi_isr = new InputStreamReader(ufs.inputStream(), "UTF-8");
@@ -188,8 +167,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
         final int imported = parser.recordCount().getAsInt();
         Main.LOGGER.info(imported + " CVRs parsed from file " + the_file.id() + 
                          " for county " + the_file.county().id());
-        updateImportStatus(the_response, the_file.county().id(), ImportStatus.SUCCESSFUL);
-        updateCountyDashboard(the_response, the_file, imported);
+        updateCountyDashboard(the_response, the_file, ImportStatus.SUCCESSFUL, imported);
         the_file.setStatus(FileStatus.IMPORTED_AS_CVR_EXPORT);
         Persistence.saveOrUpdate(the_file);
         handleTies(the_response, the_file.county());

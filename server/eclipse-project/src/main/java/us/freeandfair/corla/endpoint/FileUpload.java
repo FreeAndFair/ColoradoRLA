@@ -13,9 +13,9 @@ package us.freeandfair.corla.endpoint;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.OutputStream;
 import java.sql.Blob;
@@ -45,6 +45,7 @@ import us.freeandfair.corla.model.UploadedFile.HashStatus;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.util.FileHelper;
 import us.freeandfair.corla.util.SparkHelper;
+import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
  * The file upload endpoint.
@@ -108,13 +109,17 @@ public class FileUpload extends AbstractEndpoint {
    * @param the_county The county that uploaded the file.
    * @return the resulting entity if successful, null otherwise
    */
+  // we are deliberately ignoring the return value of lnr.skip()
+  @SuppressFBWarnings("SR_NOT_CHECKED")
   private UploadedFile attemptFilePersistence(final Response the_response, 
                                               final UploadInformation the_info,
                                               final County the_county) {
     UploadedFile result = null;
     
     try (FileInputStream is = new FileInputStream(the_info.my_file);
-         LineNumberReader lnr = new LineNumberReader(new FileReader(the_info.my_file))) {
+         LineNumberReader lnr = 
+             new LineNumberReader(new InputStreamReader(new FileInputStream(the_info.my_file), 
+                                                        "UTF-8"))) {
       final Blob blob = Persistence.blobFor(is, the_info.my_file.length());
       final HashStatus hash_status;
       
