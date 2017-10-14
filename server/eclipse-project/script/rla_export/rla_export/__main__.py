@@ -1,22 +1,20 @@
 #!/usr/bin/env python
-"""
-Audit_Center: Export ColoradoRLA data for publication on Audit Center web site
+"""rla_export: Export data from ColoradoRLA to allow public verification of the audit
 ~~~~~~~~
 
 Abbreviated usage:
 
-This will run queries using all the .sql files in the $SQL_DIR
-environmental variable, which is the current directory by default:
+This will run queries using all the standard .sql queries:
 
- audit_center [-e export_directory]
+ rla_export [-e export_directory]
 
 Export a query on selected sql files:
 
- audit_center [-e export_directory] file.sql ...
+ rla_export [-e export_directory] file.sql ...
 
 Full command line usage synopsis:
 
- audit_center -h
+ rla_export -h
 
 See README.md for documentation.
 """
@@ -41,8 +39,8 @@ __date__ = "2017-10-03"
 __copyright__ = "Copyright (c) 2017 Colorado Department of State"
 __license__ = "AGPLv3"
 
-SQL_PATH = pkg_resources.resource_filename('rla_tool_export', 'sql')
-PROPERTIES_FILE = pkg_resources.resource_filename('rla_tool_export', 'default.properties')
+SQL_PATH = pkg_resources.resource_filename('rla_export', 'sql')
+PROPERTIES_FILE = pkg_resources.resource_filename('rla_export', 'default.properties')
 
 parser = argparse.ArgumentParser(description='Export ColoradoRLA data for publication on Audit Center web site')
 
@@ -158,7 +156,7 @@ def query_to_json(ac, queryfile):
     try:
         ac.cur.execute(full_query)
     except psycopg2.Error as e:
-        message = ("audit_center json query error on %s:\n %s\nQuery: \n%s" %
+        message = ("rla_export json query error on %s:\n %s\nQuery: \n%s" %
                       (queryfile, e, full_query))
         logging.error(message)
         return message
@@ -180,7 +178,7 @@ def query_to_csvfile(ac, queryfile, csvfile):
         with open(csvfile, "w") as f:
             ac.cur.copy_expert(full_query, f)
     except (psycopg2.Error, IOError) as e:
-        message = ("audit_center csv query error on %s, writing to %s:\n %s\nQuery: \n%s" %
+        message = ("rla_export csv query error on %s, writing to %s:\n %s\nQuery: \n%s" %
                       (queryfile, csvfile, e, full_query))
         logging.error(message)
         return message
@@ -248,7 +246,7 @@ def download_file(session, baseurl, file_id, filename):
 
 
 def main():
-    "Run audit_center with given OptionParser arguments"
+    "Run rla_export with given OptionParser arguments"
 
     args = parser.parse_args()
 
@@ -260,7 +258,7 @@ def main():
         _test()
         sys.exit(0)
 
-    # Establish an audit_center context for passing state around
+    # Establish a context for passing state around
     ac = Namespace()
 
     # Parse properties file
@@ -307,6 +305,7 @@ def main():
 
         query_to_csvfile(ac, queryfile, resultfilebase + '.csv')
 
+    # TODO: pick this up from a config file
     baseurl = args.url
     ac.corla_auth = {'url': baseurl, 'username': 'stateadmin1', 'password': ''}
 
