@@ -2,11 +2,11 @@ from setuptools import setup, find_packages
 
 
 def readme():
-    with open('README.md') as f:
+    with open('README.rst') as f:
         return f.read()
 
 
-setup(name='rla_tool_export',
+setup(name='rla_export',
       version='0.8',
       description='Export data for publication and audit verification from ColoradoRLA: Software to facilitate risk-limiting post-election tabulation audits',
       long_description=readme(),
@@ -46,7 +46,7 @@ setup(name='rla_tool_export',
       # test_suite='nose.collector',
       # tests_require=['nose', 'nose-cover3'],
       entry_points={
-          'console_scripts': ['rla_tool_export = rla_tool_export.__main__:main'],
+          'console_scripts': ['rla_export = rla_export.__main__:main'],
       },
       include_package_data=True,
       # TODO: include external file ColoradoRLA/server/eclipse-project/src/main/resources/us/freeandfair/corla/default.properties rather than a copy of it
