@@ -269,9 +269,9 @@ def test_endpoint_json(ac, s, path, data, show=True):
         else:
             print(r, "POST", path)
 
-    r = test_endpoint_get(ac, ac.state_s, "/dos-asm-state", show=False)
-
     if ac.args.trackstates:
+        r = test_endpoint_get(ac, ac.state_s, "/dos-asm-state", show=False)
+
         if 'current_state' in r.json():
             print("DOS: %s" % r.json()['current_state'])
         else:
@@ -672,8 +672,6 @@ def county_audit(ac, county_id):
     # TODO or FIXME - doesn't yet match "ballots_to_audit" from the dashboard
     # logging.log(5, json.dumps(publish_ballots_to_audit(ac.args.seed, cvrs), indent=2))
 
-    # r = test_endpoint_get(ac, ac.state_s, "/dos-dashboard")
-
     # r = test_endpoint_get(ac, county_s, "/audit-board-asm-state")
 
     round = len(county_dashboard['rounds'])
@@ -755,8 +753,6 @@ def county_audit(ac, county_id):
             break
 
     r = test_endpoint_json(ac, county_s, "/sign-off-audit-round", audit_board_set)
-
-    r = test_endpoint_get(ac, ac.state_s, "/dos-dashboard")
 
     remaining = county_dashboard['estimated_ballots_to_audit']
     if remaining <= 0:
@@ -970,8 +966,13 @@ def main():
     else:
         ac.false_choices = [loser]
 
-    ac.state_s = requests.Session()
-    state_login(ac, ac.state_s)
+    if not ac.args.commands == ['county_setup']:
+        # Assuming --trackstates is not on, don't need state session.
+        # Avoid possible database locking problems with logging in as
+        # state admin from many clients at once in performance testing.
+
+        ac.state_s = requests.Session()
+        state_login(ac, ac.state_s)
 
     # These options imply exit after running a single action
     if ac.args.dos_endpoint is not None:
