@@ -232,6 +232,36 @@ parser.add_argument('commands', metavar="COMMAND", nargs='*',
                     'Possibilities: reset dos_init county_setup dos_start county_audit dos_wrapup')
 
 
+def requests_retry_session(retries=3, backoff_factor=2, method_whitelist=False,
+                           status_forcelist=(429, 502, 503), session=None):
+    """Return a Requests session that retries for the given status codes, and
+    for connection timeouts.
+    The default of method_whitelist=False means that it retries all HTTP
+    methods, even POST, which should be OK given the default status_forcelist.
+
+    Inspired by Peter Bengtsson https://www.peterbe.com/plog/best-practice-with-retries-with-requests
+
+    To test 503 error and connection timeout:
+     crtest -e '' -d 10 -u http://httpbin.org/status/503?
+     crtest -e '' -d 10 -u http://10.255.255.1/?
+    """
+
+    session = session or requests.Session()
+    retry = requests.packages.urllib3.util.retry.Retry(
+        total=retries,
+        connect=retries,
+        read=retries,
+        status=retries,
+        method_whitelist=method_whitelist,
+        status_forcelist=status_forcelist,
+        backoff_factor=backoff_factor,
+    )
+    adapter = requests.adapters.HTTPAdapter(max_retries=retry)
+    session.mount('http://', adapter)
+    session.mount('https://', adapter)
+    return session
+
+
 def state_login(ac, s):
     "Login as state admin in given requests session"
 
@@ -564,7 +594,7 @@ def county_setup(ac, county_id):
 
     logging.debug("county setup for county_id %d" % county_id)
 
-    county_s = requests.Session()
+    county_s = requests_retry_session()
     county_login(ac, county_s, county_id)
 
     upload_files(ac, county_s)
@@ -647,7 +677,7 @@ def dos_start(ac):
 def county_audit(ac, county_id):
     'Audit board uploads ACVRs from a county. Return estimated remaining ballots to audit'
 
-    county_s = requests.Session()
+    county_s = requests_retry_session()
     county_login(ac, county_s, county_id)
 
     # Note: we take advantage of a side effect of this also: print where we're at....
@@ -775,7 +805,7 @@ def download_report(ac, s, path, extension):
 def county_wrapup(ac, county_id):
     'Audit board summary, wrapup, audit-report'
 
-    county_s = requests.Session()
+    county_s = requests_retry_session()
     county_login(ac, county_s, county_id)
 
     county_dashboard = get_county_dashboard(ac, county_s, county_id)
@@ -975,13 +1005,13 @@ def main():
         logging.info("Skipping state_login()")
         ac.state_s = None
     else:
-        ac.state_s = requests.Session()
+        ac.state_s = requests_retry_session()
         state_login(ac, ac.state_s)
 
     # These options imply exit after running a single action
     if ac.args.county_endpoint is not None:
         for county_id in ac.args.counties:
-            county_s = requests.Session()
+            county_s = requests_retry_session()
             county_login(ac, county_s, county_id)
 
             r = test_endpoint_get(ac, county_s, ac.args.county_endpoint)
