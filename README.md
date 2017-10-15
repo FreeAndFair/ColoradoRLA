@@ -63,4 +63,4 @@ Contributors
 * Daniel Zimmerman (Principled Computer Scientist) Principle author of
   RLA Tool Server
 
-More information about our team members [is available](docs/10_team.md).
+More information about our team members [is available](docs/70_team.md).
