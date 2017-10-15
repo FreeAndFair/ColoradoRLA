@@ -26,8 +26,9 @@ crtest -l "Clear Winner" -s "22345123451234512345" -p "1 17"
 # Test ballot-not-found
 crtest -C 1 -n "8 15"
 
-# Simple quick retrieval
-crtest -u $URL -E /audit-board-asm-state
+# Simple quick retrievals
+crtest -E /audit-board-asm-state
+crtest -e /dos-asm-state
 
 # Display a county or DOS dashboard
 crtest -E '/county-dashboard'
@@ -966,20 +967,18 @@ def main():
     else:
         ac.false_choices = [loser]
 
-    if not ac.args.commands == ['county_setup']:
+    if ac.args.commands == ['county_setup'] or ac.args.county_endpoint is not None:
         # Assuming --trackstates is not on, don't need state session.
         # Avoid possible database locking problems with logging in as
         # state admin from many clients at once in performance testing.
 
+        logging.info("Skipping state_login()")
+        ac.state_s = None
+    else:
         ac.state_s = requests.Session()
         state_login(ac, ac.state_s)
 
     # These options imply exit after running a single action
-    if ac.args.dos_endpoint is not None:
-        r = test_endpoint_get(ac, ac.state_s, ac.args.dos_endpoint)
-        print(r, "GET", ac.args.dos_endpoint, r.text)
-        sys.exit(0)
-
     if ac.args.county_endpoint is not None:
         for county_id in ac.args.counties:
             county_s = requests.Session()
@@ -988,6 +987,11 @@ def main():
             r = test_endpoint_get(ac, county_s, ac.args.county_endpoint)
             print(r, "GET", ac.args.county_endpoint, r.text)
 
+        sys.exit(0)
+
+    if ac.args.dos_endpoint is not None:
+        r = test_endpoint_get(ac, ac.state_s, ac.args.dos_endpoint)
+        print(r, "GET", ac.args.dos_endpoint, r.text)
         sys.exit(0)
 
     if ac.args.hand_counts:
