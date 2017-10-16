@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 
 
 export default (state: AppState, action: any): AppState => {
-    const nextState: any = _.merge({}, state);
+    const nextState = _.merge({}, state);
     const { county } = nextState;
 
     const {

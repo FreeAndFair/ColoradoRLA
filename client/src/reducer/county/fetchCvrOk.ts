@@ -1,7 +1,7 @@
 import { forEach, merge } from 'lodash';
 
 
-function createEmptyAcvr(cvr: any): any {
+function createEmptyAcvr(cvr: Cvr): Acvr {
     const acvr: any = {};
 
     forEach(cvr.contestInfo, c => {
@@ -14,7 +14,7 @@ function createEmptyAcvr(cvr: any): any {
     return acvr;
 }
 
-const parse = (data: any, state: any) => ({
+const parse = (data: CvrJson, state: AppState): Cvr => ({
     ballotType: data.ballot_type,
     batchId: data.batch_id,
     contestInfo: data.contest_info,

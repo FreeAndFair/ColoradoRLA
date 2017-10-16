@@ -88,25 +88,14 @@ interface ContestInfoJson {
 }
 
 interface AcvrJson {
-    audit_cvr: {
-        ballot_type: string;
-        batch_id: string;
-        contest_info: ContestInfoJson[];
-        county_id: number;
-        cvr_number: number;
-        id: number;
-        imprinted_id: string;
-        record_id: string;
-        record_type: string;
-        scanner_id: string;
-        timestamp: Date;
-    };
+    audit_cvr: CvrJson;
     cvr_id: number;
 }
 
 interface Cvr {
     ballotType: any;
     batchId: any;
+    contestInfo: any;
     countyId: any;
     cvrNumber: any;
     id: any;
@@ -114,6 +103,20 @@ interface Cvr {
     recordId: any;
     recordType: any;
     scannerId: any;
+}
+
+interface CvrJson {
+    ballot_type: string;
+    batch_id: string;
+    contest_info: ContestInfoJson[];
+    county_id: number;
+    cvr_number: number;
+    id: number;
+    imprinted_id: string;
+    record_id: string;
+    record_type: string;
+    scanner_id: string;
+    timestamp: Date;
 }
 
 interface UploadFileOkJson {
@@ -130,3 +133,8 @@ interface UploadFileOkJson {
 type UploadBallotManifestOkJson = UploadFileOkJson;
 
 type UploadCvrExportOkJson = UploadFileOkJson;
+
+interface FetchCountyAsmStateOkJson {
+    current_state: string;
+    enabled_ui_events: string[];
+}
