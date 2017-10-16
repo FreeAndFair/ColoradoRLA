@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 
-function parse(data: FetchCountyAsmStateOkJson): CountyAsmState {
+function parse(data: FetchCountyAsmStateOkJson): CountyAsm {
     return {
         currentState: data.current_state,
         enabledUiEvents: data.enabled_ui_events,

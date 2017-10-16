@@ -1,5 +1,3 @@
-import { AuditBoardState, CountyState } from 'corla/asm';
-
 function capitalize(s: string) {
     if (!s) { return ''; }
 
@@ -12,7 +10,7 @@ export function electionType(type: ElectionType): string {
     return `${capitalize(type)} Election`;
 }
 
-export function formatCountyAsmState(state: CountyState) {
+export function formatCountyAsmState(state: CountyAsmState) {
     switch (state) {
         case 'COUNTY_INITIAL_STATE':
             return 'Not started';
@@ -35,8 +33,8 @@ export function formatCountyAsmState(state: CountyState) {
 }
 
 export function formatCountyAndBoardAsmState(
-    county: CountyState,
-    board: AuditBoardState,
+    county: CountyAsmState,
+    board: AuditBoardAsmState,
 ): string {
     switch (county) {
     case 'COUNTY_INITIAL_STATE':
