@@ -9,7 +9,7 @@ interface AppState {
     loginChallenge: any;
     dashboard?: Dashboard;
     county?: CountyState;
-    sos?: any;
+    sos?: DosState;
 }
 
 interface CountyState {
@@ -25,4 +25,14 @@ interface CountyState {
     hash?: any;  // TODO: remove
     uploadingBallotManifest?: boolean;
     uploadingCvrExport?: boolean;
+}
+
+interface DosState {
+    asm: any;
+    auditStage: any;
+    auditedContests: any;
+    contests?: any;
+    contestsForAudit?: any;
+    countyStatus: any;
+    seed?: any;
 }

@@ -34,7 +34,7 @@ const defaultCountyState = (): CountyState => ({
     contests: {},
 });
 
-const defaultDosState = (): any => ({
+const defaultDosState = (): DosState => ({
     asm: {},
     auditStage: 'PRE_AUDIT',
     auditedContests: {},

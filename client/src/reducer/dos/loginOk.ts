@@ -1,4 +1,4 @@
-export default (state: any) => ({
+export default (state: AppState): AppState => ({
     ...state,
     dashboard: 'sos',
 });
