@@ -14,7 +14,7 @@ const roundSignOff = createSubmitAction({
 });
 
 
-function format(electors: any[]) {
+function format(electors: Elector[]): ElectorJson[] {
     return electors.map(e => ({
         first_name: e.firstName,
         last_name: e.lastName,
@@ -22,4 +22,4 @@ function format(electors: any[]) {
 }
 
 
-export default (electors: any) => roundSignOff(format(electors));
+export default (electors: Elector[]) => roundSignOff(format(electors));

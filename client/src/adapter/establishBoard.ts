@@ -1,4 +1,4 @@
-const formatBoardMember = (elector: any) => {
+const formatBoardMember = (elector: AuditBoardMember): AuditBoardMemberJson => {
     const { firstName, lastName } = elector;
 
     return {
@@ -9,4 +9,5 @@ const formatBoardMember = (elector: any) => {
 };
 
 
-export const format = (board: any) => board.map(formatBoardMember);
+export const format = (board: AuditBoard): AuditBoardJson =>
+    board.map(formatBoardMember);

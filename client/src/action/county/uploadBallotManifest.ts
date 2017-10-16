@@ -6,7 +6,7 @@ const importUrl = endpoint('import-ballot-manifest');
 const uploadUrl = endpoint('upload-file');
 
 
-function createFormData(file: Blob, hash: string) {
+function createFormData(file: Blob, hash: string): FormData {
     const formData = new FormData();
 
     formData.append('file', file);
@@ -15,7 +15,7 @@ function createFormData(file: Blob, hash: string) {
     return formData;
 }
 
-async function importBallotManifest(body: any) {
+async function importBallotManifest(body: UploadBallotManifestOkJson) {
     const init: any = {
         body: JSON.stringify(body),
         credentials: 'include',
