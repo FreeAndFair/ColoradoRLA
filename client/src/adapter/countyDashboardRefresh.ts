@@ -1,71 +1,27 @@
 import * as _ from 'lodash';
 
 
-interface Elector {
-    first_name: string;
-    last_name: string;
-    political_party: string;
+function parseBoardMember(e: AuditBoardMemberJson): AuditBoardMember {
+    return {
+        firstName: e.first_name,
+        lastName: e.last_name,
+        party: e.political_party,
+    };
 }
 
-type Status = 'NO_DATA' | 'CVRS_UPLOADED_SUCCESSFULLY' | 'ERROR_IN_UPLOADED_DATA';
-
-type CVRImportStatus = 'NOT_ATTEMPTED' | 'IN_PROGRESS' | 'SUCCESSFUL' | 'FAILED';
-
-interface Round {
-    actual_count: number;
-    disagreements: number;
-    discrepancies: number;
-    expected_count: number;
-    number: number;
-    signatories: any;
-    start_audit_prefix_length: number;
-    start_index: number;
-    start_time: Date;
-}
-
-interface CountyDashboard {
-    asm_state: string;
-    audit_time: string;
-    audit_board: any;
-    audited_ballot_count: number;
-    audited_prefix_length: number;
-    ballot_manifest_count: number;
-    ballot_manifest_file: any;
-    ballot_under_audit_id: number;
-    ballots_remaining_in_round: number;
-    current_round: Round;
-    cvr_export_count: number;
-    cvr_export_file: any;
-    cvr_import_status: CVRImportStatus;
-    contests: number[];
-    contests_under_audit: number[];
-    disagreement_count: number;
-    discrepancy_count: number;
-    estimated_ballots_to_audit: number;
-    general_information: string;
-    id: number;
-    risk_limit: number;
-    rounds: Round[];
-    status: Status;
-}
-
-const parseBoardMember = (e: Elector): any => ({
-    firstName: e.first_name,
-    lastName: e.last_name,
-    party: e.political_party,
-});
-
-const parseAuditBoard = (board: any) => {
+function parseAuditBoard(board: any): AuditBoard {
     if (!board) {
         return [];
     }
 
     return board.members.map(parseBoardMember);
-};
+}
 
-const parseTimestamp = (ts: string): Date => new Date(ts);
+function parseTimestamp(ts: string): Date {
+    return new Date(ts);
+}
 
-const pivot = (a: any) => {
+function pivot(a: any): any {
     const o: any = {};
 
     a.forEach((v: any) => {
@@ -73,9 +29,9 @@ const pivot = (a: any) => {
     });
 
     return o;
-};
+}
 
-export const parseContests = (contestIds: any, state: any): any => {
+export function parseContests(contestIds: number[], state: AppState): any[] {
     if (!state.county.contestDefs) {
         return [];
     }
@@ -87,9 +43,9 @@ export const parseContests = (contestIds: any, state: any): any => {
     const { contestDefs } = state.county;
 
     return _.map(contestIds, (id: any) => contestDefs[id]);
-};
+}
 
-const parseContestsUnderAudit = (contestIds: any, state: any): any => {
+function parseContestsUnderAudit(contestIds: number[], state: AppState): any[] {
     if (!state.county.contestDefs) {
         return [];
     }
@@ -100,17 +56,13 @@ const parseContestsUnderAudit = (contestIds: any, state: any): any => {
 
     const { contestDefs } = state.county;
 
-    return _.map(contestIds, (reason: any, id: any) => {
+    return _.map(contestIds, (reason, id) => {
         const def = state.county.contestDefs[id];
         return { ...def, reason };
     });
-};
+}
 
-function parseRound(data: Round) {
-    if (!data) {
-        return {};
-    }
-
+function parseRound(data: RoundJson): Round {
     return {
         actualCount: data.actual_count,
         disagreements: data.disagreements,
@@ -124,7 +76,7 @@ function parseRound(data: Round) {
     };
 }
 
-function parseRounds(rounds: Round[]) {
+function parseRounds(rounds?: RoundJson[]): Round[] {
     if (!rounds) {
         return [];
     }
@@ -132,14 +84,14 @@ function parseRounds(rounds: Round[]) {
     return rounds.map(parseRound);
 }
 
-function parseElection(data: any): any {
+function parseElection(data: CountyDashboardJson): any {
     return {
         date: new Date(data.audit_info.election_date),
         type: data.audit_info.election_type,
     };
 }
 
-function parseRiskLimit(data: any): number {
+function parseRiskLimit(data: CountyDashboardJson): number {
     return _.get(data, 'audit_info.risk_limit');
 }
 
@@ -147,7 +99,7 @@ function parseDisCount(data: any): number {
     return _.sum(_.values(data));
 }
 
-function parseFile(file: any): any {
+function parseFile(file: UploadedFileJson): UploadedFile {
     if (!file) { return null; }
 
     return {
@@ -163,8 +115,8 @@ function parseFile(file: any): any {
     };
 }
 
-export const parse = (data: CountyDashboard, state: any): any => {
-    const findContest = (id: any) => state.county.contestDefs[id];
+export function parse(data: CountyDashboardJson, state: AppState): any {
+    const findContest = (id: number) => state.county.contestDefs[id];
 
     return {
         asm_state: data.asm_state,
@@ -178,7 +130,7 @@ export const parse = (data: CountyDashboard, state: any): any => {
         ballotsRemainingInRound: data.ballots_remaining_in_round,
         contests: parseContests(data.contests, state),
         contestsUnderAudit: parseContestsUnderAudit(data.contests_under_audit, state),
-        currentRound: parseRound(data.current_round),
+        currentRound: data.current_round ? parseRound(data.current_round) : {},
         cvrExport: parseFile(data.cvr_export_file),
         cvrExportCount: data.cvr_export_count,
         cvrImportStatus: data.cvr_import_status,
@@ -192,4 +144,4 @@ export const parse = (data: CountyDashboard, state: any): any => {
         rounds: parseRounds(data.rounds),
         status: data.status,
     };
-};
+}

@@ -119,10 +119,11 @@ interface CvrJson {
     timestamp: Date;
 }
 
-interface UploadFileOkJson {
+interface UploadedFileJson {
     approximate_record_count: number;
     county_id: number;
     file_id: number;
+    filename: string;
     hash: string;
     hash_status: string;
     status: string;
@@ -130,9 +131,23 @@ interface UploadFileOkJson {
     timestamp: string;
 }
 
+type UploadFileOkJson = UploadedFileJson;
+
 type UploadBallotManifestOkJson = UploadFileOkJson;
 
 type UploadCvrExportOkJson = UploadFileOkJson;
+
+interface UploadedFile {
+    approximateRecordCount: number;
+    countyId: number;
+    hash: string;
+    hashStatus: string;
+    id: number;
+    name: string;
+    size: number;
+    status: string;
+    timestamp: Date;
+}
 
 interface FetchCountyAsmStateOkJson {
     current_state: CountyAsmState;
@@ -311,3 +326,65 @@ type AppAction
     | UploadRandomSeedOkAction
     | UploadingBallotManifestAction
     | UploadingCvrExportAction;
+
+type CountyDashboardStatus
+    = 'NO_DATA'
+    | 'CVRS_UPLOADED_SUCCESSFULLY'
+    | 'ERROR_IN_UPLOADED_DATA';
+
+type CVRImportStatus
+    = 'NOT_ATTEMPTED'
+    | 'IN_PROGRESS'
+    | 'SUCCESSFUL'
+    | 'FAILED';
+
+interface Round {
+    actualCount: number;
+    disagreements: number;
+    discrepancies: number;
+    expectedCount: number;
+    number: number;
+    signatories: any;
+    startAuditPrefixLength: number;
+    startIndex: number;
+    startTime: Date;
+}
+
+interface RoundJson {
+    actual_count: number;
+    disagreements: number;
+    discrepancies: number;
+    expected_count: number;
+    number: number;
+    signatories: any;
+    start_audit_prefix_length: number;
+    start_index: number;
+    start_time: Date;
+}
+
+interface CountyDashboardJson {
+    asm_state: string;
+    audit_board: any;
+    audit_info: any;
+    audit_time: string;
+    audited_ballot_count: number;
+    audited_prefix_length: number;
+    ballot_manifest_count: number;
+    ballot_manifest_file: any;
+    ballot_under_audit_id: number;
+    ballots_remaining_in_round: number;
+    current_round: RoundJson;
+    cvr_export_count: number;
+    cvr_export_file: any;
+    cvr_import_status: CVRImportStatus;
+    contests: number[];
+    contests_under_audit: number[];
+    disagreement_count: number;
+    discrepancy_count: number;
+    estimated_ballots_to_audit: number;
+    general_information: string;
+    id: number;
+    risk_limit: number;
+    rounds: RoundJson[];
+    status: CountyDashboardStatus;
+}
