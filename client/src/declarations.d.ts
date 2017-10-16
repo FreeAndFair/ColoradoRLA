@@ -138,3 +138,18 @@ interface FetchCountyAsmStateOkJson {
     current_state: string;
     enabled_ui_events: string[];
 }
+
+interface FetchDosAsmStateOkJson {
+    current_state: string;
+    enabled_ui_events: string[];
+}
+
+interface CountyAsmState {
+    currentState: string;
+    enabledUiEvents: string[];
+}
+
+interface DosAsmState {
+    currentState: string;
+    enabledUiEvents: string[];
+}
