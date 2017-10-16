@@ -33,7 +33,7 @@ class CVRExportFormContainer extends React.Component<any, any> {
         const { county, fileUploaded, uploadingFile } = this.props;
 
         if (uploadingFile) {
-            return <Uploading />;
+            return <Uploading county={ county } />;
         }
 
         if (fileUploaded && !this.state.reupload && county.cvrExport) {
