@@ -28,7 +28,7 @@ const parse = (data: any, state: any) => ({
 });
 
 
-export default (state: any, action: any) => {
+export default (state: AppState, action: any): AppState => {
     const nextState = merge({}, state);
 
     const county = merge({}, state.county);

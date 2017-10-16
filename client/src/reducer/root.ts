@@ -24,14 +24,7 @@ import uploadRandomSeedOk from './dos/uploadRandomSeedOk';
 import login1FOk from './login1FOk';
 
 
-interface AppState {
-    loginChallenge: any;
-    dashboard?: Dashboard;
-    county?: any;
-    sos?: any;
-}
-
-const defaultCountyState = (): any => ({
+const defaultCountyState = (): CountyState => ({
     acvrs: {},
     asm: {
         auditBoard: {},

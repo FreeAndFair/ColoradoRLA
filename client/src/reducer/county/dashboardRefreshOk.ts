@@ -3,7 +3,7 @@ import { isEmpty, merge } from 'lodash';
 import { parse } from 'corla/adapter/countyDashboardRefresh';
 
 
-export default (state: any, action: any) => {
+export default (state: AppState, action: any): AppState => {
     const nextState = merge({}, state );
 
     const newCountyData = parse(action.data, state);

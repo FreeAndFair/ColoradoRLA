@@ -20,7 +20,7 @@ const parse = (data: any, state: any) => {
 };
 
 
-export default (state: any, action: any) => {
+export default (state: AppState, action: any): AppState => {
     const nextState = { ...state };
 
     nextState.county.contestDefs = merge({}, parse(action.data, state));

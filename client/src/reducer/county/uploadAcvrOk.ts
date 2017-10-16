@@ -1,4 +1,4 @@
-export default (state: any, action: any) => {
+export default (state: AppState, action: any): AppState => {
     const nextState = { ...state };
 
     return nextState;
