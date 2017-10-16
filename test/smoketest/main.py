@@ -255,6 +255,7 @@ def requests_retry_session(retries=3, backoff_factor=2, method_whitelist=False,
         method_whitelist=method_whitelist,
         status_forcelist=status_forcelist,
         backoff_factor=backoff_factor,
+        raise_on_status=False
     )
     adapter = requests.adapters.HTTPAdapter(max_retries=retry)
     session.mount('http://', adapter)
@@ -351,7 +352,6 @@ def upload_file(ac, s, import_path, filename, sha256):
 
     import_handle = r.json()
 
-    # This could be done later, after importing another file.
     r = test_endpoint_json(ac, s, import_path, import_handle)
     if r.status_code != 200:
         print(r, "POST", import_path, r.text)
@@ -1003,7 +1003,7 @@ def main():
             county_login(ac, county_s, county_id)
 
             r = test_endpoint_get(ac, county_s, ac.args.county_endpoint)
-            ac.logconsole.info("%s %s %s", r, "GET", ac.args.county_endpoint, r.text)
+            ac.logconsole.info("%s %s %s %s", r, "GET", ac.args.county_endpoint, r.text)
 
         sys.exit(0)
 
