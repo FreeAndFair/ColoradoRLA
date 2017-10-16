@@ -270,7 +270,7 @@ def state_login(ac, s):
                data={'username': 'stateadmin1', 'password': '', 'second_factor': ''})
     r = s.post(ac.base + path,
                data={'username': 'stateadmin1', 'password': '', 'second_factor': ''})
-    print(r, "POST", path)
+    ac.logconsole.info("%s %s %s", r, "POST", path)
 
 
 def county_login(ac, s, county_id):
@@ -281,7 +281,7 @@ def county_login(ac, s, county_id):
                data={'username': 'countyadmin%d' % county_id, 'password': '', 'second_factor': ''})
     r = s.post(ac.base + path,
                data={'username': 'countyadmin%d' % county_id, 'password': '', 'second_factor': ''})
-    print(r, "POST", path)
+    ac.logconsole.info("%s %s %s", r, "POST", path)
 
 
 def test_endpoint_json(ac, s, path, data, show=True):
@@ -293,12 +293,12 @@ def test_endpoint_json(ac, s, path, data, show=True):
     r = s.post(ac.base + path, json=data)
     if r.status_code == 200:
         if show:
-            print(r, "POST", path)
+            ac.logconsole.info("%s %s %s", r, "POST", path)
     else:
         if show:
-            print(r, "POST", path, r.text)
+            ac.logconsole.info("%s %s %s %s", r, "POST", path, r.text)
         else:
-            print(r, "POST", path)
+            ac.logconsole.info("%s %s %s", r, "POST", path)
 
     if ac.args.trackstates:
         r = test_endpoint_get(ac, ac.state_s, "/dos-asm-state", show=False)
@@ -320,28 +320,12 @@ def test_endpoint_get(ac, s, path, show=True):
     r = s.get(ac.base + path)
     if r.status_code == 200:
         if show:
-            print(r, "GET", path)
+            ac.logconsole.info("%s %s %s", r, "GET", path)
     else:
         if show:
-            print(r, "GET", path, r.text)
+            ac.logconsole.info("%s %s %s %s", r, "GET", path, r.text)
         else:
-            print(r, "GET", path)
-    return r
-
-
-def test_endpoint_bytes(ac, s, path, data):
-    "Do a generic test of an endpoint that posts the given data to the given path"
-
-    r = s.post(ac.base + path, data)
-    print(r, "POST", path, r.text)
-    return r
-
-
-def test_endpoint_post(ac, s, path, data):
-    "Do a generic test of an endpoint that posts the given data to the given path"
-
-    r = s.post(ac.base + path, data)
-    print(r, "POST", path, r.text)
+            ac.logconsole.info("%s %s %s", r, "GET", path)
     return r
 
 
@@ -598,9 +582,6 @@ def county_setup(ac, county_id):
     county_login(ac, county_s, county_id)
 
     upload_files(ac, county_s)
-    # Replace that with this later - or make test_endpoint_file method?
-    # r = test_endpoint_post(base, county_s1, "/upload-ballot-manifest", ...)
-    # r = test_endpoint_post(base, county_s1, "/upload-cvr-export", ...)
 
     r = test_endpoint_get(ac, county_s, "/contest/county?%d" % county_id)
     contests = r.json()
@@ -643,13 +624,9 @@ def dos_start(ac):
                                  "reason": "COUNTY_WIDE_CONTEST",
                                  "audit": "COMPARISON"}])
 
-    # TODO shouldn't this be a POST ala this?
-    # r = test_endpoint_post(ac, ac.state_s, "/publish-data-to-audit", {})
-    r = test_endpoint_get(ac, ac.state_s, "/publish-data-to-audit")
-
     r = test_endpoint_json(ac, ac.state_s, "/random-seed",
                            {'seed': ac.args.seed})
-    # r = test_endpoint_post(ac, ac.state_s, "/ballots-to-audit/publish", {})
+
     r = test_endpoint_json(ac, ac.state_s, "/start-audit-round",
                            { "multiplier": 1.0, "use_estimates": True})
     # print(r.text)
@@ -841,7 +818,7 @@ def dos_wrapup(ac):
     r = test_endpoint_get(ac, ac.state_s, "/dos-dashboard")
     logging.info("dos-dashboard: %s" % r.text)
 
-    r = test_endpoint_json(ac, ac.state_s, "/publish-report", {})
+    # r = test_endpoint_json(ac, ac.state_s, "/publish-report", {})
 
     download_report(ac, ac.state_s, "state-report", "xlsx")
 
@@ -964,7 +941,18 @@ def main():
     ac = Namespace()
 
     ac.args = parser.parse_args()
-    logging.basicConfig(level=ac.args.debuglevel)   # or level=5 for everything
+    FORMAT = '%(asctime)-15s %(levelname)s %(name)s %(message)s'
+    logging.basicConfig(stream=sys.stdout, level=ac.args.debuglevel, format=FORMAT)
+
+    # Define a standalone logger to get timestamped results sent to stdout
+    # creating a nice "print" statement with additional context added in
+    ac.logconsole = logging.getLogger('console')
+    ac.logconsole.propagate = False
+    ac.logconsole.setLevel(logging.INFO)
+    console = logging.StreamHandler(stream=sys.stdout)
+    formatter = logging.Formatter(fmt='%(asctime)s.%(msecs)03d %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    console.setFormatter(formatter)
+    ac.logconsole.addHandler(console)
 
     # Add a default county here to work around https://bugs.python.org/issue16399
     if ac.args.counties is None:
@@ -985,7 +973,7 @@ def main():
     fields = [int(f) for f in ac.args.notfound_plan.split()]
     ac.nf_discrepancy_remainder, ac.nf_discrepancy_cycle = fields
 
-    print("Arguments: %s" % ac.args)
+    ac.logconsole.info("Arguments: %s" % ac.args)
 
     ac.round = 1
 
@@ -1015,7 +1003,7 @@ def main():
             county_login(ac, county_s, county_id)
 
             r = test_endpoint_get(ac, county_s, ac.args.county_endpoint)
-            print(r, "GET", ac.args.county_endpoint, r.text)
+            ac.logconsole.info("%s %s %s", r, "GET", ac.args.county_endpoint, r.text)
 
         sys.exit(0)
 
