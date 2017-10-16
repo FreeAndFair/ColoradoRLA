@@ -189,3 +189,125 @@ type DosAsmState
     | 'DOS_ROUND_COMPLETE'
     | 'DOS_AUDIT_COMPLETE'
     | 'AUDIT_RESULTS_PUBLISHED';
+
+interface CountyDashboardRefreshOkAction {
+    type: 'COUNTY_DASHBOARD_REFRESH_OK';
+    data: any;
+}
+
+interface CountyFetchContestsOkAction {
+    type: 'COUNTY_FETCH_CONTESTS_OK';
+    data: any;
+}
+
+interface CountyFetchCvrOkAction {
+    type: 'COUNTY_FETCH_CVR_OK';
+    data: any;
+}
+
+interface CountyLoginOk {
+    type: 'COUNTY_LOGIN_OK';
+    data: any;
+}
+
+interface DosDashboardRefreshOkAction {
+    type: 'DOS_DASHBOARD_REFRESH_OK';
+    data: any;
+}
+
+interface DosFetchContestsOkAction {
+    type: 'DOS_FETCH_CONTESTS_OK';
+    data: any;
+}
+
+interface DosLoginOkAction {
+    type: 'DOS_LOGIN_OK';
+    data: any;
+}
+
+interface FetchAuditBoardAsmStateOkAction {
+    type: 'FETCH_AUDIT_BOARD_ASM_STATE_OK';
+    data: any;
+}
+
+interface FetchCountyAsmStateOkAction {
+    type: 'FETCH_COUNTY_ASM_STATE_OK';
+    data: FetchCountyAsmStateOkJson;
+}
+
+interface FetchCvrsToAuditOkAction {
+    type: 'FETCH_CVRS_TO_AUDIT_OK';
+    data: any;
+}
+
+interface FetchDosAsmStateOkAction {
+    type: 'FETCH_DOS_ASM_STATE_OK';
+    data: any;
+}
+
+interface Login1FOkAction {
+    type: 'LOGIN_1F_OK';
+    data: any;
+}
+
+interface SelectContestsForAuditOkAction {
+    type: 'SELECT_CONTESTS_FOR_AUDIT_OK';
+    data: any;
+}
+
+interface UpdateAcvrFormAction {
+    type: 'UPDATE_ACVR_FORM';
+    data: any;
+}
+
+interface UploadBallotManifestOkAction {
+    type: 'UPLOAD_BALLOT_MANIFEST_OK';
+    data: any;
+}
+
+interface UploadAcvrOkAction {
+    type: 'UPLOAD_ACVR_OK';
+    data: any;
+}
+
+interface UploadCvrExportOkAction {
+    type: 'UPLOAD_CVR_EXPORT_OK';
+    data: any;
+}
+
+interface UploadRandomSeedOkAction {
+    type: 'UPLOAD_RANDOM_SEED_OK';
+    data: any;
+}
+
+interface UploadingBallotManifestAction {
+    type: 'UPLOADING_BALLOT_MANIFEST';
+    data: any;
+}
+
+interface UploadingCvrExportAction {
+    type: 'UPLOADING_CVR_EXPORT';
+    data: any;
+}
+
+type AppAction
+    = CountyDashboardRefreshOkAction
+    | CountyFetchContestsOkAction
+    | CountyFetchCvrOkAction
+    | CountyLoginOk
+    | DosDashboardRefreshOkAction
+    | DosFetchContestsOkAction
+    | DosLoginOkAction
+    | FetchAuditBoardAsmStateOkAction
+    | FetchCountyAsmStateOkAction
+    | FetchCvrsToAuditOkAction
+    | FetchDosAsmStateOkAction
+    | Login1FOkAction
+    | SelectContestsForAuditOkAction
+    | UpdateAcvrFormAction
+    | UploadBallotManifestOkAction
+    | UploadAcvrOkAction
+    | UploadCvrExportOkAction
+    | UploadRandomSeedOkAction
+    | UploadingBallotManifestAction
+    | UploadingCvrExportAction;
