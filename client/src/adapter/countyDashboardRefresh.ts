@@ -9,6 +9,8 @@ interface Elector {
 
 type Status = 'NO_DATA' | 'CVRS_UPLOADED_SUCCESSFULLY' | 'ERROR_IN_UPLOADED_DATA';
 
+type CVRImportStatus = 'NOT_ATTEMPTED' | 'IN_PROGRESS' | 'SUCCESSFUL' | 'FAILED';
+
 interface Round {
     actual_count: number;
     disagreements: number;
@@ -34,6 +36,7 @@ interface CountyDashboard {
     current_round: Round;
     cvr_export_count: number;
     cvr_export_file: any;
+    cvr_import_status: CVRImportStatus;
     contests: number[];
     contests_under_audit: number[];
     disagreement_count: number;
@@ -148,6 +151,7 @@ function parseFile(file: any): any {
     if (!file) { return null; }
 
     return {
+        approximateRecordCount: file.approximate_record_count,
         countyId: file.county_id,
         hash: file.hash,
         hashStatus: file.hash_status,
@@ -177,6 +181,7 @@ export const parse = (data: CountyDashboard, state: any): any => {
         currentRound: parseRound(data.current_round),
         cvrExport: parseFile(data.cvr_export_file),
         cvrExportCount: data.cvr_export_count,
+        cvrImportStatus: data.cvr_import_status,
         disagreementCount: parseDisCount(data.disagreement_count),
         discrepancyCount: parseDisCount(data.discrepancy_count),
         election: parseElection(data),
