@@ -1,4 +1,4 @@
-function canRenderReport(state: any) {
+function canRenderReport(state: AppState) {
     const { currentState } = state.county.asm.county;
 
     if (!currentState) { return false; }

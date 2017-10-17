@@ -8,7 +8,7 @@ const AUDIT_STARTED_STATES = [
 ];
 
 
-function auditStarted(state: any): boolean {
+function auditStarted(state: AppState): boolean {
     if (!_.has(state, 'county.asm.county.currentState')) {
         return false;
     }

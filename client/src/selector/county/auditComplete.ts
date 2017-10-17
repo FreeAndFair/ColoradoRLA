@@ -1,4 +1,4 @@
-function auditComplete(state: any): boolean {
+function auditComplete(state: AppState): boolean {
     const { county } = state;
     const { currentState } = county.asm.county;
 

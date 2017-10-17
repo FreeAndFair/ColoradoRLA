@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 
-function canSignIn(state: any) {
+function canSignIn(state: AppState) {
     if (!_.has(state, 'county.asm.county.currentState')) {
         return false;
     }

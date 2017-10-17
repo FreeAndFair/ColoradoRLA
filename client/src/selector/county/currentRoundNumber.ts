@@ -1,4 +1,4 @@
-function currentRoundNumber(state: any): number {
+function currentRoundNumber(state: AppState): number {
     const { county } = state;
 
     if (!county.currentRound) {

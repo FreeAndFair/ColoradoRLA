@@ -41,6 +41,7 @@ function select(state: AppState) {
     const { county } = state;
 
     const previousRound = previousRoundSelector(state);
+    const previousRoundSignedOff = previousRound && signedOff(previousRound);
 
     return {
         allRoundsComplete: allRoundsCompleteSelector(state),
@@ -48,7 +49,7 @@ function select(state: AppState) {
         currentRoundNumber: currentRoundNumberSelector(state),
         election: state.county.election,
         estimatedBallotsToAudit: state.county.estimatedBallotsToAudit,
-        previousRound,
+        previousRound: previousRound || {},
         previousRoundSignedOff: signedOff(previousRound),
     };
 }

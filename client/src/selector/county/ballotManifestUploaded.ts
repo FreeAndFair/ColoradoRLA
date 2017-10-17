@@ -9,7 +9,7 @@ const UPLOADED_STATES = [
 ];
 
 
-function ballotManifestUploaded(state: any): boolean {
+function ballotManifestUploaded(state: AppState): boolean {
     if (!_.has(state, 'county.asm.county.currentState')) {
         return false;
     }

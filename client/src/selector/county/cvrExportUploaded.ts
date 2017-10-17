@@ -9,7 +9,7 @@ const UPLOADED_STATES = [
 ];
 
 
-function cvrExportUploaded(state: any): boolean {
+function cvrExportUploaded(state: AppState): boolean {
     if (!_.has(state, 'county.asm.county.currentState')) {
         return false;
     }

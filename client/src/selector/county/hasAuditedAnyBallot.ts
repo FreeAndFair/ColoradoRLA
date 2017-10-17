@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 
-function hasAuditedAnyBallot(state: any): boolean {
+function hasAuditedAnyBallot(state: AppState): boolean {
     const auditedBallotCount = _.get(state, 'county.auditedBallotCount');
 
     if (_.isNil(auditedBallotCount)) {

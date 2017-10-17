@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 
-function currentBallotNumber(state: any): number {
+function currentBallotNumber(state: AppState): number {
     const { county } = state;
     const { cvrsToAudit, currentBallot } = county;
 

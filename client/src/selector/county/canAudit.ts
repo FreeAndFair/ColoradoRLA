@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import auditBoardSignedIn from './auditBoardSignedIn';
 
 
-function canAudit(state: any) {
+function canAudit(state: AppState) {
     if (!_.has(state, 'county.asm.county.currentState')) {
         return false;
     }

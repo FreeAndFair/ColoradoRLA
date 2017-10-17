@@ -10,7 +10,7 @@ const SIGNED_IN_STATES = [
 ];
 
 
-function auditBoardSignedIn(state: any) {
+function auditBoardSignedIn(state: AppState) {
     if (!_.has(state, 'county.auditBoard')) {
         return false;
     }

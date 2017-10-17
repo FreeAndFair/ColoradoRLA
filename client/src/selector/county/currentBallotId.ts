@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 
-function currentBallotId(state: any): number {
+function currentBallotId(state: AppState): number {
     if (!_.has(state, 'county.cvrsToAudit')) {
         return null;
     }

@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 
-function allRoundsComplete(state: any): boolean {
+function allRoundsComplete(state: AppState): boolean {
     const { county } = state;
     const { currentState } = county.asm.county;
 

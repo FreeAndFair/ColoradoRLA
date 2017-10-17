@@ -1,7 +1,7 @@
 import { isEmpty } from 'lodash';
 
 
-function roundInProgress(state: any): boolean {
+function roundInProgress(state: AppState): boolean {
     const { county } = state;
 
     return county.ballotsRemainingInRound !== 0;

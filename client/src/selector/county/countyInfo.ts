@@ -1,7 +1,7 @@
 import counties from 'corla/data/counties';
 
 
-function countyInfo(state: any) {
+function countyInfo(state: AppState) {
     const { county } = state;
 
     if (!county.id) {
