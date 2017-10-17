@@ -3,7 +3,15 @@ import * as React from 'react';
 import { EditableText, Radio, RadioGroup } from '@blueprintjs/core';
 
 
-const SignInForm = (props: any) => {
+interface FormProps {
+    elector: AuditBoardMember;
+    onFirstNameChange: OnClick;
+    onLastNameChange: OnClick;
+    onPartyChange: OnClick;
+    onTextConfirm: OnClick;
+}
+
+const SignInForm = (props: FormProps) => {
     const {
         elector,
         onFirstNameChange,

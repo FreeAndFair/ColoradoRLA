@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import { History } from 'history';
+
 import withSync from 'corla/component/withSync';
 
 import counties from 'corla/data/counties';
@@ -12,7 +14,15 @@ import countyInfoSelector from 'corla/selector/county/countyInfo';
 import hasAuditedAnyBallotSelector from 'corla/selector/county/hasAuditedAnyBallot';
 
 
-class AuditBoardSignInContainer extends React.Component<any, any> {
+interface ContainerProps {
+    auditBoard: AuditBoard;
+    auditBoardSignedIn: boolean;
+    countyName: string;
+    hasAuditedAnyBallot: boolean;
+    history: History;
+}
+
+class AuditBoardSignInContainer extends React.Component<ContainerProps> {
     public render() {
         const {
             auditBoard,
@@ -38,7 +48,7 @@ class AuditBoardSignInContainer extends React.Component<any, any> {
     }
 }
 
-const select = (state: any) => {
+function select(state: AppState) {
     const { county } = state;
 
     const countyInfo = countyInfoSelector(state);
@@ -51,7 +61,7 @@ const select = (state: any) => {
         countyName,
         hasAuditedAnyBallot: hasAuditedAnyBallotSelector(state),
     };
-};
+}
 
 
 export default withSync(
