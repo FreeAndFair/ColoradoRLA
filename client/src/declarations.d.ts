@@ -84,7 +84,9 @@ interface AuditBoardMemberJson {
     political_party: string;
 }
 
-type AuditBoardJson = AuditBoardMemberJson[];
+interface AuditBoardJson {
+    members: AuditBoardMemberJson[];
+}
 
 interface RiskLimitJson {
     risk_limit: number;

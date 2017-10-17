@@ -9,7 +9,7 @@ function parseBoardMember(e: AuditBoardMemberJson): AuditBoardMember {
     };
 }
 
-function parseAuditBoard(board: any): AuditBoard {
+function parseAuditBoard(board: AuditBoardJson): AuditBoard {
     if (!board) {
         return [];
     }
@@ -31,7 +31,7 @@ function pivot(a: any): any {
     return o;
 }
 
-export function parseContests(contestIds: number[], state: AppState): any[] {
+export function parseContests(contestIds: number[], state: AppState): Contest[] {
     if (!state.county.contestDefs) {
         return [];
     }
@@ -42,10 +42,10 @@ export function parseContests(contestIds: number[], state: AppState): any[] {
 
     const { contestDefs } = state.county;
 
-    return _.map(contestIds, (id: any) => contestDefs[id]);
+    return _.map(contestIds, id => contestDefs[id]);
 }
 
-function parseContestsUnderAudit(contestIds: number[], state: AppState): any[] {
+function parseContestsUnderAudit(contestIds: number[], state: AppState): Contest[] {
     if (!state.county.contestDefs) {
         return [];
     }
