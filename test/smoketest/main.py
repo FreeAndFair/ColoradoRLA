@@ -219,7 +219,7 @@ parser.add_argument('-S, --check-audit-size', type=bool, dest='check_audit_size'
                     help='Check calculations of audit size. Requires rlacalc, psycopg2')
 
 parser.add_argument('-T, --time-delay', type=float, dest='time_delay', default=0.0,
-                    help='Maximum time to pause between network requests. Default 0.0. '
+                    help='Maximum time to pause before network requests. Default 0.0. '
                     'Actual pauses will be uniformly distributed between 0 and the maximum')
 
 # TODO: get rid of this and associated old code when /upload-cvr-export and /upload-cvr-export go away
@@ -996,9 +996,11 @@ def main():
     fields = [int(f) for f in ac.args.notfound_plan.split()]
     ac.nf_discrepancy_remainder, ac.nf_discrepancy_cycle = fields
 
-    Pause.max_pause = ac.args.time_delay
-
     ac.logconsole.info("Arguments: %s" % ac.args)
+
+    Pause.max_pause = ac.args.time_delay
+    # Start off with a pause, since others are inserted at end of requests.
+    Pause.pause_hook(None)
 
     ac.round = 1
 
