@@ -145,6 +145,8 @@ import operator
 import argparse
 from argparse import Namespace
 import json
+import time
+import random
 import logging
 import hashlib
 
@@ -216,6 +218,10 @@ parser.add_argument('--download-file', dest='download_file', type=int, metavar='
 parser.add_argument('-S, --check-audit-size', type=bool, dest='check_audit_size',
                     help='Check calculations of audit size. Requires rlacalc, psycopg2')
 
+parser.add_argument('-T, --time-delay', type=float, dest='time_delay', default=0.0,
+                    help='Maximum time to pause between network requests. Default 0.0. '
+                    'Actual pauses will be uniformly distributed between 0 and the maximum')
+
 # TODO: get rid of this and associated old code when /upload-cvr-export and /upload-cvr-export go away
 parser.add_argument('-Y, --ye-olde-upload', type=bool, dest='ye_olde_upload',
                     help='use old file upload protocol')
@@ -230,6 +236,22 @@ parser.add_argument('-d, --debuglevel', type=int, default=logging.WARNING, dest=
 parser.add_argument('commands', metavar="COMMAND", nargs='*',
                     help='audit commands to run. May be specified multiple times. '
                     'Possibilities: reset dos_init county_setup dos_start county_audit dos_wrapup')
+
+
+class Pause(object):
+    """Provide a configurable sleep delay.
+    Just set Pause.max_pause directly when you want the default to change"
+    """
+
+    max_pause = 0.0
+
+    @classmethod
+    def pause_hook(self, r, *args, **kwargs):
+        """A hook for a Requests response, which pauses a random amount of time,
+        between 0.0 and the maximum pause configured for the class
+        """
+
+        time.sleep(random.uniform(0.0, self.max_pause))
 
 
 def requests_retry_session(retries=3, backoff_factor=2, method_whitelist=False,
@@ -247,6 +269,7 @@ def requests_retry_session(retries=3, backoff_factor=2, method_whitelist=False,
     """
 
     session = session or requests.Session()
+    session.hooks = dict(response=Pause.pause_hook)  # Why isn't this an argument to the constructor?
     retry = requests.packages.urllib3.util.retry.Retry(
         total=retries,
         connect=retries,
@@ -972,6 +995,8 @@ def main():
 
     fields = [int(f) for f in ac.args.notfound_plan.split()]
     ac.nf_discrepancy_remainder, ac.nf_discrepancy_cycle = fields
+
+    Pause.max_pause = ac.args.time_delay
 
     ac.logconsole.info("Arguments: %s" % ac.args)
 
