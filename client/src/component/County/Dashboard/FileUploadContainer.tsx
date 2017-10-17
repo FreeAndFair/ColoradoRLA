@@ -5,7 +5,13 @@ import BallotManifestFormContainer from './BallotManifest/FormContainer';
 import CVRExportFormContainer from './CVRExport/FormContainer';
 
 
-const MatchStatus = (props: any) => {
+interface MatchStatusProps {
+    ballotManifestCount: number;
+    cvrExportCount: number;
+    uploadedBothFiles: boolean;
+}
+
+const MatchStatus = (props: MatchStatusProps) => {
     const { ballotManifestCount, cvrExportCount, uploadedBothFiles } = props;
 
     if (!uploadedBothFiles) {
@@ -35,7 +41,12 @@ const MatchStatus = (props: any) => {
     }
 };
 
-const FileUploadForms = (props: any) => {
+interface FileUploadFormsProps {
+    county: CountyState;
+    uploadedBothFiles: boolean;
+}
+
+const FileUploadForms = (props: FileUploadFormsProps) => {
     const { county, uploadedBothFiles } = props;
     const { ballotManifestCount, cvrExportCount } = county;
 
@@ -59,7 +70,13 @@ const MissedDeadline = () => {
     );
 };
 
-class FileUploadContainer extends React.Component<any, any> {
+interface FileUploadContainerProps {
+    county: CountyState;
+    missedDeadline: boolean;
+    uploadedBothFiles: boolean;
+}
+
+class FileUploadContainer extends React.Component<FileUploadContainerProps> {
     public render() {
         const { county, missedDeadline, uploadedBothFiles } = this.props;
 
@@ -74,16 +91,16 @@ class FileUploadContainer extends React.Component<any, any> {
     }
 }
 
-const mapStateToProps = (state: any) => {
+const select = (state: AppState) => {
     const { county } = state;
     const { asm } = county;
 
     const auditInProgress = asm.auditBoard.currentState === 'AUDIT_IN_PROGRESS';
-    const uploadedBothFiles = county.ballotManifestHash && county.cvrExportHash;
+    const uploadedBothFiles = !!(county.ballotManifestHash && county.cvrExportHash);
     const missedDeadline = auditInProgress && !uploadedBothFiles;
 
     return { county, missedDeadline, uploadedBothFiles };
 };
 
 
-export default connect(mapStateToProps)(FileUploadContainer);
+export default connect(select)(FileUploadContainer);

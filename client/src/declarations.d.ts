@@ -17,17 +17,35 @@ interface AppState {
     username?: string;
 }
 
+type CvrImportStatus
+    = 'NOT_ATTEMPTED'
+    | 'IN_PROGRESS'
+    | 'SUCCESSFUL'
+    | 'FAILED';
+
 interface CountyState {
     acvrs: any;
     asm: any;
     auditBoard: any;
+    auditedBallotCount?: number;
+    ballotManifest?: UploadedFile;
+    ballotManifestCount?: number;
+    ballotManifestHash?: string;
+    ballotsRemainingInRound?: number;
     contests: any;
     contestDefs?: any;
     currentBallot?: any;
     currentRound?: any;
+    cvrExport?: UploadedFile;
+    cvrExportCount?: number;
+    cvrExportHash?: string;
+    cvrImportStatus?: CvrImportStatus;
     cvrsToAudit?: any;
+    disagreementCount?: number;
+    discrepancyCount?: number;
     fileName?: any;  // TODO: remove
     hash?: any;  // TODO: remove
+    id?: number;
     uploadingBallotManifest?: boolean;
     uploadingCvrExport?: boolean;
 }
@@ -393,3 +411,29 @@ interface CountyDashboardJson {
     rounds: RoundJson[];
     status: CountyDashboardStatus;
 }
+
+interface ContestChoice {
+    name: string;
+    description: string;
+}
+
+interface Contest {
+    choices: ContestChoice[];
+    description: string;
+    id: number;
+    name: string;
+    votesAllowed: number;
+
+}
+
+interface CountyContests {
+    [id: number]: Contest;
+}
+
+interface CountyInfo {
+    id: number;
+    name: string;
+}
+
+// TODO: Narrow type.
+type OnClick = (...args: any[]) => any;

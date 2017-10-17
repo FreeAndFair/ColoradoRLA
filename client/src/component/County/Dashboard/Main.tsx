@@ -7,7 +7,13 @@ import fetchReport from 'corla/action/county/fetchReport';
 import FileDownloadButtons from 'corla/component/FileDownloadButtons';
 
 
-const AuditBoardInfo = ({ signedIn }: any) => {
+interface AuditBoardInfoProps {
+    signedIn: boolean;
+}
+
+const AuditBoardInfo = (props: AuditBoardInfoProps) => {
+    const { signedIn } = props;
+
     const icon = signedIn
                ? <span className='pt-icon pt-intent-success pt-icon-tick-circle' />
                : <span className='pt-icon pt-intent-danger pt-icon-error' />;
@@ -22,7 +28,21 @@ const AuditBoardInfo = ({ signedIn }: any) => {
     );
 };
 
-const Main = (props: any) => {
+interface MainProps {
+    auditBoardSignedIn: boolean;
+    auditButtonDisabled: boolean;
+    auditComplete: boolean;
+    auditStarted: boolean;
+    boardSignIn: OnClick;
+    canRenderReport: boolean;
+    county: CountyState;
+    currentRoundNumber: number;
+    name: string;
+    signInButtonDisabled: boolean;
+    startAudit: OnClick;
+}
+
+const Main = (props: MainProps) => {
     const {
         auditBoardSignedIn,
         auditButtonDisabled,

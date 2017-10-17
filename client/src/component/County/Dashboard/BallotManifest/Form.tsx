@@ -3,7 +3,19 @@ import * as React from 'react';
 import { EditableText } from '@blueprintjs/core';
 
 
-const BallotManifestForm = (props: any) => {
+interface FormProps {
+    disableReupload: OnClick;
+    fileUploaded: boolean;
+    form: {
+        file?: File;
+        hash: string;
+    };
+    onFileChange: OnClick;
+    onHashChange: OnClick;
+    upload: OnClick;
+}
+
+const BallotManifestForm = (props: FormProps) => {
     const {
         disableReupload,
         fileUploaded,

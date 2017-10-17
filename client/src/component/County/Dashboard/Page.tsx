@@ -9,7 +9,22 @@ import Info from './Info';
 import Main from './Main';
 
 
-const CountyDashboardPage = (props: any) => {
+interface PageProps {
+    auditBoardSignedIn: boolean;
+    auditComplete: boolean;
+    auditStarted: boolean;
+    boardSignIn: OnClick;
+    canAudit: boolean;
+    canRenderReport: boolean;
+    canSignIn: boolean;
+    contests: CountyContests;
+    county: CountyState;
+    countyInfo: CountyInfo;
+    currentRoundNumber: number;
+    startAudit: OnClick;
+}
+
+const CountyDashboardPage = (props: PageProps) => {
     const {
         auditBoardSignedIn,
         auditComplete,
@@ -24,8 +39,6 @@ const CountyDashboardPage = (props: any) => {
         currentRoundNumber,
         startAudit,
     } = props;
-
-    const info = { auditDate: county.startTimestamp };
 
     const auditButtonDisabled = !canAudit || auditComplete;
     const signInButtonDisabled = !canSignIn;

@@ -8,10 +8,7 @@ import CountyNav from '../Nav';
 import * as config from 'corla/config';
 
 
-const MissedDeadlinePage = (props: any) => {
-    const { county } = props;
-    const { name } = county;
-
+const MissedDeadlinePage = () => {
     return (
         <div className='county-root'>
             <CountyNav />

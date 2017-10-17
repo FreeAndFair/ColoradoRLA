@@ -5,7 +5,12 @@ import * as _ from 'lodash';
 import { Intent, ProgressBar, Spinner } from '@blueprintjs/core';
 
 
-const Progress = (props: any) => {
+interface ProgressProps {
+    count: number;
+    file: UploadedFile;
+}
+
+const Progress = (props: ProgressProps) => {
     const { count, file } = props;
 
     if (_.isNil(count)) { return null; }
@@ -25,10 +30,13 @@ const Progress = (props: any) => {
             <ProgressBar className='pt-intent-primary' value={ progressRatio } />
         </div>
     );
-
 };
 
-const Uploading = (props: any) => {
+interface UploadingProps {
+    county: CountyState;
+}
+
+const Uploading = (props: UploadingProps) => {
     const { county } = props;
     const { cvrExportCount, cvrExport, cvrImportStatus } = county;
 

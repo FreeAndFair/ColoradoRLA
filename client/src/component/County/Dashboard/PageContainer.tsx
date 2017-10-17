@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import { History } from 'history';
+
 import withPoll from 'corla/component/withPoll';
 
 import counties from 'corla/data/counties';
@@ -20,7 +22,22 @@ import currentRoundNumberSelector from 'corla/selector/county/currentRoundNumber
 import missedDeadlineSelector from 'corla/selector/county/missedDeadline';
 
 
-class CountyDashboardContainer extends React.Component<any, any> {
+interface DashboardProps {
+    allRoundsComplete: boolean;
+    auditBoardSignedIn: boolean;
+    auditComplete: boolean;
+    auditStarted: boolean;
+    canAudit: boolean;
+    canRenderReport: boolean;
+    canSignIn: boolean;
+    contests: CountyContests;
+    county: CountyState;
+    currentRoundNumber: number;
+    history: History;
+    missedDeadline: boolean;
+}
+
+class CountyDashboardContainer extends React.Component<DashboardProps> {
     public render() {
         const {
             allRoundsComplete,
@@ -38,7 +55,7 @@ class CountyDashboardContainer extends React.Component<any, any> {
         }
 
         if (missedDeadline) {
-            return <MissedDeadlinePage county={ county } />;
+            return <MissedDeadlinePage />;
         }
 
         const countyInfo = county.id ? counties[county.id] : {};
@@ -62,7 +79,7 @@ class CountyDashboardContainer extends React.Component<any, any> {
     }
 }
 
-const select = (state: any) => {
+const select = (state: AppState) => {
     const { county } = state;
 
     if (!county) {
