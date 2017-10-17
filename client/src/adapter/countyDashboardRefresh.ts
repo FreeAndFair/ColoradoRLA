@@ -62,6 +62,19 @@ function parseContestsUnderAudit(contestIds: number[], state: AppState): any[] {
     });
 }
 
+function parseSignatories(s?: ElectorJson[]): Elector[] {
+    if (!s) {
+        return [];
+    }
+
+    return s.map(e => {
+        return {
+            firstName: e.first_name,
+            lastName: e.last_name,
+        };
+    });
+}
+
 function parseRound(data: RoundJson): Round {
     return {
         actualCount: data.actual_count,
@@ -69,7 +82,7 @@ function parseRound(data: RoundJson): Round {
         discrepancies: data.discrepancies,
         expectedCount: data.expected_count,
         number: data.number,
-        signatories: data.signatories || [],
+        signatories: parseSignatories(data.signatories),
         startAuditPrefixLength: data.start_audit_prefix_length,
         startIndex: data.start_index,
         startTime: data.start_time,
@@ -84,7 +97,7 @@ function parseRounds(rounds?: RoundJson[]): Round[] {
     return rounds.map(parseRound);
 }
 
-function parseElection(data: CountyDashboardJson): any {
+function parseElection(data: CountyDashboardJson): Election {
     return {
         date: new Date(data.audit_info.election_date),
         type: data.audit_info.election_type,
@@ -115,7 +128,7 @@ function parseFile(file: UploadedFileJson): UploadedFile {
     };
 }
 
-export function parse(data: CountyDashboardJson, state: AppState): any {
+export function parse(data: CountyDashboardJson, state: AppState) {
     const findContest = (id: number) => state.county.contestDefs[id];
 
     return {
@@ -130,7 +143,7 @@ export function parse(data: CountyDashboardJson, state: AppState): any {
         ballotsRemainingInRound: data.ballots_remaining_in_round,
         contests: parseContests(data.contests, state),
         contestsUnderAudit: parseContestsUnderAudit(data.contests_under_audit, state),
-        currentRound: data.current_round ? parseRound(data.current_round) : {},
+        currentRound: data.current_round ? parseRound(data.current_round) : null,
         cvrExport: parseFile(data.cvr_export_file),
         cvrExportCount: data.cvr_export_count,
         cvrImportStatus: data.cvr_import_status,
