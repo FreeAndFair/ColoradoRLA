@@ -31,7 +31,7 @@ const defaultCountyState = (): CountyState => ({
         county: {},
     },
     auditBoard: [],
-    contests: {},
+    contests: [],
 });
 
 const defaultDosState = (): DosState => ({
