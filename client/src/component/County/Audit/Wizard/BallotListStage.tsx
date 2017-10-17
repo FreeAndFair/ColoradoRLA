@@ -5,7 +5,14 @@ import * as _ from 'lodash';
 import downloadCvrsToAuditCsv from 'corla/action/county/downloadCvrsToAuditCsv';
 
 
-const BallotListStage = (props: any) => {
+interface BallotListStageProps {
+    county: CountyState;
+    countyInfo: CountyInfo;
+    cvrsToAudit: CvrJson[];
+    nextStage: OnClick;
+}
+
+const BallotListStage = (props: BallotListStageProps) => {
     const { county, countyInfo, cvrsToAudit, nextStage } = props;
 
     const roundNumber = county.currentRound.number;
@@ -14,7 +21,7 @@ const BallotListStage = (props: any) => {
         return <div />;
     }
 
-    const ballotListRows = _.map(cvrsToAudit, (cvr: any) => {
+    const ballotListRows = _.map(cvrsToAudit, cvr => {
         const audited = cvr.audited ? '✔' : '';
 
         return (
@@ -29,7 +36,7 @@ const BallotListStage = (props: any) => {
         );
     });
 
-    const contestsUnderAuditListItems = _.map(county.contestsUnderAudit, (c: any) => {
+    const contestsUnderAuditListItems = _.map(county.contestsUnderAudit, c => {
         const riskLimitPercent = county.riskLimit
                                ? `${county.riskLimit * 100}%`
                                : '';

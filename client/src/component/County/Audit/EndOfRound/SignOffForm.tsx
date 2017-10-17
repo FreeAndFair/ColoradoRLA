@@ -3,7 +3,15 @@ import * as React from 'react';
 import { EditableText } from '@blueprintjs/core';
 
 
-const ElectorFormField = (props: any) => {
+interface FormFieldProps {
+    elector: Elector;
+    index: number;
+    onFirstNameChange: OnClick;
+    onLastNameChange: OnClick;
+    onTextConfirm: OnClick;
+}
+
+const ElectorFormField = (props: FormFieldProps) => {
     const {
         elector,
         index,
@@ -43,7 +51,16 @@ const ElectorFormField = (props: any) => {
     );
 };
 
-const EndOfRoundForm = (props: any) => {
+interface FormProps {
+    form: Elector[];
+    formIsValid: boolean;
+    onFirstNameChange: OnClick;
+    onLastNameChange: OnClick;
+    onTextConfirm: OnClick;
+    submit: OnClick;
+}
+
+const EndOfRoundForm = (props: FormProps) => {
     const {
         form,
         formIsValid,

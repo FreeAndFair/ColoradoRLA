@@ -10,8 +10,15 @@ import ballotNotFound from 'corla/action/county/ballotNotFound';
 import countyFetchCvr from 'corla/action/county/fetchCvr';
 
 
-const BallotNotFoundForm = ({ ballotNotFound, currentBallot }: any) => {
+interface NotFoundProps {
+    ballotNotFound: OnClick;
+    currentBallot: Cvr;
+}
+
+const BallotNotFoundForm = (props: NotFoundProps) => {
+    const { ballotNotFound, currentBallot } = props;
     const onClick = () => ballotNotFound(currentBallot.id);
+
     return (
         <div>
             <div>
@@ -26,7 +33,14 @@ const BallotNotFoundForm = ({ ballotNotFound, currentBallot }: any) => {
     );
 };
 
-const AuditInstructions = (props: any) => {
+interface InstructionsProps {
+    ballotNotFound: OnClick;
+    county: CountyState;
+    currentBallot: Cvr;
+    currentBallotNumber: number;
+}
+
+const AuditInstructions = (props: InstructionsProps) => {
     const {
         ballotNotFound,
         county,
@@ -35,8 +49,7 @@ const AuditInstructions = (props: any) => {
     } = props;
 
     const { currentRound } = county;
-
-    const isCurrentCvr = (cvr: any) => cvr.db_id === currentBallot.id;
+    const isCurrentCvr = (cvr: CvrJson) => cvr.db_id === currentBallot.id;
     const fullCvr = _.find(county.cvrsToAudit, isCurrentCvr);
     const storageBin = fullCvr ? fullCvr.storage_location : '—';
 
@@ -95,7 +108,11 @@ const AuditInstructions = (props: any) => {
     );
 };
 
-const ContestInfo = ({ contest }: any) => {
+interface ContestInfoProps {
+    contest: Contest;
+}
+
+const ContestInfo = ({ contest }: ContestInfoProps) => {
     const { name, description, choices, votesAllowed } = contest;
 
     return (
@@ -107,16 +124,23 @@ const ContestInfo = ({ contest }: any) => {
     );
 };
 
-const ContestChoices = (props: any) => {
+interface ChoicesProps {
+    choices: ContestChoice[];
+    marks: AcvrContest;
+    noConsensus: boolean;
+    updateBallotMarks: OnClick;
+}
+
+const ContestChoices = (props: ChoicesProps) => {
     const { choices, marks, noConsensus, updateBallotMarks } = props;
 
-    const updateChoiceByName = (name: string) => (e: any) => {
+    const updateChoiceByName = (name: string) => (e: React.ChangeEvent<any>) => {
         const checkbox = e.target;
 
         updateBallotMarks({ choices: { [name]: checkbox.checked } });
     };
 
-    const choiceForms = _.map(choices, (choice: any) => {
+    const choiceForms = _.map(choices, choice => {
         const checked = marks.choices[choice.name];
 
         return (
@@ -138,7 +162,14 @@ const ContestChoices = (props: any) => {
     );
 };
 
-const ContestComments = ({ comments, onChange }: any) => {
+interface CommentsProps {
+    comments: string;
+    onChange: OnClick;
+}
+
+const ContestComments = (props: CommentsProps) => {
+    const { comments, onChange } = props;
+
     return (
         <div className='pt-card'>
             <label>
@@ -149,18 +180,25 @@ const ContestComments = ({ comments, onChange }: any) => {
     );
 };
 
-const BallotContestMarkForm = (props: any) => {
+interface MarkFormProps {
+    contest: Contest;
+    county: CountyState;
+    currentBallot: Cvr;
+    updateBallotMarks: OnClick;
+}
+
+const BallotContestMarkForm = (props: MarkFormProps) => {
     const { contest, county, currentBallot, updateBallotMarks } = props;
     const { name, description, choices, votesAllowed } = contest;
 
     const acvr = county.acvrs[currentBallot.id];
     const contestMarks = acvr[contest.id];
 
-    const updateComments = (comments: any) => {
+    const updateComments = (comments: string) => {
         updateBallotMarks({ comments });
     };
 
-    const updateConsensus = (e: any) => {
+    const updateConsensus = (e: React.ChangeEvent<any>) => {
         updateBallotMarks({ noConsensus: !!e.target.checked });
     };
 
@@ -185,13 +223,19 @@ const BallotContestMarkForm = (props: any) => {
     );
 };
 
-const BallotAuditForm = (props: any) => {
+interface AuditFormProps {
+    county: CountyState;
+    currentBallot: Cvr;
+    updateBallotMarks: OnClick;
+}
+
+const BallotAuditForm = (props: AuditFormProps) => {
     const { county, currentBallot } = props;
 
-    const contestForms = _.map(currentBallot.contestInfo, (info: any) => {
+    const contestForms = _.map(currentBallot.contestInfo, info => {
         const contest = county.contestDefs[info.contest];
 
-        const updateBallotMarks: any = (data: any) => props.updateBallotMarks({
+        const updateBallotMarks = (data: any) => props.updateBallotMarks({
             ballotId: currentBallot.id,
             contestId: contest.id,
             ...data,
@@ -210,7 +254,16 @@ const BallotAuditForm = (props: any) => {
     return <div>{ contestForms }</div>;
 };
 
-const BallotAuditStage = (props: any) => {
+interface StageProps {
+    county: CountyState;
+    currentBallot: Cvr;
+    currentBallotNumber: number;
+    nextStage: OnClick;
+    prevStage: OnClick;
+    updateBallotMarks: OnClick;
+}
+
+const BallotAuditStage = (props: StageProps) => {
     const {
         county,
         currentBallot,

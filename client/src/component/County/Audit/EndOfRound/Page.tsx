@@ -10,7 +10,11 @@ import corlaDate from 'corla/date';
 import * as format from 'corla/format';
 
 
-const PreviousRoundSignedOff = (props: any) => {
+interface PreviousRoundProps {
+    roundNumber: number;
+}
+
+const PreviousRoundSignedOff = (props: PreviousRoundProps) => {
     const { roundNumber } = props;
 
     return (
@@ -25,7 +29,7 @@ const PreviousRoundSignedOff = (props: any) => {
     );
 };
 
-const LastRoundComplete = (props: any) => {
+const LastRoundComplete = () => {
     return (
         <div>
             <CountyNav />
@@ -43,7 +47,17 @@ const LastRoundComplete = (props: any) => {
     );
 };
 
-const EndOfRoundPage = (props: any) => {
+interface PageProps {
+    allRoundsComplete: boolean;
+    countyInfo: CountyInfo;
+    currentRoundNumber: number;
+    election: Election;
+    estimatedBallotsToAudit: number;
+    previousRound: Round;
+    previousRoundSignedOff: boolean;
+}
+
+const EndOfRoundPage = (props: PageProps) => {
     const {
         allRoundsComplete,
         countyInfo,

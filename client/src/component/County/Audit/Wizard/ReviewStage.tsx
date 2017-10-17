@@ -5,11 +5,17 @@ import * as _ from 'lodash';
 import BackButton from './BackButton';
 
 
-const BallotContestReview = ({ contest, marks }: any) => {
+interface BallotContestReviewProps {
+    contest: Contest;
+    marks: AcvrContest;
+}
+
+const BallotContestReview = (props: BallotContestReviewProps) => {
+    const { contest, marks } = props;
     const { comments, noConsensus } = marks;
     const { votesAllowed } = contest;
 
-    const markedChoices: any = _.pickBy(marks.choices);
+    const markedChoices: AcvrChoices = _.pickBy(marks.choices);
     const votesMarked = _.size(markedChoices);
 
     const noConsensusDiv = (
@@ -24,7 +30,7 @@ const BallotContestReview = ({ contest, marks }: any) => {
         </div>
     );
 
-    const markedChoiceDivs = _.map(markedChoices, (_: any, name: any) => {
+    const markedChoiceDivs = _.map(markedChoices, (_, name) => {
         return (
             <div key={ name } className='pt-card'>
                 <div>{ name }</div>
@@ -66,8 +72,15 @@ const BallotContestReview = ({ contest, marks }: any) => {
     );
 };
 
-const BallotReview = ({ county, marks }: any) => {
-    const contestReviews = _.map(marks, (m: any, contestId: any) => {
+interface BallotReviewProps {
+    county: CountyState;
+    marks: Acvr;
+}
+
+const BallotReview = (props: BallotReviewProps) => {
+    const { county, marks } = props;
+
+    const contestReviews = _.map(marks, (m, contestId) => {
         const contest = county.contestDefs[contestId];
 
         return (
@@ -82,7 +95,16 @@ const BallotReview = ({ county, marks }: any) => {
     return <div className='pt-card'>{ contestReviews }</div>;
 };
 
-const ReviewStage = (props: any) => {
+interface ReviewStageProps {
+    county: CountyState;
+    currentBallot: Cvr;
+    marks: Acvr;
+    nextStage: OnClick;
+    prevStage: OnClick;
+    uploadAcvr: OnClick;
+}
+
+const ReviewStage = (props: ReviewStageProps) => {
     const {
         county,
         currentBallot,

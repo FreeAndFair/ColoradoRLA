@@ -9,7 +9,7 @@ import currentRoundNumberSelector from 'corla/selector/county/currentRoundNumber
 import previousRoundSelector from 'corla/selector/county/previousRound';
 
 
-function signedOff(round: any): boolean {
+function signedOff(round: Round): boolean {
     if (!round.signatories) {
         return false;
     }
@@ -21,13 +21,23 @@ function signedOff(round: any): boolean {
     return true;
 }
 
-class EndOfRoundPageContainer extends React.Component<any, any> {
+interface ContainerProps {
+    allRoundsComplete: boolean;
+    countyInfo: CountyInfo;
+    currentRoundNumber: number;
+    election: Election;
+    estimatedBallotsToAudit: number;
+    previousRound: Round;
+    previousRoundSignedOff: boolean;
+}
+
+class EndOfRoundPageContainer extends React.Component<ContainerProps> {
     public render() {
         return <EndOfRoundPage { ...this.props } />;
     }
 }
 
-const mapStateToProps = (state: any) => {
+function select(state: AppState) {
     const { county } = state;
 
     const previousRound = previousRoundSelector(state);
@@ -41,7 +51,7 @@ const mapStateToProps = (state: any) => {
         previousRound,
         previousRoundSignedOff: signedOff(previousRound),
     };
-};
+}
 
 
-export default connect(mapStateToProps)(EndOfRoundPageContainer);
+export default connect(select)(EndOfRoundPageContainer);

@@ -14,7 +14,13 @@ import canAuditSelector from 'corla/selector/county/canAudit';
 import roundInProgressSelector from 'corla/selector/county/roundInProgress';
 
 
-class CountyAuditContainer extends React.Component<any, any> {
+interface ContainerProps {
+    auditComplete: boolean;
+    canAudit: boolean;
+    showEndOfRoundPage: boolean;
+}
+
+class CountyAuditContainer extends React.Component<ContainerProps> {
     public render() {
         if (this.props.auditComplete) {
             notice.ok('The audit is complete.');
@@ -34,7 +40,7 @@ class CountyAuditContainer extends React.Component<any, any> {
     }
 }
 
-const select = (state: any) => {
+function select(state: AppState) {
     const showEndOfRoundPage = allRoundsCompleteSelector(state)
                             || !roundInProgressSelector(state);
 
@@ -43,7 +49,7 @@ const select = (state: any) => {
         canAudit: canAuditSelector(state),
         showEndOfRoundPage,
     };
-};
+}
 
 
 export default withPoll(

@@ -6,7 +6,15 @@ import ReviewStage from './ReviewStage';
 import uploadAcvr from 'corla/action/county/uploadAcvr';
 
 
-class ReviewStageContainer extends React.Component<any, any> {
+interface ContainerProps {
+    county: CountyState;
+    currentBallot: Cvr;
+    marks: Acvr;
+    nextStage: OnClick;
+    prevStage: OnClick;
+}
+
+class ReviewStageContainer extends React.Component<ContainerProps> {
     public render() {
         const props = { ...this.props, uploadAcvr };
 
@@ -14,13 +22,14 @@ class ReviewStageContainer extends React.Component<any, any> {
     }
 }
 
-
-const mapStateToProps = ({ county }: any) => {
+function select(props: AppState) {
+    const { county } = props;
     const { currentBallot } = county;
 
     const marks = county.acvrs[currentBallot.id];
 
     return { county, currentBallot, marks };
-};
+}
 
-export default connect(mapStateToProps)(ReviewStageContainer);
+
+export default connect(select)(ReviewStageContainer);

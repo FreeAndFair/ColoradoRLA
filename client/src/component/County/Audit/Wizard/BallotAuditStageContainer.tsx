@@ -10,7 +10,15 @@ import ballotNotFound from 'corla/action/county/ballotNotFound';
 import currentBallotNumber from 'corla/selector/county/currentBallotNumber';
 
 
-class BallotAuditStageContainer extends React.Component<any, any> {
+interface ContainerProps {
+    county: CountyState;
+    currentBallot: Cvr;
+    currentBallotNumber: number;
+    nextStage: OnClick;
+    prevStage: OnClick;
+}
+
+class BallotAuditStageContainer extends React.Component<ContainerProps> {
     public render() {
         const props = {
             ...this.props,
@@ -21,7 +29,7 @@ class BallotAuditStageContainer extends React.Component<any, any> {
     }
 }
 
-const mapStateToProps = (state: any) => {
+function select(state: AppState) {
     const { county } = state;
     const { currentBallot } = county;
 
@@ -30,7 +38,7 @@ const mapStateToProps = (state: any) => {
         currentBallot,
         currentBallotNumber: currentBallotNumber(state),
     };
-};
+}
 
 
-export default connect(mapStateToProps)(BallotAuditStageContainer);
+export default connect(select)(BallotAuditStageContainer);

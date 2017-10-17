@@ -6,7 +6,12 @@ import * as corlaDate from 'corla/date';
 import * as format from 'corla/format';
 
 
-const StartStage = (props: any) => {
+interface StageProps {
+    county: CountyState;
+    nextStage: OnClick;
+}
+
+const StartStage = (props: StageProps) => {
     const { county, nextStage } = props;
     const { election } = county;
 
