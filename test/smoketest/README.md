@@ -9,17 +9,47 @@ See results in smoketest.*.out, generated like this:
 Note: the pytest tests from zerotest are currently unused and disabled.
 
 ## Installing Test Dependencies
-For now, you'll need to install
-[zerotest](https://github.com/jjyr/zerotest)
+
+For now, you need to install [zerotest](https://github.com/jjyr/zerotest)
 to run these tests, and/or generate new ones in the same way.
 
-This is mainly tested with python3, but has been seen to work
-on python2 also.  You will need these libraries for some of the tests:
+This is mainly tested with python3, but has been seen to work on python2.
 
-`pip install zerotest requests`
+### Create a Python virtual environment
 
-or `pip3 install zerotest requests` (or similar) if you have
-multiple Python installations.
+Create a new [virtual environment](https://packaging.python.org/tutorials/installing-packages/#creating-virtual-environments)
+for the project:
+
+    $ python3 -m venv smoketest-venv
+
+(This creates a directory called "smoketest-venv" inside the current
+directory.)
+
+On Debian/Ubuntu systems, the command above may instruct you to first install
+`python3-venv`.  If you are using Python 3.4 and installing `python3-venv`
+gives you an error like the following:
+
+> E: Unable to locate package python3-venv
+
+then you can try installing `python3.4-venv` instead.  This was seen
+[to be required](https://bugs.launchpad.net/ubuntu/+source/python3.4/+bug/1532231)
+on Ubuntu.
+
+To activate the virtual environment in a new shell window:
+
+    $ source smoketest-venv/bin/activate
+
+### Installing Python dependencies
+
+Install the Python dependencies in your Python environment (e.g. in the
+virtual environment you created above):
+
+    $ pip install -r requirements.txt
+
+(You may need to replace `pip` with `pip3` above depending on your system.)
+
+If `requirements.txt` ever needs updating, you can follow the instructions
+inside `requirements.in`.
 
 ## Running a smoketest
 
@@ -141,7 +171,7 @@ Interim test of captured queries:
 Generate raw test script which should work with existing database:
 
 ```
-zerotest generate --ignore-all-headers server_test.json > server_test_raw.py 
+zerotest generate --ignore-all-headers server_test.json > server_test_raw.py
 sed 's,localhost:8887,localhost:8888,' server_test_raw.py > server_test_raw2.py
 ```
 
