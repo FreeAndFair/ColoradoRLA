@@ -5,23 +5,29 @@ import PasswordForm from './PasswordForm';
 import SecondFactorForm from './SecondFactorForm';
 
 
-export class LoginFormContainer extends React.Component<any, any> {
+interface Props {
+    dashboard: Dashboard;
+    loginChallenge: LoginChallenge;
+    username: string;
+}
+
+export class LoginFormContainer extends React.Component<Props> {
     public render() {
         const { loginChallenge } = this.props;
 
         if (loginChallenge) {
             return <SecondFactorForm { ...this.props } />;
         } else {
-            return <PasswordForm { ...this.props } />;
+            return <PasswordForm />;
         }
     }
 }
 
-const mapStateToProps = (state: any) => {
+function select(state: AppState) {
     const { dashboard, loginChallenge, username } = state;
 
     return { dashboard, loginChallenge, username };
-};
+}
 
 
-export default connect(mapStateToProps)(LoginFormContainer);
+export default connect(select)(LoginFormContainer);

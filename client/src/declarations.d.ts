@@ -5,11 +5,16 @@ type ElectionType = 'coordinated'
                   | 'general'
                   | 'recall';
 
+type LoginChallengeBox = [string, string];
+
+type LoginChallenge = LoginChallengeBox[];
+
 interface AppState {
-    loginChallenge: any;
+    loginChallenge: LoginChallenge;
     dashboard?: Dashboard;
     county?: CountyState;
     sos?: DosState;
+    username?: string;
 }
 
 interface CountyState {

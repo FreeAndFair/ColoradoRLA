@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-
+import { RouteComponentProps } from 'react-router';
 import { Redirect } from 'react-router-dom';
 
 import session from 'corla/session';
@@ -8,7 +8,9 @@ import session from 'corla/session';
 import LoginPage from './Page';
 
 
-export class LoginContainer extends React.Component<any, any> {
+type LoginProps = RouteComponentProps<void>;
+
+export class LoginContainer extends React.Component<LoginProps> {
     public render() {
         const { location } = this.props;
 

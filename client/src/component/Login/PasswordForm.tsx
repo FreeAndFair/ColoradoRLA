@@ -9,7 +9,14 @@ function isFormValid(form: any): boolean {
     return username.length > 0;
 }
 
-export default class PasswordForm extends React.Component<any, any> {
+interface FormState {
+    form: {
+        password: string;
+        username: string;
+    };
+}
+
+export default class PasswordForm extends React.Component<null, FormState> {
     public state = {
         form: {
             password: '',
