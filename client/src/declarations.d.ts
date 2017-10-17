@@ -1,5 +1,10 @@
 type Dashboard = 'sos' | 'county';
 
+interface Election {
+    date: Date;
+    type: ElectionType;
+}
+
 type ElectionType = 'coordinated'
                   | 'primary'
                   | 'general'
@@ -24,28 +29,33 @@ type CvrImportStatus
     | 'FAILED';
 
 interface CountyState {
-    acvrs: any;
+    acvrs: CountyAcvrs;
     asm: any;
-    auditBoard: any;
+    auditBoard: AuditBoard;
     auditedBallotCount?: number;
     ballotManifest?: UploadedFile;
     ballotManifestCount?: number;
     ballotManifestHash?: string;
     ballotsRemainingInRound?: number;
-    contests: any;
-    contestDefs?: any;
-    currentBallot?: any;
-    currentRound?: any;
+    contests: Contest[];
+    contestDefs?: CountyContests;
+    contestsUnderAudit?: Contest[];
+    currentBallot?: Cvr;
+    currentRound?: Round;
     cvrExport?: UploadedFile;
     cvrExportCount?: number;
     cvrExportHash?: string;
     cvrImportStatus?: CvrImportStatus;
-    cvrsToAudit?: any;
+    cvrsToAudit?: CvrJson[];  // Sic
     disagreementCount?: number;
     discrepancyCount?: number;
-    fileName?: any;  // TODO: remove
-    hash?: any;  // TODO: remove
+    election?: Election;
+    estimatedBallotsToAudit?: number;
+    fileName?: string;  // TODO: remove
+    hash?: string;  // TODO: remove
     id?: number;
+    riskLimit?: number;
+    rounds?: Round[];
     uploadingBallotManifest?: boolean;
     uploadingCvrExport?: boolean;
 }
@@ -90,6 +100,10 @@ interface ElectorJson {
     last_name: string;
 }
 
+interface CountyAcvrs {
+    [cvrId: number]: Acvr;
+}
+
 interface Acvr {
     [contestId: number]: AcvrContest;
 }
@@ -115,30 +129,42 @@ interface AcvrJson {
     cvr_id: number;
 }
 
+type RecordType
+    = 'UPLOADED'
+    | 'PHANTOM_RECORD'
+    | 'AUDITOR_ENTERED'
+    | 'PHANTOM_BALLOT';
+
 interface Cvr {
-    ballotType: any;
-    batchId: any;
-    contestInfo: any;
-    countyId: any;
-    cvrNumber: any;
-    id: any;
-    imprintedId: any;
-    recordId: any;
-    recordType: any;
-    scannerId: any;
+    ballotType: string;  // String repr of number
+    batchId: number;
+    contestInfo: Array<{
+        choices: string[];  // Name part of `ContestChoice`
+        contest: number;
+    }>;
+    countyId: number;
+    cvrNumber: number;
+    id: number;
+    imprintedId: string;  // `${scannerId}-${batchId}-${recordId}`
+    recordId: number;
+    recordType: RecordType;  // UPLOADED etc
+    scannerId: number;
 }
 
 interface CvrJson {
+    audited?: boolean;
     ballot_type: string;
-    batch_id: string;
+    batch_id: number;
     contest_info: ContestInfoJson[];
     county_id: number;
     cvr_number: number;
+    db_id?: number;
     id: number;
     imprinted_id: string;
-    record_id: string;
-    record_type: string;
-    scanner_id: string;
+    record_id: number;
+    record_type: RecordType;
+    scanner_id: number;
+    storage_location?: string;
     timestamp: Date;
 }
 
@@ -367,7 +393,7 @@ interface Round {
     discrepancies: number;
     expectedCount: number;
     number: number;
-    signatories: any;
+    signatories: Elector[];
     startAuditPrefixLength: number;
     startIndex: number;
     startTime: Date;
@@ -379,7 +405,7 @@ interface RoundJson {
     discrepancies: number;
     expected_count: number;
     number: number;
-    signatories: any;
+    signatories: ElectorJson[];
     start_audit_prefix_length: number;
     start_index: number;
     start_time: Date;
