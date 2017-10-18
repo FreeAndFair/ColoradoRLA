@@ -152,6 +152,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
           new DominionCVRExportParser(bmi_isr, 
                                       Persistence.getByID(the_file.county().id(), 
                                                           County.class),
+                                      Main.properties(),
                                       true);
       int deleted = 0;
       
