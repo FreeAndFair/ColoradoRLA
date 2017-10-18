@@ -64,14 +64,27 @@ interface DosState {
     asm: {
         currentState: DosAsmState;
     };
-    auditedContests: DosContests;
+    auditedContests: DosAuditedContests;
+    auditTypes?: ContestAuditTypes;
     contests?: DosContests;
-    contestsForAudit?: any;
+    contestsForAudit?: any;  // Dead?
     countyStatus: DosCountyStatuses;
     discrepancyCounts?: DosDiscrepancyCounts;
+    election?: Election;
+    publicMeetingDate?: Date;
     riskLimit?: number;
     seed?: any;
 }
+
+interface ContestAuditTypes {
+    [contestId: number]: AuditType;
+}
+
+type AuditType
+    = 'COMPARISON'
+    | 'HAND_COUNT'
+    | 'NOT_AUDITABLE'
+    | 'NONE';
 
 interface DosDiscrepancyCounts {
     [countyId: number]: DosDiscrepancyCount;
@@ -113,6 +126,10 @@ interface DiscrepancyCount {
 
 interface DosContests {
     [contestId: number]: Contest;
+}
+
+interface DosAuditedContests {
+    [contestId: number]: AuditedContest;
 }
 
 interface AuditBoardMember {
@@ -508,6 +525,11 @@ interface Contest {
     id: number;
     name: string;
     votesAllowed: number;
+}
+
+interface AuditedContest extends Contest {
+    // TODO: Should be enum.
+    reason: string;
 }
 
 interface ContestJson {
