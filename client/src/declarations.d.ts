@@ -561,3 +561,5 @@ interface CountyInfo {
 
 // TODO: Narrow type.
 type OnClick = (...args: any[]) => any;
+
+type Option<T> = T | null | undefined;
