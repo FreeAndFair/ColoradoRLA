@@ -37,10 +37,15 @@ function formatReason(reason: string): string {
     return 'County Contest';
 }
 
-const SelectedContests = (props: any) => {
+interface SelectedContestsProps {
+    auditedContests: DosAuditedContests;
+    contests: DosContests;
+}
+
+const SelectedContests = (props: SelectedContestsProps) => {
     const { auditedContests, contests } = props;
 
-    const rows = _.map(props.auditedContests, (auditedContest: any) => {
+    const rows = _.map(props.auditedContests, auditedContest => {
         const contest = _.find(contests, (c: any) => c.id === auditedContest.id);
 
         const countyName = counties[contest.countyId].name;
@@ -75,7 +80,11 @@ const SelectedContests = (props: any) => {
     );
 };
 
-const WaitingForContestsPage = ({ back }: any) => {
+interface WaitingPageProps {
+    back: OnClick;
+}
+
+const WaitingForContestsPage = ({ back }: WaitingPageProps) => {
     return (
         <div>
             <Nav />
@@ -95,7 +104,16 @@ const WaitingForContestsPage = ({ back }: any) => {
     );
 };
 
-const SelectContestsPage = (props: any) => {
+interface PageProps {
+    auditedContests: DosAuditedContests;
+    back: OnClick;
+    contests: DosContests;
+    isAuditable: OnClick;
+    nextPage: OnClick;
+    selectContestsForAudit: OnClick;
+}
+
+const SelectContestsPage = (props: PageProps) => {
     const {
         auditedContests,
         back,

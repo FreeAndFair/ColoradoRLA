@@ -35,7 +35,11 @@ function round(val: number, digits: number) {
     return Math.round(val * factor) / factor;
 }
 
-const ReadonlyRiskLimit = ({ riskLimit }: any) => {
+interface ReadOnlyRiskLimitProps {
+    riskLimit: number;
+}
+
+const ReadonlyRiskLimit = ({ riskLimit }: ReadOnlyRiskLimitProps) => {
     const riskLimitPercent = round(riskLimit * 100, 2);
 
     return (
@@ -46,7 +50,11 @@ const ReadonlyRiskLimit = ({ riskLimit }: any) => {
     );
 };
 
-const NextButton = (props: any) => {
+interface NextButtonProps {
+    nextPage: OnClick;
+}
+
+const NextButton = (props: NextButtonProps) => {
     const { nextPage } = props;
 
     return (
@@ -56,7 +64,12 @@ const NextButton = (props: any) => {
     );
 };
 
-const SaveButton = (props: any) => {
+interface SaveButtonProps {
+    disabled: boolean;
+    forms: any;
+}
+
+const SaveButton = (props: SaveButtonProps) => {
     const { disabled, forms } = props;
 
     const buttonClick = () => {
@@ -85,7 +98,14 @@ const SaveButton = (props: any) => {
     );
 };
 
-const ReadOnlyPage = (props: any) => {
+interface ReadOnlyPageProps {
+    election: Election;
+    nextPage: OnClick;
+    publicMeetingDate: Date;
+    riskLimit: number;
+}
+
+const ReadOnlyPage = (props: ReadOnlyPageProps) => {
     const { election, nextPage, riskLimit } = props;
 
     const electionDate = corlaDate.format(election.date);
@@ -117,7 +137,16 @@ const ReadOnlyPage = (props: any) => {
     );
 };
 
-const AuditPage = (props: any) => {
+interface PageProps {
+    election: Election;
+    formValid: boolean;
+    nextPage: OnClick;
+    publicMeetingDate: Date;
+    riskLimit: number;
+    setFormValid: OnClick;
+}
+
+const AuditPage = (props: PageProps) => {
     const {
         election,
         formValid,
@@ -142,7 +171,7 @@ const AuditPage = (props: any) => {
         );
     }
 
-    const forms: any = {};
+    const forms = {};
 
     const disableButton = !formValid;
 
@@ -181,8 +210,7 @@ const AuditPage = (props: any) => {
                 </div>
                 <SaveButton
                     disabled={ disableButton }
-                    forms={ forms}
-                    riskLimit={ riskLimit } />
+                    forms={ forms } />
             </div>
         </div>
     );

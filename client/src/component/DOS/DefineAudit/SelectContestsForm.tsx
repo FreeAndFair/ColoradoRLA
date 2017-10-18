@@ -8,11 +8,6 @@ import { Select } from '@blueprintjs/labs';
 import counties from 'corla/data/counties';
 
 
-interface FormState {
-    contests: any;
-    forms: any;
-}
-
 const auditReasons = [
     { id: 'state_wide_contest', text: 'State Contest' },
     { id: 'county_wide_contest', text: 'County Contest' },
@@ -20,7 +15,15 @@ const auditReasons = [
 
 const AuditReasonSelect = Select.ofType<any>();
 
-const TiedContestRow = (props: any) => {
+interface RowProps {
+    auditStatus: any;
+    contest: Contest;
+    onAuditChange: OnClick;
+    onHandCountChange: OnClick;
+    onReasonChange: OnClick;
+}
+
+const TiedContestRow = (props: RowProps) => {
     const { contest } = props;
 
     const countyName = counties[contest.countyId].name;
@@ -40,7 +43,7 @@ const TiedContestRow = (props: any) => {
     );
 };
 
-const ContestRow = (props: any) => {
+const ContestRow = (props: RowProps) => {
     const {
         auditStatus,
         contest,
@@ -105,8 +108,29 @@ type SortKey = 'contest' | 'county';
 
 type SortOrder = 'asc' | 'desc';
 
-class SelectContestsForm extends React.Component<any, any> {
-    constructor(props: any) {
+interface FormProps {
+    contests: DosContests;
+    forms: any;
+    isAuditable: OnClick;
+}
+
+interface SelectContestsForm {
+    [contestId: number]: {
+        audit: boolean;
+        handCount: boolean;
+        reason: string;
+    };
+}
+
+interface FormState {
+    filter: string;
+    form: any;
+    order: SortOrder;
+    sort: SortKey;
+}
+
+class SelectContestsForm extends React.Component<FormProps, FormState> {
+    constructor(props: FormProps) {
         super(props);
 
         this.state = {
@@ -129,7 +153,7 @@ class SelectContestsForm extends React.Component<any, any> {
         });
     }
 
-    public componentWillReceiveProps(nextProps: any) {
+    public componentWillReceiveProps(nextProps: FormProps) {
         if (!_.isEqual(nextProps.contests, this.props.contests)) {
             this.resetForm(nextProps.contests);
         }
@@ -140,7 +164,9 @@ class SelectContestsForm extends React.Component<any, any> {
 
         this.props.forms.selectContestsForm = this.state.form;
 
-        const contestData = _.map(contests, (c: any) => {
+        type ContestData = [string, string, RowProps];
+
+        const contestData: ContestData[] = _.map(contests, (c): ContestData => {
             const props = {
                 auditStatus: this.state.form[c.id],
                 contest: c,
@@ -159,7 +185,7 @@ class SelectContestsForm extends React.Component<any, any> {
             ];
         });
 
-        const keyFunc = (d: any[]) => {
+        const keyFunc = (d: ContestData) => {
             const i = this.state.sort === 'contest' ? 1 : 0;
             return d[i];
         };
@@ -169,7 +195,7 @@ class SelectContestsForm extends React.Component<any, any> {
             _.reverse(sortedData);
         }
 
-        const filterFunc = (d: any[]) => {
+        const filterFunc = (d: ContestData) => {
             const [countyName, contestName, ...props] = d;
 
             const str = this.state.filter.toLowerCase();
@@ -180,7 +206,7 @@ class SelectContestsForm extends React.Component<any, any> {
         };
         const filteredData = _.filter(sortedData, filterFunc);
 
-        const contestRows = _.map(filteredData, (d: any[]) => {
+        const contestRows = _.map(filteredData, (d: ContestData) => {
             const props = d[2];
             const { contest } = props;
 
@@ -257,13 +283,7 @@ class SelectContestsForm extends React.Component<any, any> {
         );
     }
 
-    private setContests() {
-        const { contests } = this.props;
-
-        this.setState({ contests });
-    }
-
-    private resetForm(contests: any) {
+    private resetForm(contests: DosContests) {
         const form: any = {};
 
         _.forEach(contests, (c, _) => {
@@ -277,7 +297,7 @@ class SelectContestsForm extends React.Component<any, any> {
         this.setState({ form });
     }
 
-    private onAuditChange = (contest: any) => () => {
+    private onAuditChange = (contest: Contest) => () => {
         const s = { ...this.state };
 
         const { audit } = s.form[contest.id];
@@ -286,11 +306,11 @@ class SelectContestsForm extends React.Component<any, any> {
         this.setState(s);
     }
 
-    private onFilterChange = (filter: any) => {
+    private onFilterChange = (filter: string) => {
         this.setState({ filter });
     }
 
-    private onHandCountChange = (contest: any) => () => {
+    private onHandCountChange = (contest: Contest) => () => {
         const s = { ...this.state };
 
         const { handCount } = s.form[contest.id];
@@ -299,7 +319,7 @@ class SelectContestsForm extends React.Component<any, any> {
         this.setState(s);
     }
 
-    private onReasonChange = (contest: any) => (item: any) => {
+    private onReasonChange = (contest: Contest) => (item: any) => {
         const s = { ...this.state };
 
         s.form[contest.id].reason = { ...item };

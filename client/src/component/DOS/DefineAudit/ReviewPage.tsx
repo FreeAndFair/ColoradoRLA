@@ -23,8 +23,16 @@ const Breadcrumb = () => (
     </ul>
 );
 
+interface AuditReviewProps {
+    back: OnClick;
+    publishBallotsToAudit: OnClick;
+    saveAndDone: OnClick;
+    sos: DosState;
+}
 
-const AuditReview = ({ back, publishBallotsToAudit, saveAndDone, sos }: any) => {
+const AuditReview = (props: AuditReviewProps) => {
+    const { back, publishBallotsToAudit, saveAndDone, sos } = props;
+
     const launch = () => {
         publishBallotsToAudit();
         saveAndDone();

@@ -3,7 +3,16 @@ import * as React from 'react';
 import { EditableText } from '@blueprintjs/core';
 
 
-class SeedForm extends React.Component<any, any> {
+interface FormProps {
+    forms: any;
+}
+
+interface FormState {
+    seed: string;
+}
+
+
+class SeedForm extends React.Component<FormProps, FormState> {
     public state = { seed: '' };
 
     public render() {

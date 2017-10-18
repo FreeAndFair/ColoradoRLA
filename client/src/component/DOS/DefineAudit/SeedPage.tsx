@@ -27,8 +27,15 @@ const Breadcrumb = () => (
     </ul>
 );
 
+interface PageProps {
+    back: OnClick;
+    nextPage: OnClick;
+    publicMeetingDate: Date;
+    seed: string;
+    uploadRandomSeed: OnClick;
+}
 
-const AuditSeedPage = (props: any) => {
+const AuditSeedPage = (props: PageProps) => {
     const { back, nextPage, publicMeetingDate, seed, uploadRandomSeed } = props;
 
     const forms: any = {};

@@ -1,4 +1,7 @@
 import * as React from 'react';
+
+import { History } from 'history';
+
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 
@@ -7,8 +10,21 @@ import StartPage from './StartPage';
 import withSync from 'corla/component/withSync';
 
 
-class StartPageContainer extends React.Component<any, any> {
-    public state: any = {
+interface ContainerProps {
+    election: Election;
+    history: History;
+    publicMeetingDate: Date;
+    riskLimit: number;
+    sos: DosState;
+}
+
+interface ContainerState {
+    riskLimit: boolean;
+    type: boolean;
+}
+
+class StartPageContainer extends React.Component<ContainerProps, ContainerState> {
+    public state = {
         riskLimit: true,
         type: false,
     };
@@ -45,7 +61,7 @@ class StartPageContainer extends React.Component<any, any> {
     }
 }
 
-const select = (state: any) => {
+function select(state: AppState) {
     const { sos } = state;
 
     if (!sos) { return {}; }
@@ -53,7 +69,7 @@ const select = (state: any) => {
     const { election, publicMeetingDate, riskLimit } = sos;
 
     return { election, riskLimit, publicMeetingDate, sos };
-};
+}
 
 
 export default withSync(

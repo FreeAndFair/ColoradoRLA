@@ -12,7 +12,15 @@ function defaultPublicMeetingDate(): string {
     return moment.tz(timezone).add(7, 'days').format('YYYY-MM-DD');
 }
 
-class PublicMeetingDateForm extends React.Component<any, any> {
+interface FormProps {
+    forms: any;
+}
+
+interface FormState {
+    date: string;
+}
+
+class PublicMeetingDateForm extends React.Component<FormProps, FormState> {
     public state = { date: defaultPublicMeetingDate() };
 
     public render() {

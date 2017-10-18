@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { Redirect } from 'react-router-dom';
 
+import { History } from 'history';
+
 import withPoll from 'corla/component/withPoll';
 
 import SelectContestsPage from './SelectContestsPage';
@@ -8,7 +10,15 @@ import SelectContestsPage from './SelectContestsPage';
 import selectContestsForAudit from 'corla/action/dos/selectContestsForAudit';
 
 
-class SelectContestsPageContainer extends React.Component<any, any> {
+interface ContainerProps {
+    auditedContests: DosAuditedContests;
+    contests: DosContests;
+    history: History;
+    isAuditable: OnClick;
+    sos: DosState;
+}
+
+class SelectContestsPageContainer extends React.Component<ContainerProps> {
     public render() {
         const {
             auditedContests,
@@ -39,12 +49,12 @@ class SelectContestsPageContainer extends React.Component<any, any> {
     }
 }
 
-const select = (state: any) => {
+function select(state: AppState) {
     const { sos } = state;
 
     if (!sos) { return {}; }
 
-    const isAuditable = (contestId: any): boolean => {
+    const isAuditable = (contestId: number): boolean => {
         const t = sos.auditTypes[contestId];
 
         return t !== 'HAND_COUNT' && t !== 'NOT_AUDITABLE';
@@ -56,7 +66,7 @@ const select = (state: any) => {
         isAuditable,
         sos,
     };
-};
+}
 
 
 export default withPoll(

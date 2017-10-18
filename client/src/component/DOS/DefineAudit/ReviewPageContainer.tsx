@@ -2,6 +2,8 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 
+import { History } from 'history';
+
 import withSync from 'corla/component/withSync';
 
 import ReviewPage from './ReviewPage';
@@ -9,7 +11,12 @@ import ReviewPage from './ReviewPage';
 import publishBallotsToAudit from 'corla/action/dos/publishBallotsToAudit';
 
 
-class ReviewPageContainer extends React.Component<any, any> {
+interface ContainerProps {
+    history: History;
+    sos: DosState;
+}
+
+class ReviewPageContainer extends React.Component<ContainerProps> {
     public render() {
         const { history, sos } = this.props;
 
@@ -32,11 +39,11 @@ class ReviewPageContainer extends React.Component<any, any> {
     }
 }
 
-const select = (state: any) => {
+function select(state: AppState) {
     const { sos } = state;
 
     return { sos };
-};
+}
 
 
 export default withSync(

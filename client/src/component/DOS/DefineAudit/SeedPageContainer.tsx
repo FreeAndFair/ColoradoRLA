@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { Redirect } from 'react-router-dom';
 
+import { History } from 'history';
+
 import withSync from 'corla/component/withSync';
 
 import SeedPage from './SeedPage';
@@ -8,7 +10,15 @@ import SeedPage from './SeedPage';
 import uploadRandomSeed from 'corla/action/dos/uploadRandomSeed';
 
 
-class SeedPageContainer extends React.Component<any, any> {
+interface ContainerProps {
+    history: History;
+    publicMeetingDate: Date;
+    seed: string;
+    sos: DosState;
+}
+
+
+class SeedPageContainer extends React.Component<ContainerProps> {
     public render() {
         const { history, publicMeetingDate, seed, sos } = this.props;
 
@@ -32,7 +42,7 @@ class SeedPageContainer extends React.Component<any, any> {
     }
 }
 
-const select = (state: any) => {
+function select(state: AppState) {
     const { sos } = state;
 
     if (!sos) { return {}; }
@@ -42,7 +52,7 @@ const select = (state: any) => {
         seed: sos.seed,
         sos,
     };
-};
+}
 
 
 export default withSync(
