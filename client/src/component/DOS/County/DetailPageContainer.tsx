@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { match } from 'react-router-dom';
 
 import withSync from 'corla/component/withSync';
 
@@ -7,12 +8,17 @@ import counties from 'corla/data/counties';
 import CountyDetailPage from './DetailPage';
 
 
-class CountyDetailContainer extends React.Component<any, any> {
+interface ContainerProps {
+    countyStatus: DosCountyStatuses;
+    match: match<any>;
+}
+
+class CountyDetailContainer extends React.Component<ContainerProps> {
     public render() {
         const { countyStatus } = this.props;
 
         const { countyId } = this.props.match.params;
-        const county: any = counties[countyId];
+        const county = counties[countyId];
 
         if (!county) {
             return <div />;
@@ -28,12 +34,12 @@ class CountyDetailContainer extends React.Component<any, any> {
     }
 }
 
-const select = (state: any) => {
+function select(state: AppState) {
     const { sos } = state;
     const { countyStatus } = sos;
 
     return { countyStatus };
-};
+}
 
 
 export default withSync(

@@ -9,7 +9,11 @@ import FileDownloadButtons from 'corla/component/FileDownloadButtons';
 import Nav from '../Nav';
 
 
-const Breadcrumb = ({ county }: any) => (
+interface BreadcrumbProps {
+    county: CountyInfo;
+}
+
+const Breadcrumb = ({ county }: BreadcrumbProps) => (
     <ul className='pt-breadcrumbs'>
         <li>
             <a className='pt-breadcrumb pt-disabled' href='/sos'>
@@ -29,13 +33,17 @@ const Breadcrumb = ({ county }: any) => (
     </ul>
 );
 
-function formatMember(member: any): string {
+function formatMember(member: AuditBoardMember): string {
     const { firstName, lastName, party } = member;
 
     return `${firstName} ${lastName} (${party})`;
 }
 
-const AuditBoard = (props: any) => {
+interface AuditBoardProps {
+    auditBoard: AuditBoardStatus;
+}
+
+const AuditBoard = (props: AuditBoardProps) => {
     const { auditBoard } = props;
 
     return (
@@ -61,7 +69,7 @@ const AuditBoard = (props: any) => {
     );
 };
 
-const NoAuditBoard = (props: any) => {
+const NoAuditBoard = () => {
     return (
         <div className='pt-card'>
             <h3>Audit Board</h3>
@@ -72,7 +80,12 @@ const NoAuditBoard = (props: any) => {
     );
 };
 
-const CountyDetails = (props: any) => {
+interface DetailsProps {
+    county: CountyInfo;
+    status: DosCountyStatus;
+}
+
+const CountyDetails = (props: DetailsProps) => {
     const { county, status } = props;
     const { auditBoard } = status;
 
@@ -122,8 +135,14 @@ const CountyDetails = (props: any) => {
     );
 };
 
+interface PageProps {
+    county: CountyInfo;
+    status: DosCountyStatus;
+}
 
-const CountyDetailPage = ({ county, status }: any) => {
+const CountyDetailPage = (props: PageProps) => {
+    const { county, status } = props;
+
     return (
         <div>
             <Nav />

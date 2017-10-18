@@ -4,17 +4,15 @@ import * as _ from 'lodash';
 
 import withSync from 'corla/component/withSync';
 
-import counties from 'corla/data/counties';
-
 import CountyOverviewPage from './OverviewPage';
 
 
-const select = (state: any) => {
+function select(state: AppState) {
     const { sos } = state;
     const { countyStatus } = sos;
 
-    return { counties, countyStatus, sos };
-};
+    return { countyStatus, sos };
+}
 
 
 export default withSync(
