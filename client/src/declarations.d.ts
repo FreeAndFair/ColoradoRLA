@@ -61,13 +61,40 @@ interface CountyState {
 }
 
 interface DosState {
-    asm: any;
-    auditStage: any;
-    auditedContests: any;
-    contests?: any;
+    asm: {
+        currentState: DosAsmState;
+    };
+    auditedContests: DosContests;
+    contests?: DosContests;
     contestsForAudit?: any;
-    countyStatus: any;
+    countyStatus: DosCountyStatuses;
     seed?: any;
+}
+
+interface DosCountyStatuses {
+    [countyId: number]: DosCountyStatus;
+}
+
+interface DosCountyStatus {
+    asmState: CountyAsmState;
+    auditBoard: AuditBoardStatus;
+    auditBoardASmState: AuditBoardAsmState;
+    auditedBallotCount: number;
+    ballotManifest: UploadedFile;
+    ballotsRemainingInRound: number;
+    currentRound: Round;
+    cvrExport: UploadedFile;
+    disagreementCount: number;
+    discrepancyCount: number;
+    estimatedBallotsToAudit: number;
+    id: number;
+    manifestTimestamp: any;
+    rounds: any;
+    status: any;
+}
+
+interface DosContests {
+    [contestId: number]: Contest;
 }
 
 interface AuditBoardMember {
@@ -78,6 +105,11 @@ interface AuditBoardMember {
 
 type AuditBoard = AuditBoardMember[];
 
+interface AuditBoardStatus {
+    members: AuditBoardMember[];
+    signIn: Date;
+}
+
 interface AuditBoardMemberJson {
     first_name: string;
     last_name: string;
@@ -86,6 +118,7 @@ interface AuditBoardMemberJson {
 
 interface AuditBoardJson {
     members: AuditBoardMemberJson[];
+    sign_in_time: Date;
 }
 
 interface RiskLimitJson {
@@ -440,6 +473,11 @@ interface CountyDashboardJson {
     status: CountyDashboardStatus;
 }
 
+interface ContestChoiceJson {
+    name: string;
+    description: string;
+}
+
 interface ContestChoice {
     name: string;
     description: string;
@@ -447,11 +485,20 @@ interface ContestChoice {
 
 interface Contest {
     choices: ContestChoice[];
+    countyId: number;
     description: string;
     id: number;
     name: string;
     votesAllowed: number;
+}
 
+interface ContestJson {
+    choices: ContestChoiceJson[];
+    county_id: number;
+    description: string;
+    id: number;
+    name: string;
+    votes_allowed: number;
 }
 
 interface CountyContests {
