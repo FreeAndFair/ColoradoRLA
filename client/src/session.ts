@@ -21,7 +21,7 @@ function expire() {
     cookie.remove('session');
 }
 
-function get(): Session {
+function get(): Option<Session> {
     const s = cookie.getJSON('session');
 
     if (!isSession(s)) {
