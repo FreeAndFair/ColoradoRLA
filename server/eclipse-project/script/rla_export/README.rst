@@ -7,16 +7,17 @@ on the Audit Center web site.
 Installation
 ------------
 
-Installing required packages:
+To install the packages required to run the RLA export command, type the 
+following command from within the `script` directory:
 
   ``pip install rla_export``
 
-Information on the installed package:
+For more information on the installed package, type the command:
 
   ``pydoc rla_export``
 
-Examples
---------
+Running the Export Command
+--------------------------
 
 With no options, the command will run queries using
 all the standard .sql files provided in the package, and
@@ -48,14 +49,14 @@ for example ``state_report.xlsx``.
 Other export files are generated based on ``sql`` query files.
 These are always produced in two formats: json and csv.
 The basename of each resulting file is the same as the basename of the query file.
-Thus, given the query file``seed.sql``, the files ``seed.json`` and ``seed.sql``
+Thus, given the query file``seed.sql``, the files ``seed.json`` and ``seed.csv``
 will be produced.
-
-For each type of information, the export file or the query file are listed here.
-When a county_id is used in an output file, it is indicated with the letter ``n``.
 
 For now this is organized based on the requirements, identified by letters or numbers,
 roughly as included in the email exchanges on public exports for the Audit Center.
+
+For each requirement, the export file or the query file are listed here.
+When a county_id is used in an output file, it is indicated with the letter ``n``.
 
 a. Seed for randomization
 
@@ -67,7 +68,7 @@ b. random ballot order
 
 c. Number of ballots to be audited overall in each audited contest in each county
 
-  ballots\_to\_audit\_per\_county.sql
+  ballots_to_audit_per_county.sql
 
 d. List of Audit Rounds (number of ballots, status by
    County, download links). Links should be to all the finalized
@@ -95,9 +96,9 @@ g. Audit Board names and political parties by County
 
 h. County Ballot Manifests and Hashes (status & download links)
 
-  manifest\_hash.sql
+  manifest_hash.sql
 
-  cvr\_hash.sql
+  cvr_hash.sql
 
 1. The CVR file. This is only extracted if the ``-c True`` option is used.
 
