@@ -58,7 +58,7 @@ function parseContestsUnderAudit(contestIds: number[], state: AppState): Contest
 
     return _.map(contestIds, (reason, id) => {
         const def = state.county.contestDefs[id];
-        return { ...def, reason };
+        return { ...def };
     });
 }
 
