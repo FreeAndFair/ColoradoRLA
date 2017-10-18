@@ -1,3 +1,13 @@
+#!/usr/bin/env python
+
+from setuptools import setup
+
+setup(
+    setup_requires=['pbr'],
+    pbr=True,
+)
+
+"""
 from setuptools import setup, find_packages
 
 
@@ -51,3 +61,4 @@ setup(name='rla_export',
       include_package_data=True,
       # TODO: include external file ColoradoRLA/server/eclipse-project/src/main/resources/us/freeandfair/corla/default.properties rather than a copy of it
       zip_safe=False)
+"""
