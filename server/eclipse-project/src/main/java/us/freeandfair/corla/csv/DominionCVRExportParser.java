@@ -381,15 +381,7 @@ public class DominionCVRExportParser implements CVRExportParser {
    * if necessary.
    */
   private void checkForFlush() {
-    if (my_parsed_cvrs.size() % my_batch_size == 0) {
-      Persistence.flush();
-      for (final CastVoteRecord cvr : my_parsed_cvrs) {
-        Persistence.evict(cvr);
-      }
-      my_parsed_cvrs.clear();
-    }
-    
-    if (my_multi_transaction && my_parsed_cvrs.size() % my_transaction_size == 0) {
+    if (my_multi_transaction && my_record_count % my_transaction_size == 0) {
       // update the count on the county dashboard
       final CountyDashboard cdb = 
           Persistence.getByID(my_county.id(), CountyDashboard.class);
@@ -402,6 +394,14 @@ public class DominionCVRExportParser implements CVRExportParser {
       
       Persistence.commitTransaction();
       Persistence.beginTransaction();
+    } 
+    
+    if (my_record_count % my_batch_size == 0) {
+      Persistence.flush();
+      for (final CastVoteRecord cvr : my_parsed_cvrs) {
+        Persistence.evict(cvr);
+      }
+      my_parsed_cvrs.clear();
     }
   }
   
@@ -463,7 +463,6 @@ public class DominionCVRExportParser implements CVRExportParser {
                              ballot_type, contest_info);
       Persistence.saveOrUpdate(new_cvr);
       my_parsed_cvrs.add(new_cvr);
-      checkForFlush();
       
       // add the CVR to all of our results
       for (final CountyContestResult r : my_results) {
@@ -646,6 +645,7 @@ public class DominionCVRExportParser implements CVRExportParser {
                                " CVRs for county " + my_county.id());
             }
           }
+          checkForFlush();
         }
         
         for (final CountyContestResult r : my_results) {
