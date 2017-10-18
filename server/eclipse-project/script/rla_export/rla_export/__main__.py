@@ -39,8 +39,9 @@ __date__ = "2017-10-03"
 __copyright__ = "Copyright (c) 2017 Colorado Department of State"
 __license__ = "AGPLv3"
 
-SQL_PATH = pkg_resources.resource_filename('rla_export', 'sql')
-PROPERTIES_FILE = pkg_resources.resource_filename('rla_export', 'default.properties')
+MYPACKAGE = 'rla_export'
+SQL_PATH = pkg_resources.resource_filename(MYPACKAGE, 'sql')
+PROPERTIES_FILE = pkg_resources.resource_filename(MYPACKAGE, 'default.properties')
 
 parser = argparse.ArgumentParser(description='Export ColoradoRLA data for publication on Audit Center web site')
 
@@ -55,7 +56,7 @@ parser.add_argument('-p, --properties', dest='properties',
 parser.add_argument('-e, --export-dir', dest='export_dir',
                     default=".",
                     help='Directory in which to put the resulting .json files. Default: . (current directory)')
-parser.add_argument('-c, --cvr-download', type=bool, dest='cvr_download',
+parser.add_argument('-c, --cvr-download', dest='cvr_download', action='store_true',
                     help='Download cvrs also - only needed once per audit, before dice are rolled')
 parser.add_argument('-u, --url', dest='url',
                     default='http://localhost:8888',
@@ -63,6 +64,8 @@ parser.add_argument('-u, --url', dest='url',
                     'Use something like http://example.gov/api when running '
                     'against a full installation.')
 
+parser.add_argument('-v, --version', dest='version', action='store_true',
+                    help='Print version number')
 parser.add_argument("-d, --debuglevel", type=int, default=logging.WARNING, dest="debuglevel",
   help="Set logging level to debuglevel: DEBUG=10, INFO=20,\n WARNING=30 (the default), ERROR=40, CRITICAL=50")
 
@@ -253,6 +256,10 @@ def main():
     logging.basicConfig(level=args.debuglevel)
 
     logging.debug("args: %s", args)
+
+    if args.version:
+        print(pkg_resources.get_distribution(MYPACKAGE))
+        sys.exit(0)
 
     if args.test:
         _test()
