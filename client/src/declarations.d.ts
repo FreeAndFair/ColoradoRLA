@@ -528,9 +528,18 @@ interface Contest {
 }
 
 interface AuditedContest extends Contest {
-    // TODO: Should be enum.
-    reason: string;
+    reason: AuditReason;
 }
+
+type AuditReason
+    = 'STATE_WIDE_CONTEST'
+    | 'COUNTY_WIDE_CONTEST'
+    | 'CLOSE_CONTEST'
+    | 'TIED_CONTEST'
+    | 'GEOGRAPHICAL_SCOPE'
+    | 'CONCERN_REGARDING_ACCURACY'
+    | 'OPPORTUNISTIC_BENEFITS'
+    | 'COUNTY_CLERK_ABILITY';
 
 interface ContestJson {
     choices: ContestChoiceJson[];

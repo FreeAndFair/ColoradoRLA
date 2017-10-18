@@ -29,7 +29,7 @@ const Breadcrumb = () => (
     </ul>
 );
 
-function formatReason(reason: string): string {
+function formatReason(reason: AuditReason): string {
     if (reason === 'STATE_WIDE_CONTEST') {
         return 'State Contest';
     }
