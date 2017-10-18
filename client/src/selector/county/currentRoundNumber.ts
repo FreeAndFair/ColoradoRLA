@@ -1,9 +1,8 @@
-function currentRoundNumber(state: AppState): number {
+function currentRoundNumber(state: AppState): Option<number> {
     const { county } = state;
 
-    if (!county.currentRound) {
-        return null;
-    }
+    if (!county) { return null; }
+    if (!county.currentRound) { return null; }
 
     return county.currentRound.number;
 }

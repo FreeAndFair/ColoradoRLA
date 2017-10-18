@@ -1,15 +1,17 @@
 import * as _ from 'lodash';
 
 
-function currentBallotNumber(state: AppState): number {
+function currentBallotNumber(state: AppState): Option<number> {
     const { county } = state;
+
+    if (!county) { return null; }
+
     const { cvrsToAudit, currentBallot } = county;
 
-    if (!cvrsToAudit || !currentBallot) {
-        return null;
-    }
+    if (!cvrsToAudit) { return null; }
+    if (!currentBallot) { return null; }
 
-    return 1 + _.findIndex(cvrsToAudit, (cvr: any) => cvr.db_id === currentBallot.id);
+    return 1 + _.findIndex(cvrsToAudit, cvr => cvr.db_id === currentBallot.id);
 }
 
 
