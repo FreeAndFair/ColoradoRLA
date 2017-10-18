@@ -585,6 +585,10 @@ public class DominionCVRExportParser implements CVRExportParser {
       return my_parse_success;
     }
     
+    Main.LOGGER.info("parsing CVR export for county " + my_county.id() + 
+                     ", batch_size=" + my_batch_size + 
+                     ", transaction_size=" + my_transaction_size);
+    
     boolean result = true; // presume the parse will succeed
     final Iterator<CSVRecord> records = my_parser.iterator();
     
