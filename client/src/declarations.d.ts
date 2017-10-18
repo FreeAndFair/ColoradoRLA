@@ -68,7 +68,20 @@ interface DosState {
     contests?: DosContests;
     contestsForAudit?: any;
     countyStatus: DosCountyStatuses;
+    discrepancyCounts?: DosDiscrepancyCounts;
+    riskLimit?: number;
     seed?: any;
+}
+
+interface DosDiscrepancyCounts {
+    [countyId: number]: DosDiscrepancyCount;
+}
+
+type DiscrepancyType = '-2' | '-1' | '0' | '1' | '2';
+
+interface DosDiscrepancyCount {
+    // The index type is really limited to `DiscrepancyType`.
+    [type: string]: number;
 }
 
 interface DosCountyStatuses {
@@ -78,19 +91,24 @@ interface DosCountyStatuses {
 interface DosCountyStatus {
     asmState: CountyAsmState;
     auditBoard: AuditBoardStatus;
-    auditBoardASmState: AuditBoardAsmState;
+    auditBoardAsmState: AuditBoardAsmState;
     auditedBallotCount: number;
     ballotManifest: UploadedFile;
     ballotsRemainingInRound: number;
     currentRound: Round;
     cvrExport: UploadedFile;
     disagreementCount: number;
-    discrepancyCount: number;
+    discrepancyCount: DiscrepancyCount;
     estimatedBallotsToAudit: number;
     id: number;
     manifestTimestamp: any;
     rounds: any;
     status: any;
+}
+
+interface DiscrepancyCount {
+    audited: number;
+    unaudited: number;
 }
 
 interface DosContests {

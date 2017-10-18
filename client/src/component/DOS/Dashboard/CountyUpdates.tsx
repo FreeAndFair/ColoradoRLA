@@ -54,7 +54,7 @@ type SortKey = 'name'
 
 function sortIndex(sort: SortKey): number {
     // tslint:disable
-    const index: any = {
+    const index = {
         name: 1,
         status: 2,
         submitted: 3,
@@ -71,8 +71,18 @@ function sortIndex(sort: SortKey): number {
 
 type SortOrder = 'asc' | 'desc';
 
-class CountyUpdates extends React.Component<any, any> {
-    public state: any = {
+interface UpdatesProps {
+    countyStatus: DosCountyStatuses;
+}
+
+interface UpdatesState {
+    filter: string;
+    order: SortOrder;
+    sort: SortKey;
+}
+
+class CountyUpdates extends React.Component<UpdatesProps, UpdatesState> {
+    public state: UpdatesState = {
         filter: '',
         order: 'asc',
         sort: 'name',
@@ -81,8 +91,20 @@ class CountyUpdates extends React.Component<any, any> {
     public render() {
         const { countyStatus } = this.props;
 
-        const countyData = _.map(countyStatus, (c: any) => {
-            const county = _.find(counties, (x: any) => x.id === c.id);
+        type RowData = [
+            number,
+            string,
+            string,
+            number,
+            (number | string),
+            (number | string),
+            (number | string),
+            number,
+            number
+        ];
+
+        const countyData: RowData[] = _.map(countyStatus, (c): RowData => {
+            const county = _.find(counties, (x: CountyInfo) => x.id === c.id);
 
             const status = formatCountyAndBoardAsmState(c.asmState, c.auditBoardAsmState);
             const auditedDiscrepancyCount = c.discrepancyCount
@@ -92,7 +114,7 @@ class CountyUpdates extends React.Component<any, any> {
                                             ? c.discrepancyCount.unaudited
                                             : '—';
 
-            let disagreementCount: any = c.disagreementCount;
+            let disagreementCount: (number | string) = c.disagreementCount;
 
             if (_.isNil(c.disagreementCount)) {
                 if (auditedDiscrepancyCount === '—') {
@@ -115,14 +137,14 @@ class CountyUpdates extends React.Component<any, any> {
             ];
         });
 
-        const keyFunc = (d: any[]) => d[sortIndex(this.state.sort)];
+        const keyFunc = (d: RowData) => d[sortIndex(this.state.sort)];
         const sortedCountyData = _.sortBy(countyData, keyFunc);
 
         if (this.state.order === 'desc') {
             _.reverse(sortedCountyData);
         }
 
-        const filterName = (d: any) => {
+        const filterName = (d: RowData) => {
             const name = d[1].toLowerCase();
             const str = this.state.filter.toLowerCase();
 
@@ -130,7 +152,7 @@ class CountyUpdates extends React.Component<any, any> {
         };
         const filteredCountyData = _.filter(sortedCountyData, filterName);
 
-        const countyStatusRows = _.map(filteredCountyData, (x: any) => {
+        const countyStatusRows = _.map(filteredCountyData, (x: RowData) => {
             return (
                 <tr key={ x[0] }>
                     <td>{ x[1] }</td>
@@ -229,7 +251,7 @@ class CountyUpdates extends React.Component<any, any> {
         );
     }
 
-    private onFilterChange = (filter: any) => {
+    private onFilterChange = (filter: string) => {
         this.setState({ filter });
     }
 

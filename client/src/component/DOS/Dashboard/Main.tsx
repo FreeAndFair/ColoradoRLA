@@ -5,7 +5,11 @@ import RoundContainer from './RoundContainer';
 import fetchReport from 'corla/action/dos/fetchReport';
 
 
-const RiskLimitInfo = ({ riskLimit }: any) => {
+interface RiskLimitInfoProps {
+    riskLimit: number;
+}
+
+const RiskLimitInfo = ({ riskLimit }: RiskLimitInfoProps) => {
     return (
         <div className='pt-card'>
             <strong>Target Risk Limit: </strong> { riskLimit * 100 } %
@@ -13,7 +17,11 @@ const RiskLimitInfo = ({ riskLimit }: any) => {
     );
 };
 
-const SeedInfo = ({ seed }: any) => {
+interface SeedInfoProps {
+    seed: string;
+}
+
+const SeedInfo = ({ seed }: SeedInfoProps) => {
     return (
         <div className='pt-card'>
             <strong>Seed: </strong> { seed }
@@ -21,7 +29,11 @@ const SeedInfo = ({ seed }: any) => {
     );
 };
 
-const Definition = ({ sos }: any) => {
+interface DefinitionProps {
+    sos: DosState;
+}
+
+const Definition = ({ sos }: DefinitionProps) => {
     return (
         <div>
             <RiskLimitInfo riskLimit={ sos.riskLimit } />
@@ -36,7 +48,13 @@ const NotDefined = () => {
     );
 };
 
-const Main = (props: any) => {
+interface MainProps {
+    auditDefined: boolean;
+    canRenderReport: boolean;
+    sos: DosState;
+}
+
+const Main = (props: MainProps) => {
     const { auditDefined, canRenderReport, sos } = props;
 
     const auditDefinition = auditDefined

@@ -6,7 +6,14 @@ import DOSDashboardPage from './Page';
 import withPoll from 'corla/component/withPoll';
 
 
-class DOSDashboardContainer extends React.Component<any, any> {
+interface ContainerProps {
+    contests: DosContests;
+    countyStatus: DosCountyStatuses;
+    seed: string;
+    sos: DosState;
+}
+
+class DOSDashboardContainer extends React.Component<ContainerProps> {
     public render() {
         if (!this.props.sos) {
             return <div />;
@@ -16,7 +23,7 @@ class DOSDashboardContainer extends React.Component<any, any> {
     }
 }
 
-const select = (state: any) => {
+function select(state: AppState) {
     const { sos } = state;
 
     if (!sos) { return {}; }
@@ -27,7 +34,7 @@ const select = (state: any) => {
         seed: sos.seed,
         sos,
     };
-};
+}
 
 
 export default withPoll(

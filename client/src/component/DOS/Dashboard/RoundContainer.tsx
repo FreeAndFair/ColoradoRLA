@@ -11,7 +11,17 @@ import countiesWithRoundSelector from 'corla/selector/dos/countiesWithRound';
 import currentRoundSelector from 'corla/selector/dos/currentRound';
 
 
-class RoundContainer extends React.Component<any, any> {
+interface ContainerProps {
+    auditStarted: boolean;
+    canStartNextRound: boolean;
+    countiesWithRound: DosCountyStatus[];
+    currentRound: number;
+    finishedCountiesCount: number;
+    sos: DosState;
+    totalCountiesCount: number;
+}
+
+class RoundContainer extends React.Component<ContainerProps> {
     public render() {
         if (this.props.canStartNextRound) {
             return <Control { ...this.props } />;
@@ -25,7 +35,7 @@ class RoundContainer extends React.Component<any, any> {
     }
 }
 
-const select = (state: any) => {
+function select(state: AppState) {
     const { sos } = state;
 
     if (!sos) {
@@ -37,7 +47,7 @@ const select = (state: any) => {
 
     const totalCountiesCount = countiesWithRound.length;
 
-    const finished = (c: any) => {
+    const finished = (c: DosCountyStatus) => {
         return c.currentRound.number !== currentRound
             || c.asmState === 'COUNTY_AUDIT_COMPLETE';
     };
@@ -52,7 +62,7 @@ const select = (state: any) => {
         sos,
         totalCountiesCount,
     };
-};
+}
 
 
 export default connect(select)(RoundContainer);

@@ -13,7 +13,14 @@ import CountyUpdates from './CountyUpdates';
 import MainContainer from './MainContainer';
 
 
-const DOSDashboardPage = (props: any) => {
+interface PageProps {
+    contests: DosContests;
+    countyStatus: DosCountyStatuses;
+    seed: string;
+    sos: DosState;
+}
+
+const DOSDashboardPage = (props: PageProps) => {
     const { contests, countyStatus, seed, sos } = props;
 
     return (

@@ -1,7 +1,13 @@
 import * as React from 'react';
 
 
-const Status = (props: any) => {
+interface StatusProps {
+    currentRound: number;
+    finishedCountiesCount: number;
+    totalCountiesCount: number;
+}
+
+const Status = (props: StatusProps) => {
     const { currentRound, finishedCountiesCount, totalCountiesCount } = props;
 
     return (

@@ -7,13 +7,19 @@ import auditStarted from 'corla/selector/dos/auditStarted';
 import canRenderReport from 'corla/selector/dos/canRenderReport';
 
 
-class MainContainer extends React.Component<any, any> {
+interface ContainerProps {
+    auditDefined: boolean;
+    canRenderReport: boolean;
+    sos: DosState;
+}
+
+class MainContainer extends React.Component<ContainerProps> {
     public render() {
         return <Main { ...this.props } />;
     }
 }
 
-const mapStateToProps = (state: any) => {
+function select(state: AppState) {
     const { sos } = state;
 
     if (!sos) { return {}; }
@@ -23,7 +29,7 @@ const mapStateToProps = (state: any) => {
         canRenderReport: canRenderReport(state),
         sos,
     };
-};
+}
 
 
-export default connect(mapStateToProps)(MainContainer);
+export default connect(select)(MainContainer);
