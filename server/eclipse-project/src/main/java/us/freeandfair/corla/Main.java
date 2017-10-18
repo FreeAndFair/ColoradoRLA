@@ -67,6 +67,7 @@ import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.PersistentASMStateQueries;
+import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
  * The main executable for the ColoradoRLA server. 
@@ -76,6 +77,7 @@ import us.freeandfair.corla.query.PersistentASMStateQueries;
  * @version 1.0.0
  */
 @SuppressWarnings({"PMD.GodClass", "PMD.ExcessiveImports"})
+@SuppressFBWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD")
 public final class Main {
   /**
    * The path to the default properties resource.
@@ -151,12 +153,13 @@ public final class Main {
   /**
    * Which authentication subsystem implementation are we to use?
    */
-  private static AuthenticationInterface my_authentication;
+  private static AuthenticationInterface static_authentication;
   
   /**
    * The properties loaded from the properties file.
    */
-  private final Properties my_properties;
+  @SuppressWarnings("PMD.AssignmentToNonFinalStatic")
+  private static Properties static_properties;
   
   // Version Initializer
   
@@ -181,7 +184,7 @@ public final class Main {
    * @param the_properties The properties.
    */
   public Main(final Properties the_properties) {
-    my_properties = the_properties;
+    static_properties = the_properties;
   }
   
   // Instance Methods
@@ -198,7 +201,30 @@ public final class Main {
    * the system's properties file and loaded at startup.
    */
   public static AuthenticationInterface authentication() {
-    return my_authentication;
+    return static_authentication;
+  }
+  
+  /**
+   * @return a read-only view of the properties in use by the system at runtime.
+   */
+  public static Properties properties() {
+    return new Properties(static_properties);
+  }
+  
+  /**
+   * Creates a default set of properties.
+   * 
+   * @return The default properties.
+   */
+  public static Properties defaultProperties() {
+    final Properties properties = new Properties();
+    try {
+      properties.load(ClassLoader.getSystemResourceAsStream(DEFAULT_PROPERTIES));
+    } catch (final IOException e) {
+      throw new IllegalStateException
+      ("Error loading default properties file, aborting.", e);
+    }
+    return properties;
   }
   
   /**
@@ -210,18 +236,18 @@ public final class Main {
     try {
       // classload and attach to the authentication field the appropriate
       // implementation of `AuthenticationInterface`.
-      authentication_class = my_properties.getProperty("authentication_class");
+      authentication_class = static_properties.getProperty("authentication_class");
       if (authentication_class == null) {
         authentication_class = "us.freeandfair.corla.auth.DatabaseAuthentication";
       }
-      my_authentication = (AuthenticationInterface) 
+      static_authentication = (AuthenticationInterface) 
           Class.forName(authentication_class).newInstance();
       LOGGER.info("Loaded authentication subsystem `" + authentication_class + "'");
-      my_authentication.setLogger(LOGGER);
-      my_authentication.setGSON(GSON);
+      static_authentication.setLogger(LOGGER);
+      static_authentication.setGSON(GSON);
       final String authentication_server =
-          my_properties.getProperty("authentication_server", "localhost");
-      my_authentication.setAuthenticationServerName(authentication_server);
+          static_properties.getProperty("authentication_server", "localhost");
+      static_authentication.setAuthenticationServerName(authentication_server);
       LOGGER.info("Initialized authentication subsystem `" + authentication_class + "'");
     } catch (final ClassNotFoundException | 
         IllegalAccessException | InstantiationException e) {
@@ -242,7 +268,7 @@ public final class Main {
     
     try {
       final int prop_port =
-          Integer.parseInt(my_properties.getProperty(the_property, 
+          Integer.parseInt(static_properties.getProperty(the_property, 
                                                      String.valueOf(the_default)));
       if (MIN_PORT <= prop_port && prop_port < MAX_PORT) {
         result = prop_port;
@@ -308,7 +334,7 @@ public final class Main {
     
     for (final Endpoint e : endpoints) {
       final CORSFilter cors_and_before = 
-          new CORSFilter(my_properties, (the_request, the_response) ->
+          new CORSFilter(static_properties, (the_request, the_response) ->
           e.before(the_request, the_response));
       before(e.endpointName(), cors_and_before);
       after(e.endpointName(), (the_request, the_response) -> 
@@ -408,7 +434,7 @@ public final class Main {
     final Properties properties = new Properties();
     try {
       properties.load(ClassLoader.
-                      getSystemResourceAsStream(my_properties.getProperty(COUNTY_IDS)));
+                      getSystemResourceAsStream(static_properties.getProperty(COUNTY_IDS)));
     } catch (final IOException e) {
       throw new IllegalStateException("Error loading county IDs, aborting.", e);
     }
@@ -445,10 +471,11 @@ public final class Main {
    * Starts a ColoradoRLA server.
    */
   public void start() {
-    LOGGER.info("starting server version " + VERSION + " with properties: " + my_properties);
+    LOGGER.info("starting server version " + VERSION + " with properties: " + 
+                static_properties);
 
     // provide properties to the persistence engine
-    Persistence.setProperties(my_properties);
+    Persistence.setProperties(static_properties);
 
     if (Persistence.beginTransaction()) {
       initializeASMsAndDashboards(initializeCounties());
@@ -489,7 +516,7 @@ public final class Main {
     final int https_port = parsePortNumber("https_port", DEFAULT_HTTPS_PORT);
     
     // get key store information from properties, if applicable
-    String keystore_path = my_properties.getProperty("keystore", null);
+    String keystore_path = static_properties.getProperty("keystore", null);
     if (keystore_path != null && !(new File(keystore_path).exists())) {
       // the keystore property isn't an absolute or relative pathname that exists, so
       // let's try to load it as a resource
@@ -511,7 +538,7 @@ public final class Main {
     } else {
       port(https_port);
       final String keystore_password = 
-          my_properties.getProperty("keystore_password", null);
+          static_properties.getProperty("keystore_password", null);
       secure(keystore_path, keystore_password, null, null);
 
       // redirect everything
@@ -530,24 +557,7 @@ public final class Main {
     // start the endpoints
     activateEndpoints();
   }
-    
-  // Static Methods
-  
-  /**
-   * Creates a default set of properties.
-   * 
-   * @return The default properties.
-   */
-  public static Properties defaultProperties() {
-    final Properties properties = new Properties();
-    try {
-      properties.load(ClassLoader.getSystemResourceAsStream(DEFAULT_PROPERTIES));
-    } catch (final IOException e) {
-      throw new IllegalStateException
-      ("Error loading default properties file, aborting.", e);
-    }
-    return properties;
-  }
+ 
   
   /**
    * The main method. Starts the server using the specified properties

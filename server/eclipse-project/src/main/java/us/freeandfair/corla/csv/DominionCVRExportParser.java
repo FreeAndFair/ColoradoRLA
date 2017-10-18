@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.OptionalInt;
+import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.csv.CSVFormat;
@@ -51,19 +52,29 @@ import us.freeandfair.corla.query.CountyContestResultQueries;
 @SuppressWarnings({"PMD.GodClass", "PMD.CyclomaticComplexity"})
 public class DominionCVRExportParser implements CVRExportParser {
   /**
-   * The interval at which to report progress.
+   * The name of the transaction size property.
+   */
+  public static final String TRANSACTION_SIZE_PROPERTY = "cvr_import_transaction_size";
+  
+  /**
+   * The name of the batch size property.
+   */
+  public static final String BATCH_SIZE_PROPERTY = "cvr_import_batch_size";
+  
+  /**
+   * The interval at which to log progress.
    */
   private static final int PROGRESS_INTERVAL = 500;
   
   /**
-   * The size of a batch of CVRs to be flushed to the database.
+   * The default size of a batch of CVRs to be flushed to the database.
    */
-  private static final int BATCH_SIZE = 80;
+  private static final int DEFAULT_BATCH_SIZE = 80;
 
   /**
-   * The size of a batch of CVRs to be committed as a transaction.
+   * The default size of a batch of CVRs to be committed as a transaction.
    */
-  private static final int TRANSACTION_SIZE = 400;
+  private static final int DEFAULT_TRANSACTION_SIZE = 400;
   
   /**
    * The column containing the CVR number in a Dominion export file.
@@ -177,6 +188,16 @@ public class DominionCVRExportParser implements CVRExportParser {
   private final Set<CastVoteRecord> my_parsed_cvrs = new HashSet<>();
   
   /**
+   * The size of a batch of CVRs to be flushed to the database.
+   */
+  private final int my_batch_size;
+  
+  /**
+   * The size of a batch of CVRs to be committed as a transaction.
+   */
+  private final int my_transaction_size;
+  
+  /**
    * A flag that indicates whether the parse is processed as multiple 
    * transactions.
    */
@@ -188,6 +209,8 @@ public class DominionCVRExportParser implements CVRExportParser {
    * 
    * @param the_reader The reader from which to read the CSV to parse.
    * @param the_county The county whose CVRs are to be parsed.
+   * @param the_properties The properties from which to read any overrides to the 
+   * default transaction and batch sizes.
    * @param the_multi_transaction true to commit the CVRs in multiple transactions,
    * false otherwise. If this is true, the parser assumes that a transaction is
    * in progress when invoked, and periodically commits that transaction and 
@@ -195,11 +218,16 @@ public class DominionCVRExportParser implements CVRExportParser {
    * @exception IOException if an error occurs while constructing the parser.
    */
   public DominionCVRExportParser(final Reader the_reader, final County the_county,
+                                 final Properties the_properties,
                                  final boolean the_multi_transaction) 
       throws IOException {
     my_parser = new CSVParser(the_reader, CSVFormat.DEFAULT);
     my_county = the_county;
     my_multi_transaction = the_multi_transaction;
+    my_batch_size = parseProperty(the_properties, BATCH_SIZE_PROPERTY, 
+                                  DEFAULT_BATCH_SIZE);
+    my_transaction_size = parseProperty(the_properties, TRANSACTION_SIZE_PROPERTY, 
+                                        DEFAULT_TRANSACTION_SIZE);
   }
   
   /**
@@ -215,6 +243,32 @@ public class DominionCVRExportParser implements CVRExportParser {
     my_parser = CSVParser.parse(the_string, CSVFormat.DEFAULT);
     my_county = the_county;
     my_multi_transaction = false;
+    my_batch_size = DEFAULT_BATCH_SIZE;
+    my_transaction_size = DEFAULT_TRANSACTION_SIZE;
+  }
+  
+  /**
+   * Parse an integer value from the specified property, returning the specified
+   * default if the property doesn't exist or is not an integer.
+   * 
+   * @param the_properties The properties to use.
+   * @param the_property_name The name of the property to parse.
+   * @param the_default_value The default value.
+   */
+  private int parseProperty(final Properties the_properties, 
+                            final String the_property_name, 
+                            final int the_default_value) {
+    int result = the_default_value;
+    
+    if (the_properties.containsKey(the_property_name)) {
+      try {
+        result = Integer.parseInt(the_properties.getProperty(the_property_name));
+      } catch (final NumberFormatException e) {
+        result = the_default_value;
+      }
+    }
+    
+    return result;
   }
   
   /**
@@ -327,7 +381,7 @@ public class DominionCVRExportParser implements CVRExportParser {
    * if necessary.
    */
   private void checkForFlush() {
-    if (my_parsed_cvrs.size() % BATCH_SIZE == 0) {
+    if (my_parsed_cvrs.size() % my_batch_size == 0) {
       Persistence.flush();
       for (final CastVoteRecord cvr : my_parsed_cvrs) {
         Persistence.evict(cvr);
@@ -335,7 +389,7 @@ public class DominionCVRExportParser implements CVRExportParser {
       my_parsed_cvrs.clear();
     }
     
-    if (my_multi_transaction && my_parsed_cvrs.size() % TRANSACTION_SIZE == 0) {
+    if (my_multi_transaction && my_parsed_cvrs.size() % my_transaction_size == 0) {
       // update the count on the county dashboard
       final CountyDashboard cdb = 
           Persistence.getByID(my_county.id(), CountyDashboard.class);
@@ -530,6 +584,10 @@ public class DominionCVRExportParser implements CVRExportParser {
       // no need to parse if we've already parsed
       return my_parse_success;
     }
+    
+    Main.LOGGER.info("parsing CVR export for county " + my_county.id() + 
+                     ", batch_size=" + my_batch_size + 
+                     ", transaction_size=" + my_transaction_size);
     
     boolean result = true; // presume the parse will succeed
     final Iterator<CSVRecord> records = my_parser.iterator();
