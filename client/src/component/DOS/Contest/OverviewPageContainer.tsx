@@ -5,7 +5,7 @@ import withSync from 'corla/component/withSync';
 import OverviewPage from './OverviewPage';
 
 
-const select = (state: any) => {
+function select(state: AppState) {
     const { sos } = state;
 
     if (!sos) {
@@ -16,7 +16,7 @@ const select = (state: any) => {
         contests: sos.contests,
         sos,
     };
-};
+}
 
 
 export default withSync(
