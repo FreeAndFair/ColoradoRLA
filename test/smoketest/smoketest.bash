@@ -22,7 +22,7 @@ export TRAVIS_BUILD_DIR=`git rev-parse --show-toplevel`
 export CLIENT_DIR="${TRAVIS_BUILD_DIR}/client"
 export SERVER_DIR="${TRAVIS_BUILD_DIR}/server/eclipse-project"
 export TEST_DIR="${TRAVIS_BUILD_DIR}/test"
-export SQL_DIR=${SERVER_DIR}/script/sql
+export SQL_DIR=${SERVER_DIR}/script/rla_export/rla_export/sql
 
 
 # Exit early if there were no server changes.
