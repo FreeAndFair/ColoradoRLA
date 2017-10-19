@@ -59,10 +59,11 @@ parser.add_argument('-e, --export-dir', dest='export_dir',
 parser.add_argument('-c, --cvr-download', dest='cvr_download', action='store_true',
                     help='Download cvrs also - only needed once per audit, before dice are rolled')
 parser.add_argument('-u, --url', dest='url',
-                    default='http://localhost:8888',
-                    help='base url of corla server. Defaults to http://localhost:8888. '
+                    default=None,
+                    help='base url of corla server. Defaults to the port from the properties file '
+                    'on localhost. '
                     'Use something like http://example.gov/api when running '
-                    'against a full installation.')
+                    'against a normal remote installation.')
 
 parser.add_argument('-v, --version', dest='version', action='store_true',
                     help='Print version number')
@@ -299,6 +300,8 @@ def main():
         queryfiles = [filename for filename in glob.glob(sql_dir + "/*.sql")]
 
     for queryfile in queryfiles:
+        logging.info("Exporting json and csv for query in %s" % queryfile)
+
         resultfilebase = os.path.join(args.export_dir,
                                   os.path.basename(
                                       os.path.splitext(queryfile)[0]))
@@ -313,7 +316,7 @@ def main():
         query_to_csvfile(ac, queryfile, resultfilebase + '.csv')
 
     # TODO: pick this up from a config file
-    baseurl = args.url
+    baseurl = args.url or 'http://localhost:' + cp.get('p', 'http_port', '8888')
     ac.corla_auth = {'url': baseurl, 'username': 'stateadmin1', 'password': ''}
 
     with state_login(**ac.corla_auth) as session:

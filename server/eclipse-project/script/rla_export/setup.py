@@ -1,13 +1,3 @@
-#!/usr/bin/env python
-
-from setuptools import setup
-
-setup(
-    setup_requires=['pbr'],
-    pbr=True,
-)
-
-"""
 from setuptools import setup, find_packages
 
 
@@ -17,7 +7,7 @@ def readme():
 
 
 setup(name='rla_export',
-      version='0.8',
+      version='1.0.4.dev2',
       description='Export data for publication and audit verification from ColoradoRLA: Software to facilitate risk-limiting post-election tabulation audits',
       long_description=readme(),
       url='https://github.com/FreeAndFair/ColoradoRLA',
@@ -44,13 +34,13 @@ setup(name='rla_export',
         #  Auditing
         #  Elections
       ],
-      keywords='audit election psycopg2 csv json sql',
+      keywords='audit election psycopg2',
       # Note: this project is one part of the ColoradoRLA repo
       packages=find_packages(),
       # python_requires='==2.7',
       install_requires=[
-          'requests>=2.4.2',
-          'psycopg2',
+          'requests>=2.12.1',
+          'psycopg2>=2.7.3.1',
           'setuptools-git',
       ],
       # test_suite='nose.collector',
@@ -61,4 +51,3 @@ setup(name='rla_export',
       include_package_data=True,
       # TODO: include external file ColoradoRLA/server/eclipse-project/src/main/resources/us/freeandfair/corla/default.properties rather than a copy of it
       zip_safe=False)
-"""
