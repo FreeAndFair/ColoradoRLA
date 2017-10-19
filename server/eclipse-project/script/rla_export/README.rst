@@ -7,6 +7,8 @@ on the Audit Center web site.
 Installation
 ------------
 
+These installation instructions are for redhat. Other operating systems may have other package managers (instead of yum and pip). 
+
 As a one-time step on each rla tool server, run these commands to install
 Python's "pip" command for installing packages and the necessary dependencies.
 
@@ -19,8 +21,10 @@ Python's "pip" command for installing packages and the necessary dependencies.
     sudo pip install --upgrade pip
 
 
-To install the packages required to run the RLA export command, type the 
-following command, referencing the rla_export package provided.
+To install the packages required to run the RLA export command, 
+navigate to the file containing the rla_export package (the ``*.tar.gz`` file) 
+and type the 
+following command, (noting that the version number may be different from ``1.0.4.dev2`` and making the necessary change to the command). 
 
   ``pip install rla_export-1.0.4.dev2.tar.gz``
 
@@ -34,7 +38,6 @@ put the resulting exported data in files in the current directory.
 It will also download any reports that are available, and a csv-format
 list of ballot cards for auditing for all rounds defined to date.
 
-
   ``rla_export``
 
 If you are using a customized database properties file on the ``java jar``
@@ -46,9 +49,11 @@ so that the program knows the proper connection information for the database:
 The output can also optionally be put in a different output directory
 using a ``-e export_directory`` argument.
 
-To export just a specific query in json and csv format for selected sql files:
+If you wish to export the results of a custom database query in json and csv format , put the query into ``file.sql`` and add the file name as an argument:
 
   ``rla_export file.sql ...``
+
+The export from this command will have a json and a csv file for the single SQL command in ``file.sql``, as well as the reports and ballot manifests.  
 
 Full command line usage synopsis:
 
