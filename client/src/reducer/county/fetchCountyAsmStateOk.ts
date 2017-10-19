@@ -9,7 +9,7 @@ function parse(data: JSON.FetchCountyASMStateOk): County.ASM {
 }
 
 
-export default (state: AppState, action: FetchCountyASMStateOkAction): AppState => {
+export default (state: AppState, action: Action.FetchCountyASMStateOk): AppState => {
     const nextState = { ...state };
 
     nextState.county!.asm!.county = parse(action.data);

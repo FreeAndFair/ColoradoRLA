@@ -29,6 +29,7 @@
 
     "files": [
         "./index.d.ts",
+        "./action.d.ts",
         "./county.d.ts",
         "./dos.d.ts",
         "./json.d.ts",

@@ -47,7 +47,7 @@ const defaultState: AppState = {
 };
 
 
-export default function root(state: AppState = defaultState, action: AppAction) {
+export default function root(state: AppState = defaultState, action: Action.App) {
     switch (action.type) {
 
     case 'COUNTY_DASHBOARD_REFRESH_OK': {
