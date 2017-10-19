@@ -9,7 +9,7 @@ Installation
 
 If some version of the python package manager pip is already installed, skip to the package installation pip command. If not, you will have to install pip. The pip installation depends on the operating system. 
 
-For redhead, as a one-time step on each rla tool server, run these commands to install
+For redhat, as a one-time step on each rla tool server, run these commands to install
 Python's "pip" command for installing packages and the necessary dependencies.
 
 ::
