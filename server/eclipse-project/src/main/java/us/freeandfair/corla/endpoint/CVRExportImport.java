@@ -249,6 +249,9 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
         Persistence.beginTransaction();
         final DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
         dosdb.removeContestsToAuditForCounty(the_county);
+        // prevent Hibernate from reordering the ContestsToAudit deletion after the
+        // Contest and CountyContestResult deletion in the following queries
+        Persistence.flush(); 
         result = 
             CastVoteRecordQueries.deleteMatching(the_county.id(), RecordType.UPLOADED);
         CountyContestResultQueries.deleteForCounty(the_county.id());
