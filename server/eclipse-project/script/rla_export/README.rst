@@ -7,32 +7,46 @@ on the Audit Center web site.
 Installation
 ------------
 
+As a one-time step on each rla tool server, run these commands to install
+Python's "pip" command for installing packages and the necessary dependencies.
+
+::
+
+    yum install epel-release
+    curl https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm > epel-release-latest-7.noarch.rpm
+    yum install ./epel-release-latest-*.noarch.rpm
+    yum install python-pip
+    sudo pip install --upgrade pip
+
+
 To install the packages required to run the RLA export command, type the 
-following command from within the `script` directory:
+following command, referencing the rla_export package provided.
 
-  ``pip install rla_export``
-
-For more information on the installed package, type the command:
-
-  ``pydoc rla_export``
+  ``pip install rla_export-1.0.4.dev2.tar.gz``
 
 Running the Export Command
 --------------------------
 
-With no options, the command will export run queries using
-all the standard .sql files provided in the package, and
+With no options, the command will run queries using
+all the standard `.sql`` files provided in the package, and
 put the resulting exported data in files in the current directory.
+
+It will also download any reports that are available, and a csv-format
+list of ballot cards for auditing for all rounds defined to date.
+
 
   ``rla_export``
 
-The optional -p argument specifies connection information via
-a database properties file, which should be the same file used
-for the ``java jar`` command line. The output can also optionally be put
-in a different output directory using the -e argument.
+If you are using a customized database properties file on the ``java jar``
+command line, you should provide that same file with the ``-p`` option,
+so that the program knows the proper connection information for the database:
 
-  ``rla_export [-p properties_file] [-e export_directory]``
+  ``rla_export -p properties_file``
 
-Export a query in json and csv format for selected sql files:
+The output can also optionally be put in a different output directory
+using a ``-e export_directory`` argument.
+
+To export just a specific query in json and csv format for selected sql files:
 
   ``rla_export file.sql ...``
 
@@ -49,7 +63,7 @@ for example ``state_report.xlsx``.
 Other export files are generated based on ``sql`` query files.
 These are always produced in two formats: json and csv.
 The basename of each resulting file is the same as the basename of the query file.
-Thus, given the query file``seed.sql``, the files ``seed.json`` and ``seed.csv``
+Thus, given the query file ``seed.sql``, the files ``seed.json`` and ``seed.csv``
 will be produced.
 
 For now this is organized based on the requirements, identified by letters or numbers,
