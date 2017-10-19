@@ -13,6 +13,7 @@
         "noFallthroughCasesInSwitch": true,
         "noImplicitAny": true,
         "noImplicitReturns": true,
+        "strictNullChecks": true,
 
         "lib": [
             "dom",
