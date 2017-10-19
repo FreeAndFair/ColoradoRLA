@@ -48,7 +48,7 @@ const ContestInfoTable = (props: ContestInfoTableProps) => {
 };
 
 interface ContestInfoProps {
-    contests: CountyContests;
+    contests: County.ContestDefs;
 }
 
 const ContestInfo = (props: ContestInfoProps) => {
@@ -73,7 +73,7 @@ const ContestInfo = (props: ContestInfoProps) => {
 };
 
 interface CountyInfoProps {
-    county: CountyState;
+    county: County.AppState;
     currentRoundNumber: number;
     info: CountyInfo;
 }
@@ -111,8 +111,8 @@ const CountyInfo = (props: CountyInfoProps) => {
 
 interface InfoProps {
     info: CountyInfo;
-    contests: CountyContests;
-    county: CountyState;
+    contests: County.ContestDefs;
+    county: County.AppState;
     currentRoundNumber: number;
 }
 

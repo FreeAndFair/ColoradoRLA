@@ -35,7 +35,7 @@ interface MainProps {
     auditStarted: boolean;
     boardSignIn: OnClick;
     canRenderReport: boolean;
-    county: CountyState;
+    county: County.AppState;
     currentRoundNumber: number;
     name: string;
     signInButtonDisabled: boolean;

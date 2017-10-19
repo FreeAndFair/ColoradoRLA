@@ -60,9 +60,9 @@ function sortIndex(sort: SortKey): number {
 }
 
 interface UpdatesProps {
-    contests: DosContests;
+    contests: DOS.Contests;
     seed: string;
-    sos: DosState;
+    sos: DOS.AppState;
 }
 
 interface UpdatesState {
@@ -81,7 +81,7 @@ class ContestUpdates extends React.Component<UpdatesProps, UpdatesState> {
     public render() {
         const { contests, seed, sos } = this.props;
 
-        const selectedContests: DosContests =
+        const selectedContests: DOS.Contests =
             _.values(_.pick(contests, _.keys(sos.auditedContests)));
 
         type RowData = [string, string, number, Contest];

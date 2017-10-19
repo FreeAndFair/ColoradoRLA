@@ -42,7 +42,7 @@ const MatchStatus = (props: MatchStatusProps) => {
 };
 
 interface FileUploadFormsProps {
-    county: CountyState;
+    county: County.AppState;
     uploadedBothFiles: boolean;
 }
 
@@ -71,7 +71,7 @@ const MissedDeadline = () => {
 };
 
 interface FileUploadContainerProps {
-    county: CountyState;
+    county: County.AppState;
     missedDeadline: boolean;
     uploadedBothFiles: boolean;
 }

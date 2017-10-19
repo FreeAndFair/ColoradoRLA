@@ -17,8 +17,8 @@ interface PageProps {
     canAudit: boolean;
     canRenderReport: boolean;
     canSignIn: boolean;
-    contests: CountyContests;
-    county: CountyState;
+    contests: County.ContestDefs;
+    county: County.AppState;
     countyInfo: CountyInfo;
     currentRoundNumber: number;
     startAudit: OnClick;

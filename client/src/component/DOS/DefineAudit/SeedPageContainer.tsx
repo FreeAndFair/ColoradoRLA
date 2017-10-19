@@ -14,7 +14,7 @@ interface ContainerProps {
     history: History;
     publicMeetingDate: Date;
     seed: string;
-    sos: DosState;
+    sos: DOS.AppState;
 }
 
 

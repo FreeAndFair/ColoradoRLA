@@ -72,7 +72,7 @@ function sortIndex(sort: SortKey): number {
 type SortOrder = 'asc' | 'desc';
 
 interface UpdatesProps {
-    countyStatus: DosCountyStatuses;
+    countyStatus: DOS.CountyStatuses;
 }
 
 interface UpdatesState {
@@ -106,7 +106,7 @@ class CountyUpdates extends React.Component<UpdatesProps, UpdatesState> {
         const countyData: RowData[] = _.map(countyStatus, (c): RowData => {
             const county = _.find(counties, (x: CountyInfo) => x.id === c.id);
 
-            const status = formatCountyAndBoardAsmState(c.asmState, c.auditBoardAsmState);
+            const status = formatCountyAndBoardAsmState(c.asmState, c.auditBoardASMState);
             const auditedDiscrepancyCount = c.discrepancyCount
                                           ? c.discrepancyCount.audited
                                           : '—';

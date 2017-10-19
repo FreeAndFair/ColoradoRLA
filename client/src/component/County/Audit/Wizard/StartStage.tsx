@@ -7,7 +7,7 @@ import * as format from 'corla/format';
 
 
 interface StageProps {
-    county: CountyState;
+    county: County.AppState;
     nextStage: OnClick;
 }
 

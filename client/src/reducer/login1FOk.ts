@@ -1,8 +1,12 @@
-function parseBox(box: string): string[] {
-    return box.substring(1, box.length - 1).split(',');
+function parseBox(box: string): LoginChallengeBox {
+    const parts = box.substring(1, box.length - 1).split(',');
+
+    const [x, y, ..._] = parts;
+
+    return [x, y];
 }
 
-function parseChallenge(challenge: string): string[][] {
+function parseChallenge(challenge: string): LoginChallenge {
     const boxes = challenge.split(' ');
 
     return boxes.map(parseBox);

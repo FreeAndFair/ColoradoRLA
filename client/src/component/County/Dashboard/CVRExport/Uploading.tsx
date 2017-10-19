@@ -33,7 +33,7 @@ const Progress = (props: ProgressProps) => {
 };
 
 interface UploadingProps {
-    county: CountyState;
+    county: County.AppState;
 }
 
 const Uploading = (props: UploadingProps) => {

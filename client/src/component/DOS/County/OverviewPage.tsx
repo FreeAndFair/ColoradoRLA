@@ -28,7 +28,7 @@ const Breadcrumb = () => (
 
 interface RowProps {
     county: CountyInfo;
-    status: DosCountyStatus;
+    status: DOS.CountyStatus;
 }
 
 const CountyTableRow = (props: RowProps) => {
@@ -56,7 +56,7 @@ const CountyTableRow = (props: RowProps) => {
 };
 
 interface TableProps {
-    countyStatus: DosCountyStatuses;
+    countyStatus: DOS.CountyStatuses;
 }
 
 const CountyTable = (props: TableProps) => {
@@ -91,7 +91,7 @@ const CountyTable = (props: TableProps) => {
 };
 
 interface PageProps {
-    countyStatus: DosCountyStatuses;
+    countyStatus: DOS.CountyStatuses;
 }
 
 const CountyOverviewPage = (props: PageProps) => {

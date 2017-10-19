@@ -30,8 +30,8 @@ interface DashboardProps {
     canAudit: boolean;
     canRenderReport: boolean;
     canSignIn: boolean;
-    contests: CountyContests;
-    county: CountyState;
+    contests: County.ContestDefs;
+    county: County.AppState;
     currentRoundNumber: number;
     history: History;
     missedDeadline: boolean;

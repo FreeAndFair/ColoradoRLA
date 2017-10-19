@@ -109,7 +109,7 @@ type SortKey = 'contest' | 'county';
 type SortOrder = 'asc' | 'desc';
 
 interface FormProps {
-    contests: DosContests;
+    contests: DOS.Contests;
     forms: any;
     isAuditable: OnClick;
 }
@@ -283,7 +283,7 @@ class SelectContestsForm extends React.Component<FormProps, FormState> {
         );
     }
 
-    private resetForm(contests: DosContests) {
+    private resetForm(contests: DOS.Contests) {
         const form: any = {};
 
         _.forEach(contests, (c, _) => {

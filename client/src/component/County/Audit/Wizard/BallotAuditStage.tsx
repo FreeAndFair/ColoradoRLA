@@ -35,7 +35,7 @@ const BallotNotFoundForm = (props: NotFoundProps) => {
 
 interface InstructionsProps {
     ballotNotFound: OnClick;
-    county: CountyState;
+    county: County.AppState;
     currentBallot: Cvr;
     currentBallotNumber: number;
 }
@@ -49,7 +49,7 @@ const AuditInstructions = (props: InstructionsProps) => {
     } = props;
 
     const { currentRound } = county;
-    const isCurrentCvr = (cvr: CvrJson) => cvr.db_id === currentBallot.id;
+    const isCurrentCvr = (cvr: JSON.Cvr) => cvr.db_id === currentBallot.id;
     const fullCvr = _.find(county.cvrsToAudit, isCurrentCvr);
     const storageBin = fullCvr ? fullCvr.storage_location : '—';
 
@@ -126,7 +126,7 @@ const ContestInfo = ({ contest }: ContestInfoProps) => {
 
 interface ChoicesProps {
     choices: ContestChoice[];
-    marks: AcvrContest;
+    marks: County.AcvrContest;
     noConsensus: boolean;
     updateBallotMarks: OnClick;
 }
@@ -182,7 +182,7 @@ const ContestComments = (props: CommentsProps) => {
 
 interface MarkFormProps {
     contest: Contest;
-    county: CountyState;
+    county: County.AppState;
     currentBallot: Cvr;
     updateBallotMarks: OnClick;
 }
@@ -224,7 +224,7 @@ const BallotContestMarkForm = (props: MarkFormProps) => {
 };
 
 interface AuditFormProps {
-    county: CountyState;
+    county: County.AppState;
     currentBallot: Cvr;
     updateBallotMarks: OnClick;
 }
@@ -255,7 +255,7 @@ const BallotAuditForm = (props: AuditFormProps) => {
 };
 
 interface StageProps {
-    county: CountyState;
+    county: County.AppState;
     currentBallot: Cvr;
     currentBallotNumber: number;
     nextStage: OnClick;

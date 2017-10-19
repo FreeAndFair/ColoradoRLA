@@ -82,7 +82,7 @@ const NoAuditBoard = () => {
 
 interface DetailsProps {
     county: CountyInfo;
-    status: DosCountyStatus;
+    status: DOS.CountyStatus;
 }
 
 const CountyDetails = (props: DetailsProps) => {
@@ -137,7 +137,7 @@ const CountyDetails = (props: DetailsProps) => {
 
 interface PageProps {
     county: CountyInfo;
-    status: DosCountyStatus;
+    status: DOS.CountyStatus;
 }
 
 const CountyDetailPage = (props: PageProps) => {

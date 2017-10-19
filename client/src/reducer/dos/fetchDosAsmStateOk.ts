@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 
-function parse(data: FetchDosAsmStateOkJson): DosAsm {
+function parse(data: JSON.FetchDosASMStateOk): DOS.ASM {
     return {
         currentState: data.current_state,
         enabledUiEvents: data.enabled_ui_events,

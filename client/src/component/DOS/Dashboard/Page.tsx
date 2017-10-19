@@ -14,10 +14,10 @@ import MainContainer from './MainContainer';
 
 
 interface PageProps {
-    contests: DosContests;
-    countyStatus: DosCountyStatuses;
+    contests: DOS.Contests;
+    countyStatus: DOS.CountyStatuses;
     seed: string;
-    sos: DosState;
+    sos: DOS.AppState;
 }
 
 const DOSDashboardPage = (props: PageProps) => {

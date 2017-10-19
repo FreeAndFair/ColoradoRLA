@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 
-function parseBoardMember(e: AuditBoardMemberJson): AuditBoardMember {
+function parseBoardMember(e: JSON.AuditBoardMember): AuditBoardMember {
     return {
         firstName: e.first_name,
         lastName: e.last_name,
@@ -9,7 +9,7 @@ function parseBoardMember(e: AuditBoardMemberJson): AuditBoardMember {
     };
 }
 
-function parseAuditBoard(board: AuditBoardJson): AuditBoard {
+function parseAuditBoard(board: JSON.AuditBoard): AuditBoard {
     if (!board) {
         return [];
     }
@@ -62,7 +62,7 @@ function parseContestsUnderAudit(contestIds: number[], state: AppState): Contest
     });
 }
 
-function parseSignatories(s?: ElectorJson[]): Elector[] {
+function parseSignatories(s?: JSON.Elector[]): Elector[] {
     if (!s) {
         return [];
     }
@@ -75,7 +75,7 @@ function parseSignatories(s?: ElectorJson[]): Elector[] {
     });
 }
 
-function parseRound(data: RoundJson): Round {
+function parseRound(data: JSON.Round): Round {
     return {
         actualCount: data.actual_count,
         disagreements: data.disagreements,
@@ -89,7 +89,7 @@ function parseRound(data: RoundJson): Round {
     };
 }
 
-function parseRounds(rounds?: RoundJson[]): Round[] {
+function parseRounds(rounds?: JSON.Round[]): Round[] {
     if (!rounds) {
         return [];
     }
@@ -97,14 +97,14 @@ function parseRounds(rounds?: RoundJson[]): Round[] {
     return rounds.map(parseRound);
 }
 
-function parseElection(data: CountyDashboardJson): Election {
+function parseElection(data: JSON.CountyDashboard): Election {
     return {
         date: new Date(data.audit_info.election_date),
         type: data.audit_info.election_type,
     };
 }
 
-function parseRiskLimit(data: CountyDashboardJson): number {
+function parseRiskLimit(data: JSON.CountyDashboard): number {
     return _.get(data, 'audit_info.risk_limit');
 }
 
@@ -112,7 +112,7 @@ function parseDisCount(data: any): number {
     return _.sum(_.values(data));
 }
 
-function parseFile(file: UploadedFileJson): Option<UploadedFile> {
+function parseFile(file: JSON.UploadedFile): Option<UploadedFile> {
     if (!file) { return null; }
 
     return {
@@ -128,7 +128,7 @@ function parseFile(file: UploadedFileJson): Option<UploadedFile> {
     };
 }
 
-export function parse(data: CountyDashboardJson, state: AppState) {
+export function parse(data: JSON.CountyDashboard, state: AppState) {
     const findContest = (id: number) => state.county!.contestDefs![id];
 
     return {

@@ -10,7 +10,7 @@ export function electionType(type: ElectionType): string {
     return `${capitalize(type)} Election`;
 }
 
-export function formatCountyAsmState(state: CountyAsmState) {
+export function formatCountyAsmState(state: County.ASMState) {
     switch (state) {
         case 'COUNTY_INITIAL_STATE':
             return 'Not started';
@@ -33,8 +33,8 @@ export function formatCountyAsmState(state: CountyAsmState) {
 }
 
 export function formatCountyAndBoardAsmState(
-    county: CountyAsmState,
-    board: AuditBoardAsmState,
+    county: County.ASMState,
+    board: AuditBoardASMState,
 ): string {
     switch (county) {
     case 'COUNTY_INITIAL_STATE':

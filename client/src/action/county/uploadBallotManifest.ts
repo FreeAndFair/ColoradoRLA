@@ -15,7 +15,7 @@ function createFormData(file: Blob, hash: string): FormData {
     return formData;
 }
 
-async function importBallotManifest(body: UploadBallotManifestOkJson) {
+async function importBallotManifest(body: JSON.UploadBallotManifestOk) {
     const init: any = {
         body: JSON.stringify(body),
         credentials: 'include',

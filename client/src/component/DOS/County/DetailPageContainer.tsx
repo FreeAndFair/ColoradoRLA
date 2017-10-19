@@ -9,7 +9,7 @@ import CountyDetailPage from './DetailPage';
 
 
 interface ContainerProps {
-    countyStatus: DosCountyStatuses;
+    countyStatus: DOS.CountyStatuses;
     match: match<any>;
 }
 

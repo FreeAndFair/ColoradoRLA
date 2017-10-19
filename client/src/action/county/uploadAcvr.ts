@@ -16,4 +16,4 @@ const uploadAcvr = createSubmitAction({
 });
 
 
-export default (acvr: Acvr, cvr: Cvr) => uploadAcvr(format(acvr, cvr));
+export default (acvr: County.Acvr, cvr: Cvr) => uploadAcvr(format(acvr, cvr));

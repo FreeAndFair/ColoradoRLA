@@ -15,7 +15,7 @@ function createFormData(file: Blob, hash: string): FormData {
     return formData;
 }
 
-async function importCvrExport(body: UploadCvrExportOkJson) {
+async function importCvrExport(body: JSON.UploadCvrExportOk) {
     const init: any = {
         body: JSON.stringify(body),
         credentials: 'include',

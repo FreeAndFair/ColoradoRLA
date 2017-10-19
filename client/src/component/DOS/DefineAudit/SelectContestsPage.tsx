@@ -38,8 +38,8 @@ function formatReason(reason: AuditReason): string {
 }
 
 interface SelectedContestsProps {
-    auditedContests: DosAuditedContests;
-    contests: DosContests;
+    auditedContests: DOS.AuditedContests;
+    contests: DOS.Contests;
 }
 
 const SelectedContests = (props: SelectedContestsProps) => {
@@ -105,9 +105,9 @@ const WaitingForContestsPage = ({ back }: WaitingPageProps) => {
 };
 
 interface PageProps {
-    auditedContests: DosAuditedContests;
+    auditedContests: DOS.AuditedContests;
     back: OnClick;
-    contests: DosContests;
+    contests: DOS.Contests;
     isAuditable: OnClick;
     nextPage: OnClick;
     selectContestsForAudit: OnClick;

@@ -27,7 +27,7 @@ interface AuditReviewProps {
     back: OnClick;
     publishBallotsToAudit: OnClick;
     saveAndDone: OnClick;
-    sos: DosState;
+    sos: DOS.AppState;
 }
 
 const AuditReview = (props: AuditReviewProps) => {

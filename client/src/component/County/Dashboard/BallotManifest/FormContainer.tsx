@@ -30,7 +30,7 @@ const UploadedBallotManifest = (props: UploadedProps) => {
 };
 
 interface ContainerProps {
-    county: CountyState;
+    county: County.AppState;
     fileUploaded: boolean;
     uploadingFile: boolean;
 }

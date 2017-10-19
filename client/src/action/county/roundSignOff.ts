@@ -14,7 +14,7 @@ const roundSignOff = createSubmitAction({
 });
 
 
-function format(electors: Elector[]): ElectorJson[] {
+function format(electors: Elector[]): JSON.Elector[] {
     return electors.map(e => ({
         first_name: e.firstName,
         last_name: e.lastName,

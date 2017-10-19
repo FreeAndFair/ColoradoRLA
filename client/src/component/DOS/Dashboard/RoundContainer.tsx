@@ -14,10 +14,10 @@ import currentRoundSelector from 'corla/selector/dos/currentRound';
 interface ContainerProps {
     auditStarted: boolean;
     canStartNextRound: boolean;
-    countiesWithRound: DosCountyStatus[];
+    countiesWithRound: DOS.CountyStatus[];
     currentRound: number;
     finishedCountiesCount: number;
-    sos: DosState;
+    sos: DOS.AppState;
     totalCountiesCount: number;
 }
 
@@ -47,7 +47,7 @@ function select(state: AppState) {
 
     const totalCountiesCount = countiesWithRound.length;
 
-    const finished = (c: DosCountyStatus) => {
+    const finished = (c: DOS.CountyStatus) => {
         return c.currentRound.number !== currentRound
             || c.asmState === 'COUNTY_AUDIT_COMPLETE';
     };

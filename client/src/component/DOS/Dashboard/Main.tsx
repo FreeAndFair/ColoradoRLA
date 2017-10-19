@@ -30,7 +30,7 @@ const SeedInfo = ({ seed }: SeedInfoProps) => {
 };
 
 interface DefinitionProps {
-    sos: DosState;
+    sos: DOS.AppState;
 }
 
 const Definition = ({ sos }: DefinitionProps) => {
@@ -51,7 +51,7 @@ const NotDefined = () => {
 interface MainProps {
     auditDefined: boolean;
     canRenderReport: boolean;
-    sos: DosState;
+    sos: DOS.AppState;
 }
 
 const Main = (props: MainProps) => {

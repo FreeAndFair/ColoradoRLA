@@ -13,7 +13,7 @@ import publishBallotsToAudit from 'corla/action/dos/publishBallotsToAudit';
 
 interface ContainerProps {
     history: History;
-    sos: DosState;
+    sos: DOS.AppState;
 }
 
 class ReviewPageContainer extends React.Component<ContainerProps> {

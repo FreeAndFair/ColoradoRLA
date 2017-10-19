@@ -5,7 +5,7 @@ import CountyAuditWizard from './Wizard';
 
 
 interface WizardContainerProps {
-    county: CountyState;
+    county: County.AppState;
 }
 
 class CountyAuditWizardContainer extends React.Component<WizardContainerProps> {

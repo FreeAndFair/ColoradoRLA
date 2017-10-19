@@ -28,7 +28,11 @@
     },
 
     "files": [
-        "./declarations.d.ts",
+        "./index.d.ts",
+        "./county.d.ts",
+        "./dos.d.ts",
+        "./json.d.ts",
+        "./vendor.d.ts",
         "./node_modules/@types/webpack-env/index.d.ts"
     ],
 

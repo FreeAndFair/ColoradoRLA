@@ -15,7 +15,7 @@ interface ContainerProps {
     history: History;
     publicMeetingDate: Date;
     riskLimit: number;
-    sos: DosState;
+    sos: DOS.AppState;
 }
 
 interface ContainerState {

@@ -1,8 +1,8 @@
 import * as _ from 'lodash';
 
 
-const formatContestInfo = (mark: AcvrContest, contestId: number): ContestInfoJson => {
-    const markedChoices: AcvrChoices = _.pickBy(mark.choices);
+const formatContestInfo = (mark: County.AcvrContest, contestId: number): JSON.ContestInfo => {
+    const markedChoices: County.AcvrChoices = _.pickBy(mark.choices);
     const choices = _.map(markedChoices, (_, name) => name);
 
     const consensus = mark.noConsensus ? 'NO' : 'YES';
@@ -11,7 +11,7 @@ const formatContestInfo = (mark: AcvrContest, contestId: number): ContestInfoJso
 };
 
 
-export const format = (marks: Acvr, cvr: Cvr): AcvrJson => ({
+export const format = (marks: County.Acvr, cvr: Cvr): JSON.Acvr => ({
     audit_cvr: {
         ballot_type: cvr.ballotType,
         batch_id: cvr.batchId,

@@ -11,7 +11,7 @@ import currentBallotNumber from 'corla/selector/county/currentBallotNumber';
 
 
 interface ContainerProps {
-    county: CountyState;
+    county: County.AppState;
     currentBallot: Cvr;
     currentBallotNumber: number;
     nextStage: OnClick;

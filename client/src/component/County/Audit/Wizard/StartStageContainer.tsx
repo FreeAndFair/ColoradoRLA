@@ -6,7 +6,7 @@ import StartStage from './StartStage';
 
 
 interface ContainerProps {
-    county: CountyState;
+    county: County.AppState;
     nextStage: OnClick;
 }
 

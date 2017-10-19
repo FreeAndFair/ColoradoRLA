@@ -7,7 +7,7 @@ import ContestDetailPage from './DetailPage';
 
 
 interface ContainerProps {
-    contests: DosContests;
+    contests: DOS.Contests;
     match: match<any>;
 }
 

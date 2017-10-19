@@ -11,11 +11,11 @@ import selectContestsForAudit from 'corla/action/dos/selectContestsForAudit';
 
 
 interface ContainerProps {
-    auditedContests: DosAuditedContests;
-    contests: DosContests;
+    auditedContests: DOS.AuditedContests;
+    contests: DOS.Contests;
     history: History;
     isAuditable: OnClick;
-    sos: DosState;
+    sos: DOS.AppState;
 }
 
 class SelectContestsPageContainer extends React.Component<ContainerProps> {

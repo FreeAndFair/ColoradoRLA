@@ -29,7 +29,7 @@ const UploadedCVRExport = (props: UploadedProps) => {
 };
 
 interface ContainerProps {
-    county: CountyState;
+    county: County.AppState;
     fileUploaded: boolean;
     uploadingFile: boolean;
 }

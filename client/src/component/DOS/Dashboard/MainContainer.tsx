@@ -10,7 +10,7 @@ import canRenderReport from 'corla/selector/dos/canRenderReport';
 interface ContainerProps {
     auditDefined: boolean;
     canRenderReport: boolean;
-    sos: DosState;
+    sos: DOS.AppState;
 }
 
 class MainContainer extends React.Component<ContainerProps> {

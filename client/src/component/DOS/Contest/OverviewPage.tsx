@@ -51,7 +51,7 @@ const ContestTableRow = (props: RowProps) => {
 
 
 interface TableProps {
-    contests: DosContests;
+    contests: DOS.Contests;
 }
 
 const ContestTable = (props: TableProps) => {
@@ -79,7 +79,7 @@ const ContestTable = (props: TableProps) => {
 };
 
 interface PageProps {
-    contests: DosContests;
+    contests: DOS.Contests;
 }
 
 const ContestOverviewPage = (props: PageProps) => {

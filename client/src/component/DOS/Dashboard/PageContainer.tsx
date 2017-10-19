@@ -7,10 +7,10 @@ import withPoll from 'corla/component/withPoll';
 
 
 interface ContainerProps {
-    contests: DosContests;
-    countyStatus: DosCountyStatuses;
+    contests: DOS.Contests;
+    countyStatus: DOS.CountyStatuses;
     seed: string;
-    sos: DosState;
+    sos: DOS.AppState;
 }
 
 class DOSDashboardContainer extends React.Component<ContainerProps> {
