@@ -19,7 +19,7 @@ For more information on the installed package, type the command:
 Running the Export Command
 --------------------------
 
-With no options, the command will run queries using
+With no options, the command will export run queries using
 all the standard .sql files provided in the package, and
 put the resulting exported data in files in the current directory.
 
