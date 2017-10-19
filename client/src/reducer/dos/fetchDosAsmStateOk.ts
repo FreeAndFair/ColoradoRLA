@@ -12,6 +12,8 @@ function parse(data: FetchDosAsmStateOkJson): DosAsm {
 export default (state: AppState, action: any): AppState => {
     const nextState = { ...state };
 
+    if (!nextState.sos) { return nextState; }
+
     nextState.sos.asm = parse(action.data);
 
     return nextState;

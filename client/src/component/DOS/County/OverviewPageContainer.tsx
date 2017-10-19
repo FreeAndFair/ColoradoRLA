@@ -9,7 +9,7 @@ import CountyOverviewPage from './OverviewPage';
 
 function select(state: AppState) {
     const { sos } = state;
-    const { countyStatus } = sos;
+    const { countyStatus } = sos!;
 
     return { countyStatus, sos };
 }

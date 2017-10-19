@@ -13,8 +13,8 @@ export default (state: AppState, action: CountyDashboardRefreshOkAction): AppSta
     // We want to overwrite these, not deeply merge, because an empty
     // value indicates a signed-out audit board or that we are between
     // rounds.
-    nextState.county.auditBoard = newCountyData.auditBoard;
-    nextState.county.currentRound = newCountyData.currentRound;
+    nextState.county!.auditBoard = newCountyData.auditBoard;
+    nextState.county!.currentRound = newCountyData.currentRound;
 
     return nextState;
 };

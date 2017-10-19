@@ -46,7 +46,7 @@ interface ContainerState {
 class BallotManifestFormContainer extends React.Component<ContainerProps, ContainerState> {
     public state: ContainerState = {
         form: {
-            file: null,
+            file: undefined,
             hash: '',
         },
         reupload: false,
@@ -104,7 +104,7 @@ class BallotManifestFormContainer extends React.Component<ContainerProps, Contai
         const { county } = this.props;
         const { file, hash } = this.state.form;
 
-        uploadBallotManifest(county.id, file, hash);
+        uploadBallotManifest(county!.id!, file!, hash);
 
         this.disableReupload();
     }
@@ -113,7 +113,7 @@ class BallotManifestFormContainer extends React.Component<ContainerProps, Contai
 const select = (state: AppState) => {
     const { county } = state;
 
-    const uploadingFile = !!county.uploadingBallotManifest;
+    const uploadingFile = !!county!.uploadingBallotManifest;
 
     return {
         county,

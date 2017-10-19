@@ -41,7 +41,7 @@ const Uploading = (props: UploadingProps) => {
     const { cvrExportCount, cvrExport, cvrImportStatus } = county;
 
     const progress = cvrImportStatus === 'IN_PROGRESS'
-                   ? <Progress file={ cvrExport } count={ cvrExportCount } />
+                   ? <Progress file={ cvrExport! } count={ cvrExportCount! } />
                    : null;
 
     return (

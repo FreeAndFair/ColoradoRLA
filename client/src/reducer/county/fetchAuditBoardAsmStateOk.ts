@@ -12,7 +12,7 @@ function parse(data: any) {
 export default (state: AppState, action: any): AppState => {
     const nextState = { ...state };
 
-    nextState.county.asm.auditBoard = parse(action.data);
+    nextState.county!.asm!.auditBoard = parse(action.data);
 
     return nextState;
 };

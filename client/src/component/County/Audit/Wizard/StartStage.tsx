@@ -15,9 +15,9 @@ const StartStage = (props: StageProps) => {
     const { county, nextStage } = props;
     const { election } = county;
 
-    const countyName = counties[county.id].name;
-    const electionDate = corlaDate.format(election.date);
-    const electionType = format.electionType(election.type);
+    const countyName = counties[county!.id!]!.name;
+    const electionDate = corlaDate.format(election!.date);
+    const electionType = format.electionType(election!.type);
 
     return (
         <div className='rla-page'>

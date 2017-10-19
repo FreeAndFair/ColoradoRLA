@@ -22,14 +22,14 @@ export default (state: AppState, action: any): AppState => {
         nextMarks.noConsensus = !!noConsensus;
     }
 
-    const marks = nextState.county.acvrs[ballotId][contestId];
+    const marks = nextState.county!.acvrs![ballotId][contestId];
 
     if (nextMarks.noConsensus) {
         const toClear = _.merge({}, marks.choices, nextMarks.choices);
         nextMarks.choices = _.mapValues(toClear, () => false);
     }
 
-    nextState.county.acvrs[ballotId][contestId] = _.merge({}, marks, nextMarks);
+    nextState.county!.acvrs![ballotId][contestId] = _.merge({}, marks, nextMarks);
 
     return nextState;
 };

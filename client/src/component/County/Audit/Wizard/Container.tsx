@@ -14,7 +14,9 @@ class CountyAuditWizardContainer extends React.Component<WizardContainerProps> {
     }
 }
 
-function select({ county }: AppState) {
+function select(state: AppState) {
+    const { county } = state;
+
     return { county };
 }
 

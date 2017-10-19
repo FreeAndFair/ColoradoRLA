@@ -22,7 +22,11 @@ function withPoll(
         }
     }
 
-    return connect(select, bind)(Wrapper);
+    if (bind) {
+        return connect(select, bind)(Wrapper);
+    } else {
+        return connect(select)(Wrapper);
+    }
 }
 
 

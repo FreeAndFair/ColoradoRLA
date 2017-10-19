@@ -8,8 +8,10 @@ export default (state: AppState, action: any): AppState => {
 
     const sos = merge({}, parse(action.data));
     nextState.sos = merge({}, nextState.sos, sos);
-    nextState.sos.auditedContests = sos.auditedContests;
-    nextState.sos.countyStatus = sos.countyStatus;
+
+    // We just set `sos` with the result of `merge`, so it as least an empty object.
+    nextState.sos!.auditedContests = sos.auditedContests;
+    nextState.sos!.countyStatus = sos.countyStatus;
 
     return nextState;
 };

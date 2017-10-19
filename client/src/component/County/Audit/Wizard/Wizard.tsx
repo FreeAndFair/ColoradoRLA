@@ -8,12 +8,16 @@ import StartStageContainer from './StartStageContainer';
 
 type WizardStage = 'ballot-audit' | 'list' | 'review' | 'start';
 
+interface WizardProps {
+    county: CountyState;
+}
+
 interface WizardState {
     stage: WizardStage;
 }
 
-class CountyAuditWizard extends React.Component<null, WizardState> {
-    constructor(props: null) {
+class CountyAuditWizard extends React.Component<WizardProps, WizardState> {
+    constructor(props: WizardProps) {
         super(props);
 
         this.state = { stage: 'start' };

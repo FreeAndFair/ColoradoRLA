@@ -32,32 +32,32 @@ function pivot(a: any): any {
 }
 
 export function parseContests(contestIds: number[], state: AppState): Contest[] {
-    if (!state.county.contestDefs) {
+    if (!state.county!.contestDefs) {
         return [];
     }
 
-    if (_.isEmpty(state.county.contestDefs)) {
+    if (_.isEmpty(state.county!.contestDefs)) {
         return [];
     }
 
-    const { contestDefs } = state.county;
+    const { contestDefs } = state.county!;
 
-    return _.map(contestIds, id => contestDefs[id]);
+    return _.map(contestIds, id => contestDefs![id]);
 }
 
 function parseContestsUnderAudit(contestIds: number[], state: AppState): Contest[] {
-    if (!state.county.contestDefs) {
+    if (!state.county!.contestDefs) {
         return [];
     }
 
-    if (_.isEmpty(state.county.contestDefs)) {
+    if (_.isEmpty(state.county!.contestDefs)) {
         return [];
     }
 
-    const { contestDefs } = state.county;
+    const { contestDefs } = state.county!;
 
     return _.map(contestIds, (reason, id) => {
-        const def = state.county.contestDefs[id];
+        const def = state.county!.contestDefs![id];
         return { ...def };
     });
 }
@@ -112,7 +112,7 @@ function parseDisCount(data: any): number {
     return _.sum(_.values(data));
 }
 
-function parseFile(file: UploadedFileJson): UploadedFile {
+function parseFile(file: UploadedFileJson): Option<UploadedFile> {
     if (!file) { return null; }
 
     return {
@@ -129,7 +129,7 @@ function parseFile(file: UploadedFileJson): UploadedFile {
 }
 
 export function parse(data: CountyDashboardJson, state: AppState) {
-    const findContest = (id: number) => state.county.contestDefs[id];
+    const findContest = (id: number) => state.county!.contestDefs![id];
 
     return {
         asm_state: data.asm_state,

@@ -52,10 +52,10 @@ function select(state: AppState) {
     const { county } = state;
 
     const countyInfo = countyInfoSelector(state);
-    const countyName = countyInfo.name || '';
+    const countyName = countyInfo!.name || '';
 
     return {
-        auditBoard: county.auditBoard,
+        auditBoard: county!.auditBoard,
         auditBoardSignedIn: auditBoardSignedInSelector(state),
         county,
         countyName,

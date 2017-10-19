@@ -15,7 +15,7 @@ type LoginChallengeBox = [string, string];
 type LoginChallenge = LoginChallengeBox[];
 
 interface AppState {
-    loginChallenge: LoginChallenge;
+    loginChallenge?: Option<LoginChallenge>;
     dashboard?: Dashboard;
     county?: CountyState;
     sos?: DosState;
@@ -29,19 +29,19 @@ type CvrImportStatus
     | 'FAILED';
 
 interface CountyState {
-    acvrs: CountyAcvrs;
-    asm: any;
-    auditBoard: AuditBoard;
+    acvrs?: CountyAcvrs;
+    asm?: any;
+    auditBoard?: AuditBoard;
     auditedBallotCount?: number;
     ballotManifest?: UploadedFile;
     ballotManifestCount?: number;
     ballotManifestHash?: string;
     ballotsRemainingInRound?: number;
-    contests: Contest[];
+    contests?: Contest[];
     contestDefs?: CountyContests;
     contestsUnderAudit?: Contest[];
     currentBallot?: Cvr;
-    currentRound?: Round;
+    currentRound?: Option<Round>;
     cvrExport?: UploadedFile;
     cvrExportCount?: number;
     cvrExportHash?: string;

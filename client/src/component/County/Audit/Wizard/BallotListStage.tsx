@@ -15,7 +15,7 @@ interface BallotListStageProps {
 const BallotListStage = (props: BallotListStageProps) => {
     const { county, countyInfo, cvrsToAudit, nextStage } = props;
 
-    const roundNumber = county.currentRound.number;
+    const roundNumber = county!.currentRound!.number;
 
     if (!cvrsToAudit) {
         return <div />;

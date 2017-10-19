@@ -32,7 +32,7 @@ function select(state: AppState) {
     return {
         county,
         countyInfo: countyInfo(state),
-        cvrsToAudit: county.cvrsToAudit,
+        cvrsToAudit: county!.cvrsToAudit,
     };
 }
 

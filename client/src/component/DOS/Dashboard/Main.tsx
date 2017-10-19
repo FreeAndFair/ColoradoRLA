@@ -36,7 +36,7 @@ interface DefinitionProps {
 const Definition = ({ sos }: DefinitionProps) => {
     return (
         <div>
-            <RiskLimitInfo riskLimit={ sos.riskLimit } />
+            <RiskLimitInfo riskLimit={ sos.riskLimit! } />
             <SeedInfo seed={ sos.seed } />
         </div>
     );

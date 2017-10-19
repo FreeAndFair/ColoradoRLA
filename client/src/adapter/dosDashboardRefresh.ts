@@ -25,7 +25,7 @@ function parseRounds(rounds: any[]) {
     return rounds.map(parseRound);
 }
 
-function parseDisagreementCount(data: any): number {
+function parseDisagreementCount(data: any): Option<number> {
     if (_.isEmpty(data)) {
         return null;
     }
@@ -109,7 +109,7 @@ function parseElection(data: any): any {
     };
 }
 
-function parsePublicMeetingDate(data: any): Date {
+function parsePublicMeetingDate(data: any): Option<Date> {
     if (!_.has(data, 'audit_info.public_meeting_date')) {
         return null;
     }
@@ -119,7 +119,7 @@ function parsePublicMeetingDate(data: any): Date {
     return new Date(date);
 }
 
-function parseRiskLimit(data: any): number {
+function parseRiskLimit(data: any): Option<number> {
     const info = data.audit_info;
 
     if (!info) {

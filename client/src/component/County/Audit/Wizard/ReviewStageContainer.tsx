@@ -24,9 +24,9 @@ class ReviewStageContainer extends React.Component<ContainerProps> {
 
 function select(props: AppState) {
     const { county } = props;
-    const { currentBallot } = county;
+    const { currentBallot } = county!;
 
-    const marks = county.acvrs[currentBallot.id];
+    const marks = county!.acvrs![currentBallot!.id];
 
     return { county, currentBallot, marks };
 }

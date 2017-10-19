@@ -45,7 +45,7 @@ interface ContainerState {
 class CVRExportFormContainer extends React.Component<ContainerProps, ContainerState> {
     public state: ContainerState = {
         form: {
-            file: null,
+            file: undefined,
             hash: '',
         },
         reupload: false,
@@ -103,7 +103,7 @@ class CVRExportFormContainer extends React.Component<ContainerProps, ContainerSt
         const { county } = this.props;
         const { file, hash } = this.state.form;
 
-        uploadCvrExport(county.id, file, hash);
+        uploadCvrExport(county!.id!, file!, hash);
 
         this.disableReupload();
     }
@@ -112,7 +112,7 @@ class CVRExportFormContainer extends React.Component<ContainerProps, ContainerSt
 const select = (state: AppState) => {
     const { county } = state;
 
-    const uploadingFile = !!county.uploadingCvrExport;
+    const uploadingFile = !!county!.uploadingCvrExport;
 
     return {
         county,

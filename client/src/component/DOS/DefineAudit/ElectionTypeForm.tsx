@@ -14,12 +14,12 @@ interface FormProps {
 }
 
 interface FormState {
-    type: ElectionType;
+    type?: ElectionType;
 }
 
 class ElectionTypeForm extends React.Component<FormProps, FormState> {
     public state: FormState = {
-        type: null,
+        type: undefined,
     };
 
     public render() {

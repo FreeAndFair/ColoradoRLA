@@ -31,7 +31,7 @@ class BallotAuditStageContainer extends React.Component<ContainerProps> {
 
 function select(state: AppState) {
     const { county } = state;
-    const { currentBallot } = county;
+    const { currentBallot } = county!;
 
     return {
         county,

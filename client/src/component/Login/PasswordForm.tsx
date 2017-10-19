@@ -16,7 +16,7 @@ interface FormState {
     };
 }
 
-export default class PasswordForm extends React.Component<null, FormState> {
+export default class PasswordForm extends React.Component<any, FormState> {
     public state = {
         form: {
             password: '',

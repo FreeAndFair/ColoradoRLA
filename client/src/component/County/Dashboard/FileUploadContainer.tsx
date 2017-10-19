@@ -48,12 +48,12 @@ interface FileUploadFormsProps {
 
 const FileUploadForms = (props: FileUploadFormsProps) => {
     const { county, uploadedBothFiles } = props;
-    const { ballotManifestCount, cvrExportCount } = county;
+    const { ballotManifestCount, cvrExportCount } = county!;
 
     return (
         <div>
-            <MatchStatus ballotManifestCount={ ballotManifestCount }
-                         cvrExportCount={ cvrExportCount }
+            <MatchStatus ballotManifestCount={ ballotManifestCount! }
+                         cvrExportCount={ cvrExportCount! }
                          uploadedBothFiles={ uploadedBothFiles } />
             <BallotManifestFormContainer />
             <CVRExportFormContainer />
@@ -93,10 +93,10 @@ class FileUploadContainer extends React.Component<FileUploadContainerProps> {
 
 const select = (state: AppState) => {
     const { county } = state;
-    const { asm } = county;
+    const { asm } = county!;
 
     const auditInProgress = asm.auditBoard.currentState === 'AUDIT_IN_PROGRESS';
-    const uploadedBothFiles = !!(county.ballotManifestHash && county.cvrExportHash);
+    const uploadedBothFiles = !!(county!.ballotManifestHash && county!.cvrExportHash);
     const missedDeadline = auditInProgress && !uploadedBothFiles;
 
     return { county, missedDeadline, uploadedBothFiles };

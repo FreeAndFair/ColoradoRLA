@@ -47,10 +47,10 @@ function select(state: AppState) {
         allRoundsComplete: allRoundsCompleteSelector(state),
         countyInfo: countyInfoSelector(state),
         currentRoundNumber: currentRoundNumberSelector(state),
-        election: state.county.election,
-        estimatedBallotsToAudit: state.county.estimatedBallotsToAudit,
+        election: state.county!.election,
+        estimatedBallotsToAudit: state.county!.estimatedBallotsToAudit,
         previousRound: previousRound || {},
-        previousRoundSignedOff: signedOff(previousRound),
+        previousRoundSignedOff: previousRound ? signedOff(previousRound) : false,
     };
 }
 

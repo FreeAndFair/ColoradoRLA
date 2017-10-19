@@ -81,7 +81,7 @@ const BallotReview = (props: BallotReviewProps) => {
     const { county, marks } = props;
 
     const contestReviews = _.map(marks, (m, contestId) => {
-        const contest = county.contestDefs[contestId];
+        const contest = county!.contestDefs![contestId];
 
         return (
             <BallotContestReview
@@ -115,7 +115,7 @@ const ReviewStage = (props: ReviewStageProps) => {
     } = props;
 
     const onClick = () => {
-        const m = county.acvrs[currentBallot.id];
+        const m = county!.acvrs![currentBallot.id];
 
         uploadAcvr(m, currentBallot);
         nextStage();

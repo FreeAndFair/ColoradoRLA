@@ -38,7 +38,7 @@ const AuditReview = (props: AuditReviewProps) => {
         saveAndDone();
     };
 
-    const riskLimitPercent = sos.riskLimit * 100;
+    const riskLimitPercent = sos.riskLimit! * 100;
 
     const disableLaunchButton = !sos.seed;
 

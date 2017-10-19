@@ -31,12 +31,14 @@ const parse = (data: CvrJson, state: AppState): Cvr => ({
 export default (state: AppState, action: any): AppState => {
     const nextState = merge({}, state);
 
+    if (!state.county) { return nextState; }
+
     const county = merge({}, state.county);
     const currentBallot = parse(action.data, state);
     county.currentBallot = currentBallot;
 
-    if (!county.acvrs[currentBallot.id]) {
-        county.acvrs[currentBallot.id] = createEmptyAcvr(currentBallot);
+    if (!county.acvrs![currentBallot.id]) {
+        county.acvrs![currentBallot.id] = createEmptyAcvr(currentBallot);
     }
     nextState.county = county;
 

@@ -88,7 +88,7 @@ class ContestUpdates extends React.Component<UpdatesProps, UpdatesState> {
 
         const rowData: RowData[] = _.map(selectedContests, (c): RowData => {
             const county: CountyInfo = counties[c.countyId];
-            const discrepancyCount: number = _.sum(_.values(sos.discrepancyCounts[c.id]));
+            const discrepancyCount: number = _.sum(_.values(sos.discrepancyCounts![c.id]));
 
             return [county.name, c.name, discrepancyCount, c];
         });

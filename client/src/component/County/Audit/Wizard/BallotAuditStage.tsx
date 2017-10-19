@@ -57,7 +57,7 @@ const AuditInstructions = (props: InstructionsProps) => {
         <div className='pt-card'>
             <div className='pt-card'>
                 Use this page to report the voter markings on ballot card #{ currentBallotNumber },
-                out of { currentRound.expectedCount } ballots that you must audit in this round.
+                out of { currentRound!.expectedCount } ballots that you must audit in this round.
             </div>
             <div>
                 <div className='pt-card'>
@@ -191,7 +191,7 @@ const BallotContestMarkForm = (props: MarkFormProps) => {
     const { contest, county, currentBallot, updateBallotMarks } = props;
     const { name, description, choices, votesAllowed } = contest;
 
-    const acvr = county.acvrs[currentBallot.id];
+    const acvr = county.acvrs![currentBallot.id];
     const contestMarks = acvr[contest.id];
 
     const updateComments = (comments: string) => {
@@ -233,7 +233,7 @@ const BallotAuditForm = (props: AuditFormProps) => {
     const { county, currentBallot } = props;
 
     const contestForms = _.map(currentBallot.contestInfo, info => {
-        const contest = county.contestDefs[info.contest];
+        const contest = county.contestDefs![info.contest];
 
         const updateBallotMarks = (data: any) => props.updateBallotMarks({
             ballotId: currentBallot.id,

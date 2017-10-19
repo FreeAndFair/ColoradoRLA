@@ -23,7 +23,7 @@ function* countyRefreshOk({ data }: any): any {
     }
 
     if (has(county, 'currentRound.number')) {
-        fetchCvrsToAudit(county.currentRound.number);
+        fetchCvrsToAudit(county.currentRound!.number);
     }
 }
 

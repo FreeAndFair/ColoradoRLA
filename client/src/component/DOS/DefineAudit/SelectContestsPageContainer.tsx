@@ -55,6 +55,8 @@ function select(state: AppState) {
     if (!sos) { return {}; }
 
     const isAuditable = (contestId: number): boolean => {
+        if (!sos.auditTypes) { return false; }
+
         const t = sos.auditTypes[contestId];
 
         return t !== 'HAND_COUNT' && t !== 'NOT_AUDITABLE';
