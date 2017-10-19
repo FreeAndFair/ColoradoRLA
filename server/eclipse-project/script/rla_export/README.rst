@@ -5,11 +5,11 @@ The ``rla_export`` command exports ColoradoRLA data for publication
 on the Audit Center web site.
 
 Installation
-------------
+------------ 
 
-These installation instructions are for redhat. Other operating systems may have other package managers (instead of yum and pip). 
+If some version of the python package manager pip is already installed, skip to the package installation pip command. If not, you will have to install pip. The pip installation depends on the operating system. 
 
-As a one-time step on each rla tool server, run these commands to install
+For redhead, as a one-time step on each rla tool server, run these commands to install
 Python's "pip" command for installing packages and the necessary dependencies.
 
 ::
@@ -21,9 +21,9 @@ Python's "pip" command for installing packages and the necessary dependencies.
     sudo pip install --upgrade pip
 
 
-To install the packages required to run the RLA export command, 
-navigate to the file containing the rla_export package (the ``*.tar.gz`` file) 
-and type the 
+Once a version of pip is installed, you can install the packages required to run the RLA export command by 
+navigating to the file containing the rla_export package (the ``*.tar.gz`` file) 
+and typing the 
 following command, (noting that the version number may be different from ``1.0.4.dev2`` and making the necessary change to the command). 
 
   ``pip install rla_export-1.0.4.dev2.tar.gz``
