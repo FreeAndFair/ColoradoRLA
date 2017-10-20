@@ -5,14 +5,14 @@ import { Redirect } from 'react-router-dom';
 
 
 interface RootRedirectContainerProps {
-    dashboard: any;
+    dashboard: Dashboard;
 }
 
-export class RootRedirectContainer extends React.Component<RootRedirectContainerProps & any, any> {
+export class RootRedirectContainer extends React.Component<RootRedirectContainerProps> {
     public render() {
         const { dashboard } = this.props;
 
-        if (dashboard === 'sos') {
+        if (dashboard === 'DOS') {
             return <Redirect to='/sos' />;
         }
 
@@ -20,11 +20,15 @@ export class RootRedirectContainer extends React.Component<RootRedirectContainer
     }
 }
 
-const mapStateToProps = ({ dashboard }: any) => ({ dashboard });
+function isCountyAppState(state: AppState): state is County.AppState {
+    return state.type === 'County';
+}
 
-const mapDispatchToProps = (dispatch: any) => ({});
+function select(state: AppState) {
+    const dashboard = isCountyAppState(state) ? 'County' : 'DOS';
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(RootRedirectContainer);
+    return { dashboard };
+}
+
+
+export default connect(select)(RootRedirectContainer);

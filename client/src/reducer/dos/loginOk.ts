@@ -1,3 +1,3 @@
-export default function loginOk(state: LoginAppState): County.AppState {
-    return {};
+export default function loginOk(state: LoginAppState): DOS.AppState {
+    return { type: 'DOS' };
 }

@@ -1,3 +1,3 @@
 export default function loginOk(state: LoginAppState): County.AppState {
-    return {};
+    return { type: 'County' };
 }

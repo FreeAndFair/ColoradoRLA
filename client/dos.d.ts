@@ -13,6 +13,7 @@ declare namespace DOS {
         publicMeetingDate?: Date;
         riskLimit?: number;
         seed?: any;
+        type: 'DOS';
     }
 
     interface DiscrepancyCount {

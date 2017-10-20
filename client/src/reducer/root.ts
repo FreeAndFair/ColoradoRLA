@@ -32,15 +32,19 @@ const defaultCountyState = (): County.AppState => ({
     },
     auditBoard: [],
     contests: [],
+    type: 'County',
 });
 
 const defaultDosState = (): DOS.AppState => ({
     asm: { currentState: 'DOS_INITIAL_STATE' },
     auditedContests: {},
     countyStatus: {},
+    type: 'DOS',
 });
 
-const defaultState: AppState = {};
+const defaultLoginState: LoginAppState = { type: 'Login' };
+
+const defaultState = defaultLoginState;
 
 
 export default function root(state: AppState = defaultState, action: Action.App) {

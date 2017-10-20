@@ -27,6 +27,7 @@ declare namespace County {
         id?: number;
         riskLimit?: number;
         rounds?: Round[];
+        type: 'County';
         uploadingBallotManifest?: boolean;
         uploadingCvrExport?: boolean;
     }

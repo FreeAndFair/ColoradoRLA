@@ -18,6 +18,7 @@ interface LoginAppState {
     dashboard?: Dashboard;
     loginChallenge?: Option<LoginChallenge>;
     username?: string;
+    type: 'Login';
 }
 
 type AppState = LoginAppState | County.AppState | DOS.AppState;
