@@ -35,12 +35,12 @@ import DOSDashboardContainer from './DOS/Dashboard/PageContainer';
 
 
 export interface RootContainerProps {
-    store: Store<any>;
+    store: Store<AppState>;
 }
 
 type RouteDef = [string, React.ComponentClass];
 
-const makeRoute = (store: any) => (def: RouteDef) => {
+const makeRoute = (store: Store<AppState>) => (def: RouteDef) => {
     const [path, Page] = def;
 
     return (
