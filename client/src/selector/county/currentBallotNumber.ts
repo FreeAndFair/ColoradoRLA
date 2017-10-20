@@ -1,12 +1,8 @@
 import * as _ from 'lodash';
 
 
-function currentBallotNumber(state: AppState): Option<number> {
-    const { county } = state;
-
-    if (!county) { return null; }
-
-    const { cvrsToAudit, currentBallot } = county;
+function currentBallotNumber(state: County.AppState): Option<number> {
+    const { cvrsToAudit, currentBallot } = state;
 
     if (!cvrsToAudit) { return null; }
     if (!currentBallot) { return null; }

@@ -27,20 +27,20 @@ interface AuditReviewProps {
     back: OnClick;
     publishBallotsToAudit: OnClick;
     saveAndDone: OnClick;
-    sos: DOS.AppState;
+    dosState: DOS.AppState;
 }
 
 const AuditReview = (props: AuditReviewProps) => {
-    const { back, publishBallotsToAudit, saveAndDone, sos } = props;
+    const { back, publishBallotsToAudit, saveAndDone, dosState } = props;
 
     const launch = () => {
         publishBallotsToAudit();
         saveAndDone();
     };
 
-    const riskLimitPercent = sos.riskLimit! * 100;
+    const riskLimitPercent = dosState.riskLimit! * 100;
 
-    const disableLaunchButton = !sos.seed;
+    const disableLaunchButton = !dosState.seed;
 
     return (
         <div>
@@ -63,7 +63,7 @@ const AuditReview = (props: AuditReviewProps) => {
                         </tr>
                         <tr>
                             <td>Random Number Generator Seed:</td>
-                            <td>{ sos.seed }</td>
+                            <td>{ dosState.seed }</td>
                         </tr>
                     </tbody>
                 </table>

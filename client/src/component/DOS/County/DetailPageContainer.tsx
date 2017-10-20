@@ -34,9 +34,8 @@ class CountyDetailContainer extends React.Component<ContainerProps> {
     }
 }
 
-function select(state: AppState) {
-    const { sos } = state;
-    const { countyStatus } = sos!;
+function select(dosState: DOS.AppState) {
+    const { countyStatus } = dosState;
 
     return { countyStatus };
 }

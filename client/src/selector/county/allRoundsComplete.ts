@@ -1,19 +1,16 @@
 import * as _ from 'lodash';
 
 
-function allRoundsComplete(state: AppState): boolean {
-    if (!state.county) { return false; }
-    if (!state.county.asm) { return false; }
-    if (!state.county.asm.county) { return false; }
-
-    const { currentState } = state.county.asm.county;
-
+function allRoundsComplete(state: County.AppState): boolean {
+    if (!state.asm) { return false; }
+    if (!state.asm.county) { return false; }
+    const { currentState } = state.asm.county;
     if (!currentState) { return false; }
 
-    if (!state.county.rounds) { return false; }
-    if (_.isEmpty(state.county.rounds)) { return false; }
+    if (!state.rounds) { return false; }
+    if (_.isEmpty(state.rounds)) { return false; }
 
-    const { currentRound } = state.county;
+    const { currentRound } = state;
 
     return !currentRound || _.isEmpty(currentRound);
 }

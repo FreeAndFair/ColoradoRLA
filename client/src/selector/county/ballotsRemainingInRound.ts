@@ -1,9 +1,5 @@
-function ballotsRemainingInRound(state: AppState): Option<number> {
-    const { county } = state;
-
-    if (!county) { return null; }
-
-    return county.ballotsRemainingInRound;
+function ballotsRemainingInRound(state: County.AppState): Option<number> {
+    return state.ballotsRemainingInRound;
 }
 
 

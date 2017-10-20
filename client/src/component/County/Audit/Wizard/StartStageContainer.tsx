@@ -6,7 +6,7 @@ import StartStage from './StartStage';
 
 
 interface ContainerProps {
-    county: County.AppState;
+    countyState: County.AppState;
     nextStage: OnClick;
 }
 
@@ -16,10 +16,8 @@ class StartStageContainer extends React.Component<ContainerProps> {
     }
 }
 
-function select(state: AppState) {
-    const { county } = state;
-
-    return { county };
+function select(countyState: County.AppState) {
+    return { countyState };
 }
 
 

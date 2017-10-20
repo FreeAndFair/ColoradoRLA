@@ -13,36 +13,38 @@ import publishBallotsToAudit from 'corla/action/dos/publishBallotsToAudit';
 
 interface ContainerProps {
     history: History;
-    sos: DOS.AppState;
+    dosState: DOS.AppState;
 }
 
 class ReviewPageContainer extends React.Component<ContainerProps> {
     public render() {
-        const { history, sos } = this.props;
+        const { history, dosState } = this.props;
 
-        if (!sos) {
+        if (!dosState) {
             return <div />;
         }
 
-        if (sos.asm.currentState === 'DOS_AUDIT_ONGOING') {
+        if (!dosState.asm) {
+            return <div />;
+        }
+
+        if (dosState.asm.currentState === 'DOS_AUDIT_ONGOING') {
             return <Redirect to='/sos' />;
         }
 
         const props = {
             back: () => history.push('/sos/audit/seed'),
+            dosState,
             publishBallotsToAudit,
             saveAndDone: () => history.push('/sos'),
-            sos,
         };
 
         return <ReviewPage { ...props } />;
     }
 }
 
-function select(state: AppState) {
-    const { sos } = state;
-
-    return { sos };
+function select(dosState: DOS.AppState) {
+    return { dosState };
 }
 
 

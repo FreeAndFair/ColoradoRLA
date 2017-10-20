@@ -7,7 +7,7 @@ import uploadAcvr from 'corla/action/county/uploadAcvr';
 
 
 interface ContainerProps {
-    county: County.AppState;
+    countyState: County.AppState;
     currentBallot: Cvr;
     marks: County.Acvr;
     nextStage: OnClick;
@@ -22,13 +22,14 @@ class ReviewStageContainer extends React.Component<ContainerProps> {
     }
 }
 
-function select(props: AppState) {
-    const { county } = props;
-    const { currentBallot } = county!;
+function select(countyState: County.AppState) {
+    const { currentBallot } = countyState;
 
-    const marks = county!.acvrs![currentBallot!.id];
+    if (!currentBallot) { return {}; }
 
-    return { county, currentBallot, marks };
+    const marks = countyState!.acvrs![currentBallot.id];
+
+    return { countyState, currentBallot, marks };
 }
 
 

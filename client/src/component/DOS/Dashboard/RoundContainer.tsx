@@ -16,8 +16,8 @@ interface ContainerProps {
     canStartNextRound: boolean;
     countiesWithRound: DOS.CountyStatus[];
     currentRound: number;
+    dosState: DOS.AppState;
     finishedCountiesCount: number;
-    sos: DOS.AppState;
     totalCountiesCount: number;
 }
 
@@ -35,15 +35,9 @@ class RoundContainer extends React.Component<ContainerProps> {
     }
 }
 
-function select(state: AppState) {
-    const { sos } = state;
-
-    if (!sos) {
-        return {};
-    }
-
-    const currentRound = currentRoundSelector(state);
-    const countiesWithRound = countiesWithRoundSelector(state, currentRound);
+function select(dosState: DOS.AppState) {
+    const currentRound = currentRoundSelector(dosState);
+    const countiesWithRound = countiesWithRoundSelector(dosState, currentRound);
 
     const totalCountiesCount = countiesWithRound.length;
 
@@ -54,12 +48,12 @@ function select(state: AppState) {
     const finishedCountiesCount = countiesWithRound.filter(finished).length;
 
     return {
-        auditStarted: auditStartedSelector(state),
-        canStartNextRound: canStartNextRoundSelector(state),
+        auditStarted: auditStartedSelector(dosState),
+        canStartNextRound: canStartNextRoundSelector(dosState),
         countiesWithRound,
         currentRound,
+        dosState,
         finishedCountiesCount,
-        sos,
         totalCountiesCount,
     };
 }

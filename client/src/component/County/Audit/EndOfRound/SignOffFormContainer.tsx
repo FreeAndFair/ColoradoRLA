@@ -84,9 +84,9 @@ class SignOffFormContainer extends React.Component<ContainerProps, ContainerStat
     }
 }
 
-function select(state: AppState) {
+function select(countyState: County.AppState) {
     return {
-        countyInfo: countyInfo(state),
+        countyInfo: countyInfo(countyState),
     };
 }
 

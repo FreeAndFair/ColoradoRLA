@@ -37,18 +37,16 @@ class EndOfRoundPageContainer extends React.Component<ContainerProps> {
     }
 }
 
-function select(state: AppState) {
-    const { county } = state;
-
-    const previousRound = previousRoundSelector(state);
+function select(countyState: County.AppState) {
+    const previousRound = previousRoundSelector(countyState);
     const previousRoundSignedOff = previousRound && signedOff(previousRound);
 
     return {
-        allRoundsComplete: allRoundsCompleteSelector(state),
-        countyInfo: countyInfoSelector(state),
-        currentRoundNumber: currentRoundNumberSelector(state),
-        election: state.county!.election,
-        estimatedBallotsToAudit: state.county!.estimatedBallotsToAudit,
+        allRoundsComplete: allRoundsCompleteSelector(countyState),
+        countyInfo: countyInfoSelector(countyState),
+        currentRoundNumber: currentRoundNumberSelector(countyState),
+        election: countyState.election,
+        estimatedBallotsToAudit: countyState.estimatedBallotsToAudit,
         previousRound: previousRound || {},
         previousRoundSignedOff: previousRound ? signedOff(previousRound) : false,
     };

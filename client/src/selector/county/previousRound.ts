@@ -1,13 +1,9 @@
-function previousRound(state: AppState): Option<Round> {
-    const { county } = state;
-
-    if (!county) { return null; }
-
-    if (!county.rounds) {
+function previousRound(state: County.AppState): Option<Round> {
+    if (!state.rounds) {
         return null;
     }
 
-    return county.rounds[county.rounds.length - 1];
+    return state.rounds[state.rounds.length - 1];
 }
 
 

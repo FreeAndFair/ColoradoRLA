@@ -29,7 +29,7 @@ const UploadedCVRExport = (props: UploadedProps) => {
 };
 
 interface ContainerProps {
-    county: County.AppState;
+    countyState: County.AppState;
     fileUploaded: boolean;
     uploadingFile: boolean;
 }
@@ -52,16 +52,16 @@ class CVRExportFormContainer extends React.Component<ContainerProps, ContainerSt
     };
 
     public render() {
-        const { county, fileUploaded, uploadingFile } = this.props;
+        const { countyState, fileUploaded, uploadingFile } = this.props;
 
         if (uploadingFile) {
-            return <Uploading county={ county } />;
+            return <Uploading countyState={ countyState } />;
         }
 
-        if (fileUploaded && !this.state.reupload && county.cvrExport) {
+        if (fileUploaded && !this.state.reupload && countyState.cvrExport) {
             return (
                 <UploadedCVRExport enableReupload={ this.enableReupload }
-                                   file={ county.cvrExport } />
+                                   file={ countyState.cvrExport } />
             );
         }
 
@@ -100,23 +100,23 @@ class CVRExportFormContainer extends React.Component<ContainerProps, ContainerSt
     }
 
     private upload = () => {
-        const { county } = this.props;
+        const { countyState } = this.props;
         const { file, hash } = this.state.form;
 
-        uploadCvrExport(county!.id!, file!, hash);
+        if (file) {
+            uploadCvrExport(countyState.id!, file!, hash);
 
-        this.disableReupload();
+            this.disableReupload();
+        }
     }
 }
 
-const select = (state: AppState) => {
-    const { county } = state;
-
-    const uploadingFile = !!county!.uploadingCvrExport;
+const select = (countyState: County.AppState) => {
+    const uploadingFile = !!countyState.uploadingCvrExport;
 
     return {
-        county,
-        fileUploaded: cvrExportUploadedSelector(state),
+        countyState,
+        fileUploaded: cvrExportUploadedSelector(countyState),
         uploadingFile,
     };
 };

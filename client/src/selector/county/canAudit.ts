@@ -1,12 +1,11 @@
 import auditBoardSignedIn from './auditBoardSignedIn';
 
 
-function canAudit(state: AppState) {
-    if (!state.county) { return false; }
-    if (!state.county.asm) { return false; }
-    if (!state.county.asm.county) { return false; }
+function canAudit(state: County.AppState) {
+    if (!state.asm) { return false; }
+    if (!state.asm.county) { return false; }
 
-    const { currentState } = state.county.asm.county;
+    const { currentState } = state.asm.county;
 
     if (!currentState) { return false; }
 

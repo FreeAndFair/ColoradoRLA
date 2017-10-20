@@ -1,8 +1,11 @@
-export default (state: AppState, action: any): AppState => {
+export default function uploadingCvrExport(
+    state: County.AppState,
+    action: Action.UploadingCvrExport,
+): County.AppState {
     const nextState = { ...state };
 
     const { uploading } = action.data;
-    nextState!.county!.uploadingCvrExport = uploading;
+    nextState.uploadingCvrExport = uploading;
 
     return nextState;
-};
+}

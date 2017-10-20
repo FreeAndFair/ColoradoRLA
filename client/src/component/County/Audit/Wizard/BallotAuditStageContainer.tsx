@@ -11,7 +11,7 @@ import currentBallotNumber from 'corla/selector/county/currentBallotNumber';
 
 
 interface ContainerProps {
-    county: County.AppState;
+    countyState: County.AppState;
     currentBallot: Cvr;
     currentBallotNumber: number;
     nextStage: OnClick;
@@ -29,14 +29,13 @@ class BallotAuditStageContainer extends React.Component<ContainerProps> {
     }
 }
 
-function select(state: AppState) {
-    const { county } = state;
-    const { currentBallot } = county!;
+function select(countyState: County.AppState) {
+    const { currentBallot } = countyState;
 
     return {
-        county,
+        countyState,
         currentBallot,
-        currentBallotNumber: currentBallotNumber(state),
+        currentBallotNumber: currentBallotNumber(countyState),
     };
 }
 

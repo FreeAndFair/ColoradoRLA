@@ -40,58 +40,54 @@ const defaultDosState = (): DOS.AppState => ({
     countyStatus: {},
 });
 
-const defaultState: AppState = {
-    county: defaultCountyState(),
-    loginChallenge: null,
-    sos: defaultDosState(),
-};
+const defaultState: AppState = {};
 
 
 export default function root(state: AppState = defaultState, action: Action.App) {
     switch (action.type) {
 
     case 'COUNTY_DASHBOARD_REFRESH_OK': {
-        return countyDashboardRefreshOk(state, action);
+        return countyDashboardRefreshOk(state as County.AppState, action);
     }
 
     case 'COUNTY_FETCH_CONTESTS_OK': {
-        return countyFetchContestsOk(state, action);
+        return countyFetchContestsOk(state as County.AppState, action);
     }
 
     case 'COUNTY_FETCH_CVR_OK': {
-        return countyFetchCvrOk(state, action);
+        return countyFetchCvrOk(state as County.AppState, action);
     }
 
     case 'COUNTY_LOGIN_OK': {
-        return countyLoginOk(state);
+        return countyLoginOk(state as LoginAppState);
     }
 
     case 'DOS_DASHBOARD_REFRESH_OK': {
-        return dosDashboardRefreshOk(state, action);
+        return dosDashboardRefreshOk(state as DOS.AppState, action);
     }
 
     case 'DOS_FETCH_CONTESTS_OK': {
-        return dosContestFetchOk(state, action);
+        return dosContestFetchOk(state as DOS.AppState, action);
     }
 
     case 'DOS_LOGIN_OK': {
-        return dosLoginOk(state);
+        return dosLoginOk(state as LoginAppState);
     }
 
     case 'FETCH_AUDIT_BOARD_ASM_STATE_OK': {
-        return fetchAuditBoardAsmStateOk(state, action);
+        return fetchAuditBoardAsmStateOk(state as County.AppState, action);
     }
 
     case 'FETCH_COUNTY_ASM_STATE_OK': {
-        return fetchCountyAsmStateOk(state, action);
+        return fetchCountyAsmStateOk(state as County.AppState, action);
     }
 
     case 'FETCH_CVRS_TO_AUDIT_OK': {
-        return fetchCvrsToAuditOk(state, action);
+        return fetchCvrsToAuditOk(state as County.AppState, action);
     }
 
     case 'FETCH_DOS_ASM_STATE_OK': {
-        return fetchDosAsmStateOk(state, action);
+        return fetchDosAsmStateOk(state as DOS.AppState, action);
     }
 
     case 'LOGIN_1F_OK': {
@@ -99,35 +95,35 @@ export default function root(state: AppState = defaultState, action: Action.App)
     }
 
     case 'SELECT_CONTESTS_FOR_AUDIT_OK': {
-        return selectContestsForAuditOk(state, action);
+        return selectContestsForAuditOk(state as DOS.AppState, action);
     }
 
     case 'UPDATE_ACVR_FORM': {
-        return updateAcvrForm(state, action);
+        return updateAcvrForm(state as County.AppState, action);
     }
 
     case 'UPLOAD_BALLOT_MANIFEST_OK': {
-        return uploadBallotManifestOk(state, action);
+        return uploadBallotManifestOk(state as County.AppState, action);
     }
 
     case 'UPLOAD_ACVR_OK': {
-        return uploadAcvrOk(state, action);
+        return uploadAcvrOk(state as County.AppState, action);
     }
 
     case 'UPLOAD_CVR_EXPORT_OK': {
-        return uploadCvrExportOk(state, action);
+        return uploadCvrExportOk(state as County.AppState, action);
     }
 
     case 'UPLOAD_RANDOM_SEED_OK': {
-        return uploadRandomSeedOk(state, action);
+        return uploadRandomSeedOk(state as DOS.AppState, action);
     }
 
     case 'UPLOADING_BALLOT_MANIFEST': {
-        return uploadingBallotManifest(state, action);
+        return uploadingBallotManifest(state as County.AppState, action);
     }
 
     case 'UPLOADING_CVR_EXPORT': {
-        return uploadingCvrExport(state, action);
+        return uploadingCvrExport(state as County.AppState, action);
     }
 
     default:

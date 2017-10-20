@@ -62,7 +62,7 @@ function sortIndex(sort: SortKey): number {
 interface UpdatesProps {
     contests: DOS.Contests;
     seed: string;
-    sos: DOS.AppState;
+    dosState: DOS.AppState;
 }
 
 interface UpdatesState {
@@ -79,16 +79,16 @@ class ContestUpdates extends React.Component<UpdatesProps, UpdatesState> {
     };
 
     public render() {
-        const { contests, seed, sos } = this.props;
+        const { contests, dosState, seed } = this.props;
 
         const selectedContests: DOS.Contests =
-            _.values(_.pick(contests, _.keys(sos.auditedContests)));
+            _.values(_.pick(contests, _.keys(dosState.auditedContests)));
 
         type RowData = [string, string, number, Contest];
 
         const rowData: RowData[] = _.map(selectedContests, (c): RowData => {
             const county: CountyInfo = counties[c.countyId];
-            const discrepancyCount: number = _.sum(_.values(sos.discrepancyCounts![c.id]));
+            const discrepancyCount: number = _.sum(_.values(dosState.discrepancyCounts![c.id]));
 
             return [county.name, c.name, discrepancyCount, c];
         });
@@ -112,7 +112,7 @@ class ContestUpdates extends React.Component<UpdatesProps, UpdatesState> {
         const contestStatuses = _.map(filteredData, row => {
             const [countyName, contestName, discrepancyCount, c] = row;
 
-            if (!sos.auditedContests) {
+            if (!dosState.auditedContests) {
                 return <tr key={ c.id }><td /><td /><td /><td /><td /></tr>;
             }
 

@@ -28,19 +28,18 @@ const parse = (data: JSON.Cvr, state: AppState): Cvr => ({
 });
 
 
-export default (state: AppState, action: any): AppState => {
+export default function fetchCvrOk(
+    state: County.AppState,
+    action: Action.CountyFetchCvrOk,
+): County.AppState {
     const nextState = merge({}, state);
 
-    if (!state.county) { return nextState; }
-
-    const county = merge({}, state.county);
     const currentBallot = parse(action.data, state);
-    county.currentBallot = currentBallot;
+    nextState.currentBallot = currentBallot;
 
-    if (!county.acvrs![currentBallot.id]) {
-        county.acvrs![currentBallot.id] = createEmptyAcvr(currentBallot);
+    if (!nextState.acvrs![currentBallot.id]) {
+        nextState.acvrs![currentBallot.id] = createEmptyAcvr(currentBallot);
     }
-    nextState.county = county;
 
     return nextState;
-};
+}

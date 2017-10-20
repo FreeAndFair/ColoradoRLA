@@ -9,10 +9,13 @@ function parse(data: JSON.FetchCountyASMStateOk): County.ASM {
 }
 
 
-export default (state: AppState, action: Action.FetchCountyASMStateOk): AppState => {
+export default function fetchCountyAsmStateOk(
+    state: County.AppState,
+    action: Action.FetchCountyASMStateOk,
+): County.AppState {
     const nextState = { ...state };
 
-    nextState.county!.asm!.county = parse(action.data);
+    nextState.asm!.county = parse(action.data);
 
     return nextState;
-};
+}

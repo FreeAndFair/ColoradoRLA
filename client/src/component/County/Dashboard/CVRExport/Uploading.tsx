@@ -33,15 +33,19 @@ const Progress = (props: ProgressProps) => {
 };
 
 interface UploadingProps {
-    county: County.AppState;
+    countyState: County.AppState;
 }
 
 const Uploading = (props: UploadingProps) => {
-    const { county } = props;
-    const { cvrExportCount, cvrExport, cvrImportStatus } = county;
+    const { countyState } = props;
+    const { cvrExportCount, cvrExport, cvrImportStatus } = countyState;
+
+    if (!cvrExportCount) { return null; }
+    if (!cvrExport) { return null; }
+    if (!cvrImportStatus) { return null; }
 
     const progress = cvrImportStatus === 'IN_PROGRESS'
-                   ? <Progress file={ cvrExport! } count={ cvrExportCount! } />
+                   ? <Progress file={ cvrExport } count={ cvrExportCount } />
                    : null;
 
     return (

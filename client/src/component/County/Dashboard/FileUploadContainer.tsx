@@ -42,13 +42,16 @@ const MatchStatus = (props: MatchStatusProps) => {
 };
 
 interface FileUploadFormsProps {
-    county: County.AppState;
+    countyState: County.AppState;
     uploadedBothFiles: boolean;
 }
 
 const FileUploadForms = (props: FileUploadFormsProps) => {
-    const { county, uploadedBothFiles } = props;
-    const { ballotManifestCount, cvrExportCount } = county!;
+    const { countyState, uploadedBothFiles } = props;
+
+    if (!countyState) { return null; }
+
+    const { ballotManifestCount, cvrExportCount } = countyState;
 
     return (
         <div>
@@ -71,35 +74,34 @@ const MissedDeadline = () => {
 };
 
 interface FileUploadContainerProps {
-    county: County.AppState;
+    countyState: County.AppState;
     missedDeadline: boolean;
     uploadedBothFiles: boolean;
 }
 
 class FileUploadContainer extends React.Component<FileUploadContainerProps> {
     public render() {
-        const { county, missedDeadline, uploadedBothFiles } = this.props;
+        const { countyState, missedDeadline, uploadedBothFiles } = this.props;
 
         if (missedDeadline) {
             return <MissedDeadline />;
         }
 
         return (
-            <FileUploadForms county={ county }
+            <FileUploadForms countyState={ countyState }
                              uploadedBothFiles={ uploadedBothFiles } />
         );
     }
 }
 
-const select = (state: AppState) => {
-    const { county } = state;
-    const { asm } = county!;
+const select = (countyState: County.AppState) => {
+    const { asm } = countyState;
 
     const auditInProgress = asm.auditBoard.currentState === 'AUDIT_IN_PROGRESS';
-    const uploadedBothFiles = !!(county!.ballotManifestHash && county!.cvrExportHash);
+    const uploadedBothFiles = !!(countyState.ballotManifestHash && countyState.cvrExportHash);
     const missedDeadline = auditInProgress && !uploadedBothFiles;
 
-    return { county, missedDeadline, uploadedBothFiles };
+    return { countyState, missedDeadline, uploadedBothFiles };
 };
 
 

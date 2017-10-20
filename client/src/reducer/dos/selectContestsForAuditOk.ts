@@ -1,9 +1,10 @@
-export default (state: AppState, action: any): AppState => {
+export default function selectContestsForAuditOk(
+    state: DOS.AppState,
+    action: Action.SelectContestsForAuditOk,
+): DOS.AppState {
     const nextState = { ...state };
 
-    if (!nextState.sos) { return nextState; }
-
-    nextState.sos.contestsForAudit = action.data.sent;
+    nextState.contestsForAudit = action.data.sent;
 
     return nextState;
-};
+}

@@ -23,7 +23,7 @@ export class LoginFormContainer extends React.Component<Props> {
     }
 }
 
-function select(state: AppState) {
+function select(state: LoginAppState) {
     const { dashboard, loginChallenge, username } = state;
 
     return { dashboard, loginChallenge, username };

@@ -79,27 +79,21 @@ class CountyDashboardContainer extends React.Component<DashboardProps> {
     }
 }
 
-const select = (state: AppState) => {
-    const { county } = state;
-
-    if (!county) {
-        return {};
-    }
-
-    const { contestDefs } = county;
+const select = (countyState: County.AppState) => {
+    const { contestDefs } = countyState;
 
     return {
-        allRoundsComplete: allRoundsCompleteSelector(state),
-        auditBoardSignedIn: auditBoardSignedInSelector(state),
-        auditComplete: auditCompleteSelector(state),
-        auditStarted: auditStartedSelector(state),
-        canAudit: canAuditSelector(state),
-        canRenderReport: canRenderReportSelector(state),
-        canSignIn: canSignInSelector(state),
+        allRoundsComplete: allRoundsCompleteSelector(countyState),
+        auditBoardSignedIn: auditBoardSignedInSelector(countyState),
+        auditComplete: auditCompleteSelector(countyState),
+        auditStarted: auditStartedSelector(countyState),
+        canAudit: canAuditSelector(countyState),
+        canRenderReport: canRenderReportSelector(countyState),
+        canSignIn: canSignInSelector(countyState),
         contests: contestDefs,
-        county,
-        currentRoundNumber: currentRoundNumberSelector(state),
-        missedDeadline: missedDeadlineSelector(state),
+        countyState,
+        currentRoundNumber: currentRoundNumberSelector(countyState),
+        missedDeadline: missedDeadlineSelector(countyState),
     };
 };
 

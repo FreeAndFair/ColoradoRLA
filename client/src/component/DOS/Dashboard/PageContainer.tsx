@@ -10,12 +10,12 @@ interface ContainerProps {
     contests: DOS.Contests;
     countyStatus: DOS.CountyStatuses;
     seed: string;
-    sos: DOS.AppState;
+    dosState: DOS.AppState;
 }
 
 class DOSDashboardContainer extends React.Component<ContainerProps> {
     public render() {
-        if (!this.props.sos) {
+        if (!this.props.dosState) {
             return <div />;
         }
 
@@ -23,16 +23,12 @@ class DOSDashboardContainer extends React.Component<ContainerProps> {
     }
 }
 
-function select(state: AppState) {
-    const { sos } = state;
-
-    if (!sos) { return {}; }
-
+function select(dosState: DOS.AppState) {
     return {
-        contests: sos.contests,
-        countyStatus: sos.countyStatus,
-        seed: sos.seed,
-        sos,
+        contests: dosState.contests,
+        countyStatus: dosState.countyStatus,
+        dosState,
+        seed: dosState.seed,
     };
 }
 

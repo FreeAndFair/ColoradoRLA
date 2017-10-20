@@ -11,22 +11,26 @@ import uploadRandomSeed from 'corla/action/dos/uploadRandomSeed';
 
 
 interface ContainerProps {
+    dosState: DOS.AppState;
     history: History;
     publicMeetingDate: Date;
     seed: string;
-    sos: DOS.AppState;
 }
 
 
 class SeedPageContainer extends React.Component<ContainerProps> {
     public render() {
-        const { history, publicMeetingDate, seed, sos } = this.props;
+        const { history, publicMeetingDate, seed, dosState } = this.props;
 
-        if (!sos) {
+        if (!dosState) {
             return <div />;
         }
 
-        if (sos.asm.currentState === 'DOS_AUDIT_ONGOING') {
+        if (!dosState.asm) {
+            return <div />;
+        }
+
+        if (dosState.asm.currentState === 'DOS_AUDIT_ONGOING') {
             return <Redirect to='/sos' />;
         }
 
@@ -42,15 +46,13 @@ class SeedPageContainer extends React.Component<ContainerProps> {
     }
 }
 
-function select(state: AppState) {
-    const { sos } = state;
-
-    if (!sos) { return {}; }
+function select(dosState: DOS.AppState) {
+    if (!dosState) { return {}; }
 
     return {
-        publicMeetingDate: sos.publicMeetingDate,
-        seed: sos.seed,
-        sos,
+        dosState,
+        publicMeetingDate: dosState.publicMeetingDate,
+        seed: dosState.seed,
     };
 }
 

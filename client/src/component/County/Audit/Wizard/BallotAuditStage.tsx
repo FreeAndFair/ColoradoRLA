@@ -35,7 +35,7 @@ const BallotNotFoundForm = (props: NotFoundProps) => {
 
 interface InstructionsProps {
     ballotNotFound: OnClick;
-    county: County.AppState;
+    countyState: County.AppState;
     currentBallot: Cvr;
     currentBallotNumber: number;
 }
@@ -43,14 +43,14 @@ interface InstructionsProps {
 const AuditInstructions = (props: InstructionsProps) => {
     const {
         ballotNotFound,
-        county,
+        countyState,
         currentBallot,
         currentBallotNumber,
     } = props;
 
-    const { currentRound } = county;
+    const { currentRound } = countyState;
     const isCurrentCvr = (cvr: JSON.Cvr) => cvr.db_id === currentBallot.id;
-    const fullCvr = _.find(county.cvrsToAudit, isCurrentCvr);
+    const fullCvr = _.find(countyState.cvrsToAudit, isCurrentCvr);
     const storageBin = fullCvr ? fullCvr.storage_location : '—';
 
     return (
@@ -182,16 +182,16 @@ const ContestComments = (props: CommentsProps) => {
 
 interface MarkFormProps {
     contest: Contest;
-    county: County.AppState;
+    countyState: County.AppState;
     currentBallot: Cvr;
     updateBallotMarks: OnClick;
 }
 
 const BallotContestMarkForm = (props: MarkFormProps) => {
-    const { contest, county, currentBallot, updateBallotMarks } = props;
+    const { contest, countyState, currentBallot, updateBallotMarks } = props;
     const { name, description, choices, votesAllowed } = contest;
 
-    const acvr = county.acvrs![currentBallot.id];
+    const acvr = countyState.acvrs![currentBallot.id];
     const contestMarks = acvr[contest.id];
 
     const updateComments = (comments: string) => {
@@ -224,16 +224,16 @@ const BallotContestMarkForm = (props: MarkFormProps) => {
 };
 
 interface AuditFormProps {
-    county: County.AppState;
+    countyState: County.AppState;
     currentBallot: Cvr;
     updateBallotMarks: OnClick;
 }
 
 const BallotAuditForm = (props: AuditFormProps) => {
-    const { county, currentBallot } = props;
+    const { countyState, currentBallot } = props;
 
     const contestForms = _.map(currentBallot.contestInfo, info => {
-        const contest = county.contestDefs![info.contest];
+        const contest = countyState.contestDefs![info.contest];
 
         const updateBallotMarks = (data: any) => props.updateBallotMarks({
             ballotId: currentBallot.id,
@@ -245,7 +245,7 @@ const BallotAuditForm = (props: AuditFormProps) => {
             <BallotContestMarkForm
                 key={ contest.id }
                 contest={ contest }
-                county={ county }
+                countyState={ countyState }
                 currentBallot={ currentBallot }
                 updateBallotMarks={ updateBallotMarks } />
         );
@@ -255,7 +255,7 @@ const BallotAuditForm = (props: AuditFormProps) => {
 };
 
 interface StageProps {
-    county: County.AppState;
+    countyState: County.AppState;
     currentBallot: Cvr;
     currentBallotNumber: number;
     nextStage: OnClick;
@@ -265,7 +265,7 @@ interface StageProps {
 
 const BallotAuditStage = (props: StageProps) => {
     const {
-        county,
+        countyState,
         currentBallot,
         currentBallotNumber,
         nextStage,
@@ -282,12 +282,12 @@ const BallotAuditStage = (props: StageProps) => {
             <h2>Ballot Card Verification</h2>
             <AuditInstructions
                 ballotNotFound={ notFound }
-                county={ county }
+                countyState={ countyState }
                 currentBallot={ currentBallot }
                 currentBallotNumber={ currentBallotNumber }
             />
             <BallotAuditForm
-                county={ county }
+                countyState={ countyState }
                 currentBallot={ currentBallot }
                 updateBallotMarks={ updateBallotMarks }
             />

@@ -1,4 +1,4 @@
-type Dashboard = 'sos' | 'county';
+type Dashboard = 'DOS' | 'County';
 
 interface Election {
     date: Date;
@@ -14,13 +14,13 @@ type LoginChallengeBox = [string, string];
 
 type LoginChallenge = LoginChallengeBox[];
 
-interface AppState {
-    loginChallenge?: Option<LoginChallenge>;
+interface LoginAppState {
     dashboard?: Dashboard;
-    county?: County.AppState;
-    sos?: DOS.AppState;
+    loginChallenge?: Option<LoginChallenge>;
     username?: string;
 }
+
+type AppState = LoginAppState | County.AppState | DOS.AppState;
 
 interface ContestAuditTypes {
     [contestId: number]: AuditType;

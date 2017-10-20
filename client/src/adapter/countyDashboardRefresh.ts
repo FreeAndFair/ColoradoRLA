@@ -31,33 +31,33 @@ function pivot(a: any): any {
     return o;
 }
 
-export function parseContests(contestIds: number[], state: AppState): Contest[] {
-    if (!state.county!.contestDefs) {
+export function parseContests(contestIds: number[], state: County.AppState): Contest[] {
+    const { contestDefs } = state;
+
+    if (!contestDefs) {
         return [];
     }
 
-    if (_.isEmpty(state.county!.contestDefs)) {
+    if (_.isEmpty(contestDefs)) {
         return [];
     }
 
-    const { contestDefs } = state.county!;
-
-    return _.map(contestIds, id => contestDefs![id]);
+    return _.map(contestIds, id => contestDefs[id]);
 }
 
-function parseContestsUnderAudit(contestIds: number[], state: AppState): Contest[] {
-    if (!state.county!.contestDefs) {
+function parseContestsUnderAudit(contestIds: number[], state: County.AppState): Contest[] {
+    const { contestDefs } = state;
+
+    if (!contestDefs) {
         return [];
     }
 
-    if (_.isEmpty(state.county!.contestDefs)) {
+    if (_.isEmpty(contestDefs)) {
         return [];
     }
-
-    const { contestDefs } = state.county!;
 
     return _.map(contestIds, (reason, id) => {
-        const def = state.county!.contestDefs![id];
+        const def = contestDefs![id];
         return { ...def };
     });
 }
@@ -128,8 +128,8 @@ function parseFile(file: JSON.UploadedFile): Option<UploadedFile> {
     };
 }
 
-export function parse(data: JSON.CountyDashboard, state: AppState) {
-    const findContest = (id: number) => state.county!.contestDefs![id];
+export function parse(data: JSON.CountyDashboard, state: County.AppState) {
+    const findContest = (id: number) => state.contestDefs![id];
 
     return {
         asm_state: data.asm_state,

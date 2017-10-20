@@ -1,4 +1,3 @@
-export default (state: AppState): AppState => ({
-    ...state,
-    dashboard: 'county',
-});
+export default function loginOk(state: LoginAppState): County.AppState {
+    return {};
+}

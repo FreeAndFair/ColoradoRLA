@@ -9,10 +9,13 @@ function parse(data: any) {
 }
 
 
-export default (state: AppState, action: any): AppState => {
+export default function fetchAuditBoardAsmStateOk(
+    state: County.AppState,
+    action: Action.FetchAuditBoardASMStateOk,
+): County.AppState {
     const nextState = { ...state };
 
-    nextState.county!.asm!.auditBoard = parse(action.data);
+    nextState.asm!.auditBoard = parse(action.data);
 
     return nextState;
-};
+}

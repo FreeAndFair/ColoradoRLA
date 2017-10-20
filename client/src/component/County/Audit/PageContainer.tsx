@@ -40,13 +40,13 @@ class CountyAuditContainer extends React.Component<ContainerProps> {
     }
 }
 
-function select(state: AppState) {
-    const showEndOfRoundPage = allRoundsCompleteSelector(state)
-                            || !roundInProgressSelector(state);
+function select(countyState: County.AppState) {
+    const showEndOfRoundPage = allRoundsCompleteSelector(countyState)
+                            || !roundInProgressSelector(countyState);
 
     return {
-        auditComplete: auditCompleteSelector(state),
-        canAudit: canAuditSelector(state),
+        auditComplete: auditCompleteSelector(countyState),
+        canAudit: canAuditSelector(countyState),
         showEndOfRoundPage,
     };
 }

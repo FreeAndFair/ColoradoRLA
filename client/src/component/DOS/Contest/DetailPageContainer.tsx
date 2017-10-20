@@ -30,14 +30,8 @@ class ContestDetailContainer extends React.Component<ContainerProps> {
     }
 }
 
-function select(state: AppState) {
-    const { sos } = state;
-
-    if (!sos) {
-        return {};
-    }
-
-    const { contests } = sos;
+function select(dosState: DOS.AppState) {
+    const { contests } = dosState;
 
     return { contests };
 }

@@ -30,7 +30,7 @@ const UploadedBallotManifest = (props: UploadedProps) => {
 };
 
 interface ContainerProps {
-    county: County.AppState;
+    countyState: County.AppState;
     fileUploaded: boolean;
     uploadingFile: boolean;
 }
@@ -53,16 +53,16 @@ class BallotManifestFormContainer extends React.Component<ContainerProps, Contai
     };
 
     public render() {
-        const { county, fileUploaded, uploadingFile } = this.props;
+        const { countyState, fileUploaded, uploadingFile } = this.props;
 
         if (uploadingFile) {
             return <Uploading />;
         }
 
-        if (fileUploaded && !this.state.reupload && county.ballotManifest) {
+        if (fileUploaded && !this.state.reupload && countyState.ballotManifest) {
             return (
                 <UploadedBallotManifest enableReupload={ this.enableReupload }
-                                        file={ county.ballotManifest } />
+                                        file={ countyState.ballotManifest } />
             );
         }
 
@@ -101,23 +101,23 @@ class BallotManifestFormContainer extends React.Component<ContainerProps, Contai
     }
 
     private upload = () => {
-        const { county } = this.props;
+        const { countyState } = this.props;
         const { file, hash } = this.state.form;
 
-        uploadBallotManifest(county!.id!, file!, hash);
+        if (file) {
+            uploadBallotManifest(countyState.id!, file, hash);
+        }
 
         this.disableReupload();
     }
 }
 
-const select = (state: AppState) => {
-    const { county } = state;
-
-    const uploadingFile = !!county!.uploadingBallotManifest;
+const select = (countyState: County.AppState) => {
+    const uploadingFile = !!countyState.uploadingBallotManifest;
 
     return {
-        county,
-        fileUploaded: ballotManifestUploadedSelector(state),
+        countyState,
+        fileUploaded: ballotManifestUploadedSelector(countyState),
         uploadingFile,
     };
 };

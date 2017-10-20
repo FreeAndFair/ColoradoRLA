@@ -48,18 +48,15 @@ class AuditBoardSignInContainer extends React.Component<ContainerProps> {
     }
 }
 
-function select(state: AppState) {
-    const { county } = state;
-
-    const countyInfo = countyInfoSelector(state);
+function select(countyState: County.AppState) {
+    const countyInfo = countyInfoSelector(countyState);
     const countyName = countyInfo!.name || '';
 
     return {
-        auditBoard: county!.auditBoard,
-        auditBoardSignedIn: auditBoardSignedInSelector(state),
-        county,
+        auditBoard: countyState.auditBoard,
+        auditBoardSignedIn: auditBoardSignedInSelector(countyState),
         countyName,
-        hasAuditedAnyBallot: hasAuditedAnyBallotSelector(state),
+        hasAuditedAnyBallot: hasAuditedAnyBallotSelector(countyState),
     };
 }
 

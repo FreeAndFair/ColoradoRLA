@@ -8,8 +8,8 @@ import countyInfo from 'corla/selector/county/countyInfo';
 
 
 interface ContainerProps {
-    county: County.AppState;
     countyInfo: CountyInfo;
+    countyState: County.AppState;
     cvrsToAudit: JSON.Cvr[];
     nextStage: OnClick;
 }
@@ -26,13 +26,11 @@ class BallotListStageContainer extends React.Component<ContainerProps> {
     }
 }
 
-function select(state: AppState) {
-    const { county } = state;
-
+function select(countyState: County.AppState) {
     return {
-        county,
-        countyInfo: countyInfo(state),
-        cvrsToAudit: county!.cvrsToAudit,
+        countyInfo: countyInfo(countyState),
+        countyState,
+        cvrsToAudit: countyState.cvrsToAudit,
     };
 }
 

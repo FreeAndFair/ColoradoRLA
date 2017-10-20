@@ -73,15 +73,15 @@ const BallotContestReview = (props: BallotContestReviewProps) => {
 };
 
 interface BallotReviewProps {
-    county: County.AppState;
+    countyState: County.AppState;
     marks: County.Acvr;
 }
 
 const BallotReview = (props: BallotReviewProps) => {
-    const { county, marks } = props;
+    const { countyState, marks } = props;
 
     const contestReviews = _.map(marks, (m, contestId) => {
-        const contest = county!.contestDefs![contestId];
+        const contest = countyState.contestDefs![contestId];
 
         return (
             <BallotContestReview
@@ -96,7 +96,7 @@ const BallotReview = (props: BallotReviewProps) => {
 };
 
 interface ReviewStageProps {
-    county: County.AppState;
+    countyState: County.AppState;
     currentBallot: Cvr;
     marks: County.Acvr;
     nextStage: OnClick;
@@ -106,7 +106,7 @@ interface ReviewStageProps {
 
 const ReviewStage = (props: ReviewStageProps) => {
     const {
-        county,
+        countyState,
         currentBallot,
         marks,
         nextStage,
@@ -115,7 +115,7 @@ const ReviewStage = (props: ReviewStageProps) => {
     } = props;
 
     const onClick = () => {
-        const m = county!.acvrs![currentBallot.id];
+        const m = countyState!.acvrs![currentBallot.id];
 
         uploadAcvr(m, currentBallot);
         nextStage();
@@ -123,7 +123,7 @@ const ReviewStage = (props: ReviewStageProps) => {
 
     return (
         <div className='rla-page'>
-            <BallotReview county={ county } marks={ marks } />
+            <BallotReview countyState={ countyState } marks={ marks } />
             <div className='pt-card'>
                 <BackButton back={ prevStage } />
                 <button className='pt-button pt-intent-primary' onClick={ onClick }>

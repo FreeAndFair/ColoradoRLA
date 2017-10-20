@@ -30,14 +30,14 @@ const SeedInfo = ({ seed }: SeedInfoProps) => {
 };
 
 interface DefinitionProps {
-    sos: DOS.AppState;
+    dosState: DOS.AppState;
 }
 
-const Definition = ({ sos }: DefinitionProps) => {
+const Definition = ({ dosState }: DefinitionProps) => {
     return (
         <div>
-            <RiskLimitInfo riskLimit={ sos.riskLimit! } />
-            <SeedInfo seed={ sos.seed } />
+            <RiskLimitInfo riskLimit={ dosState.riskLimit! } />
+            <SeedInfo seed={ dosState.seed } />
         </div>
     );
 };
@@ -51,17 +51,21 @@ const NotDefined = () => {
 interface MainProps {
     auditDefined: boolean;
     canRenderReport: boolean;
-    sos: DOS.AppState;
+    dosState: DOS.AppState;
 }
 
 const Main = (props: MainProps) => {
-    const { auditDefined, canRenderReport, sos } = props;
+    const { auditDefined, canRenderReport, dosState } = props;
 
     const auditDefinition = auditDefined
-                          ? <Definition sos={ sos } />
+                          ? <Definition dosState={ dosState } />
                           : <NotDefined />;
 
-    if (sos.asm.currentState === 'DOS_AUDIT_COMPLETE') {
+    if (!dosState.asm) {
+        return null;
+    }
+
+    if (dosState.asm.currentState === 'DOS_AUDIT_COMPLETE') {
         return (
             <div className='sos-notifications pt-card'>
                 { auditDefinition }

@@ -13,9 +13,9 @@ import selectContestsForAudit from 'corla/action/dos/selectContestsForAudit';
 interface ContainerProps {
     auditedContests: DOS.AuditedContests;
     contests: DOS.Contests;
+    dosState: DOS.AppState;
     history: History;
     isAuditable: OnClick;
-    sos: DOS.AppState;
 }
 
 class SelectContestsPageContainer extends React.Component<ContainerProps> {
@@ -23,16 +23,20 @@ class SelectContestsPageContainer extends React.Component<ContainerProps> {
         const {
             auditedContests,
             contests,
+            dosState,
             history,
             isAuditable,
-            sos,
         } = this.props;
 
-        if (!sos) {
+        if (!dosState) {
             return <div />;
         }
 
-        if (sos.asm.currentState === 'DOS_AUDIT_ONGOING') {
+        if (!dosState.asm) {
+            return <div />;
+        }
+
+        if (dosState.asm.currentState === 'DOS_AUDIT_ONGOING') {
             return <Redirect to='/sos' />;
         }
 
@@ -49,24 +53,20 @@ class SelectContestsPageContainer extends React.Component<ContainerProps> {
     }
 }
 
-function select(state: AppState) {
-    const { sos } = state;
-
-    if (!sos) { return {}; }
-
+function select(dosState: DOS.AppState) {
     const isAuditable = (contestId: number): boolean => {
-        if (!sos.auditTypes) { return false; }
+        if (!dosState.auditTypes) { return false; }
 
-        const t = sos.auditTypes[contestId];
+        const t = dosState.auditTypes[contestId];
 
         return t !== 'HAND_COUNT' && t !== 'NOT_AUDITABLE';
     };
 
     return {
-        auditedContests: sos.auditedContests,
-        contests: sos.contests,
+        auditedContests: dosState.auditedContests,
+        contests: dosState.contests,
+        dosState,
         isAuditable,
-        sos,
     };
 }
 

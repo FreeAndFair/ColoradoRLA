@@ -9,13 +9,11 @@ const UPLOADED_STATES = [
 ];
 
 
-function cvrExportUploaded(state: AppState): boolean {
-    if (!state.county) { return false; }
-    if (!state.county.asm) { return false; }
-    if (!state.county.asm.county) { return false; }
-    if (!state.county.asm.county.currentState) { return false; }
+function cvrExportUploaded(state: County.AppState): boolean {
+    if (!state.asm.county) { return false; }
+    if (!state.asm.county.currentState) { return false; }
 
-    const { currentState } = state.county.asm.county;
+    const { currentState } = state.asm.county;
 
     return _.includes(UPLOADED_STATES, currentState);
 }

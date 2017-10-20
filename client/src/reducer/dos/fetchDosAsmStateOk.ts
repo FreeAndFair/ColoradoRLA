@@ -9,12 +9,13 @@ function parse(data: JSON.FetchDosASMStateOk): DOS.ASM {
 }
 
 
-export default (state: AppState, action: any): AppState => {
+export default function fetchDOSASMStateOk(
+    state: DOS.AppState,
+    action: Action.FetchDOSASMStateOk,
+): DOS.AppState {
     const nextState = { ...state };
 
-    if (!nextState.sos) { return nextState; }
-
-    nextState.sos.asm = parse(action.data);
+    nextState.asm = parse(action.data);
 
     return nextState;
-};
+}

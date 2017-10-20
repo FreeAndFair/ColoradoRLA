@@ -15,7 +15,7 @@ interface ContainerProps {
     history: History;
     publicMeetingDate: Date;
     riskLimit: number;
-    sos: DOS.AppState;
+    dosState: DOS.AppState;
 }
 
 interface ContainerState {
@@ -30,13 +30,17 @@ class StartPageContainer extends React.Component<ContainerProps, ContainerState>
     };
 
     public render() {
-        const { election, history, publicMeetingDate, riskLimit, sos } = this.props;
+        const { election, history, publicMeetingDate, riskLimit, dosState } = this.props;
 
-        if (!sos) {
+        if (!dosState) {
             return <div />;
         }
 
-        if (sos.asm.currentState === 'DOS_AUDIT_ONGOING') {
+        if (!dosState.asm) {
+            return <div />;
+        }
+
+        if (dosState.asm.currentState === 'DOS_AUDIT_ONGOING') {
             return <Redirect to='/sos' />;
         }
 
@@ -61,14 +65,10 @@ class StartPageContainer extends React.Component<ContainerProps, ContainerState>
     }
 }
 
-function select(state: AppState) {
-    const { sos } = state;
+function select(dosState: DOS.AppState) {
+    const { election, publicMeetingDate, riskLimit } = dosState;
 
-    if (!sos) { return {}; }
-
-    const { election, publicMeetingDate, riskLimit } = sos;
-
-    return { election, riskLimit, publicMeetingDate, sos };
+    return { election, riskLimit, publicMeetingDate, dosState };
 }
 
 

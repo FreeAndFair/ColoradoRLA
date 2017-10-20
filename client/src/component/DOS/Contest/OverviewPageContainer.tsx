@@ -5,16 +5,10 @@ import withSync from 'corla/component/withSync';
 import OverviewPage from './OverviewPage';
 
 
-function select(state: AppState) {
-    const { sos } = state;
-
-    if (!sos) {
-        return {};
-    }
-
+function select(dosState: DOS.AppState) {
     return {
-        contests: sos.contests,
-        sos,
+        contests: dosState.contests,
+        dosState,
     };
 }
 

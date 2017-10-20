@@ -155,17 +155,19 @@ function parseAuditBoard(data: any): any {
     };
 }
 
-export const parse = (data: any) => ({
-    asm: parseAsmState(data),
-    auditReasons: data.audit_reasons,
-    auditTypes: data.audit_types,
-    auditedContests: parseAuditedContests(data.audited_contests),
-    countyStatus: parseCountyStatus(data.county_status),
-    discrepancyCounts: data.discrepancy_count,
-    election: parseElection(data),
-    estimatedBallotsToAudit: data.estimated_ballots_to_audit,
-    handCountContests: data.hand_count_contests,
-    publicMeetingDate: parsePublicMeetingDate(data),
-    riskLimit: parseRiskLimit(data),
-    seed: _.get(data, 'audit_info.seed'),
-});
+export function parse(data: any) {
+    return {
+        asm: parseAsmState(data),
+        auditReasons: data.audit_reasons,
+        auditTypes: data.audit_types,
+        auditedContests: parseAuditedContests(data.audited_contests),
+        countyStatus: parseCountyStatus(data.county_status),
+        discrepancyCounts: data.discrepancy_count,
+        election: parseElection(data),
+        estimatedBallotsToAudit: data.estimated_ballots_to_audit,
+        handCountContests: data.hand_count_contests,
+        publicMeetingDate: parsePublicMeetingDate(data),
+        riskLimit: parseRiskLimit(data),
+        seed: _.get(data, 'audit_info.seed'),
+    };
+}

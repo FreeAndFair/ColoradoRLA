@@ -7,11 +7,10 @@ import withSync from 'corla/component/withSync';
 import CountyOverviewPage from './OverviewPage';
 
 
-function select(state: AppState) {
-    const { sos } = state;
-    const { countyStatus } = sos!;
+function select(dosState: DOS.AppState) {
+    const { countyStatus } = dosState;
 
-    return { countyStatus, sos };
+    return { countyStatus, dosState };
 }
 
 

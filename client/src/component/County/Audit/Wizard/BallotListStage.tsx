@@ -6,16 +6,16 @@ import downloadCvrsToAuditCsv from 'corla/action/county/downloadCvrsToAuditCsv';
 
 
 interface BallotListStageProps {
-    county: County.AppState;
     countyInfo: CountyInfo;
+    countyState: County.AppState;
     cvrsToAudit: JSON.Cvr[];
     nextStage: OnClick;
 }
 
 const BallotListStage = (props: BallotListStageProps) => {
-    const { county, countyInfo, cvrsToAudit, nextStage } = props;
+    const { countyInfo, countyState, cvrsToAudit, nextStage } = props;
 
-    const roundNumber = county!.currentRound!.number;
+    const roundNumber = countyState.currentRound!.number;
 
     if (!cvrsToAudit) {
         return <div />;
@@ -36,9 +36,9 @@ const BallotListStage = (props: BallotListStageProps) => {
         );
     });
 
-    const contestsUnderAuditListItems = _.map(county.contestsUnderAudit, c => {
-        const riskLimitPercent = county.riskLimit
-                               ? `${county.riskLimit * 100}%`
+    const contestsUnderAuditListItems = _.map(countyState.contestsUnderAudit, c => {
+        const riskLimitPercent = countyState.riskLimit
+                               ? `${countyState.riskLimit * 100}%`
                                : '';
         return (
             <li key={ c.id }>

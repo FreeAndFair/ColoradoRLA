@@ -9,16 +9,13 @@ const SIGNED_IN_STATES = [
     'WAITING_FOR_ROUND_SIGN_OFF',
 ];
 
-function auditBoardSignedIn(state: AppState): boolean {
-    if (!state.county) { return false; }
-    if (!state.county.auditBoard) { return false; }
-    if (!state.county.asm) { return false; }
-    if (!state.county.asm.auditBoard) { return false; }
-
-    const { auditBoard } = state.county;
+function auditBoardSignedIn(state: County.AppState): boolean {
+    const { auditBoard } = state;
     if (!auditBoard) { return false; }
 
-    const { currentState } = state.county.asm.auditBoard;
+    if (!state.asm) { return false; }
+    if (!state.asm.auditBoard) { return false; }
+    const { currentState } = state.asm.auditBoard;
     if (!currentState) { return false; }
 
     return isValidAuditBoard(auditBoard)

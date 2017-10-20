@@ -9,7 +9,7 @@ import StartStageContainer from './StartStageContainer';
 type WizardStage = 'ballot-audit' | 'list' | 'review' | 'start';
 
 interface WizardProps {
-    county: County.AppState;
+    countyState: County.AppState;
 }
 
 interface WizardState {
