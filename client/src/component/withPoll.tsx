@@ -5,15 +5,17 @@ import { connect } from 'react-redux';
 import action from 'corla/action';
 
 
-function withSync(
-    Wrapped: any,
+function withSync<P, SelectP, BindP, BindS>(
+    Wrapped: React.ComponentClass<P>,
     didMount: string,
     willUnmount: string,
-    select: (state: any) => any,
-    bind?: (dispatch: any) => any,
+    select: Select<SelectP>,
+    bind?: Bind<BindP, BindS>,
 
 ) {
-    class Wrapper extends React.Component<any, any> {
+    type WrapperProps = P & SelectP & BindP;
+
+    class Wrapper extends React.Component<WrapperProps> {
         public componentDidMount() {
             action(didMount);
         }

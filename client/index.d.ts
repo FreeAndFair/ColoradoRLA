@@ -162,3 +162,7 @@ interface CountyInfo {
 type OnClick = (...args: any[]) => any;
 
 type Option<T> = T | null | undefined;
+
+type Select<P> = (state: AppState) => P;
+
+type Bind<P, S> = (dispatch: Dispatch<S>) => P;

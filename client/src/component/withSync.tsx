@@ -5,14 +5,15 @@ import { connect } from 'react-redux';
 import action from 'corla/action';
 
 
-function withPoll(
+function withPoll<P, SelectP, BindP, BindS>(
     Wrapped: any,
     didMount: string,
-    select: (state: any) => any,
-    bind?: (dispatch: any) => any,
-
+    select: Select<SelectP>,
+    bind?: Bind<BindP, BindS>,
 ) {
-    class Wrapper extends React.Component<any, any> {
+    type Props = P & SelectP & BindP;
+
+    class Wrapper extends React.Component<Props> {
         public componentDidMount() {
             action(didMount);
         }
