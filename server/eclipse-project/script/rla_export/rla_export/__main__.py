@@ -249,6 +249,52 @@ def download_file(session, baseurl, file_id, filename):
         logging.error("download_file for file_id %d: %s" % (file_id, e))
 
 
+def pull_endpoints(args):
+    "Pull and save several reports from RLA Tool endpoints"
+
+    # TODO: pick this up from a config file
+    baseurl = args.url or 'http://localhost:' + cp.get('p', 'http_port', '8888')
+    ac.corla_auth = {'url': baseurl, 'username': 'stateadmin1', 'password': ''}
+
+    with state_login(**ac.corla_auth) as session:
+        r = get_endpoint(session, baseurl, "/dos-dashboard")
+        if r.status_code != 200:
+            logging.error("Can't get dos-dashboard: status_code %d" % (r.status_code))
+            sys.exit(2)
+
+        dos_dashboard = Dotable(r.json())
+
+        # Comment this out until https://github.com/FreeAndFair/ColoradoRLA/issues/836 is resolved
+        # Otherwise this can tie up the database and prevent other work from progressing
+
+        # r = download_content(session, baseurl, 'state-report',
+        #                     os.path.join(args.export_dir, 'state_report.xlsx'))
+
+        for county_status in dos_dashboard.county_status.values():
+            county_id = county_status.id
+
+            if county_status.has_key('ballot_manifest_file'):
+                filename = os.path.join(args.export_dir, 'county_manifest_%d.csv' % county_id)
+                download_file(session, baseurl, county_status.ballot_manifest_file.file_id, filename)
+
+            if county_status.has_key('cvr_export_file') and args.cvr_download:
+                filename = os.path.join(args.export_dir, 'county_cvr_%d.csv' % county_id)
+                download_file(session, baseurl, county_status.cvr_export_file.file_id, filename)
+
+            if not county_status.has_key('rounds') or len(county_status.rounds) <= 0:
+                continue
+
+            ballot_count = county_status.rounds[-1].expected_audited_prefix_length
+            if ballot_count > 0:
+                filename = os.path.join(args.export_dir, 'ballot_list_%d.csv' % county_id)
+                query = ("cvr-to-audit-download?county=%d&start=0&ballot_count=%d"
+                        "&include_audited&include_duplicates" % (county_id, ballot_count))
+                r = download_content(session, baseurl, query, filename)
+
+                filename = os.path.join(args.export_dir, 'county_report_%d.xlsx' % county_id)
+                download_content(session, baseurl, "county-report?county=%d" % county_id, filename)
+
+
 def main():
     "Run rla_export with given OptionParser arguments"
 
@@ -299,6 +345,8 @@ def main():
         logging.debug('sql_dir = %s, path=%s' % (sql_dir, SQL_PATH))
         queryfiles = [filename for filename in glob.glob(sql_dir + "/*.sql")]
 
+        pull_endpoints(args)
+
     for queryfile in queryfiles:
         logging.info("Exporting json and csv for query in %s" % queryfile)
 
@@ -315,47 +363,7 @@ def main():
 
         query_to_csvfile(ac, queryfile, resultfilebase + '.csv')
 
-    # TODO: pick this up from a config file
-    baseurl = args.url or 'http://localhost:' + cp.get('p', 'http_port', '8888')
-    ac.corla_auth = {'url': baseurl, 'username': 'stateadmin1', 'password': ''}
-
-    with state_login(**ac.corla_auth) as session:
-        r = get_endpoint(session, baseurl, "/dos-dashboard")
-        if r.status_code != 200:
-            logging.error("Can't get dos-dashboard: status_code %d" % (r.status_code))
-            sys.exit(2)
-
-        dos_dashboard = Dotable(r.json())
-
-        # Comment this out until https://github.com/FreeAndFair/ColoradoRLA/issues/836 is resolved
-        # Otherwise this can tie up the database and prevent other work from progressing
-
-        # r = download_content(session, baseurl, 'state-report',
-        #                     os.path.join(args.export_dir, 'state_report.xlsx'))
-
-        for county_status in dos_dashboard.county_status.values():
-            county_id = county_status.id
-
-            if county_status.has_key('ballot_manifest_file'):
-                filename = os.path.join(args.export_dir, 'county_manifest_%d.csv' % county_id)
-                download_file(session, baseurl, county_status.ballot_manifest_file.file_id, filename)
-
-            if county_status.has_key('cvr_export_file') and args.cvr_download:
-                filename = os.path.join(args.export_dir, 'county_cvr_%d.csv' % county_id)
-                download_file(session, baseurl, county_status.cvr_export_file.file_id, filename)
-
-            if not county_status.has_key('rounds') or len(county_status.rounds) <= 0:
-                continue
-
-            ballot_count = county_status.rounds[-1].expected_audited_prefix_length
-            if ballot_count > 0:
-                filename = os.path.join(args.export_dir, 'ballot_list_%d.csv' % county_id)
-                query = ("cvr-to-audit-download?county=%d&start=0&ballot_count=%d"
-                        "&include_audited&include_duplicates" % (county_id, ballot_count))
-                r = download_content(session, baseurl, query, filename)
-
-                filename = os.path.join(args.export_dir, 'county_report_%d.xlsx' % county_id)
-                download_content(session, baseurl, "county-report?county=%d" % county_id, filename)
+    ac.con.close()
 
 
 if __name__ == "__main__":

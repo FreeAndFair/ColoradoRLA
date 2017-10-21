@@ -53,7 +53,7 @@ If you wish to export the results of a custom database query in json and csv for
 
   ``rla_export file.sql``
 
-The export from this command will have a json and a csv file for the single SQL command in ``file.sql``, as well as the reports and ballot manifests.
+The export from this command will have just a json and a csv file for the single SQL command in ``file.sql``.
 
 Full command line usage synopsis:
 
