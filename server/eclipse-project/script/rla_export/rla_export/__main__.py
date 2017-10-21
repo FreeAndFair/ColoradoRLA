@@ -327,8 +327,11 @@ def main():
 
         dos_dashboard = Dotable(r.json())
 
-        r = download_content(session, baseurl, 'state-report',
-                             os.path.join(args.export_dir, 'state_report.xlsx'))
+        # Comment this out until https://github.com/FreeAndFair/ColoradoRLA/issues/836 is resolved
+        # Otherwise this can tie up the database and prevent other work from progressing
+
+        # r = download_content(session, baseurl, 'state-report',
+        #                     os.path.join(args.export_dir, 'state_report.xlsx'))
 
         for county_status in dos_dashboard.county_status.values():
             county_id = county_status.id
