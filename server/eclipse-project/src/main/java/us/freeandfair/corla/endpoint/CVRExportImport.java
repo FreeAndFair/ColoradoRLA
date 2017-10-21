@@ -171,14 +171,14 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
         Main.LOGGER.info(imported + " CVRs parsed from file " + the_file.id() + 
                          " for county " + the_file.county().id());
         updateCountyDashboard(the_response, the_file, ImportStatus.SUCCESSFUL, imported);
-        the_file.setStatus(FileStatus.IMPORTED_AS_CVR_EXPORT);
-        Persistence.saveOrUpdate(the_file);
         handleTies(the_response, the_file.county());
         final Map<String, Integer> response = new HashMap<String, Integer>();
         response.put("records_imported", imported);
         if (deleted > 0) {
           response.put("records_deleted", deleted);
         }
+        the_file.setStatus(FileStatus.IMPORTED_AS_CVR_EXPORT);
+        Persistence.saveOrUpdate(the_file);
         okJSON(the_response, Main.GSON.toJson(response));
       } else {
         try {
