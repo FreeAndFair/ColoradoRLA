@@ -61,7 +61,7 @@ public class PublishAuditReport extends AbstractDoSDashboardEndpoint {
    * Download all of the data relevant to public auditing of a RLA.
    */
   @Override
-  public String endpoint(final Request the_request,
+  public String endpointBody(final Request the_request,
                          final Response the_response) {
     ok(the_response, "Publish the audit report for the entire state-wide RLA.");
     return my_endpoint_result.get();

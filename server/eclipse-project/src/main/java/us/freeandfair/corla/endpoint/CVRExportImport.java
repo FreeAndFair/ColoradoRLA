@@ -384,7 +384,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
    */
   @Override
   @SuppressWarnings({"PMD.ConfusingTernary"})
-  public String endpoint(final Request the_request, final Response the_response) {    
+  public String endpointBody(final Request the_request, final Response the_response) {    
     // we know we have county authorization, so let's find out which county
     final County county = Main.authentication().authenticatedCounty(the_request);
 

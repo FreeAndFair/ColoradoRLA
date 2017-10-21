@@ -79,7 +79,7 @@ public class SelectContestsForAudit extends AbstractDoSDashboardEndpoint {
    * @param the_response The response.
    */
   @Override
-  public synchronized String endpoint(final Request the_request, 
+  public synchronized String endpointBody(final Request the_request, 
                                       final Response the_response) {
     try {
       final ContestToAudit[] contests = 

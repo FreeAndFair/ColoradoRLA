@@ -90,7 +90,7 @@ public class AuthenticateAdministrator extends AbstractEndpoint {
    * @param the_response The response.
    */
   @Override
-  public String endpoint(final Request the_request, final Response the_response) {
+  public String endpointBody(final Request the_request, final Response the_response) {
     final SubmittedCredentials credentials =
         Main.authentication().authenticationCredentials(the_request);
     if (Main.authentication().secondFactorAuthenticated(the_request) &&

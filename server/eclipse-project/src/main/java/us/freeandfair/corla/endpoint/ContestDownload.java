@@ -68,7 +68,7 @@ public class ContestDownload extends AbstractEndpoint {
    * {@inheritDoc}
    */
   @Override
-  public String endpoint(final Request the_request, final Response the_response) {
+  public String endpointBody(final Request the_request, final Response the_response) {
     // only return contests for counties that have finished their uploads
     final Set<County> county_set = new HashSet<>();
     for (final CountyDashboard cdb : Persistence.getAll(CountyDashboard.class)) {

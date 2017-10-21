@@ -91,7 +91,7 @@ public class FileDownload extends AbstractEndpoint {
    * {@inheritDoc}
    */
   @Override
-  public String endpoint(final Request the_request, final Response the_response) {
+  public String endpointBody(final Request the_request, final Response the_response) {
     // we know we have either state or county authentication; this will be null
     // for state authentication
     final County county = Main.authentication().authenticatedCounty(the_request);

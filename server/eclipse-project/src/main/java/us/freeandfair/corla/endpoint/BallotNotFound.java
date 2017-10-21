@@ -99,7 +99,7 @@ public class BallotNotFound extends AbstractAuditBoardDashboardEndpoint {
   // badDataContents() (which ends the method's execution) would get called first
   @SuppressFBWarnings("NP_NULL_ON_SOME_PATH")
   @SuppressWarnings("PMD.NPathComplexity")
-  public String endpoint(final Request the_request, final Response the_response) {
+  public String endpointBody(final Request the_request, final Response the_response) {
     // we must be authenticated as a county
     final County county = Main.authentication().authenticatedCounty(the_request);
     if (county == null) {

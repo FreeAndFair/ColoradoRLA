@@ -80,7 +80,7 @@ public class StateReportDownload extends AbstractEndpoint {
   @Override
   // necessary to break out of the lambda expression in case of IOException
   @SuppressWarnings("PMD.ExceptionAsFlowControl")
-  public String endpoint(final Request the_request, final Response the_response) {
+  public String endpointBody(final Request the_request, final Response the_response) {
     // if we haven't defined the election, this is "data not found"
     final DoSDashboardASM dos_asm = ASMUtilities.asmFor(DoSDashboardASM.class, 
                                                         DoSDashboardASM.IDENTITY);
