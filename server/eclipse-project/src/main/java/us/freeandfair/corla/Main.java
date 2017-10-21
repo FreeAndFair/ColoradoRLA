@@ -171,7 +171,7 @@ public final class Main {
       final Model model = reader.read(isr);
       version = model.getVersion();
     } catch (final IOException | XmlPullParserException e) {
-      // version is already set to "UNKNOWN"
+      LOGGER.info("could not obtain version number: " + e);
     }
     VERSION = version;
   }
