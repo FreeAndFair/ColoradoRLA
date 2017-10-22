@@ -79,6 +79,19 @@ parser.add_argument('--test',
 __doc__ = __doc__.replace("%InsertOptionParserUsage%\n", parser.format_help())
 
 
+def check_or_create_dir(path):
+    """Check whether path exists, and create directory there if necessary
+    Props to A-B-B and discussion at
+      https://stackoverflow.com/a/14364249/507544
+    """
+
+    try:
+        os.makedirs(path)
+    except OSError:
+        if not os.path.isdir(path):
+            raise
+
+
 class Dotable(dict):
     """Make nested python dictionaries (json-like objects) accessable using dot notation.
 
@@ -249,11 +262,11 @@ def download_file(session, baseurl, file_id, filename):
         logging.error("download_file for file_id %d: %s" % (file_id, e))
 
 
-def pull_endpoints(args, cp):
+def pull_endpoints(args, ac):
     "Pull and save several reports from RLA Tool endpoints"
 
     # TODO: pick this up from a config file
-    baseurl = args.url or 'http://localhost:' + cp.get('p', 'http_port', '8888')
+    baseurl = args.url or 'http://localhost:' + ac.cp.get('p', 'http_port', '8888')
     ac.corla_auth = {'url': baseurl, 'username': 'stateadmin1', 'password': ''}
 
     with state_login(**ac.corla_auth) as session:
@@ -264,11 +277,8 @@ def pull_endpoints(args, cp):
 
         dos_dashboard = Dotable(r.json())
 
-        # Comment this out until https://github.com/FreeAndFair/ColoradoRLA/issues/836 is resolved
-        # Otherwise this can tie up the database and prevent other work from progressing
-
-        # r = download_content(session, baseurl, 'state-report',
-        #                     os.path.join(args.export_dir, 'state_report.xlsx'))
+        r = download_content(session, baseurl, 'state-report',
+                            os.path.join(args.export_dir, 'state_report.xlsx'))
 
         for county_status in dos_dashboard.county_status.values():
             county_id = county_status.id
@@ -312,19 +322,25 @@ def main():
         _test()
         sys.exit(0)
 
+    try:
+        check_or_create_dir(args.export_dir)
+    except OSError as e:
+        logging.error("rla_export: Can't save exports in export-dir, aborting:\n %s", e)
+        sys.exit(1)
+
     # Establish a context for passing state around
     ac = Namespace()
 
     # Parse properties file
-    cp = ConfigParser.SafeConfigParser()
-    cp.readfp(FakeSecHead(open(args.properties)))
+    ac.cp = ConfigParser.SafeConfigParser()
+    ac.cp.readfp(FakeSecHead(open(args.properties)))
 
     # Note: in ColoradoRLA, the url property is used to specify the host and port,
     # but not user and password
 
-    url = cp.get('p', 'hibernate.url')
-    user = cp.get('p', 'hibernate.user')
-    password = cp.get('p', 'hibernate.pass')
+    url = ac.cp.get('p', 'hibernate.url')
+    user = ac.cp.get('p', 'hibernate.user')
+    password = ac.cp.get('p', 'hibernate.pass')
 
     # Remove hibernate-specific query strings and nonstandard 'scheme' value
     pgurl = re.sub(r'\?.*', '', url.replace('jdbc:postgresql', 'postgresql'))
@@ -345,7 +361,7 @@ def main():
         logging.debug('sql_dir = %s, path=%s' % (sql_dir, SQL_PATH))
         queryfiles = [filename for filename in glob.glob(sql_dir + "/*.sql")]
 
-        pull_endpoints(args, cp)
+        pull_endpoints(args, ac)
 
     for queryfile in queryfiles:
         logging.info("Exporting json and csv for query in %s" % queryfile)

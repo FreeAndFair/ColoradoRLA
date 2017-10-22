@@ -27,7 +27,7 @@ cp $jar $reldir/corla-server.jar
 
 cp ../deploy/corla.conf $reldir
 
-echo 'Checkout an alternate branch now if desired'
+echo 'Checkout an alternate branch now if desired. Hit return when ready.'
 read
 echo Proceeding
 
