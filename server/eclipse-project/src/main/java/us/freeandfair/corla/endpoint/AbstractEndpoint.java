@@ -23,6 +23,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Level;
 import org.eclipse.jetty.http.HttpStatus;
 
+import spark.HaltException;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
@@ -442,15 +443,19 @@ public abstract class AbstractEndpoint implements Endpoint {
    * @param the_response The response.
    * @return the result of the endpoint execution.
    */
-  // catching generic exception is necessary because that's how we can keep the
-  // server running as best it can, and log the unhandled exception, without killing
-  // a Spark thread and hanging a database transaction
-  @SuppressWarnings("PMD.AvoidCatchingGenericException")
+  // these exception warnings are suppressed because this method is, exactly,
+  // attempting to suppress and log all non-Error exceptions other than 
+  // HaltException
+  @SuppressWarnings({"PMD.AvoidCatchingGenericException", "PMD.AvoidRethrowingException"})
   public final String endpoint(final Request the_request, final Response the_response) {
     String result = null;
     
     try {
       result = endpointBody(the_request, the_response);
+    } catch (final HaltException e) {
+      // a HaltException should just be propagated, as that is an expected exception
+      // that is properly dealt with by Spark
+      throw e;
     } catch (final Exception e) {
       // some exception occurred that was not handled within the endpoint, so
       // handle it as a generic server error and log the stack trace
