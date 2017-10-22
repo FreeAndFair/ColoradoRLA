@@ -249,7 +249,7 @@ def download_file(session, baseurl, file_id, filename):
         logging.error("download_file for file_id %d: %s" % (file_id, e))
 
 
-def pull_endpoints(args):
+def pull_endpoints(args, cp):
     "Pull and save several reports from RLA Tool endpoints"
 
     # TODO: pick this up from a config file
@@ -345,7 +345,7 @@ def main():
         logging.debug('sql_dir = %s, path=%s' % (sql_dir, SQL_PATH))
         queryfiles = [filename for filename in glob.glob(sql_dir + "/*.sql")]
 
-        pull_endpoints(args)
+        pull_endpoints(args, cp)
 
     for queryfile in queryfiles:
         logging.info("Exporting json and csv for query in %s" % queryfile)
