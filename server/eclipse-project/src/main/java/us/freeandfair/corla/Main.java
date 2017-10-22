@@ -15,6 +15,7 @@ import static spark.Spark.*;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -164,14 +165,30 @@ public final class Main {
   // Version Initializer
   
   static {
+    final String pom_location =
+        "/META-INF/maven/us.freeandfair.production/colorado_rla/pom.xml";
+    final File pom = new File("pom.xml");
     String version = "UNKNOWN";
-    try (InputStreamReader isr = 
-         new InputStreamReader(new FileInputStream("pom.xml"), "UTF-8")) {
-      final MavenXpp3Reader reader = new MavenXpp3Reader();
-      final Model model = reader.read(isr);
-      version = model.getVersion();
-    } catch (final IOException | XmlPullParserException e) {
-      LOGGER.info("could not obtain version number: " + e);
+    InputStream pom_stream = null;
+    
+    if (pom.exists()) {
+      try {
+        pom_stream = new FileInputStream(pom);
+      } catch (final FileNotFoundException e) {
+        // this can't happen because we tested that the file existed
+      }
+    } else {
+      pom_stream = Main.class.getResourceAsStream(pom_location);
+    }
+    
+    if (pom_stream != null) {
+      try (InputStreamReader isr = new InputStreamReader(pom_stream, "UTF-8")) {
+        final MavenXpp3Reader reader = new MavenXpp3Reader();
+        final Model model = reader.read(isr);
+        version = model.getVersion();
+      } catch (final IOException | XmlPullParserException e) {
+        LOGGER.info("could not obtain version number: " + e);
+      }
     }
     VERSION = version;
   }
