@@ -35,7 +35,7 @@ export const defaultCountyState = (): County.AppState => ({
     type: 'County',
 });
 
-const defaultDosState = (): DOS.AppState => ({
+export const defaultDOSState = (): DOS.AppState => ({
     asm: { currentState: 'DOS_INITIAL_STATE' },
     auditedContests: {},
     countyStatus: {},
