@@ -560,7 +560,8 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
           try {
             final long delay = 
                 ExponentialBackoffHelper.exponentialBackoff(retries, TRANSACTION_SLEEP_MSEC);
-            Main.LOGGER.info("retrying DoS dashboard update in " + delay + "ms");
+            Main.LOGGER.info("retrying DoS dashboard update for county " + the_county.id() + 
+                             IN + delay + "ms");
             Thread.sleep(delay);
           } catch (final InterruptedException ex) {
             // it's OK to be interrupted
@@ -629,7 +630,8 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
           try {
             final long delay = 
                 ExponentialBackoffHelper.exponentialBackoff(retries, TRANSACTION_SLEEP_MSEC);
-            Main.LOGGER.info("retrying DoS dashboard update in " + delay + "ms");
+            Main.LOGGER.info("retrying DoS dashboard update for county " + the_county.id() + 
+                             IN + delay + "ms");
             Thread.sleep(delay);
           } catch (final InterruptedException ex) {
             // it's OK to be interrupted
