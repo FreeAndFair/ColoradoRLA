@@ -7,25 +7,27 @@ import { isCountyAppState } from 'corla/type';
 
 
 interface RootRedirectContainerProps {
-    dashboard: Dashboard;
+    stateType: AppStateType;
 }
 
 export class RootRedirectContainer extends React.Component<RootRedirectContainerProps> {
     public render() {
-        const { dashboard } = this.props;
+        const { stateType } = this.props;
 
-        if (dashboard === 'DOS') {
+        if (stateType === 'County') {
+            return <Redirect to='/county' />;
+        }
+
+        if (stateType === 'DOS') {
             return <Redirect to='/sos' />;
         }
 
-        return <Redirect to='/county' />;
+        return <Redirect to='/login' />;
     }
 }
 
 function select(state: AppState) {
-    const dashboard = isCountyAppState(state) ? 'County' : 'DOS';
-
-    return { dashboard };
+    return { stateType: state.type };
 }
 
 

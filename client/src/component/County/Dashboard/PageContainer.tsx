@@ -3,6 +3,7 @@ import * as React from 'react';
 import { History } from 'history';
 
 import withPoll from 'corla/component/withPoll';
+import withState from 'corla/component/withState';
 
 import counties from 'corla/data/counties';
 
@@ -95,11 +96,11 @@ function select(countyState: County.AppState) {
         currentRoundNumber: currentRoundNumberSelector(countyState),
         missedDeadline: missedDeadlineSelector(countyState),
     };
-};
+}
 
-export default withPoll(
+export default withState('County', withPoll(
     CountyDashboardContainer,
     'COUNTY_DASHBOARD_POLL_START',
     'COUNTY_DASHBOARD_POLL_STOP',
     select,
-);
+));
