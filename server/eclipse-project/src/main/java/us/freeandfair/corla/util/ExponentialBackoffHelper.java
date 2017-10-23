@@ -41,7 +41,7 @@ public final class ExponentialBackoffHelper {
     if (Double.isNaN(exponentiated)) {
       multiplier = 1;
     } else {
-      final long max_delay_factor = Math.min(1, Math.round(exponentiated));
+      final long max_delay_factor = Math.max(1, Math.round(exponentiated));
       multiplier = ThreadLocalRandom.current().nextLong(max_delay_factor) + 1;
     }
     
