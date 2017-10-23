@@ -18,8 +18,8 @@ interface PageProps {
     canRenderReport: boolean;
     canSignIn: boolean;
     contests: County.ContestDefs;
-    county: County.AppState;
     countyInfo: CountyInfo;
+    countyState: County.AppState;
     currentRoundNumber: number;
     startAudit: OnClick;
 }
@@ -34,8 +34,8 @@ const CountyDashboardPage = (props: PageProps) => {
         canRenderReport,
         canSignIn,
         contests,
-        county,
         countyInfo,
+        countyState,
         currentRoundNumber,
         startAudit,
     } = props;
@@ -53,7 +53,7 @@ const CountyDashboardPage = (props: PageProps) => {
                           auditBoardSignedIn={ auditBoardSignedIn }
                           boardSignIn={ boardSignIn }
                           canRenderReport={ canRenderReport }
-                          county={ county }
+                          countyState={ countyState }
                           currentRoundNumber={ currentRoundNumber }
                           auditButtonDisabled={ auditButtonDisabled }
                           name={ countyInfo.name }
@@ -61,7 +61,7 @@ const CountyDashboardPage = (props: PageProps) => {
                           startAudit={ startAudit } />
                     <Info info={ countyInfo }
                           contests={ contests }
-                          county={ county }
+                          countyState={ countyState }
                           currentRoundNumber={ currentRoundNumber }/>
                 </div>
             </div>

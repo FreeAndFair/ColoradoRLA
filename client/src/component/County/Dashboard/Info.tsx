@@ -73,22 +73,27 @@ const ContestInfo = (props: ContestInfoProps) => {
 };
 
 interface CountyInfoProps {
-    county: County.AppState;
+    countyState: County.AppState;
     currentRoundNumber: number;
     info: CountyInfo;
 }
 
 const CountyInfo = (props: CountyInfoProps) => {
-    const { county, currentRoundNumber, info } = props;
+    const { countyState, currentRoundNumber, info } = props;
+
+    const currentState: County.ASMState = _.get(countyState, 'asm.countyState.currentState');
+    const status = currentState
+                 ? formatCountyAsmState(currentState)
+                 : '';
 
     const rows = [
         ['County:', info.name],
-        ['Status:', formatCountyAsmState(county.asm.county.currentState)],
+        ['Status:', status],
         ['Current Round:', currentRoundNumber],
-        ['Ballot cards remaining in round:', county.ballotsRemainingInRound],
-        ['Ballot cards audited (all rounds):', county.auditedBallotCount],
-        ['Disagreements (all rounds):', county.disagreementCount],
-        ['Discrepancies (all rounds):', county.discrepancyCount],
+        ['Ballot cards remaining in round:', countyState.ballotsRemainingInRound],
+        ['Ballot cards audited (all rounds):', countyState.auditedBallotCount],
+        ['Disagreements (all rounds):', countyState.disagreementCount],
+        ['Discrepancies (all rounds):', countyState.discrepancyCount],
     ].map(([k, v]) => (
         <tr key={ k }>
             <td><strong>{ k }</strong></td>
@@ -112,16 +117,16 @@ const CountyInfo = (props: CountyInfoProps) => {
 interface InfoProps {
     info: CountyInfo;
     contests: County.ContestDefs;
-    county: County.AppState;
+    countyState: County.AppState;
     currentRoundNumber: number;
 }
 
 const Info = (props: InfoProps) => {
-    const { info, contests, county, currentRoundNumber } = props;
+    const { info, contests, countyState, currentRoundNumber } = props;
 
     return (
         <div className='info pt-card'>
-            <CountyInfo county={ county }
+            <CountyInfo countyState={ countyState }
                         info={ info }
                         currentRoundNumber={ currentRoundNumber } />
             <ContestInfo contests={ contests } />

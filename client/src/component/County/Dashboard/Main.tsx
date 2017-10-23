@@ -35,7 +35,7 @@ interface MainProps {
     auditStarted: boolean;
     boardSignIn: OnClick;
     canRenderReport: boolean;
-    county: County.AppState;
+    countyState: County.AppState;
     currentRoundNumber: number;
     name: string;
     signInButtonDisabled: boolean;
@@ -50,7 +50,7 @@ const Main = (props: MainProps) => {
         auditStarted,
         boardSignIn,
         canRenderReport,
-        county,
+        countyState,
         currentRoundNumber,
         name,
         signInButtonDisabled,
@@ -84,7 +84,7 @@ const Main = (props: MainProps) => {
                               : <FileUploadContainer />;
 
     const fileDownloadButtons = auditStarted
-                              ? <FileDownloadButtons status={ county } />
+                              ? <FileDownloadButtons status={ countyState } />
                               : <div />;
 
     const reportType = auditComplete

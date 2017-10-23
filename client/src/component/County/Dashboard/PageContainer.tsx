@@ -31,7 +31,7 @@ interface DashboardProps {
     canRenderReport: boolean;
     canSignIn: boolean;
     contests: County.ContestDefs;
-    county: County.AppState;
+    countyState: County.AppState;
     currentRoundNumber: number;
     history: History;
     missedDeadline: boolean;
@@ -45,12 +45,12 @@ class CountyDashboardContainer extends React.Component<DashboardProps> {
             canAudit,
             canRenderReport,
             canSignIn,
-            county,
+            countyState,
             history,
             missedDeadline,
         } = this.props;
 
-        if (!county) {
+        if (!countyState) {
             return <div />;
         }
 
@@ -58,7 +58,7 @@ class CountyDashboardContainer extends React.Component<DashboardProps> {
             return <MissedDeadlinePage />;
         }
 
-        const countyInfo = county.id ? counties[county.id] : {};
+        const countyInfo = countyState.id ? counties[countyState.id] : {};
         const boardSignIn = () => history.push('/county/board');
         const startAudit = () => history.push('/county/audit');
 
@@ -79,7 +79,7 @@ class CountyDashboardContainer extends React.Component<DashboardProps> {
     }
 }
 
-const select = (countyState: County.AppState) => {
+function select(countyState: County.AppState) {
     const { contestDefs } = countyState;
 
     return {
