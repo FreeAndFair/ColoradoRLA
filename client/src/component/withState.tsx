@@ -14,8 +14,10 @@ function withState(
 ) {
     class Wrapper extends React.Component<WrapperProps> {
         public render() {
-            if (this.props.hasState) {
-                return <Wrapped />;
+            const { hasState, ...rest } = this.props;
+
+            if (hasState) {
+                return <Wrapped { ...rest } />;
             }
 
             return <Redirect to='/login' />;
