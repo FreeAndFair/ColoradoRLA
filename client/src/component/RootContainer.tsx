@@ -46,32 +46,47 @@ export class RootContainer extends React.Component<RootContainerProps> {
             <Provider store={ store }>
                 <Router>
                     <Switch>
-                        <Route exact path='/login' component={ NextLoginContainer } />
-                        <LoginRoute path='/'
+                        <Route exact
+                               path='/login'
+                               component={ NextLoginContainer } />
+                        <LoginRoute exact
+                                    path='/'
                                     page={ RootRedirectContainer } />
-                        <LoginRoute path='/county'
+                        <LoginRoute exact
+                                    path='/county'
                                     page={ CountyDashboardPageContainer } />
-                        <LoginRoute path='/county/board'
+                        <LoginRoute exact
+                                    path='/county/board'
                                     page={ AuditBoardPageContainer } />
-                        <LoginRoute path='/county/audit'
+                        <LoginRoute exact
+                                    path='/county/audit'
                                     page={ CountyAuditPageContainer } />
-                        <LoginRoute path='/sos'
+                        <LoginRoute exact
+                                    path='/sos'
                                     page={ DOSDashboardContainer } />
-                        <LoginRoute path='/sos/audit'
+                        <LoginRoute exact
+                                    path='/sos/audit'
                                     page={ DOSDefineAuditStartPageContainer } />
-                        <LoginRoute path='/sos/audit/seed'
+                        <LoginRoute exact
+                                    path='/sos/audit/seed'
                                     page={ DOSDefineAuditSeedPageContainer } />
-                        <LoginRoute path='/sos/audit/select-contests'
+                        <LoginRoute exact
+                                    path='/sos/audit/select-contests'
                                     page={ DOSDefineAduitSelectContestsPageContainer } />
-                        <LoginRoute path='/sos/audit/review'
+                        <LoginRoute exact
+                                    path='/sos/audit/review'
                                     page={ DOSDefineAuditReviewPageContainer } />
-                        <LoginRoute path='/sos/contest'
+                        <LoginRoute exact
+                                    path='/sos/contest'
                                     page={ DOSContestOverviewPageContainer } />
-                        <LoginRoute path='/sos/contest/:contestId'
+                        <LoginRoute exact
+                                    path='/sos/contest/:contestId'
                                     page={ DOSContestDetailPageContainer } />
-                        <LoginRoute path='/sos/county'
+                        <LoginRoute exact
+                                    path='/sos/county'
                                     page={ DOSCountyOverviewPageContainer } />
-                        <LoginRoute path='/sos/county/:countyId'
+                        <LoginRoute exact
+                                    path='/sos/county/:countyId'
                                     page={ DOSCountyDetailPageContainer } />
                     </Switch>
                 </Router>
