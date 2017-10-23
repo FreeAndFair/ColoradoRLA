@@ -206,7 +206,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
     /**
      * The number of milliseconds to sleep between transaction retries.
      */
-    private static final long TRANSACTION_SLEEP_MSEC = 1000;
+    private static final long TRANSACTION_SLEEP_MSEC = 10;
     
     /**
      * The " (id " string.
