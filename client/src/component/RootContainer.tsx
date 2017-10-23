@@ -38,41 +38,7 @@ export interface RootContainerProps {
     store: Store<AppState>;
 }
 
-type RouteDef = [string, React.ComponentClass];
-
-const makeRoute = (store: Store<AppState>) => (def: RouteDef) => {
-    const [path, Page] = def;
-
-    return (
-        <LoginRoute
-            exact
-            key={ path }
-            path={ path }
-            page={ Page }
-        />
-    );
-};
-
-const routes: RouteDef[] = [
-    ['/', RootRedirectContainer],
-    ['/county', CountyDashboardPageContainer],
-    ['/county/board', AuditBoardPageContainer],
-    ['/county/audit', CountyAuditPageContainer],
-    ['/help', HelpRootContainer],
-    ['/help/glossary', GlossaryContainer],
-    ['/help/manual', ManualContainer],
-    ['/sos', DOSDashboardContainer],
-    ['/sos/audit', DOSDefineAuditStartPageContainer],
-    ['/sos/audit/seed', DOSDefineAuditSeedPageContainer],
-    ['/sos/audit/select-contests', DOSDefineAduitSelectContestsPageContainer],
-    ['/sos/audit/review', DOSDefineAuditReviewPageContainer],
-    ['/sos/contest', DOSContestOverviewPageContainer],
-    ['/sos/contest/:contestId', DOSContestDetailPageContainer],
-    ['/sos/county', DOSCountyOverviewPageContainer],
-    ['/sos/county/:countyId', DOSCountyDetailPageContainer],
-];
-
-export class RootContainer extends React.Component<RootContainerProps, void> {
+export class RootContainer extends React.Component<RootContainerProps> {
     public render() {
         const { store } = this.props;
 
@@ -81,7 +47,32 @@ export class RootContainer extends React.Component<RootContainerProps, void> {
                 <Router>
                     <Switch>
                         <Route exact path='/login' component={ NextLoginContainer } />
-                        { routes.map(makeRoute(store)) }
+                        <LoginRoute path='/'
+                                    page={ RootRedirectContainer } />
+                        <LoginRoute path='/county'
+                                    page={ CountyDashboardPageContainer } />
+                        <LoginRoute path='/county/board'
+                                    page={ AuditBoardPageContainer } />
+                        <LoginRoute path='/county/audit'
+                                    page={ CountyAuditPageContainer } />
+                        <LoginRoute path='/sos'
+                                    page={ DOSDashboardContainer } />
+                        <LoginRoute path='/sos/audit'
+                                    page={ DOSDefineAuditStartPageContainer } />
+                        <LoginRoute path='/sos/audit/seed'
+                                    page={ DOSDefineAuditSeedPageContainer } />
+                        <LoginRoute path='/sos/audit/select-contests'
+                                    page={ DOSDefineAduitSelectContestsPageContainer } />
+                        <LoginRoute path='/sos/audit/review'
+                                    page={ DOSDefineAuditReviewPageContainer } />
+                        <LoginRoute path='/sos/contest'
+                                    page={ DOSContestOverviewPageContainer } />
+                        <LoginRoute path='/sos/contest/:contestId'
+                                    page={ DOSContestDetailPageContainer } />
+                        <LoginRoute path='/sos/county'
+                                    page={ DOSCountyOverviewPageContainer } />
+                        <LoginRoute path='/sos/county/:countyId'
+                                    page={ DOSCountyDetailPageContainer } />
                     </Switch>
                 </Router>
             </Provider>
