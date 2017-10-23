@@ -68,7 +68,7 @@ public class DominionCVRExportParser implements CVRExportParser {
   /**
    * The number of times to retry a county dashboard update operation.
    */
-  private static final int UPDATE_RETRIES = 10;
+  private static final int UPDATE_RETRIES = 15;
   
   /**
    * The number of milliseconds to sleep between transaction retries.

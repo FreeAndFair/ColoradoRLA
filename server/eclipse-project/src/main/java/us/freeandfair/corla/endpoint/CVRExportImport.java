@@ -201,7 +201,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
     /**
      * The number of times to retry a DoS dashboard update operation.
      */
-    private static final int UPDATE_RETRIES = 10;
+    private static final int UPDATE_RETRIES = 15;
     
     /**
      * The number of milliseconds to sleep between transaction retries.
@@ -237,17 +237,16 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
         try {
           parseFile(my_file);
           updateStateMachine(true);
-        } catch (final PersistenceException e) {
-          // the transaction failed, so clean up
+          Persistence.commitTransaction();
+          Main.LOGGER.info("CVR import complete for county " + my_file.county().id());
+        } catch (final PersistenceException | CVRImportException e) {
+          // the import failed, so clean up
+          Main.LOGGER.error("CVR import failed for county " + my_file.county().id() + ": " + 
+              ExceptionUtils.getStackTrace(e));
           cleanup(my_file.county(), true);
           updateStateMachine(false);
-        } catch (final CVRImportException e) {
-          Main.LOGGER.error("CVR import for county " + my_file.county().id() + 
-                            " failed: " + e.getMessage());
-          updateStateMachine(false);
-        }
-        Persistence.commitTransaction();
-        Main.LOGGER.info("CVR import complete for county " + my_file.county().id());
+          Persistence.commitTransaction();
+        } 
       } catch (final PersistenceException | CVRImportException e) {
         // at this point, either a cleanup failed or a state machine update failed,
         // so log it and say there's nothing we can do
@@ -575,7 +574,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
                          " CVR reset in " + retries + TRIES);
       } else if (!success) {
         error("could not update DoS dashboard for county " + the_county.id() + 
-              " CVR reset after " + (retries - 1) + TRIES);
+              " CVR reset after " + retries + TRIES);
       }
       return result;
     }
