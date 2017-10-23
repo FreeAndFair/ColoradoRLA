@@ -38,6 +38,11 @@ crtest -e '/dos-dashboard'
 # Get csv file with ballot cards to be audited, random sequence numbers
 crtest -E '/cvr-to-audit-download?start=0&ballot_count=9&include_duplicates'
 
+# Get estimate for given counties of how many CVRs have been read in vs total record_count
+# 'cvr_export_count' is an estimate of the total processed so far, and
+# 'approximate_record_count' is an estimate of the total count in the uploaded file.
+crtest -c 1 -c 3 -E '/county-dashboard' | egrep '"id"|filename|cvr_export_count|approximate_record_count'
+
 # Check whether the /cvr-to-audit responses match the other lists, and also remove audited ballots
 
 crtest reset dos_init county_setup dos_start
@@ -151,7 +156,6 @@ import logging
 import hashlib
 
 import requests
-import sampler
 
 
 __author__ = "Neal McBurnett <http://neal.mcburnett.org/>"
@@ -221,6 +225,9 @@ parser.add_argument('-S, --check-audit-size', type=bool, dest='check_audit_size'
 parser.add_argument('-T, --time-delay', type=float, dest='time_delay', default=0.0,
                     help='Maximum time to pause before network requests. Default 0.0. '
                     'Actual pauses will be uniformly distributed between 0 and the maximum')
+parser.add_argument('-L, --lower-time-delay', type=float, dest='lower_time_delay', default=0.0,
+                    help='Minimum time to pause before network requests. Default 0.0. '
+                    'Actual pauses will be uniformly distributed between this and the maximum')
 
 # TODO: get rid of this and associated old code when /upload-cvr-export and /upload-cvr-export go away
 parser.add_argument('-Y, --ye-olde-upload', type=bool, dest='ye_olde_upload',
@@ -243,6 +250,7 @@ class Pause(object):
     Just set Pause.max_pause directly when you want the default to change"
     """
 
+    min_pause = 0.0
     max_pause = 0.0
 
     @classmethod
@@ -251,7 +259,7 @@ class Pause(object):
         between 0.0 and the maximum pause configured for the class
         """
 
-        time.sleep(random.uniform(0.0, self.max_pause))
+        time.sleep(random.uniform(self.min_pause, self.max_pause))
 
 
 def requests_retry_session(retries=3, backoff_factor=2, method_whitelist=False,
@@ -358,11 +366,7 @@ def upload_file(ac, s, import_path, filename, sha256):
     import_path is either '/import-cvr-export' or '/import-ballot-manifest'
     """
 
-    # Obtain test directory, i.e. where this script is.
-    # Filenames can be absolute or relative to this directory.
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-
-    with open(os.path.join(dir_path, filename), 'rb') as f:
+    with open(filename, 'rb') as f:
         path = "/upload-file"
         payload = {'hash': sha256}
         r = s.post(ac.base + path,
@@ -379,6 +383,34 @@ def upload_file(ac, s, import_path, filename, sha256):
     if r.status_code != 200:
         print(r, "POST", import_path, r.text)
     logging.debug("%s %s %s" % (r, import_path, r.text))
+
+    if import_path == "/import-cvr-export":
+        while True:
+            # wait for the verdict on the CVR export
+            r = test_endpoint_get(ac, s, "/county-dashboard")
+            dashboard = r.json()
+            state = dashboard['asm_state']
+            imported_count = dashboard.get('cvr_export_count', None)
+            if 'cvr_export_file' in dashboard:
+                approximate_record_count = dashboard['cvr_export_file']['approximate_record_count']
+            else:
+                approximate_record_count = -1
+
+            # more efficient? Do part of the time?
+            # r = test_endpoint_get(ac, s, "/county-asm-state")
+            # state = r.json()['current_state']
+
+            if state in ["CVRS_IMPORTING", "BALLOT_MANIFEST_OK_AND_CVRS_IMPORTING"]:
+                logging.info("Received about %d of about %d CVRs",
+                             imported_count, approximate_record_count)
+                time.sleep(30)
+            else: 
+                print("CVR import complete, state: %s" % state)
+                # TODO: evaluate whether there was an error
+                #  Importing CVRs always wipes out old ones. So if you start in, e.g., CVRS_OK,
+                # and an import fails, you’ll end up in COUNTY_INITIAL_STATE.
+                # Otherwise? end up in previous state
+                break
 
 """
 TODO: clean this out when ready.
@@ -454,6 +486,8 @@ def get_cvrs(ac, s):
 def publish_ballots_to_audit(seed, cvrs):
     """Return lists by county of ballots to audit.
     """
+
+    import sampler
 
     county_ids = set(cvr['county_id'] for cvr in cvrs)
 
@@ -589,7 +623,7 @@ def reset(ac):
 
 
 def dos_init(ac):
-    'Run initial Dept of State steps: reset, risk_limit etc.'
+    'Run initial Dept of State steps: audit definition, risk_limit etc.'
 
     r = test_endpoint_json(ac, ac.state_s, "/update-audit-info",
                            { "election_type": "coordinated",
@@ -999,6 +1033,7 @@ def main():
     ac.logconsole.info("Arguments: %s" % ac.args)
 
     Pause.max_pause = ac.args.time_delay
+    Pause.min_pause = ac.args.lower_time_delay
     # Start off with a pause, since others are inserted at end of requests.
     Pause.pause_hook(None)
 
