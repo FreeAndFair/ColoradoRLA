@@ -10,12 +10,12 @@ const STARTED_STATES = [
     'AUDIT_RESULTS_PUBLISHED',
 ];
 
-function auditStarted(state: any): boolean {
-    if (!_.has(state, 'sos.asm.currentState')) {
+function auditStarted(state: DOS.AppState): boolean {
+    if (!state.asm) {
         return false;
     }
 
-    const { currentState } = state.sos.asm;
+    const { currentState } = state.asm;
 
     return _.includes(STARTED_STATES, currentState);
 }
