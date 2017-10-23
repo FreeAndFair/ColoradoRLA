@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import { History } from 'history';
 
+import withState from 'corla/component/withState';
 import withSync from 'corla/component/withSync';
 
 import counties from 'corla/data/counties';
@@ -48,7 +49,14 @@ class AuditBoardSignInContainer extends React.Component<ContainerProps> {
     }
 }
 
-function select(countyState: County.AppState) {
+interface SelectProps {
+    auditBoard: AuditBoard;
+    auditBoardSignedIn: boolean;
+    countyName: string;
+    hasAuditedAnyBallot: boolean;
+}
+
+function select(countyState: County.AppState): SelectProps {
     const countyInfo = countyInfoSelector(countyState);
     const countyName = countyInfo!.name || '';
 
@@ -61,8 +69,8 @@ function select(countyState: County.AppState) {
 }
 
 
-export default withSync(
+export default withState('County', withSync(
     AuditBoardSignInContainer,
     'COUNTY_BOARD_SIGN_IN_SYNC',
     select,
-);
+));
