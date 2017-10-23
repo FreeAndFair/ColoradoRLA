@@ -9,7 +9,7 @@ import { Menu, MenuDivider, MenuItem } from '@blueprintjs/core';
 
 class SoSNavMenu extends React.Component<any, any> {
     public render() {
-        const { currentAsmState, sos } = this.props;
+        const { currentAsmState } = this.props;
 
         const disableStates = [
             'AUDIT_READY_TO_START',
@@ -68,10 +68,11 @@ class SoSNavMenu extends React.Component<any, any> {
     }
 }
 
-const mapStateToProps = (state: any) => ({
-    currentAsmState: state.sos.asm.currentState,
-    sos: state.sos,
-});
+function select(state: DOS.AppState) {
+    return {
+        currentAsmState: state.asm.currentState,
+    };
+}
 
 
-export default connect(mapStateToProps)(SoSNavMenu);
+export default connect(select)(SoSNavMenu);
