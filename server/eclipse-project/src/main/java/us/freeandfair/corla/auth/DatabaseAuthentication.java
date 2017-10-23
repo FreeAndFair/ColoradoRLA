@@ -45,6 +45,9 @@ public final class DatabaseAuthentication extends AbstractAuthentication {
 
   /**
    * {@inheritDoc}
+   * The returned AuthenticationResult's second factor challenge is a random
+   * triple of three uppercase characters early in the alphabet, similar to
+   * that which simple code cards use.
    */
   @Override
   @SuppressWarnings({"PMD.ConsecutiveLiteralAppends", "checkstyle:magicnumber"})
