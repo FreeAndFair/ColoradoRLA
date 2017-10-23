@@ -24,7 +24,7 @@ import uploadRandomSeedOk from './dos/uploadRandomSeedOk';
 import login1FOk from './login1FOk';
 
 
-const defaultCountyState = (): County.AppState => ({
+export const defaultCountyState = (): County.AppState => ({
     acvrs: {},
     asm: {
         auditBoard: {},
