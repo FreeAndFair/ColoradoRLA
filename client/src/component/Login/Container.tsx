@@ -8,23 +8,37 @@ import session from 'corla/session';
 import LoginPage from './Page';
 
 
-type LoginProps = RouteComponentProps<void>;
+interface LoginProps extends RouteComponentProps<void> {
+    stateType: AppStateType;
+}
 
 export class LoginContainer extends React.Component<LoginProps> {
     public render() {
-        const { location } = this.props;
+        const { stateType } = this.props;
 
-        if (session.active()) {
-            const to = location.state
-                     ? location.state.from
-                     : '/';
+        const s = session.get();
 
-            return <Redirect to={ to } />;
+        if (s) {
+            const { type } = s;
+
+            if (type === 'county' && stateType === 'County') {
+                return <Redirect to='/county' />;
+            }
+
+            if (type === 'dos' && stateType === 'DOS') {
+                return <Redirect to='/sos' />;
+            }
+
+            session.expire();
         }
 
         return <LoginPage />;
     }
 }
 
+function select(state: AppState) {
+    return { stateType: state.type };
+}
 
-export default LoginContainer;
+
+export default connect(select)(LoginContainer);

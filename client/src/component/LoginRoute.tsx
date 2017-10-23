@@ -10,27 +10,28 @@ import session from 'corla/session';
 
 
 interface LoginRouteProps extends RouteProps {
-    page: React.ComponentClass,
+    page: React.ComponentClass;
 }
 
 function LoginRoute(props: LoginRouteProps) {
     const { page: Page, ...rest } = props;
 
-    function render(props: RouteComponentProps<any>) {
+    function render(innerProps: RouteComponentProps<any>) {
         if (session.active()) {
-            return <Page { ...props } />;
+            return <Page { ...innerProps } />;
         }
 
-        const from = props.location.pathname || '/';
+        const from = innerProps.location.pathname || '/';
         const to = {
             pathname: '/login',
             state: { from },
         };
-        return <Redirect to={ to } />;
-    };
 
-    return <Route exact render={ render } { ...rest } />;
-};
+        return <Redirect to={ to } />;
+    }
+
+    return <Route render={ render } { ...rest } />;
+}
 
 
 export default LoginRoute;
