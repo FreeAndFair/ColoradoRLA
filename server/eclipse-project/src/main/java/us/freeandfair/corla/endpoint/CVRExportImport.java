@@ -19,7 +19,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 
 import javax.persistence.PersistenceException;
 
@@ -54,6 +53,7 @@ import us.freeandfair.corla.model.UploadedFile.HashStatus;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CastVoteRecordQueries;
 import us.freeandfair.corla.query.CountyContestResultQueries;
+import us.freeandfair.corla.util.ExponentialBackoffHelper;
 import us.freeandfair.corla.util.UploadedFileStreamer;
 
 /**
@@ -323,7 +323,8 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
             Persistence.rollbackTransaction();
             // let's give other transactions time to breathe
             try {
-              final long delay = calculateTransactionSleep(retries);
+              final long delay = 
+                  ExponentialBackoffHelper.exponentialBackoff(retries, TRANSACTION_SLEEP_MSEC);
               Main.LOGGER.info("waiting for county state update, retrying in " + 
                                 my_file.county().id() + IN + delay + "ms");
               Thread.sleep(delay);
@@ -342,7 +343,8 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
           }
           // let's give other transactions time to breathe
           try {
-            final long delay = calculateTransactionSleep(retries);
+            final long delay = 
+                ExponentialBackoffHelper.exponentialBackoff(retries, TRANSACTION_SLEEP_MSEC);
             Main.LOGGER.info("retrying state update for county " + 
                               my_file.county().id() + IN + delay + "ms");
             Thread.sleep(delay);          
@@ -407,7 +409,8 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
           }
           // let's give other transactions time to breathe
           try {
-            final long delay = calculateTransactionSleep(retries);
+            final long delay = 
+                ExponentialBackoffHelper.exponentialBackoff(retries, TRANSACTION_SLEEP_MSEC);
             Main.LOGGER.info("retrying county " + my_file.county().id() + 
                              " dashboard update in " + delay + "ms");
             Thread.sleep(delay);         
@@ -555,7 +558,8 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
           result = 0;
           // let's give other transactions time to breathe
           try {
-            final long delay = calculateTransactionSleep(retries);
+            final long delay = 
+                ExponentialBackoffHelper.exponentialBackoff(retries, TRANSACTION_SLEEP_MSEC);
             Main.LOGGER.info("retrying DoS dashboard update in " + delay + "ms");
             Thread.sleep(delay);
           } catch (final InterruptedException ex) {
@@ -623,7 +627,8 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
           result = 0;
           // let's give other transactions time to breathe
           try {
-            final long delay = calculateTransactionSleep(retries);
+            final long delay = 
+                ExponentialBackoffHelper.exponentialBackoff(retries, TRANSACTION_SLEEP_MSEC);
             Main.LOGGER.info("retrying DoS dashboard update in " + delay + "ms");
             Thread.sleep(delay);
           } catch (final InterruptedException ex) {
@@ -641,26 +646,6 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
               " tied contests after " + (retries - 1) + TRIES);
       } 
       return result;
-    }
-    
-    /**
-     * Calculates a delay, in milliseconds, to sleep before retrying a transaction.
-     * This is done using a relatively standard exponential backoff.
-     * 
-     * @param the_retries The number of retries so far.
-     */
-    private long calculateTransactionSleep(final int the_retries) {
-      final double exponentiated = Math.pow(2,  the_retries);
-      long multiplier = 1;
-      
-      if (Double.isNaN(exponentiated)) {
-        multiplier = 1;
-      } else {
-        final long max_delay_factor = Math.min(1, Math.round(exponentiated));
-        multiplier = ThreadLocalRandom.current().nextLong(max_delay_factor) + 1;
-      }
-      
-      return multiplier * TRANSACTION_SLEEP_MSEC;
     }
   }
 }
