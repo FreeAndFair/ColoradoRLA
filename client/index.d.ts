@@ -14,6 +14,8 @@ type LoginChallengeBox = [string, string];
 
 type LoginChallenge = LoginChallengeBox[];
 
+type AppStateType = 'County' | 'DOS' | 'Login';
+
 interface LoginAppState {
     dashboard?: Dashboard;
     loginChallenge?: Option<LoginChallenge>;
