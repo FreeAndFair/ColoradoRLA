@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 
 import { Redirect } from 'react-router-dom';
 
+import { isCountyAppState } from 'corla/type';
+
 
 interface RootRedirectContainerProps {
     dashboard: Dashboard;
@@ -18,10 +20,6 @@ export class RootRedirectContainer extends React.Component<RootRedirectContainer
 
         return <Redirect to='/county' />;
     }
-}
-
-function isCountyAppState(state: AppState): state is County.AppState {
-    return state.type === 'County';
 }
 
 function select(state: AppState) {
