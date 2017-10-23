@@ -1,6 +1,6 @@
 declare namespace DOS {
     interface AppState {
-        asm?: {
+        asm: {
             currentState: DOS.ASMState;
         };
         auditedContests?: DOS.AuditedContests;
