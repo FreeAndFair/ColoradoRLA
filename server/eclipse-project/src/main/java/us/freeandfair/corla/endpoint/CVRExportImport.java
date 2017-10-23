@@ -325,8 +325,8 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
             try {
               final long delay = 
                   ExponentialBackoffHelper.exponentialBackoff(retries, TRANSACTION_SLEEP_MSEC);
-              Main.LOGGER.info("waiting for county state update, retrying in " + 
-                                my_file.county().id() + IN + delay + "ms");
+              Main.LOGGER.info("waiting for county " + my_file.county().id() + 
+                               " state update, retrying in " + delay + "ms");
               Thread.sleep(delay);
             } catch (final InterruptedException ex) {
               // it's OK to be interrupted
