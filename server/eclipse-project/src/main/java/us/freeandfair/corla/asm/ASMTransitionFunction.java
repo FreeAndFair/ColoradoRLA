@@ -142,7 +142,9 @@ public interface ASMTransitionFunction {
                         COUNTY_AUDIT_COMPLETE)),
     O(new ASMTransition(SetCreator.setOf(COUNTY_INITIAL_STATE,
                                          BALLOT_MANIFEST_OK,
-                                         CVRS_OK),
+                                         CVRS_OK,
+                                         CVRS_IMPORTING,
+                                         BALLOT_MANIFEST_OK_AND_CVRS_IMPORTING),
                         COUNTY_START_AUDIT_EVENT,
                         DEADLINE_MISSED));
 
