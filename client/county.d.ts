@@ -61,9 +61,10 @@ declare namespace County {
 
     type ASMState
         = 'COUNTY_INITIAL_STATE'
-        | 'COUNTY_AUTHENTICATED'
         | 'BALLOT_MANIFEST_OK'
+        | 'CVRS_IMPORTING'
         | 'CVRS_OK'
+        | 'BALLOT_MANIFEST_OK_AND_CVRS_IMPORTING'
         | 'BALLOT_MANIFEST_AND_CVRS_OK'
         | 'COUNTY_AUDIT_UNDERWAY'
         | 'COUNTY_AUDIT_COMPLETE'

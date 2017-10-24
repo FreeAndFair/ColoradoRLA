@@ -10,25 +10,26 @@ export function electionType(type: ElectionType): string {
     return `${capitalize(type)} Election`;
 }
 
-export function formatCountyASMState(state: County.ASMState) {
+export function formatCountyASMState(state: County.ASMState): string {
     switch (state) {
-        case 'COUNTY_INITIAL_STATE':
-            return 'Not started';
-        case 'COUNTY_AUTHENTICATED':
-            return 'Logged in';
-        case 'BALLOT_MANIFEST_OK':
-            return 'Ballot manifest uploaded';
-        case 'CVRS_OK':
-            return 'CVR export uploaded';
-        case 'BALLOT_MANIFEST_AND_CVRS_OK':
-            return 'Ballot manifest and CVR export uploaded';
-        case 'COUNTY_AUDIT_UNDERWAY':
-            return 'Audit underway';
-        case 'COUNTY_AUDIT_COMPLETE':
-            return 'Audit complete';
-        case 'DEADLINE_MISSED':
-            return 'File upload deadline missed';
-        default: return '';
+    case 'COUNTY_INITIAL_STATE':
+        return 'Not started';
+    case 'BALLOT_MANIFEST_OK':
+        return 'Ballot manifest imported';
+    case 'CVRS_IMPORTING':
+        return 'Importing CVRs';
+    case 'CVRS_OK':
+        return 'CVRs imported';
+    case 'BALLOT_MANIFEST_OK_AND_CVRS_IMPORTING':
+        return 'Ballot manifest imported, importing CVRs';
+    case 'BALLOT_MANIFEST_AND_CVRS_OK':
+        return 'Ballot manifest and CVRs imported';
+    case 'COUNTY_AUDIT_UNDERWAY':
+        return 'Audit underway';
+    case 'COUNTY_AUDIT_COMPLETE':
+        return 'Audit complete';
+    case 'DEADLINE_MISSED':
+        return 'File upload deadline missed';
     }
 }
 
@@ -37,17 +38,7 @@ export function formatCountyAndBoardASMState(
     board: AuditBoardASMState,
 ): string {
     switch (county) {
-    case 'COUNTY_INITIAL_STATE':
-        return 'Not started';
-    case 'COUNTY_AUTHENTICATED':
-        return 'Logged in';
-    case 'BALLOT_MANIFEST_OK':
-        return 'Ballot manifest uploaded';
-    case 'CVRS_OK':
-        return 'CVR export uploaded';
-    case 'BALLOT_MANIFEST_AND_CVRS_OK':
-        return 'Ballot manifest and CVR export uploaded';
-    case 'COUNTY_AUDIT_UNDERWAY':
+    case 'COUNTY_AUDIT_UNDERWAY': {
         switch (board) {
         case 'AUDIT_INITIAL_STATE':
             // Should not be reachable, given county state.
@@ -74,14 +65,12 @@ export function formatCountyAndBoardASMState(
             // Should not be reachable, given county state.
             return '—';
         default:
-            // We have branched on every case in `COUNTY_AUDIT_UNDERWAY`, but
-            // the TypeScript compiler fails to detect this, emitting a spurious
-            // error "TS7029: Fallthrough case in switch".
+            // We have branched on every audit board ASM state, but
+            // the TypeScript compiler fails to detect this, emitting
+            // a spurious error "TS7029: Fallthrough case in switch".
             return '—';
         }
-    case 'COUNTY_AUDIT_COMPLETE':
-        return 'Audit complete';
-    case 'DEADLINE_MISSED':
-        return 'File upload deadline missed';
+    }
+    default: return formatCountyASMState(county);
     }
 }
