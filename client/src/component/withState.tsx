@@ -8,9 +8,9 @@ interface WrapperProps {
     hasState: boolean;
 }
 
-function withState(
+function withState<P>(
     stateType: AppStateType,
-    Wrapped: React.ComponentClass,
+    Wrapped: React.ComponentType<P>,
 ) {
     class Wrapper extends React.Component<WrapperProps> {
         public render() {
