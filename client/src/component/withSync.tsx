@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import action from 'corla/action';
 
 
-function withPoll<P, SelectP, BindP, BindS>(
+function withSync<P, SelectP, BindP, BindS>(
     Wrapped: any,
     didMount: string,
     select: Select<SelectP>,
@@ -31,4 +31,4 @@ function withPoll<P, SelectP, BindP, BindS>(
 }
 
 
-export default withPoll;
+export default withSync;
