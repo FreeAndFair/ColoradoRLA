@@ -25,8 +25,8 @@ declare namespace JSON {
         consensus: string;
     }
 
-    interface Acvr {
-        audit_cvr: JSON.Cvr;
+    interface ACVR {
+        audit_cvr: JSON.CVR;
         cvr_id: number;
     }
 
@@ -74,7 +74,7 @@ declare namespace JSON {
         description: string;
     }
 
-    interface Cvr {
+    interface CVR {
         audited?: boolean;
         ballot_type: string;
         batch_id: number;
@@ -107,7 +107,7 @@ declare namespace JSON {
 
     type UploadBallotManifestOk = JSON.UploadFileOk;
 
-    type UploadCvrExportOk = JSON.UploadFileOk;
+    type UploadCVRExportOk = JSON.UploadFileOk;
 
     interface FetchCountyASMStateOk {
         current_state: County.ASMState;

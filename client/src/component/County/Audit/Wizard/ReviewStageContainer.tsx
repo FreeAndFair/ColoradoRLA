@@ -8,8 +8,8 @@ import uploadAcvr from 'corla/action/county/uploadAcvr';
 
 interface ContainerProps {
     countyState: County.AppState;
-    currentBallot: Cvr;
-    marks: County.Acvr;
+    currentBallot: CVR;
+    marks: County.ACVR;
     nextStage: OnClick;
     prevStage: OnClick;
 }

@@ -5,7 +5,7 @@ export default function uploadingCvrExport(
     const nextState = { ...state };
 
     const { uploading } = action.data;
-    nextState.uploadingCvrExport = uploading;
+    nextState.uploadingCVRExport = uploading;
 
     return nextState;
 }

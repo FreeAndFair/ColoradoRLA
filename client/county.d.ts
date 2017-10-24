@@ -1,6 +1,6 @@
 declare namespace County {
     interface AppState {
-        acvrs?: Acvrs;
+        acvrs?: ACVRs;
         asm: ASMStates;
         auditBoard: AuditBoard;
         auditedBallotCount?: number;
@@ -11,13 +11,13 @@ declare namespace County {
         contests?: Contest[];
         contestDefs?: ContestDefs;
         contestsUnderAudit?: Contest[];
-        currentBallot?: Cvr;
+        currentBallot?: CVR;
         currentRound?: Option<Round>;
         cvrExport?: UploadedFile;
         cvrExportCount?: number;
         cvrExportHash?: string;
-        cvrImportStatus: CvrImportStatus;
-        cvrsToAudit?: JSON.Cvr[];  // Sic
+        cvrImportStatus: CVRImportStatus;
+        cvrsToAudit?: JSON.CVR[];  // Sic
         disagreementCount?: number;
         discrepancyCount?: number;
         election?: Election;
@@ -29,7 +29,7 @@ declare namespace County {
         rounds: Round[];
         type: 'County';
         uploadingBallotManifest?: boolean;
-        uploadingCvrExport?: boolean;
+        uploadingCVRExport?: boolean;
     }
 
     interface ASMStates {
@@ -37,21 +37,21 @@ declare namespace County {
         county: ASMState;
     }
 
-    interface Acvrs {
-        [cvrId: number]: Acvr;
+    interface ACVRs {
+        [cvrId: number]: ACVR;
     }
 
-    interface Acvr {
-        [contestId: number]: AcvrContest;
+    interface ACVR {
+        [contestId: number]: ACVRContest;
     }
 
-    interface AcvrContest {
-        choices: AcvrChoices;
+    interface ACVRContest {
+        choices: ACVRChoices;
         comments: string;
         noConsensus: boolean;
     }
 
-    interface AcvrChoices {
+    interface ACVRChoices {
         [contestChoice: string]: boolean;
     }
 
