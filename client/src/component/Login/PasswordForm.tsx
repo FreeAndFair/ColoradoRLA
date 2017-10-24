@@ -33,7 +33,7 @@ export default class PasswordForm extends React.Component<{}, FormState> {
         return (
             <div>
                 <label className='pt-label'>
-                    Email
+                    User ID
                     <input className='pt-input username'
                            type='text'
                            onChange={ this.onEmailChange }
