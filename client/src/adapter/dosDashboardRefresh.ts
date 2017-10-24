@@ -66,7 +66,7 @@ function parseCountyStatus(countyStatus: any) {
         result[c.id] = {
             asmState: c.asm_state,
             auditBoard: parseAuditBoard(c.audit_board),
-            auditBoardAsmState: c.audit_board_asm_state,
+            auditBoardASMState: c.audit_board_asm_state,
             auditedBallotCount: c.audited_ballot_count,
             ballotManifest: parseFile(c.ballot_manifest_file),
             ballotsRemainingInRound: c.ballots_remaining_in_round,
@@ -129,7 +129,7 @@ function parseRiskLimit(data: any): Option<number> {
     return info.risk_limit;
 }
 
-function parseAsmState(data: any): any {
+function parseASMState(data: any): any {
     return { currentState: data.asm_state };
 }
 
@@ -157,7 +157,7 @@ function parseAuditBoard(data: any): any {
 
 export function parse(data: any) {
     return {
-        asm: parseAsmState(data),
+        asm: parseASMState(data),
         auditReasons: data.audit_reasons,
         auditTypes: data.audit_types,
         auditedContests: parseAuditedContests(data.audited_contests),

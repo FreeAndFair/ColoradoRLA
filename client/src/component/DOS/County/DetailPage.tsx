@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import * as _ from 'lodash';
 
-import { formatCountyAsmState } from 'corla/format';
+import { formatCountyASMState } from 'corla/format';
 
 import FileDownloadButtons from 'corla/component/FileDownloadButtons';
 
@@ -89,7 +89,7 @@ const CountyDetails = (props: DetailsProps) => {
     const { county, status } = props;
     const { auditBoard } = status;
 
-    const countyState = formatCountyAsmState(status.asmState);
+    const countyState = formatCountyASMState(status.asmState);
     const submitted = status.auditedBallotCount;
 
     const auditedCount = _.get(status, 'discrepancyCount.audited') || '—';

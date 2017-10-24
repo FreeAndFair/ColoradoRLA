@@ -9,7 +9,7 @@ import { Menu, MenuDivider, MenuItem } from '@blueprintjs/core';
 
 class SoSNavMenu extends React.Component<any, any> {
     public render() {
-        const { currentAsmState } = this.props;
+        const { currentASMState } = this.props;
 
         const disableStates = [
             'AUDIT_READY_TO_START',
@@ -17,7 +17,7 @@ class SoSNavMenu extends React.Component<any, any> {
             'DOS_AUDIT_COMPLETE',
             'AUDIT_RESULTS_PUBLISHED',
         ];
-        const disableAuditButton = _.includes(disableStates, currentAsmState);
+        const disableAuditButton = _.includes(disableStates, currentASMState);
 
         const homeItem = (
             <Link to='/sos'>
@@ -70,7 +70,7 @@ class SoSNavMenu extends React.Component<any, any> {
 
 function select(state: DOS.AppState) {
     return {
-        currentAsmState: state.asm.currentState,
+        currentASMState: state.asm.currentState,
     };
 }
 

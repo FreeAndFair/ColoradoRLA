@@ -114,7 +114,7 @@ declare namespace JSON {
         enabled_ui_events: string[];
     }
 
-    interface FetchDosASMStateOk {
+    interface FetchDOSASMStateOk {
         current_state: DOS.ASMState;
         enabled_ui_events: string[];
     }

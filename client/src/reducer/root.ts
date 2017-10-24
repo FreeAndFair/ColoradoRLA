@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
 
 import countyDashboardRefreshOk from './county/dashboardRefreshOk';
-import fetchAuditBoardAsmStateOk from './county/fetchAuditBoardAsmStateOk';
+import fetchAuditBoardASMStateOk from './county/fetchAuditBoardASMStateOk';
 import countyFetchContestsOk from './county/fetchContestsOk';
-import fetchCountyAsmStateOk from './county/fetchCountyAsmStateOk';
+import fetchCountyASMStateOk from './county/fetchCountyASMStateOk';
 import countyFetchCvrOk from './county/fetchCvrOk';
 import fetchCvrsToAuditOk from './county/fetchCvrsToAuditOk';
 import countyLoginOk from './county/loginOk';
@@ -16,7 +16,7 @@ import uploadingCvrExport from './county/uploadingCvrExport';
 
 import dosContestFetchOk from './dos/contestFetchOk';
 import dosDashboardRefreshOk from './dos/dashboardRefreshOk';
-import fetchDosAsmStateOk from './dos/fetchDosAsmStateOk';
+import fetchDOSASMStateOk from './dos/fetchDOSASMStateOk';
 import dosLoginOk from './dos/loginOk';
 import selectContestsForAuditOk from './dos/selectContestsForAuditOk';
 import uploadRandomSeedOk from './dos/uploadRandomSeedOk';
@@ -79,11 +79,11 @@ export default function root(state: AppState = defaultState, action: Action.App)
     }
 
     case 'FETCH_AUDIT_BOARD_ASM_STATE_OK': {
-        return fetchAuditBoardAsmStateOk(state as County.AppState, action);
+        return fetchAuditBoardASMStateOk(state as County.AppState, action);
     }
 
     case 'FETCH_COUNTY_ASM_STATE_OK': {
-        return fetchCountyAsmStateOk(state as County.AppState, action);
+        return fetchCountyASMStateOk(state as County.AppState, action);
     }
 
     case 'FETCH_CVRS_TO_AUDIT_OK': {
@@ -91,7 +91,7 @@ export default function root(state: AppState = defaultState, action: Action.App)
     }
 
     case 'FETCH_DOS_ASM_STATE_OK': {
-        return fetchDosAsmStateOk(state as DOS.AppState, action);
+        return fetchDOSASMStateOk(state as DOS.AppState, action);
     }
 
     case 'LOGIN_1F_OK': {

@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { formatCountyAsmState } from 'corla/format';
+import { formatCountyASMState } from 'corla/format';
 
 import * as _ from 'lodash';
 
@@ -83,7 +83,7 @@ const CountyInfo = (props: CountyInfoProps) => {
 
     const currentState: County.ASMState = _.get(countyState, 'asm.countyState.currentState');
     const status = currentState
-                 ? formatCountyAsmState(currentState)
+                 ? formatCountyASMState(currentState)
                  : '';
 
     const rows = [

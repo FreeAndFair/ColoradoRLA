@@ -9,7 +9,7 @@ function parse(data: any) {
 }
 
 
-export default function fetchAuditBoardAsmStateOk(
+export default function fetchAuditBoardASMStateOk(
     state: County.AppState,
     action: Action.FetchAuditBoardASMStateOk,
 ): County.AppState {

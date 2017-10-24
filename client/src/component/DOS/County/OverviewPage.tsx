@@ -6,7 +6,7 @@ import * as _ from 'lodash';
 
 import counties from 'corla/data/counties';
 
-import { formatCountyAsmState } from 'corla/format';
+import { formatCountyASMState } from 'corla/format';
 
 import Nav from '../Nav';
 
@@ -34,7 +34,7 @@ interface RowProps {
 const CountyTableRow = (props: RowProps) => {
     const { county, status } = props;
 
-    const countyState = formatCountyAsmState(status.asmState);
+    const countyState = formatCountyASMState(status.asmState);
     const submitted = status.auditedBallotCount;
 
     const auditedCount = _.get(status, 'discrepancyCount.audited') || '—';

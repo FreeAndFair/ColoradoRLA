@@ -9,7 +9,7 @@ function parse(data: JSON.FetchCountyASMStateOk): County.ASM {
 }
 
 
-export default function fetchCountyAsmStateOk(
+export default function fetchCountyASMStateOk(
     state: County.AppState,
     action: Action.FetchCountyASMStateOk,
 ): County.AppState {

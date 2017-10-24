@@ -6,7 +6,7 @@ import { EditableText, Tooltip } from '@blueprintjs/core';
 
 import counties from 'corla/data/counties';
 
-import { formatCountyAndBoardAsmState } from 'corla/format';
+import { formatCountyAndBoardASMState } from 'corla/format';
 
 
 const RemainingInRoundHeader = () => {
@@ -106,7 +106,7 @@ class CountyUpdates extends React.Component<UpdatesProps, UpdatesState> {
         const countyData: RowData[] = _.map(countyStatus, (c): RowData => {
             const county = _.find(counties, (x: CountyInfo) => x.id === c.id);
 
-            const status = formatCountyAndBoardAsmState(c.asmState, c.auditBoardASMState);
+            const status = formatCountyAndBoardASMState(c.asmState, c.auditBoardASMState);
             const auditedDiscrepancyCount = c.discrepancyCount
                                           ? c.discrepancyCount.audited
                                           : '—';

@@ -7,9 +7,9 @@ import * as config from 'corla/config';
 import createPollSaga from 'corla/saga/createPollSaga';
 
 import dashboardRefresh from 'corla/action/county/dashboardRefresh';
-import fetchAuditBoardAsmState from 'corla/action/county/fetchAuditBoardAsmState';
+import fetchAuditBoardASMState from 'corla/action/county/fetchAuditBoardASMState';
 import fetchContests from 'corla/action/county/fetchContests';
-import fetchCountyAsmState from 'corla/action/county/fetchCountyAsmState';
+import fetchCountyASMState from 'corla/action/county/fetchCountyASMState';
 
 
 const COUNTY_POLL_DELAY = config.pollDelay;
@@ -23,8 +23,8 @@ function* auditPoll() {
 
     if (shouldSync) {
         dashboardRefresh();
-        fetchAuditBoardAsmState();
-        fetchCountyAsmState();
+        fetchAuditBoardASMState();
+        fetchCountyASMState();
     }
 }
 
@@ -38,15 +38,15 @@ const auditPollSaga = createPollSaga(
 function* boardSignInSaga() {
     yield takeLatest('COUNTY_BOARD_SIGN_IN_SYNC', () => {
         dashboardRefresh();
-        fetchAuditBoardAsmState();
-        fetchCountyAsmState();
+        fetchAuditBoardASMState();
+        fetchCountyASMState();
     });
 }
 
 function* dashboardPoll() {
     dashboardRefresh();
-    fetchAuditBoardAsmState();
-    fetchCountyAsmState();
+    fetchAuditBoardASMState();
+    fetchCountyASMState();
 
     const { county } = yield select();
 
