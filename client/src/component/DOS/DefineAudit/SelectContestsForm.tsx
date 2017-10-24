@@ -8,19 +8,30 @@ import { Select } from '@blueprintjs/labs';
 import counties from 'corla/data/counties';
 
 
-const auditReasons = [
+interface FormAuditReason {
+    id: string;
+    text: string;
+}
+
+const auditReasons: FormAuditReason[] = [
     { id: 'state_wide_contest', text: 'State Contest' },
     { id: 'county_wide_contest', text: 'County Contest' },
 ];
 
-const AuditReasonSelect = Select.ofType<any>();
+const AuditReasonSelect = Select.ofType<FormAuditReason>();
+
+interface FormStatus {
+    audit: boolean;
+    handCount: boolean;
+    reason: FormAuditReason;
+}
 
 interface RowProps {
-    auditStatus: any;
     contest: Contest;
     onAuditChange: OnClick;
     onHandCountChange: OnClick;
     onReasonChange: OnClick;
+    status: FormStatus;
 }
 
 const TiedContestRow = (props: RowProps) => {
@@ -45,14 +56,14 @@ const TiedContestRow = (props: RowProps) => {
 
 const ContestRow = (props: RowProps) => {
     const {
-        auditStatus,
+        status,
         contest,
         onAuditChange,
         onHandCountChange,
         onReasonChange,
     } = props;
 
-    if (!auditStatus) {
+    if (!status) {
         return null;
     }
 
@@ -77,13 +88,13 @@ const ContestRow = (props: RowProps) => {
             onItemSelect={ onReasonChange }
             popoverProps={ { popoverClassName } }>
             <Button
-                text={ auditStatus.reason.text }
+                text={ status.reason.text }
                 rightIconName='double-caret-vertical' />
         </AuditReasonSelect>
     );
 
-    const { handCount } = auditStatus;
-    const toAudit = !handCount && auditStatus.audit;
+    const { handCount } = status;
+    const toAudit = !handCount && status.audit;
 
     const countyName = counties[contest.countyId].name;
 
@@ -98,7 +109,7 @@ const ContestRow = (props: RowProps) => {
                     onChange={ onAuditChange } />
             </td>
             <td>
-                { auditStatus.audit ? auditReasonSelect : '' }
+                { status.audit ? auditReasonSelect : '' }
             </td>
         </tr>
     );
@@ -115,11 +126,7 @@ interface FormProps {
 }
 
 interface SelectContestsForm {
-    [contestId: number]: {
-        audit: boolean;
-        handCount: boolean;
-        reason: string;
-    };
+    [contestId: number]: FormStatus;
 }
 
 interface FormState {
@@ -168,12 +175,12 @@ class SelectContestsForm extends React.Component<FormProps, FormState> {
 
         const contestData: ContestData[] = _.map(contests, (c): ContestData => {
             const props = {
-                auditStatus: this.state.form[c.id],
                 contest: c,
                 key: c.id,
                 onAuditChange: this.onAuditChange(c),
                 onHandCountChange: this.onHandCountChange(c),
                 onReasonChange: this.onReasonChange(c),
+                status: this.state.form[c.id],
             };
 
             const countyName = counties[c.countyId].name;
