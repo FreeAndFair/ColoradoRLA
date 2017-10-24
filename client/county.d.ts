@@ -16,7 +16,7 @@ declare namespace County {
         cvrExport?: UploadedFile;
         cvrExportCount?: number;
         cvrExportHash?: string;
-        cvrImportStatus?: CvrImportStatus;
+        cvrImportStatus: CvrImportStatus;
         cvrsToAudit?: JSON.Cvr[];  // Sic
         disagreementCount?: number;
         discrepancyCount?: number;

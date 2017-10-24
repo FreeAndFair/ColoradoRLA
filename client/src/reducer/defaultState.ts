@@ -7,6 +7,7 @@ export function countyState(): County.AppState {
         },
         auditBoard: [],
         contests: [],
+        cvrImportStatus: 'NOT_ATTEMPTED',
         rounds: [],
         type: 'County',
     };
