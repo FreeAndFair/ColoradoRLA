@@ -4,6 +4,7 @@ import { Redirect } from 'react-router-dom';
 
 import { History } from 'history';
 
+import withDOSState from 'corla/component/withDOSState';
 import withSync from 'corla/component/withSync';
 
 import ReviewPage from './ReviewPage';
@@ -49,7 +50,7 @@ function select(dosState: DOS.AppState) {
 
 
 export default withSync(
-    ReviewPageContainer,
+    withDOSState(ReviewPageContainer),
     'DOS_DEFINE_AUDIT_REVIEW_SYNC',
     select,
 );

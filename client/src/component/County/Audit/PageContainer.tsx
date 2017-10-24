@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Redirect } from 'react-router-dom';
 
+import withCountyState from 'corla/component/withCountyState';
 import withPoll from 'corla/component/withPoll';
 
 import EndOfRoundPageContainer from './EndOfRound/PageContainer';
@@ -53,7 +54,7 @@ function select(countyState: County.AppState) {
 
 
 export default withPoll(
-    CountyAuditContainer,
+    withCountyState(CountyAuditContainer),
     'COUNTY_AUDIT_POLL_START',
     'COUNTY_AUDIT_POLL_STOP',
     select,

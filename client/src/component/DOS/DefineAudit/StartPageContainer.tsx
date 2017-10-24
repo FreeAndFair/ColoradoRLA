@@ -7,6 +7,7 @@ import { Redirect } from 'react-router-dom';
 
 import StartPage from './StartPage';
 
+import withDOSState from 'corla/component/withDOSState';
 import withSync from 'corla/component/withSync';
 
 
@@ -73,7 +74,7 @@ function select(dosState: DOS.AppState) {
 
 
 export default withSync(
-    StartPageContainer,
+    withDOSState(StartPageContainer),
     'DOS_DEFINE_AUDIT_SYNC',
     select,
 );

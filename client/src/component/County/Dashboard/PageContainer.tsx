@@ -2,8 +2,8 @@ import * as React from 'react';
 
 import { History } from 'history';
 
+import withCountyState from 'corla/component/withCountyState';
 import withPoll from 'corla/component/withPoll';
-import withState from 'corla/component/withState';
 
 import counties from 'corla/data/counties';
 
@@ -98,9 +98,9 @@ function select(countyState: County.AppState) {
     };
 }
 
-export default withState('County', withPoll(
-    CountyDashboardContainer,
+export default withPoll(
+    withCountyState(CountyDashboardContainer),
     'COUNTY_DASHBOARD_POLL_START',
     'COUNTY_DASHBOARD_POLL_STOP',
     select,
-));
+);

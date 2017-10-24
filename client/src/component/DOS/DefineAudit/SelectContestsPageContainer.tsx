@@ -3,6 +3,7 @@ import { Redirect } from 'react-router-dom';
 
 import { History } from 'history';
 
+import withDOSState from 'corla/component/withDOSState';
 import withPoll from 'corla/component/withPoll';
 
 import SelectContestsPage from './SelectContestsPage';
@@ -72,7 +73,7 @@ function select(dosState: DOS.AppState) {
 
 
 export default withPoll(
-    SelectContestsPageContainer,
+    withDOSState(SelectContestsPageContainer),
     'DOS_SELECT_CONTESTS_POLL_START',
     'DOS_SELECT_CONTESTS_POLL_STOP',
     select,

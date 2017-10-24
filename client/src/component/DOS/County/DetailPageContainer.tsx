@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { match } from 'react-router-dom';
 
+import withDOSState from 'corla/component/withDOSState';
 import withSync from 'corla/component/withSync';
 
 import counties from 'corla/data/counties';
@@ -42,7 +43,7 @@ function select(dosState: DOS.AppState) {
 
 
 export default withSync(
-    CountyDetailContainer,
+    withDOSState(CountyDetailContainer),
     'DOS_COUNTY_DETAIL_SYNC',
     select,
 );

@@ -3,6 +3,7 @@ import { Redirect } from 'react-router-dom';
 
 import { History } from 'history';
 
+import withDOSState from 'corla/component/withDOSState';
 import withSync from 'corla/component/withSync';
 
 import SeedPage from './SeedPage';
@@ -58,7 +59,7 @@ function select(dosState: DOS.AppState) {
 
 
 export default withSync(
-    SeedPageContainer,
+    withDOSState(SeedPageContainer),
     'DOS_DEFINE_AUDIT_RANDOM_SEED_SYNC',
     select,
 );

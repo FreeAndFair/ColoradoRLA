@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { match } from 'react-router-dom';
 
+import withDOSState from 'corla/component/withDOSState';
 import withSync from 'corla/component/withSync';
 
 import ContestDetailPage from './DetailPage';
@@ -38,7 +39,7 @@ function select(dosState: DOS.AppState) {
 
 
 export default withSync(
-    ContestDetailContainer,
+    withDOSState(ContestDetailContainer),
     'DOS_CONTEST_DETAIL_SYNC',
     select,
 );

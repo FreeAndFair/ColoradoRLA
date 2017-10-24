@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 
 import DOSDashboardPage from './Page';
 
+import withDOSState from 'corla/component/withDOSState';
 import withPoll from 'corla/component/withPoll';
-import withState from 'corla/component/withState';
 
 
 interface ContainerProps {
@@ -34,9 +34,9 @@ function select(dosState: DOS.AppState) {
 }
 
 
-export default withState('DOS', withPoll(
-    DOSDashboardContainer,
+export default withPoll(
+    withDOSState(DOSDashboardContainer),
     'DOS_DASHBOARD_POLL_START',
     'DOS_DASHBOARD_POLL_STOP',
     select,
-));
+);
