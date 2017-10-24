@@ -23,7 +23,7 @@ import NextLoginContainer from './Login/Container';
 
 import DOSDefineAuditReviewPageContainer from './DOS/DefineAudit/ReviewPageContainer';
 import DOSDefineAuditSeedPageContainer from './DOS/DefineAudit/SeedPageContainer';
-import DOSDefineAduitSelectContestsPageContainer from './DOS/DefineAudit/SelectContestsPageContainer';
+import DOSDefineAuditSelectContestsPageContainer from './DOS/DefineAudit/SelectContestsPageContainer';
 import DOSDefineAuditStartPageContainer from './DOS/DefineAudit/StartPageContainer';
 
 import DOSContestDetailPageContainer from './DOS/Contest/DetailPageContainer';
@@ -72,7 +72,7 @@ export class RootContainer extends React.Component<RootContainerProps> {
                                     page={ DOSDefineAuditSeedPageContainer } />
                         <LoginRoute exact
                                     path='/sos/audit/select-contests'
-                                    page={ DOSDefineAduitSelectContestsPageContainer } />
+                                    page={ DOSDefineAuditSelectContestsPageContainer } />
                         <LoginRoute exact
                                     path='/sos/audit/review'
                                     page={ DOSDefineAuditReviewPageContainer } />
