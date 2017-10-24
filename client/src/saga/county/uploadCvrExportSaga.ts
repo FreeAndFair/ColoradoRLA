@@ -39,13 +39,6 @@ function* importCvrExportNetworkFail(): IterableIterator<any> {
     notice.danger('Network error: failed to upload CVR export.');
 }
 
-function* uploadCvrExportOk(action: any): IterableIterator<any> {
-    const { data } = action;
-    const { received } = data;
-
-    notice.ok(`Uploaded CVR export "${received.filename}".`);
-}
-
 function* uploadCvrExportFail(action: any): IterableIterator<any> {
     notice.danger('Failed to upload CVR export.');
 }
@@ -82,7 +75,6 @@ export default function* uploadCvrExportSaga() {
     yield takeLatest('IMPORT_CVR_EXPORT_FAIL', importCvrExportFail);
     yield takeLatest('IMPORT_CVR_EXPORT_NETWORK_FAIL', importCvrExportNetworkFail);
 
-    yield takeLatest('UPLOAD_CVR_EXPORT_OK', uploadCvrExportOk);
     yield takeLatest('UPLOAD_CVR_EXPORT_FAIL', uploadCvrExportFail);
     yield takeLatest('UPLOAD_CVR_EXPORT_NETWORK_FAIL', uploadCvrExportNetworkFail);
 
