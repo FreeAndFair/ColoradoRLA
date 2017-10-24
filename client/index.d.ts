@@ -150,7 +150,8 @@ interface Contest {
     votesAllowed: number;
 }
 
-interface AuditedContest extends Contest {
+interface AuditedContest {
+    id: number;
     reason: AuditReason;
 }
 

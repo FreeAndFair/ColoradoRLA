@@ -45,16 +45,15 @@ interface SelectedContestsProps {
 const SelectedContests = (props: SelectedContestsProps) => {
     const { auditedContests, contests } = props;
 
-    const rows = _.map(props.auditedContests, auditedContest => {
-        const contest = _.find(contests, (c: any) => c.id === auditedContest.id);
-
+    const rows = _.map(props.auditedContests, audited => {
+        const contest = contests[audited.id];
         const countyName = counties[contest.countyId].name;
 
         return (
             <tr key={ contest.id }>
                 <td>{ countyName }</td>
                 <td>{ contest.name }</td>
-                <td>{ formatReason(auditedContest.reason) }</td>
+                <td>{ formatReason(audited.reason) }</td>
             </tr>
         );
     });
