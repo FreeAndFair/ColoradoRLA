@@ -11,13 +11,7 @@ const STARTED_STATES = [
 ];
 
 function auditStarted(state: DOS.AppState): boolean {
-    if (!state.asm) {
-        return false;
-    }
-
-    const { currentState } = state.asm;
-
-    return _.includes(STARTED_STATES, currentState);
+    return _.includes(STARTED_STATES, state.asm);
 }
 
 

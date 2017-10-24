@@ -41,7 +41,7 @@ class StartPageContainer extends React.Component<ContainerProps, ContainerState>
             return <div />;
         }
 
-        if (dosState.asm.currentState === 'DOS_AUDIT_ONGOING') {
+        if (dosState.asm === 'DOS_AUDIT_ONGOING') {
             return <Redirect to='/sos' />;
         }
 

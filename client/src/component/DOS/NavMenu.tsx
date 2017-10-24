@@ -70,7 +70,7 @@ class SoSNavMenu extends React.Component<any, any> {
 
 function select(state: DOS.AppState) {
     return {
-        currentASMState: state.asm.currentState,
+        currentASMState: state.asm,
     };
 }
 

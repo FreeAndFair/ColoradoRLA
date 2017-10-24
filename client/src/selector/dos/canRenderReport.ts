@@ -10,13 +10,7 @@ const REPORT_STATES = [
 ];
 
 function canRenderReport(state: DOS.AppState): boolean {
-    if (!state.asm) { return false; }
-
-    const { currentState } = state.asm;
-
-    if (!currentState) { return false; }
-
-    return _.includes(REPORT_STATES, currentState);
+    return _.includes(REPORT_STATES, state.asm);
 }
 
 

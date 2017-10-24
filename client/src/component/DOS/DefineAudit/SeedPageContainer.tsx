@@ -31,7 +31,7 @@ class SeedPageContainer extends React.Component<ContainerProps> {
             return <div />;
         }
 
-        if (dosState.asm.currentState === 'DOS_AUDIT_ONGOING') {
+        if (dosState.asm === 'DOS_AUDIT_ONGOING') {
             return <Redirect to='/sos' />;
         }
 
