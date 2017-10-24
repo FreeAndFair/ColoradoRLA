@@ -72,7 +72,7 @@ export default function root(state: AppState, action: Action.App) {
     }
 
     case 'LOGIN_1F_OK': {
-        return login1FOk(state, action);
+        return login1FOk(state as LoginAppState, action);
     }
 
     case 'UPDATE_ACVR_FORM': {

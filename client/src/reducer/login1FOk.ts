@@ -16,9 +16,9 @@ function parseChallenge(challenge: string): LoginChallenge {
 function parse(data: any) {
     const { received, sent } = data;
 
-    const dashboard = received.role === 'STATE'
-        ? 'sos'
-        : 'county';
+    const dashboard: Dashboard = received.role === 'STATE'
+        ? 'DOS'
+        : 'County';
 
     const loginChallenge = received.challenge
         ? parseChallenge(received.challenge)
@@ -30,7 +30,12 @@ function parse(data: any) {
 }
 
 
-export default (state: any, action: any) => ({
-    ...state,
-    ...parse(action.data),
-});
+export default function login1FOk(
+    state: LoginAppState,
+    action: Action.Login1FOk,
+): LoginAppState {
+    return {
+        ...state,
+        ...parse(action.data),
+    };
+}
