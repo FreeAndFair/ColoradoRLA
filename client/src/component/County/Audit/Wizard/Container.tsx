@@ -4,13 +4,19 @@ import { connect } from 'react-redux';
 import CountyAuditWizard from './Wizard';
 
 
-class CountyAuditWizardContainer extends React.Component<any, any> {
+interface WizardContainerProps {
+    countyState: County.AppState;
+}
+
+class CountyAuditWizardContainer extends React.Component<WizardContainerProps> {
     public render() {
         return <CountyAuditWizard { ...this.props } />;
     }
 }
 
-const mapStateToProps = ({ county }: any) => ({ county });
+function select(countyState: AppState) {
+    return { countyState };
+}
 
 
-export default connect(mapStateToProps)(CountyAuditWizardContainer);
+export default connect(select)(CountyAuditWizardContainer);

@@ -1,4 +1,6 @@
-export default (state: any) => ({
-    ...state,
-    dashboard: 'sos',
-});
+import { dosState } from '../defaultState';
+
+
+export default function loginOk(state: LoginAppState): DOS.AppState {
+    return dosState();
+}

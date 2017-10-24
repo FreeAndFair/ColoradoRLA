@@ -1,16 +1,14 @@
 import * as _ from 'lodash';
 
 
-function currentBallotId(state: any): number {
-    if (!_.has(state, 'county.cvrsToAudit')) {
-        return null;
-    }
-
-    const { cvrsToAudit } = state.county;
+function currentBallotId(state: County.AppState): Option<number> {
+    const { cvrsToAudit } = state;
 
     const currentCvr = _.find(cvrsToAudit, (cvr: any) => !cvr.audited);
 
-    return _.get(currentCvr, 'db_id');
+    if (!currentCvr) { return null; }
+
+    return currentCvr.db_id;
 }
 
 

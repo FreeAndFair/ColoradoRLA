@@ -29,7 +29,7 @@ const Breadcrumb = () => (
     </ul>
 );
 
-function formatReason(reason: string): string {
+function formatReason(reason: AuditReason): string {
     if (reason === 'STATE_WIDE_CONTEST') {
         return 'State Contest';
     }
@@ -37,19 +37,23 @@ function formatReason(reason: string): string {
     return 'County Contest';
 }
 
-const SelectedContests = (props: any) => {
+interface SelectedContestsProps {
+    auditedContests: DOS.AuditedContests;
+    contests: DOS.Contests;
+}
+
+const SelectedContests = (props: SelectedContestsProps) => {
     const { auditedContests, contests } = props;
 
-    const rows = _.map(props.auditedContests, (auditedContest: any) => {
-        const contest = _.find(contests, (c: any) => c.id === auditedContest.id);
-
+    const rows = _.map(props.auditedContests, audited => {
+        const contest = contests[audited.id];
         const countyName = counties[contest.countyId].name;
 
         return (
             <tr key={ contest.id }>
                 <td>{ countyName }</td>
                 <td>{ contest.name }</td>
-                <td>{ formatReason(auditedContest.reason) }</td>
+                <td>{ formatReason(audited.reason) }</td>
             </tr>
         );
     });
@@ -75,7 +79,11 @@ const SelectedContests = (props: any) => {
     );
 };
 
-const WaitingForContestsPage = ({ back }: any) => {
+interface WaitingPageProps {
+    back: OnClick;
+}
+
+const WaitingForContestsPage = ({ back }: WaitingPageProps) => {
     return (
         <div>
             <Nav />
@@ -95,7 +103,16 @@ const WaitingForContestsPage = ({ back }: any) => {
     );
 };
 
-const SelectContestsPage = (props: any) => {
+interface PageProps {
+    auditedContests: DOS.AuditedContests;
+    back: OnClick;
+    contests: DOS.Contests;
+    isAuditable: OnClick;
+    nextPage: OnClick;
+    selectContestsForAudit: OnClick;
+}
+
+const SelectContestsPage = (props: PageProps) => {
     const {
         auditedContests,
         back,

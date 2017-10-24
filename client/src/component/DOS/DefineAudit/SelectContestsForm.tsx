@@ -8,19 +8,33 @@ import { Select } from '@blueprintjs/labs';
 import counties from 'corla/data/counties';
 
 
-interface FormState {
-    contests: any;
-    forms: any;
+interface FormAuditReason {
+    id: string;
+    text: string;
 }
 
-const auditReasons = [
+const auditReasons: FormAuditReason[] = [
     { id: 'state_wide_contest', text: 'State Contest' },
     { id: 'county_wide_contest', text: 'County Contest' },
 ];
 
-const AuditReasonSelect = Select.ofType<any>();
+const AuditReasonSelect = Select.ofType<FormAuditReason>();
 
-const TiedContestRow = (props: any) => {
+interface FormStatus {
+    audit: boolean;
+    handCount: boolean;
+    reason: FormAuditReason;
+}
+
+interface RowProps {
+    contest: Contest;
+    onAuditChange: OnClick;
+    onHandCountChange: OnClick;
+    onReasonChange: OnClick;
+    status: FormStatus;
+}
+
+const TiedContestRow = (props: RowProps) => {
     const { contest } = props;
 
     const countyName = counties[contest.countyId].name;
@@ -40,16 +54,16 @@ const TiedContestRow = (props: any) => {
     );
 };
 
-const ContestRow = (props: any) => {
+const ContestRow = (props: RowProps) => {
     const {
-        auditStatus,
+        status,
         contest,
         onAuditChange,
         onHandCountChange,
         onReasonChange,
     } = props;
 
-    if (!auditStatus) {
+    if (!status) {
         return null;
     }
 
@@ -74,13 +88,13 @@ const ContestRow = (props: any) => {
             onItemSelect={ onReasonChange }
             popoverProps={ { popoverClassName } }>
             <Button
-                text={ auditStatus.reason.text }
+                text={ status.reason.text }
                 rightIconName='double-caret-vertical' />
         </AuditReasonSelect>
     );
 
-    const { handCount } = auditStatus;
-    const toAudit = !handCount && auditStatus.audit;
+    const { handCount } = status;
+    const toAudit = !handCount && status.audit;
 
     const countyName = counties[contest.countyId].name;
 
@@ -95,7 +109,7 @@ const ContestRow = (props: any) => {
                     onChange={ onAuditChange } />
             </td>
             <td>
-                { auditStatus.audit ? auditReasonSelect : '' }
+                { status.audit ? auditReasonSelect : '' }
             </td>
         </tr>
     );
@@ -105,8 +119,25 @@ type SortKey = 'contest' | 'county';
 
 type SortOrder = 'asc' | 'desc';
 
-class SelectContestsForm extends React.Component<any, any> {
-    constructor(props: any) {
+interface FormProps {
+    contests: DOS.Contests;
+    forms: any;
+    isAuditable: OnClick;
+}
+
+interface SelectContestsForm {
+    [contestId: number]: FormStatus;
+}
+
+interface FormState {
+    filter: string;
+    form: any;
+    order: SortOrder;
+    sort: SortKey;
+}
+
+class SelectContestsForm extends React.Component<FormProps, FormState> {
+    constructor(props: FormProps) {
         super(props);
 
         this.state = {
@@ -129,7 +160,7 @@ class SelectContestsForm extends React.Component<any, any> {
         });
     }
 
-    public componentWillReceiveProps(nextProps: any) {
+    public componentWillReceiveProps(nextProps: FormProps) {
         if (!_.isEqual(nextProps.contests, this.props.contests)) {
             this.resetForm(nextProps.contests);
         }
@@ -140,14 +171,16 @@ class SelectContestsForm extends React.Component<any, any> {
 
         this.props.forms.selectContestsForm = this.state.form;
 
-        const contestData = _.map(contests, (c: any) => {
+        type ContestData = [string, string, RowProps];
+
+        const contestData: ContestData[] = _.map(contests, (c): ContestData => {
             const props = {
-                auditStatus: this.state.form[c.id],
                 contest: c,
                 key: c.id,
                 onAuditChange: this.onAuditChange(c),
                 onHandCountChange: this.onHandCountChange(c),
                 onReasonChange: this.onReasonChange(c),
+                status: this.state.form[c.id],
             };
 
             const countyName = counties[c.countyId].name;
@@ -159,7 +192,7 @@ class SelectContestsForm extends React.Component<any, any> {
             ];
         });
 
-        const keyFunc = (d: any[]) => {
+        const keyFunc = (d: ContestData) => {
             const i = this.state.sort === 'contest' ? 1 : 0;
             return d[i];
         };
@@ -169,7 +202,7 @@ class SelectContestsForm extends React.Component<any, any> {
             _.reverse(sortedData);
         }
 
-        const filterFunc = (d: any[]) => {
+        const filterFunc = (d: ContestData) => {
             const [countyName, contestName, ...props] = d;
 
             const str = this.state.filter.toLowerCase();
@@ -180,7 +213,7 @@ class SelectContestsForm extends React.Component<any, any> {
         };
         const filteredData = _.filter(sortedData, filterFunc);
 
-        const contestRows = _.map(filteredData, (d: any[]) => {
+        const contestRows = _.map(filteredData, (d: ContestData) => {
             const props = d[2];
             const { contest } = props;
 
@@ -257,13 +290,7 @@ class SelectContestsForm extends React.Component<any, any> {
         );
     }
 
-    private setContests() {
-        const { contests } = this.props;
-
-        this.setState({ contests });
-    }
-
-    private resetForm(contests: any) {
+    private resetForm(contests: DOS.Contests) {
         const form: any = {};
 
         _.forEach(contests, (c, _) => {
@@ -277,7 +304,7 @@ class SelectContestsForm extends React.Component<any, any> {
         this.setState({ form });
     }
 
-    private onAuditChange = (contest: any) => () => {
+    private onAuditChange = (contest: Contest) => () => {
         const s = { ...this.state };
 
         const { audit } = s.form[contest.id];
@@ -286,11 +313,11 @@ class SelectContestsForm extends React.Component<any, any> {
         this.setState(s);
     }
 
-    private onFilterChange = (filter: any) => {
+    private onFilterChange = (filter: string) => {
         this.setState({ filter });
     }
 
-    private onHandCountChange = (contest: any) => () => {
+    private onHandCountChange = (contest: Contest) => () => {
         const s = { ...this.state };
 
         const { handCount } = s.form[contest.id];
@@ -299,7 +326,7 @@ class SelectContestsForm extends React.Component<any, any> {
         this.setState(s);
     }
 
-    private onReasonChange = (contest: any) => (item: any) => {
+    private onReasonChange = (contest: Contest) => (item: any) => {
         const s = { ...this.state };
 
         s.form[contest.id].reason = { ...item };

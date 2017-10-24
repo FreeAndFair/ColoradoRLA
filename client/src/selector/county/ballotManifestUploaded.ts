@@ -8,13 +8,13 @@ const UPLOADED_STATES = [
     'COUNTY_AUDIT_COMPLETE',
 ];
 
+function ballotManifestUploaded(state: County.AppState): boolean {
+    if (!state.asm) { return false; }
+    if (!state.asm.county) { return false; }
 
-function ballotManifestUploaded(state: any): boolean {
-    if (!_.has(state, 'county.asm.county.currentState')) {
-        return false;
-    }
+    const { currentState } = state.asm.county;
 
-    const { currentState } = state.county.asm.county;
+    if (!currentState) { return false; }
 
     return _.includes(UPLOADED_STATES, currentState);
 }

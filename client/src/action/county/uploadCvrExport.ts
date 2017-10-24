@@ -6,7 +6,7 @@ const importUrl = endpoint('import-cvr-export');
 const uploadUrl = endpoint('upload-file');
 
 
-function createFormData(file: Blob, hash: string) {
+function createFormData(file: Blob, hash: string): FormData {
     const formData = new FormData();
 
     formData.append('file', file);
@@ -15,7 +15,7 @@ function createFormData(file: Blob, hash: string) {
     return formData;
 }
 
-async function importCvrExport(body: any) {
+async function importCvrExport(body: JSON.UploadCvrExportOk) {
     const init: any = {
         body: JSON.stringify(body),
         credentials: 'include',

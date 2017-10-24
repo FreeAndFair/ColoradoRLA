@@ -4,7 +4,7 @@ import activeCounties from './activeCounties';
 import auditStarted from './auditStarted';
 
 
-function currentRound(state: any): number {
+function currentRound(state: DOS.AppState): number {
     const counties = activeCounties(state);
 
     let roundNumber = 0;

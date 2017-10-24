@@ -5,7 +5,13 @@ import BallotManifestFormContainer from './BallotManifest/FormContainer';
 import CVRExportFormContainer from './CVRExport/FormContainer';
 
 
-const MatchStatus = (props: any) => {
+interface MatchStatusProps {
+    ballotManifestCount: number;
+    cvrExportCount: number;
+    uploadedBothFiles: boolean;
+}
+
+const MatchStatus = (props: MatchStatusProps) => {
     const { ballotManifestCount, cvrExportCount, uploadedBothFiles } = props;
 
     if (!uploadedBothFiles) {
@@ -35,14 +41,22 @@ const MatchStatus = (props: any) => {
     }
 };
 
-const FileUploadForms = (props: any) => {
-    const { county, uploadedBothFiles } = props;
-    const { ballotManifestCount, cvrExportCount } = county;
+interface FileUploadFormsProps {
+    countyState: County.AppState;
+    uploadedBothFiles: boolean;
+}
+
+const FileUploadForms = (props: FileUploadFormsProps) => {
+    const { countyState, uploadedBothFiles } = props;
+
+    if (!countyState) { return null; }
+
+    const { ballotManifestCount, cvrExportCount } = countyState;
 
     return (
         <div>
-            <MatchStatus ballotManifestCount={ ballotManifestCount }
-                         cvrExportCount={ cvrExportCount }
+            <MatchStatus ballotManifestCount={ ballotManifestCount! }
+                         cvrExportCount={ cvrExportCount! }
                          uploadedBothFiles={ uploadedBothFiles } />
             <BallotManifestFormContainer />
             <CVRExportFormContainer />
@@ -59,31 +73,36 @@ const MissedDeadline = () => {
     );
 };
 
-class FileUploadContainer extends React.Component<any, any> {
+interface FileUploadContainerProps {
+    countyState: County.AppState;
+    missedDeadline: boolean;
+    uploadedBothFiles: boolean;
+}
+
+class FileUploadContainer extends React.Component<FileUploadContainerProps> {
     public render() {
-        const { county, missedDeadline, uploadedBothFiles } = this.props;
+        const { countyState, missedDeadline, uploadedBothFiles } = this.props;
 
         if (missedDeadline) {
             return <MissedDeadline />;
         }
 
         return (
-            <FileUploadForms county={ county }
+            <FileUploadForms countyState={ countyState }
                              uploadedBothFiles={ uploadedBothFiles } />
         );
     }
 }
 
-const mapStateToProps = (state: any) => {
-    const { county } = state;
-    const { asm } = county;
+const select = (countyState: County.AppState) => {
+    const { asm } = countyState;
 
     const auditInProgress = asm.auditBoard.currentState === 'AUDIT_IN_PROGRESS';
-    const uploadedBothFiles = county.ballotManifestHash && county.cvrExportHash;
+    const uploadedBothFiles = !!(countyState.ballotManifestHash && countyState.cvrExportHash);
     const missedDeadline = auditInProgress && !uploadedBothFiles;
 
-    return { county, missedDeadline, uploadedBothFiles };
+    return { countyState, missedDeadline, uploadedBothFiles };
 };
 
 
-export default connect(mapStateToProps)(FileUploadContainer);
+export default connect(select)(FileUploadContainer);

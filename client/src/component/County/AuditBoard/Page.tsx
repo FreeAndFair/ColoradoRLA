@@ -9,7 +9,16 @@ import auditBoardSignIn from 'corla/action/county/auditBoardSignIn';
 import isValidAuditBoard from 'corla/selector/county/isValidAuditBoard';
 
 
-class AuditBoardSignInPage extends React.Component<any, any> {
+interface PageProps {
+    auditBoard: AuditBoard;
+    countyName: string;
+}
+
+interface PageState {
+    form: AuditBoard;
+}
+
+class AuditBoardSignInPage extends React.Component<PageProps, PageState> {
     public state = {
         form: [
             {
@@ -99,7 +108,7 @@ class AuditBoardSignInPage extends React.Component<any, any> {
         this.setState(s);
     }
 
-    private onPartyChange = (index: number) => (e: any) => {
+    private onPartyChange = (index: number) => (e: React.ChangeEvent<any>) => {
         const s = { ...this.state };
 
         const party = e.target.value;

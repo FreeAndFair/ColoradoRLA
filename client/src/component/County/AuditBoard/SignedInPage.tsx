@@ -5,7 +5,14 @@ import CountyNav from '../Nav';
 import auditBoardSignOut from 'corla/action/county/auditBoardSignOut';
 
 
-const SignedInPage = (props: any) => {
+interface PageProps {
+    auditBoard: AuditBoard;
+    auditBoardStartOrContinue: OnClick;
+    countyName: string;
+    hasAuditedAnyBallot: boolean;
+}
+
+const SignedInPage = (props: PageProps) => {
     const {
         auditBoard,
         auditBoardStartOrContinue,
@@ -44,22 +51,22 @@ const SignedInPage = (props: any) => {
                 </div>
             </div>
             <div>
+                <button
+                    disabled={ true }
+                    className='pt-button pt-intent-primary'>
+                    Submit
+                </button>
+                <button
+                    className='pt-button pt-intent-primary'
+                    onClick={ auditBoardSignOut }>
+                    Sign Out
+                </button>
+                <button
+                    className='pt-button pt-intent-primary'
+                    onClick={ auditBoardStartOrContinue }>
+                    { startOrContinueText }
+                </button>
             </div>
-            <button
-                disabled={ true }
-                className='pt-button pt-intent-primary'>
-                Submit
-            </button>
-            <button
-                className='pt-button pt-intent-primary'
-                onClick={ auditBoardSignOut }>
-                Sign Out
-            </button>
-            <button
-                className='pt-button pt-intent-primary'
-                onClick={ auditBoardStartOrContinue }>
-                { startOrContinueText }
-            </button>
         </div>
     );
 };

@@ -3,7 +3,12 @@ import * as React from 'react';
 import startNextRound from 'corla/action/dos/startNextRound';
 
 
-const Control = (props: any) => {
+interface  ControlProps {
+    canStartNextRound: boolean;
+    currentRound: number;
+}
+
+const Control = (props: ControlProps) => {
     const { canStartNextRound, currentRound } = props;
 
     const buttonDisabled = !canStartNextRound;

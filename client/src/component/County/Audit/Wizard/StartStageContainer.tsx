@@ -5,17 +5,20 @@ import { connect } from 'react-redux';
 import StartStage from './StartStage';
 
 
-class StartStageContainer extends React.Component<any, any> {
+interface ContainerProps {
+    countyState: County.AppState;
+    nextStage: OnClick;
+}
+
+class StartStageContainer extends React.Component<ContainerProps> {
     public render() {
         return <StartStage { ...this.props } />;
     }
 }
 
-const mapStateToProps = (state: any) => {
-    const { county } = state;
-
-    return { county };
-};
+function select(countyState: County.AppState) {
+    return { countyState };
+}
 
 
-export default connect(mapStateToProps)(StartStageContainer);
+export default connect(select)(StartStageContainer);

@@ -8,7 +8,15 @@ import roundSignOff from 'corla/action/county/roundSignOff';
 import countyInfo from 'corla/selector/county/countyInfo';
 
 
-class SignOffFormContainer extends React.Component<any, any> {
+interface ContainerProps {
+    countyInfo: CountyInfo;
+}
+
+interface ContainerState {
+    form: Elector[];
+}
+
+class SignOffFormContainer extends React.Component<ContainerProps, ContainerState> {
     public state = {
         form: [
             {
@@ -35,7 +43,7 @@ class SignOffFormContainer extends React.Component<any, any> {
             submit: () => roundSignOff(this.state.form),
         };
 
-        return <SignOffForm {...props} />;
+        return <SignOffForm { ...props } />;
     }
 
     private onTextConfirm = () => {
@@ -69,18 +77,18 @@ class SignOffFormContainer extends React.Component<any, any> {
     private formIsValid = () => {
         const { form } = this.state;
 
-        return form[0].firstName
-            && form[0].lastName
-            && form[1].firstName
-            && form[1].lastName;
+        return !!(form[0].firstName
+               && form[0].lastName
+               && form[1].firstName
+               && form[1].lastName);
     }
 }
 
-const mapStateToProps = (state: any) => {
+function select(countyState: County.AppState) {
     return {
-        countyInfo: countyInfo(state),
+        countyInfo: countyInfo(countyState),
     };
-};
+}
 
 
-export default connect(mapStateToProps)(SignOffFormContainer);
+export default connect(select)(SignOffFormContainer);

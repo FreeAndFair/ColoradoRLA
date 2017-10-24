@@ -1,17 +1,16 @@
-import * as _ from 'lodash';
-
 import auditBoardSignedIn from './auditBoardSignedIn';
 
 
-function canAudit(state: any) {
-    if (!_.has(state, 'county.asm.county.currentState')) {
-        return false;
-    }
+function canAudit(state: County.AppState) {
+    if (!state.asm) { return false; }
+    if (!state.asm.county) { return false; }
 
-    const countyASMState = state.county.asm.county.currentState;
+    const { currentState } = state.asm.county;
+
+    if (!currentState) { return false; }
 
     return auditBoardSignedIn(state)
-        && countyASMState === 'COUNTY_AUDIT_UNDERWAY';
+        && currentState === 'COUNTY_AUDIT_UNDERWAY';
 }
 
 

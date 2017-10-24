@@ -1,12 +1,9 @@
-import * as _ from 'lodash';
+function canSignIn(state: County.AppState): boolean {
+    if (!state.asm) { return false; }
+    if (!state.asm.county) { return false; }
+    if (!state.asm.county.currentState) { return false; }
 
-
-function canSignIn(state: any) {
-    if (!_.has(state, 'county.asm.county.currentState')) {
-        return false;
-    }
-
-    const { currentState } = state.county.asm.county;
+    const { currentState } = state.asm.county;
 
     return currentState === 'COUNTY_AUDIT_UNDERWAY';
 }

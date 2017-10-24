@@ -9,7 +9,7 @@ interface MenuItemDef {
     text: string;
 }
 
-const MenuItem = (def: MenuItemDef): any => {
+const MenuItem = (def: MenuItemDef) => {
     const className = `pt-menu-item ${def.icon}`;
 
     return (
@@ -23,7 +23,7 @@ const MenuItem = (def: MenuItemDef): any => {
     );
 };
 
-export default class CountyNavMenu extends React.Component<any, any> {
+export default class CountyNavMenu extends React.Component {
     public render() {
         return (
             <ul className='pt-menu pt-election-1'>

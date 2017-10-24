@@ -1,26 +1,47 @@
 import * as React from 'react';
+
+import { History } from 'history';
+
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 
 import StartPage from './StartPage';
 
+import withDOSState from 'corla/component/withDOSState';
 import withSync from 'corla/component/withSync';
 
 
-class StartPageContainer extends React.Component<any, any> {
-    public state: any = {
+interface ContainerProps {
+    election: Election;
+    history: History;
+    publicMeetingDate: Date;
+    riskLimit: number;
+    dosState: DOS.AppState;
+}
+
+interface ContainerState {
+    riskLimit: boolean;
+    type: boolean;
+}
+
+class StartPageContainer extends React.Component<ContainerProps, ContainerState> {
+    public state = {
         riskLimit: true,
         type: false,
     };
 
     public render() {
-        const { election, history, publicMeetingDate, riskLimit, sos } = this.props;
+        const { election, history, publicMeetingDate, riskLimit, dosState } = this.props;
 
-        if (!sos) {
+        if (!dosState) {
             return <div />;
         }
 
-        if (sos.asm.currentState === 'DOS_AUDIT_ONGOING') {
+        if (!dosState.asm) {
+            return <div />;
+        }
+
+        if (dosState.asm.currentState === 'DOS_AUDIT_ONGOING') {
             return <Redirect to='/sos' />;
         }
 
@@ -40,24 +61,20 @@ class StartPageContainer extends React.Component<any, any> {
         return this.state.riskLimit && this.state.type;
     }
 
-    private setFormValid = (s: any) => {
+    private setFormValid = (s: Pick<ContainerState, keyof ContainerState>) => {
         this.setState(s);
     }
 }
 
-const select = (state: any) => {
-    const { sos } = state;
+function select(dosState: DOS.AppState) {
+    const { election, publicMeetingDate, riskLimit } = dosState;
 
-    if (!sos) { return {}; }
-
-    const { election, publicMeetingDate, riskLimit } = sos;
-
-    return { election, riskLimit, publicMeetingDate, sos };
-};
+    return { election, riskLimit, publicMeetingDate, dosState };
+}
 
 
 export default withSync(
-    StartPageContainer,
+    withDOSState(StartPageContainer),
     'DOS_DEFINE_AUDIT_SYNC',
     select,
 );

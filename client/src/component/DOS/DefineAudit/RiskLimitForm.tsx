@@ -7,6 +7,8 @@ import { NumericInput } from '@blueprintjs/core';
 
 interface FormProps {
     forms: any;
+    riskLimit: number;
+    setFormValid: OnClick;
 }
 
 interface FormState {
@@ -37,7 +39,7 @@ function toPercent(val: number) {
 }
 
 
-class RiskLimitForm extends React.Component<FormProps & any, FormState> {
+class RiskLimitForm extends React.Component<FormProps, FormState> {
     public state: FormState = {
         ballotPollingField: `${toPercent(DEFAULT_RISK_LIMIT)}`,
         ballotPollingLimit: DEFAULT_RISK_LIMIT,
@@ -143,7 +145,7 @@ class RiskLimitForm extends React.Component<FormProps & any, FormState> {
         this.syncParent(s);
     }
 
-    private syncParent = (s: any) => {
+    private syncParent = (s: FormState) => {
         // Tell parent component if it should disable the "Save" button.
         const parsedComparisonField = parseFloat(s.comparisonField);
         const fieldValid = isValidRiskLimit(parsedComparisonField);

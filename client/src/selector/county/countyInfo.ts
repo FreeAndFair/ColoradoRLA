@@ -1,14 +1,10 @@
 import counties from 'corla/data/counties';
 
 
-function countyInfo(state: any) {
-    const { county } = state;
+function countyInfo(state: County.AppState): Option<CountyInfo> {
+    if (!state.id) { return null; }
 
-    if (!county.id) {
-        return {};
-    }
-
-    return counties[county.id];
+    return counties[state.id];
 }
 
 

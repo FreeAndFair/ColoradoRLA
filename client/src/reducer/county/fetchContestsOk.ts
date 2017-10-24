@@ -20,10 +20,13 @@ const parse = (data: any, state: any) => {
 };
 
 
-export default (state: any, action: any) => {
+export default function fetchContestsOk(
+    state: County.AppState,
+    action: Action.CountyFetchContestsOk,
+): County.AppState {
     const nextState = { ...state };
 
-    nextState.county.contestDefs = merge({}, parse(action.data, state));
+    nextState.contestDefs = parse(action.data, state);
 
     return nextState;
-};
+}

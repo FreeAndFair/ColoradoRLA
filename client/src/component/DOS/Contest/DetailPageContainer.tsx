@@ -1,11 +1,18 @@
 import * as React from 'react';
+import { match } from 'react-router-dom';
 
+import withDOSState from 'corla/component/withDOSState';
 import withSync from 'corla/component/withSync';
 
 import ContestDetailPage from './DetailPage';
 
 
-class ContestDetailContainer extends React.Component<any, any> {
+interface ContainerProps {
+    contests: DOS.Contests;
+    match: match<any>;
+}
+
+class ContestDetailContainer extends React.Component<ContainerProps> {
     public render() {
         const { contests } = this.props;
 
@@ -24,21 +31,15 @@ class ContestDetailContainer extends React.Component<any, any> {
     }
 }
 
-const select = (state: any) => {
-    const { sos } = state;
-
-    if (!sos) {
-        return {};
-    }
-
-    const { contests } = sos;
+function select(dosState: DOS.AppState) {
+    const { contests } = dosState;
 
     return { contests };
-};
+}
 
 
 export default withSync(
-    ContestDetailContainer,
+    withDOSState(ContestDetailContainer),
     'DOS_CONTEST_DETAIL_SYNC',
     select,
 );

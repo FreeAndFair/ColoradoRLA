@@ -5,7 +5,11 @@ import RoundContainer from './RoundContainer';
 import fetchReport from 'corla/action/dos/fetchReport';
 
 
-const RiskLimitInfo = ({ riskLimit }: any) => {
+interface RiskLimitInfoProps {
+    riskLimit: number;
+}
+
+const RiskLimitInfo = ({ riskLimit }: RiskLimitInfoProps) => {
     return (
         <div className='pt-card'>
             <strong>Target Risk Limit: </strong> { riskLimit * 100 } %
@@ -13,7 +17,11 @@ const RiskLimitInfo = ({ riskLimit }: any) => {
     );
 };
 
-const SeedInfo = ({ seed }: any) => {
+interface SeedInfoProps {
+    seed: string;
+}
+
+const SeedInfo = ({ seed }: SeedInfoProps) => {
     return (
         <div className='pt-card'>
             <strong>Seed: </strong> { seed }
@@ -21,11 +29,18 @@ const SeedInfo = ({ seed }: any) => {
     );
 };
 
-const Definition = ({ sos }: any) => {
+interface DefinitionProps {
+    dosState: DOS.AppState;
+}
+
+const Definition = ({ dosState }: DefinitionProps) => {
+    // We assume this component is only rendered if the audit is defined.
+    // If the audit is defined, then we have a `seed`. The compiler can't infer this
+    // yet, so we assert it for now.
     return (
         <div>
-            <RiskLimitInfo riskLimit={ sos.riskLimit } />
-            <SeedInfo seed={ sos.seed } />
+            <RiskLimitInfo riskLimit={ dosState.riskLimit! } />
+            <SeedInfo seed={ dosState.seed! } />
         </div>
     );
 };
@@ -36,14 +51,24 @@ const NotDefined = () => {
     );
 };
 
-const Main = (props: any) => {
-    const { auditDefined, canRenderReport, sos } = props;
+interface MainProps {
+    auditDefined: boolean;
+    canRenderReport: boolean;
+    dosState: DOS.AppState;
+}
+
+const Main = (props: MainProps) => {
+    const { auditDefined, canRenderReport, dosState } = props;
 
     const auditDefinition = auditDefined
-                          ? <Definition sos={ sos } />
+                          ? <Definition dosState={ dosState } />
                           : <NotDefined />;
 
-    if (sos.asm.currentState === 'DOS_AUDIT_COMPLETE') {
+    if (!dosState.asm) {
+        return null;
+    }
+
+    if (dosState.asm.currentState === 'DOS_AUDIT_COMPLETE') {
         return (
             <div className='sos-notifications pt-card'>
                 { auditDefinition }

@@ -1,19 +1,31 @@
 import * as React from 'react';
 
-import { formatCountyAsmState } from 'corla/format';
+import { formatCountyASMState } from 'corla/format';
 
 import * as _ from 'lodash';
 
 
-const ContestInfoTableRow = ({ choice }: any) => (
-    <tr>
-        <td>{ choice.name }</td>
-        <td>{ choice.description }</td>
-    </tr>
-);
+interface ContestInfoTableRowProps {
+    choice: ContestChoice;
+}
 
-const ContestInfoTable = ({ contest }: any) => {
-    const body = _.map(contest.choices, (c: any) => {
+const ContestInfoTableRow = (props: ContestInfoTableRowProps) => {
+    const { choice } = props;
+    return (
+        <tr>
+            <td>{ choice.name }</td>
+            <td>{ choice.description }</td>
+        </tr>
+    );
+};
+
+interface ContestInfoTableProps {
+    contest: Contest;
+}
+
+const ContestInfoTable = (props: ContestInfoTableProps) => {
+    const { contest } = props;
+    const body = _.map(contest.choices, c => {
         return <ContestInfoTableRow key={ c.name } choice={ c } />;
     });
 
@@ -35,8 +47,14 @@ const ContestInfoTable = ({ contest }: any) => {
     );
 };
 
-const ContestInfo = ({ contests }: any): any => {
-    const contestTables = _.map(contests, (c: any) => {
+interface ContestInfoProps {
+    contests: County.ContestDefs;
+}
+
+const ContestInfo = (props: ContestInfoProps) => {
+    const { contests } = props;
+
+    const contestTables = _.map(contests, c => {
         if (!c) {
             return <div />;
         }
@@ -54,18 +72,29 @@ const ContestInfo = ({ contests }: any): any => {
     );
 };
 
-const CountyInfo = ({ county, currentRoundNumber, info }: any) => {
-    const { ballotsToAudit } = county;
+interface CountyInfoProps {
+    countyState: County.AppState;
+    currentRoundNumber: number;
+    info: CountyInfo;
+}
+
+const CountyInfo = (props: CountyInfoProps) => {
+    const { countyState, currentRoundNumber, info } = props;
+
+    const currentState: County.ASMState = _.get(countyState, 'asm.countyState.currentState');
+    const status = currentState
+                 ? formatCountyASMState(currentState)
+                 : '';
 
     const rows = [
         ['County:', info.name],
-        ['Status:', formatCountyAsmState(county.asm.county.currentState)],
+        ['Status:', status],
         ['Current Round:', currentRoundNumber],
-        ['Ballot cards remaining in round:', county.ballotsRemainingInRound],
-        ['Ballot cards audited (all rounds):', county.auditedBallotCount],
-        ['Disagreements (all rounds):', county.disagreementCount],
-        ['Discrepancies (all rounds):', county.discrepancyCount],
-    ].map(([k, v]: any) => (
+        ['Ballot cards remaining in round:', countyState.ballotsRemainingInRound],
+        ['Ballot cards audited (all rounds):', countyState.auditedBallotCount],
+        ['Disagreements (all rounds):', countyState.disagreementCount],
+        ['Discrepancies (all rounds):', countyState.discrepancyCount],
+    ].map(([k, v]) => (
         <tr key={ k }>
             <td><strong>{ k }</strong></td>
             <td>{ v }</td>
@@ -84,12 +113,26 @@ const CountyInfo = ({ county, currentRoundNumber, info }: any) => {
     );
 };
 
-const Info = ({ info, contests, county, currentRoundNumber }: any) => (
-    <div className='info pt-card'>
-        <CountyInfo county={ county } info={ info } currentRoundNumber={ currentRoundNumber } />
-        <ContestInfo contests={ contests } />
-    </div>
-);
+
+interface InfoProps {
+    info: CountyInfo;
+    contests: County.ContestDefs;
+    countyState: County.AppState;
+    currentRoundNumber: number;
+}
+
+const Info = (props: InfoProps) => {
+    const { info, contests, countyState, currentRoundNumber } = props;
+
+    return (
+        <div className='info pt-card'>
+            <CountyInfo countyState={ countyState }
+                        info={ info }
+                        currentRoundNumber={ currentRoundNumber } />
+            <ContestInfo contests={ contests } />
+        </div>
+    );
+};
 
 
 export default Info;

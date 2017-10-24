@@ -1,10 +1,9 @@
 import { parse } from 'corla/adapter/uploadBallotManifest';
 
 
-export default (state: any, action: any) => {
-    const nextState = { ...state };
-
-    nextState.county = { ...nextState.county, ...parse(action.data) };
-
-    return nextState;
-};
+export default function uploadBallotManifestOk(
+    state: County.AppState,
+    action: Action.UploadBallotManifestOk,
+): County.AppState {
+    return { ...state, ...parse(action.data) };
+}

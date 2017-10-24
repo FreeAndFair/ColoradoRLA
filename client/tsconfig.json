@@ -13,6 +13,7 @@
         "noFallthroughCasesInSwitch": true,
         "noImplicitAny": true,
         "noImplicitReturns": true,
+        "strictNullChecks": true,
 
         "lib": [
             "dom",
@@ -27,7 +28,13 @@
     },
 
     "files": [
-        "./declarations.d.ts",
+        "./index.d.ts",
+        "./action.d.ts",
+        "./county.d.ts",
+        "./dos.d.ts",
+        "./global.d.ts",
+        "./json.d.ts",
+        "./vendor.d.ts",
         "./node_modules/@types/webpack-env/index.d.ts"
     ],
 

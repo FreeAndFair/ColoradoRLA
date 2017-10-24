@@ -3,13 +3,22 @@ import * as React from 'react';
 import login1F from 'corla/action/login1F';
 
 
-function isFormValid(form: any): boolean {
+function isFormValid(form: FormFields): boolean {
     const { username, password } = form;
 
     return username.length > 0;
 }
 
-export default class PasswordForm extends React.Component<any, any> {
+interface FormFields {
+    password: string;
+    username: string;
+}
+
+interface FormState {
+    form: FormFields;
+}
+
+export default class PasswordForm extends React.Component<{}, FormState> {
     public state = {
         form: {
             password: '',

@@ -10,8 +10,15 @@ import ballotNotFound from 'corla/action/county/ballotNotFound';
 import countyFetchCvr from 'corla/action/county/fetchCvr';
 
 
-const BallotNotFoundForm = ({ ballotNotFound, currentBallot }: any) => {
+interface NotFoundProps {
+    ballotNotFound: OnClick;
+    currentBallot: Cvr;
+}
+
+const BallotNotFoundForm = (props: NotFoundProps) => {
+    const { ballotNotFound, currentBallot } = props;
     const onClick = () => ballotNotFound(currentBallot.id);
+
     return (
         <div>
             <div>
@@ -26,25 +33,31 @@ const BallotNotFoundForm = ({ ballotNotFound, currentBallot }: any) => {
     );
 };
 
-const AuditInstructions = (props: any) => {
+interface InstructionsProps {
+    ballotNotFound: OnClick;
+    countyState: County.AppState;
+    currentBallot: Cvr;
+    currentBallotNumber: number;
+}
+
+const AuditInstructions = (props: InstructionsProps) => {
     const {
         ballotNotFound,
-        county,
+        countyState,
         currentBallot,
         currentBallotNumber,
     } = props;
 
-    const { currentRound } = county;
-
-    const isCurrentCvr = (cvr: any) => cvr.db_id === currentBallot.id;
-    const fullCvr = _.find(county.cvrsToAudit, isCurrentCvr);
+    const { currentRound } = countyState;
+    const isCurrentCvr = (cvr: JSON.Cvr) => cvr.db_id === currentBallot.id;
+    const fullCvr = _.find(countyState.cvrsToAudit, isCurrentCvr);
     const storageBin = fullCvr ? fullCvr.storage_location : '—';
 
     return (
         <div className='pt-card'>
             <div className='pt-card'>
                 Use this page to report the voter markings on ballot card #{ currentBallotNumber },
-                out of { currentRound.expectedCount } ballots that you must audit in this round.
+                out of { currentRound!.expectedCount } ballots that you must audit in this round.
             </div>
             <div>
                 <div className='pt-card'>
@@ -95,7 +108,11 @@ const AuditInstructions = (props: any) => {
     );
 };
 
-const ContestInfo = ({ contest }: any) => {
+interface ContestInfoProps {
+    contest: Contest;
+}
+
+const ContestInfo = ({ contest }: ContestInfoProps) => {
     const { name, description, choices, votesAllowed } = contest;
 
     return (
@@ -107,16 +124,23 @@ const ContestInfo = ({ contest }: any) => {
     );
 };
 
-const ContestChoices = (props: any) => {
+interface ChoicesProps {
+    choices: ContestChoice[];
+    marks: County.AcvrContest;
+    noConsensus: boolean;
+    updateBallotMarks: OnClick;
+}
+
+const ContestChoices = (props: ChoicesProps) => {
     const { choices, marks, noConsensus, updateBallotMarks } = props;
 
-    const updateChoiceByName = (name: string) => (e: any) => {
+    const updateChoiceByName = (name: string) => (e: React.ChangeEvent<any>) => {
         const checkbox = e.target;
 
         updateBallotMarks({ choices: { [name]: checkbox.checked } });
     };
 
-    const choiceForms = _.map(choices, (choice: any) => {
+    const choiceForms = _.map(choices, choice => {
         const checked = marks.choices[choice.name];
 
         return (
@@ -138,7 +162,14 @@ const ContestChoices = (props: any) => {
     );
 };
 
-const ContestComments = ({ comments, onChange }: any) => {
+interface CommentsProps {
+    comments: string;
+    onChange: OnClick;
+}
+
+const ContestComments = (props: CommentsProps) => {
+    const { comments, onChange } = props;
+
     return (
         <div className='pt-card'>
             <label>
@@ -149,18 +180,25 @@ const ContestComments = ({ comments, onChange }: any) => {
     );
 };
 
-const BallotContestMarkForm = (props: any) => {
-    const { contest, county, currentBallot, updateBallotMarks } = props;
+interface MarkFormProps {
+    contest: Contest;
+    countyState: County.AppState;
+    currentBallot: Cvr;
+    updateBallotMarks: OnClick;
+}
+
+const BallotContestMarkForm = (props: MarkFormProps) => {
+    const { contest, countyState, currentBallot, updateBallotMarks } = props;
     const { name, description, choices, votesAllowed } = contest;
 
-    const acvr = county.acvrs[currentBallot.id];
+    const acvr = countyState.acvrs![currentBallot.id];
     const contestMarks = acvr[contest.id];
 
-    const updateComments = (comments: any) => {
+    const updateComments = (comments: string) => {
         updateBallotMarks({ comments });
     };
 
-    const updateConsensus = (e: any) => {
+    const updateConsensus = (e: React.ChangeEvent<any>) => {
         updateBallotMarks({ noConsensus: !!e.target.checked });
     };
 
@@ -185,13 +223,19 @@ const BallotContestMarkForm = (props: any) => {
     );
 };
 
-const BallotAuditForm = (props: any) => {
-    const { county, currentBallot } = props;
+interface AuditFormProps {
+    countyState: County.AppState;
+    currentBallot: Cvr;
+    updateBallotMarks: OnClick;
+}
 
-    const contestForms = _.map(currentBallot.contestInfo, (info: any) => {
-        const contest = county.contestDefs[info.contest];
+const BallotAuditForm = (props: AuditFormProps) => {
+    const { countyState, currentBallot } = props;
 
-        const updateBallotMarks: any = (data: any) => props.updateBallotMarks({
+    const contestForms = _.map(currentBallot.contestInfo, info => {
+        const contest = countyState.contestDefs![info.contest];
+
+        const updateBallotMarks = (data: any) => props.updateBallotMarks({
             ballotId: currentBallot.id,
             contestId: contest.id,
             ...data,
@@ -201,7 +245,7 @@ const BallotAuditForm = (props: any) => {
             <BallotContestMarkForm
                 key={ contest.id }
                 contest={ contest }
-                county={ county }
+                countyState={ countyState }
                 currentBallot={ currentBallot }
                 updateBallotMarks={ updateBallotMarks } />
         );
@@ -210,9 +254,18 @@ const BallotAuditForm = (props: any) => {
     return <div>{ contestForms }</div>;
 };
 
-const BallotAuditStage = (props: any) => {
+interface StageProps {
+    countyState: County.AppState;
+    currentBallot: Cvr;
+    currentBallotNumber: number;
+    nextStage: OnClick;
+    prevStage: OnClick;
+    updateBallotMarks: OnClick;
+}
+
+const BallotAuditStage = (props: StageProps) => {
     const {
-        county,
+        countyState,
         currentBallot,
         currentBallotNumber,
         nextStage,
@@ -229,12 +282,12 @@ const BallotAuditStage = (props: any) => {
             <h2>Ballot Card Verification</h2>
             <AuditInstructions
                 ballotNotFound={ notFound }
-                county={ county }
+                countyState={ countyState }
                 currentBallot={ currentBallot }
                 currentBallotNumber={ currentBallotNumber }
             />
             <BallotAuditForm
-                county={ county }
+                countyState={ countyState }
                 currentBallot={ currentBallot }
                 updateBallotMarks={ updateBallotMarks }
             />

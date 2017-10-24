@@ -1,7 +1,11 @@
 import * as React from 'react';
 
 
-const BackButton = ({ back }: any) => {
+interface Props {
+    back: OnClick;
+}
+
+const BackButton = ({ back }: Props) => {
     return <button className='pt-button' onClick={ back }>Back</button>;
 };
 

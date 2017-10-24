@@ -11,7 +11,17 @@ import countiesWithRoundSelector from 'corla/selector/dos/countiesWithRound';
 import currentRoundSelector from 'corla/selector/dos/currentRound';
 
 
-class RoundContainer extends React.Component<any, any> {
+interface ContainerProps {
+    auditStarted: boolean;
+    canStartNextRound: boolean;
+    countiesWithRound: DOS.CountyStatus[];
+    currentRound: number;
+    dosState: DOS.AppState;
+    finishedCountiesCount: number;
+    totalCountiesCount: number;
+}
+
+class RoundContainer extends React.Component<ContainerProps> {
     public render() {
         if (this.props.canStartNextRound) {
             return <Control { ...this.props } />;
@@ -25,34 +35,28 @@ class RoundContainer extends React.Component<any, any> {
     }
 }
 
-const select = (state: any) => {
-    const { sos } = state;
-
-    if (!sos) {
-        return {};
-    }
-
-    const currentRound = currentRoundSelector(state);
-    const countiesWithRound = countiesWithRoundSelector(state, currentRound);
+function select(dosState: DOS.AppState) {
+    const currentRound = currentRoundSelector(dosState);
+    const countiesWithRound = countiesWithRoundSelector(dosState, currentRound);
 
     const totalCountiesCount = countiesWithRound.length;
 
-    const finished = (c: any) => {
+    const finished = (c: DOS.CountyStatus) => {
         return c.currentRound.number !== currentRound
             || c.asmState === 'COUNTY_AUDIT_COMPLETE';
     };
     const finishedCountiesCount = countiesWithRound.filter(finished).length;
 
     return {
-        auditStarted: auditStartedSelector(state),
-        canStartNextRound: canStartNextRoundSelector(state),
+        auditStarted: auditStartedSelector(dosState),
+        canStartNextRound: canStartNextRoundSelector(dosState),
         countiesWithRound,
         currentRound,
+        dosState,
         finishedCountiesCount,
-        sos,
         totalCountiesCount,
     };
-};
+}
 
 
 export default connect(select)(RoundContainer);

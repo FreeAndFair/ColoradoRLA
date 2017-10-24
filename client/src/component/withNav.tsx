@@ -20,7 +20,11 @@ const Heading = () =>
 const Divider = () =>
     <span className='pt-navbar-divider' />;
 
-const HomeButton = ({ path }: any) => (
+interface HomeButtonProps {
+    path: string;
+}
+
+const HomeButton = ({ path }: HomeButtonProps) => (
     <Link to={ path }>
         <button className='pt-button pt-minimal pt-icon-home'>Home</button>
     </Link>
@@ -32,11 +36,18 @@ const UserButton = () =>
 const SettingsButton = () =>
     <button className='pt-button pt-minimal pt-icon-cog' />;
 
-const LogoutButton = ({ logout }: any) =>
+interface LogoutButtonProps {
+    logout: OnClick;
+}
+
+const LogoutButton = ({ logout }: LogoutButtonProps) =>
     <button className='pt-button pt-minimal pt-icon-log-out' onClick={ logout } />;
 
+interface ResetButtonProps {
+    reset: OnClick;
+}
 
-const ResetDatabaseButton = ({ reset }: any) => (
+const ResetDatabaseButton = ({ reset }: ResetButtonProps) => (
     <button
         className='pt-button pt-intent-danger pt-icon-warning-sign'
         onClick={ reset }>
@@ -45,7 +56,7 @@ const ResetDatabaseButton = ({ reset }: any) => (
 );
 
 
-export default function withNav(Menu: any, path: any): any {
+export default function withNav(Menu: React.ComponentClass, path: string) {
     const resetSection = path === '/sos' && config.debug
                        ? <ResetDatabaseButton reset={ resetDatabase } />
                        : <div />;
@@ -65,7 +76,6 @@ export default function withNav(Menu: any, path: any): any {
                 <Divider />
                 <LogoutButton logout={ logout }/>
             </div>
-
         </nav>
     );
 }

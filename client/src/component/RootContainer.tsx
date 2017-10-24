@@ -15,15 +15,11 @@ import AuditBoardPageContainer from './County/AuditBoard/PageContainer';
 import CountyAuditPageContainer from './County/Audit/PageContainer';
 import CountyDashboardPageContainer from './County/Dashboard/PageContainer';
 
-import GlossaryContainer from './Help/GlossaryContainer';
-import HelpRootContainer from './Help/HelpRootContainer';
-import ManualContainer from './Help/ManualContainer';
-
 import NextLoginContainer from './Login/Container';
 
 import DOSDefineAuditReviewPageContainer from './DOS/DefineAudit/ReviewPageContainer';
 import DOSDefineAuditSeedPageContainer from './DOS/DefineAudit/SeedPageContainer';
-import DOSDefineAduitSelectContestsPageContainer from './DOS/DefineAudit/SelectContestsPageContainer';
+import DOSDefineAuditSelectContestsPageContainer from './DOS/DefineAudit/SelectContestsPageContainer';
 import DOSDefineAuditStartPageContainer from './DOS/DefineAudit/StartPageContainer';
 
 import DOSContestDetailPageContainer from './DOS/Contest/DetailPageContainer';
@@ -35,44 +31,10 @@ import DOSDashboardContainer from './DOS/Dashboard/PageContainer';
 
 
 export interface RootContainerProps {
-    store: Store<any>;
+    store: Store<AppState>;
 }
 
-type RouteDef = [string, React.ComponentClass];
-
-const makeRoute = (store: any) => (def: RouteDef) => {
-    const [path, Page] = def;
-
-    return (
-        <LoginRoute
-            exact
-            key={ path }
-            path={ path }
-            page={ Page }
-        />
-    );
-};
-
-const routes: RouteDef[] = [
-    ['/', RootRedirectContainer],
-    ['/county', CountyDashboardPageContainer],
-    ['/county/board', AuditBoardPageContainer],
-    ['/county/audit', CountyAuditPageContainer],
-    ['/help', HelpRootContainer],
-    ['/help/glossary', GlossaryContainer],
-    ['/help/manual', ManualContainer],
-    ['/sos', DOSDashboardContainer],
-    ['/sos/audit', DOSDefineAuditStartPageContainer],
-    ['/sos/audit/seed', DOSDefineAuditSeedPageContainer],
-    ['/sos/audit/select-contests', DOSDefineAduitSelectContestsPageContainer],
-    ['/sos/audit/review', DOSDefineAuditReviewPageContainer],
-    ['/sos/contest', DOSContestOverviewPageContainer],
-    ['/sos/contest/:contestId', DOSContestDetailPageContainer],
-    ['/sos/county', DOSCountyOverviewPageContainer],
-    ['/sos/county/:countyId', DOSCountyDetailPageContainer],
-];
-
-export class RootContainer extends React.Component<RootContainerProps, void> {
+export class RootContainer extends React.Component<RootContainerProps> {
     public render() {
         const { store } = this.props;
 
@@ -80,8 +42,48 @@ export class RootContainer extends React.Component<RootContainerProps, void> {
             <Provider store={ store }>
                 <Router>
                     <Switch>
-                        <Route exact path='/login' component={ NextLoginContainer } />
-                        { routes.map(makeRoute(store)) }
+                        <Route exact
+                               path='/login'
+                               component={ NextLoginContainer } />
+                        <LoginRoute exact
+                                    path='/'
+                                    page={ RootRedirectContainer } />
+                        <LoginRoute exact
+                                    path='/county'
+                                    page={ CountyDashboardPageContainer } />
+                        <LoginRoute exact
+                                    path='/county/board'
+                                    page={ AuditBoardPageContainer } />
+                        <LoginRoute exact
+                                    path='/county/audit'
+                                    page={ CountyAuditPageContainer } />
+                        <LoginRoute exact
+                                    path='/sos'
+                                    page={ DOSDashboardContainer } />
+                        <LoginRoute exact
+                                    path='/sos/audit'
+                                    page={ DOSDefineAuditStartPageContainer } />
+                        <LoginRoute exact
+                                    path='/sos/audit/seed'
+                                    page={ DOSDefineAuditSeedPageContainer } />
+                        <LoginRoute exact
+                                    path='/sos/audit/select-contests'
+                                    page={ DOSDefineAuditSelectContestsPageContainer } />
+                        <LoginRoute exact
+                                    path='/sos/audit/review'
+                                    page={ DOSDefineAuditReviewPageContainer } />
+                        <LoginRoute exact
+                                    path='/sos/contest'
+                                    page={ DOSContestOverviewPageContainer } />
+                        <LoginRoute exact
+                                    path='/sos/contest/:contestId'
+                                    page={ DOSContestDetailPageContainer } />
+                        <LoginRoute exact
+                                    path='/sos/county'
+                                    page={ DOSCountyOverviewPageContainer } />
+                        <LoginRoute exact
+                                    path='/sos/county/:countyId'
+                                    page={ DOSCountyDetailPageContainer } />
                     </Switch>
                 </Router>
             </Provider>

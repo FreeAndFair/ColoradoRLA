@@ -1,7 +1,5 @@
-function ballotsRemainingInRound(state: any): number {
-    const { county } = state;
-
-    return county.ballotsRemainingInRound;
+function ballotsRemainingInRound(state: County.AppState): Option<number> {
+    return state.ballotsRemainingInRound;
 }
 
 

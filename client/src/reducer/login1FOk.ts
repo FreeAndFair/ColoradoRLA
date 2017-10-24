@@ -1,8 +1,12 @@
-function parseBox(box: string): string[] {
-    return box.substring(1, box.length - 1).split(',');
+function parseBox(box: string): LoginChallengeBox {
+    const parts = box.substring(1, box.length - 1).split(',');
+
+    const [x, y, ..._] = parts;
+
+    return [x, y];
 }
 
-function parseChallenge(challenge: string): string[][] {
+function parseChallenge(challenge: string): LoginChallenge {
     const boxes = challenge.split(' ');
 
     return boxes.map(parseBox);
@@ -12,9 +16,9 @@ function parseChallenge(challenge: string): string[][] {
 function parse(data: any) {
     const { received, sent } = data;
 
-    const dashboard = received.role === 'STATE'
-        ? 'sos'
-        : 'county';
+    const dashboard: Dashboard = received.role === 'STATE'
+        ? 'DOS'
+        : 'County';
 
     const loginChallenge = received.challenge
         ? parseChallenge(received.challenge)
@@ -26,7 +30,12 @@ function parse(data: any) {
 }
 
 
-export default (state: any, action: any) => ({
-    ...state,
-    ...parse(action.data),
-});
+export default function login1FOk(
+    state: LoginAppState,
+    action: Action.Login1FOk,
+): LoginAppState {
+    return {
+        ...state,
+        ...parse(action.data),
+    };
+}

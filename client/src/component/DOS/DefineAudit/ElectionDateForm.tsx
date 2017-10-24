@@ -12,7 +12,15 @@ function defaultElectionDate(): string {
     return moment.tz(timezone).format('YYYY-MM-DD');
 }
 
-class ElectionDateForm extends React.Component<any, any> {
+interface FormProps {
+    forms: any;
+}
+
+interface FormState {
+    date: string;
+}
+
+class ElectionDateForm extends React.Component<FormProps, FormState> {
     public state = { date: defaultElectionDate() };
 
     public render() {

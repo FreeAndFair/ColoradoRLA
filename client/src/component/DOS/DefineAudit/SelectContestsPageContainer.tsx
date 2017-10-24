@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { Redirect } from 'react-router-dom';
 
+import { History } from 'history';
+
+import withDOSState from 'corla/component/withDOSState';
 import withPoll from 'corla/component/withPoll';
 
 import SelectContestsPage from './SelectContestsPage';
@@ -8,21 +11,33 @@ import SelectContestsPage from './SelectContestsPage';
 import selectContestsForAudit from 'corla/action/dos/selectContestsForAudit';
 
 
-class SelectContestsPageContainer extends React.Component<any, any> {
+interface ContainerProps {
+    auditedContests: DOS.AuditedContests;
+    contests: DOS.Contests;
+    dosState: DOS.AppState;
+    history: History;
+    isAuditable: OnClick;
+}
+
+class SelectContestsPageContainer extends React.Component<ContainerProps> {
     public render() {
         const {
             auditedContests,
             contests,
+            dosState,
             history,
             isAuditable,
-            sos,
         } = this.props;
 
-        if (!sos) {
+        if (!dosState) {
             return <div />;
         }
 
-        if (sos.asm.currentState === 'DOS_AUDIT_ONGOING') {
+        if (!dosState.asm) {
+            return <div />;
+        }
+
+        if (dosState.asm.currentState === 'DOS_AUDIT_ONGOING') {
             return <Redirect to='/sos' />;
         }
 
@@ -39,28 +54,26 @@ class SelectContestsPageContainer extends React.Component<any, any> {
     }
 }
 
-const select = (state: any) => {
-    const { sos } = state;
+function select(dosState: DOS.AppState) {
+    const isAuditable = (contestId: number): boolean => {
+        if (!dosState.auditTypes) { return false; }
 
-    if (!sos) { return {}; }
-
-    const isAuditable = (contestId: any): boolean => {
-        const t = sos.auditTypes[contestId];
+        const t = dosState.auditTypes[contestId];
 
         return t !== 'HAND_COUNT' && t !== 'NOT_AUDITABLE';
     };
 
     return {
-        auditedContests: sos.auditedContests,
-        contests: sos.contests,
+        auditedContests: dosState.auditedContests,
+        contests: dosState.contests,
+        dosState,
         isAuditable,
-        sos,
     };
-};
+}
 
 
 export default withPoll(
-    SelectContestsPageContainer,
+    withDOSState(SelectContestsPageContainer),
     'DOS_SELECT_CONTESTS_POLL_START',
     'DOS_SELECT_CONTESTS_POLL_STOP',
     select,

@@ -1,9 +1,11 @@
 import * as _ from 'lodash';
 
 
-export default (state: any, action: any) => {
-    const nextState: any = _.merge({}, state);
-    const { county } = nextState;
+export default function updateAcvrForm(
+    state: County.AppState,
+    action: Action.UpdateAcvrForm,
+): County.AppState {
+    const nextState = _.merge({}, state);
 
     const {
         ballotId,
@@ -22,14 +24,14 @@ export default (state: any, action: any) => {
         nextMarks.noConsensus = !!noConsensus;
     }
 
-    const marks = nextState.county.acvrs[ballotId][contestId];
+    const marks = nextState.acvrs![ballotId][contestId];
 
     if (nextMarks.noConsensus) {
         const toClear = _.merge({}, marks.choices, nextMarks.choices);
         nextMarks.choices = _.mapValues(toClear, () => false);
     }
 
-    nextState.county.acvrs[ballotId][contestId] = _.merge({}, marks, nextMarks);
+    nextState.acvrs![ballotId][contestId] = _.merge({}, marks, nextMarks);
 
     return nextState;
-};
+}

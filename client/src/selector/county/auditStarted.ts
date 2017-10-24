@@ -7,13 +7,13 @@ const AUDIT_STARTED_STATES = [
     'DEADLINE_MISSED',
 ];
 
+function auditStarted(state: County.AppState): boolean {
+    if (!state.asm) { return false; }
+    if (!state.asm.county) { return false; }
 
-function auditStarted(state: any): boolean {
-    if (!_.has(state, 'county.asm.county.currentState')) {
-        return false;
-    }
+    const { currentState } = state.asm.county;
 
-    const { currentState } = state.county.asm.county;
+    if (!currentState) { return false; }
 
     return _.includes(AUDIT_STARTED_STATES, currentState);
 }
