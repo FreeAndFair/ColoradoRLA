@@ -11,6 +11,13 @@ type ElectionType
     | 'general'
     | 'recall';
 
+type AuthRole = 'STATE' | 'COUNTY';
+
+type AuthStage
+    = 'NOT_AUTHENTICATED'
+    | 'TRADITIONALLY_AUTHENTICATED'
+    | 'SECOND_FACTOR_AUTHENTICATED';
+
 type LoginChallengeBox = [string, string];
 
 type LoginChallenge = LoginChallengeBox[];
