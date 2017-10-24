@@ -5,10 +5,11 @@ interface Election {
     type: ElectionType;
 }
 
-type ElectionType = 'coordinated'
-                  | 'primary'
-                  | 'general'
-                  | 'recall';
+type ElectionType
+    = 'coordinated'
+    | 'primary'
+    | 'general'
+    | 'recall';
 
 type LoginChallengeBox = [string, string];
 
