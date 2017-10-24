@@ -1,11 +1,8 @@
 import * as _ from 'lodash';
 
 
-function parse(data: any) {
-    return {
-        currentState: data.current_state,
-        enabledUiEvents: data.enabled_ui_events,
-    };
+function parse(data: any): AuditBoardASMState {
+    return data.current_state;
 }
 
 
@@ -15,7 +12,7 @@ export default function fetchAuditBoardASMStateOk(
 ): County.AppState {
     const nextState = { ...state };
 
-    nextState.asm!.auditBoard = parse(action.data);
+    nextState.asm.auditBoard = parse(action.data);
 
     return nextState;
 }

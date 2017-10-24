@@ -1,7 +1,7 @@
 declare namespace County {
     interface AppState {
         acvrs?: Acvrs;
-        asm?: any;
+        asm: ASMStates;
         auditBoard: AuditBoard;
         auditedBallotCount?: number;
         ballotManifest?: UploadedFile;
@@ -32,6 +32,11 @@ declare namespace County {
         uploadingCvrExport?: boolean;
     }
 
+    interface ASMStates {
+        auditBoard: AuditBoardASMState;
+        county: ASMState;
+    }
+
     interface Acvrs {
         [cvrId: number]: Acvr;
     }
@@ -52,11 +57,6 @@ declare namespace County {
 
     interface ContestDefs {
         [id: number]: Contest;
-    }
-
-    interface ASM {
-        currentState: ASMState;
-        enabledUiEvents: string[];
     }
 
     type ASMState

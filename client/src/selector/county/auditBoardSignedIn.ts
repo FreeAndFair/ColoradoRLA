@@ -10,16 +10,8 @@ const SIGNED_IN_STATES = [
 ];
 
 function auditBoardSignedIn(state: County.AppState): boolean {
-    const { auditBoard } = state;
-    if (!auditBoard) { return false; }
-
-    if (!state.asm) { return false; }
-    if (!state.asm.auditBoard) { return false; }
-    const { currentState } = state.asm.auditBoard;
-    if (!currentState) { return false; }
-
-    return isValidAuditBoard(auditBoard)
-        && _.includes(SIGNED_IN_STATES, currentState);
+    return isValidAuditBoard(state.auditBoard)
+        && _.includes(SIGNED_IN_STATES, state.asm.auditBoard);
 }
 
 

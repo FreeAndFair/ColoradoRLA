@@ -2,8 +2,8 @@ export function countyState(): County.AppState {
     return {
         acvrs: {},
         asm: {
-            auditBoard: {},
-            county: {},
+            auditBoard: 'AUDIT_INITIAL_STATE',
+            county: 'COUNTY_INITIAL_STATE',
         },
         auditBoard: [],
         contests: [],
