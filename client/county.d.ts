@@ -26,7 +26,7 @@ declare namespace County {
         hash?: string;  // TODO: remove
         id?: number;
         riskLimit?: number;
-        rounds?: Round[];
+        rounds: Round[];
         type: 'County';
         uploadingBallotManifest?: boolean;
         uploadingCvrExport?: boolean;

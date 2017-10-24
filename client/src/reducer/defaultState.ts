@@ -7,6 +7,7 @@ export function countyState(): County.AppState {
         },
         auditBoard: [],
         contests: [],
+        rounds: [],
         type: 'County',
     };
 }
