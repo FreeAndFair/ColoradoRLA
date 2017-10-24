@@ -59,7 +59,11 @@ class CountyDashboardContainer extends React.Component<DashboardProps> {
             return <MissedDeadlinePage />;
         }
 
-        const countyInfo = countyState.id ? counties[countyState.id] : {};
+        if (!countyState.id) {
+            return <div />;
+        }
+
+        const countyInfo = counties[countyState.id];
         const boardSignIn = () => history.push('/county/board');
         const startAudit = () => history.push('/county/audit');
 

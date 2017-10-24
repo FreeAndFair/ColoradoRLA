@@ -104,7 +104,7 @@ class CountyUpdates extends React.Component<UpdatesProps, UpdatesState> {
         ];
 
         const countyData: RowData[] = _.map(countyStatus, (c): RowData => {
-            const county = _.find(counties, (x: CountyInfo) => x.id === c.id);
+            const county = counties[c.id];
 
             const status = formatCountyAndBoardASMState(c.asmState, c.auditBoardASMState);
             const auditedDiscrepancyCount = c.discrepancyCount
