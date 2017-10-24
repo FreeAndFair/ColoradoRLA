@@ -6,7 +6,6 @@ declare namespace DOS {
         auditedContests: DOS.AuditedContests;
         auditTypes: ContestAuditTypes;
         contests: DOS.Contests;
-        contestsForAudit: Contests;
         countyStatus: DOS.CountyStatuses;
         discrepancyCounts?: DOS.DiscrepancyCounts;
         election?: Election;

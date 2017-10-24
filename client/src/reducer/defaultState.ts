@@ -17,7 +17,6 @@ export function dosState(): DOS.AppState {
         auditTypes: {},
         auditedContests: {},
         contests: {},
-        contestsForAudit: {},
         countyStatus: {},
         type: 'DOS',
     };

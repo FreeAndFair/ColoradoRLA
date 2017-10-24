@@ -18,7 +18,6 @@ import dosContestFetchOk from './dos/contestFetchOk';
 import dosDashboardRefreshOk from './dos/dashboardRefreshOk';
 import fetchDOSASMStateOk from './dos/fetchDOSASMStateOk';
 import dosLoginOk from './dos/loginOk';
-import selectContestsForAuditOk from './dos/selectContestsForAuditOk';
 import uploadRandomSeedOk from './dos/uploadRandomSeedOk';
 
 import login1FOk from './login1FOk';
@@ -74,10 +73,6 @@ export default function root(state: AppState, action: Action.App) {
 
     case 'LOGIN_1F_OK': {
         return login1FOk(state, action);
-    }
-
-    case 'SELECT_CONTESTS_FOR_AUDIT_OK': {
-        return selectContestsForAuditOk(state as DOS.AppState, action);
     }
 
     case 'UPDATE_ACVR_FORM': {
