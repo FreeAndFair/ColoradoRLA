@@ -24,30 +24,8 @@ import uploadRandomSeedOk from './dos/uploadRandomSeedOk';
 import login1FOk from './login1FOk';
 
 
-export const defaultCountyState = (): County.AppState => ({
-    acvrs: {},
-    asm: {
-        auditBoard: {},
-        county: {},
-    },
-    auditBoard: [],
-    contests: [],
-    type: 'County',
-});
-
-export const defaultDOSState = (): DOS.AppState => ({
-    asm: { currentState: 'DOS_INITIAL_STATE' },
-    auditedContests: {},
-    countyStatus: {},
-    type: 'DOS',
-});
-
-const defaultLoginState: LoginAppState = { type: 'Login' };
-
-const defaultState = defaultLoginState;
-
-
-export default function root(state: AppState = defaultState, action: Action.App) {
+// Default state is preloaded in the module `corla/store`.
+export default function root(state: AppState, action: Action.App) {
     switch (action.type) {
 
     case 'COUNTY_DASHBOARD_REFRESH_OK': {

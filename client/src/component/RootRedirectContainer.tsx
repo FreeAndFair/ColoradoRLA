@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 
 import { Redirect } from 'react-router-dom';
 
+import session from 'corla/session';
+
 import { isCountyAppState } from 'corla/type';
 
 
@@ -14,12 +16,20 @@ export class RootRedirectContainer extends React.Component<RootRedirectContainer
     public render() {
         const { stateType } = this.props;
 
-        if (stateType === 'County') {
-            return <Redirect to='/county' />;
-        }
+        const s = session.get();
 
-        if (stateType === 'DOS') {
-            return <Redirect to='/sos' />;
+        if (s) {
+            const { type } = s;
+
+            if (type === 'county' && stateType === 'County') {
+                return <Redirect to='/county' />;
+            }
+
+            if (type === 'dos' && stateType === 'DOS') {
+                return <Redirect to='/sos' />;
+            }
+
+            session.expire();
         }
 
         return <Redirect to='/login' />;

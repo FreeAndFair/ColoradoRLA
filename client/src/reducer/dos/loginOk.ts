@@ -1,6 +1,6 @@
-import { defaultDOSState } from '../root';
+import { dosState } from '../defaultState';
 
 
 export default function loginOk(state: LoginAppState): DOS.AppState {
-    return defaultDOSState();
+    return dosState();
 }

@@ -1,6 +1,6 @@
-import { defaultCountyState } from '../root';
+import { countyState } from '../defaultState';
 
 
 export default function loginOk(state: LoginAppState): County.AppState {
-    return defaultCountyState();
+    return countyState();
 }
