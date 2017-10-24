@@ -1,6 +1,6 @@
 import action from 'corla/action';
-
 import { endpoint } from 'corla/config';
+import { empty } from 'corla/util';
 
 const importUrl = endpoint('import-cvr-export');
 const uploadUrl = endpoint('upload-file');
@@ -27,7 +27,7 @@ async function importCvrExport(body: JSON.UploadCvrExportOk) {
 
         const r = await fetch(importUrl, init);
 
-        const received = await r.json();
+        const received = await r.json().catch(empty);
         const sent = body;
         const data = { received, sent };
 
@@ -58,7 +58,7 @@ async function uploadCvrExport(countyId: number, file: Blob, hash: string) {
 
         const r = await fetch(uploadUrl, init);
 
-        const received = await r.json();
+        const received = await r.json().catch(empty);
         const sent = { file, hash };
         const data = { received, sent };
 
