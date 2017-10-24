@@ -72,7 +72,7 @@ public class SetRandomSeed extends AbstractDoSDashboardEndpoint {
    * @param the_response The response.
    */
   @Override
-  public String endpoint(final Request the_request, final Response the_response) {
+  public String endpointBody(final Request the_request, final Response the_response) {
     try {
       final AuditInfo submitted = 
           Main.GSON.fromJson(the_request.body(), AuditInfo.class);

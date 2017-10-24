@@ -44,7 +44,7 @@ public class Root extends AbstractEndpoint {
    * {@inheritDoc}
    */
   @Override
-  public String endpoint(final Request the_request, final Response the_response) {
+  public String endpointBody(final Request the_request, final Response the_response) {
     ok(the_response, "ColoradoRLA Server, Version " + Main.VERSION + " - " +
                      "Please Use a Valid Endpoint!");
     return my_endpoint_result.get();

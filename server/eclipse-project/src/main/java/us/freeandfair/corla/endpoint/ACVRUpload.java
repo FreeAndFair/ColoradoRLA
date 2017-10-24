@@ -81,7 +81,7 @@ public class ACVRUpload extends AbstractAuditBoardDashboardEndpoint {
    * {@inheritDoc}
    */
   @Override
-  public String endpoint(final Request the_request, final Response the_response) {
+  public String endpointBody(final Request the_request, final Response the_response) {
     try {
       final SubmittedAuditCVR submission =
           Main.GSON.fromJson(the_request.body(), SubmittedAuditCVR.class);

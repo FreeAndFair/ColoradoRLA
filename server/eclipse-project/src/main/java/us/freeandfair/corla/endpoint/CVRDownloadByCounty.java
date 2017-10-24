@@ -72,7 +72,7 @@ public class CVRDownloadByCounty extends AbstractEndpoint {
   @Override
   // necessary to break out of the lambda expression in case of IOException
   @SuppressWarnings("PMD.ExceptionAsFlowControl")
-  public String endpoint(final Request the_request, final Response the_response) {
+  public String endpointBody(final Request the_request, final Response the_response) {
     final Set<Long> county_set = new HashSet<Long>();
     for (final String s : the_request.queryParams()) {
       county_set.add(Long.valueOf(s));

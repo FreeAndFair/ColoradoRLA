@@ -102,7 +102,7 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
    * {@inheritDoc}
    */
   @Override
-  public String endpoint(final Request the_request,
+  public String endpointBody(final Request the_request,
                          final Response the_response) {
     if (my_asm.get().currentState() == RANDOM_SEED_PUBLISHED) {
       // the audit hasn't started yet, so start round 1 and ignore the parameters

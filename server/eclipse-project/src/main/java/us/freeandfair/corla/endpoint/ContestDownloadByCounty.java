@@ -68,7 +68,7 @@ public class ContestDownloadByCounty extends AbstractEndpoint {
    * {@inheritDoc}
    */
   @Override
-  public String endpoint(final Request the_request, final Response the_response) {
+  public String endpointBody(final Request the_request, final Response the_response) {
     if (validateParameters(the_request)) {
       final Set<County> county_set = new HashSet<County>();
       for (final String s : the_request.queryParams()) {

@@ -43,7 +43,7 @@ public interface Endpoint {
   String endpointName();
  
   /**
-   * A Spark endpoint.
+   * The main body of the endpoint. 
    *
    * @param the_request The request object.
    * @param the_response The response object.

@@ -50,7 +50,7 @@ public class ReportBallotsToAudit extends AbstractDoSDashboardEndpoint {
    * {@inheritDoc}
    */
   @Override
-  public String endpoint(final Request the_request,
+  public String endpointBody(final Request the_request,
                          final Response the_response) {
     ok(the_response, "the report of ballots to audit is not yet implemented, but " + 
                      "the information can be obtained from county dashboard states");

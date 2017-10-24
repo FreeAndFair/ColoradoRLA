@@ -15,6 +15,8 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.persistence.PersistenceException;
 
@@ -23,6 +25,10 @@ import org.apache.cxf.attachment.Rfc5987Util;
 import spark.Request;
 import spark.Response;
 
+import us.freeandfair.corla.asm.ASMState;
+import us.freeandfair.corla.asm.ASMState.DoSDashboardState;
+import us.freeandfair.corla.asm.ASMUtilities;
+import us.freeandfair.corla.asm.DoSDashboardASM;
 import us.freeandfair.corla.report.StateReport;
 import us.freeandfair.corla.util.SparkHelper;
 
@@ -34,6 +40,16 @@ import us.freeandfair.corla.util.SparkHelper;
  */
 @SuppressWarnings("PMD.AtLeastOneConstructor")
 public class StateReportDownload extends AbstractEndpoint {
+  /**
+   * The states in which this endpoint can provide a result.
+   */
+  private static final List<ASMState> LEGAL_STATES = 
+      Arrays.asList(DoSDashboardState.COMPLETE_AUDIT_INFO_SET,
+                    DoSDashboardState.DOS_AUDIT_ONGOING, 
+                    DoSDashboardState.DOS_ROUND_COMPLETE,
+                    DoSDashboardState.DOS_AUDIT_COMPLETE,
+                    DoSDashboardState.AUDIT_RESULTS_PUBLISHED);
+  
   /**
    * {@inheritDoc}
    */
@@ -64,7 +80,14 @@ public class StateReportDownload extends AbstractEndpoint {
   @Override
   // necessary to break out of the lambda expression in case of IOException
   @SuppressWarnings("PMD.ExceptionAsFlowControl")
-  public String endpoint(final Request the_request, final Response the_response) {
+  public String endpointBody(final Request the_request, final Response the_response) {
+    // if we haven't defined the election, this is "data not found"
+    final DoSDashboardASM dos_asm = ASMUtilities.asmFor(DoSDashboardASM.class, 
+                                                        DoSDashboardASM.IDENTITY);
+    if (!LEGAL_STATES.contains(dos_asm.currentState())) {
+      dataNotFound(the_response, "No state report available in this state.");
+    }
+    
     final boolean pdf = "pdf".equalsIgnoreCase(the_request.queryParams("file_type"));
     final StateReport sr = new StateReport();
     byte[] file = new byte[0];

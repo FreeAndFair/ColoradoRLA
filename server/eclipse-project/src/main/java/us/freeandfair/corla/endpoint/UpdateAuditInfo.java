@@ -82,7 +82,7 @@ public class UpdateAuditInfo extends AbstractDoSDashboardEndpoint {
    */
   @Override
   @SuppressWarnings("PMD.UselessParentheses")
-  public String endpoint(final Request the_request, final Response the_response) {
+  public String endpointBody(final Request the_request, final Response the_response) {
     try {
       final AuditInfo info = 
           Main.GSON.fromJson(the_request.body(), AuditInfo.class);

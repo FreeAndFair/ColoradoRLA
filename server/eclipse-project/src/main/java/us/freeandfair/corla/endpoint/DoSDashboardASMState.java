@@ -55,7 +55,7 @@ public class DoSDashboardASMState extends AbstractDoSDashboardEndpoint {
    * {@inheritDoc}
    */
   @Override
-  public String endpoint(final Request the_request, final Response the_response) {
+  public String endpointBody(final Request the_request, final Response the_response) {
     // there's really nothing to do here other than get the ASM state, which we
     // conveniently have locally already
     

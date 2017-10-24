@@ -15,6 +15,8 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.persistence.PersistenceException;
 
@@ -24,6 +26,10 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.asm.ASMState;
+import us.freeandfair.corla.asm.ASMState.DoSDashboardState;
+import us.freeandfair.corla.asm.ASMUtilities;
+import us.freeandfair.corla.asm.DoSDashboardASM;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.report.CountyReport;
@@ -41,6 +47,16 @@ public class CountyReportDownload extends AbstractEndpoint {
    * The "county" parameter.
    */
   public static final String COUNTY = "county";
+  
+  /**
+   * The states in which this endpoint can provide a result.
+   */
+  private static final List<ASMState> LEGAL_STATES = 
+      Arrays.asList(DoSDashboardState.COMPLETE_AUDIT_INFO_SET,
+                    DoSDashboardState.DOS_AUDIT_ONGOING, 
+                    DoSDashboardState.DOS_ROUND_COMPLETE,
+                    DoSDashboardState.DOS_AUDIT_COMPLETE,
+                    DoSDashboardState.AUDIT_RESULTS_PUBLISHED);
   
   /**
    * {@inheritDoc}
@@ -97,7 +113,14 @@ public class CountyReportDownload extends AbstractEndpoint {
   @Override
   // necessary to break out of the lambda expression in case of IOException
   @SuppressWarnings("PMD.ExceptionAsFlowControl")
-  public String endpoint(final Request the_request, final Response the_response) {
+  public String endpointBody(final Request the_request, final Response the_response) {
+    // if we haven't defined the election, this is "data not found"
+    final DoSDashboardASM dos_asm = ASMUtilities.asmFor(DoSDashboardASM.class, 
+                                                        DoSDashboardASM.IDENTITY);
+    if (!LEGAL_STATES.contains(dos_asm.currentState())) {
+      dataNotFound(the_response, "No state report available in this state.");
+    }
+    
     // we know we have either state or county authentication; this will be null
     // for state authentication
     County county = Main.authentication().authenticatedCounty(the_request);
