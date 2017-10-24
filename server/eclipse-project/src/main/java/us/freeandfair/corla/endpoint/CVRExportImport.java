@@ -138,7 +138,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
           COUNTIES_RUNNING.add(county.id());
         }
         (new Thread(new CVRImporter(file))).start();
-        ok(the_response);
+        okJSON(the_response, Main.GSON.toJson(file));
       } else {
         badDataContents(the_response, "attempt to import a file without a verified hash");
       }
@@ -359,7 +359,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
                          IN + retries + TRIES);
       } else if (!success) {
         error("could not update state machine for county " + my_file.county().id() + 
-              " after " + (retries - 1) + TRIES);
+              " after " + retries + TRIES);
       } 
     }
     
@@ -425,7 +425,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
                          IN + retries + TRIES);
       } else if (!success) {
         error("could not update state machine for county " + my_file.county().id() + 
-              " after " + (retries - 1) + TRIES);
+              " after " + retries + TRIES);
       } 
     }
     
@@ -471,7 +471,8 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
           try {
             cleanup(the_file.county(), true);
           } catch (final PersistenceException e) {
-            // if we couldn't clean up, there's not much we can do about it
+            error("couldn't clean up after " + parser.errorMessage() + " [file " + 
+                the_file.filename() + PAREN_ID + the_file.id() + ")]");
           }
           error(parser.errorMessage() + " [file " + 
                 the_file.filename() + PAREN_ID + the_file.id() + ")]");
@@ -644,7 +645,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
                          " tied contests in " + retries + TRIES);
       } else if (!success) {
         error("could not update DoS dashboard for county " + the_county.id() + 
-              " tied contests after " + (retries - 1) + TRIES);
+              " tied contests after " + retries + TRIES);
       } 
       return result;
     }

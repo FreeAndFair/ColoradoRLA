@@ -464,7 +464,7 @@ public class DominionCVRExportParser implements CVRExportParser {
                        " in " + retries + " tries");
     } else if (!success) {
       throw new PersistenceException("could not update state machine for county " + 
-                                     my_county.id() + " after " + (retries - 1) + " tries");
+                                     my_county.id() + " after " + retries + " tries");
     } 
   } 
   
