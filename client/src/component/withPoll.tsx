@@ -6,7 +6,7 @@ import action from 'corla/action';
 
 
 function withSync<P, SelectP, BindP, BindS>(
-    Wrapped: React.ComponentClass<P>,
+    Wrapped: React.ComponentType<P>,
     didMount: string,
     willUnmount: string,
     select: Select<SelectP>,
