@@ -3,11 +3,11 @@ declare namespace DOS {
         asm: {
             currentState: DOS.ASMState;
         };
-        auditedContests?: DOS.AuditedContests;
-        auditTypes?: ContestAuditTypes;
-        contests?: DOS.Contests;
+        auditedContests: DOS.AuditedContests;
+        auditTypes: ContestAuditTypes;
+        contests: DOS.Contests;
         contestsForAudit?: any;  // Dead?
-        countyStatus?: DOS.CountyStatuses;
+        countyStatus: DOS.CountyStatuses;
         discrepancyCounts?: DOS.DiscrepancyCounts;
         election?: Election;
         publicMeetingDate?: Date;
