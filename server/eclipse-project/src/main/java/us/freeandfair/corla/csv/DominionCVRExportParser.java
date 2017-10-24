@@ -27,6 +27,8 @@ import java.util.OptionalInt;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.persistence.PersistenceException;
+
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -42,6 +44,7 @@ import us.freeandfair.corla.model.CountyContestResult;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CountyContestResultQueries;
+import us.freeandfair.corla.util.ExponentialBackoffHelper;
 
 /**
  * Parser for Dominion CVR export files.
@@ -49,7 +52,8 @@ import us.freeandfair.corla.query.CountyContestResultQueries;
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 1.0.0
  */
-@SuppressWarnings({"PMD.GodClass", "PMD.CyclomaticComplexity"})
+@SuppressWarnings({"PMD.GodClass", "PMD.CyclomaticComplexity", "PMD.ExcessiveImports",
+    "PMD.ModifiedCyclomaticComplexity", "PMD.StdCyclomaticComplexity"})
 public class DominionCVRExportParser implements CVRExportParser {
   /**
    * The name of the transaction size property.
@@ -60,6 +64,16 @@ public class DominionCVRExportParser implements CVRExportParser {
    * The name of the batch size property.
    */
   public static final String BATCH_SIZE_PROPERTY = "cvr_import_batch_size";
+  
+  /**
+   * The number of times to retry a county dashboard update operation.
+   */
+  private static final int UPDATE_RETRIES = 15;
+  
+  /**
+   * The number of milliseconds to sleep between transaction retries.
+   */
+  private static final long TRANSACTION_SLEEP_MSEC = 10;
   
   /**
    * The interval at which to log progress.
@@ -382,19 +396,8 @@ public class DominionCVRExportParser implements CVRExportParser {
    */
   private void checkForFlush() {
     if (my_multi_transaction && my_record_count % my_transaction_size == 0) {
-      // update the count on the county dashboard
-      final CountyDashboard cdb = 
-          Persistence.getByID(my_county.id(), CountyDashboard.class);
-      // if we can't get a reference to the county dashboard, we've got problems -
-      // but we'll deal with them elsewhere
-      if (cdb != null) {
-        cdb.setCVRsImported(my_record_count);
-        Persistence.saveOrUpdate(cdb);
-      }
-      
-      Persistence.commitTransaction();
-      Persistence.beginTransaction();
-    } 
+      commitCVRsAndUpdateCountyDashboard();
+    }
     
     if (my_record_count % my_batch_size == 0) {
       Persistence.flush();
@@ -404,6 +407,66 @@ public class DominionCVRExportParser implements CVRExportParser {
       my_parsed_cvrs.clear();
     }
   }
+  
+  /**
+   * Commits the currently outstanding CVRs and updates the county dashboard
+   * accordingly.
+   */
+  private void commitCVRsAndUpdateCountyDashboard() {
+    // commit all the CVR records and contest tracking data
+    Persistence.commitTransaction();
+    
+    boolean success = false;
+    int retries = 0;
+    while (!success && retries < UPDATE_RETRIES) {
+      try {
+        retries = retries + 1;
+        Main.LOGGER.debug("updating county " + my_county.id() + " dashboard, attempt " +
+                          retries);
+        Persistence.beginTransaction();
+        final CountyDashboard cdb = 
+            Persistence.getByID(my_county.id(), CountyDashboard.class);
+        // if we can't get a reference to the county dashboard, we've got problems -
+        // but we'll deal with them elsewhere
+        if (cdb == null) {
+          Persistence.rollbackTransaction();
+        } else {
+          cdb.setCVRsImported(my_record_count);
+          Persistence.saveOrUpdate(cdb);
+          Persistence.commitTransaction();
+          success = true;
+        }
+      } catch (final PersistenceException e) {
+        // something went wrong, let's try again
+        if (Persistence.canTransactionRollback()) {
+          try {
+            Persistence.rollbackTransaction();
+          } catch (final PersistenceException ex) {
+            // not much we can do about it
+          }
+        }
+        // let's give other transactions time to breathe
+        try {
+          final long delay = 
+              ExponentialBackoffHelper.exponentialBackoff(retries, TRANSACTION_SLEEP_MSEC);
+          Main.LOGGER.info("retrying county " + my_county.id() + 
+                           " dashboard update in " + delay + "ms");
+          Thread.sleep(delay);         
+        } catch (final InterruptedException ex) {
+          // it's OK to be interrupted
+        }
+      }
+    }
+    // we always need a running transaction
+    Persistence.beginTransaction();
+    if (success && retries > 1) {
+      Main.LOGGER.info("updated state machine for county " + my_county.id() + 
+                       " in " + retries + " tries");
+    } else if (!success) {
+      throw new PersistenceException("could not update state machine for county " + 
+                                     my_county.id() + " after " + retries + " tries");
+    } 
+  } 
   
   /**
    * Extract a CVR from a line of the file.
@@ -652,6 +715,10 @@ public class DominionCVRExportParser implements CVRExportParser {
           r.updateResults();
           Persistence.saveOrUpdate(r);
         }
+        
+        // commit any uncommitted records
+        
+        commitCVRsAndUpdateCountyDashboard();
       } else {
         // error message was set when validating columns
         result = false;

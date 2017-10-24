@@ -11,7 +11,7 @@
 
 package us.freeandfair.corla.endpoint;
 
-import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.UPLOAD_BALLOT_MANIFEST_EVENT;
+import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.IMPORT_BALLOT_MANIFEST_EVENT;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -73,7 +73,7 @@ public class BallotManifestImport extends AbstractCountyDashboardEndpoint {
    */
   @Override
   protected ASMEvent endpointEvent() {
-    return UPLOAD_BALLOT_MANIFEST_EVENT;
+    return IMPORT_BALLOT_MANIFEST_EVENT;
   }
 
   /**
