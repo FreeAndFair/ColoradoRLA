@@ -34,10 +34,13 @@ interface DefinitionProps {
 }
 
 const Definition = ({ dosState }: DefinitionProps) => {
+    // We assume this component is only rendered if the audit is defined.
+    // If the audit is defined, then we have a `seed`. The compiler can't infer this
+    // yet, so we assert it for now.
     return (
         <div>
             <RiskLimitInfo riskLimit={ dosState.riskLimit! } />
-            <SeedInfo seed={ dosState.seed } />
+            <SeedInfo seed={ dosState.seed! } />
         </div>
     );
 };

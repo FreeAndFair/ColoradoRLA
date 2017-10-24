@@ -6,13 +6,13 @@ declare namespace DOS {
         auditedContests: DOS.AuditedContests;
         auditTypes: ContestAuditTypes;
         contests: DOS.Contests;
-        contestsForAudit?: any;  // Dead?
+        contestsForAudit: Contests;
         countyStatus: DOS.CountyStatuses;
         discrepancyCounts?: DOS.DiscrepancyCounts;
         election?: Election;
         publicMeetingDate?: Date;
         riskLimit?: number;
-        seed?: any;
+        seed?: string;
         type: 'DOS';
     }
 
