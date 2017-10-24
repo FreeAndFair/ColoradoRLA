@@ -8,6 +8,11 @@ import StartStageContainer from './StartStageContainer';
 
 type WizardStage = 'ballot-audit' | 'list' | 'review' | 'start';
 
+interface TransitionTable {
+    // We'd want `[stage: WizardStage]`, but TS doesn't allow it.
+    [stage: string]: WizardStage;
+}
+
 interface WizardProps {
     countyState: County.AppState;
 }
@@ -46,7 +51,7 @@ class CountyAuditWizard extends React.Component<WizardProps, WizardState> {
 
     private nextStage = () => {
         // tslint:disable
-        const t: any = {
+        const t: TransitionTable = {
             'start': 'list',
             'list': 'ballot-audit',
             'ballot-audit': 'review',
@@ -63,7 +68,7 @@ class CountyAuditWizard extends React.Component<WizardProps, WizardState> {
 
     private prevStage = () => {
         // tslint:disable
-        const t: any = {
+        const t: TransitionTable = {
             'start': 'start',
             'list': 'start',
             'ballot-audit': 'list',
