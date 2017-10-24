@@ -61,7 +61,7 @@ class StartPageContainer extends React.Component<ContainerProps, ContainerState>
         return this.state.riskLimit && this.state.type;
     }
 
-    private setFormValid = (s: any) => {
+    private setFormValid = (s: Pick<ContainerState, keyof ContainerState>) => {
         this.setState(s);
     }
 }
