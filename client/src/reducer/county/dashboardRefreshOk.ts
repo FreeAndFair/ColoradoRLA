@@ -3,6 +3,23 @@ import { isEmpty, merge } from 'lodash';
 import { parse } from 'corla/adapter/countyDashboardRefresh';
 
 
+function cvrImportAlert(
+    prev: CVRImportStatus,
+    next: CVRImportStatus,
+): County.CVRImportAlert {
+    if (prev === 'IN_PROGRESS') {
+        if (next === 'FAILED') {
+            return 'Fail';
+        }
+        if (next === 'SUCCESSFUL') {
+            return 'Ok';
+        }
+    }
+
+    return 'None';
+}
+
+
 export default function dashboardRefreshOk(
     state: County.AppState,
     action: Action.CountyDashboardRefreshOk,
@@ -16,6 +33,11 @@ export default function dashboardRefreshOk(
     // rounds.
     nextState.auditBoard = newState.auditBoard;
     nextState.currentRound = newState.currentRound;
+
+    nextState.cvrImportAlert = cvrImportAlert(
+        state.cvrImportStatus,
+        newState.cvrImportStatus,
+    );
 
     return nextState;
 }
