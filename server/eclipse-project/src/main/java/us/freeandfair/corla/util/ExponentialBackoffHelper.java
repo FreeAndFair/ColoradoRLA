@@ -11,7 +11,7 @@
 
 package us.freeandfair.corla.util;
 
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Random;
 
 /**
  * A class of helper methods for dealing with files.
@@ -20,6 +20,11 @@ import java.util.concurrent.ThreadLocalRandom;
  * @version 1.0.0
  */
 public final class ExponentialBackoffHelper {
+  /**
+   * The random number generator.
+   */
+  private static final Random RANDOM = new Random();
+  
   /**
    * Private constructor to prevent instantiation.
    */
@@ -41,8 +46,9 @@ public final class ExponentialBackoffHelper {
     if (Double.isNaN(exponentiated)) {
       multiplier = 1;
     } else {
-      final long max_delay_factor = Math.max(1, Math.round(exponentiated));
-      multiplier = ThreadLocalRandom.current().nextLong(max_delay_factor) + 1;
+      final int max_delay_factor = 
+          (int) Math.max(1, Math.min(Integer.MAX_VALUE, Math.round(exponentiated)));
+      multiplier = RANDOM.nextInt(max_delay_factor) + 1;
     }
     
     return multiplier * the_unit_delay;
