@@ -30,9 +30,9 @@ function* auditPoll() {
 
 const auditPollSaga = createPollSaga(
     [auditPoll],
-    COUNTY_POLL_DELAY,
     'COUNTY_AUDIT_POLL_START',
     'COUNTY_AUDIT_POLL_STOP',
+    () => COUNTY_POLL_DELAY,
 );
 
 function* boardSignInSaga() {
@@ -57,9 +57,9 @@ function* dashboardPoll() {
 
 const dashboardPollSaga = createPollSaga(
     [dashboardPoll],
-    COUNTY_POLL_DELAY,
     'COUNTY_DASHBOARD_POLL_START',
     'COUNTY_DASHBOARD_POLL_STOP',
+    () => COUNTY_POLL_DELAY,
 );
 
 
