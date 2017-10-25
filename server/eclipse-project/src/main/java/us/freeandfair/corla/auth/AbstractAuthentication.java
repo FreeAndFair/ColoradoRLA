@@ -57,9 +57,11 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
    * @param the_username the username of the person to attempt to authenticate.
    * @param the_password the password for `username`.
    * @param the_second_factor the second factor for `username`.
+   * 
+   * @todo kiniry Refactor method into helper methods for each phase.
    */
   @Override
-  @SuppressWarnings("PMD.NPathComplexity")
+  @SuppressWarnings({"PMD.NPathComplexity", "PMD.ExcessiveMethodLength"})
   public boolean authenticateAdministrator(final Request the_request,
                                            final Response the_response,
                                            final String the_username, 
@@ -122,7 +124,14 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
               the_request.session().attribute(ADMIN, admin);
               the_request.session().removeAttribute(CHALLENGE);
               Main.LOGGER.info("Second factor authentication succeeded for administrator " + 
-                               the_username);
+                               the_username + " in role " + admin.type());
+              if (admin.type() == AdministratorType.COUNTY) {
+                Main.LOGGER.info(the_username + " is an administrator for county " +
+                                 admin.county());
+              }
+              if (admin.type() == AdministratorType.STATE) {
+                Main.LOGGER.info(the_username + " is a state administrator");
+              }
             } else {
               // Send the authentication state machine back to its initial state.
               the_request.session().attribute(AUTH_STAGE, NOT_AUTHENTICATED);
@@ -155,7 +164,6 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
       deauthenticate(the_request);
       Main.LOGGER.info("Authentication failed for user " + the_username);
     }
-
     return result;
   }
   
