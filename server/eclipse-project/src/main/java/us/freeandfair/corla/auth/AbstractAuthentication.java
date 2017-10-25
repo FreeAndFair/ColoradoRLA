@@ -57,9 +57,11 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
    * @param the_username the username of the person to attempt to authenticate.
    * @param the_password the password for `username`.
    * @param the_second_factor the second factor for `username`.
+   * 
+   * @todo kiniry Refactor method into helper methods for each phase.
    */
   @Override
-  @SuppressWarnings("PMD.NPathComplexity")
+  @SuppressWarnings({"PMD.NPathComplexity", "PMD.ExcessiveMethodLength"})
   public boolean authenticateAdministrator(final Request the_request,
                                            final Response the_response,
                                            final String the_username, 
