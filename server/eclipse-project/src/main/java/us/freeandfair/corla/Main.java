@@ -25,6 +25,7 @@ import java.net.URL;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
@@ -485,12 +486,41 @@ public final class Main {
   }
   
   /**
+   * Generates a string representation of a Properties object, including all
+   * properties (even default ones).
+   * 
+   * @param the_properties The Properties object.
+   * @return the string representation.
+   */
+  private static String propertiesString(final Properties the_properties) {
+    final StringBuilder sb = new StringBuilder();
+    
+    sb.append('{');
+    final Enumeration<?> property_names = the_properties.propertyNames();
+    boolean not_first = false;
+    while (property_names.hasMoreElements()) {
+      final Object prop = property_names.nextElement();
+      if (not_first) {
+        sb.append(", ");
+      } else {
+        not_first = true;
+      }
+      sb.append(prop.toString());
+      sb.append('=');
+      sb.append(the_properties.getProperty(prop.toString()));
+    }
+    sb.append('}');  
+    
+    return sb.toString();
+  }
+  
+  /**
    * Starts a ColoradoRLA server.
    */
   public void start() {
     LOGGER.info("starting server version " + VERSION + " with properties: " + 
-                static_properties);
-
+                propertiesString(static_properties));
+    
     // provide properties to the persistence engine
     Persistence.setProperties(static_properties);
 
