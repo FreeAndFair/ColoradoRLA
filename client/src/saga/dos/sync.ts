@@ -34,9 +34,9 @@ const DOS_POLL_DELAY = config.pollDelay;
 
 const dashboardPollSaga = createPollSaga(
     [dashboardRefresh, fetchContests],
-    DOS_POLL_DELAY,
     'DOS_DASHBOARD_POLL_START',
     'DOS_DASHBOARD_POLL_STOP',
+    () => DOS_POLL_DELAY,
 );
 
 function* defineAuditSaga() {
@@ -45,9 +45,9 @@ function* defineAuditSaga() {
 
 const selectContestsPollSaga = createPollSaga(
     [dashboardRefresh, fetchContests],
-    DOS_POLL_DELAY,
     'DOS_SELECT_CONTESTS_POLL_START',
     'DOS_SELECT_CONTESTS_POLL_STOP',
+    () => DOS_POLL_DELAY,
 );
 
 function* randomSeedSaga() {

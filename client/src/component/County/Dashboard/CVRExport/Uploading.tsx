@@ -25,7 +25,7 @@ const Progress = (props: ProgressProps) => {
     return (
         <div className='rla-file-upload-progress'>
             <div>
-                <strong>Progress:</strong> { progressPercent }%
+                <strong>Import progress:</strong> { progressPercent }%
             </div>
             <ProgressBar className='pt-intent-primary' value={ progressRatio } />
         </div>
@@ -44,16 +44,20 @@ const Uploading = (props: UploadingProps) => {
     if (!cvrExport) { return null; }
     if (!cvrImportStatus) { return null; }
 
-    const progress = cvrImportStatus === 'IN_PROGRESS'
-                   ? <Progress file={ cvrExport } count={ cvrExportCount } />
-                   : null;
-
-    return (
-        <div className='pt-card'>
-            <Spinner className='pt-large' intent={ Intent.PRIMARY } />
-            { progress }
-        </div>
-    );
+    if (cvrImportStatus === 'IN_PROGRESS') {
+        return (
+            <div className='pt-card'>
+                <Progress file={ cvrExport } count={ cvrExportCount } />
+            </div>
+        );
+    } else {
+        return (
+            <div className='pt-card'>
+                <Spinner className='pt-large' intent={ Intent.PRIMARY } />
+                <div>Uploading file...</div>
+            </div>
+        );
+    }
 };
 
 

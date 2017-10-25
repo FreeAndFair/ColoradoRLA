@@ -11,6 +11,8 @@ import fetchAuditBoardASMState from 'corla/action/county/fetchAuditBoardASMState
 import fetchContests from 'corla/action/county/fetchContests';
 import fetchCountyASMState from 'corla/action/county/fetchCountyASMState';
 
+import cvrExportUploadingSelector from 'corla/selector/county/cvrExportUploading';
+
 
 const COUNTY_POLL_DELAY = config.pollDelay;
 
@@ -30,9 +32,9 @@ function* auditPoll() {
 
 const auditPollSaga = createPollSaga(
     [auditPoll],
-    COUNTY_POLL_DELAY,
     'COUNTY_AUDIT_POLL_START',
     'COUNTY_AUDIT_POLL_STOP',
+    () => COUNTY_POLL_DELAY,
 );
 
 function* boardSignInSaga() {
@@ -55,11 +57,21 @@ function* dashboardPoll() {
     }
 }
 
+function* selectPollDelay() {
+    const countyState = yield select();
+
+    const isUploading = cvrExportUploadingSelector(countyState);
+
+    const delay = isUploading ? 5000 : COUNTY_POLL_DELAY;
+
+    return delay;
+}
+
 const dashboardPollSaga = createPollSaga(
     [dashboardPoll],
-    COUNTY_POLL_DELAY,
     'COUNTY_DASHBOARD_POLL_START',
     'COUNTY_DASHBOARD_POLL_STOP',
+    selectPollDelay,
 );
 
 

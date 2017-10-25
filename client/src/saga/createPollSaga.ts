@@ -1,18 +1,23 @@
 import { delay } from 'redux-saga';
+import { SelectEffect } from 'redux-saga/effects';
 import { cancel, fork, take } from 'redux-saga/effects';
 
 
+type SelectPollDelay = () => number | IterableIterator<number | SelectEffect>;
+
 function createPollSaga(
     pollActions: any[],
-    pollDelay: number,
     pollStart: string,
     pollStop: string,
+    selectPollDelay: SelectPollDelay,
 ) {
     function* pollTask() {
         while (true) {
             for (const a of pollActions) {
                 yield a();
             }
+
+            const pollDelay = yield selectPollDelay();
 
             yield delay(pollDelay);
         }
