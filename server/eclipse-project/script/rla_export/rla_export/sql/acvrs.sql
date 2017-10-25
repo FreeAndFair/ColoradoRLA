@@ -5,7 +5,7 @@
 --  The RLA algorithm takes matches and discrepancies into account for each selection.
 
 SELECT cai.index as selection, dashboard_id AS county, imprinted_id, record_type, timestamp, counted, disagreement,
-   discrepancy, cci_a.comment, cci_a.consensus, cci_s.contest_id, cai.cvr_id, cci_s.choices, acvr_id, cci_a.choices
+   discrepancy, cci_a.comment, cci_a.consensus, cci_s.contest_id, cai.cvr_id, cci_s.choices as machine_choices, acvr_id, cci_a.choices as audit_board_choices
  FROM cvr_audit_info AS cai
  LEFT JOIN cast_vote_record AS cvr
    ON cai.acvr_id = cvr.id

@@ -80,6 +80,12 @@ When a county_id is used in an output file, it is indicated with the letter ``n`
 a. Seed for randomization
 
   seed.sql
+ * - Column Name
+   - Type
+   - Interpretation
+ * - seed
+   - 20-digit string
+   - the random seed
 
 b. random ballot order
 
@@ -98,6 +104,103 @@ d. List of Audit Rounds (number of ballots, status by
   [partially implemented]
 
   discrepancies.sql
+ * - Column Name
+   - Type
+   - Interpretation
+ * - name
+   - String
+   - name of contest
+ * - id
+   - Integer
+   - internal database id for the contest
+ * - 
+   - 
+   - 
+ * - 
+   - 
+   - 
+ * - 
+   - 
+   - 
+ * - 
+   - 
+   - 
+ * - 
+   - 
+   - 
+ * - 
+   - 
+   - 
+ * - 
+   - 
+   - 
+ * - 
+   - 
+   - 
+ * - 
+   - 
+   - 
+ * - 
+   - 
+   - 
+ * - 
+   - 
+   - 
+ * - 
+   - 
+   - 
+ * - 
+   - 
+   - 
+ * - 
+   - 
+   - 
+ * - 
+   - 
+   - 
+ * - 
+   - 
+   - 
+ * - 
+   - 
+   - 
+ * - 
+   - 
+   - 
+ * - 
+   - 
+   - 
+ * - 
+   - 
+   - 
+ * - 
+   - 
+   - 
+ * - 
+   - 
+   - 
+ * - 
+   - 
+   - 
+
+
+
+  prefix_length.sql
+ * - Column Name
+   - Type
+   - Interpretation
+ * - county_name
+   - String
+   - name of county
+ * - audited_prefix_length
+   - Integer
+   - length of the prefix that will be complete at the end of the round 
+	in the given county. Note that the "prefix" is part of the random 
+	sequence of ballot cards, which may contain duplicates. For example,
+	if a single ballot card appears twice in the random sequence generated 
+	by the pseudorandom number generator up through the current round, 
+	that ballot card would count twice toward the prefix length.
+
 
 e. Status (audit required, audit in progress, audit
    complete, hand count required,, hand count complete) by audited contest
@@ -117,6 +220,17 @@ h. County Ballot Manifests and Hashes (status & download links)
 
   manifest_hash.sql
 
+ * - Column Name
+   - Type
+   - Interpretation
+ * - county_name
+   - String
+   - name of county
+ * - hash
+   - String
+   - hash value entered by the given county after any successful upload
+
+
   cvr_hash.sql
 
 1. The CVR file. This is only extracted if the ``-c True`` option is used.
@@ -127,6 +241,41 @@ h. County Ballot Manifests and Hashes (status & download links)
    Tool from the CVR file for contests chosen for audit
 
   tabulate.sql
+
+ * - Column Name
+   - Type
+   - Interpretation
+ * - county_name
+   - String
+   - name of county
+ * - contest_name
+   - String
+   - name of contest
+ * - choice
+   - String
+   - candidate or answer to question
+ * - votes
+   - Integer
+   - number of votes for the given choice in the given contest
+	in the given county
+ * - votes_allowed
+   - Integer
+   - maximum number of votes one voter may cast in the given contest
+ * - winners
+   - List of Strings
+   - list of names of winning choices in the given contest
+	counting votes in the given county only
+ * - min_margin
+   - Integer
+   - smallest difference between any winner's and any loser's vote totals 
+	in the given contest, counting votes in the given county only
+ * - county_ballot_count
+   - Integer
+   - number of ballot cards cast in the given county
+ * - contest_ballot_count
+   - Integer
+   - number of ballot cards in the given county containing the given contest
+	
 
 11. The final audit report by county
 
@@ -141,3 +290,54 @@ h. County Ballot Manifests and Hashes (status & download links)
     ballots not found).
 
   acvrs.sql
+
+ * - Column Name
+   - Type
+   - Interpretation
+ * - selection
+   - 
+   - 
+ * - county
+   - Integer
+   - county number
+ * - imprinted_id
+   - String
+   - imprinted id from CVR file
+ * - record_type
+   - String
+   - 
+ * - timestamp
+   - Timestamp
+   - time of submission of the audit board interpretation
+ * - counted
+   - True/False
+   - 
+ * - disagreement
+   - List of Strings
+   - 
+ * - discrepancy
+   - List of Strings
+   - 
+ * - comment
+   - 
+   - 
+ * - consensus
+   - Yes/No
+   - "NO" if audit board reported no consensus for the given contest, otherwise "YES"
+ * - contest_id
+   - 
+   - 
+ * - cvr_id
+   - 
+   - 
+ * - machine_choices
+   - 
+   - 
+ * - acvr_id
+   - 
+   - 
+ * - audit_board_choices
+   - 
+   - 
+
+
