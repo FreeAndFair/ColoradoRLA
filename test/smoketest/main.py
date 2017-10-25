@@ -373,7 +373,7 @@ def get_imported_count(dashboard):
         approximate_record_count = 0
 
     return (dashboard['asm_state'],
-            "Received about %d of about %d CVRs" %
+            "Parsed about %d of about %d CVRs" %
                 (imported_count, approximate_record_count))
 
 
