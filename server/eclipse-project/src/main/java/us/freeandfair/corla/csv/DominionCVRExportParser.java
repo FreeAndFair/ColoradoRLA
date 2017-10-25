@@ -272,14 +272,13 @@ public class DominionCVRExportParser implements CVRExportParser {
   private int parseProperty(final Properties the_properties, 
                             final String the_property_name, 
                             final int the_default_value) {
-    int result = the_default_value;
+    int result;
     
-    if (the_properties.containsKey(the_property_name)) {
-      try {
-        result = Integer.parseInt(the_properties.getProperty(the_property_name));
-      } catch (final NumberFormatException e) {
-        result = the_default_value;
-      }
+    try {
+      result = Integer.parseInt(the_properties.getProperty(the_property_name, 
+                                                           String.valueOf(the_default_value)));
+    } catch (final NumberFormatException e) {
+      result = the_default_value;
     }
     
     return result;
