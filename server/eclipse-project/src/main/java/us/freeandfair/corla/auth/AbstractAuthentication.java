@@ -164,7 +164,6 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
       deauthenticate(the_request);
       Main.LOGGER.info("Authentication failed for user " + the_username);
     }
-
     return result;
   }
   
