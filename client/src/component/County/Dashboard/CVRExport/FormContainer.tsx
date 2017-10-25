@@ -7,6 +7,7 @@ import Uploading from './Uploading';
 import uploadCvrExport from 'corla/action/county/uploadCvrExport';
 
 import cvrExportUploadedSelector from 'corla/selector/county/cvrExportUploaded';
+import cvrExportUploadingSelector from 'corla/selector/county/cvrExportUploading';
 
 
 interface UploadedProps {
@@ -112,7 +113,7 @@ class CVRExportFormContainer extends React.Component<ContainerProps, ContainerSt
 }
 
 const select = (countyState: County.AppState) => {
-    const uploadingFile = !!countyState.uploadingCvrExport;
+    const uploadingFile = cvrExportUploadingSelector(countyState);
 
     return {
         countyState,

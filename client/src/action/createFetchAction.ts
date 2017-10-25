@@ -1,3 +1,5 @@
+import { empty } from 'corla/util';
+
 import action from '.';
 
 
@@ -8,7 +10,6 @@ interface CreateFetchConfig {
     sendType: string;
     url: string;
 }
-
 
 function createFetchAction(config: CreateFetchConfig) {
     const {
@@ -38,7 +39,7 @@ function createFetchAction(config: CreateFetchConfig) {
                 action('NOT_AUTHORIZED');
             }
 
-            const data = await r.json();
+            const data = await r.json().catch(empty);
 
             action(okType, data);
         } catch (e) {

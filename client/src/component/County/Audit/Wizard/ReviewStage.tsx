@@ -7,7 +7,7 @@ import BackButton from './BackButton';
 
 interface BallotContestReviewProps {
     contest: Contest;
-    marks: County.AcvrContest;
+    marks: County.ACVRContest;
 }
 
 const BallotContestReview = (props: BallotContestReviewProps) => {
@@ -15,7 +15,7 @@ const BallotContestReview = (props: BallotContestReviewProps) => {
     const { comments, noConsensus } = marks;
     const { votesAllowed } = contest;
 
-    const markedChoices: County.AcvrChoices = _.pickBy(marks.choices);
+    const markedChoices: County.ACVRChoices = _.pickBy(marks.choices);
     const votesMarked = _.size(markedChoices);
 
     const noConsensusDiv = (
@@ -74,7 +74,7 @@ const BallotContestReview = (props: BallotContestReviewProps) => {
 
 interface BallotReviewProps {
     countyState: County.AppState;
-    marks: County.Acvr;
+    marks: County.ACVR;
 }
 
 const BallotReview = (props: BallotReviewProps) => {
@@ -97,8 +97,8 @@ const BallotReview = (props: BallotReviewProps) => {
 
 interface ReviewStageProps {
     countyState: County.AppState;
-    currentBallot: Cvr;
-    marks: County.Acvr;
+    currentBallot: CVR;
+    marks: County.ACVR;
     nextStage: OnClick;
     prevStage: OnClick;
     uploadAcvr: OnClick;

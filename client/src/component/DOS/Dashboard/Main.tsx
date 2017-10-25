@@ -68,7 +68,7 @@ const Main = (props: MainProps) => {
         return null;
     }
 
-    if (dosState.asm.currentState === 'DOS_AUDIT_COMPLETE') {
+    if (dosState.asm === 'DOS_AUDIT_COMPLETE') {
         return (
             <div className='sos-notifications pt-card'>
                 { auditDefinition }

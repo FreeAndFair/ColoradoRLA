@@ -94,15 +94,15 @@ class FileUploadContainer extends React.Component<FileUploadContainerProps> {
     }
 }
 
-const select = (countyState: County.AppState) => {
+function select(countyState: County.AppState) {
     const { asm } = countyState;
 
-    const auditInProgress = asm.auditBoard.currentState === 'AUDIT_IN_PROGRESS';
-    const uploadedBothFiles = !!(countyState.ballotManifestHash && countyState.cvrExportHash);
-    const missedDeadline = auditInProgress && !uploadedBothFiles;
+    const uploadedBothFiles = !!(countyState.ballotManifestHash
+                              && countyState.cvrExportHash);
+    const missedDeadline = asm.county === 'DEADLINE_MISSED';
 
     return { countyState, missedDeadline, uploadedBothFiles };
-};
+}
 
 
 export default connect(select)(FileUploadContainer);

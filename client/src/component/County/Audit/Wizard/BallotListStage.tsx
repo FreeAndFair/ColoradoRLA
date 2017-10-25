@@ -8,7 +8,7 @@ import downloadCvrsToAuditCsv from 'corla/action/county/downloadCvrsToAuditCsv';
 interface BallotListStageProps {
     countyInfo: CountyInfo;
     countyState: County.AppState;
-    cvrsToAudit: JSON.Cvr[];
+    cvrsToAudit: JSON.CVR[];
     nextStage: OnClick;
 }
 

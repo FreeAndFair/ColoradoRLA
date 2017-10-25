@@ -1,8 +1,6 @@
 declare namespace DOS {
     interface AppState {
-        asm: {
-            currentState: DOS.ASMState;
-        };
+        asm: DOS.ASMState;
         auditedContests: DOS.AuditedContests;
         auditTypes: ContestAuditTypes;
         contests: DOS.Contests;
@@ -59,11 +57,6 @@ declare namespace DOS {
 
     interface AuditedContests {
         [contestId: number]: AuditedContest;
-    }
-
-    interface ASM {
-        currentState: DOS.ASMState;
-        enabledUiEvents: string[];
     }
 
     type ASMState

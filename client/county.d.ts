@@ -1,7 +1,7 @@
 declare namespace County {
     interface AppState {
-        acvrs?: Acvrs;
-        asm?: any;
+        acvrs?: ACVRs;
+        asm: ASMStates;
         auditBoard: AuditBoard;
         auditedBallotCount?: number;
         ballotManifest?: UploadedFile;
@@ -11,13 +11,14 @@ declare namespace County {
         contests?: Contest[];
         contestDefs?: ContestDefs;
         contestsUnderAudit?: Contest[];
-        currentBallot?: Cvr;
+        currentBallot?: CVR;
         currentRound?: Option<Round>;
         cvrExport?: UploadedFile;
         cvrExportCount?: number;
         cvrExportHash?: string;
-        cvrImportStatus?: CvrImportStatus;
-        cvrsToAudit?: JSON.Cvr[];  // Sic
+        cvrImportAlert: CVRImportAlert;
+        cvrImportStatus: CVRImportStatus;
+        cvrsToAudit?: JSON.CVR[];  // Sic
         disagreementCount?: number;
         discrepancyCount?: number;
         election?: Election;
@@ -26,27 +27,34 @@ declare namespace County {
         hash?: string;  // TODO: remove
         id?: number;
         riskLimit?: number;
-        rounds?: Round[];
+        rounds: Round[];
         type: 'County';
         uploadingBallotManifest?: boolean;
-        uploadingCvrExport?: boolean;
+        uploadingCVRExport?: boolean;
     }
 
-    interface Acvrs {
-        [cvrId: number]: Acvr;
+    type CVRImportAlert = 'None' | 'Fail' | 'Ok';
+
+    interface ASMStates {
+        auditBoard: AuditBoardASMState;
+        county: ASMState;
     }
 
-    interface Acvr {
-        [contestId: number]: AcvrContest;
+    interface ACVRs {
+        [cvrId: number]: ACVR;
     }
 
-    interface AcvrContest {
-        choices: AcvrChoices;
+    interface ACVR {
+        [contestId: number]: ACVRContest;
+    }
+
+    interface ACVRContest {
+        choices: ACVRChoices;
         comments: string;
         noConsensus: boolean;
     }
 
-    interface AcvrChoices {
+    interface ACVRChoices {
         [contestChoice: string]: boolean;
     }
 
@@ -54,16 +62,12 @@ declare namespace County {
         [id: number]: Contest;
     }
 
-    interface ASM {
-        currentState: ASMState;
-        enabledUiEvents: string[];
-    }
-
     type ASMState
         = 'COUNTY_INITIAL_STATE'
-        | 'COUNTY_AUTHENTICATED'
         | 'BALLOT_MANIFEST_OK'
+        | 'CVRS_IMPORTING'
         | 'CVRS_OK'
+        | 'BALLOT_MANIFEST_OK_AND_CVRS_IMPORTING'
         | 'BALLOT_MANIFEST_AND_CVRS_OK'
         | 'COUNTY_AUDIT_UNDERWAY'
         | 'COUNTY_AUDIT_COMPLETE'

@@ -1,11 +1,8 @@
 import * as _ from 'lodash';
 
 
-function parse(data: JSON.FetchCountyASMStateOk): County.ASM {
-    return {
-        currentState: data.current_state,
-        enabledUiEvents: data.enabled_ui_events,
-    };
+function parse(data: any): County.ASMState {
+    return data.current_state;
 }
 
 
@@ -15,7 +12,7 @@ export default function fetchCountyASMStateOk(
 ): County.AppState {
     const nextState = { ...state };
 
-    nextState.asm!.county = parse(action.data);
+    nextState.asm.county = parse(action.data);
 
     return nextState;
 }

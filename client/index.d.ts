@@ -37,12 +37,6 @@ interface ContestAuditTypes {
     [contestId: number]: AuditType;
 }
 
-type CvrImportStatus
-    = 'NOT_ATTEMPTED'
-    | 'IN_PROGRESS'
-    | 'SUCCESSFUL'
-    | 'FAILED';
-
 type AuditType
     = 'COMPARISON'
     | 'HAND_COUNT'
@@ -73,7 +67,7 @@ type RecordType
     | 'AUDITOR_ENTERED'
     | 'PHANTOM_BALLOT';
 
-interface Cvr {
+interface CVR {
     ballotType: string;  // String repr of number
     batchId: number;
     contestInfo: Array<{

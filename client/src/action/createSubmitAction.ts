@@ -1,3 +1,5 @@
+import { empty } from 'corla/util';
+
 import action from '.';
 
 
@@ -9,7 +11,6 @@ interface CreateSubmitConfig {
     sendType: string;
     url: string;
 }
-
 
 function defaultCreateData(sent: any, received: any): any {
     return { received, sent };
@@ -50,7 +51,7 @@ function createSubmitAction(config: CreateSubmitConfig) {
                 return;
             }
 
-            const received = await r.json();
+            const received = await r.json().catch(empty);
             const data = createData(sent, received);
 
             action(okType, data);

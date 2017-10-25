@@ -35,13 +35,6 @@ function* importBallotManifestNetworkFail(): IterableIterator<any> {
     notice.danger('Network error: failed to upload ballot manifest.');
 }
 
-function* uploadBallotManifestOk(action: any): IterableIterator<any> {
-    const { data } = action;
-    const { received } = data;
-
-    notice.ok(`Uploaded ballot manifest "${received.filename}".`);
-}
-
 function* uploadBallotManifestFail(action: any): IterableIterator<any> {
     notice.danger('Failed to upload ballot manifest.');
 }
@@ -78,7 +71,6 @@ export default function* fileUploadSaga() {
     yield takeLatest('IMPORT_BALLOT_MANIFEST_FAIL', importBallotManifestFail);
     yield takeLatest('IMPORT_BALLOT_MANIFEST_NETWORK_FAIL', importBallotManifestNetworkFail);
 
-    yield takeLatest('UPLOAD_BALLOT_MANIFEST_OK', uploadBallotManifestOk);
     yield takeLatest('UPLOAD_BALLOT_MANIFEST_FAIL', uploadBallotManifestFail);
     yield takeLatest('UPLOAD_BALLOT_MANIFEST_NETWORK_FAIL', uploadBallotManifestNetworkFail);
 

@@ -2,18 +2,21 @@ export function countyState(): County.AppState {
     return {
         acvrs: {},
         asm: {
-            auditBoard: {},
-            county: {},
+            auditBoard: 'AUDIT_INITIAL_STATE',
+            county: 'COUNTY_INITIAL_STATE',
         },
         auditBoard: [],
         contests: [],
+        cvrImportAlert: 'None',
+        cvrImportStatus: 'NOT_ATTEMPTED',
+        rounds: [],
         type: 'County',
     };
 }
 
 export function dosState(): DOS.AppState {
     return {
-        asm: { currentState: 'DOS_INITIAL_STATE' },
+        asm: 'DOS_INITIAL_STATE',
         auditTypes: {},
         auditedContests: {},
         contests: {},

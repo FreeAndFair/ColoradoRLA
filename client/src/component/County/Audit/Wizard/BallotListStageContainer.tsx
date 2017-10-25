@@ -10,7 +10,7 @@ import countyInfo from 'corla/selector/county/countyInfo';
 interface ContainerProps {
     countyInfo: CountyInfo;
     countyState: County.AppState;
-    cvrsToAudit: JSON.Cvr[];
+    cvrsToAudit: JSON.CVR[];
     nextStage: OnClick;
 }
 
