@@ -14,7 +14,6 @@ package us.freeandfair.corla.model;
 import java.io.Serializable;
 import java.time.Instant;
 
-import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;

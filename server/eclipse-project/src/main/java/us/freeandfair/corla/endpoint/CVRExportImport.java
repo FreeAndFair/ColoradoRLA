@@ -15,9 +15,12 @@ import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.IMPORT_CVRS
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.time.Instant;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.PersistenceException;
@@ -139,6 +142,8 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
           cdb.cvrFile().setStatus(FileStatus.NOT_IMPORTED);
           Persistence.saveOrUpdate(cdb.cvrFile());
         }
+        final Map<String, Instant> result = new HashMap<>();
+        result.put("import_start_time", Instant.now());
         // spawn a thread to do the import; this endpoint always immediately 
         // returns a successful result if we get to this point
         synchronized (COUNTIES_RUNNING) {
@@ -147,7 +152,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
         }
         (new Thread(new CVRImporter(file))).start();
         
-        okJSON(the_response, Main.GSON.toJson(file));
+        okJSON(the_response, Main.GSON.toJson(result));
       } else {
         badDataContents(the_response, "attempt to import a file without a verified hash");
       }
@@ -412,7 +417,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
             Persistence.saveOrUpdate(cdb);
           } 
           Persistence.commitTransaction();
-         success = true;
+          success = true;
         } catch (final PersistenceException e) {
           // something went wrong, let's try again
           if (Persistence.canTransactionRollback()) {
