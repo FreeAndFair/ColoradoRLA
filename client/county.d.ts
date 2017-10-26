@@ -33,6 +33,18 @@ declare namespace County {
         uploadingCVRExport?: boolean;
     }
 
+    interface CVRImportStatus {
+        error?: string;
+        state: CVRImportState;
+        timestamp: Date;
+    }
+
+    type CVRImportState
+        = 'NOT_ATTEMPTED'
+        | 'IN_PROGRESS'
+        | 'SUCCESSFUL'
+        | 'FAILED';
+
     type CVRImportAlert = 'None' | 'Fail' | 'Ok';
 
     interface ASMStates {

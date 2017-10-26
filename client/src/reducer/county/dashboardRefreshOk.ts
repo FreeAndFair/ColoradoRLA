@@ -4,14 +4,14 @@ import { parse } from 'corla/adapter/countyDashboardRefresh';
 
 
 function cvrImportAlert(
-    prev: CVRImportStatus,
-    next: CVRImportStatus,
+    prev: County.CVRImportStatus,
+    next: County.CVRImportStatus,
 ): County.CVRImportAlert {
-    if (prev === 'IN_PROGRESS') {
-        if (next === 'FAILED') {
+    if (prev.state === 'IN_PROGRESS') {
+        if (next.state === 'FAILED') {
             return 'Fail';
         }
-        if (next === 'SUCCESSFUL') {
+        if (next.state === 'SUCCESSFUL') {
             return 'Ok';
         }
     }

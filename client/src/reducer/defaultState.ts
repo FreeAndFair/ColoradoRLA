@@ -8,7 +8,10 @@ export function countyState(): County.AppState {
         auditBoard: [],
         contests: [],
         cvrImportAlert: 'None',
-        cvrImportStatus: 'NOT_ATTEMPTED',
+        cvrImportStatus: {
+            state: 'NOT_ATTEMPTED',
+            timestamp: new Date(),
+        },
         rounds: [],
         type: 'County',
     };

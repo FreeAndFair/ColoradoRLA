@@ -56,7 +56,7 @@ const Uploading = (props: UploadingProps) => {
         return <UploadingFile />;
     }
 
-    if (cvrImportStatus === 'IN_PROGRESS') {
+    if (cvrImportStatus.state === 'IN_PROGRESS') {
         return (
             <div className='pt-card'>
                 <Progress file={ cvrExport } count={ cvrExportCount } />
