@@ -3,8 +3,10 @@ import { empty } from 'corla/util';
 import action from '.';
 
 
-interface CreateSubmitConfig {
-    createData?: (sent: any, received: any) => any;
+type CreateDataFn<S, R> = (sent: S, received: R) => Action.SubmitData<S, R>;
+
+interface CreateSubmitConfig<S, R> {
+    createData?: CreateDataFn<S, R>;
     failType: string;
     networkFailType: string;
     okType: string;
@@ -12,11 +14,11 @@ interface CreateSubmitConfig {
     url: string;
 }
 
-function defaultCreateData(sent: any, received: any): any {
+function defaultCreateData<S, R>(sent: S, received: R) {
     return { received, sent };
 }
 
-function createSubmitAction(config: CreateSubmitConfig) {
+function createSubmitAction<S, R>(config: CreateSubmitConfig<S, R>) {
     const {
         failType,
         networkFailType,
@@ -27,10 +29,10 @@ function createSubmitAction(config: CreateSubmitConfig) {
 
     const createData = config.createData || defaultCreateData;
 
-    async function submitAction(sent: any) {
+    async function submitAction(sent: S) {
         action(sendType);
 
-        const init: any = {
+        const init: RequestInit = {
             body: JSON.stringify(sent),
             credentials: 'include',
             method: 'post',
