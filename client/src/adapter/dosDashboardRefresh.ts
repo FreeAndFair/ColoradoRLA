@@ -130,7 +130,7 @@ function parseRiskLimit(data: any): Option<number> {
 }
 
 function parseASMState(data: any): any {
-    return { currentState: data.asm_state };
+    return data.asm_state;
 }
 
 function parseMember(member: any): any {
