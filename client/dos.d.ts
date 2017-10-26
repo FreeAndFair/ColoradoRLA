@@ -80,6 +80,42 @@ declare namespace DOS {
     }
 
     namespace Form {
+        namespace AuditDef {
+            interface Forms {
+                electionDateForm?: DOS.Form.ElectionDate.Form;
+                electionTypeForm?: DOS.Form.ElectionType.Form;
+                publicMeetingDateForm?: DOS.Form.PublicMeetingDate.Form;
+                riskLimit?: DOS.Form.RiskLimit.Form;
+            }
+        }
+
+        namespace ElectionDate {
+            interface Form {
+                date: string;
+            }
+        }
+
+        namespace ElectionType {
+            interface Form {
+                type?: ElectionType;
+            }
+        }
+
+        namespace PublicMeetingDate {
+            interface Form {
+                date: string;
+            }
+        }
+
+        namespace RiskLimit {
+            interface Form {
+                ballotPollingField: string;
+                ballotPollingLimit: number;
+                comparisonField: string;
+                comparisonLimit: number;
+            }
+        }
+
         namespace SelectContests {
             type ReasonId = 'county_wide_contest' | 'state_wide_contest';
 

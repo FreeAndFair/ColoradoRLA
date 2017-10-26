@@ -13,7 +13,7 @@ function defaultElectionDate(): string {
 }
 
 interface FormProps {
-    forms: any;
+    forms: DOS.Form.AuditDef.Forms;
 }
 
 interface FormState {
