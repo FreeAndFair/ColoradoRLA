@@ -1,6 +1,8 @@
 declare namespace Action {
     type App
-        = CountyDashboardRefreshOk
+        = CountyCVRImportFailNotice
+        | CountyCVRImportOkNotice
+        | CountyDashboardRefreshOk
         | CountyFetchContestsOk
         | CountyFetchCvrOk
         | CountyLoginOk
@@ -11,6 +13,7 @@ declare namespace Action {
         | FetchCountyASMStateOk
         | FetchCvrsToAuditOk
         | FetchDOSASMStateOk
+        | ImportCvrExportOk
         | Login1FOk
         | SelectContestsForAuditOk
         | UpdateAcvrForm
@@ -20,6 +23,16 @@ declare namespace Action {
         | UploadRandomSeedOk
         | UploadingBallotManifest
         | UploadingCvrExport;
+
+    interface CountyCVRImportFailNotice {
+        type: 'COUNTY_CVR_IMPORT_FAIL_NOTICE';
+        data: any;
+    }
+
+    interface CountyCVRImportOkNotice {
+        type: 'COUNTY_CVR_IMPORT_OK_NOTICE';
+        data: any;
+    }
 
     interface CountyDashboardRefreshOk {
         type: 'COUNTY_DASHBOARD_REFRESH_OK';
@@ -73,6 +86,11 @@ declare namespace Action {
 
     interface FetchDOSASMStateOk {
         type: 'FETCH_DOS_ASM_STATE_OK';
+        data: any;
+    }
+
+    interface ImportCvrExportOk {
+        type: 'IMPORT_CVR_EXPORT_OK';
         data: any;
     }
 

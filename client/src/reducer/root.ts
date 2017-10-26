@@ -71,6 +71,16 @@ export default function root(state: AppState, action: Action.App) {
         return fetchDOSASMStateOk(state as DOS.AppState, action);
     }
 
+    case 'IMPORT_CVR_EXPORT_OK': {
+        const nextState = { ...state } as County.AppState;
+
+        const data = action.data.received;
+        nextState.cvrImportPending.alerted = false;
+        nextState.cvrImportPending.started = new Date(data.import_start_time);
+
+        return nextState;
+    }
+
     case 'LOGIN_1F_OK': {
         return login1FOk(state as LoginAppState, action);
     }
@@ -101,6 +111,22 @@ export default function root(state: AppState, action: Action.App) {
 
     case 'UPLOADING_CVR_EXPORT': {
         return uploadingCvrExport(state as County.AppState, action);
+    }
+
+    case 'COUNTY_CVR_IMPORT_FAIL_NOTICE': {
+        const nextState = { ...state } as County.AppState;
+
+        nextState.cvrImportPending.alerted = true;
+
+        return nextState;
+    }
+
+    case 'COUNTY_CVR_IMPORT_OK_NOTICE': {
+        const nextState = { ...state } as County.AppState;
+
+        nextState.cvrImportPending.alerted = true;
+
+        return nextState;
     }
 
     default:
