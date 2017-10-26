@@ -58,9 +58,9 @@
       "resolved": "https://registry.npmjs.org/@types/moment-timezone/-/moment-timezone-0.2.35.tgz"
     },
     "@types/node": {
-      "version": "8.0.20",
-      "from": "@types/node@https://registry.npmjs.org/@types/node/-/node-8.0.20.tgz",
-      "resolved": "https://registry.npmjs.org/@types/node/-/node-8.0.20.tgz"
+      "version": "8.0.47",
+      "from": "@types/node@*",
+      "resolved": "https://registry.npmjs.org/@types/node/-/node-8.0.47.tgz"
     },
     "@types/react": {
       "version": "15.6.5",
@@ -98,9 +98,9 @@
       "resolved": "https://registry.npmjs.org/@types/sinon/-/sinon-2.3.3.tgz"
     },
     "@types/tape": {
-      "version": "4.2.30",
-      "from": "@types/tape@https://registry.npmjs.org/@types/tape/-/tape-4.2.30.tgz",
-      "resolved": "https://registry.npmjs.org/@types/tape/-/tape-4.2.30.tgz"
+      "version": "4.2.31",
+      "from": "@types/tape@4.2.31",
+      "resolved": "https://registry.npmjs.org/@types/tape/-/tape-4.2.31.tgz"
     },
     "@types/tether": {
       "version": "1.4.2",
