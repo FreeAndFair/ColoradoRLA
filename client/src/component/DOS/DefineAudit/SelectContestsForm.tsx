@@ -43,6 +43,12 @@ const TiedContestRow = (props: RowProps) => {
     );
 };
 
+interface MenuItemData {
+    handleClick: OnClick;
+    item: DOS.Form.SelectContests.Reason;
+    isActive: boolean;
+}
+
 const ContestRow = (props: RowProps) => {
     const {
         status,
@@ -56,7 +62,7 @@ const ContestRow = (props: RowProps) => {
         return null;
     }
 
-    const renderItem = ({ handleClick, item, isActive }: any) => {
+    const renderItem = ({ handleClick, item, isActive }: MenuItemData) => {
         return (
             <MenuItem
                 className={ isActive ? Classes.ACTIVE : '' }
@@ -311,10 +317,10 @@ class SelectContestsForm extends React.Component<FormProps, FormState> {
         this.setState(s);
     }
 
-    private onReasonChange = (contest: Contest) => (item: any) => {
+    private onReasonChange = (contest: Contest) => (reason: DOS.Form.SelectContests.Reason) => {
         const s = { ...this.state };
 
-        s.form[contest.id].reason = { ...item };
+        s.form[contest.id].reason = { ...reason };
 
         this.setState(s);
     }
