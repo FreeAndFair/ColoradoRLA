@@ -1,6 +1,6 @@
 declare namespace County {
     interface AppState {
-        acvrs?: ACVRs;
+        acvrs: ACVRs;
         asm: ASMStates;
         auditBoard: AuditBoard;
         auditedBallotCount?: number;
