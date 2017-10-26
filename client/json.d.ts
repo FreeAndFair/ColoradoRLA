@@ -133,4 +133,10 @@ declare namespace JSON {
         name: string;
         votes_allowed: number;
     }
+
+    interface ContestForAudit {
+        audit: AuditType;
+        contest: number;
+        reason: string;
+    }
 }
