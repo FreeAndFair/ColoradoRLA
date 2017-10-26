@@ -3546,9 +3546,9 @@
       "resolved": "https://registry.npmjs.org/type-is/-/type-is-1.6.15.tgz"
     },
     "typescript": {
-      "version": "2.5.1",
-      "from": "typescript@https://registry.npmjs.org/typescript/-/typescript-2.5.1.tgz",
-      "resolved": "https://registry.npmjs.org/typescript/-/typescript-2.5.1.tgz"
+      "version": "2.5.3",
+      "from": "typescript@2.5.3",
+      "resolved": "https://registry.npmjs.org/typescript/-/typescript-2.5.3.tgz"
     },
     "ua-parser-js": {
       "version": "0.7.14",
