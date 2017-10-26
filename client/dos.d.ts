@@ -78,4 +78,25 @@ declare namespace DOS {
         publicMeetingDate: Date;
         riskLimit: number;
     }
+
+    namespace Form {
+        namespace SelectContests {
+            type ReasonId = 'county_wide_contest' | 'state_wide_contest';
+
+            interface Reason {
+                id: ReasonId;
+                text: string;
+            }
+
+            interface ContestStatus {
+                audit: boolean;
+                handCount: boolean;
+                reason: Reason;
+            }
+
+            interface FormData {
+                [contestId: number]: ContestStatus;
+            }
+        }
+    }
 }

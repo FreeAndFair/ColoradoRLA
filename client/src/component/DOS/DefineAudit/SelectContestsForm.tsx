@@ -8,30 +8,19 @@ import { Select } from '@blueprintjs/labs';
 import counties from 'corla/data/counties';
 
 
-interface FormAuditReason {
-    id: string;
-    text: string;
-}
-
-const auditReasons: FormAuditReason[] = [
+const auditReasons: DOS.Form.SelectContests.Reason[] = [
     { id: 'state_wide_contest', text: 'State Contest' },
     { id: 'county_wide_contest', text: 'County Contest' },
 ];
 
-const AuditReasonSelect = Select.ofType<FormAuditReason>();
-
-interface FormStatus {
-    audit: boolean;
-    handCount: boolean;
-    reason: FormAuditReason;
-}
+const AuditReasonSelect = Select.ofType<DOS.Form.SelectContests.Reason>();
 
 interface RowProps {
     contest: Contest;
     onAuditChange: OnClick;
     onHandCountChange: OnClick;
     onReasonChange: OnClick;
-    status: FormStatus;
+    status: DOS.Form.SelectContests.ContestStatus;
 }
 
 const TiedContestRow = (props: RowProps) => {
@@ -125,13 +114,9 @@ interface FormProps {
     isAuditable: OnClick;
 }
 
-interface SelectContestsForm {
-    [contestId: number]: FormStatus;
-}
-
 interface FormState {
     filter: string;
-    form: any;
+    form: DOS.Form.SelectContests.FormData;
     order: SortOrder;
     sort: SortKey;
 }
