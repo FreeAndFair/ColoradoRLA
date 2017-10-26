@@ -16,7 +16,7 @@ declare namespace County {
         cvrExport?: UploadedFile;
         cvrExportCount?: number;
         cvrExportHash?: string;
-        cvrImportAlert: CVRImportAlert;
+        cvrImportPending: CVRImportPending;
         cvrImportStatus: CVRImportStatus;
         cvrsToAudit?: JSON.CVR[];  // Sic
         disagreementCount?: number;
@@ -31,6 +31,11 @@ declare namespace County {
         type: 'County';
         uploadingBallotManifest?: boolean;
         uploadingCVRExport?: boolean;
+    }
+
+    interface CVRImportPending {
+        alerted: boolean;
+        started: Date;
     }
 
     interface CVRImportStatus {
