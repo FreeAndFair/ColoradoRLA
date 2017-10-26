@@ -142,7 +142,7 @@ public class CountyDashboard implements PersistentEntity {
                          column = @Column(name = "cvr_import_error_message")),
       @AttributeOverride(name = "my_timestamp",
                          column = @Column(name = "cvr_import_timestamp"))
-  })
+      })
   private ImportStatus my_cvr_import_status = 
       new ImportStatus(ImportState.NOT_ATTEMPTED, null);
   
