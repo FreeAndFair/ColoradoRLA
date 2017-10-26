@@ -81,9 +81,9 @@ interface CountyInfoProps {
 const CountyInfo = (props: CountyInfoProps) => {
     const { countyState, currentRoundNumber, info } = props;
 
-    const currentState: County.ASMState = _.get(countyState, 'asm.countyState.currentState');
-    const status = currentState
-                 ? formatCountyASMState(currentState)
+    const asmState = countyState.asm.county;
+    const status = asmState
+                 ? formatCountyASMState(asmState)
                  : '';
 
     const rows = [
