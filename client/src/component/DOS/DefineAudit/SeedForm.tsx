@@ -4,7 +4,7 @@ import { EditableText } from '@blueprintjs/core';
 
 
 interface FormProps {
-    forms: any;
+    forms: DOS.Form.Seed.Ref;
 }
 
 interface FormState {

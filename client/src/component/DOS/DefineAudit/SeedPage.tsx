@@ -38,7 +38,7 @@ interface PageProps {
 const AuditSeedPage = (props: PageProps) => {
     const { back, nextPage, publicMeetingDate, seed, uploadRandomSeed } = props;
 
-    const forms: any = {};
+    const forms: DOS.Form.Seed.Ref = {};
 
     const onSaveAndNext = () => {
         if (forms.seedForm) {

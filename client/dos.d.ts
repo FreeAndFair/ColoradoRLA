@@ -116,6 +116,16 @@ declare namespace DOS {
             }
         }
 
+        namespace Seed {
+            interface Ref {
+                seedForm?: DOS.Form.Seed.Form;
+            }
+
+            interface Form {
+                seed: string;
+            }
+        }
+
         namespace SelectContests {
             type ReasonId = 'county_wide_contest' | 'state_wide_contest';
 
