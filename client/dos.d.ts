@@ -127,6 +127,10 @@ declare namespace DOS {
         }
 
         namespace SelectContests {
+            interface Ref {
+                selectContestsForm?: DOS.Form.SelectContests.FormData;
+            }
+
             type ReasonId = 'county_wide_contest' | 'state_wide_contest';
 
             interface Reason {

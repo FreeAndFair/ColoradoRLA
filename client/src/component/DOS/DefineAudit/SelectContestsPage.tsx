@@ -126,7 +126,7 @@ const SelectContestsPage = (props: PageProps) => {
         return <WaitingForContestsPage back={ back } />;
     }
 
-    const forms: any = {};
+    const forms: DOS.Form.SelectContests.Ref = {};
 
     const haveSelectedContests = !_.isEmpty(auditedContests);
 

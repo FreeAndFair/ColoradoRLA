@@ -116,7 +116,7 @@ type SortOrder = 'asc' | 'desc';
 
 interface FormProps {
     contests: DOS.Contests;
-    forms: any;
+    forms: DOS.Form.SelectContests.Ref;
     isAuditable: OnClick;
 }
 
@@ -282,7 +282,7 @@ class SelectContestsForm extends React.Component<FormProps, FormState> {
     }
 
     private resetForm(contests: DOS.Contests) {
-        const form: any = {};
+        const form: DOS.Form.SelectContests.FormData = {};
 
         _.forEach(contests, (c, _) => {
             form[c.id] = {
