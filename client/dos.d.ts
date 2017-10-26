@@ -72,4 +72,10 @@ declare namespace DOS {
         | 'DOS_ROUND_COMPLETE'
         | 'DOS_AUDIT_COMPLETE'
         | 'AUDIT_RESULTS_PUBLISHED';
+
+    interface AuditInfo {
+        election: Election;
+        publicMeetingDate: Date;
+        riskLimit: number;
+    }
 }
