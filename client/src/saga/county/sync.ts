@@ -19,9 +19,9 @@ const COUNTY_POLL_DELAY = config.pollDelay;
 function* auditPoll() {
     const { county } = yield select();
 
-    const currentState = _.get(county, 'asm.auditBoard.currentState');
-    const shouldSync = currentState === 'WAITING_FOR_ROUND_START'
-        || currentState === 'WAITING_FOR_ROUND_START_NO_AUDIT_BOARD';
+    const asmState = county.asm.auditBoard;
+    const shouldSync = asmState === 'WAITING_FOR_ROUND_START'
+        || asmState === 'WAITING_FOR_ROUND_START_NO_AUDIT_BOARD';
 
     if (shouldSync) {
         dashboardRefresh();
