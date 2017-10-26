@@ -69,6 +69,12 @@ declare namespace JSON {
         status: CountyDashboardStatus;
     }
 
+    interface CVRImportStatus {
+        error_message?: string;
+        import_state: County.CVRImportState;
+        timestamp: string;
+    }
+
     interface ContestChoice {
         name: string;
         description: string;

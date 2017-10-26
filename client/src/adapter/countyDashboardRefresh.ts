@@ -128,6 +128,14 @@ function parseFile(file: JSON.UploadedFile): Option<UploadedFile> {
     };
 }
 
+function parseCVRImportStatus(data: JSON.CVRImportStatus): County.CVRImportStatus {
+    return {
+        error: data.error_message,
+        state: data.import_state,
+        timestamp: new Date(data.timestamp),
+    };
+}
+
 export function parse(data: JSON.CountyDashboard, state: County.AppState) {
     const findContest = (id: number) => state.contestDefs![id];
 
@@ -146,7 +154,7 @@ export function parse(data: JSON.CountyDashboard, state: County.AppState) {
         currentRound: data.current_round ? parseRound(data.current_round) : null,
         cvrExport: parseFile(data.cvr_export_file),
         cvrExportCount: data.cvr_export_count,
-        cvrImportStatus: data.cvr_import_status,
+        cvrImportStatus: parseCVRImportStatus(data.cvr_import_status),
         disagreementCount: parseDisCount(data.disagreement_count),
         discrepancyCount: parseDisCount(data.discrepancy_count),
         election: parseElection(data),

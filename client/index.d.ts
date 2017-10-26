@@ -112,12 +112,6 @@ type CountyDashboardStatus
     | 'CVRS_UPLOADED_SUCCESSFULLY'
     | 'ERROR_IN_UPLOADED_DATA';
 
-type CVRImportStatus
-    = 'NOT_ATTEMPTED'
-    | 'IN_PROGRESS'
-    | 'SUCCESSFUL'
-    | 'FAILED';
-
 interface Round {
     actualCount: number;
     disagreements: number;

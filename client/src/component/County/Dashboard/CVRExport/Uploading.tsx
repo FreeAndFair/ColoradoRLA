@@ -32,6 +32,15 @@ const Progress = (props: ProgressProps) => {
     );
 };
 
+const UploadingFile = () => {
+    return (
+        <div className='pt-card'>
+            <Spinner className='pt-large' intent={ Intent.PRIMARY } />
+            <div>Uploading file...</div>
+        </div>
+    );
+};
+
 interface UploadingProps {
     countyState: County.AppState;
 }
@@ -40,23 +49,21 @@ const Uploading = (props: UploadingProps) => {
     const { countyState } = props;
     const { cvrExportCount, cvrExport, cvrImportStatus } = countyState;
 
-    if (!cvrExportCount) { return null; }
-    if (!cvrExport) { return null; }
-    if (!cvrImportStatus) { return null; }
+    if (!cvrExportCount) {
+        return <UploadingFile />;
+    }
+    if (!cvrExport) {
+        return <UploadingFile />;
+    }
 
-    if (cvrImportStatus === 'IN_PROGRESS') {
+    if (cvrImportStatus.state === 'IN_PROGRESS') {
         return (
             <div className='pt-card'>
                 <Progress file={ cvrExport } count={ cvrExportCount } />
             </div>
         );
     } else {
-        return (
-            <div className='pt-card'>
-                <Spinner className='pt-large' intent={ Intent.PRIMARY } />
-                <div>Uploading file...</div>
-            </div>
-        );
+        return <UploadingFile />;
     }
 };
 
