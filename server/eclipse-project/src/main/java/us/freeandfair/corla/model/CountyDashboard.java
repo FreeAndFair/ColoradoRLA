@@ -23,15 +23,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -45,6 +46,7 @@ import javax.persistence.Table;
 import javax.persistence.Version;
 
 import us.freeandfair.corla.model.CVRContestInfo.ConsensusValue;
+import us.freeandfair.corla.model.ImportStatus.ImportState;
 import us.freeandfair.corla.persistence.AuditSelectionIntegerMapConverter;
 import us.freeandfair.corla.persistence.PersistentEntity;
 
@@ -132,9 +134,17 @@ public class CountyDashboard implements PersistentEntity {
   /**
    * The CVR import status.
    */
-  @Column(nullable = false)
-  @Enumerated(EnumType.STRING)
-  private ImportStatus my_cvr_import_status = ImportStatus.NOT_ATTEMPTED;
+  @Embedded
+  @AttributeOverrides({
+      @AttributeOverride(name = "my_import_state",
+                         column = @Column(name = "cvr_import_state")),
+      @AttributeOverride(name = "my_error_message",
+                         column = @Column(name = "cvr_import_error_message")),
+      @AttributeOverride(name = "my_timestamp",
+                         column = @Column(name = "cvr_import_timestamp"))
+  })
+  private ImportStatus my_cvr_import_status = 
+      new ImportStatus(ImportState.NOT_ATTEMPTED, null);
   
   /**
    * The timestamp of the most recent uploaded ballot manifest. 

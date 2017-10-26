@@ -47,6 +47,7 @@ import us.freeandfair.corla.model.CountyContestResult;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.model.ImportStatus;
+import us.freeandfair.corla.model.ImportStatus.ImportState;
 import us.freeandfair.corla.model.UploadedFile;
 import us.freeandfair.corla.model.UploadedFile.FileStatus;
 import us.freeandfair.corla.model.UploadedFile.HashStatus;
@@ -131,13 +132,21 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
                                    "file " + file.filename() + "uploaded by county " + 
                                    file.county().id());
       } else if (file.hashStatus() == HashStatus.VERIFIED) {
-        // we spawn a thread to do the import, and this endpoint always immediately 
+        // make sure the old CVR file is now marked as "not imported", since the CVRs
+        // will be wiped
+        final CountyDashboard cdb = Persistence.getByID(county.id(), CountyDashboard.class);
+        if (cdb.cvrFile() != null) {
+          cdb.cvrFile().setStatus(FileStatus.NOT_IMPORTED);
+          Persistence.saveOrUpdate(cdb.cvrFile());
+        }
+        // spawn a thread to do the import; this endpoint always immediately 
         // returns a successful result if we get to this point
         synchronized (COUNTIES_RUNNING) {
           // signal that we're starting the import
           COUNTIES_RUNNING.add(county.id());
         }
         (new Thread(new CVRImporter(file))).start();
+        
         okJSON(the_response, Main.GSON.toJson(file));
       } else {
         badDataContents(the_response, "attempt to import a file without a verified hash");
@@ -239,11 +248,18 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
           updateStateMachine(true);
           Persistence.commitTransaction();
           Main.LOGGER.info("CVR import complete for county " + my_file.county().id());
-        } catch (final PersistenceException | CVRImportException e) {
-          // the import failed, so clean up
+        } catch (final PersistenceException e) {
+          // the import failed for DB reasons, so clean up
           Main.LOGGER.error("CVR import failed for county " + my_file.county().id() + ": " + 
               ExceptionUtils.getStackTrace(e));
-          cleanup(my_file.county(), true);
+          cleanup(my_file.county(), true, "import failed because of database problem");
+          updateStateMachine(false);
+          Persistence.commitTransaction();
+        } catch (final CVRImportException e) {
+          // we intentionally failed the import, so clean up
+          Main.LOGGER.error("CVR import failed for county " + my_file.county().id() + ": " + 
+              ExceptionUtils.getStackTrace(e));
+          cleanup(my_file.county(), true, e.getMessage());
           updateStateMachine(false);
           Persistence.commitTransaction();
         } 
@@ -396,7 +412,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
             Persistence.saveOrUpdate(cdb);
           } 
           Persistence.commitTransaction();
-          success = true;
+         success = true;
         } catch (final PersistenceException e) {
           // something went wrong, let's try again
           if (Persistence.canTransactionRollback()) {
@@ -448,7 +464,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
                                         Main.properties(),
                                         true);
         try {
-          final int deleted = cleanup(the_file.county(), false);
+          final int deleted = cleanup(the_file.county());
           if (deleted > 0) {
             Main.LOGGER.info("deleted " + deleted + " previously-uploaded CVRs");
           }
@@ -456,20 +472,19 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
           error("unable to delete previously uploaded CVRs");
         }
         
-        updateCountyDashboard(the_file, ImportStatus.IN_PROGRESS, 0);
-
-        Persistence.beginTransaction();
+        updateCountyDashboard(the_file, new ImportStatus(ImportState.IN_PROGRESS), 0);
+                
         if (parser.parse()) {
           final int imported = parser.recordCount().getAsInt();
           Main.LOGGER.info(imported + " CVRs parsed from file " + the_file.id() + 
                            " for county " + the_file.county().id());
-          updateCountyDashboard(the_file, ImportStatus.SUCCESSFUL, imported);
+          updateCountyDashboard(the_file, new ImportStatus(ImportState.SUCCESSFUL), imported);
           handleTies(the_file.county());
           the_file.setStatus(FileStatus.IMPORTED_AS_CVR_EXPORT);
           Persistence.saveOrUpdate(the_file);
         } else {
           try {
-            cleanup(the_file.county(), true);
+            cleanup(the_file.county(), true, parser.errorMessage());
           } catch (final PersistenceException e) {
             error("couldn't clean up after " + parser.errorMessage() + " [file " + 
                 the_file.filename() + PAREN_ID + the_file.id() + ")]");
@@ -481,7 +496,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
         Main.LOGGER.info("parse transactions did not complete successfully, " + 
                          "attempting cleanup");
         try {
-          cleanup(the_file.county(), true);
+          cleanup(the_file.county(), true, "could not clean up");
         } catch (final PersistenceException ex) {
           // if we couldn't clean up, there's not much we can do about it
         }
@@ -494,7 +509,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
                          the_file.filename() + PAREN_ID + the_file.id() +
                          "): " + ExceptionUtils.getStackTrace(e));
         try {
-          cleanup(the_file.county(), true);
+          cleanup(the_file.county(), true, "malformed CVR export file");
         } catch (final PersistenceException ex) {
           // if we couldn't clean up, there's not much we can do about it
         }
@@ -511,12 +526,28 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
      * transaction so that one is open at all times during endpoint execution.
      * 
      * @param the_county The county to wipe.
-     * @param the_failure_flag true to set the CVR import status on the county
-     * dashboard to FAILED, false otherwise.
      * @return the number of deleted CVR records, if any were deleted.
      * @exception PersistenceException if the wipe was unsuccessful.
      */
-    private int cleanup(final County the_county, final boolean the_failure_flag) {
+    private int cleanup(final County the_county) {
+      return cleanup(the_county, false, null);
+    }
+    
+    /**
+     * Attempts to wipe all CVR records for a specific county. This ends any current
+     * transaction, does the delete in its own transaction, and starts a new 
+     * transaction so that one is open at all times during endpoint execution.
+     * 
+     * @param the_county The county to wipe.
+     * @param the_failure_flag true to set the CVR import status on the county
+     * dashboard to FAILED, false otherwise.
+     * @param the_failure_message The failure message to report, if the_failure_flag
+     * is true.
+     * @return the number of deleted CVR records, if any were deleted.
+     * @exception PersistenceException if the wipe was unsuccessful.
+     */
+    private int cleanup(final County the_county, final boolean the_failure_flag, 
+                        final String the_failure_message) {
       if (Persistence.isTransactionActive()) {
         Persistence.commitTransaction();
       }
@@ -542,7 +573,7 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
           cdb.setCVRFile(null);
           cdb.setCVRsImported(0);
           if (the_failure_flag) {
-            cdb.setCVRImportStatus(ImportStatus.FAILED);
+            cdb.setCVRImportStatus(new ImportStatus(ImportState.FAILED, the_failure_message));
           }
           Persistence.commitTransaction();
           success = true;
