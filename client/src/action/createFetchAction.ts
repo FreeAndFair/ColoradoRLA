@@ -23,7 +23,7 @@ function createFetchAction(config: CreateFetchConfig) {
     async function fetchAction() {
         action(sendType);
 
-        const init: any = {
+        const init: RequestInit = {
             credentials: 'include',
             method: 'get',
         };
