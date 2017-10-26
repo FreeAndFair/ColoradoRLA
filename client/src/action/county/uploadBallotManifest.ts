@@ -16,7 +16,7 @@ function createFormData(file: Blob, hash: string): FormData {
 }
 
 async function importBallotManifest(body: JSON.UploadBallotManifestOk) {
-    const init: any = {
+    const init: RequestInit = {
         body: JSON.stringify(body),
         credentials: 'include',
         method: 'post',
@@ -47,7 +47,7 @@ async function importBallotManifest(body: JSON.UploadBallotManifestOk) {
 async function uploadBallotManifest(countyId: number, file: Blob, hash: string) {
     const formData = createFormData(file, hash);
 
-    const init: any = {
+    const init: RequestInit = {
         body: formData,
         credentials: 'include',
         method: 'post',
