@@ -1,0 +1,20 @@
+#!/bin/sh
+time 2.sh;
+time 2.sh;
+time 2.sh;
+time 2.sh;
+time 4.sh;
+time 4.sh;
+time 4.sh;
+time 8.sh;
+time 8.sh;
+time 8.sh;
+time 16.sh;
+time 16.sh;
+time 16.sh;
+time 32.sh;
+time 32.sh;
+time 32.sh;
+time 64.sh;
+time 64.sh;
+time 64.sh;
