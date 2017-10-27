@@ -151,7 +151,6 @@ import logging
 import hashlib
 
 import requests
-import sampler
 
 
 __author__ = "Neal McBurnett <http://neal.mcburnett.org/>"
@@ -184,7 +183,7 @@ parser.add_argument('-l, --loser', dest='loser', default="UNDERVOTE",
                     help='Loser to use for -p, default "UNDERVOTE"')
 parser.add_argument('-p, --discrepancy-plan', dest='plan', default="2 17",
                     help='Planned discrepancies. Default is "2 17", i.e. '
-                    'Every 17 ACVR upload, upload a possible discrepancy once, '
+                    'Every 17 ACVR uploads, upload a possible discrepancy once, '
                     'when the remainder of dividing the upload index is 2. '
                     'Discrepancies thus come with the 3rd of every 17 ACVR uploads.')
 parser.add_argument('-P, --discrepancy-end', dest='plan_limit', type=int, default=sys.maxint,
@@ -210,6 +209,11 @@ parser.add_argument('-e, --dos-endpoint', dest='dos_endpoint',
                     help='do an HTTP GET from the given endpoint, authenticated as state admin.')
 parser.add_argument('-E, --county-endpoint', dest='county_endpoint',
                     help='do an HTTP GET from the given endpoint, authenticated as a county.')
+parser.add_argument('-i, --state-imported', dest='state_imported', action='store_true',
+                    help='show CVRs imported for all counties')
+parser.add_argument('-I, --county-imported', dest='county_imported', action='store_true',
+                    help='show CVRs imported for given counties')
+
 parser.add_argument('--hand-count', dest='hand_counts', type=int, metavar='CONTEST', action='append',
                     help='Declare a hand-count for the given numeric contest_index')
 parser.add_argument('--download-file', dest='download_file', type=int, metavar='FILE_ID',
@@ -221,6 +225,9 @@ parser.add_argument('-S, --check-audit-size', type=bool, dest='check_audit_size'
 parser.add_argument('-T, --time-delay', type=float, dest='time_delay', default=0.0,
                     help='Maximum time to pause before network requests. Default 0.0. '
                     'Actual pauses will be uniformly distributed between 0 and the maximum')
+parser.add_argument('-L, --lower-time-delay', type=float, dest='lower_time_delay', default=0.0,
+                    help='Minimum time to pause before network requests. Default 0.0. '
+                    'Actual pauses will be uniformly distributed between this and the maximum')
 
 # TODO: get rid of this and associated old code when /upload-cvr-export and /upload-cvr-export go away
 parser.add_argument('-Y, --ye-olde-upload', type=bool, dest='ye_olde_upload',
@@ -243,6 +250,7 @@ class Pause(object):
     Just set Pause.max_pause directly when you want the default to change"
     """
 
+    min_pause = 0.0
     max_pause = 0.0
 
     @classmethod
@@ -251,7 +259,7 @@ class Pause(object):
         between 0.0 and the maximum pause configured for the class
         """
 
-        time.sleep(random.uniform(0.0, self.max_pause))
+        time.sleep(random.uniform(self.min_pause, self.max_pause))
 
 
 def requests_retry_session(retries=3, backoff_factor=2, method_whitelist=False,
@@ -353,16 +361,28 @@ def test_endpoint_get(ac, s, path, show=True):
     return r
 
 
+def get_imported_count(dashboard):
+    """Pull counts out of county-dashboard
+    Return (ASM_state, summary)
+    """
+
+    imported_count = dashboard.get('cvr_export_count', None)
+    if 'cvr_export_file' in dashboard:
+        approximate_record_count = dashboard['cvr_export_file']['approximate_record_count']
+    else:
+        approximate_record_count = 0
+
+    return (dashboard['asm_state'],
+            "Parsed about %d of about %d CVRs" %
+                (imported_count, approximate_record_count))
+
+
 def upload_file(ac, s, import_path, filename, sha256):
     """Upload the named file, specifying the given sha256 hash.
     import_path is either '/import-cvr-export' or '/import-ballot-manifest'
     """
 
-    # Obtain test directory, i.e. where this script is.
-    # Filenames can be absolute or relative to this directory.
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-
-    with open(os.path.join(dir_path, filename), 'rb') as f:
+    with open(filename, 'rb') as f:
         path = "/upload-file"
         payload = {'hash': sha256}
         r = s.post(ac.base + path,
@@ -378,18 +398,24 @@ def upload_file(ac, s, import_path, filename, sha256):
     r = test_endpoint_json(ac, s, import_path, import_handle)
     if r.status_code != 200:
         print(r, "POST", import_path, r.text)
+
     logging.debug("%s %s %s" % (r, import_path, r.text))
 
-"""
-TODO: clean this out when ready.
+    if import_path == "/import-cvr-export":
+        while True:
+            # wait for the verdict on the CVR export
+            r = test_endpoint_get(ac, s, "/county-dashboard")
+            dashboard = r.json()
+            (state, summary) = get_imported_count(dashboard)
 
-Alternate approaches that have worked:
-    r = test_endpoint_bytes(ac, s, import_path, r.text)
-    r = test_endpoint_json(ac, s, import_path, { "file_id": import_handle['file_id']})
+            logging.info(summary)
 
-    print("import_handle: %s" % import_handle)
-    print("response text: %s" % r.text)
-"""
+            if state not in ["CVRS_IMPORTING", "BALLOT_MANIFEST_OK_AND_CVRS_IMPORTING"]:
+                print("CVR import complete, state: %s" % state)
+                break
+
+            time.sleep(30)
+
 
 def download_file(ac, s, file_id, filename):
     "Download the previously-uploaded file with the given file_id to the given filename"
@@ -454,6 +480,8 @@ def get_cvrs(ac, s):
 def publish_ballots_to_audit(seed, cvrs):
     """Return lists by county of ballots to audit.
     """
+
+    import sampler
 
     county_ids = set(cvr['county_id'] for cvr in cvrs)
 
@@ -589,7 +617,7 @@ def reset(ac):
 
 
 def dos_init(ac):
-    'Run initial Dept of State steps: reset, risk_limit etc.'
+    'Run initial Dept of State steps: audit definition, risk_limit etc.'
 
     r = test_endpoint_json(ac, ac.state_s, "/update-audit-info",
                            { "election_type": "coordinated",
@@ -999,6 +1027,7 @@ def main():
     ac.logconsole.info("Arguments: %s" % ac.args)
 
     Pause.max_pause = ac.args.time_delay
+    Pause.min_pause = ac.args.lower_time_delay
     # Start off with a pause, since others are inserted at end of requests.
     Pause.pause_hook(None)
 
@@ -1037,6 +1066,30 @@ def main():
     if ac.args.dos_endpoint is not None:
         r = test_endpoint_get(ac, ac.state_s, ac.args.dos_endpoint)
         print(r, "GET", ac.args.dos_endpoint, r.text)
+        sys.exit(0)
+
+    if ac.args.county_imported:
+        for county_id in ac.args.counties:
+            county_s = requests_retry_session()
+            county_login(ac, county_s, county_id)
+
+            r = test_endpoint_get(ac, county_s, "/county-dashboard")
+            dashboard = r.json()
+            (state, summary) = get_imported_count(dashboard)
+
+            print("County %d: %s" % (county_id, summary))
+
+        sys.exit(0)
+
+    if ac.args.state_imported:
+        r = test_endpoint_get(ac, ac.state_s, "/dos-dashboard")
+        dos_dashboard = r.json()
+        for county_id, status in sorted(dos_dashboard['county_status'].items(),
+                                        key=lambda t: int(t[0])):
+            county_id = int(county_id)
+            (state, summary) = get_imported_count(status)
+            print("County %d: %s" % (county_id, summary))
+
         sys.exit(0)
 
     if ac.args.hand_counts:
