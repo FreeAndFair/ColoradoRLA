@@ -188,6 +188,7 @@ public final class CVRAuditInfoQueries {
                                       subroot2.get(MY_INDEX))));
       cq.select(root);
       cq.where(cb.and(cb.equal(root.get(MY_INDEX), sq1),
+                      cb.equal(root.get(MY_DASHBOARD), the_dashboard),
                       cb.not(cb.exists(sq2))));
       cq.orderBy(cb.asc(root.get(MY_INDEX)));
       final TypedQuery<CVRAuditInfo> query = s.createQuery(cq);
