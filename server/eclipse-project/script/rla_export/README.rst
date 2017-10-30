@@ -46,7 +46,8 @@ so that the program knows the proper connection and login information for the da
 
   ``rla_export -p properties_file``
 
-The output can also optionally be put in a different output directory
+The output can also optionally be put in a different output directory,
+which will be created if necessary,
 using a ``-e export_directory`` argument.
 
 If you wish to export the results of a custom database query in json and csv format, put the query into ``file.sql`` and add the file name as an argument:
