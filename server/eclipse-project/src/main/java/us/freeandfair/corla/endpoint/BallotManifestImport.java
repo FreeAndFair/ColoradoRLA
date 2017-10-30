@@ -91,6 +91,13 @@ public class BallotManifestImport extends AbstractCountyDashboardEndpoint {
     if (cdb == null) {
       serverError(the_response, "could not locate county dashboard");
     } else {
+      // mark any previous ballot manifest import as NOT_IMPORTED
+      if (cdb.manifestFile() != null) {
+        cdb.manifestFile().setStatus(FileStatus.NOT_IMPORTED);
+        Persistence.saveOrUpdate(cdb.cvrFile());
+      }
+
+      // now set the new manifest info
       cdb.setManifestFile(the_file);
       cdb.setBallotsInManifest(the_ballot_count);
       try {

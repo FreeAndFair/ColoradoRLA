@@ -232,7 +232,9 @@ public class CVRAuditInfo implements PersistentEntity {
    */
   public void setDiscrepancy(final Set<AuditReason> the_reasons) {
     my_discrepancy.clear();
-    my_discrepancy.addAll(the_reasons);
+    if (the_reasons != null) {
+      my_discrepancy.addAll(the_reasons);
+    }
   }
   
   /**
@@ -250,7 +252,9 @@ public class CVRAuditInfo implements PersistentEntity {
    */
   public void setDisagreement(final Set<AuditReason> the_reasons) {
     my_disagreement.clear();
-    my_disagreement.addAll(the_reasons);
+    if (the_reasons != null) {
+      my_disagreement.addAll(the_reasons);
+    }
   }
   
   /**
