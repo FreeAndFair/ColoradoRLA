@@ -17,9 +17,9 @@ import cvrExportUploadingSelector from 'corla/selector/county/cvrExportUploading
 const COUNTY_POLL_DELAY = config.pollDelay;
 
 function* auditPoll() {
-    const { county } = yield select();
+    const countyState = yield select();
 
-    const asmState = county.asm.auditBoard;
+    const asmState = countyState.asm.auditBoard;
     const shouldSync = asmState === 'WAITING_FOR_ROUND_START'
         || asmState === 'WAITING_FOR_ROUND_START_NO_AUDIT_BOARD';
 
@@ -50,10 +50,10 @@ function* dashboardPoll() {
     fetchAuditBoardASMState();
     fetchCountyASMState();
 
-    const { county } = yield select();
+    const countyState = yield select();
 
-    if (county && county.id) {
-        fetchContests(county.id);
+    if (countyState && !_.isNil(countyState.id)) {
+        fetchContests(countyState.id);
     }
 }
 
