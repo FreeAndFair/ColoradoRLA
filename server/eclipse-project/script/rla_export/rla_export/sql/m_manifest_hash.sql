@@ -1,5 +1,4 @@
--- For each county, ballot manifest hash and county name
--- Note that query pulls not just the most recent hash for each county, but has one record for each successfully uploaded ballot manifest file in each county.
+-- For each county, county name and hash of ballot manifest file uploaded by the county for use in the audit
 
 SELECT co.name as county_name, uf.hash AS ballot_manifest_hash
 FROM county AS co
