@@ -114,57 +114,54 @@ d. List of Audit Rounds (number of ballots, status by
  * - id
    - Integer
    - internal database id for the contest
- * - 
+ * - winners_allowed
+   - Integer
+   - maximum number of winners of the given contest
+ * - one_vote_over_count
+   - Integer
+   - number of one-vote overstatements found so far by the audit board for the given contest
+ * - one_vote_under_count
+   - Integer
+   - 
+ * - two_vote_over_count
    - 
    - 
- * - 
+ * - two_vote_under_count
+   - Integer
+   - 
+ * - audit_reason
    - 
    - 
- * - 
+ * - audit_status
    - 
    - 
- * - 
+ * - audited_sample_count
    - 
    - 
- * - 
+ * - disagreement_count
+   - Integer
    - 
+ * - estimated_samples_to_audit
+   - Integer
    - 
- * - 
+ * - estimated_recalculate_needed
+   - True/False
    - 
+ * - gamma
+   - Numeric
    - 
- * - 
+ * - optimistic_recalculate_needed
+   - True/False
    - 
+ * - optimistic_samples_to_audit
+   - Integer
    - 
- * - 
-   - 
-   - 
- * - 
-   - 
-   - 
- * - 
-   - 
-   - 
- * - 
-   - 
-   - 
- * - 
-   - 
-   - 
- * - 
-   - 
-   - 
- * - 
-   - 
-   - 
- * - 
-   - 
-   - 
- * - 
-   - 
-   - 
- * - 
-   - 
-   - 
+ * - risk_limit
+   - Numeric
+   - Risk limit chosen by the Secretary of State for the given contest
+ * - county_name
+   - String
+   - name of county
  * - 
    - 
    - 
