@@ -140,6 +140,7 @@ TODO: to help human testers using web client, display CVRs corresponding to sele
 from __future__ import (print_function, division,
                         absolute_import, unicode_literals)
 import sys
+import codecs
 import os 
 import operator
 import argparse
@@ -192,8 +193,8 @@ parser.add_argument('-P, --discrepancy-end', dest='plan_limit', type=int, defaul
 parser.add_argument('-n, --notfound-plan', dest='notfound_plan', default="-1 1",
                     help='Planned rate of ballot-not-found discrepancies. Default is "-1 1", i.e. never')
 
-parser.add_argument('-R, --rounds', type=int, default=-1, dest='rounds',
-  help='Set maximum number of rounds. Default is all rounds.')
+parser.add_argument('-R, --rounds', type=int, dest='rounds', default=-1,
+                    help='Set maximum number of rounds. Default is all rounds.')
 
 parser.add_argument('-r, --risk-limit', type=float, dest='risk_limit', default=0.1,
                     help='risk limit, e.g. 0.1')
@@ -647,31 +648,13 @@ def county_setup(ac, county_id):
 def dos_start(ac):
     'Run DOS steps to start the audit, enabling county auditing to begin: contest selection, seed, etc.'
 
-    r = test_endpoint_get(ac, ac.state_s, "/contest")
-    contests = r.json()
-    if len(contests) <= 0:
+    if len(ac.audited_contests) <= 0:
         print("No contests to audit, status_code = %d" % r.status_code)
         return
 
-    for i, contest in enumerate(contests):
-        print("Contest {}: vote for {votes_allowed} in {name}".format(i, **contest))
-
-    logging.log(5, "Contests: %s" % contests)
-
-    ac.audited_contests = []
-
-    # -1 is a special value meaning "audit all contests"
-    if ac.args.contests[0] == -1:
-        ac.args.contests = range(len(contests))
-
-    for contest_index in ac.args.contests:
-        if contest_index >= len(contests):
-            logging.error("Contest_index %d out of range: only %d contests in election" %
-                          (contest_index, len(contests)))
-
-        ac.audited_contests.append(contests[contest_index]['id'])
+    for contest_id in ac.audited_contests:
         r = test_endpoint_json(ac, ac.state_s, "/select-contests",
-                               [{"contest": ac.audited_contests[-1],
+                               [{"contest": contest_id,
                                  "reason": "COUNTY_WIDE_CONTEST",
                                  "audit": "COMPARISON"}])
 
@@ -987,6 +970,7 @@ def check_audit_size(ac):
 def main():
     # Get unbuffered output
     sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
+    sys.stdout = codecs.getwriter('utf8')(sys.stdout)
 
     # Establist an "audit context", abbreviated ac, for passing state around.
     ac = Namespace()
@@ -1121,6 +1105,34 @@ def main():
     if "county_setup" in ac.args.commands:
         for county_id in ac.args.counties:
             county_setup(ac, county_id)
+
+    if ac.args.commands == ['county_setup']:
+        # All done. Avoid inquiring about contests, etc.
+        sys.exit(0)
+
+    # Establish which contests are being audited
+    # Note, this may be a separate run of crtest
+    r = test_endpoint_get(ac, ac.state_s, "/contest")
+    contests = r.json()
+
+    for i, contest in enumerate(contests):
+        print("Contest {}: vote for {votes_allowed} in {name}".format(i, **contest))
+
+    logging.log(5, "Contests: %s" % contests)
+
+    ac.audited_contests = []
+
+    # -1 is a special value meaning "audit all contests"
+    if ac.args.contests[0] == -1:
+        ac.args.contests = range(len(contests))
+
+    for contest_index in ac.args.contests:
+        if contest_index >= len(contests):
+            logging.debug("Warning: Contest_index %d out of range: only %d contests in election (but we may just be in an early phase)" %
+                          (contest_index, len(contests)))
+            break
+
+        ac.audited_contests.append(contests[contest_index]['id'])
 
     if "dos_start" in ac.args.commands:
         dos_start(ac)
