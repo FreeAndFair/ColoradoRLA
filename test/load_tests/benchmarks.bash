@@ -14,7 +14,7 @@ mkdir -p $testname
 cd $testname
 
 # Save all script output in benchmark, while watching as it comes out
-exec > >(tee benchmark.out)
+exec > >(tee benchmarks.out)
 
 echo Test $testname, loading $cvrs on $URL for n=$series
 
@@ -37,7 +37,7 @@ for n in $series; do
     end=$(date +%s)
     interval=$((end - start))
     results="$results	$interval"
-    echo "Done:  $(date -Is) after $interval seconds"
+    echo "Done:  $(date -Is) with n=$n, trial $i, after $interval seconds"
   done
 done
 
