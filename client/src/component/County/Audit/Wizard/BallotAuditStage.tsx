@@ -134,11 +134,15 @@ interface ChoicesProps {
 const ContestChoices = (props: ChoicesProps) => {
     const { choices, marks, noConsensus, updateBallotMarks } = props;
 
-    const updateChoiceByName = (name: string) => (e: React.ChangeEvent<any>) => {
-        const checkbox = e.target;
+    function updateChoiceByName(name: string) {
+        function updateChoice(e: React.ChangeEvent<HTMLInputElement>) {
+            const checkbox = e.target;
 
-        updateBallotMarks({ choices: { [name]: checkbox.checked } });
-    };
+            updateBallotMarks({ choices: { [name]: checkbox.checked } });
+        }
+
+        return updateChoice;
+    }
 
     const choiceForms = _.map(choices, choice => {
         const checked = marks.choices[choice.name];

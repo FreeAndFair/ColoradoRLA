@@ -1,8 +1,8 @@
 import * as _ from 'lodash';
 
 
-export const format = (formData: any) => {
-    const data: any = [];
+export function format(formData: DOS.Form.SelectContests.FormData): JSON.ContestForAudit[] {
+    const data: JSON.ContestForAudit[] = [];
 
     _.forEach(formData, (r, id) => {
         if (r.audit) {
@@ -24,4 +24,4 @@ export const format = (formData: any) => {
     });
 
     return data;
-};
+}

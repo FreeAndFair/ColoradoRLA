@@ -9,7 +9,7 @@ const ELECTION_TYPES: ElectionType[] =
     ['coordinated', 'primary', 'general', 'recall'];
 
 interface FormProps {
-    forms: any;
+    forms: DOS.Form.AuditDef.Forms;
     setFormValid: OnClick;
 }
 

@@ -8,30 +8,19 @@ import { Select } from '@blueprintjs/labs';
 import counties from 'corla/data/counties';
 
 
-interface FormAuditReason {
-    id: string;
-    text: string;
-}
-
-const auditReasons: FormAuditReason[] = [
+const auditReasons: DOS.Form.SelectContests.Reason[] = [
     { id: 'state_wide_contest', text: 'State Contest' },
     { id: 'county_wide_contest', text: 'County Contest' },
 ];
 
-const AuditReasonSelect = Select.ofType<FormAuditReason>();
-
-interface FormStatus {
-    audit: boolean;
-    handCount: boolean;
-    reason: FormAuditReason;
-}
+const AuditReasonSelect = Select.ofType<DOS.Form.SelectContests.Reason>();
 
 interface RowProps {
     contest: Contest;
     onAuditChange: OnClick;
     onHandCountChange: OnClick;
     onReasonChange: OnClick;
-    status: FormStatus;
+    status: DOS.Form.SelectContests.ContestStatus;
 }
 
 const TiedContestRow = (props: RowProps) => {
@@ -54,6 +43,12 @@ const TiedContestRow = (props: RowProps) => {
     );
 };
 
+interface MenuItemData {
+    handleClick: OnClick;
+    item: DOS.Form.SelectContests.Reason;
+    isActive: boolean;
+}
+
 const ContestRow = (props: RowProps) => {
     const {
         status,
@@ -67,7 +62,7 @@ const ContestRow = (props: RowProps) => {
         return null;
     }
 
-    const renderItem = ({ handleClick, item, isActive }: any) => {
+    const renderItem = ({ handleClick, item, isActive }: MenuItemData) => {
         return (
             <MenuItem
                 className={ isActive ? Classes.ACTIVE : '' }
@@ -121,17 +116,13 @@ type SortOrder = 'asc' | 'desc';
 
 interface FormProps {
     contests: DOS.Contests;
-    forms: any;
+    forms: DOS.Form.SelectContests.Ref;
     isAuditable: OnClick;
-}
-
-interface SelectContestsForm {
-    [contestId: number]: FormStatus;
 }
 
 interface FormState {
     filter: string;
-    form: any;
+    form: DOS.Form.SelectContests.FormData;
     order: SortOrder;
     sort: SortKey;
 }
@@ -291,7 +282,7 @@ class SelectContestsForm extends React.Component<FormProps, FormState> {
     }
 
     private resetForm(contests: DOS.Contests) {
-        const form: any = {};
+        const form: DOS.Form.SelectContests.FormData = {};
 
         _.forEach(contests, (c, _) => {
             form[c.id] = {
@@ -326,10 +317,10 @@ class SelectContestsForm extends React.Component<FormProps, FormState> {
         this.setState(s);
     }
 
-    private onReasonChange = (contest: Contest) => (item: any) => {
+    private onReasonChange = (contest: Contest) => (reason: DOS.Form.SelectContests.Reason) => {
         const s = { ...this.state };
 
-        s.form[contest.id].reason = { ...item };
+        s.form[contest.id].reason = { ...reason };
 
         this.setState(s);
     }

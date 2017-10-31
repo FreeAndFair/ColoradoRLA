@@ -66,16 +66,26 @@ const NextButton = (props: NextButtonProps) => {
 
 interface SaveButtonProps {
     disabled: boolean;
-    forms: any;
+    forms: DOS.Form.AuditDef.Forms;
 }
 
 const SaveButton = (props: SaveButtonProps) => {
     const { disabled, forms } = props;
 
     const buttonClick = () => {
+        if (!forms.electionDateForm) { return; }
+        if (!forms.electionTypeForm) { return; }
+        if (!forms.publicMeetingDateForm) { return; }
+
+        if (!forms.electionDateForm.date) { return; }
+        if (!forms.electionTypeForm.type) { return; }
+        if (!forms.publicMeetingDateForm.date) { return; }
+
         const electionDate = corlaDate.parse(forms.electionDateForm.date);
         const { type } = forms.electionTypeForm;
         const publicMeetingDate = corlaDate.parse(forms.publicMeetingDateForm.date);
+
+        if (!forms.riskLimit) { return; }
         const riskLimit = forms.riskLimit.comparisonLimit;
 
         setAuditInfo({
@@ -171,7 +181,7 @@ const AuditPage = (props: PageProps) => {
         );
     }
 
-    const forms = {};
+    const forms: DOS.Form.AuditDef.Forms = {};
 
     const disableButton = !formValid;
 

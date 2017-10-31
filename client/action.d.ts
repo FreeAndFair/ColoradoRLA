@@ -1,4 +1,9 @@
 declare namespace Action {
+    interface SubmitData<S, R> {
+        sent: S;
+        received: R;
+    }
+
     type App
         = CountyCVRImportFailNotice
         | CountyCVRImportOkNotice

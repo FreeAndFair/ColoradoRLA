@@ -72,4 +72,81 @@ declare namespace DOS {
         | 'DOS_ROUND_COMPLETE'
         | 'DOS_AUDIT_COMPLETE'
         | 'AUDIT_RESULTS_PUBLISHED';
+
+    interface AuditInfo {
+        election: Election;
+        publicMeetingDate: Date;
+        riskLimit: number;
+    }
+
+    namespace Form {
+        namespace AuditDef {
+            interface Forms {
+                electionDateForm?: DOS.Form.ElectionDate.Form;
+                electionTypeForm?: DOS.Form.ElectionType.Form;
+                publicMeetingDateForm?: DOS.Form.PublicMeetingDate.Form;
+                riskLimit?: DOS.Form.RiskLimit.Form;
+            }
+        }
+
+        namespace ElectionDate {
+            interface Form {
+                date: string;
+            }
+        }
+
+        namespace ElectionType {
+            interface Form {
+                type?: ElectionType;
+            }
+        }
+
+        namespace PublicMeetingDate {
+            interface Form {
+                date: string;
+            }
+        }
+
+        namespace RiskLimit {
+            interface Form {
+                ballotPollingField: string;
+                ballotPollingLimit: number;
+                comparisonField: string;
+                comparisonLimit: number;
+            }
+        }
+
+        namespace Seed {
+            interface Ref {
+                seedForm?: DOS.Form.Seed.Form;
+            }
+
+            interface Form {
+                seed: string;
+            }
+        }
+
+        namespace SelectContests {
+            interface Ref {
+                selectContestsForm?: DOS.Form.SelectContests.FormData;
+            }
+
+            type ReasonId = 'county_wide_contest' | 'state_wide_contest';
+
+            interface Reason {
+                id: ReasonId;
+                text: string;
+            }
+
+            interface ContestStatus {
+                audit: boolean;
+                handCount: boolean;
+                reason: Reason;
+            }
+
+            interface FormData {
+                [contestId: number]: ContestStatus;
+            }
+        }
+    }
 }

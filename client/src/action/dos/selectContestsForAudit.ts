@@ -16,5 +16,5 @@ const selectContestsForAudit = createSubmitAction({
 });
 
 
-export default (data: any) =>
+export default (data: DOS.Form.SelectContests.FormData) =>
     selectContestsForAudit(format(data));

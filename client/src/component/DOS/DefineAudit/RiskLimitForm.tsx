@@ -6,7 +6,7 @@ import { NumericInput } from '@blueprintjs/core';
 
 
 interface FormProps {
-    forms: any;
+    forms: DOS.Form.AuditDef.Forms;
     riskLimit: number;
     setFormValid: OnClick;
 }

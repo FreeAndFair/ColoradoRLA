@@ -15,7 +15,7 @@ const setAuditInfo = createSubmitAction({
     url,
 });
 
-function format(info: any): any {
+function format(info: DOS.AuditInfo) {
     const data = {
         election_date: get(info, 'election.date'),
         election_type: get(info, 'election.type'),
@@ -27,4 +27,4 @@ function format(info: any): any {
 }
 
 
-export default (info: any) => setAuditInfo(format(info));
+export default (info: DOS.AuditInfo) => setAuditInfo(format(info));
