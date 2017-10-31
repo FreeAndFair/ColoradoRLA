@@ -4,12 +4,16 @@
 # For example: $0 mytest "2 4 8" 4 large
 # Provide these arguments, of which only the first is mandatory:
 
+usage="Usage:
+     $0 testname [series [repeat [cvrs]]].
+e.g. URL=http://example.org/api $0 mytest '2 4 8 16 32 64' 3 medium"
+
 testname=$1             # Directory to create and save results in
+${testname:?"$usage"}
 series=${2:-2 4 8 16 32 64} # a list (in quotes) of values for the number of counties to run in parallel
 repeat=${3:-3}		# Number of times to repeat each element in series
 cvrs=${4:-medium}	# cvrs to load for each test,
 			# e.g. "medium" for medium_cvrs.csv and medium_manifest.csv
-
 mkdir -p $testname
 cd $testname
 
