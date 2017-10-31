@@ -96,13 +96,13 @@ m_status.sql
     - Data Type
     - Meaning
   * - county_name
-    - String
+    - Text String
     - Name of County
   * - contest_name
-    - String
+    - Text String
     - Name of contest
   * - audit_status
-    - String
+    - Text String
     - Blank, NOT_STARTED, IN_PROGRESS, RISK_LIMIT_ACHIEVED, or ENDED. 
       Before a user from the Department of State clicks the "Launch Audit" button, 
       the audit status is blank.
@@ -115,10 +115,10 @@ m_cvr_hash.sql
     - Type
     - Meaning
   * - county_name
-    - String
+    - Text String
     - Name of County
   * - hash
-    - String
+    - Text String
     - Hash value entered by the given county after uploading the cast vote record file
       to be used in the audit
 
@@ -127,10 +127,10 @@ m_manifest_hash.sql
     - Type
     - Meaning
   * - county_name
-    - String
+    - Text String
     - Name of County
   * - hash
-    - String
+    - Text String
     - Hash value entered by the given county after uploading the ballot manifest file
      to be used in the audit
 
@@ -142,7 +142,7 @@ m_random_sequence.sql
     - Data Type
     - Meaning
   * - county_name
-    - String
+    - Text String
     - Name of County
   * - review_index
     - Integer
@@ -164,43 +164,116 @@ m_random_sequence.sql
       with the given review-index
       in its batch of physical ballot cards 
   * - imprinted_id
-    - String
+    - Text String
     - combination of scanner, batch and record ids 
       that uniquely identifies the ballot card 
       with the given review-index
       and may be imprinted on the card
   * - ballot_type
-    - String
+    - Text String
     - BallotType from Dominion CVR export file, a code for the set of contests that 
       should be present on the physical ballot card
       with the given review-index
 
 
-- List of ballot cards assigned to Audit Board for review. 
-  This list can be created from the random sequence by removing duplicates.
-* - Column Name
-  - Data Type
-  - Meaning
-* - 
-  - 
-  - 
-- Computer record of Audit Board interpretation of marks on the paper ballot cards
-* - Column Name
-  - Data Type
-  - Meaning
-* - 
-  - 
-  - 
-- For each contest under audit, and for each ballot examined in the audit, 
++ List of ballot cards assigned to Audit Board for review. 
+  (This list could be created from the random sequence by removing duplicates 
+  and ordering by tabulator, batch and position within the batch.) 
+  Within each county, the list is ordered by rounds 
+  and, within each round, by tabulator, batch and position within the batch.
+m_ballot_list_for_review.sql
+  * - Column Name
+    - Data Type
+    - Meaning
+  * - county_name
+    - Text String
+    - Name of County
+  * - round
+    - Integer
+    - The audit round number in which the ballot card is assigned 
+      to the given County's Audit Board for review.
+  * - scanner_id
+    - Integer
+    - TabulatorNum from Dominion CVR export file, 
+      identifying the tabulator used to read the physical ballot card   
+  * - batch_id
+    - Integer
+    - BatchId from Dominion CVR export file, 
+      identifying the batch of physical ballot cards in which the card
+      was scanned
+  * - record_id
+    - Integer
+    - RecordId from Dominion CVR export file,
+      indicating the position of the card 
+      in its batch of physical ballot cards 
+  * - imprinted_id
+    - Text String
+    - combination of scanner, batch and record ids 
+      that uniquely identifies the ballot card 
+      and may be imprinted on the card
+  * - ballot_type
+    - Text String
+    - BallotType from Dominion CVR export file, a code for the set of contests that 
+      should be present on the physical ballot card
+
++ For each contest under audit, and for each ballot examined in the audit, 
   the RLA system's record of the Audit Board's interpretation of the marks 
   on the physical ballot for that contest
-* - Column Name
-  - Data Type
-  - Meaning
-* - 
-  - 
-  - 
-
+  * - Column Name
+    - Data Type
+    - Meaning
+  * - county_name
+    - Text String
+    - Name of County
+  * - contest_name
+    - Text String
+    - Name of contest
+  * - scanner_id
+    - Integer
+    - TabulatorNum from Dominion CVR export file, 
+      identifying the tabulator used to read the physical ballot card   
+  * - batch_id
+    - Integer
+    - BatchId from Dominion CVR export file, 
+      identifying the batch of physical ballot cards in which the card
+      was scanned
+  * - record_id
+    - Integer
+    - RecordId from Dominion CVR export file,
+      indicating the position of the card 
+      in its batch of physical ballot cards 
+  * - imprinted_id
+    - Text String
+    - combination of scanner, batch and record ids 
+      that uniquely identifies the ballot card 
+      and may be imprinted on the card
+  * - ballot_type
+    - Text String
+    - BallotType from Dominion CVR export file, a code for the set of contests that 
+      should be present on the physical ballot card
+  * - computer_interpretation_of_voter_choice
+    - List of Text Strings
+    - List of voter choices in the given contest on the given ballot card, as interpreted
+      by the vote-tabulation computer system
+  * - audit_board_interpretation_of_voter_choice
+    - List of Text Strings
+    - List of voter choices in the given contest on the given ballot card, as interpreted
+      by the Audit Board
+  * - did_audit_board_agree
+    - Yes/No
+    - "Yes" if the Audit Board came to consensus on the interpretation
+      of the given ballot card; "No" if not; 
+      blank if the card has not been reviewed by the Audit Board.
+  * - audit_board_comment
+    - Text String
+    - Text of comment entered by Audit Board 
+      about the given contest on the given ballot card
+  * - review_index
+    - Integer
+    - 
+  * - 
+    - 
+    - 
 
 
 
