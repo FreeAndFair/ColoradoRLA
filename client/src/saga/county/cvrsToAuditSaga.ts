@@ -14,10 +14,18 @@ function* fetchCvrsToAuditOk(action: any): IterableIterator<any> {
     const { data } = action;
     const state = yield select();
 
-    const currentId = currentBallotIdSelector(state);
+    const nextId = currentBallotIdSelector(state);
 
-    if (currentId) {
-        countyFetchCvr(currentId);
+    if (!nextId) { return; }
+
+    const { currentBallot } = state;
+
+    if (!currentBallot || (currentBallot.id !== nextId)) {
+        // If we already have a current ballot, only fetch this CVR if
+        // it is new. Otherwise we already have it, and fetching it
+        // again would overwrite the `submitted` flag, causing us to
+        // forget that we are waiting for the submission to be handled.
+        countyFetchCvr(nextId);
     }
 }
 
