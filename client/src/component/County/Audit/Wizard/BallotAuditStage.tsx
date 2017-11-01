@@ -260,7 +260,7 @@ const BallotAuditForm = (props: AuditFormProps) => {
 
 interface StageProps {
     countyState: County.AppState;
-    currentBallot: CVR;
+    currentBallot: County.CurrentBallot;
     currentBallotNumber: number;
     nextStage: OnClick;
     prevStage: OnClick;

@@ -97,7 +97,7 @@ const BallotReview = (props: BallotReviewProps) => {
 
 interface ReviewStageProps {
     countyState: County.AppState;
-    currentBallot: CVR;
+    currentBallot: County.CurrentBallot;
     marks: County.ACVR;
     nextStage: OnClick;
     prevStage: OnClick;
