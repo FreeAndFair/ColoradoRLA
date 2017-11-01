@@ -93,6 +93,24 @@ export default function root(state: AppState, action: Action.App) {
         return uploadBallotManifestOk(state as County.AppState, action);
     }
 
+    case 'UPLOAD_ACVR_SEND': {
+        const nextState = { ...state } as County.AppState;
+        nextState.currentBallot!.submitted = true;
+        return nextState;
+    }
+
+    case 'UPLOAD_ACVR_FAIL': {
+        const nextState = { ...state } as County.AppState;
+        nextState.currentBallot!.submitted = false;
+        return nextState;
+    }
+
+    case 'UPLOAD_ACVR_NETWORK_FAIL': {
+        const nextState = { ...state } as County.AppState;
+        nextState.currentBallot!.submitted = false;
+        return nextState;
+    }
+
     case 'UPLOAD_ACVR_OK': {
         return uploadAcvrOk(state as County.AppState, action);
     }
