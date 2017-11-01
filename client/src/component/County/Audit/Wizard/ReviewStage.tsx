@@ -3,6 +3,7 @@ import * as React from 'react';
 import * as _ from 'lodash';
 
 import BackButton from './BackButton';
+import SubmittingACVR from './SubmittingACVR';
 
 
 interface BallotContestReviewProps {
@@ -120,6 +121,10 @@ const ReviewStage = (props: ReviewStageProps) => {
         uploadAcvr(m, currentBallot);
         nextStage();
     };
+
+    if (currentBallot.submitted) {
+        return <SubmittingACVR />;
+    }
 
     return (
         <div className='rla-page'>
