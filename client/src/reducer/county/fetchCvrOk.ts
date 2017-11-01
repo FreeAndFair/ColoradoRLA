@@ -38,8 +38,8 @@ export default function fetchCvrOk(
     const currentBallot = parse(action.data, state);
     nextState.currentBallot = currentBallot;
 
-    if (!nextState.acvrs![currentBallot.id]) {
-        nextState.acvrs![currentBallot.id] = createEmptyAcvr(currentBallot);
+    if (!nextState.acvrs[currentBallot.id]) {
+        nextState.acvrs[currentBallot.id] = createEmptyAcvr(currentBallot);
     }
 
     return nextState;
