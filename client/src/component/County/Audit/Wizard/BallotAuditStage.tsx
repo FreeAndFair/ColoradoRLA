@@ -5,6 +5,7 @@ import * as _ from 'lodash';
 import { Checkbox, EditableText, MenuDivider } from '@blueprintjs/core';
 
 import BackButton from './BackButton';
+import WaitingForNextBallot from './WaitingForNextBallot';
 
 import ballotNotFound from 'corla/action/county/ballotNotFound';
 import countyFetchCvr from 'corla/action/county/fetchCvr';
@@ -280,6 +281,10 @@ const BallotAuditStage = (props: StageProps) => {
     const notFound = () => {
         ballotNotFound(currentBallot.id);
     };
+
+    if (currentBallot.submitted) {
+        return <WaitingForNextBallot />;
+    }
 
     return (
         <div className='rla-page'>
