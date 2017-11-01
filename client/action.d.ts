@@ -5,7 +5,11 @@ declare namespace Action {
     }
 
     type App
-        = CountyCVRImportFailNotice
+        = BallotNotFoundFail
+        | BallotNotFoundNetworkFail
+        | BallotNotFoundOk
+        | BallotNotFoundSend
+        | CountyCVRImportFailNotice
         | CountyCVRImportOkNotice
         | CountyDashboardRefreshOk
         | CountyFetchContestsOk
@@ -31,6 +35,26 @@ declare namespace Action {
         | UploadRandomSeedOk
         | UploadingBallotManifest
         | UploadingCvrExport;
+
+    interface BallotNotFoundFail {
+        type: 'BALLOT_NOT_FOUND_FAIL',
+        data: any,
+    }
+
+    interface BallotNotFoundNetworkFail {
+        type: 'BALLOT_NOT_FOUND_NETWORK_FAIL',
+        data: any,
+    }
+
+    interface BallotNotFoundOk {
+        type: 'BALLOT_NOT_FOUND_OK',
+        data: any,
+    }
+
+    interface BallotNotFoundSend {
+        type: 'BALLOT_NOT_FOUND_SEND',
+        data: any,
+    }
 
     interface CountyCVRImportFailNotice {
         type: 'COUNTY_CVR_IMPORT_FAIL_NOTICE';
