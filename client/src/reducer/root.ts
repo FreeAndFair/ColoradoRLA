@@ -27,6 +27,24 @@ import login1FOk from './login1FOk';
 export default function root(state: AppState, action: Action.App) {
     switch (action.type) {
 
+    case 'BALLOT_NOT_FOUND_SEND': {
+        const nextState = { ...state } as County.AppState;
+        nextState.currentBallot!.submitted = true;
+        return nextState;
+    }
+
+    case 'BALLOT_NOT_FOUND_FAIL': {
+        const nextState = { ...state } as County.AppState;
+        nextState.currentBallot!.submitted = false;
+        return nextState;
+    }
+
+    case 'BALLOT_NOT_FOUND_NETWORK_FAIL': {
+        const nextState = { ...state } as County.AppState;
+        nextState.currentBallot!.submitted = false;
+        return nextState;
+    }
+
     case 'COUNTY_DASHBOARD_REFRESH_OK': {
         return countyDashboardRefreshOk(state as County.AppState, action);
     }
