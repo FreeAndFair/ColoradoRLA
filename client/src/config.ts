@@ -21,3 +21,11 @@ export const pollDelay
     = debug
     ? 1000 * 5
     : 1000 * 30;
+
+
+// Notification timeouts are in milliseconds.
+export const defaultOkTimeout = 10000;
+
+// No timeout, require manual dismissal.
+export const defaultDangerTimeout = 0;
+export const defaultWarningTimeout = 0;
