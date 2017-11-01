@@ -11,7 +11,7 @@ declare namespace County {
         contests?: Contest[];
         contestDefs?: ContestDefs;
         contestsUnderAudit?: Contest[];
-        currentBallot?: CVR;
+        currentBallot?: CurrentBallot;
         currentRound?: Option<Round>;
         cvrExport?: UploadedFile;
         cvrExportCount?: number;
@@ -31,6 +31,10 @@ declare namespace County {
         type: 'County';
         uploadingBallotManifest?: boolean;
         uploadingCVRExport?: boolean;
+    }
+
+    interface CurrentBallot extends CVR {
+        submitted: boolean;
     }
 
     interface CVRImportPending {

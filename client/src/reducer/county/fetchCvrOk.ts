@@ -14,7 +14,7 @@ function createEmptyAcvr(cvr: CVR): County.ACVR {
     return acvr;
 }
 
-const parse = (data: JSON.CVR, state: AppState): CVR => ({
+const parse = (data: JSON.CVR, state: AppState): County.CurrentBallot => ({
     ballotType: data.ballot_type,
     batchId: data.batch_id,
     contestInfo: data.contest_info,
@@ -25,6 +25,7 @@ const parse = (data: JSON.CVR, state: AppState): CVR => ({
     recordId: data.record_id,
     recordType: data.record_type,
     scannerId: data.scanner_id,
+    submitted: false,
 });
 
 
@@ -37,8 +38,8 @@ export default function fetchCvrOk(
     const currentBallot = parse(action.data, state);
     nextState.currentBallot = currentBallot;
 
-    if (!nextState.acvrs![currentBallot.id]) {
-        nextState.acvrs![currentBallot.id] = createEmptyAcvr(currentBallot);
+    if (!nextState.acvrs[currentBallot.id]) {
+        nextState.acvrs[currentBallot.id] = createEmptyAcvr(currentBallot);
     }
 
     return nextState;

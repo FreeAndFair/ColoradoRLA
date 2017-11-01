@@ -3,6 +3,7 @@ import * as React from 'react';
 import * as _ from 'lodash';
 
 import BackButton from './BackButton';
+import SubmittingACVR from './SubmittingACVR';
 
 
 interface BallotContestReviewProps {
@@ -97,7 +98,7 @@ const BallotReview = (props: BallotReviewProps) => {
 
 interface ReviewStageProps {
     countyState: County.AppState;
-    currentBallot: CVR;
+    currentBallot: County.CurrentBallot;
     marks: County.ACVR;
     nextStage: OnClick;
     prevStage: OnClick;
@@ -114,12 +115,20 @@ const ReviewStage = (props: ReviewStageProps) => {
         uploadAcvr,
     } = props;
 
-    const onClick = () => {
+    async function onClick() {
         const m = countyState!.acvrs![currentBallot.id];
 
-        uploadAcvr(m, currentBallot);
-        nextStage();
-    };
+        try {
+            await uploadAcvr(m, currentBallot);
+            nextStage();
+        } catch {
+            // Failed to submit. Let saga machinery alert user.
+        }
+    }
+
+    if (currentBallot.submitted) {
+        return <SubmittingACVR />;
+    }
 
     return (
         <div className='rla-page'>

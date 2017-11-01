@@ -23,7 +23,10 @@ declare namespace Action {
         | SelectContestsForAuditOk
         | UpdateAcvrForm
         | UploadBallotManifestOk
+        | UploadAcvrFail
+        | UploadAcvrNetworkFail
         | UploadAcvrOk
+        | UploadAcvrSend
         | UploadCvrExportOk
         | UploadRandomSeedOk
         | UploadingBallotManifest
@@ -119,8 +122,23 @@ declare namespace Action {
         data: any;
     }
 
+    interface UploadAcvrFail {
+        type: 'UPLOAD_ACVR_FAIL';
+        data: any;
+    }
+
+    interface UploadAcvrNetworkFail {
+        type: 'UPLOAD_ACVR_NETWORK_FAIL';
+        data: any;
+    }
+
     interface UploadAcvrOk {
         type: 'UPLOAD_ACVR_OK';
+        data: any;
+    }
+
+    interface UploadAcvrSend {
+        type: 'UPLOAD_ACVR_SEND';
         data: any;
     }
 
