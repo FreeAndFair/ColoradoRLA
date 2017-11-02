@@ -63,7 +63,8 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
    * @todo kiniry Refactor method into helper methods for each phase.
    */
   @Override
-  @SuppressWarnings({"PMD.NPathComplexity", "PMD.ExcessiveMethodLength"})
+  @SuppressWarnings({"PMD.NPathComplexity", "PMD.ExcessiveMethodLength", "PMD.SwitchDensity", 
+                     "checkstyle:methodlength"})
   public boolean authenticateAdministrator(final Request the_request,
                                            final Response the_response,
                                            final String the_username, 
@@ -102,13 +103,19 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
               // We have traditionally authenticated.
               final Administrator admin = 
                   AdministratorQueries.byUsername(lowercase_username);
-              admin.updateLastLoginTime();
-              Persistence.saveOrUpdate(admin);
-              the_request.session().attribute(AUTH_STAGE, TRADITIONALLY_AUTHENTICATED);
-              the_request.session().attribute(ADMIN, admin);
-              the_request.session().attribute(CHALLENGE, auth_result.challenge());
-              Main.LOGGER.info("Traditional authentication succeeded for administrator " + 
-                               lowercase_username);
+              if (admin == null) {
+                Main.LOGGER.info("User " + lowercase_username + " not found in database, " +
+                                 "aborting authentication.");
+                result = false;
+              } else {
+                admin.updateLastLoginTime();
+                Persistence.saveOrUpdate(admin);
+                the_request.session().attribute(AUTH_STAGE, TRADITIONALLY_AUTHENTICATED);
+                the_request.session().attribute(ADMIN, admin);
+                the_request.session().attribute(CHALLENGE, auth_result.challenge());
+                Main.LOGGER.info("Traditional authentication succeeded for administrator " + 
+                                 lowercase_username);
+              }
             } else {
               Main.LOGGER.info("Traditional authentication failed for administrator " + 
                                lowercase_username);
