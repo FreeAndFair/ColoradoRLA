@@ -199,7 +199,9 @@ public abstract class AbstractStateMachine implements Serializable {
     // If we are in the right state then transition to the new state.
     if (the_transition.startStates().contains(my_current_state)) {
       my_current_state = the_transition.endState();
-      Main.LOGGER.info("ASM transition succeeded: " + the_transition); 
+      Main.LOGGER.info("ASM transition " + the_transition + " succeeded from state " +
+                       my_current_state + " for " + getClass().getSimpleName() + "/" + 
+                       my_identity);
     } else {
       Main.LOGGER.error("ASM transition " + the_transition + 
                         " failed from state " + my_current_state); 
@@ -234,13 +236,14 @@ public abstract class AbstractStateMachine implements Serializable {
       Main.LOGGER.error("ASM event " + the_event + 
                         " failed from state " + my_current_state); 
       throw new IllegalStateException("Illegal transition on ASM " + 
-                                      getClass().getName() + "/" + my_identity + 
+                                      getClass().getSimpleName() + "/" + my_identity + 
                                       ": (" + my_current_state + ", " + 
                                       the_event + ")");
     } else {
       my_current_state = result;
       Main.LOGGER.info("ASM event " + the_event + " caused transition to " + 
-                       my_current_state); 
+                       my_current_state + " for " + getClass().getSimpleName() + 
+                       "/" + my_identity); 
       return result;
     }
   }
@@ -266,7 +269,7 @@ public abstract class AbstractStateMachine implements Serializable {
    * @return a String representation of this ASM.
    */
   public String toString() {
-    return getClass().getName() + ", identity=" + my_identity + 
+    return getClass().getSimpleName() + ", identity=" + my_identity + 
            ", current_state=" + my_current_state;
   }
 }
