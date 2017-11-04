@@ -9,11 +9,11 @@ cvr_s.batch_id,
 cvr_s.record_id,
 cvr_s.imprinted_id,
 cvr_s.ballot_type,
-cai.index + 1 AS review_index
+cai.index + 1 AS random_sequence_index
  FROM cvr_audit_info AS cai
  LEFT JOIN cast_vote_record AS cvr_s
    ON cai.cvr_id = cvr_s.id
  LEFT JOIN county AS cty
    ON cai.dashboard_id = cty.id
- ORDER BY county_name, review_index
+ ORDER BY county_name, random_sequence_index
 ;
