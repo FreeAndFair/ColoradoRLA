@@ -90,24 +90,13 @@ will be produced.
   Which contests has the 
   Secretary selected for audit? Which contests (if any) has the 
   Secretary selected for hand count?
-
-m_status.sql
+m_selected_contest_over_under.sql
   * - Column Name
-    - Data Type
+    - Type
     - Meaning
-  * - county_name
-    - Text String
-    - Name of County
-  * - contest_name
-    - Text String
-    - Name of contest
-  * - audit_status
-    - Text String
-    - Blank, NOT_STARTED, IN_PROGRESS, RISK_LIMIT_ACHIEVED, or ENDED. 
-      Before a user from the Department of State clicks the "Launch Audit" button, 
-      the audit status is blank.
-      ENDED means "ended without achieving the risk limit" because the 
-      Secretary of State desgnated the contest for a hand count. 
+  * -
+    -
+    -
 
 + Hashes of CVR and ballot manifest files
 m_cvr_hash.sql
@@ -219,6 +208,8 @@ m_ballot_list_for_review.sql
 + For each contest under audit, and for each ballot examined in the audit, 
   the RLA system's record of the Audit Board's interpretation of the marks 
   on the physical ballot for that contest
+m_audit_details_by_contest_and_ballot.sql
+
   * - Column Name
     - Data Type
     - Meaning
@@ -228,20 +219,9 @@ m_ballot_list_for_review.sql
   * - contest_name
     - Text String
     - Name of contest
-  * - scanner_id
+  * - random_sequence_index
     - Integer
-    - TabulatorNum from Dominion CVR export file, 
-      identifying the tabulator used to read the physical ballot card   
-  * - batch_id
-    - Integer
-    - BatchId from Dominion CVR export file, 
-      identifying the batch of physical ballot cards in which the card
-      was scanned
-  * - record_id
-    - Integer
-    - RecordId from Dominion CVR export file,
-      indicating the position of the card 
-      in its batch of physical ballot cards 
+    - Index in the random sequence (starting with 1)
   * - imprinted_id
     - Text String
     - combination of scanner, batch and record ids 
@@ -251,14 +231,14 @@ m_ballot_list_for_review.sql
     - Text String
     - BallotType from Dominion CVR export file, a code for the set of contests that 
       should be present on the physical ballot card
-  * - computer_interpretation_of_voter_choice
+  * - choice_per_voting_computer
     - List of Text Strings
     - List of voter choices in the given contest on the given ballot card, as interpreted
-      by the vote-tabulation computer system
-  * - audit_board_interpretation_of_voter_choice
+      by the vote-tabulation computer system (note: overvotes recorded as blank votes)
+  * - choice_per_audit_board
     - List of Text Strings
     - List of voter choices in the given contest on the given ballot card, as interpreted
-      by the Audit Board
+      by the Audit Board (note: overvotes recorded as a too-long list of choices)
   * - did_audit_board_agree
     - Yes/No
     - "Yes" if the Audit Board came to consensus on the interpretation
@@ -268,14 +248,22 @@ m_ballot_list_for_review.sql
     - Text String
     - Text of comment entered by Audit Board 
       about the given contest on the given ballot card
-  * - review_index
-    - Integer
-    - 
-  * - 
-    - 
-    - 
+  * - timestamp
+    - Timestamp
+    - Date and time of Audit Board's submission of their interpretation to the RLA Tool
 
++ Error inflation factor
+m_gamma
 
+  * - Column Name
+    - Data Type
+    - Meaning
+  * - max_gamma
+    - Number
+    - Largest value of gamma used for any contest
+  * - min_gamma
+    - Number
+    - Smallest value of gamma used for any contest
 
 
 Other export files are the same as the files available via the GUI interface,
