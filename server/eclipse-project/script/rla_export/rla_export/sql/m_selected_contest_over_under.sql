@@ -4,7 +4,7 @@
 SELECT 
    cty.name AS county_name, 
    cn.name AS contest_name,
-   cta.audit AS current_audit_type
+   cta.audit AS current_audit_type,
    ccca.audit_reason,
    ccca.audit_status,
    ccca.one_vote_over_count,

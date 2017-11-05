@@ -33,6 +33,8 @@ import ConfigParser
 import psycopg2
 import psycopg2.extras
 import requests
+import getpass
+
 
 __author__ = "Neal McBurnett <nealmcb@freeandfair.us>"
 __date__ = "2017-10-03"
@@ -56,8 +58,12 @@ parser.add_argument('-p, --properties', dest='properties',
 parser.add_argument('-e, --export-dir', dest='export_dir',
                     default=".",
                     help='Directory in which to put the resulting .json files. Default: . (current directory)')
-parser.add_argument('-c, --cvr-download', dest='cvr_download', action='store_true',
-                    help='Download cvrs also - only needed once per audit, before dice are rolled')
+parser.add_argument('-r, --reports', dest='reports', action='store_true',
+                    help='Login and export data from RLA Tool server')
+parser.add_argument('-f, --file-downloads', dest='file_downloads', action='store_true',
+                    help='Download file imports - only needed once per audit, before dice are rolled')
+parser.add_argument('--no-db-export', dest='db_export', action='store_false',
+                    help='Skip the exports directly from the database.')
 parser.add_argument('-u, --url', dest='url',
                     default=None,
                     help='base url of corla server. Defaults to the port from the properties file '
@@ -90,6 +96,34 @@ def check_or_create_dir(path):
     except OSError:
         if not os.path.isdir(path):
             raise
+
+
+class fragile(object):
+    """A Context Manager to allow breaking out of other context managers.
+    Usage:
+        with fragile(open(path)) as f:
+            print 'before condition'
+            if condition:
+                raise fragile.Break
+            print 'after condition'
+
+    Credit to [Break or exit out of "with" statement? answer by Orez](https://stackoverflow.com/a/23665658/507544)
+    """
+
+    class Break(Exception):
+        """Break out of the with statement"""
+
+    def __init__(self, value):
+        self.value = value
+
+    def __enter__(self):
+        return self.value.__enter__()
+
+    def __exit__(self, etype, value, traceback):
+        error = self.value.__exit__(etype, value, traceback)
+        if etype == self.Break:
+            return True
+        return error
 
 
 class Dotable(dict):
@@ -143,7 +177,8 @@ def totest(n):
 
 
 def _test():
-    "Run all doctests in this file"
+    """Run all doctests in this file
+    """
 
     import doctest
     return doctest.testmod()
@@ -201,24 +236,108 @@ def query_to_csvfile(ac, queryfile, csvfile):
         return message
 
 
+def db_export(ac, args):
+    """Export results of specified queries directly from the database
+    :param ac: audit contest
+    :param args: command line arguments
+    :return: None
+    """
+
+    # Note: in ColoradoRLA, the url property is used to specify the host and port,
+    # but not user and password
+
+    url = ac.cp.get('p', 'hibernate.url')
+    user = ac.cp.get('p', 'hibernate.user')
+    password = ac.cp.get('p', 'hibernate.pass')
+
+    # Remove hibernate-specific query strings and nonstandard 'scheme' value
+    pgurl = re.sub(r'\?.*', '', url.replace('jdbc:postgresql', 'postgresql'))
+
+    logging.debug("pgurl: %s\n url: %s" % (pgurl, url))
+
+    try:
+        ac.conn = psycopg2.connect(pgurl, user=user, password=password)
+        ac.conn.set_session(readonly=True, autocommit=True)
+    except psycopg2.Error as e:
+        logging.error(e)
+        return
+
+    ac.cur = ac.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+    queryfiles = args.queryfiles
+    if not queryfiles:
+        sql_dir = os.environ.get('SQL_DIR', SQL_PATH)
+        logging.debug('sql_dir = %s, path=%s' % (sql_dir, SQL_PATH))
+        queryfiles = [filename for filename in glob.glob(sql_dir + "/*.sql")]
+
+    for queryfile in queryfiles:
+        logging.info("Exporting json and csv for query in %s" % queryfile)
+
+        resultfilebase = os.path.join(args.export_dir,
+                                  os.path.basename(
+                                      os.path.splitext(queryfile)[0]))
+        try:
+            with open(resultfilebase + '.json', 'w') as f:
+                logging.debug("Export query from %s as json in %s" % (queryfile, resultfilebase + '.json'))
+                f.write(query_to_json(ac, queryfile))
+        except IOError as e:
+            logging.error(e)
+            break
+
+        query_to_csvfile(ac, queryfile, resultfilebase + '.csv')
+
+    ac.conn.close()
+
+
+def show_elapsed(r, *args, **kwargs):
+    print("Endpoint %s: %s. Elapsed time %.3f" % (r.url, r, r.elapsed.total_seconds()))
+
+
 def state_login(url, username, password):
-    "Login as state admin in given requests session with given credentials"
+    """Login as state admin in given requests session with given credentials.
+    On failure, set session.rla_logged_in = False
+    TODO: find a more elegant way to signal errors when used as a context handler
+
+    Sample challenge: "[G,3] [B,4] [E,8]"
+    But show them like this: G3, B4, E8
+    Format responses in request like this: 'second_factor': "R1 R2 R3"
+   """
+
+    session = requests.Session()
+    session.rla_logged_in = False
+
+    username = raw_input("Username for RLA tool: ")
+    password = getpass.getpass("Password: ")
 
     PATH = "/auth-state-admin"
     data={'username': username, 'password': password, 'second_factor': ''}
 
-    session = None
     try:
-        session = requests.Session()
         r = session.post(url + PATH, data)
+        logging.debug("Login response: %s", r.text)
         if r.status_code != 200:
-            logging.error("Login failed for %s as %s: status_code %d" % (url, username, r.status_code))
-        r = session.post(url + PATH, data)
-        if r.status_code != 200:
-            logging.error("Login phase 2 failed for %s as %s: status_code %d" % (url, username, r.status_code))
-    except requests.ConnectionError as e:
-        logging.error("state_login: %s" % e)
+            logging.error("Login failed for %s%s as %s: status_code %d" % (url, PATH, username, r.status_code))
+            return session
 
+        remove_chars = dict((ord(char), None) for char in '[],')
+        challenges = r.json()['challenge'].translate(remove_chars).split()
+
+        print("Enter responses for user %s" % username)
+        responses = [getpass.getpass(" Grid Challenge %s: " % challenge) for challenge in challenges]
+        logging.debug("Login phase 2 responses: %s", responses)
+        data['second_factor'] = ' '.join(responses)
+
+        r = session.post(url + PATH, data)
+        logging.debug("Login phase 2 response: %s", r.text)
+        if r.status_code != 200:
+            logging.error("Login phase 2 failed for %s%s as %s: status_code %d" % (url, PATH, username, r.status_code))
+            return session
+    except requests.RequestException as e:
+        logging.error("state_login: %s" % e, exc_info=True)
+        return session
+
+    session.hooks = dict(response=show_elapsed)
+    session.rla_logged_in = True
     return session
 
 
@@ -269,11 +388,15 @@ def pull_endpoints(args, ac):
     baseurl = args.url or 'http://localhost:' + ac.cp.get('p', 'http_port', '8888')
     ac.corla_auth = {'url': baseurl, 'username': 'stateadmin1', 'password': ''}
 
-    with state_login(**ac.corla_auth) as session:
+    with fragile(state_login(**ac.corla_auth)) as session:
+        # Give up if login was unsuccessful
+        if session is None or not session.rla_logged_in:
+            raise fragile.Break
+
         r = get_endpoint(session, baseurl, "/dos-dashboard")
         if r.status_code != 200:
             logging.error("Can't get dos-dashboard: status_code %d" % (r.status_code))
-            sys.exit(2)
+            return
 
         dos_dashboard = Dotable(r.json())
 
@@ -283,11 +406,11 @@ def pull_endpoints(args, ac):
         for county_status in dos_dashboard.county_status.values():
             county_id = county_status.id
 
-            if county_status.has_key('ballot_manifest_file'):
+            if args.file_downloads and county_status.has_key('ballot_manifest_file'):
                 filename = os.path.join(args.export_dir, 'county_manifest_%d.csv' % county_id)
                 download_file(session, baseurl, county_status.ballot_manifest_file.file_id, filename)
 
-            if county_status.has_key('cvr_export_file') and args.cvr_download:
+            if args.file_downloads and county_status.has_key('cvr_export_file'):
                 filename = os.path.join(args.export_dir, 'county_cvr_%d.csv' % county_id)
                 download_file(session, baseurl, county_status.cvr_export_file.file_id, filename)
 
@@ -319,8 +442,7 @@ def main():
         sys.exit(0)
 
     if args.test:
-        _test()
-        sys.exit(0)
+        sys.exit(_test()[0])
 
     try:
         check_or_create_dir(args.export_dir)
@@ -335,51 +457,11 @@ def main():
     ac.cp = ConfigParser.SafeConfigParser()
     ac.cp.readfp(FakeSecHead(open(args.properties)))
 
-    # Note: in ColoradoRLA, the url property is used to specify the host and port,
-    # but not user and password
+    if args.db_export:
+        db_export(ac, args)
 
-    url = ac.cp.get('p', 'hibernate.url')
-    user = ac.cp.get('p', 'hibernate.user')
-    password = ac.cp.get('p', 'hibernate.pass')
-
-    # Remove hibernate-specific query strings and nonstandard 'scheme' value
-    pgurl = re.sub(r'\?.*', '', url.replace('jdbc:postgresql', 'postgresql'))
-
-    logging.debug("pgurl: %s\n url: %s" % (pgurl, url))
-
-    try:
-        ac.con = psycopg2.connect(pgurl, user=user, password=password)
-    except psycopg2.Error as e:
-        logging.error(e)
-        sys.exit(1)
-
-    ac.cur = ac.con.cursor(cursor_factory=psycopg2.extras.DictCursor)
-
-    queryfiles = args.queryfiles
-    if not queryfiles:
-        sql_dir = os.environ.get('SQL_DIR', SQL_PATH)
-        logging.debug('sql_dir = %s, path=%s' % (sql_dir, SQL_PATH))
-        queryfiles = [filename for filename in glob.glob(sql_dir + "/*.sql")]
-
+    if args.reports or args.file_downloads:
         pull_endpoints(args, ac)
-
-    for queryfile in queryfiles:
-        logging.info("Exporting json and csv for query in %s" % queryfile)
-
-        resultfilebase = os.path.join(args.export_dir,
-                                  os.path.basename(
-                                      os.path.splitext(queryfile)[0]))
-        try:
-            with open(resultfilebase + '.json', 'w') as f:
-                logging.debug("Export query from %s as json in %s" % (queryfile, resultfilebase + '.json'))
-                f.write(query_to_json(ac, queryfile))
-        except IOError as e:
-            logging.error(e)
-            break
-
-        query_to_csvfile(ac, queryfile, resultfilebase + '.csv')
-
-    ac.con.close()
 
 
 if __name__ == "__main__":

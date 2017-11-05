@@ -43,7 +43,5 @@ FROM
 
 WHERE cai.counted = 't' AND dc.contest_id is not NULL
 
-ORDER BY county_name, contest_name, random_sequence_index;
-
---
---
+ORDER BY county_name, contest_name, random_sequence_index
+;
