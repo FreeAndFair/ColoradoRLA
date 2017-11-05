@@ -86,17 +86,72 @@ The basename of each resulting file is the same as the basename of the query fil
 Thus, given the query file ``seed.sql``, the files ``seed.json`` and ``seed.csv``
 will be produced.
 
-+ List of contests selected by Secretary of State for audit, with current status. 
-  Which contests has the 
-  Secretary selected for audit? Which contests (if any) has the 
-  Secretary selected for hand count?
-m_selected_contest_over_under.sql
++ List of contests selected by the Secretary of State for audit, with information 
+  about the contest that doesn't change during the audit, namely the reason for 
+  the audit, the number of winners of the contest and the value of the error inflation factor (gamma).
+m_selected_contest_static.sql
   * - Column Name
     - Type
     - Meaning
-  * -
-    -
-    -
+  * - county_name
+    - Text String
+    - Name of County
+  * - contest_name
+    - Text String
+    - Name of contest
+  * - contest_type
+    - Text String
+    - Type of contest (statewide or countywide, per Rule 25.2.2(i))
+  * - winners_allowed
+    - Integer
+    - Number of winners allowed for the contest (required to calculate diluted margin)
+  * - gamma
+    - Number
+    - Error inflation factor defined in Stark's paper, Super-simple simultaneous single-ballot risk-limiting audits, which is cited in Lindeman and Stark's paper, A Gentle Introduction to Risk Limiting Audits, which is cited in Rule 25.2.2(j))
+
+
++ List of contests selected by Secretary of State for audit, with current status. 
+  Which contests has the 
+  Secretary selected for audit? Which contests (if any) has the 
+  Secretary selected for hand count? How many discrepancies of each type?
+m_selected_contest_dynamic.sql
+  * - Column Name
+    - Type
+    - Meaning
+  * - county_name
+    - Text String
+    - Name of County
+  * - contest_name
+    - Text String
+    - Name of contest
+  * - current_audit_type
+    - Text String
+    - Comparison audit, ballot polling audit or hand count
+  * - computerized_audit_status
+    - Text String
+    - Not started, in progress, risk limit achieved, or ended. 
+      Because declaring a hand count ends the computerized portion of the audit,
+      a contest that is being hand-counted will have the value "ended" in this field.
+  * - one_vote_over_count
+    - Integer
+    - The number of ballot cards in the random sequence so far (with duplicates) 
+      on which there is a one-vote overstatement 
+      (per Lindeman & Stark's A Gentle Introduction to Risk Limiting Audits).
+  * - one_vote_under_count
+    - Integer
+    - The number of ballot cards in the random sequence so far (with duplicates) 
+      on which there is a one-vote understatement 
+      (per Lindeman & Stark's A Gentle Introduction to Risk Limiting Audits).
+  * - two_vote_over_count
+    - Integer
+    - The number of ballot cards in the random sequence so far (with duplicates) 
+      on which there is a two-vote overstatement 
+      (per Lindeman & Stark's A Gentle Introduction to Risk Limiting Audits).
+  * - two_vote_under_count
+    - Integer
+    - The number of ballot cards in the random sequence so far (with duplicates) 
+      on which there is a two-vote understatement 
+      (per Lindeman & Stark's A Gentle Introduction to Risk Limiting Audits).
 
 + Hashes of CVR and ballot manifest files
 m_cvr_hash.sql
@@ -252,18 +307,6 @@ m_audit_details_by_contest_and_ballot.sql
     - Timestamp
     - Date and time of Audit Board's submission of their interpretation to the RLA Tool
 
-+ Error inflation factor
-m_gamma
-
-  * - Column Name
-    - Data Type
-    - Meaning
-  * - max_gamma
-    - Number
-    - Largest value of gamma used for any contest
-  * - min_gamma
-    - Number
-    - Smallest value of gamma used for any contest
 
 
 Other export files are the same as the files available via the GUI interface,
