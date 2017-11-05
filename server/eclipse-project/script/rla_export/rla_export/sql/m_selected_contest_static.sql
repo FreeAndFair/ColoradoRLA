@@ -4,13 +4,9 @@
 SELECT 
    cty.name AS county_name, 
    cn.name AS contest_name,
-   cta.audit AS current_audit_type,
-   ccca.audit_reason,
-   ccca.audit_status,
-   ccca.one_vote_over_count,
-   ccca.one_vote_under_count,
-   ccca.two_vote_over_count,
-   ccca.two_vote_under_count
+   ccca.contest_type,
+   cn.winners_allowed,
+   ccca.gamma
 FROM 
    driving_contest AS dc
 LEFT JOIN
