@@ -90,46 +90,46 @@ class CountyUpdates extends React.Component<UpdatesProps, UpdatesState> {
     };
 
     public render() {
-        const { countyStatus } = this.props;
+        const { auditStarted, countyStatus } = this.props;
 
         type RowData = [
             number,
             string,
             string,
-            number,
             (number | string),
             (number | string),
             (number | string),
-            number,
-            number
+            (number | string),
+            (number | string),
+            (number | string)
         ];
 
         const countyData: RowData[] = _.map(countyStatus, (c): RowData => {
             const county = counties[c.id];
-
+            const missedDeadline = c.asmState === 'DEADLINE_MISSED';
             const status = formatCountyAndBoardASMState(c.asmState, c.auditBoardASMState);
-            const auditedDiscrepancyCount = c.discrepancyCount
-                                          ? c.discrepancyCount.audited
-                                          : '—';
-            const unauditedDiscrepancyCount = c.discrepancyCount
-                                            ? c.discrepancyCount.unaudited
-                                            : '—';
 
-            let disagreementCount: (number | string) = c.disagreementCount;
-
-            if (_.isNil(c.disagreementCount)) {
-                if (auditedDiscrepancyCount === '—') {
-                    disagreementCount = '—';
-                } else {
-                    disagreementCount = 0;
-                }
+            if (!auditStarted) {
+                return [c.id, county.name, status, '—', '—', '—', '—', '—', '—'];
             }
+
+            if (auditStarted && missedDeadline) {
+                return [c.id, county.name, status, '—', '—', '—', '—', '—', '—'];
+            }
+
+            const auditedDiscrepancyCount = c.discrepancyCount
+                                          ? c.discrepancyCount.audited || 0
+                                          : 0;
+            const unauditedDiscrepancyCount = c.discrepancyCount
+                                            ? c.discrepancyCount.unaudited || 0
+                                            : 0;
+            const disagreementCount = c.disagreementCount || 0;
 
             return [
                 c.id,
                 county.name,
                 status,
-                c.auditedBallotCount,
+                c.auditedBallotCount || 0,
                 auditedDiscrepancyCount,
                 unauditedDiscrepancyCount,
                 disagreementCount,
