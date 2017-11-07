@@ -72,6 +72,7 @@ function sortIndex(sort: SortKey): number {
 type SortOrder = 'asc' | 'desc';
 
 interface UpdatesProps {
+    auditStarted: boolean;
     countyStatus: DOS.CountyStatuses;
 }
 

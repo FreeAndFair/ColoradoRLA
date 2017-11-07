@@ -14,6 +14,7 @@ import MainContainer from './MainContainer';
 
 
 interface PageProps {
+    auditStarted: boolean;
     contests: DOS.Contests;
     countyStatus: DOS.CountyStatuses;
     dosState: DOS.AppState;
@@ -21,7 +22,7 @@ interface PageProps {
 }
 
 const DOSDashboardPage = (props: PageProps) => {
-    const { contests, countyStatus, dosState, seed } = props;
+    const { auditStarted, contests, countyStatus, dosState, seed } = props;
 
     return (
         <div>
@@ -29,8 +30,11 @@ const DOSDashboardPage = (props: PageProps) => {
                 <SoSNav />
                 <MainContainer />
                 <div className='sos-info pt-card'>
-                    <CountyUpdates countyStatus={ countyStatus } />
-                    <ContestUpdates contests={ contests } seed={ seed } dosState={ dosState } />
+                    <CountyUpdates auditStarted={ auditStarted }
+                                   countyStatus={ countyStatus } />
+                    <ContestUpdates contests={ contests }
+                                    seed={ seed }
+                                    dosState={ dosState } />
                 </div>
             </div>
             <LicenseFooter />
