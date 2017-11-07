@@ -138,7 +138,24 @@ class CountyUpdates extends React.Component<UpdatesProps, UpdatesState> {
             ];
         });
 
-        const keyFunc = (d: RowData) => d[sortIndex(this.state.sort)];
+        const keyFunc = (d: RowData) => {
+            const sortVal = d[sortIndex(this.state.sort)];
+
+            if (sortVal === '—') {
+                // There are numeric and non-numeric columns. If the audit has not
+                // started, all numeric columns will have the value '—', so it doesn't
+                // matter what the _sort_ value is. If the audit has started, some
+                // counties will have missed the file upload deadline. Their numeric
+                // columns will display '—', but participating counties will have numeric
+                // values. What we would like is for non-participating counties to appear
+                // _after_ participating counties when sorting by a numeric column from
+                // greatest to least. By treating '—' as -Infinity for sort purposes,
+                // we guarantee it will be smaller than any participant numeric value.
+                return -Infinity;
+            } else {
+                return sortVal;
+            }
+        };
         const sortedCountyData = _.sortBy(countyData, keyFunc);
 
         if (this.state.order === 'desc') {
