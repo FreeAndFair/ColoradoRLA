@@ -139,6 +139,7 @@ class CountyUpdates extends React.Component<UpdatesProps, UpdatesState> {
         });
 
         const keyFunc = (d: RowData) => {
+            const countyName = d[1];
             const sortVal = d[sortIndex(this.state.sort)];
 
             if (sortVal === '—') {
@@ -151,9 +152,9 @@ class CountyUpdates extends React.Component<UpdatesProps, UpdatesState> {
                 // _after_ participating counties when sorting by a numeric column from
                 // greatest to least. By treating '—' as -Infinity for sort purposes,
                 // we guarantee it will be smaller than any participant numeric value.
-                return -Infinity;
+                return [-Infinity, countyName];
             } else {
-                return sortVal;
+                return [sortVal, countyName];
             }
         };
         const sortedCountyData = _.sortBy(countyData, keyFunc);
