@@ -260,9 +260,10 @@ m_ballot_list_for_review.sql
     - BallotType from Dominion CVR export file, a code for the set of contests that 
       should be present on the physical ballot card
 
-+ For each contest under audit, and for each ballot examined in the audit, 
-  the RLA system's record of the Audit Board's interpretation of the marks 
-  on the physical ballot for that contest
++ For each contest under audit, and for each cast vote record presented to the 
+  Audit Board for verification, 
+  the RLA system's record of the Audit Board's review of 
+  the physical ballot for that contest
 m_audit_details_by_contest_and_ballot.sql
 
   * - Column Name
@@ -302,7 +303,8 @@ m_audit_details_by_contest_and_ballot.sql
   * - audit_board_comment
     - Text String
     - Text of comment entered by Audit Board 
-      about the given contest on the given ballot card
+      about the given contest on the given ballot card,
+      or indication that the ballot was not found.
   * - timestamp
     - Timestamp
     - Date and time of Audit Board's submission of their interpretation to the RLA Tool
