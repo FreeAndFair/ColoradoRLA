@@ -4,7 +4,7 @@
 SELECT 
    cty.name AS county_name, 
    cn.name AS contest_name,
-   ccca.contest_type,
+   ccca.audit_reason as contest_type,
    cn.winners_allowed,
    ccca.gamma
 FROM 
