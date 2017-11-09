@@ -2,7 +2,13 @@
 % Colorado Risk Limiting Audit Tool 
 % 2017
 
-Separate from the RLA central server and client server programs that support the Department of State and the Counties in carrying out the Risk Limiting Audit, there is a package, called `rla_export`, allowing export of data from the central server and the underlying database.
+Separate from the RLA central server and client server programs that support the Department of State and the Counties in carrying out the Risk Limiting Audit, there is a command, called `rla_export`, allowing export of data from the central server and the underlying database. 
+
+The command is part of a python package, whose technical description can be found in a `README.rst` file in the python site-packages directory tree wherever the package is installed. The most current online version (which may or may not match the version you have installed) is available 
+in the [public code repository](https://github.com/FreeAndFair/ColoradoRLA/tree/auditcenter/server/eclipse-project/script/rla_export).
+
+The `README.rst` file gives instructions for installing the python package, and describes various run-time options. For a catalog of the exports produced by the command, see below.
+
 
 ## Database Exports
 The `rla_export` command exports many of the files necessary for independent verification of 
@@ -249,10 +255,10 @@ seed | 20-Digit String | the random seed for the pseudo-random number generator
 county_name | Text String | Name of County
 filename | Text String | Name of file
 hash_status | Text String | "VERIFIED",  "MISMATCH", or "NOT_CHECKED"
-approx_count | Integer | 
-size | Integer |
+approx_count | Integer | Approximate number of lines in the file
+size | Integer | Size of file in bytes
 status | Text String | "IMPORTED_AS_BALLOT_MANIFEST", "IMPORTED_AS_CVR_EXPORT" or "NOT_IMPORTED"
-timestamp | Timestamp | 
+timestamp | Timestamp | Date and time of the most recent update to the upload status of the given file
 
 ## State and County Audit Reports
 
