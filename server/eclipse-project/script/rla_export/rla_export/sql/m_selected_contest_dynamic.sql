@@ -1,4 +1,4 @@
--- For each contest under audit, number of two-vote overstatements, one-vote overstatements, two-vote understatements and one-vote understatements found so far.
+-- List of contests selected by Secretary of State for audit, with current status.  Which contests has the  Secretary selected for audit? Which contests (if any) has the  Secretary selected for hand count? How many discrepancies of each type have been found so far?
 
 
 SELECT 
