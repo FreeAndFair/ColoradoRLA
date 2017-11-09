@@ -4,7 +4,7 @@ SELECT
   county.name AS county_name,
   contest.name AS contest_name,
   county_contest_vote_total.choice AS choice,
-  county_contest_vote_total.vote_total AS votes,
+  county_contest_vote_total.vote_total AS votes
 FROM
   county_contest_vote_total,
   county_contest_result,
