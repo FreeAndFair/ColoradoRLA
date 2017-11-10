@@ -126,7 +126,8 @@ public class BallotManifestImport extends AbstractCountyDashboardEndpoint {
       if (parser.parse()) {
         final int imported = parser.recordCount().getAsInt();
         Main.LOGGER.info(imported + " ballot manifest records parsed from file " + 
-                         the_file.filename() + PAREN_ID + the_file.id() + ")");
+                         the_file.filename() + PAREN_ID + the_file.id() + ") for county " + 
+                         the_file.county().id());
         updateCountyDashboard(the_response, the_file,
                               parser.ballotCount().getAsInt());
         the_file.setStatus(FileStatus.IMPORTED_AS_BALLOT_MANIFEST);
@@ -139,14 +140,15 @@ public class BallotManifestImport extends AbstractCountyDashboardEndpoint {
         okJSON(the_response, Main.GSON.toJson(response));
       } else {
         Main.LOGGER.info("could not parse malformed ballot manifest file " + 
-                         the_file.filename() + PAREN_ID + the_file.id() + ")");
+                         the_file.filename() + PAREN_ID + the_file.id() + ") for county " + 
+                         the_file.county().id());
         badDataContents(the_response, "malformed ballot manifest file " + 
                                       the_file.filename() + PAREN_ID + the_file.id() + ")");
       }
     } catch (final RuntimeException | IOException e) {
       Main.LOGGER.info("could not parse malformed ballot manifest file " + 
-                       the_file.filename() + PAREN_ID + the_file.id() + ")" + 
-                       ": " + e);
+                       the_file.filename() + PAREN_ID + the_file.id() + ") for county " + 
+                       the_file.county().id() + ": " + e);
       badDataContents(the_response, "malformed ballot manifest file " + 
                                     the_file.filename() + PAREN_ID + the_file.id() + ")");
     } catch (final SQLException e) {

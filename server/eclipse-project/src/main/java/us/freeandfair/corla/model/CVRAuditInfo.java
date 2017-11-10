@@ -24,10 +24,7 @@ import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -44,14 +41,7 @@ import us.freeandfair.corla.persistence.PersistentEntity;
  */
 @Entity
 @Cacheable(true)
-@Table(name = "cvr_audit_info",
-       indexes = { @Index(name = "idx_cvrai_cvr", columnList = "cvr_id"),
-                   @Index(name = "idx_cvrai_dashboard_cvr", 
-                          columnList = "dashboard_id, cvr_id"),
-                   @Index(name = "idx_cvrai_dashboard_index",
-                          columnList = "dashboard_id, index"),
-                   @Index(name = "idx_cvrai_dashboard_cvr_index",
-                          columnList = "dashboard_id, cvr_id, index")})
+@Table(name = "cvr_audit_info")
 //this class has many fields that would normally be declared final, but
 //cannot be for compatibility with Hibernate and JPA.
 // note: CVRAuditInfo is not serializable because it references CountyDashboard,
@@ -59,11 +49,10 @@ import us.freeandfair.corla.persistence.PersistentEntity;
 @SuppressWarnings("PMD.ImmutableField")
 public class CVRAuditInfo implements PersistentEntity {
   /**
-   * The ID number.
+   * The ID number. This is always the same as the CVR ID number.
    */
   @Id
   @Column(updatable = false, nullable = false)
-  @GeneratedValue(strategy = GenerationType.SEQUENCE)
   private Long my_id;
   
   /**
@@ -71,13 +60,6 @@ public class CVRAuditInfo implements PersistentEntity {
    */
   @Version
   private Long my_version;
-  
-  /**
-   * The county dashboard to which this record belongs. 
-   */
-  @ManyToOne(optional = false, fetch = FetchType.LAZY)
-  @JoinColumn
-  private CountyDashboard my_dashboard;
 
   /**
    * The CVR to audit.
@@ -94,11 +76,18 @@ public class CVRAuditInfo implements PersistentEntity {
   private CastVoteRecord my_acvr;
 
   /**
-   * A flag indicating whether this CVRAuditInfo has been considered
+   * The number of times this CVRAuditInfo appears in the audit
+   * sequence.
+   */
+  @Column(nullable = false)
+  private Integer my_multiplicity = 1;
+  
+  /**
+   * The number of times this CVRAuditInfo has been considered
    * in the audit calculations.
    */
   @Column(nullable = false)
-  private Boolean my_counted = false;
+  private Integer my_counted = 0;
   
   /**
    * The number of discrepancies found in the audit so far.
@@ -113,13 +102,6 @@ public class CVRAuditInfo implements PersistentEntity {
   @Column(nullable = false, name = "disagreement", columnDefinition = "text")
   @Convert(converter = AuditReasonSetConverter.class)
   private Set<AuditReason> my_disagreement = new HashSet<>();
-
-  
-  /**
-   * The index of this CVRAuditInfo in its list.
-   */
-  @Column(name = "index", nullable = false)
-  private Integer my_index;
   
   /**
    * Constructs an empty CVRAuditInfo, solely for persistence.
@@ -129,20 +111,14 @@ public class CVRAuditInfo implements PersistentEntity {
   }
   
   /**
-   * Constructs a new CVRAuditInfo for the specified dashboard and
-   * CVR to audit.
+   * Constructs a new CVRAuditInfo for the specified CVR to audit.
    * 
-   * @param the_dashboard The dashboard this record belongs to.
    * @param the_cvr The CVR to audit.
-   * @param the_index The index of this CVRAuditInfo in the list.
    */
-  public CVRAuditInfo(final CountyDashboard the_dashboard,
-                      final CastVoteRecord the_cvr,
-                      final Integer the_index) {
+  public CVRAuditInfo(final CastVoteRecord the_cvr) {
     super();
-    my_dashboard = the_dashboard;
+    my_id = the_cvr.id();
     my_cvr = the_cvr;
-    my_index = the_index;
   }
 
   /**
@@ -170,13 +146,6 @@ public class CVRAuditInfo implements PersistentEntity {
   }
   
   /**
-   * @return the county dashboard that owns this record.
-   */
-  public CountyDashboard dashboard() {
-    return my_dashboard;
-  }
-  
-  /**
    * @return the CVR to audit.
    */
   public CastVoteRecord cvr() {
@@ -200,20 +169,37 @@ public class CVRAuditInfo implements PersistentEntity {
   }
   
   /**
-   * @return true if this record has been counted in its audits,
-   * false otherwise.
+   * @return the number of times this record appears in the audit 
+   * sequence.
    */
-  public boolean counted() { 
+  public int multiplicity() {
+    return my_multiplicity;
+  }
+  
+  /**
+   * Sets the number of times this record appears in the audit sequence.
+   * 
+   * @param the_multiplicity The new value.
+   */
+  public void setMultiplicity(final int the_multiplicity) {
+    my_multiplicity = the_multiplicity;
+  }
+  
+  /**
+   * @return the number of times this record has been counted in
+   * the audit calculations.
+   */
+  public int counted() { 
     return my_counted;
   }
   
   /**
-   * Sets the flag that indicates whether this record has been
-   * counted in its audits.
+   * Sets the number of times this record has been counted in the
+   * audit calculations.
    * 
-   * @param the_counted The new flag value.
+   * @param the_counted The new value.
    */
-  public void setCounted(final boolean the_counted) {
+  public void setCounted(final int the_counted) {
     my_counted = the_counted;
   }
   
@@ -258,13 +244,6 @@ public class CVRAuditInfo implements PersistentEntity {
   }
   
   /**
-   * @return the index.
-   */
-  public Integer index() {
-    return my_index;
-  }
-  
-  /**
    * @return a String representation of this contest to audit.
    */
   @Override
@@ -281,8 +260,7 @@ public class CVRAuditInfo implements PersistentEntity {
     } else {
       acvr = my_acvr.id().toString();
     }
-    return "CVRAuditInfo [dashboard=" + my_dashboard.id() + 
-           ", cvr=" + cvr + ", acvr=" + acvr + "]";
+    return "CVRAuditInfo [cvr=" + cvr + ", acvr=" + acvr + "]";
   }
   
   /**

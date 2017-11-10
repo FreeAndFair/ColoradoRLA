@@ -228,7 +228,7 @@ public class CVRToAuditDownload extends AbstractEndpoint {
       
       if (round.isPresent()) {
         cvr_to_audit_list = 
-            ComparisonAuditController.computeBallotOrder(cdb, round.getAsInt(), audited);
+            ComparisonAuditController.ballotsToAudit(cdb, round.getAsInt(), audited);
       } else {
         cvr_to_audit_list = 
             ComparisonAuditController.computeBallotOrder(cdb, index, ballot_count, 

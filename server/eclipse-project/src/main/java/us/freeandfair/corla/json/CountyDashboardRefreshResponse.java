@@ -318,6 +318,17 @@ public class CountyDashboardRefreshResponse {
     final AuditBoardDashboardASM audit_board_asm = 
         ASMUtilities.asmFor(AuditBoardDashboardASM.class, county_id.toString());
     
+    // sanitized rounds
+    
+    final List<Round> rounds = new ArrayList<>();
+    for (final Round round : the_dashboard.rounds()) {
+      rounds.add(round.withoutSequences());
+    }
+    Round current_round = the_dashboard.currentRound();
+    if (current_round != null) {
+      current_round = current_round.withoutSequences();
+    }
+    
     return new CountyDashboardRefreshResponse(county_id, 
                                               asm.currentState(),
                                               audit_board_asm.currentState(),
@@ -339,8 +350,8 @@ public class CountyDashboardRefreshResponse {
                                               the_dashboard.disagreements(),
                                               the_dashboard.cvrUnderAudit(),
                                               the_dashboard.auditedPrefixLength(),
-                                              the_dashboard.rounds(),
-                                              the_dashboard.currentRound(),
+                                              rounds,
+                                              current_round,
                                               dosd.auditInfo());
   }
   
@@ -372,6 +383,17 @@ public class CountyDashboardRefreshResponse {
     final AuditBoardDashboardASM audit_board_asm = 
         ASMUtilities.asmFor(AuditBoardDashboardASM.class, county_id.toString());
     
+    // sanitized rounds
+    
+    final List<Round> rounds = new ArrayList<>();
+    for (final Round round : the_dashboard.rounds()) {
+      rounds.add(round.withoutSequences());
+    }
+    Round current_round = the_dashboard.currentRound();
+    if (current_round != null) {
+      current_round = current_round.withoutSequences();
+    }
+    
     return new CountyDashboardRefreshResponse(county_id, 
                                               asm.currentState(),
                                               audit_board_asm.currentState(),
@@ -393,8 +415,8 @@ public class CountyDashboardRefreshResponse {
                                               the_dashboard.disagreements(),
                                               null,
                                               the_dashboard.auditedPrefixLength(),
-                                              the_dashboard.rounds(),
-                                              the_dashboard.currentRound(),
+                                              rounds,
+                                              current_round,
                                               null);
   }
 }
