@@ -1,4 +1,4 @@
--- List, by county name, of prefix length (to end of current round)
+-- List, by county name, of prefix length (longest initial subsequence, without breaks, of random sequence for which each card in the subsequence has already been audited).
 
 SELECT co.name as county_name, cd.audited_prefix_length 
 FROM county AS co

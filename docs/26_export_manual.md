@@ -91,7 +91,7 @@ List of contests selected by the Secretary of State for audit, with information
 --- | --- | ---
 county_name | Text String | Name of County
 contest_name | Text String | Name of contest 
-contest_type | Text String | Type of contest (statewide or countywide, per Rule 25.2.2(i))
+audit_reason | Text String | Reason for audit ("STATE_WIDE_CONTEST" and "COUNTY_WIDE_CONTEST" refer to the types of contests that must be chosen to drive the audit, per Rule 25.2.2(i))
 votes_allowed | Integer | Maximum number of choices that can be recorded on one ballot in the given contest
  winners_allowed | Integer | Number of winners allowed for the contest (required to calculate diluted margin)
 winners | List of Text Strings | List of all winners of the given contest in the given County. (Note that for multi-county contests this list includes the highest vote-getters within the County, even if these were not the winners across all Counties.)
@@ -180,7 +180,8 @@ List of all contests, with information about the contest that doesn't change dur
 --- | --- | ---
 county_name | Text String | Name of County
 contest_name | Text String | Name of contest 
-contest_type | Text String | Type of contest (statewide or countywide, per Rule 25.2.2(i))
+audit_reason | Text String | Reason for audit ("STATE_WIDE_CONTEST" and "COUNTY_WIDE_CONTEST" refer to the types of contests that must be chosen to drive the audit, per Rule 25.2.2(i); other reasons from the Rule include  CLOSE_CONTEST, TIED_CONTEST, GEOGRAPHICAL_SCOPE, CONCERN_REGARDING_ACCURACY, and   COUNTY_CLERK_ABILITY; the audits of other contests on the ballot are OPPORTUNISTIC_BENEFITS)
+
 votes_allowed | Integer | Maximum number of choices that can be recorded on one ballot in the given contest
  winners_allowed | Integer | Number of winners allowed for the contest (required to calculate diluted margin)
 winners | List of Text Strings | List of all winners of the given contest in the given County. (Note that for multi-county contests this list includes the highest vote-getters within the County, even if these were not the winners across all Counties.)
@@ -240,7 +241,7 @@ sign_out_time  | Timestamp |  End of the given session for the given audit board
  Field | Type | _______________Meaning_______________ 
 --- | --- | ---
 county_name | Text String | Name of County
-audited_prefix_length | Integer | Length of the prefix of the random sequence of ballot card selections that will be audited by the end of the current round
+audited_prefix_length | Integer | Length of the longest prefix of the random sequence of cvr selections containing only cvrs that have been audited
 
 #### seed.sql
 
