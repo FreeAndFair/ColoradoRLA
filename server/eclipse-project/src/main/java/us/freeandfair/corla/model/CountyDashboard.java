@@ -40,12 +40,10 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.OrderBy;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
-import us.freeandfair.corla.model.CVRContestInfo.ConsensusValue;
 import us.freeandfair.corla.model.ImportStatus.ImportState;
 import us.freeandfair.corla.persistence.AuditSelectionIntegerMapConverter;
 import us.freeandfair.corla.persistence.PersistentEntity;
@@ -193,14 +191,6 @@ public class CountyDashboard implements PersistentEntity {
    * The current audit round.
    */
   private Integer my_current_round_index;
-  
-  /**
-   * The sequence of CVRs to audit, stored as CVRAuditInfo records.
-   */
-  @OneToMany(cascade = CascadeType.ALL, mappedBy = MY_DASHBOARD, 
-             fetch = FetchType.LAZY, orphanRemoval = true)
-  @OrderBy("my_index")
-  private List<CVRAuditInfo> my_cvr_audit_info = new ArrayList<>();
   
   /**
    * The set of contests driving the audit.
@@ -442,43 +432,6 @@ public class CountyDashboard implements PersistentEntity {
   }
   
   /**
-   * Define the CVRs to audit. This clears any existing list of CVRs to 
-   * audit, as well as the ACVRs associated with them.
-   * 
-   * @param the_cvrs_to_audit A list of the CVRs to audit, in the order 
-   * they should be examined. It may contain duplicates, which are dealt with 
-   * appropriately when submitting audit CVRs.
-   * @exception IllegalArgumentException if any null CVRs are in the list.
-   */
-  public void setCVRsToAudit(final List<CastVoteRecord> the_cvrs_to_audit) 
-      throws IllegalArgumentException {
-    if (the_cvrs_to_audit.contains(null)) {
-      throw new IllegalArgumentException("null elements in audit cvr list");
-    }
-    my_cvr_audit_info.clear();
-    addCVRsToAudit(the_cvrs_to_audit);
-  }
-
-  /**
-   * Adds more CVRs to audit, appending them to the existing list. This
-   * does not modify any already submitted ACVRs or county audit counters.
-   * 
-   * @param the_cvrs_to_add A list of the CVRs to append, in the order they
-   * should be added.
-   * @exception IllegalArgumentException if any null CVRs are in the list.
-   */
-  public void addCVRsToAudit(final List<CastVoteRecord> the_cvrs_to_add) {
-    if (the_cvrs_to_add.contains(null)) {
-      throw new IllegalArgumentException("null elements in audit cvr list");
-    }
-    for (final CastVoteRecord cvr : the_cvrs_to_add) {
-      // create a persistent record
-      final CVRAuditInfo cvrai = new CVRAuditInfo(this, cvr, my_cvr_audit_info.size());
-      my_cvr_audit_info.add(cvrai);
-    }
-  }
-  
-  /**
    * @return all the audit rounds.
    */
   public List<Round> rounds() {
@@ -502,12 +455,18 @@ public class CountyDashboard implements PersistentEntity {
    * in the random audit sequence. 
    * 
    * @param the_number_of_ballots The number of ballots.
+   * @param the_prefix_length The expected audited prefix length at the round's end.
    * @param the_start_index The start index.
+   * @param the_ballots_to_audit The ballots to audit in the round, in the order
+   * in which they should be presented.
+   * @param the_audit_subsequence The audit subsequence for the round.
    * @exception IllegalStateException if a round is currently ongoing.
    */
   public void startRound(final int the_number_of_ballots, 
                          final int the_prefix_length,
-                         final int the_start_index) {
+                         final int the_start_index,
+                         final List<Long> the_ballots_to_audit,
+                         final List<Long> the_audit_subsequence) {
     if (my_current_round_index == null) {
       my_current_round_index = my_rounds.size();
     } else {
@@ -519,43 +478,10 @@ public class CountyDashboard implements PersistentEntity {
                                   the_number_of_ballots,
                                   my_ballots_audited,
                                   the_prefix_length,
-                                  the_start_index);
-    updateRound(round);
+                                  the_start_index,
+                                  the_ballots_to_audit,
+                                  the_audit_subsequence);
     my_rounds.add(round);
-  }
-  
-  /**
-   * Updates a round object with the disagreements and discrepancies in the
-   * audited prefix range between its start index and the audited prefix length.
-   * 
-   * @param the_round The round to update.
-   */
-  private void updateRound(final Round the_round) {
-    int index = the_round.startAuditedPrefixLength();
-    final Map<Contest, AuditReason> audit_reasons = new HashMap<>();
-    final Set<AuditReason> discrepancies = new HashSet<>();
-    final Set<AuditReason> disagreements = new HashSet<>();
-    while (index < my_audited_prefix_length && 
-           the_round.actualCount() < the_round.expectedCount()) {
-      final CVRAuditInfo cvrai = my_cvr_audit_info.get(index);
-      for (final CountyContestComparisonAudit ca : comparisonAudits()) {
-        audit_reasons.put(ca.contest(), ca.auditReason());
-        if (!discrepancies.contains(ca.auditReason()) && 
-            ca.computeDiscrepancy(cvrai.cvr(), cvrai.acvr()).isPresent()) {
-          discrepancies.add(ca.auditReason());
-        }
-      }
-      for (final CVRContestInfo ci : cvrai.acvr().contestInfo()) {
-        final AuditReason reason = audit_reasons.get(ci.contest());
-        if (ci.consensus() == ConsensusValue.NO) {
-          disagreements.add(reason);
-        }
-      }
-      the_round.addAuditedBallot();
-      the_round.addDiscrepancy(discrepancies);
-      the_round.addDisagreement(disagreements);
-      index = index + 1;
-    }
   }
   
   /**
@@ -571,8 +497,6 @@ public class CountyDashboard implements PersistentEntity {
       final Round round = my_rounds.get(my_current_round_index);
       round.setSignatories(the_signatories);
       round.setEndTime(Instant.now());
-      round.setActualCount(my_ballots_audited - round.previousBallotsAudited());
-      round.setActualAuditedPrefixLength(my_audited_prefix_length);
       my_current_round_index = NO_CONTENT;
     }
   }
@@ -588,18 +512,10 @@ public class CountyDashboard implements PersistentEntity {
       result = 0;
     } else {
       final Round round = currentRound();
-      result = round.expectedCount() + round.previousBallotsAudited() -
-               my_ballots_audited; 
+      result = round.expectedCount() - round.actualCount(); 
     }
     
     return result;
-  }
-  
-  /**
-   * @return the list of CVR audit info (for legacy RLA algorithm).
-   */
-  public List<CVRAuditInfo> cvrAuditInfo() {
-    return Collections.unmodifiableList(my_cvr_audit_info);
   }
   
   /**
@@ -675,11 +591,12 @@ public class CountyDashboard implements PersistentEntity {
    * no next CVR to audit.
    */
   public Long cvrUnderAudit() {
-    if (my_cvr_audit_info == null || my_audited_prefix_length == null ||
-        my_cvr_audit_info.size() <= my_audited_prefix_length) {
+    final Round round = currentRound();
+    if (round == null || round.actualCount().compareTo(round.expectedCount()) >= 0) {
       return null;
     } else {
-      return my_cvr_audit_info.get(my_audited_prefix_length).cvr().id();
+      // get the current CVR to audit from the round object
+      return round.ballotSequence().get(round.actualCount());
     }
   }
   
@@ -692,11 +609,12 @@ public class CountyDashboard implements PersistentEntity {
   
   /**
    * Adds an audited ballot. This adds it both to the total and to
-   * the current audit round, if one is ongoing.
+   * the current audit round. If no round is ongoing, this method
+   * does nothing.
    */
   public void addAuditedBallot() {
-    my_ballots_audited = my_ballots_audited + 1;
     if (my_current_round_index != null) {
+      my_ballots_audited = my_ballots_audited + 1;
       my_rounds.get(my_current_round_index).addAuditedBallot();
     }
   }
@@ -706,8 +624,8 @@ public class CountyDashboard implements PersistentEntity {
    * from the current audit round, if one is ongoing.
    */
   public void removeAuditedBallot() {
-    my_ballots_audited = my_ballots_audited - 1;
     if (my_current_round_index != null) {
+      my_ballots_audited = my_ballots_audited - 1;
       my_rounds.get(my_current_round_index).removeAuditedBallot();
     }  
   }
@@ -899,13 +817,14 @@ public class CountyDashboard implements PersistentEntity {
   
   /**
    * Sets the length of the audited prefix of the sequence of
-   * ballots to audit.
+   * ballots to audit. If there is no active round, this method does
+   * nothing.
    * 
    * @param the_audited_prefix_length The audited prefix length.
    */
   public void setAuditedPrefixLength(final int the_audited_prefix_length) {
-    my_audited_prefix_length = the_audited_prefix_length;
     if (my_current_round_index != null) {
+      my_audited_prefix_length = the_audited_prefix_length;
       my_rounds.get(my_current_round_index).
           setActualAuditedPrefixLength(the_audited_prefix_length);
     }

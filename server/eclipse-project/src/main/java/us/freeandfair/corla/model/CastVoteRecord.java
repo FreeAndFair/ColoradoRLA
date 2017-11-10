@@ -453,7 +453,7 @@ public class CastVoteRecord implements PersistentEntity, Serializable {
   }
   
   /**
-   * A comparator to sort CVRLocationResponse objects by scanner ID, then batch ID,
+   * A comparator to sort CastVoteRecord objects by scanner ID, then batch ID,
    * then record ID.
    */
   @SuppressWarnings("PMD.AtLeastOneConstructor")

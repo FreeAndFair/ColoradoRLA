@@ -36,7 +36,6 @@ import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.CVRAuditInfoQueries;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
@@ -124,8 +123,8 @@ public class BallotNotFound extends AbstractAuditBoardDashboardEndpoint {
       if (cvr == null) {
         badDataContents(the_response, "nonexistent CVR ID");
       }
-      final List<CVRAuditInfo> matching = CVRAuditInfoQueries.matching(cdb, cvr);
-      if (matching.isEmpty()) {
+      final CVRAuditInfo matching = Persistence.getByID(cvr.id(), CVRAuditInfo.class);
+      if (matching == null) {
         badDataContents(the_response, "specified CVR not under audit");
       }
       // construct a phantom ballot ACVR
