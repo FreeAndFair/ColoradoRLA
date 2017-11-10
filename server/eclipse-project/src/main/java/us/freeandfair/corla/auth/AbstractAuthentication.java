@@ -13,6 +13,8 @@ package us.freeandfair.corla.auth;
 
 import static us.freeandfair.corla.auth.AuthenticationStage.*;
 
+import java.util.Locale;
+
 import javax.persistence.PersistenceException;
 
 import org.apache.log4j.Logger;
@@ -61,7 +63,8 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
    * @todo kiniry Refactor method into helper methods for each phase.
    */
   @Override
-  @SuppressWarnings({"PMD.NPathComplexity", "PMD.ExcessiveMethodLength"})
+  @SuppressWarnings({"PMD.NPathComplexity", "PMD.ExcessiveMethodLength", "PMD.SwitchDensity", 
+                     "checkstyle:methodlength"})
   public boolean authenticateAdministrator(final Request the_request,
                                            final Response the_response,
                                            final String the_username, 
@@ -90,54 +93,61 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
       if (the_username == null || the_username.isEmpty()) {
         result = false;
       } else {
+        final String lowercase_username = the_username.toLowerCase(Locale.US);
         switch (auth_stage) {
           case NOT_AUTHENTICATED:
             final AuthenticationResult auth_result = 
                 traditionalAuthenticate(the_request, the_response,
-                                        the_username, the_password);
+                                        lowercase_username, the_password);
             if (auth_result.success()) {
               // We have traditionally authenticated.
               final Administrator admin = 
-                  AdministratorQueries.byUsername(the_username);
-              admin.updateLastLoginTime();
-              Persistence.saveOrUpdate(admin);
-              the_request.session().attribute(AUTH_STAGE, TRADITIONALLY_AUTHENTICATED);
-              the_request.session().attribute(ADMIN, admin);
-              the_request.session().attribute(CHALLENGE, auth_result.challenge());
-              Main.LOGGER.info("Traditional authentication succeeded for administrator " + 
-                               the_username);
+                  AdministratorQueries.byUsername(lowercase_username);
+              if (admin == null) {
+                Main.LOGGER.info("User " + lowercase_username + " not found in database, " +
+                                 "aborting authentication.");
+                result = false;
+              } else {
+                admin.updateLastLoginTime();
+                Persistence.saveOrUpdate(admin);
+                the_request.session().attribute(AUTH_STAGE, TRADITIONALLY_AUTHENTICATED);
+                the_request.session().attribute(ADMIN, admin);
+                the_request.session().attribute(CHALLENGE, auth_result.challenge());
+                Main.LOGGER.info("Traditional authentication succeeded for administrator " + 
+                                 lowercase_username);
+              }
             } else {
               Main.LOGGER.info("Traditional authentication failed for administrator " + 
-                               the_username);
+                               lowercase_username);
               result = false;
             }
             break;
 
           case TRADITIONALLY_AUTHENTICATED:
-            if (secondFactorAuthenticate(the_request, the_username, the_second_factor)) {
+            if (secondFactorAuthenticate(the_request, lowercase_username, the_second_factor)) {
               // We have both traditionally and second-factor authenticated.
               final Administrator admin = 
-                  AdministratorQueries.byUsername(the_username);
+                  AdministratorQueries.byUsername(lowercase_username);
               admin.updateLastLoginTime();
               Persistence.saveOrUpdate(admin);
               the_request.session().attribute(AUTH_STAGE, SECOND_FACTOR_AUTHENTICATED); 
               the_request.session().attribute(ADMIN, admin);
               the_request.session().removeAttribute(CHALLENGE);
               Main.LOGGER.info("Second factor authentication succeeded for administrator " + 
-                               the_username + " in role " + admin.type());
+                               lowercase_username + " in role " + admin.type());
               if (admin.type() == AdministratorType.COUNTY) {
-                Main.LOGGER.info(the_username + " is an administrator for county " +
+                Main.LOGGER.info(lowercase_username + " is an administrator for county " +
                                  admin.county());
               }
               if (admin.type() == AdministratorType.STATE) {
-                Main.LOGGER.info(the_username + " is a state administrator");
+                Main.LOGGER.info(lowercase_username + " is a state administrator");
               }
             } else {
               // Send the authentication state machine back to its initial state.
               the_request.session().attribute(AUTH_STAGE, NOT_AUTHENTICATED);
               the_request.session().removeAttribute(CHALLENGE);
               Main.LOGGER.info("Second factor authentication failed for administrator" + 
-                               the_username);
+                               lowercase_username);
               result = false;
             }
             break;
@@ -154,8 +164,7 @@ public abstract class AbstractAuthentication implements AuthenticationInterface 
       }
     } catch (final PersistenceException e) {
       // there's nothing we can really do here other than saying that the
-      // authentication failed; it's also possible we failed to update the last
-      // login time, but that's not critical
+      // authentication failed
       deauthenticate(the_request);
     }
 
