@@ -42,14 +42,20 @@ __copyright__ = "Copyright (c) 2017 Colorado Department of State"
 __license__ = "AGPLv3"
 
 MYPACKAGE = 'rla_export'
-SQL_PATH = pkg_resources.resource_filename(MYPACKAGE, 'sql')
+CORLA_INI_FILE = pkg_resources.resource_filename(MYPACKAGE, 'corla.ini')
 PROPERTIES_FILE = pkg_resources.resource_filename(MYPACKAGE, 'default.properties')
+SQL_PATH = pkg_resources.resource_filename(MYPACKAGE, 'sql')
 
 parser = argparse.ArgumentParser(description='Export ColoradoRLA data for publication on Audit Center web site')
 
 parser.add_argument('queryfiles', metavar="QUERYFILE", nargs='*',
                     help='name of file with an SQL query to execute, relative to $SQL_DIR')
 
+parser.add_argument('-C, --config', dest='corla_ini_file',
+                    default=CORLA_INI_FILE,
+                    help='Config file from which to obtain application server connection information, and '
+                    'path to custom properties file. '
+                    'Default: ' + CORLA_INI_FILE)
 parser.add_argument('-p, --properties', dest='properties',
                     default=PROPERTIES_FILE,
                     help='Properties file from which to obtain database connection information. '
@@ -236,10 +242,10 @@ def query_to_csvfile(ac, queryfile, csvfile):
         return message
 
 
-def db_export(ac, args):
+def db_export(args, ac):
     """Export results of specified queries directly from the database
-    :param ac: audit contest
     :param args: command line arguments
+    :param ac: audit context
     :return: None
     """
 
@@ -293,7 +299,33 @@ def show_elapsed(r, *args, **kwargs):
     print("Endpoint %s: %s. Elapsed time %.3f" % (r.url, r, r.elapsed.total_seconds()))
 
 
-def state_login(url, username, password):
+def parse_corla_config(filename):
+    "Parse corla_ini_file"
+
+    corla_config_defaults = {
+        'properties': PROPERTIES_FILE,
+        'url':        'http://localhost:8888',
+        'user':       '',
+        'password':   '',
+        'grid1':      '',
+        'grid2':      '',
+        'grid3':      ''}
+
+    parser = ConfigParser.SafeConfigParser(corla_config_defaults)
+    parser.readfp(open(filename))
+
+    config = Namespace()
+
+    # Parse each item we allow into the config namespace, using value from config file if defined
+    for item in corla_config_defaults:
+        setattr(config, item, parser.get('appserver', item))
+
+    logging.debug("config: '%s'" % config)
+
+    return config
+
+
+def state_login(ac, url, username, password):
     """Login as state admin in given requests session with given credentials.
     On failure, set session.rla_logged_in = False
     TODO: find a more elegant way to signal errors when used as a context handler
@@ -306,11 +338,11 @@ def state_login(url, username, password):
     session = requests.Session()
     session.rla_logged_in = False
 
-    username = raw_input("Username for RLA tool: ")
-    password = getpass.getpass("Password: ")
+    username = ac.config.user or raw_input("Username for RLA tool: ")
+    password = ac.config.password or getpass.getpass("Password: ")
 
     PATH = "/auth-state-admin"
-    data={'username': username, 'password': password, 'second_factor': ''}
+    data={'username': username, 'password': password}
 
     try:
         r = session.post(url + PATH, data)
@@ -322,10 +354,13 @@ def state_login(url, username, password):
         remove_chars = dict((ord(char), None) for char in '[],')
         challenges = r.json()['challenge'].translate(remove_chars).split()
 
-        print("Enter responses for user %s" % username)
-        responses = [getpass.getpass(" Grid Challenge %s: " % challenge) for challenge in challenges]
+        if not ac.config.grid1:
+            print("Enter responses for user %s" % username)
+        responses = ac.config.grid1 or getpass.getpass(" Grid Challenge %s: " % challenges[0])
+        responses = responses + " " + (ac.config.grid2 or getpass.getpass(" Grid Challenge %s: " % challenges[1]))
+        responses = responses + " " + (ac.config.grid3 or getpass.getpass(" Grid Challenge %s: " % challenges[2]))
         logging.debug("Login phase 2 responses: %s", responses)
-        data['second_factor'] = ' '.join(responses)
+        data = {'username': username, 'second_factor': responses}
 
         r = session.post(url + PATH, data)
         logging.debug("Login phase 2 response: %s", r.text)
@@ -333,7 +368,7 @@ def state_login(url, username, password):
             logging.error("Login phase 2 failed for %s%s as %s: status_code %d" % (url, PATH, username, r.status_code))
             return session
     except requests.RequestException as e:
-        logging.error("state_login: %s" % e, exc_info=True)
+        logging.error("state_login to %s: %s" % (url, e), exc_info=True)
         return session
 
     session.hooks = dict(response=show_elapsed)
@@ -384,11 +419,10 @@ def download_file(session, baseurl, file_id, filename):
 def pull_endpoints(args, ac):
     "Pull and save several reports from RLA Tool endpoints"
 
-    # TODO: pick this up from a config file
-    baseurl = args.url or 'http://localhost:' + ac.cp.get('p', 'http_port', '8888')
-    ac.corla_auth = {'url': baseurl, 'username': 'stateadmin1', 'password': ''}
+    baseurl = args.url or ac.config.url
+    ac.corla_auth = {'url': baseurl, 'username': ac.config.user, 'password': ac.config.password}
 
-    with fragile(state_login(**ac.corla_auth)) as session:
+    with fragile(state_login(ac, **ac.corla_auth)) as session:
         # Give up if login was unsuccessful
         if session is None or not session.rla_logged_in:
             raise fragile.Break
@@ -453,12 +487,14 @@ def main():
     # Establish a context for passing state around
     ac = Namespace()
 
+    ac.config = parse_corla_config(args.corla_ini_file)
+
     # Parse properties file
     ac.cp = ConfigParser.SafeConfigParser()
     ac.cp.readfp(FakeSecHead(open(args.properties)))
 
     if args.db_export:
-        db_export(ac, args)
+        db_export(args, ac)
 
     if args.reports or args.file_downloads:
         pull_endpoints(args, ac)
