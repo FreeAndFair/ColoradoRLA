@@ -34,7 +34,6 @@ export default function* dosLoginSaga() {
         'UPLOAD_ACVR_FAIL',
         'UPLOAD_ACVR_NETWORK_FAIL',
         'UPLOAD_ACVR_OK',
-        'UPDATE_ACVR_FORM',
         'UPLOAD_BALLOT_MANIFEST_OK',
         'UPLOAD_CVR_EXPORT_OK',
         'IMPORT_BALLOT_MANIFEST_OK',
