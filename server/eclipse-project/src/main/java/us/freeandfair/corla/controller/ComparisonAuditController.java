@@ -327,8 +327,8 @@ public final class ComparisonAuditController {
     // we already have the list of CVR IDs for the round
     final List<CastVoteRecord> cvrs = CastVoteRecordQueries.get(round.ballotSequence());
     
-    for (int i = 0; i < round.actualCount(); i++) {
-      cvrs.get(i).setAuditFlag(audited(the_cdb, cvrs.get(i)));
+    for (final CastVoteRecord cvr : cvrs) {
+      cvr.setAuditFlag(audited(the_cdb, cvr));
     }
 
     return cvrs;
