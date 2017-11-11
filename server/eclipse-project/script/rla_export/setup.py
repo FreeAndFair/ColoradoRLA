@@ -7,7 +7,7 @@ def readme():
 
 
 setup(name='rla_export',
-      version='1.0.6.dev2',
+      version='1.0.6.dev5',
       description='Export data for publication and audit verification from ColoradoRLA: Software to facilitate risk-limiting post-election tabulation audits',
       long_description=readme(),
       url='https://github.com/FreeAndFair/ColoradoRLA',
@@ -36,7 +36,8 @@ setup(name='rla_export',
       ],
       keywords='audit election psycopg2',
       # Note: this project is one part of the ColoradoRLA repo
-      packages=find_packages(),
+      packages=['rla_export'],
+      data_files=[('rla_export', ['rla_export/corla.ini'])],  # Why is default.properties getting in? add it here also?
       # python_requires='==2.7',
       install_requires=[
           'requests>=2.12.1',
