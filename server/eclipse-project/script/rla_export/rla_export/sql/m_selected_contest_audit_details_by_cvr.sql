@@ -39,9 +39,9 @@ FROM
    contest AS cn
    ON dc.contest_id = cn.id
  LEFT JOIN county AS cty
-   ON cai.dashboard_id = cty.id
+   ON cn.county_id = cty.id
 
-WHERE cai.counted = 't' AND dc.contest_id is not NULL
+WHERE cai.counted <> 0 AND dc.contest_id is not NULL
 
 ORDER BY county_name, contest_name, random_sequence_index
 ;
