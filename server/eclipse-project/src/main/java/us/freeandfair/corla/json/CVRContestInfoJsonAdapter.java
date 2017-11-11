@@ -51,6 +51,11 @@ public final class CVRContestInfoJsonAdapter
   private static final String COMMENT = "comment";
   
   /**
+   * THe "comments" string (for erroneous client JSON).
+   */
+  private static final String COMMENTS = "comments";
+  
+  /**
    * The "consensus" string (for JSON serialization).
    */
   private static final String CONSENSUS = "consensus";
@@ -146,6 +151,7 @@ public final class CVRContestInfoJsonAdapter
           break;
         
         case COMMENT:
+        case COMMENTS:
           comment = the_reader.nextString();
           break;
           
