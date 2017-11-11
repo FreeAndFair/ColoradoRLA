@@ -325,7 +325,13 @@ public final class ComparisonAuditController {
     final Round round = the_cdb.rounds().get(the_round - 1);
     
     // we already have the list of CVR IDs for the round
-    return CastVoteRecordQueries.get(round.ballotSequence());
+    final List<CastVoteRecord> cvrs = CastVoteRecordQueries.get(round.ballotSequence());
+    
+    for (int i = 0; i < round.actualCount(); i++) {
+      cvrs.get(i).setAuditFlag(audited(the_cdb, cvrs.get(i)));
+    }
+
+    return cvrs;
   }
   
   /**
