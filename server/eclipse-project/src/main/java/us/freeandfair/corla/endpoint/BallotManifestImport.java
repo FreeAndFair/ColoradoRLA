@@ -94,7 +94,7 @@ public class BallotManifestImport extends AbstractCountyDashboardEndpoint {
       // mark any previous ballot manifest import as NOT_IMPORTED
       if (cdb.manifestFile() != null) {
         cdb.manifestFile().setStatus(FileStatus.NOT_IMPORTED);
-        Persistence.saveOrUpdate(cdb.cvrFile());
+        Persistence.saveOrUpdate(cdb.manifestFile());
       }
 
       // now set the new manifest info
