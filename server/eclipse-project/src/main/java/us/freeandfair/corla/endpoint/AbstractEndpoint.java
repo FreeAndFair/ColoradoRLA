@@ -22,7 +22,7 @@ import javax.persistence.PersistenceException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Level;
 import org.eclipse.jetty.http.HttpStatus;
-import org.hibernate.JDBCException;
+import org.hibernate.HibernateException;
 
 import spark.HaltException;
 import spark.Request;
@@ -458,8 +458,8 @@ public abstract class AbstractEndpoint implements Endpoint {
       // a HaltException should just be propagated, as that is an expected exception
       // that is properly dealt with by Spark
       throw e;
-    } catch (final JDBCException e) {
-      // a JDBC exception is treated like a transaction failure
+    } catch (final HibernateException e) {
+      // a Hibernate exception is treated like a transaction failure
       Main.LOGGER.error("JDBC error in endpoint " + endpointName() + ":\n" + 
                         ExceptionUtils.getStackTrace(e));
       transactionFailure(the_response, e.toString());
