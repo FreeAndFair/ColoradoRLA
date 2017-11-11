@@ -9,11 +9,10 @@ import {
 import notice from 'corla/notice';
 
 import countyFetchContests from 'corla/action/county/fetchContests';
+import countyFetchCvr from 'corla/action/county/fetchCvr';
 import fetchCvrsToAudit from 'corla/action/county/fetchCvrsToAudit';
 
 import { parse } from 'corla/adapter/countyDashboardRefresh';
-
-import currentBallotIdSelector from 'corla/selector/county/currentBallotId';
 
 
 function* countyRefreshOk({ data }: any): any {
@@ -36,6 +35,20 @@ function* countyRefreshOk({ data }: any): any {
                 break;
             }
         }
+    }
+
+    const nextId = state.ballotUnderAuditId;
+
+    if (!nextId) { return; }
+
+    const { currentBallot } = state;
+
+    if (!currentBallot || (currentBallot.id !== nextId)) {
+        // If we already have a current ballot, only fetch this CVR if
+        // it is new. Otherwise we already have it, and fetching it
+        // again would overwrite the `submitted` flag, causing us to
+        // forget that we are waiting for the submission to be handled.
+        countyFetchCvr(nextId);
     }
 
     const county = parse(data, state);

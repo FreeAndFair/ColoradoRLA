@@ -8,6 +8,7 @@ declare namespace County {
         ballotManifestCount?: number;
         ballotManifestHash?: string;
         ballotsRemainingInRound?: number;
+        ballotUnderAuditId?: number;
         contests?: Contest[];
         contestDefs?: ContestDefs;
         contestsUnderAudit?: Contest[];
