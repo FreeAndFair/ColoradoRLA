@@ -243,7 +243,7 @@ def query_to_csvfile(ac, queryfile, csvfile):
 
 
 def db_export(args, ac):
-    """Export results of specified queries directly from the database
+    """Export results of specified queries directly from the database, as json and csv.
     :param args: command line arguments
     :param ac: audit context
     :return: None
