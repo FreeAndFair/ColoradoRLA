@@ -5,9 +5,10 @@ const formatContestInfo = (mark: County.ACVRContest, contestId: number): JSON.Co
     const markedChoices: County.ACVRChoices = _.pickBy(mark.choices);
     const choices = _.map(markedChoices, (_, name) => name);
 
+    const comment = mark.comments;
     const consensus = mark.noConsensus ? 'NO' : 'YES';
 
-    return { choices, consensus, contest: contestId };
+    return { choices, comment, consensus, contest: contestId };
 };
 
 

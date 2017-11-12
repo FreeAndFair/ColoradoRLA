@@ -21,6 +21,7 @@ declare namespace JSON {
 
     interface ContestInfo {
         choices: string[];
+        comment: string;
         contest: number;
         consensus: string;
     }
