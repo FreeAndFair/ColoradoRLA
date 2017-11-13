@@ -4,20 +4,22 @@
 -- original cvr info, audit board interp info.
 -- note that the random sequence index (includes dupes) is contest_audit_info.index
 -- cvr_contest_info.index is the index of the *contest* on the ballot
--- Note that in case of an overvote, `cci_a.choices` shows all the choices the Audit Board thought the voter intended, while cci.choices will *not* show all those choices. 
-
+-- Note that in case of an overvote, `cci_a.choices` shows all the choices the
+-- Audit Board thought the voter intended, while cci.choices will *not* show all those choices.
 
 SELECT 
    cty.name AS county_name, 
    cn.name AS contest_name, 
-   cai.index + 1 AS random_sequence_index,
+   cai.counted,
    cvr_s.imprinted_id,
-   cvr_s.ballot_type, 
+   cvr_s.ballot_type,
    cci.choices AS choice_per_voting_computer, 
    cci_a.choices AS choice_per_audit_board,
-   cci_a.consensus AS did_audit_board_agree,
+   cci_a.consensus,
+   cvr_s.record_type,
    cci_a.comment AS audit_board_comment,
-   cvr_a.timestamp
+   cvr_a.timestamp,
+   cai.cvr_id
 
 FROM 
    cvr_audit_info AS cai
@@ -43,5 +45,5 @@ FROM
 
 WHERE cai.counted <> 0 AND dc.contest_id is not NULL
 
-ORDER BY county_name, contest_name, random_sequence_index
+ORDER BY county_name, contest_name
 ;
