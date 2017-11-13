@@ -45,8 +45,9 @@ ballot card counts provided will therefore not match turnout figures reported el
 
 #### m_selected_contest_audit_details_by_cvr.sql
 
- For each contest under audit, and for each cast vote record presented to the 
-  Audit Board for verification that contains the given contest, 
+ For each contest under audit, and for each cast vote record in the random sequence
+ (with duplicates) that contains the given contest and has been presented to the 
+  Audit Board for verification, 
   the RLA system's record of the Audit Board's review of 
   the physical ballot for that contest
   
@@ -211,8 +212,9 @@ current_audit_type | Text String | Comparison audit, ballot polling audit or han
 
 #### all_contest_audit_details_by_cvr.sql
 
- For each contest, and for each cast vote record presented to the 
-  Audit Board for verification that contains the given contest, 
+ For each contest, and for each cast vote record in the random sequence
+ (with duplicates) that contains the given contest and has been presented to the 
+  Audit Board for verification, 
   the RLA system's record of the Audit Board's review of 
   the physical ballot for that contest
   
