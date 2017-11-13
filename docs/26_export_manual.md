@@ -204,7 +204,7 @@ contest_name | Text String | Name of contest
 
  Field | Type | _______________Meaning_______________
 --- | --- | ---
-county_id | Integer | Number of county in (mostly) alphabetical order within Colorado Counties (1 = Adams, 2 = Alamosa, . . . , 62 = Weld, 63 = Yuma, 64 = Broomfield)
+county_name | Text String | Name of County
 round_number | Integer | Round of the audit
 ballot_sequence | List of Integers | List of the internal database ids of the cast vote records presented to the Audit Board for review in the given County in the given round of the audit
 audit_subsequence | List of Integers | List of the internal database ids of the portion of the random sequence (with duplicates) included in the given round in the given County.
@@ -219,17 +219,17 @@ member  | Text String | Name of audit board member
 sign_in_time | Timestamp |  Beginning of an audit board member's RLA Tool session
 sign_out_time  | Timestamp |  End of the given session for the given audit board member
 
-#### compare_manifest_cvr
+#### batch_count_comparison
  Field | Type | _______________Meaning_______________ 
 --- | --- | ---
-county_id | Integer | Number of county in (mostly) alphabetical order within Colorado Counties  (1 = Adams, 2 = Alamosa, . . . , 62 = Weld, 63 = Yuma, 64 = Broomfield)
+county_name | Text String | Name of County
 scanner_id | Integer | the identification number of a scanner used to create the cast vote record from the physical ballot card
 batch_id | Integer | The identification number of a batch of ballot cards scanned by the given scanner
 count_per_manifest | Integer | The number of ballot cards in the given batch on the given scanner,
 according to the ballot manifest file uploaded by the County
 count_per_cvr_file | Integer | The number of ballot cards in the given batch on the given scanner,
 according to the cast-vote-record file export from the voting computer, uploaded by the County
-difference | Integer | The difference between the two counts, which will be zero for a correctly tabulated election
+difference | Integer | The difference between the two counts, which will be zero for a correctly tabulated election. If positive, there are ballots listed in the manifest that are not found in the CVR file; if negative, there are ballots in the CVR file that are not listed in the manifest.
 
 
 
