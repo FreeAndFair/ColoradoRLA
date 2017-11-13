@@ -57,7 +57,7 @@ ballot card counts provided will therefore not match turnout figures reported el
 --- | --- | ---
 county_name | Text String | Name of County
 contest_name | Text String | Name of contest  
- imprinted_id | Text String | Combination of scanner, batch and record ids  that uniquely identifies the ballot card  and may be imprinted on the card when the ballot is scanned
+ imprinted_id | Text String | Combination of scanner number, batch number and position within batch  that uniquely identifies the ballot card  and may be imprinted on the card when the ballot is scanned
  ballot_type | Text String | BallotType from Dominion CVR export file, a code for the set of contests that  should be present on the physical ballot card. Often known as _ballot style_.
  duplicates_in_random_sequence | Integer | Number of times that a discrepancy between the cast vote record with the given imprinted id and the audit board interpretation has been counted toward the risk level
  choices_per_voting_computer | List of Text Strings | List of voter choices in the given contest on the given ballot card, as interpreted by the vote-tabulation computer system (note: overvotes recorded as blank votes)
@@ -189,7 +189,7 @@ current_audit_type | Text String | Comparison audit, ballot polling audit or han
 --- | --- | ---
 county_name | Text String | Name of County
 contest_name | Text String | Name of contest  
- imprinted_id | Text String | Combination of scanner, batch and record ids  that uniquely identifies the ballot card  and may be imprinted on the card when the ballot is scanned
+ imprinted_id | Text String | Combination of scanner number, batch number and position within batch  that uniquely identifies the ballot card  and may be imprinted on the card when the ballot is scanned
  ballot_type | Text String | BallotType from Dominion CVR export file, a code for the set of contests that  should be present on the physical ballot card. Often known as _ballot style_.
  duplicates_in_random_sequence | Integer | Number of times that a discrepancy between the cast vote record with the given imprinted id and the audit board interpretation has been counted toward the risk level
  choices_per_voting_computer | List of Text Strings | List of voter choices in the given contest on the given ballot card, as interpreted by the vote-tabulation computer system (note: overvotes recorded as blank votes)
@@ -200,6 +200,16 @@ contest_name | Text String | Name of contest
  cvr_id | Integer | Internal database id for the cast vote record
 
 
+#### sequence_subsequence
+
+ Field | Type | _______________Meaning_______________
+--- | --- | ---
+county_id | Integer | Number of county in (mostly) alphabetical order within Colorado Counties (1 = Adams, 2 = Alamosa, . . . , 62 = Weld, 63 = Yuma, 64 = Broomfield)
+round_number | Integer | Round of the audit
+ballot_sequence | List of Integers | List of the internal database ids of the cast vote records presented to the Audit Board for review in the given County in the given round of the audit
+audit_subsequence | List of Integers | List of the internal database ids of the portion of the random sequence (with duplicates) included in the given round in the given County.
+
+
 #### auditboards
 
  Field | Type | _______________Meaning_______________ 
@@ -208,6 +218,21 @@ county_name | Text String | Name of County
 member  | Text String | Name of audit board member
 sign_in_time | Timestamp |  Beginning of an audit board member's RLA Tool session
 sign_out_time  | Timestamp |  End of the given session for the given audit board member
+
+#### compare_manifest_cvr
+ Field | Type | _______________Meaning_______________ 
+--- | --- | ---
+county_id | Integer | Number of county in (mostly) alphabetical order within Colorado Counties  (1 = Adams, 2 = Alamosa, . . . , 62 = Weld, 63 = Yuma, 64 = Broomfield)
+scanner_id | Integer | the identification number of a scanner used to create the cast vote record from the physical ballot card
+batch_id | Integer | The identification number of a batch of ballot cards scanned by the given scanner
+count_per_manifest | Integer | The number of ballot cards in the given batch on the given scanner,
+according to the ballot manifest file uploaded by the County
+count_per_cvr_file | Integer | The number of ballot cards in the given batch on the given scanner,
+according to the cast-vote-record file export from the voting computer, uploaded by the County
+difference | Integer | The difference between the two counts, which will be zero for a correctly tabulated election
+
+
+
 
 #### prefix_length
 
