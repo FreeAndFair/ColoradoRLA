@@ -9,7 +9,11 @@ import counties from 'corla/data/counties';
 import Nav from '../Nav';
 
 
-const Breadcrumb = ({ contest }: any) => (
+interface BreadcrumbProps {
+    contest: Contest;
+}
+
+const Breadcrumb = ({ contest }: BreadcrumbProps) => (
     <ul className='pt-breadcrumbs'>
         <li>
             <Link to='/sos'>
@@ -33,8 +37,14 @@ const Breadcrumb = ({ contest }: any) => (
     </ul>
 );
 
-const ContestChoices = ({ contest }: any) => {
-    const choiceItems = _.map(contest.choices, (c: any, k: any) => (
+interface ChoicesProps {
+    contest: Contest;
+}
+
+const ContestChoices = (props: ChoicesProps) => {
+    const { contest } = props;
+
+    const choiceItems = _.map(contest.choices, (c, k) => (
         <li key={ k }>{ c.name }</li>
     ));
 
@@ -46,10 +56,14 @@ const ContestChoices = ({ contest }: any) => {
     );
 };
 
-const ContestDetailPage = (props: any) => {
+interface PageProps {
+    contest: Contest;
+}
+
+const ContestDetailPage = (props: PageProps) => {
     const { contest } = props;
 
-    const row = (k: any, v: any) => (
+    const row = (k: string, v: (number | string)) => (
         <tr key={ k } >
             <td><strong>{ k }</strong></td>
             <td>{ v }</td>

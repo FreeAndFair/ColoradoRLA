@@ -3,13 +3,20 @@ import * as React from 'react';
 import * as _ from 'lodash';
 
 import BackButton from './BackButton';
+import SubmittingACVR from './SubmittingACVR';
 
 
-const BallotContestReview = ({ contest, marks }: any) => {
+interface BallotContestReviewProps {
+    contest: Contest;
+    marks: County.ACVRContest;
+}
+
+const BallotContestReview = (props: BallotContestReviewProps) => {
+    const { contest, marks } = props;
     const { comments, noConsensus } = marks;
     const { votesAllowed } = contest;
 
-    const markedChoices: any = _.pickBy(marks.choices);
+    const markedChoices: County.ACVRChoices = _.pickBy(marks.choices);
     const votesMarked = _.size(markedChoices);
 
     const noConsensusDiv = (
@@ -24,7 +31,7 @@ const BallotContestReview = ({ contest, marks }: any) => {
         </div>
     );
 
-    const markedChoiceDivs = _.map(markedChoices, (_: any, name: any) => {
+    const markedChoiceDivs = _.map(markedChoices, (_, name) => {
         return (
             <div key={ name } className='pt-card'>
                 <div>{ name }</div>
@@ -66,9 +73,16 @@ const BallotContestReview = ({ contest, marks }: any) => {
     );
 };
 
-const BallotReview = ({ county, marks }: any) => {
-    const contestReviews = _.map(marks, (m: any, contestId: any) => {
-        const contest = county.contestDefs[contestId];
+interface BallotReviewProps {
+    countyState: County.AppState;
+    marks: County.ACVR;
+}
+
+const BallotReview = (props: BallotReviewProps) => {
+    const { countyState, marks } = props;
+
+    const contestReviews = _.map(marks, (m, contestId) => {
+        const contest = countyState.contestDefs![contestId];
 
         return (
             <BallotContestReview
@@ -82,9 +96,18 @@ const BallotReview = ({ county, marks }: any) => {
     return <div className='pt-card'>{ contestReviews }</div>;
 };
 
-const ReviewStage = (props: any) => {
+interface ReviewStageProps {
+    countyState: County.AppState;
+    currentBallot: County.CurrentBallot;
+    marks: County.ACVR;
+    nextStage: OnClick;
+    prevStage: OnClick;
+    uploadAcvr: OnClick;
+}
+
+const ReviewStage = (props: ReviewStageProps) => {
     const {
-        county,
+        countyState,
         currentBallot,
         marks,
         nextStage,
@@ -92,16 +115,24 @@ const ReviewStage = (props: any) => {
         uploadAcvr,
     } = props;
 
-    const onClick = () => {
-        const m = county.acvrs[currentBallot.id];
+    async function onClick() {
+        const m = countyState!.acvrs![currentBallot.id];
 
-        uploadAcvr(m, currentBallot);
-        nextStage();
-    };
+        try {
+            await uploadAcvr(m, currentBallot);
+            nextStage();
+        } catch {
+            // Failed to submit. Let saga machinery alert user.
+        }
+    }
+
+    if (currentBallot.submitted) {
+        return <SubmittingACVR />;
+    }
 
     return (
         <div className='rla-page'>
-            <BallotReview county={ county } marks={ marks } />
+            <BallotReview countyState={ countyState } marks={ marks } />
             <div className='pt-card'>
                 <BackButton back={ prevStage } />
                 <button className='pt-button pt-intent-primary' onClick={ onClick }>

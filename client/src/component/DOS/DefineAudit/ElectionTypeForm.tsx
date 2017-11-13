@@ -8,14 +8,18 @@ import * as format from 'corla/format';
 const ELECTION_TYPES: ElectionType[] =
     ['coordinated', 'primary', 'general', 'recall'];
 
-interface FormState {
-    type: ElectionType;
+interface FormProps {
+    forms: DOS.Form.AuditDef.Forms;
+    setFormValid: OnClick;
 }
 
+interface FormState {
+    type?: ElectionType;
+}
 
-class ElectionTypeForm extends React.Component<any, FormState> {
+class ElectionTypeForm extends React.Component<FormProps, FormState> {
     public state: FormState = {
-        type: null,
+        type: undefined,
     };
 
     public render() {

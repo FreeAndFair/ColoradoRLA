@@ -7,7 +7,14 @@ import BallotListStage from './BallotListStage';
 import countyInfo from 'corla/selector/county/countyInfo';
 
 
-class BallotListStageContainer extends React.Component<any, any> {
+interface ContainerProps {
+    countyInfo: CountyInfo;
+    countyState: County.AppState;
+    cvrsToAudit: JSON.CVR[];
+    nextStage: OnClick;
+}
+
+class BallotListStageContainer extends React.Component<ContainerProps> {
     public render() {
         const props = { ...this.props };
 
@@ -19,15 +26,13 @@ class BallotListStageContainer extends React.Component<any, any> {
     }
 }
 
-const mapStateToProps = (state: any) => {
-    const { county } = state;
-
+function select(countyState: County.AppState) {
     return {
-        county,
-        countyInfo: countyInfo(state),
-        cvrsToAudit: county.cvrsToAudit,
+        countyInfo: countyInfo(countyState),
+        countyState,
+        cvrsToAudit: countyState.cvrsToAudit,
     };
-};
+}
 
 
-export default connect(mapStateToProps)(BallotListStageContainer);
+export default connect(select)(BallotListStageContainer);

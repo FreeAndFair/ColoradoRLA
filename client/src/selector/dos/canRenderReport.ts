@@ -9,10 +9,8 @@ const REPORT_STATES = [
     'AUDIT_RESULTS_PUBLISHED',
 ];
 
-function canRenderReport(state: any) {
-    const currentState = _.get(state, 'sos.asm.currentState');
-
-    return _.includes(REPORT_STATES, currentState);
+function canRenderReport(state: DOS.AppState): boolean {
+    return _.includes(REPORT_STATES, state.asm);
 }
 
 

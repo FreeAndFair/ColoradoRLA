@@ -71,7 +71,7 @@ public class AuditBoardSignOut extends AbstractAuditBoardDashboardEndpoint {
   @Override
   // false positive about inner class declaration
   @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
-  public String endpoint(final Request the_request,
+  public String endpointBody(final Request the_request,
                          final Response the_response) {
     try {
       final County county = Main.authentication().authenticatedCounty(the_request); 

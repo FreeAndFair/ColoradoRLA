@@ -197,28 +197,31 @@ public final class Persistence {
       
       // C3P0 connection pooling
       settings.put(Environment.C3P0_MIN_SIZE, 
-                   system_properties.getProperty("hibernate.c3p0.min_size", ""));
+                   system_properties.getProperty("hibernate.c3p0.min_size", "20"));
       settings.put(Environment.C3P0_MAX_SIZE, 
-                   system_properties.getProperty("hibernate.c3p0.max_size", ""));
+                   system_properties.getProperty("hibernate.c3p0.max_size", "20"));
       settings.put(Environment.C3P0_IDLE_TEST_PERIOD,
-                   system_properties.getProperty("hibernate.c3p0.idle_test_period", ""));
+                   system_properties.getProperty("hibernate.c3p0.idle_test_period", "0"));
       settings.put(Environment.C3P0_MAX_STATEMENTS, 
-                   system_properties.getProperty("hibernate.c3p0.max_statements", ""));
+                   system_properties.getProperty("hibernate.c3p0.max_statements", "0"));
       settings.put(Environment.C3P0_TIMEOUT, 
-                   system_properties.getProperty("hibernate.c3p0.timeout", ""));
+                   system_properties.getProperty("hibernate.c3p0.timeout", "300"));
+      settings.put("hibernate.c3p0.numHelperThreads", 
+                   system_properties.getProperty("hibernate.c3p0.numHelperThreads", "3"));
       settings.put("hibernate.c3p0.privilegeSpawnedThreads", TRUE);
       settings.put("hibernate.c3p0.contextClassLoaderSource", "none");
+      
       // automatic schema generation
       settings.put(Environment.HBM2DDL_AUTO, 
                    system_properties.getProperty("hibernate.hbm2ddl.auto", ""));
       
       // sql debugging
       settings.put(Environment.SHOW_SQL, 
-                   system_properties.getProperty("hibernate.show_sql", ""));
+                   system_properties.getProperty("hibernate.show_sql", FALSE));
       settings.put(Environment.FORMAT_SQL, 
-                   system_properties.getProperty("hibernate.format_sql", ""));
+                   system_properties.getProperty("hibernate.format_sql", FALSE));
       settings.put(Environment.USE_SQL_COMMENTS, 
-                   system_properties.getProperty("hibernate.use_sql_comments", ""));
+                   system_properties.getProperty("hibernate.use_sql_comments", FALSE));
       
       // table and column naming
       settings.put(Environment.PHYSICAL_NAMING_STRATEGY, 

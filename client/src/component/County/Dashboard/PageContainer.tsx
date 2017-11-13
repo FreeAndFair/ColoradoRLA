@@ -1,5 +1,8 @@
 import * as React from 'react';
 
+import { History } from 'history';
+
+import withCountyState from 'corla/component/withCountyState';
 import withPoll from 'corla/component/withPoll';
 
 import counties from 'corla/data/counties';
@@ -20,7 +23,22 @@ import currentRoundNumberSelector from 'corla/selector/county/currentRoundNumber
 import missedDeadlineSelector from 'corla/selector/county/missedDeadline';
 
 
-class CountyDashboardContainer extends React.Component<any, any> {
+interface DashboardProps {
+    allRoundsComplete: boolean;
+    auditBoardSignedIn: boolean;
+    auditComplete: boolean;
+    auditStarted: boolean;
+    canAudit: boolean;
+    canRenderReport: boolean;
+    canSignIn: boolean;
+    contests: County.ContestDefs;
+    countyState: County.AppState;
+    currentRoundNumber: number;
+    history: History;
+    missedDeadline: boolean;
+}
+
+class CountyDashboardContainer extends React.Component<DashboardProps> {
     public render() {
         const {
             allRoundsComplete,
@@ -28,20 +46,24 @@ class CountyDashboardContainer extends React.Component<any, any> {
             canAudit,
             canRenderReport,
             canSignIn,
-            county,
+            countyState,
             history,
             missedDeadline,
         } = this.props;
 
-        if (!county) {
+        if (!countyState) {
             return <div />;
         }
 
         if (missedDeadline) {
-            return <MissedDeadlinePage county={ county } />;
+            return <MissedDeadlinePage />;
         }
 
-        const countyInfo = county.id ? counties[county.id] : {};
+        if (!countyState.id) {
+            return <div />;
+        }
+
+        const countyInfo = counties[countyState.id];
         const boardSignIn = () => history.push('/county/board');
         const startAudit = () => history.push('/county/audit');
 
@@ -62,32 +84,26 @@ class CountyDashboardContainer extends React.Component<any, any> {
     }
 }
 
-const select = (state: any) => {
-    const { county } = state;
-
-    if (!county) {
-        return {};
-    }
-
-    const { contestDefs } = county;
+function select(countyState: County.AppState) {
+    const { contestDefs } = countyState;
 
     return {
-        allRoundsComplete: allRoundsCompleteSelector(state),
-        auditBoardSignedIn: auditBoardSignedInSelector(state),
-        auditComplete: auditCompleteSelector(state),
-        auditStarted: auditStartedSelector(state),
-        canAudit: canAuditSelector(state),
-        canRenderReport: canRenderReportSelector(state),
-        canSignIn: canSignInSelector(state),
+        allRoundsComplete: allRoundsCompleteSelector(countyState),
+        auditBoardSignedIn: auditBoardSignedInSelector(countyState),
+        auditComplete: auditCompleteSelector(countyState),
+        auditStarted: auditStartedSelector(countyState),
+        canAudit: canAuditSelector(countyState),
+        canRenderReport: canRenderReportSelector(countyState),
+        canSignIn: canSignInSelector(countyState),
         contests: contestDefs,
-        county,
-        currentRoundNumber: currentRoundNumberSelector(state),
-        missedDeadline: missedDeadlineSelector(state),
+        countyState,
+        currentRoundNumber: currentRoundNumberSelector(countyState),
+        missedDeadline: missedDeadlineSelector(countyState),
     };
-};
+}
 
 export default withPoll(
-    CountyDashboardContainer,
+    withCountyState(CountyDashboardContainer),
     'COUNTY_DASHBOARD_POLL_START',
     'COUNTY_DASHBOARD_POLL_STOP',
     select,

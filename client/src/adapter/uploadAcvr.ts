@@ -1,40 +1,18 @@
 import * as _ from 'lodash';
 
 
-interface ContestInfo {
-    choices: string[];
-    contest: number;
-    consensus: string;
-}
+const formatContestInfo = (mark: County.ACVRContest, contestId: number): JSON.ContestInfo => {
+    const markedChoices: County.ACVRChoices = _.pickBy(mark.choices);
+    const choices = _.map(markedChoices, (_, name) => name);
 
-interface Acvr {
-    audit_cvr: {
-        ballot_type: string;
-        batch_id: string;
-        contest_info: ContestInfo[];
-        county_id: number;
-        cvr_number: number;
-        id: number;
-        imprinted_id: string;
-        record_id: string;
-        record_type: string;
-        scanner_id: string;
-        timestamp: Date;
-    };
-    cvr_id: number;
-}
-
-const formatContestInfo = (mark: any, contestId: any): ContestInfo => {
-    const markedChoices: any = _.pickBy(mark.choices);
-    const choices = _.map(markedChoices, (_, name: any) => name);
-
+    const comment = mark.comments;
     const consensus = mark.noConsensus ? 'NO' : 'YES';
 
-    return { choices, consensus, contest: contestId };
+    return { choices, comment, consensus, contest: contestId };
 };
 
 
-export const format = (marks: any, cvr: any): Acvr => ({
+export const format = (marks: County.ACVR, cvr: CVR): JSON.ACVR => ({
     audit_cvr: {
         ballot_type: cvr.ballotType,
         batch_id: cvr.batchId,

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Redirect } from 'react-router-dom';
 
+import withCountyState from 'corla/component/withCountyState';
 import withPoll from 'corla/component/withPoll';
 
 import EndOfRoundPageContainer from './EndOfRound/PageContainer';
@@ -14,7 +15,13 @@ import canAuditSelector from 'corla/selector/county/canAudit';
 import roundInProgressSelector from 'corla/selector/county/roundInProgress';
 
 
-class CountyAuditContainer extends React.Component<any, any> {
+interface ContainerProps {
+    auditComplete: boolean;
+    canAudit: boolean;
+    showEndOfRoundPage: boolean;
+}
+
+class CountyAuditContainer extends React.Component<ContainerProps> {
     public render() {
         if (this.props.auditComplete) {
             notice.ok('The audit is complete.');
@@ -34,20 +41,20 @@ class CountyAuditContainer extends React.Component<any, any> {
     }
 }
 
-const select = (state: any) => {
-    const showEndOfRoundPage = allRoundsCompleteSelector(state)
-                            || !roundInProgressSelector(state);
+function select(countyState: County.AppState) {
+    const showEndOfRoundPage = allRoundsCompleteSelector(countyState)
+                            || !roundInProgressSelector(countyState);
 
     return {
-        auditComplete: auditCompleteSelector(state),
-        canAudit: canAuditSelector(state),
+        auditComplete: auditCompleteSelector(countyState),
+        canAudit: canAuditSelector(countyState),
         showEndOfRoundPage,
     };
-};
+}
 
 
 export default withPoll(
-    CountyAuditContainer,
+    withCountyState(CountyAuditContainer),
     'COUNTY_AUDIT_POLL_START',
     'COUNTY_AUDIT_POLL_STOP',
     select,

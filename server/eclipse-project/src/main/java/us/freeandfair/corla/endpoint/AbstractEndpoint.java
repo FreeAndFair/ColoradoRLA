@@ -19,9 +19,12 @@ import java.util.List;
 
 import javax.persistence.PersistenceException;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Level;
 import org.eclipse.jetty.http.HttpStatus;
+import org.hibernate.HibernateException;
 
+import spark.HaltException;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
@@ -37,6 +40,7 @@ import us.freeandfair.corla.model.LogEntry;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.LogEntryQueries;
 import us.freeandfair.corla.util.SuppressFBWarnings;
+
 /**
  * Basic behaviors that span all endpoints. In particular, standard exceptional
  * behavior with regards to cross-cutting concerns like authentication or
@@ -373,6 +377,7 @@ public abstract class AbstractEndpoint implements Endpoint {
   
   /**
    * Indicate that the endpoint action failed due to a transaction failure.
+   * Unlike other error responses, this one does _not_ halt the connection.
    * 
    * @param the_response The HTTP response.
    * @param the_body The body of the HTTP response.
@@ -430,6 +435,56 @@ public abstract class AbstractEndpoint implements Endpoint {
     // Load and check the ASM
     loadAndCheckASM(the_request, the_response);
   } 
+  
+  /**
+   * The main body of the endpoint. This method wraps an execution of the
+   * endpointBody() method of a child class in a way such that unexpected
+   * exceptions will be properly logged rather than causing thread deaths.
+   * 
+   * @param the_request The request.
+   * @param the_response The response.
+   * @return the result of the endpoint execution.
+   */
+  // these exception warnings are suppressed because this method is, exactly,
+  // attempting to suppress and log all non-Error exceptions other than 
+  // HaltException
+  @SuppressWarnings({"PMD.AvoidCatchingGenericException", "PMD.AvoidRethrowingException"})
+  public final String endpoint(final Request the_request, final Response the_response) {
+    String result = null;
+    
+    try {
+      result = endpointBody(the_request, the_response);
+    } catch (final HaltException e) {
+      // a HaltException should just be propagated, as that is an expected exception
+      // that is properly dealt with by Spark
+      throw e;
+    } catch (final HibernateException e) {
+      // a Hibernate exception is treated like a transaction failure
+      Main.LOGGER.error("JDBC error in endpoint " + endpointName() + ":\n" + 
+                        ExceptionUtils.getStackTrace(e));
+      transactionFailure(the_response, e.toString());
+      // must manually halt after a transaction failure
+      halt(the_response);
+    } catch (final Exception e) {
+      // some exception occurred that was not handled within the endpoint, so
+      // handle it as a generic server error and log the stack trace
+      Main.LOGGER.error("uncaught exception in endpoint " + endpointName() + ":\n" + 
+                        ExceptionUtils.getStackTrace(e));
+      serverError(the_response, e.toString());
+      // the server error halts processing
+    }
+    
+    return result;
+  }
+  
+  /**
+   * The main body of the endpoint to be executed in child classes.
+   * 
+   * @param the_request The request
+   * @param the_response The response.
+   * @return the result of the endpoint execution.
+   */
+  protected abstract String endpointBody(Request the_request, Response the_response);
   
   /**
    * The after filter for this endpoint. Currently, the implementation is empty.

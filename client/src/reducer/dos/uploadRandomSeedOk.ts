@@ -1,7 +1,10 @@
-export default (state: any, action: any) => {
+export default function uploadRandomSeedOk(
+    state: DOS.AppState,
+    action: Action.UploadRandomSeedOk,
+): DOS.AppState {
     const nextState = { ...state };
 
-    nextState.sos.seed = action.data.sent.seed;
+    nextState.seed = action.data.sent.seed;
 
     return nextState;
-};
+}

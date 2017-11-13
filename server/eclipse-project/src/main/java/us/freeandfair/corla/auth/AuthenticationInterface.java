@@ -29,6 +29,8 @@ import us.freeandfair.corla.model.County;
  * @author Joseph R. Kiniry <kiniry@freeandfair.us>
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 1.0.0
+ * @todo Add a model for authentication to make the specifications herein much
+ * more clear.
  */
 public interface AuthenticationInterface {
   /**
@@ -118,6 +120,12 @@ public interface AuthenticationInterface {
    */
   //@ requires 0 < the_username.length();
   //@ requires the_second_factor != null;
+  //@ ensures (* If the_second_factor is a correct response to the challenge 
+  //@            returned in the AuthenticateResult from the immediately preceding
+  //@            successful traditionalAuthenticate call for the_username, then 
+  //@            secondFactorAuthenticate(the_request) holds and a true is returned;
+  //@            otherwise, a false is returned and 
+  //@            secondFactorAuthenticated(the_request) will be false. *);
   boolean secondFactorAuthenticate(Request the_request,
                                    String the_username,
                                    String the_second_factor);
@@ -132,8 +140,9 @@ public interface AuthenticationInterface {
 
   /**
    * @trace authentication.traditional_authenticate
-   * @return true iff traditional authentication with credential pair 
-   * (username, password) succeeds.
+   * @return an AuthenticationResult with a positive success() and a second factor 
+   * challenge() if traditional authentication with credential pair 
+   * (username, password) succeeds; a negative success() otherwise.
    * @param the_request The request.
    * @param the_response The response.
    * @param the_username the username of the person to attempt to authenticate.
@@ -141,6 +150,10 @@ public interface AuthenticationInterface {
    */
   //@ requires 0 < the_username.length();
   //@ requires the_password != null;
+  //@ ensures (* If the provided credentials are correct, then 
+  //@            traditionalAuthenticate(the_request) holds and the returned
+  //@            AuthenticationResult will contain a second factor challenge and
+  //@            will claim success. *);
   AuthenticationResult traditionalAuthenticate(Request the_request,
                                                Response the_response,
                                                String the_username, 
@@ -167,8 +180,8 @@ public interface AuthenticationInterface {
    * @param the_type the type of the administrator.
    */
   boolean authenticatedAs(Request the_request,
-                            AdministratorType the_type,
-                            String the_username);
+                          AdministratorType the_type,
+                          String the_username);
      
   /**
    * @return true iff the session is authenticated with a second factor
@@ -234,7 +247,7 @@ public interface AuthenticationInterface {
   AuthenticationStatus authenticationStatus(Request the_request);
   
   /**
-   * Gets the authenticated username
+   * Gets the authenticated username.
    */
   /**
    * @return the submitted credentials associated with any request.

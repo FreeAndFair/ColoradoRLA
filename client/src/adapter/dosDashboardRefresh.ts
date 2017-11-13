@@ -25,7 +25,7 @@ function parseRounds(rounds: any[]) {
     return rounds.map(parseRound);
 }
 
-function parseDisagreementCount(data: any): number {
+function parseDisagreementCount(data: any): Option<number> {
     if (_.isEmpty(data)) {
         return null;
     }
@@ -66,7 +66,7 @@ function parseCountyStatus(countyStatus: any) {
         result[c.id] = {
             asmState: c.asm_state,
             auditBoard: parseAuditBoard(c.audit_board),
-            auditBoardAsmState: c.audit_board_asm_state,
+            auditBoardASMState: c.audit_board_asm_state,
             auditedBallotCount: c.audited_ballot_count,
             ballotManifest: parseFile(c.ballot_manifest_file),
             ballotsRemainingInRound: c.ballots_remaining_in_round,
@@ -109,7 +109,7 @@ function parseElection(data: any): any {
     };
 }
 
-function parsePublicMeetingDate(data: any): Date {
+function parsePublicMeetingDate(data: any): Option<Date> {
     if (!_.has(data, 'audit_info.public_meeting_date')) {
         return null;
     }
@@ -119,7 +119,7 @@ function parsePublicMeetingDate(data: any): Date {
     return new Date(date);
 }
 
-function parseRiskLimit(data: any): number {
+function parseRiskLimit(data: any): Option<number> {
     const info = data.audit_info;
 
     if (!info) {
@@ -129,8 +129,8 @@ function parseRiskLimit(data: any): number {
     return info.risk_limit;
 }
 
-function parseAsmState(data: any): any {
-    return { currentState: data.asm_state };
+function parseASMState(data: any): any {
+    return data.asm_state;
 }
 
 function parseMember(member: any): any {
@@ -155,18 +155,19 @@ function parseAuditBoard(data: any): any {
     };
 }
 
-export const parse = (data: any) => ({
-    asm: parseAsmState(data),
-    auditReasons: data.audit_reasons,
-    auditStage: data.audit_stage,
-    auditTypes: data.audit_types,
-    auditedContests: parseAuditedContests(data.audited_contests),
-    countyStatus: parseCountyStatus(data.county_status),
-    discrepancyCounts: data.discrepancy_count,
-    election: parseElection(data),
-    estimatedBallotsToAudit: data.estimated_ballots_to_audit,
-    handCountContests: data.hand_count_contests,
-    publicMeetingDate: parsePublicMeetingDate(data),
-    riskLimit: parseRiskLimit(data),
-    seed: _.get(data, 'audit_info.seed'),
-});
+export function parse(data: any) {
+    return {
+        asm: parseASMState(data),
+        auditReasons: data.audit_reasons,
+        auditTypes: data.audit_types,
+        auditedContests: parseAuditedContests(data.audited_contests),
+        countyStatus: parseCountyStatus(data.county_status),
+        discrepancyCounts: data.discrepancy_count,
+        election: parseElection(data),
+        estimatedBallotsToAudit: data.estimated_ballots_to_audit,
+        handCountContests: data.hand_count_contests,
+        publicMeetingDate: parsePublicMeetingDate(data),
+        riskLimit: parseRiskLimit(data),
+        seed: _.get(data, 'audit_info.seed'),
+    };
+}

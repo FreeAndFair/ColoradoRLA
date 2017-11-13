@@ -5,14 +5,15 @@ import { connect } from 'react-redux';
 import action from 'corla/action';
 
 
-function withPoll(
-    Wrapped: any,
+function withSync<P, SelectP, BindP, BindS>(
+    Wrapped: React.ComponentType<P>,
     didMount: string,
-    select: (state: any) => any,
-    bind?: (dispatch: any) => any,
-
+    select: Select<SelectP>,
+    bind?: Bind<BindP, BindS>,
 ) {
-    class Wrapper extends React.Component<any, any> {
+    type Props = P & SelectP & BindP;
+
+    class Wrapper extends React.Component<Props> {
         public componentDidMount() {
             action(didMount);
         }
@@ -22,8 +23,12 @@ function withPoll(
         }
     }
 
-    return connect(select, bind)(Wrapper);
+    if (bind) {
+        return connect(select, bind)(Wrapper);
+    } else {
+        return connect(select)(Wrapper);
+    }
 }
 
 
-export default withPoll;
+export default withSync;

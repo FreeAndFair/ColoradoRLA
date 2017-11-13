@@ -35,7 +35,11 @@ function round(val: number, digits: number) {
     return Math.round(val * factor) / factor;
 }
 
-const ReadonlyRiskLimit = ({ riskLimit }: any) => {
+interface ReadOnlyRiskLimitProps {
+    riskLimit: number;
+}
+
+const ReadonlyRiskLimit = ({ riskLimit }: ReadOnlyRiskLimitProps) => {
     const riskLimitPercent = round(riskLimit * 100, 2);
 
     return (
@@ -46,7 +50,11 @@ const ReadonlyRiskLimit = ({ riskLimit }: any) => {
     );
 };
 
-const NextButton = (props: any) => {
+interface NextButtonProps {
+    nextPage: OnClick;
+}
+
+const NextButton = (props: NextButtonProps) => {
     const { nextPage } = props;
 
     return (
@@ -56,13 +64,28 @@ const NextButton = (props: any) => {
     );
 };
 
-const SaveButton = (props: any) => {
+interface SaveButtonProps {
+    disabled: boolean;
+    forms: DOS.Form.AuditDef.Forms;
+}
+
+const SaveButton = (props: SaveButtonProps) => {
     const { disabled, forms } = props;
 
     const buttonClick = () => {
+        if (!forms.electionDateForm) { return; }
+        if (!forms.electionTypeForm) { return; }
+        if (!forms.publicMeetingDateForm) { return; }
+
+        if (!forms.electionDateForm.date) { return; }
+        if (!forms.electionTypeForm.type) { return; }
+        if (!forms.publicMeetingDateForm.date) { return; }
+
         const electionDate = corlaDate.parse(forms.electionDateForm.date);
         const { type } = forms.electionTypeForm;
         const publicMeetingDate = corlaDate.parse(forms.publicMeetingDateForm.date);
+
+        if (!forms.riskLimit) { return; }
         const riskLimit = forms.riskLimit.comparisonLimit;
 
         setAuditInfo({
@@ -85,7 +108,14 @@ const SaveButton = (props: any) => {
     );
 };
 
-const ReadOnlyPage = (props: any) => {
+interface ReadOnlyPageProps {
+    election: Election;
+    nextPage: OnClick;
+    publicMeetingDate: Date;
+    riskLimit: number;
+}
+
+const ReadOnlyPage = (props: ReadOnlyPageProps) => {
     const { election, nextPage, riskLimit } = props;
 
     const electionDate = corlaDate.format(election.date);
@@ -117,7 +147,16 @@ const ReadOnlyPage = (props: any) => {
     );
 };
 
-const AuditPage = (props: any) => {
+interface PageProps {
+    election: Election;
+    formValid: boolean;
+    nextPage: OnClick;
+    publicMeetingDate: Date;
+    riskLimit: number;
+    setFormValid: OnClick;
+}
+
+const AuditPage = (props: PageProps) => {
     const {
         election,
         formValid,
@@ -142,7 +181,7 @@ const AuditPage = (props: any) => {
         );
     }
 
-    const forms: any = {};
+    const forms: DOS.Form.AuditDef.Forms = {};
 
     const disableButton = !formValid;
 
@@ -181,8 +220,7 @@ const AuditPage = (props: any) => {
                 </div>
                 <SaveButton
                     disabled={ disableButton }
-                    forms={ forms}
-                    riskLimit={ riskLimit } />
+                    forms={ forms } />
             </div>
         </div>
     );

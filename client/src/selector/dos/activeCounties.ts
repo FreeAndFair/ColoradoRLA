@@ -3,22 +3,22 @@ import * as _ from 'lodash';
 import auditStarted from './auditStarted';
 
 
-function activeCounties(state: any): any[] {
-    const { sos } = state;
-    const { countyStatus } = sos;
-
+function activeCounties(state: DOS.AppState): DOS.CountyStatus[] {
     if (!auditStarted(state)) {
         return [];
     }
+
+    const { countyStatus } = state;
 
     if (!countyStatus) {
         return [];
     }
 
-    const deadlineMissed = (c: any) => c.asmState === 'DEADLINE_MISSED';
-    const complete = (c: any) => c.asmState === 'COUNTY_AUDIT_COMPLETE';
+    const deadlineMissed = (c: DOS.CountyStatus) => c.asmState === 'DEADLINE_MISSED';
+    const complete = (c: DOS.CountyStatus) => c.asmState === 'COUNTY_AUDIT_COMPLETE';
 
-    return _.reject(countyStatus, (c: any) => complete(c) || deadlineMissed(c));
+    const statuses = _.values(countyStatus);
+    return _.reject(statuses, c => complete(c) || deadlineMissed(c));
 }
 
 

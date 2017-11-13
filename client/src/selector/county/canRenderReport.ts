@@ -1,10 +1,8 @@
-function canRenderReport(state: any) {
-    const { currentState } = state.county.asm.county;
+function canRenderReport(state: County.AppState): boolean {
+    const asmState = state.asm.county;
 
-    if (!currentState) { return false; }
-
-    return currentState === 'COUNTY_AUDIT_UNDERWAY'
-        || currentState === 'COUNTY_AUDIT_COMPLETE';
+    return asmState === 'COUNTY_AUDIT_UNDERWAY'
+        || asmState === 'COUNTY_AUDIT_COMPLETE';
 }
 
 

@@ -1,15 +1,10 @@
 import * as _ from 'lodash';
 
 
-function allRoundsComplete(state: any): boolean {
-    const { county } = state;
-    const { currentState } = county.asm.county;
+function allRoundsComplete(state: County.AppState): boolean {
+    if (_.isEmpty(state.rounds)) { return false; }
 
-    if (!county.rounds || _.isEmpty(county.rounds)) {
-        return false;
-    }
-
-    const { currentRound } = county;
+    const { currentRound } = state;
 
     return !currentRound || _.isEmpty(currentRound);
 }

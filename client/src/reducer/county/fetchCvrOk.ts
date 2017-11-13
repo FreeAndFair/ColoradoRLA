@@ -1,7 +1,7 @@
 import { forEach, merge } from 'lodash';
 
 
-function createEmptyAcvr(cvr: any): any {
+function createEmptyAcvr(cvr: CVR): County.ACVR {
     const acvr: any = {};
 
     forEach(cvr.contestInfo, c => {
@@ -14,7 +14,7 @@ function createEmptyAcvr(cvr: any): any {
     return acvr;
 }
 
-const parse = (data: any, state: any) => ({
+const parse = (data: JSON.CVR, state: AppState): County.CurrentBallot => ({
     ballotType: data.ballot_type,
     batchId: data.batch_id,
     contestInfo: data.contest_info,
@@ -25,20 +25,22 @@ const parse = (data: any, state: any) => ({
     recordId: data.record_id,
     recordType: data.record_type,
     scannerId: data.scanner_id,
+    submitted: false,
 });
 
 
-export default (state: any, action: any) => {
+export default function fetchCvrOk(
+    state: County.AppState,
+    action: Action.CountyFetchCvrOk,
+): County.AppState {
     const nextState = merge({}, state);
 
-    const county = merge({}, state.county);
     const currentBallot = parse(action.data, state);
-    county.currentBallot = currentBallot;
+    nextState.currentBallot = currentBallot;
 
-    if (!county.acvrs[currentBallot.id]) {
-        county.acvrs[currentBallot.id] = createEmptyAcvr(currentBallot);
+    if (!nextState.acvrs[currentBallot.id]) {
+        nextState.acvrs[currentBallot.id] = createEmptyAcvr(currentBallot);
     }
-    nextState.county = county;
 
     return nextState;
-};
+}

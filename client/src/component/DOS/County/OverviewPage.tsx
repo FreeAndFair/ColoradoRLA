@@ -4,7 +4,9 @@ import { Link } from 'react-router-dom';
 
 import * as _ from 'lodash';
 
-import { formatCountyAsmState } from 'corla/format';
+import counties from 'corla/data/counties';
+
+import { formatCountyASMState } from 'corla/format';
 
 import Nav from '../Nav';
 
@@ -24,8 +26,15 @@ const Breadcrumb = () => (
     </ul>
 );
 
-const CountyTableRow = ({ county, status }: any) => {
-    const countyState = formatCountyAsmState(status.asmState);
+interface RowProps {
+    county: CountyInfo;
+    status: DOS.CountyStatus;
+}
+
+const CountyTableRow = (props: RowProps) => {
+    const { county, status } = props;
+
+    const countyState = formatCountyASMState(status.asmState);
     const submitted = status.auditedBallotCount;
 
     const auditedCount = _.get(status, 'discrepancyCount.audited') || '—';
@@ -46,8 +55,14 @@ const CountyTableRow = ({ county, status }: any) => {
     );
 };
 
-const CountyTable = ({ counties, countyStatus }: any) => {
-    const countyRows: any = _.map(counties, (c: any) => {
+interface TableProps {
+    countyStatus: DOS.CountyStatuses;
+}
+
+const CountyTable = (props: TableProps) => {
+    const { countyStatus } = props;
+
+    const countyRows = _.map(counties, c => {
         const status = countyStatus[c.id];
 
         if (!status) {
@@ -75,14 +90,18 @@ const CountyTable = ({ counties, countyStatus }: any) => {
     );
 };
 
-const CountyOverviewPage = (props: any) => {
-    const { counties, countyStatus } = props;
+interface PageProps {
+    countyStatus: DOS.CountyStatuses;
+}
+
+const CountyOverviewPage = (props: PageProps) => {
+    const { countyStatus } = props;
 
     return (
         <div>
             <Nav />
             <Breadcrumb />
-            <CountyTable counties={ counties } countyStatus={ countyStatus }/>
+            <CountyTable countyStatus={ countyStatus } />
         </div>
     );
 };

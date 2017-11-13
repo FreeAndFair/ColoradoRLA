@@ -39,8 +39,10 @@ public interface ASMEvent extends Event {
    * @trace asm.county_dashboard_event
    */
   enum CountyDashboardEvent implements ASMEvent {
-    UPLOAD_BALLOT_MANIFEST_EVENT, // public inbound event
-    UPLOAD_CVRS_EVENT, // public inbound event
+    IMPORT_BALLOT_MANIFEST_EVENT, // public inbound event
+    IMPORT_CVRS_EVENT, // public inbound event
+    CVR_IMPORT_SUCCESS_EVENT, // private internal event
+    CVR_IMPORT_FAILURE_EVENT, // private internal event
     COUNTY_START_AUDIT_EVENT, // private internal event
     COUNTY_AUDIT_COMPLETE_EVENT // private internal event
   }

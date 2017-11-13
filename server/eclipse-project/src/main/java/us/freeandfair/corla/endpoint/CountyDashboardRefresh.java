@@ -64,7 +64,7 @@ public class CountyDashboardRefresh extends AbstractCountyDashboardEndpoint {
    * @param the_response The response.
    */
   @Override
-  public String endpoint(final Request the_request, final Response the_response) {
+  public String endpointBody(final Request the_request, final Response the_response) {
     try {
       final County county = Main.authentication().authenticatedCounty(the_request);
           

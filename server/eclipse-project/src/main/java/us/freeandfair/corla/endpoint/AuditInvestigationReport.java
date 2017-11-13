@@ -71,7 +71,7 @@ public class AuditInvestigationReport extends AbstractAuditBoardDashboardEndpoin
    * Submit an audit investigation report.
    */
   @Override
-  public String endpoint(final Request the_request,
+  public String endpointBody(final Request the_request,
                          final Response the_response) {
     try {
       final AuditInvestigationReportInfo report =

@@ -9,7 +9,22 @@ import Info from './Info';
 import Main from './Main';
 
 
-const CountyDashboardPage = (props: any) => {
+interface PageProps {
+    auditBoardSignedIn: boolean;
+    auditComplete: boolean;
+    auditStarted: boolean;
+    boardSignIn: OnClick;
+    canAudit: boolean;
+    canRenderReport: boolean;
+    canSignIn: boolean;
+    contests: County.ContestDefs;
+    countyInfo: CountyInfo;
+    countyState: County.AppState;
+    currentRoundNumber: number;
+    startAudit: OnClick;
+}
+
+const CountyDashboardPage = (props: PageProps) => {
     const {
         auditBoardSignedIn,
         auditComplete,
@@ -19,13 +34,11 @@ const CountyDashboardPage = (props: any) => {
         canRenderReport,
         canSignIn,
         contests,
-        county,
         countyInfo,
+        countyState,
         currentRoundNumber,
         startAudit,
     } = props;
-
-    const info = { auditDate: county.startTimestamp };
 
     const auditButtonDisabled = !canAudit || auditComplete;
     const signInButtonDisabled = !canSignIn;
@@ -40,7 +53,7 @@ const CountyDashboardPage = (props: any) => {
                           auditBoardSignedIn={ auditBoardSignedIn }
                           boardSignIn={ boardSignIn }
                           canRenderReport={ canRenderReport }
-                          county={ county }
+                          countyState={ countyState }
                           currentRoundNumber={ currentRoundNumber }
                           auditButtonDisabled={ auditButtonDisabled }
                           name={ countyInfo.name }
@@ -48,7 +61,7 @@ const CountyDashboardPage = (props: any) => {
                           startAudit={ startAudit } />
                     <Info info={ countyInfo }
                           contests={ contests }
-                          county={ county }
+                          countyState={ countyState }
                           currentRoundNumber={ currentRoundNumber }/>
                 </div>
             </div>

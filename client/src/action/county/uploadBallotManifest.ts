@@ -1,12 +1,12 @@
 import action from 'corla/action';
-
 import { endpoint } from 'corla/config';
+import { empty } from 'corla/util';
 
 const importUrl = endpoint('import-ballot-manifest');
 const uploadUrl = endpoint('upload-file');
 
 
-function createFormData(file: Blob, hash: string) {
+function createFormData(file: Blob, hash: string): FormData {
     const formData = new FormData();
 
     formData.append('file', file);
@@ -15,8 +15,8 @@ function createFormData(file: Blob, hash: string) {
     return formData;
 }
 
-async function importBallotManifest(body: any) {
-    const init: any = {
+async function importBallotManifest(body: JSON.UploadBallotManifestOk) {
+    const init: RequestInit = {
         body: JSON.stringify(body),
         credentials: 'include',
         method: 'post',
@@ -27,7 +27,7 @@ async function importBallotManifest(body: any) {
 
         const r = await fetch(importUrl, init);
 
-        const received = await r.json();
+        const received = await r.json().catch(empty);
         const sent = body;
         const data = { received, sent };
 
@@ -47,7 +47,7 @@ async function importBallotManifest(body: any) {
 async function uploadBallotManifest(countyId: number, file: Blob, hash: string) {
     const formData = createFormData(file, hash);
 
-    const init: any = {
+    const init: RequestInit = {
         body: formData,
         credentials: 'include',
         method: 'post',
@@ -58,7 +58,7 @@ async function uploadBallotManifest(countyId: number, file: Blob, hash: string) 
 
         const r = await fetch(uploadUrl, init);
 
-        const received = await r.json();
+        const received = await r.json().catch(empty);
         const sent = { file, hash };
         const data = { received, sent };
 

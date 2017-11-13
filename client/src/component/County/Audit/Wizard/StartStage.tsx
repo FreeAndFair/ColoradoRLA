@@ -6,11 +6,25 @@ import * as corlaDate from 'corla/date';
 import * as format from 'corla/format';
 
 
-const StartStage = (props: any) => {
-    const { county, nextStage } = props;
-    const { election } = county;
+interface StageProps {
+    countyState: County.AppState;
+    nextStage: OnClick;
+}
 
-    const countyName = counties[county.id].name;
+const StartStage = (props: StageProps) => {
+    const { countyState, nextStage } = props;
+    const { election } = countyState;
+
+    if (!election) { return null; }
+
+    if (!countyState.id) { return null; }
+
+    // TODO: This should happen in a container or reducer.
+    const county = counties[countyState.id];
+
+    if (!county) { return null; }
+
+    const countyName = county.name;
     const electionDate = corlaDate.format(election.date);
     const electionType = format.electionType(election.type);
 

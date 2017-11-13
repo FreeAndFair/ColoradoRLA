@@ -1,14 +1,25 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
+import auditStartedSelector from 'corla/selector/dos/auditStarted';
+
 import DOSDashboardPage from './Page';
 
+import withDOSState from 'corla/component/withDOSState';
 import withPoll from 'corla/component/withPoll';
 
 
-class DOSDashboardContainer extends React.Component<any, any> {
+interface ContainerProps {
+    auditStarted: boolean;
+    contests: DOS.Contests;
+    countyStatus: DOS.CountyStatuses;
+    seed: string;
+    dosState: DOS.AppState;
+}
+
+class DOSDashboardContainer extends React.Component<ContainerProps> {
     public render() {
-        if (!this.props.sos) {
+        if (!this.props.dosState) {
             return <div />;
         }
 
@@ -16,22 +27,19 @@ class DOSDashboardContainer extends React.Component<any, any> {
     }
 }
 
-const select = (state: any) => {
-    const { sos } = state;
-
-    if (!sos) { return {}; }
-
+function select(dosState: DOS.AppState) {
     return {
-        contests: sos.contests,
-        countyStatus: sos.countyStatus,
-        seed: sos.seed,
-        sos,
+        auditStarted: auditStartedSelector(dosState),
+        contests: dosState.contests,
+        countyStatus: dosState.countyStatus,
+        dosState,
+        seed: dosState.seed,
     };
-};
+}
 
 
 export default withPoll(
-    DOSDashboardContainer,
+    withDOSState(DOSDashboardContainer),
     'DOS_DASHBOARD_POLL_START',
     'DOS_DASHBOARD_POLL_STOP',
     select,

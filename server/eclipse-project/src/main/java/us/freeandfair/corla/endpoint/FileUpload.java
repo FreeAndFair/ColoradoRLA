@@ -220,7 +220,7 @@ public class FileUpload extends AbstractEndpoint {
    * {@inheritDoc}
    */
   @Override
-  public String endpoint(final Request the_request, final Response the_response) {
+  public String endpointBody(final Request the_request, final Response the_response) {
     final UploadInformation info = new UploadInformation();
     info.my_timestamp = Instant.now();
     info.my_ok = true;

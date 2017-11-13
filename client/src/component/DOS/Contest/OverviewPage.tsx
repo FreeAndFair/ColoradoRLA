@@ -26,7 +26,13 @@ const Breadcrumb = () => (
     </ul>
 );
 
-const ContestTableRow = ({ contest }: any) => {
+interface RowProps {
+    contest: Contest;
+}
+
+const ContestTableRow = (props: RowProps) => {
+    const { contest } = props;
+
     const county = counties[contest.countyId];
 
     return (
@@ -43,8 +49,15 @@ const ContestTableRow = ({ contest }: any) => {
     );
 };
 
-const ContestTable = ({ contests }: any) => {
-    const contestRows = _.map(contests, (c: any) => (
+
+interface TableProps {
+    contests: DOS.Contests;
+}
+
+const ContestTable = (props: TableProps) => {
+    const { contests } = props;
+
+    const contestRows = _.map(contests, c => (
         <ContestTableRow key={ c.id } contest={ c } />
     ));
 
@@ -65,7 +78,11 @@ const ContestTable = ({ contests }: any) => {
     );
 };
 
-const ContestOverviewPage = (props: any) => {
+interface PageProps {
+    contests: DOS.Contests;
+}
+
+const ContestOverviewPage = (props: PageProps) => {
     const { contests } = props;
 
     if (!contests) {

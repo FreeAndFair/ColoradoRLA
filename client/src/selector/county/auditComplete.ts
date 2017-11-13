@@ -1,8 +1,5 @@
-function auditComplete(state: any): boolean {
-    const { county } = state;
-    const { currentState } = county.asm.county;
-
-    return currentState === 'COUNTY_AUDIT_COMPLETE';
+function auditComplete(state: County.AppState): boolean {
+    return state.asm.county === 'COUNTY_AUDIT_COMPLETE';
 }
 
 

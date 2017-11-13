@@ -23,16 +23,24 @@ const Breadcrumb = () => (
     </ul>
 );
 
+interface AuditReviewProps {
+    back: OnClick;
+    publishBallotsToAudit: OnClick;
+    saveAndDone: OnClick;
+    dosState: DOS.AppState;
+}
 
-const AuditReview = ({ back, publishBallotsToAudit, saveAndDone, sos }: any) => {
+const AuditReview = (props: AuditReviewProps) => {
+    const { back, publishBallotsToAudit, saveAndDone, dosState } = props;
+
     const launch = () => {
         publishBallotsToAudit();
         saveAndDone();
     };
 
-    const riskLimitPercent = sos.riskLimit * 100;
+    const riskLimitPercent = dosState.riskLimit! * 100;
 
-    const disableLaunchButton = !sos.seed;
+    const disableLaunchButton = !dosState.seed;
 
     return (
         <div>
@@ -55,7 +63,7 @@ const AuditReview = ({ back, publishBallotsToAudit, saveAndDone, sos }: any) => 
                         </tr>
                         <tr>
                             <td>Random Number Generator Seed:</td>
-                            <td>{ sos.seed }</td>
+                            <td>{ dosState.seed }</td>
                         </tr>
                     </tbody>
                 </table>

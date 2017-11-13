@@ -3,16 +3,22 @@ import * as React from 'react';
 import login2F from 'corla/action/login2F';
 
 
-function isFormValid(form: any): boolean {
+function isFormValid(form: Form): boolean {
     const token = form.tokenParts.join('');
 
     return token !== '';
 }
 
-const ChallengeForm = (props: any) => {
+interface ChallengeFormProps {
+    loginChallenge: LoginChallenge;
+    onTokenChange: (index: number) => (e: React.ChangeEvent<any>) => void;
+    tokenParts: string[];
+}
+
+const ChallengeForm = (props: ChallengeFormProps) => {
     const { loginChallenge, onTokenChange, tokenParts } = props;
 
-    const challengeFields = loginChallenge.map((box: any, index: number) => {
+    const challengeFields = loginChallenge.map((box, index) => {
         const text = box.join('');
 
         return (
@@ -38,15 +44,30 @@ const ChallengeForm = (props: any) => {
     );
 };
 
-export default class SecondFactorForm extends React.Component<any, any> {
-    public state: any = {
+interface FormProps {
+    loginChallenge: LoginChallenge;
+    username: string;
+}
+
+interface FormState {
+    form: Form;
+}
+
+interface Form {
+    tokenParts: string[];
+    username: string;
+}
+
+export default class SecondFactorForm extends React.Component<FormProps, FormState> {
+    public state: FormState = {
         form: {
             tokenParts: [],
+            username: '',
         },
     };
 
     public render() {
-        const { loginChallenge } = this.props;
+        const { loginChallenge, username } = this.props;
         const { form } = this.state;
 
         const disabled = !isFormValid(form);
@@ -54,7 +75,7 @@ export default class SecondFactorForm extends React.Component<any, any> {
         return (
             <div>
                 <div className='pt-card'>
-                    Enter challenge for user: { this.props.username }
+                    Enter challenge for user: { username }
                 </div>
                 <ChallengeForm
                     loginChallenge={ loginChallenge }

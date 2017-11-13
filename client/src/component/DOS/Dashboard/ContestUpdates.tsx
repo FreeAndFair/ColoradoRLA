@@ -25,7 +25,11 @@ const RemainingToAuditHeader = () => {
     );
 };
 
-const HandCountButton = (props: any) => {
+interface ButtonProps {
+    contest: Contest;
+}
+
+const HandCountButton = (props: ButtonProps) => {
     const { contest } = props;
 
     const onClick = () => setHandCount(contest.id);
@@ -41,9 +45,11 @@ type SortKey = 'county'
              | 'name'
              | 'discrepancyCount';
 
+type SortOrder = 'asc' | 'desc';
+
 function sortIndex(sort: SortKey): number {
     // tslint:disable
-    const index: any = {
+    const index = {
         county: 0,
         name: 1,
         discrepancyCount: 2,
@@ -53,33 +59,48 @@ function sortIndex(sort: SortKey): number {
     return index[sort];
 }
 
-class ContestUpdates extends React.Component<any, any> {
-    public state: any = {
+interface UpdatesProps {
+    contests: DOS.Contests;
+    seed: string;
+    dosState: DOS.AppState;
+}
+
+interface UpdatesState {
+    filter: string;
+    order: SortOrder;
+    sort: SortKey;
+}
+
+class ContestUpdates extends React.Component<UpdatesProps, UpdatesState> {
+    public state: UpdatesState = {
         filter: '',
         order: 'asc',
         sort: 'name',
     };
 
     public render() {
-        const { contests, seed, sos } = this.props;
+        const { contests, dosState, seed } = this.props;
 
-        const selectedContests = _.values(_.pick(contests, _.keys(sos.auditedContests)));
+        const selectedContests: DOS.Contests =
+            _.values(_.pick(contests, _.keys(dosState.auditedContests)));
 
-        const rowData = _.map(selectedContests, (c: any) => {
-            const county = counties[c.countyId];
-            const discrepancyCount = _.sum(_.values(sos.discrepancyCounts[c.id]));
+        type RowData = [string, string, number, Contest];
+
+        const rowData: RowData[] = _.map(selectedContests, (c): RowData => {
+            const county: CountyInfo = counties[c.countyId];
+            const discrepancyCount: number = _.sum(_.values(dosState.discrepancyCounts![c.id]));
 
             return [county.name, c.name, discrepancyCount, c];
         });
 
-        const keyFunc = (d: any[]) => d[sortIndex(this.state.sort)];
+        const keyFunc = (d: RowData) => d[sortIndex(this.state.sort)];
         const sortedData = _.sortBy(rowData, keyFunc);
 
         if (this.state.order === 'desc') {
             _.reverse(sortedData);
         }
 
-        const filterName = (d: any) => {
+        const filterName = (d: RowData) => {
             const countyName = d[0].toLowerCase();
             const contestName = d[1].toLowerCase();
             const str = this.state.filter.toLowerCase();
@@ -88,10 +109,10 @@ class ContestUpdates extends React.Component<any, any> {
         };
         const filteredData = _.filter(sortedData, filterName);
 
-        const contestStatuses = _.map(filteredData, (row: any) => {
+        const contestStatuses = _.map(filteredData, row => {
             const [countyName, contestName, discrepancyCount, c] = row;
 
-            if (!sos.auditedContests) {
+            if (!dosState.auditedContests) {
                 return <tr key={ c.id }><td /><td /><td /><td /><td /></tr>;
             }
 
@@ -163,7 +184,7 @@ class ContestUpdates extends React.Component<any, any> {
         );
     }
 
-    private onFilterChange = (filter: any) => {
+    private onFilterChange = (filter: string) => {
         this.setState({ filter });
     }
 

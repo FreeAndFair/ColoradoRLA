@@ -1,3 +1,5 @@
-export const format = (riskLimit: number) => ({ risk_limit: riskLimit });
+export const format = (riskLimit: number): JSON.RiskLimit =>
+    ({ risk_limit: riskLimit });
 
-export const parse = ({ risk_limit }: any) => ({ riskLimit: risk_limit });
+export const parse = ({ risk_limit }: JSON.RiskLimit) =>
+    ({ riskLimit: risk_limit });

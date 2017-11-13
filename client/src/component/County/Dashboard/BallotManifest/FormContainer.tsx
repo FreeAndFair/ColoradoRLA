@@ -9,38 +9,60 @@ import uploadBallotManifest from 'corla/action/county/uploadBallotManifest';
 import ballotManifestUploadedSelector from 'corla/selector/county/ballotManifestUploaded';
 
 
-const UploadedBallotManifest = ({ enableReupload, file }: any) => (
-    <div className='pt-card'>
-        <div>Ballot Manifest <strong>uploaded</strong>.</div>
-        <div>File name: "{ file.name }"</div>
-        <div>SHA-256 hash: { file.hash }</div>
-        <button className='pt-button' onClick={ enableReupload }>
-            Re-upload
-        </button>
-    </div>
-);
+interface UploadedProps {
+    enableReupload: OnClick;
+    file: UploadedFile;
+}
 
+const UploadedBallotManifest = (props: UploadedProps) => {
+    const { enableReupload, file } = props;
 
-class BallotManifestFormContainer extends React.Component<any, any> {
-    public state: any = {
+    return (
+        <div className='pt-card'>
+            <div>Ballot Manifest <strong>uploaded</strong>.</div>
+            <div>File name: "{ file.name }"</div>
+            <div>SHA-256 hash: { file.hash }</div>
+            <button className='pt-button' onClick={ enableReupload }>
+                Re-upload
+            </button>
+        </div>
+    );
+};
+
+interface ContainerProps {
+    countyState: County.AppState;
+    fileUploaded: boolean;
+    uploadingFile: boolean;
+}
+
+interface ContainerState {
+    form: {
+        file?: File;
+        hash: string;
+    };
+    reupload: boolean;
+}
+
+class BallotManifestFormContainer extends React.Component<ContainerProps, ContainerState> {
+    public state: ContainerState = {
         form: {
-            file: null,
+            file: undefined,
             hash: '',
         },
         reupload: false,
     };
 
     public render() {
-        const { county, fileUploaded, uploadingFile } = this.props;
+        const { countyState, fileUploaded, uploadingFile } = this.props;
 
         if (uploadingFile) {
             return <Uploading />;
         }
 
-        if (fileUploaded && !this.state.reupload && county.ballotManifest) {
+        if (fileUploaded && !this.state.reupload && countyState.ballotManifest) {
             return (
                 <UploadedBallotManifest enableReupload={ this.enableReupload }
-                                        file={ county.ballotManifest } />
+                                        file={ countyState.ballotManifest } />
             );
         }
 
@@ -62,7 +84,7 @@ class BallotManifestFormContainer extends React.Component<any, any> {
         this.setState({ reupload: true });
     }
 
-    private onFileChange = (e: any) => {
+    private onFileChange = (e: React.ChangeEvent<any>) => {
         const s = { ...this.state };
 
         s.form.file = e.target.files[0];
@@ -70,7 +92,7 @@ class BallotManifestFormContainer extends React.Component<any, any> {
         this.setState(s);
     }
 
-    private onHashChange = (hash: any) => {
+    private onHashChange = (hash: string) => {
         const s = { ...this.state };
 
         s.form.hash = hash;
@@ -78,38 +100,27 @@ class BallotManifestFormContainer extends React.Component<any, any> {
         this.setState(s);
     }
 
-    private setFileTimestamp = (fileTimestamp: string) => {
-        this.setState({
-            ...this.state,
-            fileTimestamp,
-        });
-    }
-
-    private fileIsNew = () => {
-        return this.state.fileTimestamp !== this.props.fileTimestamp;
-    }
-
     private upload = () => {
-        const { county } = this.props;
+        const { countyState } = this.props;
         const { file, hash } = this.state.form;
 
-        uploadBallotManifest(county.id, file, hash);
+        if (file) {
+            uploadBallotManifest(countyState.id!, file, hash);
+        }
 
         this.disableReupload();
     }
 }
 
-const mapStateToProps = (state: any) => {
-    const { county } = state;
-
-    const uploadingFile = !!county.uploadingBallotManifest;
+const select = (countyState: County.AppState) => {
+    const uploadingFile = !!countyState.uploadingBallotManifest;
 
     return {
-        county,
-        fileUploaded: ballotManifestUploadedSelector(state),
+        countyState,
+        fileUploaded: ballotManifestUploadedSelector(countyState),
         uploadingFile,
     };
 };
 
 
-export default connect(mapStateToProps)(BallotManifestFormContainer);
+export default connect(select)(BallotManifestFormContainer);

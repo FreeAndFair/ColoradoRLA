@@ -2,23 +2,21 @@ import * as React from 'react';
 
 import * as _ from 'lodash';
 
+import withDOSState from 'corla/component/withDOSState';
 import withSync from 'corla/component/withSync';
-
-import counties from 'corla/data/counties';
 
 import CountyOverviewPage from './OverviewPage';
 
 
-const select = (state: any) => {
-    const { sos } = state;
-    const { countyStatus } = sos;
+function select(dosState: DOS.AppState) {
+    const { countyStatus } = dosState;
 
-    return { counties, countyStatus, sos };
-};
+    return { countyStatus, dosState };
+}
 
 
 export default withSync(
-    CountyOverviewPage,
+    withDOSState(CountyOverviewPage),
     'DOS_COUNTY_OVERVIEW_SYNC',
     select,
 );

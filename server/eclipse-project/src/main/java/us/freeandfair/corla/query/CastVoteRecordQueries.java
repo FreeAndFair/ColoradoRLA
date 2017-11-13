@@ -336,4 +336,36 @@ public final class CastVoteRecordQueries {
     
     return result;
   }
+  
+  /**
+   * Obtain the CastVoteRecord objects with the specified IDs. 
+   * 
+   * @param the_ids The IDs.
+   * @return the matching CastVoteRecord objects, an empty list if none are found,
+   * or null if the query fails.
+   */
+  public static List<CastVoteRecord> get(final List<Long> the_ids) {
+    List<CastVoteRecord> result = null;
+    
+    try {
+      final Session s = Persistence.currentSession();
+      final CriteriaBuilder cb = s.getCriteriaBuilder();
+      final CriteriaQuery<CastVoteRecord> cq = cb.createQuery(CastVoteRecord.class);
+      final Root<CastVoteRecord> root = cq.from(CastVoteRecord.class);
+      final List<Predicate> conjuncts = new ArrayList<>();
+      conjuncts.add(root.get("my_id").in(the_ids));
+      cq.select(root).where(cb.and(conjuncts.toArray(new Predicate[conjuncts.size()])));
+      final TypedQuery<CastVoteRecord> query = s.createQuery(cq);
+      result = query.getResultList();
+    } catch (final PersistenceException e) {
+      Main.LOGGER.error(COULD_NOT_QUERY_DATABASE);
+    }
+    if (result == null) {
+      Main.LOGGER.debug("found no CVRs with ids " + the_ids);
+    } else {
+      Main.LOGGER.debug("found " + result.size() + "CVRs ");
+    }
+    
+    return result;
+  }
 }

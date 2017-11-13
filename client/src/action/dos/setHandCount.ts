@@ -21,4 +21,4 @@ function format(id: number) {
     }];
 }
 
-export default (data: any) => setHandCount(format(data));
+export default (id: number) => setHandCount(format(id));

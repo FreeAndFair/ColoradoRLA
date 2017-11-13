@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { Redirect } from 'react-router-dom';
 
+import { History } from 'history';
+
+import withDOSState from 'corla/component/withDOSState';
 import withSync from 'corla/component/withSync';
 
 import SeedPage from './SeedPage';
@@ -8,15 +11,27 @@ import SeedPage from './SeedPage';
 import uploadRandomSeed from 'corla/action/dos/uploadRandomSeed';
 
 
-class SeedPageContainer extends React.Component<any, any> {
-    public render() {
-        const { history, publicMeetingDate, seed, sos } = this.props;
+interface ContainerProps {
+    dosState: DOS.AppState;
+    history: History;
+    publicMeetingDate: Date;
+    seed: string;
+}
 
-        if (!sos) {
+
+class SeedPageContainer extends React.Component<ContainerProps> {
+    public render() {
+        const { history, publicMeetingDate, seed, dosState } = this.props;
+
+        if (!dosState) {
             return <div />;
         }
 
-        if (sos.asm.currentState === 'DOS_AUDIT_ONGOING') {
+        if (!dosState.asm) {
+            return <div />;
+        }
+
+        if (dosState.asm === 'DOS_AUDIT_ONGOING') {
             return <Redirect to='/sos' />;
         }
 
@@ -32,21 +47,19 @@ class SeedPageContainer extends React.Component<any, any> {
     }
 }
 
-const select = (state: any) => {
-    const { sos } = state;
-
-    if (!sos) { return {}; }
+function select(dosState: DOS.AppState) {
+    if (!dosState) { return {}; }
 
     return {
-        publicMeetingDate: sos.publicMeetingDate,
-        seed: sos.seed,
-        sos,
+        dosState,
+        publicMeetingDate: dosState.publicMeetingDate,
+        seed: dosState.seed,
     };
-};
+}
 
 
 export default withSync(
-    SeedPageContainer,
+    withDOSState(SeedPageContainer),
     'DOS_DEFINE_AUDIT_RANDOM_SEED_SYNC',
     select,
 );

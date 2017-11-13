@@ -1,5 +1,7 @@
 import * as React from 'react';
+import { match } from 'react-router-dom';
 
+import withDOSState from 'corla/component/withDOSState';
 import withSync from 'corla/component/withSync';
 
 import counties from 'corla/data/counties';
@@ -7,12 +9,17 @@ import counties from 'corla/data/counties';
 import CountyDetailPage from './DetailPage';
 
 
-class CountyDetailContainer extends React.Component<any, any> {
+interface ContainerProps {
+    countyStatus: DOS.CountyStatuses;
+    match: match<any>;
+}
+
+class CountyDetailContainer extends React.Component<ContainerProps> {
     public render() {
         const { countyStatus } = this.props;
 
         const { countyId } = this.props.match.params;
-        const county: any = counties[countyId];
+        const county = counties[countyId];
 
         if (!county) {
             return <div />;
@@ -28,16 +35,15 @@ class CountyDetailContainer extends React.Component<any, any> {
     }
 }
 
-const select = (state: any) => {
-    const { sos } = state;
-    const { countyStatus } = sos;
+function select(dosState: DOS.AppState) {
+    const { countyStatus } = dosState;
 
     return { countyStatus };
-};
+}
 
 
 export default withSync(
-    CountyDetailContainer,
+    withDOSState(CountyDetailContainer),
     'DOS_COUNTY_DETAIL_SYNC',
     select,
 );

@@ -64,7 +64,7 @@ public class CVRDownloadByID extends AbstractEndpoint {
    * {@inheritDoc}
    */
   @Override
-  public String endpoint(final Request the_request, final Response the_response) {
+  public String endpointBody(final Request the_request, final Response the_response) {
     try {
       final CastVoteRecord c = 
           Persistence.getByID(Long.parseLong(the_request.params(":id")),

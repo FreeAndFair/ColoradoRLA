@@ -30,6 +30,7 @@ import javax.persistence.Embeddable;
 
 import us.freeandfair.corla.persistence.AuditSelectionIntegerMapConverter;
 import us.freeandfair.corla.persistence.ElectorListConverter;
+import us.freeandfair.corla.persistence.LongListConverter;
 
 /**
  * Information about an audit round. 
@@ -45,6 +46,11 @@ public class Round implements Serializable {
    */
   private static final long serialVersionUID = 1L;
 
+  /**
+   * The "text" constant.
+   */
+  private static final String TEXT = "text";
+  
   /**
    * The round number.
    */
@@ -91,7 +97,7 @@ public class Round implements Serializable {
    * The index of the audit random sequence where the round starts.
    */
   @Column(nullable = false, updatable = false)
-  private Integer my_start_audit_prefix_length;
+  private Integer my_start_audited_prefix_length;
   
   /**
    * The number of previously-audited ballots when the round starts.
@@ -100,23 +106,41 @@ public class Round implements Serializable {
   private Integer my_previous_ballots_audited;
   
   /**
+   * The sequence of CVR IDs for ballots to audit in this round, 
+   * in the order they are to be presented.
+   */
+  @Column(nullable = false, updatable = false,
+          name = "ballot_sequence", columnDefinition = TEXT)
+  @Convert(converter = LongListConverter.class)
+  private List<Long> my_ballot_sequence;
+  
+  /**
+   * The CVR IDs for the audit subsequence to audit in this
+   * round, in audit sequence order. 
+   */
+  @Column(nullable = false, updatable = false,
+          name = "audit_subsequence", columnDefinition = TEXT)
+  @Convert(converter = LongListConverter.class)
+  private List<Long> my_audit_subsequence;
+  
+  /**
    * The number of discrepancies found in the audit so far.
    */
-  @Column(nullable = false, name = "discrepancies", columnDefinition = "text")
+  @Column(nullable = false, name = "discrepancies", columnDefinition = TEXT)
   @Convert(converter = AuditSelectionIntegerMapConverter.class)
   private Map<AuditSelection, Integer> my_discrepancies = new HashMap<>();
   
   /**
    * The number of disagreements found in the audit so far.
    */
-  @Column(nullable = false, name = "disagreements", columnDefinition = "text")
+  @Column(nullable = false, name = "disagreements", columnDefinition = TEXT)
   @Convert(converter = AuditSelectionIntegerMapConverter.class)
   private Map<AuditSelection, Integer> my_disagreements = new HashMap<>();
   
   /**
    * The signatories for round sign-off
    */
-  @Column(name = "signatories", columnDefinition = "text")
+  @Column(name = "signatories", columnDefinition = TEXT)
   @Convert(converter = ElectorListConverter.class)
   private List<Elector> my_signatories = new ArrayList<>();
 
@@ -133,23 +157,35 @@ public class Round implements Serializable {
    * @param the_number The round number.
    * @param the_start_time The start time.
    * @param the_expected_count The expected number of ballots to audit.
-   * @param the_start_audit_prefix_length The index of the audit random sequence 
+   * @param the_previous_ballots_audited The number of ballots audited when the 
+   * round starts.
+   * @param the_expected_audited_prefix_length The audit random sequence index 
+   * where the round is expected to end.
+   * @param the_start_audited_prefix_length The index of the audit random sequence 
    * where the round starts.
+   * @param the_ballot_sequence The sequence of ballots to audit in this round.
+   * @param the_audit_subsequence The subsequence of the audit sequence for 
+   * this round.
    */
   public Round(final Integer the_number,
                final Instant the_start_time,
                final Integer the_expected_count,
                final Integer the_previous_ballots_audited,
                final Integer the_expected_audited_prefix_length,
-               final Integer the_start_audited_prefix_length) {
+               final Integer the_start_audited_prefix_length,
+               final List<Long> the_ballot_sequence,
+               final List<Long> the_audit_subsequence) {
     super();
     my_number = the_number;
     my_start_time = the_start_time;
     my_expected_count = the_expected_count;
     my_expected_audited_prefix_length = the_expected_audited_prefix_length;
     my_actual_count = 0;
-    my_start_audit_prefix_length = the_start_audited_prefix_length;
+    my_start_audited_prefix_length = the_start_audited_prefix_length;
+    my_actual_audited_prefix_length = the_start_audited_prefix_length;
     my_previous_ballots_audited = the_previous_ballots_audited;
+    my_ballot_sequence = the_ballot_sequence;
+    my_audit_subsequence = the_audit_subsequence;
   }
   
   /**
@@ -221,20 +257,33 @@ public class Round implements Serializable {
   }
   
   /**
-   * @return the audit sequence prefix length achieved by the end of 
-   * this round, or null if this round has not ended.
+   * @return the audit sequence prefix length achieved.
    */
   public Integer actualAuditedPrefixLength() {
     return my_actual_audited_prefix_length;
   }
   
   /**
-   * Sets the audit prefix sequence length achieved by the end of this round.
+   * Sets the audit prefix sequence length achieved.
    * 
    * @param the_audited_prefix_length The prefix length achieved.
    */
   public void setActualAuditedPrefixLength(final int the_audited_prefix_length) {
     my_actual_audited_prefix_length = the_audited_prefix_length;
+  }
+  
+  /**
+   * @return the ballot sequence for this round.
+   */
+  public List<Long> ballotSequence() {
+    return my_ballot_sequence;
+  }
+  
+  /**
+   * @return the audit subsequence for this round.
+   */
+  public List<Long> auditSubsequence() {
+    return my_audit_subsequence;
   }
   
   /**
@@ -256,7 +305,7 @@ public class Round implements Serializable {
    * starts.
    */
   public Integer startAuditedPrefixLength() {
-    return my_start_audit_prefix_length;
+    return my_start_audited_prefix_length;
   }
   
   /**
@@ -362,7 +411,7 @@ public class Round implements Serializable {
     return "Round [start_time=" + my_start_time + ", end_time=" +
            my_end_time + ", expected_count=" + my_expected_count + 
            ", actual_count=" + my_actual_count + ", start_index=" + 
-           my_start_audit_prefix_length + ", discrepancies=" + my_discrepancies + 
+           my_start_audited_prefix_length + ", discrepancies=" + my_discrepancies + 
            "disagreements=" + my_disagreements + ", signatories=" +
            my_signatories + "]";
   }
@@ -399,5 +448,23 @@ public class Round implements Serializable {
   @Override
   public int hashCode() {
     return nullableHashCode(startTime());
+  }
+  
+  /**
+   * @return a version of this Round with no ballot/cvr sequences
+   */
+  public Round withoutSequences() {
+    final Round result =
+        new Round(my_number, my_start_time, my_expected_count, my_previous_ballots_audited,
+                  my_expected_audited_prefix_length, my_start_audited_prefix_length,
+                  null, null);
+    result.my_actual_count = my_actual_count;
+    result.my_actual_audited_prefix_length = my_actual_audited_prefix_length;
+    result.my_discrepancies = my_discrepancies;
+    result.my_disagreements = my_disagreements;
+    result.my_signatories = my_signatories;
+    result.my_end_time = my_end_time;
+    
+    return result;
   }
 }

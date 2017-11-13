@@ -36,7 +36,6 @@ import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.CVRAuditInfoQueries;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
@@ -99,7 +98,7 @@ public class BallotNotFound extends AbstractAuditBoardDashboardEndpoint {
   // badDataContents() (which ends the method's execution) would get called first
   @SuppressFBWarnings("NP_NULL_ON_SOME_PATH")
   @SuppressWarnings("PMD.NPathComplexity")
-  public String endpoint(final Request the_request, final Response the_response) {
+  public String endpointBody(final Request the_request, final Response the_response) {
     // we must be authenticated as a county
     final County county = Main.authentication().authenticatedCounty(the_request);
     if (county == null) {
@@ -124,8 +123,8 @@ public class BallotNotFound extends AbstractAuditBoardDashboardEndpoint {
       if (cvr == null) {
         badDataContents(the_response, "nonexistent CVR ID");
       }
-      final List<CVRAuditInfo> matching = CVRAuditInfoQueries.matching(cdb, cvr);
-      if (matching.isEmpty()) {
+      final CVRAuditInfo matching = Persistence.getByID(cvr.id(), CVRAuditInfo.class);
+      if (matching == null) {
         badDataContents(the_response, "specified CVR not under audit");
       }
       // construct a phantom ballot ACVR

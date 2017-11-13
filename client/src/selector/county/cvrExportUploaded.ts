@@ -8,15 +8,8 @@ const UPLOADED_STATES = [
     'COUNTY_AUDIT_COMPLETE',
 ];
 
-
-function cvrExportUploaded(state: any): boolean {
-    if (!_.has(state, 'county.asm.county.currentState')) {
-        return false;
-    }
-
-    const { currentState } = state.county.asm.county;
-
-    return _.includes(UPLOADED_STATES, currentState);
+function cvrExportUploaded(state: County.AppState): boolean {
+    return _.includes(UPLOADED_STATES, state.asm.county);
 }
 
 

@@ -1,26 +1,21 @@
 import * as React from 'react';
 
+import withDOSState from 'corla/component/withDOSState';
 import withSync from 'corla/component/withSync';
 
 import OverviewPage from './OverviewPage';
 
 
-const select = (state: any) => {
-    const { sos } = state;
-
-    if (!sos) {
-        return {};
-    }
-
+function select(dosState: DOS.AppState) {
     return {
-        contests: sos.contests,
-        sos,
+        contests: dosState.contests,
+        dosState,
     };
-};
+}
 
 
 export default withSync(
-    OverviewPage,
+    withDOSState(OverviewPage),
     'DOS_CONTEST_OVERVIEW_SYNC',
     select,
 );

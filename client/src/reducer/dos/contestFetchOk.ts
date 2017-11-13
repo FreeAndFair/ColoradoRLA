@@ -3,10 +3,13 @@ import { merge } from 'lodash';
 import { parse } from 'corla/adapter/contestFetch';
 
 
-export default (state: any, action: any) => {
+export default function contestFetchOk(
+    state: DOS.AppState,
+    action: Action.DOSFetchContestsOk,
+): DOS.AppState {
     const nextState = { ...state };
 
-    nextState.sos.contests = parse(action.data);
+    nextState.contests = parse(action.data);
 
     return nextState;
-};
+}

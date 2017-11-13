@@ -103,7 +103,7 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
   // false positive about inner class declaration
   @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
   @SuppressWarnings("checkstyle:nestedifdepth")
-  public String endpoint(final Request the_request,
+  public String endpointBody(final Request the_request,
                          final Response the_response) {
     try {
       final Type list_type = new TypeToken<List<Elector>>() { }.getType();

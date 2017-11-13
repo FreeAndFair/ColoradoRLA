@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -29,6 +28,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.OptionalInt;
+import java.util.TimeZone;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -282,7 +282,7 @@ public class CountyReport {
     cell.setCellValue("Generated " + 
                       DATE_TIME_FORMATTER.
                       format(LocalDateTime.ofInstant(my_timestamp,
-                                                     ZoneOffset.systemDefault())));
+                                                     TimeZone.getDefault().toZoneId())));
     
     row = summary_sheet.createRow(row_number++);
     cell_number = 0;
@@ -840,7 +840,7 @@ public class CountyReport {
     final LocalDateTime election_datetime = 
         LocalDateTime.ofInstant(my_dosdb.auditInfo().electionDate(), ZoneOffset.UTC);
     final LocalDateTime report_datetime = 
-        LocalDateTime.ofInstant(my_timestamp, ZoneId.systemDefault()).
+        LocalDateTime.ofInstant(my_timestamp, TimeZone.getDefault().toZoneId()).
         truncatedTo(ChronoUnit.SECONDS);
     final StringBuilder sb = new StringBuilder(32);
     

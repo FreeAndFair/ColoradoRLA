@@ -3,28 +3,42 @@ import { connect } from 'react-redux';
 
 import { Redirect } from 'react-router-dom';
 
+import session from 'corla/session';
+
+import { isCountyAppState } from 'corla/type';
+
 
 interface RootRedirectContainerProps {
-    dashboard: any;
+    stateType: AppStateType;
 }
 
-export class RootRedirectContainer extends React.Component<RootRedirectContainerProps & any, any> {
+export class RootRedirectContainer extends React.Component<RootRedirectContainerProps> {
     public render() {
-        const { dashboard } = this.props;
+        const { stateType } = this.props;
 
-        if (dashboard === 'sos') {
-            return <Redirect to='/sos' />;
+        const s = session.get();
+
+        if (s) {
+            const { type } = s;
+
+            if (type === 'county' && stateType === 'County') {
+                return <Redirect to='/county' />;
+            }
+
+            if (type === 'dos' && stateType === 'DOS') {
+                return <Redirect to='/sos' />;
+            }
+
+            session.expire();
         }
 
-        return <Redirect to='/county' />;
+        return <Redirect to='/login' />;
     }
 }
 
-const mapStateToProps = ({ dashboard }: any) => ({ dashboard });
+function select(state: AppState) {
+    return { stateType: state.type };
+}
 
-const mapDispatchToProps = (dispatch: any) => ({});
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(RootRedirectContainer);
+export default connect(select)(RootRedirectContainer);

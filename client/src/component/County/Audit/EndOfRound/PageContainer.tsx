@@ -9,7 +9,7 @@ import currentRoundNumberSelector from 'corla/selector/county/currentRoundNumber
 import previousRoundSelector from 'corla/selector/county/previousRound';
 
 
-function signedOff(round: any): boolean {
+function signedOff(round: Round): boolean {
     if (!round.signatories) {
         return false;
     }
@@ -21,27 +21,36 @@ function signedOff(round: any): boolean {
     return true;
 }
 
-class EndOfRoundPageContainer extends React.Component<any, any> {
+interface ContainerProps {
+    allRoundsComplete: boolean;
+    countyInfo: CountyInfo;
+    currentRoundNumber: number;
+    election: Election;
+    estimatedBallotsToAudit: number;
+    previousRound: Round;
+    previousRoundSignedOff: boolean;
+}
+
+class EndOfRoundPageContainer extends React.Component<ContainerProps> {
     public render() {
         return <EndOfRoundPage { ...this.props } />;
     }
 }
 
-const mapStateToProps = (state: any) => {
-    const { county } = state;
-
-    const previousRound = previousRoundSelector(state);
+function select(countyState: County.AppState) {
+    const previousRound = previousRoundSelector(countyState);
+    const previousRoundSignedOff = previousRound && signedOff(previousRound);
 
     return {
-        allRoundsComplete: allRoundsCompleteSelector(state),
-        countyInfo: countyInfoSelector(state),
-        currentRoundNumber: currentRoundNumberSelector(state),
-        election: state.county.election,
-        estimatedBallotsToAudit: state.county.estimatedBallotsToAudit,
-        previousRound,
-        previousRoundSignedOff: signedOff(previousRound),
+        allRoundsComplete: allRoundsCompleteSelector(countyState),
+        countyInfo: countyInfoSelector(countyState),
+        currentRoundNumber: currentRoundNumberSelector(countyState),
+        election: countyState.election,
+        estimatedBallotsToAudit: countyState.estimatedBallotsToAudit,
+        previousRound: previousRound || {},
+        previousRoundSignedOff: previousRound ? signedOff(previousRound) : false,
     };
-};
+}
 
 
-export default connect(mapStateToProps)(EndOfRoundPageContainer);
+export default connect(select)(EndOfRoundPageContainer);

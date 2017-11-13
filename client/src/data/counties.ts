@@ -1,7 +1,6 @@
 interface Counties {
-    [key: number]: any;
+    [id: number]: CountyInfo;
 }
-
 
 const counties: Counties = {
     1: { id: 1, name: 'Adams' },

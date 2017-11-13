@@ -13,8 +13,16 @@ import CountyUpdates from './CountyUpdates';
 import MainContainer from './MainContainer';
 
 
-const DOSDashboardPage = (props: any) => {
-    const { contests, countyStatus, seed, sos } = props;
+interface PageProps {
+    auditStarted: boolean;
+    contests: DOS.Contests;
+    countyStatus: DOS.CountyStatuses;
+    dosState: DOS.AppState;
+    seed: string;
+}
+
+const DOSDashboardPage = (props: PageProps) => {
+    const { auditStarted, contests, countyStatus, dosState, seed } = props;
 
     return (
         <div>
@@ -22,8 +30,11 @@ const DOSDashboardPage = (props: any) => {
                 <SoSNav />
                 <MainContainer />
                 <div className='sos-info pt-card'>
-                    <CountyUpdates countyStatus={ countyStatus } />
-                    <ContestUpdates contests={ contests } seed={ seed } sos={ sos } />
+                    <CountyUpdates auditStarted={ auditStarted }
+                                   countyStatus={ countyStatus } />
+                    <ContestUpdates contests={ contests }
+                                    seed={ seed }
+                                    dosState={ dosState } />
                 </div>
             </div>
             <LicenseFooter />

@@ -70,7 +70,7 @@ public class IntermediateAuditReport extends AbstractAuditBoardDashboardEndpoint
    * Publish the intermediate audit report by the audit board.
    */
   @Override
-  public String endpoint(final Request the_request,
+  public String endpointBody(final Request the_request,
                          final Response the_response) {
     try {
       final IntermediateAuditReportInfo report =

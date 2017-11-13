@@ -3,7 +3,12 @@ import * as React from 'react';
 import downloadFile from 'corla/action/downloadFile';
 
 
-const UploadedFile = ({ description, file }: any) => {
+interface UploadedFileProps {
+    description: string;
+    file: UploadedFile;
+}
+
+const UploadedFile = ({ description, file }: UploadedFileProps) => {
     const onClick = () => downloadFile(file.id);
 
     return (
@@ -18,7 +23,11 @@ const UploadedFile = ({ description, file }: any) => {
     );
 };
 
-const FileDownloadButtons = (props: any) => {
+interface DownloadButtonsProps {
+    status: County.AppState | DOS.CountyStatus;
+}
+
+const FileDownloadButtons = (props: DownloadButtonsProps) => {
     const { status } = props;
 
     if (!status) {

@@ -142,7 +142,7 @@ public class CVRToAuditList extends AbstractEndpoint {
    */
   @Override
   @SuppressWarnings("PMD.NPathComplexity")
-  public String endpoint(final Request the_request, final Response the_response) {
+  public String endpointBody(final Request the_request, final Response the_response) {
     // we know we have either state or county authentication; this will be null
     // for state authentication
     County county = Main.authentication().authenticatedCounty(the_request);
@@ -204,7 +204,7 @@ public class CVRToAuditList extends AbstractEndpoint {
       
       if (round.isPresent()) {
         cvr_to_audit_list = 
-            ComparisonAuditController.computeBallotOrder(cdb, round.getAsInt(), audited);
+            ComparisonAuditController.ballotsToAudit(cdb, round.getAsInt(), audited);
       } else {
         cvr_to_audit_list = 
             ComparisonAuditController.computeBallotOrder(cdb, index, ballot_count, 
