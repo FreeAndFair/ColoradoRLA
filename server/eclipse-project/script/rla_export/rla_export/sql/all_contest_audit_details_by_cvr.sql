@@ -13,11 +13,12 @@ SELECT
    cty.name AS county_name, 
    cn.name AS contest_name, 
    cvr_s.imprinted_id,
-   cai.counted,
    cvr_s.ballot_type, 
+   cai.counted,
    cci.choices AS choice_per_voting_computer, 
    cci_a.choices AS choice_per_audit_board,
    cci_a.consensus,
+   cvr_s.record_type,
    cci_a.comment AS audit_board_comment,
    cvr_a.timestamp,
    cai.cvr_id
