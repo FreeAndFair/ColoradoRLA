@@ -57,8 +57,8 @@ psql -d corla -a -f ../corla-test-credentials.psql > credentials.stdout
 echo "Run tabulation test: psql -d corla -f $SQL_DIR/m_tabulate.sql | diff tabulate.out -"
 psql -d corla -f $SQL_DIR/m_tabulate.sql | diff tabulate.out - && echo "Success: tabulation test"
 
-echo "Run manifest vs cvr test: psql -d corla -f $SQL_DIR/compare-manifest-cvr.sql | diff manifest-vs-cvr.out -"
-psql -d corla -f $SQL_DIR/compare-manifest-cvr.sql | diff manifest-vs-cvr.out - && echo "Success: manifest vs cvr"
+echo "Run manifest vs cvr test: psql -d corla -f $SQL_DIR/batch_count_comparison.sql | diff manifest-vs-cvr.out -"
+psql -d corla -f $SQL_DIR/batch_count_comparison.sql | diff manifest-vs-cvr.out - && echo "Success: manifest vs cvr"
 
 echo "All done!"
 
