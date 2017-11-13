@@ -2,7 +2,7 @@
 % Colorado Risk Limiting Audit Tool 
 % 2017
 
-Separate from the RLA central server and client server programs that support the Department of State and the Counties in carrying out the Risk Limiting Audit, there is a command, called `rla_export`, allowing export of data from the central server and the underlying database. 
+Separate from the RLA application server and client software that supports the Department of State and the Counties in carrying out the Risk Limiting Audit, there is a command, called `rla_export`, allowing export of data from the central server and the underlying database.
 
 The command is part of a python package, whose technical description can be found in a `README.rst` file in the python site-packages directory tree wherever the package is installed. The most current online version (which may or may not match the version you have installed) is available 
 in the [public code repository](https://github.com/FreeAndFair/ColoradoRLA/tree/auditcenter/server/eclipse-project/script/rla_export).
@@ -39,6 +39,10 @@ The basename of each resulting file is the same as the basename of the query fil
 Thus, given the query file ``seed.sql``, the files ``seed.json`` and ``seed.csv``
 will be produced.
 
+When a ballot extends across more than one piece of paper (a "card"), each card
+is tabulated independently.  In counties which have any multi-card ballots, the
+ballot card counts provided will therefore not match turnout figures reported elsewhere.
+
 #### m_selected_contest_audit_details_by_cvr.sql
 
  For each contest under audit, and for each cast vote record presented to the 
@@ -53,10 +57,10 @@ county_name | Text String | Name of County
 contest_name | Text String | Name of contest  
 random_sequence_index | Integer | Index in the random sequence (starting with 1)
  imprinted_id | Text String | combination of scanner, batch and record ids  that uniquely identifies the ballot card  and may be imprinted on the card
- ballot_type | Text String | BallotType from Dominion CVR export file, a code for the set of contests that  should be present on the physical ballot card
- choice_per_voting_computer | List of Text Strings | List of voter choices in the given contest on the given ballot card, as interpreted by the vote-tabulation computer system (note: overvotes recorded as blank votes)
- choice_per_audit_board | List of Text Strings | List of voter choices in the given contest on the given ballot card, as interpreted by the Audit Board (note: overvotes recorded as a too-long list of choices)
- did_audit_board_agree | YES/NO | "YES" if the Audit Board came to consensus on the interpretation of the given ballot card; "NO" if not;  blank if the card has not been reviewed by the Audit Board.
+ ballot_type | Text String | BallotType from Dominion CVR export file, a code for the set of contests that  should be present on the physical ballot card. Often known as _ballot style_.
+ choices_per_voting_computer | List of Text Strings | List of voter choices in the given contest on the given ballot card, as interpreted by the vote-tabulation computer system (note: overvotes recorded as blank votes)
+ choices_per_audit_board | List of Text Strings | List of voter choices in the given contest on the given ballot card, as interpreted by the Audit Board (note: overvotes recorded as a too-long list of choices)
+ consensus | YES/NO | "YES" if the Audit Board came to consensus on the interpretation of the given ballot card; "NO" if not;  blank if the card has not been reviewed by the Audit Board.
  audit_board_comment | Text String | Text of comment entered by Audit Board  about the given contest on the given ballot card, or indication that the ballot was not found.
  timestamp | Timestamp | Date and time of Audit Board's submission of their interpretation to the RLA Tool
 
@@ -78,13 +82,13 @@ county_name | Text String | Name of County
  batch_id | Integer | BatchId from Dominion CVR export file,  identifying the batch of physical ballot cards in which the card was scanned
  record_id | Integer | RecordId from Dominion CVR export file, indicating the position of the card  in its batch of physical ballot cards 
  imprinted_id | Text String | combination of scanner, batch and record ids  that uniquely identifies the ballot card  and may be imprinted on the card
- ballot_type | Text String | BallotType from Dominion CVR export file, a code for the set of contests that  should be present on the physical ballot card
+ ballot_type | Text String | BallotType from Dominion CVR export file, a code for the set of contests that  should be present on the physical ballot card. Often known as _ballot style_.
   
 #### m_selected_contest_static.sql
 
-List of contests selected by the Secretary of State for audit, with information 
+List of contests selected to drive the audit, with information
   about the contest that doesn't change during the audit, namely the reason for 
-  the audit, the number of winners allowed in the contest, the tabulated winners of the contest, the numbers of ballots cards recorded as cast in the county (total number as well as the number containing the given contest) and the value of the error inflation factor (gamma).
+  the audit, the number of winners allowed in the contest, the tabulated winners of the contest, the numbers of ballot cards recorded as cast in the county (total number as well as the number containing the given contest) and the value of the error inflation factor (gamma).
 
 
  Field | Type | _______________Meaning_______________ 
@@ -103,18 +107,17 @@ contest_ballot_card_count | Integer | The number of ballot cards recorded in the
   
 #### m_selected_contest_dynamic.sql
 
- List of contests selected by Secretary of State for audit, with current status. 
-  Which contests has the 
-  Secretary selected for audit? Which contests (if any) has the 
-  Secretary selected for hand count? How many discrepancies of each type?
+ List of contests selected to drive the audit, with current status.
+  Which contests are driving the audit, vs which are (by default) being audited
+  opportunisticly? Which contests (if any) have
+  been selected for hand count? How many discrepancies of each type are there?
 
  Field | Type | _______________Meaning_______________ 
 --- | --- | ---
 county_name | Text String | Name of County
 contest_name | Text String | Name of contest 
-current_audit_type | Text String | "COMPARISON", "HAND_COUNT", "NOT_AUDITABLE" or "NONE
- computerized_audit_status | Text String |  "NOT_STARTED", "NOT_AUDITABLE", "IN_PROGRESS" or "ENDED".  
- Because declaring a hand count ends the computerized portion of the audit, a contest that is being hand-counted will have the value "ENDED" in this field.
+current_audit_type | Text String | "COMPARISON", "HAND_COUNT", "NOT_AUDITABLE" or "NONE. Note that "NOT_AUDITABLE" means the contest can't drive an audit, but it still can be audited opportunisticly.
+computerized_audit_status | Text String |  "NOT_STARTED", "NOT_AUDITABLE", "IN_PROGRESS" or "ENDED".   Because declaring a hand count ends the computerized portion of the audit, a contest that is being hand-counted will have the value "ENDED" in this field.
  one_vote_over_count | Integer | The number of ballot cards in the random sequence so far (with duplicates)  on which there is a one-vote overstatement  (per Lindeman & Stark's A Gentle Introduction to Risk Limiting Audits).
  one_vote_under_count | Integer | The number of ballot cards in the random sequence so far (with duplicates)  on which there is a one-vote understatement  (per Lindeman & Stark's A Gentle Introduction to Risk Limiting Audits).
  two_vote_over_count | Integer | The number of ballot cards in the random sequence so far (with duplicates)  on which there is a two-vote overstatement  (per Lindeman & Stark's A Gentle Introduction to Risk Limiting Audits).
@@ -156,7 +159,8 @@ county_name | Text String | Name of County
  batch_id | Integer | BatchId from Dominion CVR export file,  identifying the batch of physical ballot cards in which the card with the given review-index was scanned
  record_id | Integer | RecordId from Dominion CVR export file, indicating the position of the card  with the given review-index in its batch of physical ballot cards 
  imprinted_id | Text String | Combination of scanner, batch and record ids  that uniquely identifies the ballot card  with the given review-index and may be imprinted on the card
- ballot_type | Text String | BallotType from Dominion CVR export file, a code for the set of contests that  should be present on the physical ballot card with the given review-index
+ counted | Integer | Number of times the interpretation of this ballot card is reflected in the RLA calculations. When there are duplicates in the random sequence, this can be more than one.
+ ballot_type | Text String | BallotType from Dominion CVR export file, a code for the set of contests that  should be present on the physical ballot card with the given review-index. Often known as _ballot style_.
 
 #### m_tabulate.sql
 
@@ -174,7 +178,7 @@ The exports in this section, while not strictly necessary for independent verifi
 
 #### all_contest_static.sql
 
-List of all contests, with information about the contest that doesn't change during the audit, namely the reason for the audit, the number of winners allowed in the contest, the tabulated winners of the contest, the numbers of ballots cards recorded as cast in the county (total number as well as the number containing the given contest) and the value of the error inflation factor (gamma).
+List of all contests, with information about the contest that doesn't change during the audit, namely the reason for the audit, the number of winners allowed in the contest, the tabulated winners of the contest, the numbers of ballot cards recorded as cast in the county (total number as well as the number containing the given contest) and the value of the error inflation factor (gamma).
 
  Field | Type | _______________Meaning_______________ 
 --- | --- | ---
@@ -219,10 +223,11 @@ county_name | Text String | Name of County
 contest_name | Text String | Name of contest  
 random_sequence_index | Integer | Index in the random sequence (starting with 1)
  imprinted_id | Text String | combination of scanner, batch and record ids  that uniquely identifies the ballot card  and may be imprinted on the card
- ballot_type | Text String | BallotType from Dominion CVR export file, a code for the set of contests that  should be present on the physical ballot card
- choice_per_voting_computer | List of Text Strings | List of voter choices in the given contest on the given ballot card, as interpreted by the vote-tabulation computer system (note: overvotes recorded as blank votes)
- choice_per_audit_board | List of Text Strings | List of voter choices in the given contest on the given ballot card, as interpreted by the Audit Board (note: overvotes recorded as a too-long list of choices)
- did_audit_board_agree | YES/NO | "YES" if the Audit Board came to consensus on the interpretation of the given ballot card; "NO" if not;  blank if the card has not been reviewed by the Audit Board.
+ counted | Integer | Number of times the interpretation of this ballot card is reflected in the RLA calculations. When there are duplicates in the random sequence, this can be more than one.
+ ballot_type | Text String | BallotType from Dominion CVR export file, a code for the set of contests that  should be present on the physical ballot card.  Often known as _ballot style_.
+ choices_per_voting_computer | List of Text Strings | List of voter choices in the given contest on the given ballot card, as interpreted by the vote-tabulation computer system (note: overvotes recorded as blank votes)
+ choices_per_audit_board | List of Text Strings | List of voter choices in the given contest on the given ballot card, as interpreted by the Audit Board (note: overvotes recorded as a too-long list of choices)
+ consensus | YES/NO | "YES" if the Audit Board came to consensus on the interpretation of the given ballot card; "NO" if not;  blank if the card has not been reviewed by the Audit Board.
  audit_board_comment | Text String | Text of comment entered by Audit Board  about the given contest on the given ballot card, or indication that the ballot was not found.
  timestamp | Timestamp | Date and time of Audit Board's submission of their interpretation to the RLA Tool
 
