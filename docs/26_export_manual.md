@@ -60,7 +60,7 @@ contest_name | Text String | Name of contest
  imprinted_id | Text String | Combination of scanner number, batch number and position within batch  that uniquely identifies the ballot card  and may be imprinted on the card when the ballot is scanned
  ballot_type | Text String | BallotType from Dominion CVR export file, a code for the set of contests that  should be present on the physical ballot card. Often known as _ballot style_.
  duplicates_in_random_sequence | Integer | Number of times that a discrepancy between the cast vote record with the given imprinted id and the audit board interpretation has been counted toward the risk level
- choices_per_voting_computer | List of Text Strings | List of voter choices in the given contest on the given ballot card, as interpreted by the vote-tabulation computer system (note: overvotes recorded as blank votes)
+ choices_per_voting_computer | List of Text Strings  | List of voter choices in the given contest on the given ballot card, as interpreted by the vote-tabulation computer system (note: overvotes recorded as blank votes)
  choices_per_audit_board | List of Text Strings | List of voter choices in the given contest on the given ballot card, as interpreted by the Audit Board (note: overvotes recorded as a too-long list of choices)
  consensus | YES/NO | YES if the Audit Board came to consensus on the interpretation of the given ballot card; NO if not;  blank if the card has not been reviewed by the Audit Board.
  audit_board_comment | Text String | Text of comment entered by Audit Board  about the given contest on the given ballot card, or indication that the ballot was not found.
@@ -264,4 +264,8 @@ timestamp | Timestamp | Date and time of the most recent update to the upload st
 Other export files are the same as the files available via the GUI interface,
 for example ``state_report.xlsx``.
 
+## Technical Notes
+
+### List Specifications
+Lists of integers are formatted as json data, i.e., list enclosed in square brackets ([]) and items delimited by commas (,).
 
