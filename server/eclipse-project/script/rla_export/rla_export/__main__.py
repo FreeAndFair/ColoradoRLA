@@ -94,6 +94,79 @@ parser.add_argument('--test',
 __doc__ = __doc__.replace("%InsertOptionParserUsage%\n", parser.format_help())
 
 
+# TODO: Make county list something users can configure, and all three subsystems can get.
+#  Then replace this table and these files:
+#  server/eclipse-project/src/main/resources/us/freeandfair/corla/county_ids.properties
+#  client/src/data/counties.ts
+
+COUNTIES = {
+    1: 'Adams',
+    2: 'Alamosa',
+    3: 'Arapahoe',
+    4: 'Archuleta',
+    5: 'Baca',
+    6: 'Bent',
+    7: 'Boulder',
+    8: 'Chaffee',
+    9: 'Cheyenne',
+    10: 'Clear Creek',
+    11: 'Conejos',
+    12: 'Costilla',
+    13: 'Crowley',
+    14: 'Custer',
+    15: 'Delta',
+    16: 'Denver',
+    17: 'Dolores',
+    18: 'Douglas',
+    19: 'Eagle',
+    20: 'Elbert',
+    21: 'El Paso',
+    22: 'Fremont',
+    23: 'Garfield',
+    24: 'Gilpin',
+    25: 'Grand',
+    26: 'Gunnison',
+    27: 'Hinsdale',
+    28: 'Huerfano',
+    29: 'Jackson',
+    30: 'Jefferson',
+    31: 'Kiowa',
+    32: 'Kit Carson',
+    33: 'Lake',
+    34: 'La Plata',
+    35: 'Larimer',
+    36: 'Las Animas',
+    37: 'Lincoln',
+    38: 'Logan',
+    39: 'Mesa',
+    40: 'Mineral',
+    41: 'Moffat',
+    42: 'Montezuma',
+    43: 'Montrose',
+    44: 'Morgan',
+    45: 'Otero',
+    46: 'Ouray',
+    47: 'Park',
+    48: 'Phillips',
+    49: 'Pitkin',
+    50: 'Prowers',
+    51: 'Pueblo',
+    52: 'Rio Blanco',
+    53: 'Rio Grande',
+    54: 'Routt',
+    55: 'Saguache',
+    56: 'San Juan',
+    57: 'San Miguel',
+    58: 'Sedgwick',
+    59: 'Summit',
+    60: 'Teller',
+    61: 'Washington',
+    62: 'Weld',
+    63: 'Yuma',
+    64: 'Broomfield',
+}
+
+
 def check_or_create_dir(path):
     """Check whether path exists, and create directory there if necessary
     Props to A-B-B and discussion at
@@ -175,6 +248,18 @@ class FakeSecHead(object):
                 self.sechead = None
         else: 
             return self.fp.readline()
+
+
+def UmaskNamedTemporaryFile(*args, **kargs):
+    """Create NamedTemporaryFile which follows standard *NIX umask conventions.
+    Thanks to Pierre at https://stackoverflow.com/a/44130605/507544
+    """
+
+    fdesc = tempfile.NamedTemporaryFile(*args, **kargs)
+    umask = os.umask(0)
+    os.umask(umask)
+    os.chmod(fdesc.name, 0o666 & ~umask)
+    return fdesc
 
 
 def totest(n):
@@ -301,7 +386,7 @@ def db_export(args, ac):
     county_ids = ac.cur.fetchall()
     for row in county_ids:
         county_id = row['id']
-        county_name = row['name']
+        county_name = row['name'].replace(" ", "_")
         random_sequence(args, ac.connection, ac.cur, county_id, county_name)
 
     ac.connection.close()
@@ -359,7 +444,7 @@ def random_sequence(args, connection, cursor, county_id, county_name):
         cvrs = {}
 
 
-        with tempfile.NamedTemporaryFile(mode="w", dir=args.export_dir, delete=False) as stream:
+        with UmaskNamedTemporaryFile(mode="w", dir=args.export_dir, delete=False) as stream:
             print("county_name,round_number,random_sequence_index,scanner_id,batch_id,record_id,imprinted_id,ballot_type",
                   file=stream)
             prefix = 0
@@ -549,13 +634,14 @@ def pull_endpoints(args, ac):
 
         for county_status in dos_dashboard.county_status.values():
             county_id = county_status.id
+            county_name = COUNTIES[county_id].replace(" ", "_")
 
             if args.file_downloads and county_status.has_key('ballot_manifest_file'):
-                filename = os.path.join(args.export_dir, 'county_manifest_%d.csv' % county_id)
+                filename = os.path.join(args.export_dir, 'county_manifest_%s.csv' % county_name)
                 download_file(session, baseurl, county_status.ballot_manifest_file.file_id, filename)
 
             if args.file_downloads and county_status.has_key('cvr_export_file'):
-                filename = os.path.join(args.export_dir, 'county_cvr_%d.csv' % county_id)
+                filename = os.path.join(args.export_dir, 'county_cvr_%s.csv' % county_name)
                 download_file(session, baseurl, county_status.cvr_export_file.file_id, filename)
 
             if not county_status.has_key('rounds') or len(county_status.rounds) <= 0:
@@ -563,12 +649,12 @@ def pull_endpoints(args, ac):
 
             ballot_count = county_status.rounds[-1].expected_audited_prefix_length
             if ballot_count > 0:
-                filename = os.path.join(args.export_dir, 'ballot_list_%d.csv' % county_id)
+                filename = os.path.join(args.export_dir, 'ballot_list_%s.csv' % county_name)
                 query = ("cvr-to-audit-download?county=%d&start=0&ballot_count=%d"
-                        "&include_audited&include_duplicates" % (county_id, ballot_count))
+                        "&include_audited" % (county_id, ballot_count))
                 r = download_content(session, baseurl, query, filename)
 
-                filename = os.path.join(args.export_dir, 'county_report_%d.xlsx' % county_id)
+                filename = os.path.join(args.export_dir, 'county_report_%s.xlsx' % county_name)
                 download_content(session, baseurl, "county-report?county=%d" % county_id, filename)
 
 
