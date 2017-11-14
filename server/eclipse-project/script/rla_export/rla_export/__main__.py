@@ -52,7 +52,8 @@ SQL_PATH = pkg_resources.resource_filename(MYPACKAGE, 'sql')
 parser = argparse.ArgumentParser(description='Export ColoradoRLA data for publication on Audit Center web site')
 
 parser.add_argument('queryfiles', metavar="QUERYFILE", nargs='*',
-                    help='name of file with an SQL query to execute, relative to $SQL_DIR')
+                    help='Name of file with an SQL query to execute, relative to $SQL_DIR. '
+                    'If no QUERYFILEs are specified, a default set is used.')
 
 parser.add_argument('-C, --config', dest='corla_ini_file',
                     default=CORLA_INI_FILE,
@@ -60,13 +61,14 @@ parser.add_argument('-C, --config', dest='corla_ini_file',
                     'path to custom properties file. '
                     'Default: ' + CORLA_INI_FILE)
 parser.add_argument('-p, --properties', dest='properties',
-                    default=PROPERTIES_FILE,
+                    default=None,
                     help='Properties file from which to obtain database connection information. '
                     'Default: ' + PROPERTIES_FILE)
 
 parser.add_argument('-e, --export-dir', dest='export_dir',
                     default=".",
-                    help='Directory in which to put the resulting .json files. Default: . (current directory)')
+                    help='Directory in which to put the resulting .json files. '
+                    'Default: . (current directory). Created if not present.')
 parser.add_argument('-r, --reports', dest='reports', action='store_true',
                     help='Login and export data from RLA Tool server')
 parser.add_argument('-f, --file-downloads', dest='file_downloads', action='store_true',
@@ -75,8 +77,8 @@ parser.add_argument('--no-db-export', dest='db_export', action='store_false',
                     help='Skip the exports directly from the database.')
 parser.add_argument('-u, --url', dest='url',
                     default=None,
-                    help='base url of corla server. Defaults to the port from the properties file '
-                    'on localhost. '
+                    help='base url of corla server. Defaults to the value from '
+                    'the configuration file. '
                     'Use something like http://example.gov/api when running '
                     'against a normal remote installation.')
 
@@ -686,8 +688,9 @@ def main():
     ac.config = parse_corla_config(args.corla_ini_file)
 
     # Parse properties file
+    properties = args.properties or ac.config.properties
     ac.cp = ConfigParser.SafeConfigParser()
-    ac.cp.readfp(FakeSecHead(open(args.properties)))
+    ac.cp.readfp(FakeSecHead(open(properties)))
 
     if args.db_export:
         db_export(args, ac)
