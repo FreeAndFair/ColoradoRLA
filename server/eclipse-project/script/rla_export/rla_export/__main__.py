@@ -351,20 +351,27 @@ def random_sequence(args, connection, cursor, county_id, county_name):
     if not rows:
         return
 
+    # Build a dictionary of cvrs, to replay according to the random sequence
+    cvrs = {}
+
     print("county_name,round_number,random_sequence_index,scanner_id,batch_id,record_id,imprinted_id,ballot_type")
     prefix = 0
     for sequences in rows:
         round_number = sequences['round_number']
         ballot_sequence = json.loads(sequences['ballot_sequence'])
+        audit_subsequence = json.loads(sequences['audit_subsequence'])
+
+        logging.debug("random_sequence: ballot_sequence for county %s, round %d: %s" %
+                      (county_name, round_number, ballot_sequence))
+        logging.debug("random_sequence: audit_subsequence for county %s, round %d: %s" %
+                      (county_name, round_number, audit_subsequence))
+
         cursor.execute(CVR_SELECTION_QUERY,
                        {'cvr_id_list': tuple(ballot_sequence)})
 
-        # Build a dictionary of cvrs, to replay according to the random sequence
-        cvrs = {}
         for cvr in cursor.fetchall():
             cvrs[cvr['id']] = cvr
 
-        audit_subsequence = json.loads(sequences['audit_subsequence'])
         for i, cvr_id in enumerate(audit_subsequence):
             cvr = cvrs[cvr_id]
             print('"%s",%d,%d,%d,%d,%d,"%s","%s"' % (
