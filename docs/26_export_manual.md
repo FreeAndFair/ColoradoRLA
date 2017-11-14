@@ -284,7 +284,7 @@ round_number | Integer | Round of the audit
 # Technical Notes
 
 ## List Specifications
-Each list of text strings is encoded as a json string, i.e., a string enclosed in square brackets ([]) with entries separated by commas (,). 
+Lists of choices are provided as JSON-format lists. When these strings occur within csv or json files, that requires an additional level of quoting, as is usually the case.
 
 ## Ballots vs. Ballot Cards
 When a ballot extends across more than one piece of paper (a "card"), each card
