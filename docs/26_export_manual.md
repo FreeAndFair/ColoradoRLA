@@ -15,8 +15,8 @@ The `README.rst` file gives instructions for installing the python package, and 
 To allow independent verification of the RLA, 
 the Colorado Department of State must provide to the following to the public :
 
-- all CVR files and their hashes
-- all ballot manifest files and their hashes
+- all CVR files and their SHA-256 hashes
+- all ballot manifest files and their SHA-256 hashes
 - the list of contests selected for audit, and which if any have been designated for hand count
 - opportunity to observe the random seed selection
 - for each County, the random sequence of ballot cards determined by the random seed and the pseudo-random number generator
@@ -36,7 +36,7 @@ the RLA, whether by candidates, parties, other organizations.
 ## Database Exports in.csv and .json format
 
 These data files in this section are generated based on `sql` query files.
-These are always produced in two formats: ``.json` and ``.csv``.
+These are always produced in two formats: `.json` and ``.csv``.
 The basename of each resulting file is the same as the basename of the query file.
 For example, the query file ``seed.sql``, produces files ``seed.json`` and ``seed.csv``.
 
@@ -49,7 +49,7 @@ Specific exports are detailed below.
 --- | --- | ---
 county_name | Text String | Name of County
 contest_name | Text String | Name of contest 
-choice | Text String | Name of candidate or for a ballot question "Yes" or "No" 
+choice | Text String | Name of candidate or for a ballot question e.g. "Yes" or "No" 
 votes | Integer | Number of votes recorded for the given choice in the given contest in the given County
 
 
@@ -60,7 +60,7 @@ votes | Integer | Number of votes recorded for the given choice in the given con
   the RLA system's record of the Audit Board's review of 
   the physical ballot for that contest.
   
-  Note that the number of discrepancies each cast vote record contributes to the risk level calculation depends not only on the discrepancies found between the cast vote record and the Audit Board interpretation, but also on the number of times that cast vote record counts in the random sequence. 
+  Note that the number of discrepancies each cast vote record contributes to the risk level calculation depends not only on the discrepancies found between the cast vote record and the Audit Board interpretation, but also on the number of times that the cast vote record has occurred in the random sequence. 
   
 
  Field | Type | _______________Meaning_______________
@@ -69,7 +69,7 @@ county_name | Text String | Name of County
 contest_name | Text String | Name of contest  
  imprinted_id | Text String | Combination of scanner number, batch number and position within batch  that uniquely identifies the ballot card  and may be imprinted on the card when the ballot is scanned
  ballot_type | Text String | BallotType from Dominion CVR export file, a code for the set of contests that  should be present on the physical ballot card. Also known as _ballot style_.
- duplicates_in_random_sequence | Integer | Number of times that a discrepancy between the cast vote record with the given imprinted id and the audit board interpretation has been counted toward the risk level
+ counted | Integer | Number of times that a discrepancy between the cast vote record with the given imprinted id and the audit board interpretation has been counted toward the risk level. Can be more than one when there have been duplicate selections.
  choices_per_voting_computer | List of Text Strings  | List of voter choices in the given contest on the given ballot card, as interpreted by the vote-tabulation computer system (note: overvotes recorded as blank votes)
  choices_per_audit_board | List of Text Strings | List of voter choices in the given contest on the given ballot card, as interpreted by the Audit Board (note: overvotes recorded as a too-long list of choices)
  consensus | YES/NO | YES if the Audit Board came to consensus on the interpretation of the given ballot card; NO if not;  blank if the card has not been reviewed by the Audit Board.
@@ -82,7 +82,7 @@ contest_name | Text String | Name of contest
 
 List of contests selected to drive the audit, with information
   about each contest that doesn't change during the audit, namely: the reason for 
-  the audit, the number of winners allowed in the contest, the tabulated winners of the contest, the numbers of ballot cards recorded as cast in the county (total number as well as the number containing the given contest) and the value of the error inflation factor (gamma).
+  the audit, the number of winners allowed in the contest, the tabulated winners of the contest, the numbers of ballot cards recorded as cast in the county (total number as well as the number containing the given contest), the risk limit, and the value of the error inflation factor (gamma).
 
 
  Field | Type | _______________Meaning_______________ 
@@ -96,6 +96,7 @@ winners | List of Text Strings | List of all winners of the given contest in the
 min_margin | Integer | The smallest margin between any winner and any loser
 county_ballot_card_count | Integer | The number of ballot cards recorded in the given County in the election (including cards that do not contain the contest in question)
 contest_ballot_card_count | Integer | The number of ballot cards recorded in the given County that contain the contest in question
+ risk_limit | Number | The risk limit, as a fraction
  gamma | Number | Error inflation factor defined in Stark's paper, Super-simple simultaneous single-ballot risk-limiting audits, which is cited in Lindeman and Stark's paper, A Gentle Introduction to Risk Limiting Audits, which is cited in Rule 25.2.2(j))
 
   
@@ -109,10 +110,10 @@ contest_ballot_card_count | Integer | The number of ballot cards recorded in the
 county_name | Text String | Name of County
 contest_name | Text String | Name of contest 
 current_audit_type | Text String | COMPARISON, HAND_COUNT, NOT_AUDITABLE or NONE. Note that NOT_AUDITABLE means the contest can't drive an audit, but it still can be audited opportunisticly.
-random_audit_status | Text String |  NOT_STARTED, NOT_AUDITABLE, IN_PROGRESS or ENDED.   Because declaring a hand count ends the computerized portion of the audit, a contest that is being hand-counted will have the value ENDED in this field.
+random_audit_status | Text String |  NOT_STARTED, NOT_AUDITABLE, IN_PROGRESS or ENDED.   Because declaring a hand count ends the random selection portion of the audit, a contest that is being hand-counted will have the value ENDED in this field.
+ two_vote_over_count | Integer | The number of ballot cards in the random sequence so far (with duplicates)  on which there is a two-vote overstatement  (per Lindeman & Stark's A Gentle Introduction to Risk Limiting Audits).
  one_vote_over_count | Integer | The number of ballot cards in the random sequence so far (with duplicates)  on which there is a one-vote overstatement  (per Lindeman & Stark's A Gentle Introduction to Risk Limiting Audits).
  one_vote_under_count | Integer | The number of ballot cards in the random sequence so far (with duplicates)  on which there is a one-vote understatement  (per Lindeman & Stark's A Gentle Introduction to Risk Limiting Audits).
- two_vote_over_count | Integer | The number of ballot cards in the random sequence so far (with duplicates)  on which there is a two-vote overstatement  (per Lindeman & Stark's A Gentle Introduction to Risk Limiting Audits).
  two_vote_under_count | Integer | The number of ballot cards in the random sequence so far (with duplicates)  on which there is a two-vote understatement  (per Lindeman & Stark's A Gentle Introduction to Risk Limiting Audits).
 
 
@@ -123,7 +124,7 @@ Hashes of CVR files
  Field | Type | _______________Meaning_______________ 
 --- | --- | ---
 county_name | Text String | Name of County
- cvr_export_hash | Text String | Hash value entered by the given county after uploading the cast vote record file to be used in the audit
+ cvr_export_hash | Text String | SHA-256 hash value entered by the given county after uploading the cast vote record file to be used in the audit
 
 ### m_manifest_hash
 
@@ -132,11 +133,11 @@ Hashes of ballot manifest files
  Field | Type | _______________Meaning_______________ 
 --- | --- | ---
 county_name | Text String | Name of County
- ballot_manifest_hash | Text String | Hash value entered by the given county after uploading the ballot manifest file to be used in the audit
+ ballot_manifest_hash | Text String | SHA-256 hash value entered by the given county after uploading the ballot manifest file to be used in the audit
 
 ### all_contest_static
 
-List of all contests, with information about each contest that doesn't change during the audit, namely the reason for the audit, the number of winners allowed in the contest, the tabulated winners of the contest, the numbers of ballot cards recorded as cast in the county (total number as well as the number containing the given contest) and the value of the error inflation factor (gamma).
+List of all contests, with information about each contest that doesn't change during the audit, namely the reason for the audit, the number of winners allowed in the contest, the tabulated winners of the contest, the numbers of ballot cards recorded as cast in the county (total number as well as the number containing the given contest), the risk limit, and the value of the error inflation factor (gamma).
 
  Field | Type | _______________Meaning_______________ 
 --- | --- | ---
@@ -149,6 +150,7 @@ winners | List of Text Strings | List of all winners of the given contest in the
 min_margin | Integer | The smallest margin between any winner and any loser
 county_ballot_card_count | Integer | The number of ballot cards recorded in the given County in the election (including cards that do not contain the contest in question)
 contest_ballot_card_count | Integer | The number of ballot cards recorded in the given County that contain the contest in question
+ risk_limit | Number | The risk limit, as a fraction
  gamma | Number | Error inflation factor defined in Stark's paper, Super-simple simultaneous single-ballot risk-limiting audits, which is cited in Lindeman and Stark's paper, A Gentle Introduction to Risk Limiting Audits, which is cited in Rule 25.2.2(j))
 
 ### all_contest_dynamic
@@ -160,10 +162,10 @@ List of contests with current status.  Which contests has the  Secretary selecte
 county_name | Text String | Name of County
 contest_name | Text String | Name of contest 
 current_audit_type | Text String | Comparison audit, ballot polling audit or hand count
- random_audit_status | Text String | Not started, in progress, risk limit achieved, or ended.  Because declaring a hand count ends the computerized portion of the audit, a contest that is being hand-counted will have the value "ended" in this field.
+ random_audit_status | Text String | Not started, in progress, risk limit achieved, or ended.  Because declaring a hand count ends the random selection portion of the audit, a contest that is being hand-counted will have the value "ended" in this field.
+ two_vote_over_count | Integer | The number of ballot cards in the random sequence so far (with duplicates)  on which there is a two-vote overstatement  (per Lindeman & Stark's A Gentle Introduction to Risk Limiting Audits).
  one_vote_over_count | Integer | The number of ballot cards in the random sequence so far (with duplicates)  on which there is a one-vote overstatement  (per Lindeman & Stark's A Gentle Introduction to Risk Limiting Audits).
  one_vote_under_count | Integer | The number of ballot cards in the random sequence so far (with duplicates)  on which there is a one-vote understatement  (per Lindeman & Stark's A Gentle Introduction to Risk Limiting Audits).
- two_vote_over_count | Integer | The number of ballot cards in the random sequence so far (with duplicates)  on which there is a two-vote overstatement  (per Lindeman & Stark's A Gentle Introduction to Risk Limiting Audits).
  two_vote_under_count | Integer | The number of ballot cards in the random sequence so far (with duplicates)  on which there is a two-vote understatement  (per Lindeman & Stark's A Gentle Introduction to Risk Limiting Audits).
 
 ### all_contest_audit_details_by_cvr
@@ -173,7 +175,7 @@ current_audit_type | Text String | Comparison audit, ballot polling audit or han
   the RLA system's record of the Audit Board's review of 
   the physical ballot for that contest.
   
-  Note that the number of discrepancies each cast vote record contributes to the risk level calculation depends not only on the discrepancies found between the cast vote record and the Audit Board interpretation, but also on the number of times that cast vote record counts in the random sequence. 
+  Note that the number of discrepancies each cast vote record contributes to the risk level calculation depends not only on the discrepancies found between the cast vote record and the Audit Board interpretation, but also on the number of times that the cast vote record has occurred in the random sequence. 
   
 
  Field | Type | _______________Meaning_______________
@@ -182,7 +184,7 @@ county_name | Text String | Name of County
 contest_name | Text String | Name of contest  
  imprinted_id | Text String | Combination of scanner number, batch number and position within batch  that uniquely identifies the ballot card  and may be imprinted on the card when the ballot is scanned
  ballot_type | Text String | BallotType from Dominion CVR export file, a code for the set of contests that  should be present on the physical ballot card. Also known as _ballot style_.
- duplicates_in_random_sequence | Integer | Number of times that a discrepancy between the cast vote record with the given imprinted id and the audit board interpretation has been counted toward the risk level
+ counted | Integer | Number of times that a discrepancy between the cast vote record with the given imprinted id and the audit board interpretation has been counted toward the risk level. Can be more than one when there have been duplicate selections.
  choices_per_voting_computer | List of Text Strings | List of voter choices in the given contest on the given ballot card, as interpreted by the vote-tabulation computer system (note: overvotes recorded as blank votes)
  choices_per_audit_board | List of Text Strings | List of voter choices in the given contest on the given ballot card, as interpreted by the Audit Board (note: overvotes recorded as a too-long list of choices)
  consensus | YES/NO | YES if the Audit Board came to consensus on the interpretation of the given ballot card; NO if not;  blank if the card has not been reviewed by the Audit Board.
@@ -225,7 +227,7 @@ audited_prefix_length | Integer | Length of the longest prefix of the random seq
 
  Field | Type | _______________Meaning_______________ 
 --- | --- | ---
-seed | 20-Digit String | the random seed for the pseudo-random number generator
+seed | String | the random seed for the pseudo-random number generator
 
 ### upload_status
 
@@ -283,14 +285,14 @@ round_number | Integer | Round of the audit
 
 # Technical Notes
 
+## Character encoding
+Files are provided in Unicode's UTF-8 encoding.
+
 ## List Specifications
-Lists of choices are provided as JSON-format lists. When these strings occur within csv or json files, that requires an additional level of quoting, as is usually the case.
+Lists of choices are provided as JSON-format lists. When these strings occur within csv or json files, that may require an additional level of quoting.
 
 ## Ballots vs. Ballot Cards
 When a ballot extends across more than one piece of paper (a "card"), each card
 is tabulated independently.  In Counties which have any multi-card ballots, the
 ballot card counts provided will be greater than the turnout figures reported elsewhere. For example, 
-in November 2017 the County of Denver had a two-card ballot.
-
-
-
+in November 2017 the County of Denver had mostly two-card ballots.

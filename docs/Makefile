@@ -31,5 +31,8 @@ user_manual.docx: 20_user_manual.md
 export_manual.docx: 26_export_manual.md
 	pandoc 26_export_manual.md --variable linkcolor --table-of-contents --reference-docx=reference_fandf_pages.docx -f markdown -t docx -o export_manual.docx 
 
+export_manual.html: 26_export_manual.md
+	pandoc 26_export_manual.md --variable linkcolor --table-of-contents -f markdown -o export_manual.html
+
 clean:
 	rm -f book.pdf book.html runbook.docx county_runbook.docx sos_runbook.docx user_manual.docx
