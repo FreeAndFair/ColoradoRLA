@@ -262,13 +262,13 @@ def db_export(args, ac):
     logging.debug("pgurl: %s\n url: %s" % (pgurl, url))
 
     try:
-        ac.conn = psycopg2.connect(pgurl, user=user, password=password)
-        ac.conn.set_session(readonly=True, autocommit=True)
+        ac.connection = psycopg2.connect(pgurl, user=user, password=password)
+        ac.connection.set_session(readonly=True, autocommit=True)
     except psycopg2.Error as e:
         logging.error(e)
         return
 
-    ac.cur = ac.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    ac.cur = ac.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
     queryfiles = args.queryfiles
     if not queryfiles:
@@ -292,7 +292,93 @@ def db_export(args, ac):
 
         query_to_csvfile(ac, queryfile, resultfilebase + '.csv')
 
-    ac.conn.close()
+    # For each county in the audit, export random sequence
+
+    ac.cur.execute("SELECT id, name from county")
+    county_ids = ac.cur.fetchall()
+    for row in county_ids:
+        county_id = row['id']
+        county_name = row['name']
+        random_sequence(args, ac.connection, ac.cur, county_id, county_name)
+
+    ac.connection.close()
+
+
+SEQUENCE_SUBSEQUENCE_QUERY = """
+    SELECT
+       r.dashboard_id AS county_id,
+       r.number AS round_number,
+       r.ballot_sequence,
+       r.audit_subsequence
+    FROM
+       round AS r
+    WHERE
+       r.dashboard_id = %(county_id)s
+    ORDER BY county_id, round_number
+    ;
+"""
+
+CVR_SELECTION_QUERY = """
+    SELECT
+       cvr_s.id,
+       cty.name AS county_name,
+       cvr_s.scanner_id,
+       cvr_s.batch_id,
+       cvr_s.record_id,
+       cvr_s.imprinted_id,
+       cvr_s.ballot_type
+    FROM cast_vote_record AS cvr_s
+    LEFT JOIN county AS cty
+    ON cvr_s.county_id = cty.id
+    WHERE cvr_s.id IN %(cvr_id_list)s
+    ORDER BY county_name
+    ;
+"""
+
+def random_sequence(args, connection, cursor, county_id, county_name):
+    "Export list of ballots to be audited by county in random selection order, with dups"
+
+    """
+    Probably easiest for reporting to just use the sequences in the new round table to fetch the CVRs from the dB directly (use the ballot sequences to fetch them in bulk and then the audit subsequences to present the fetched records in order).
+    Another straightforward thing to do: get the cvr IDs from the ballot sequence list (because the ballots returned from the endpoint are in the same order) and use those to put the ballots in audit sequence order based on the audit subsequence list.
+    """
+
+    cursor.execute(SEQUENCE_SUBSEQUENCE_QUERY, {'county_id': county_id})
+
+    rows = cursor.fetchall()
+    logging.debug("Row count: %d" % len(rows))
+
+    if not rows:
+        return
+
+    print("county_name,round_number,random_sequence_index,scanner_id,batch_id,record_id,imprinted_id,ballot_type")
+    prefix = 0
+    for sequences in rows:
+        round_number = sequences['round_number']
+        ballot_sequence = json.loads(sequences['ballot_sequence'])
+        cursor.execute(CVR_SELECTION_QUERY,
+                       {'cvr_id_list': tuple(ballot_sequence)})
+
+        # Build a dictionary of cvrs, to replay according to the random sequence
+        cvrs = {}
+        for cvr in cursor.fetchall():
+            cvrs[cvr['id']] = cvr
+
+        audit_subsequence = json.loads(sequences['audit_subsequence'])
+        for i, cvr_id in enumerate(audit_subsequence):
+            cvr = cvrs[cvr_id]
+            print('"%s",%d,%d,%d,%d,%d,"%s","%s"' % (
+                cvr['county_name'],
+                round_number,
+                prefix + i + 1,
+                cvr['scanner_id'],
+                cvr['batch_id'],
+                cvr['record_id'],
+                cvr['imprinted_id'],
+                cvr['ballot_type']))
+
+        prefix += i + 1
+        logging.debug('Total of %d selected in round %d, prefix=%d' % (i + 1, round_number, prefix))
 
 
 def show_elapsed(r, *args, **kwargs):
