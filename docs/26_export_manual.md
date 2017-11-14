@@ -30,17 +30,17 @@ the Colorado Department of State must provide to the following to the public :
 
 
 # Exports
-
-The data files in this section are generated based on ``sql`` query files.
-These are always produced in two formats: json and csv.
-The basename of each resulting file is the same as the basename of the query file.
-Thus, given the query file ``seed.sql``, the files ``seed.json`` and ``seed.csv``
-will be produced.
+The ``rla_export`` command exports many of the files necessary for independent verification of 
+the RLA, whether by candidates, parties, other organizations. 
 
 ## Database Exports in.csv and .json format
 
-The `rla_export` command exports many of the files necessary for independent verification of 
-the RLA, whether by candidates, parties, other organizations. 
+These data files in this section are generated based on `sql` query files.
+These are always produced in two formats: ``.json` and ``.csv``.
+The basename of each resulting file is the same as the basename of the query file.
+For example, the query file ``seed.sql``, produces files ``seed.json`` and ``seed.csv``.
+
+
 Specific exports are detailed below.
 
 ### m_tabulate.sql
@@ -55,7 +55,7 @@ votes | Integer | Number of votes recorded for the given choice in the given con
 
 ### m_selected_contest_audit_details_by_cvr
 
- For each contest under audit, and for each cast vote record that contains the given contest and has been presented to the 
+ This file contains, for each contest under audit, and for each cast vote record that contains the given contest and has been presented to the 
   Audit Board for verification, 
   the RLA system's record of the Audit Board's review of 
   the physical ballot for that contest.
@@ -68,7 +68,7 @@ votes | Integer | Number of votes recorded for the given choice in the given con
 county_name | Text String | Name of County
 contest_name | Text String | Name of contest  
  imprinted_id | Text String | Combination of scanner number, batch number and position within batch  that uniquely identifies the ballot card  and may be imprinted on the card when the ballot is scanned
- ballot_type | Text String | BallotType from Dominion CVR export file, a code for the set of contests that  should be present on the physical ballot card. Often known as _ballot style_.
+ ballot_type | Text String | BallotType from Dominion CVR export file, a code for the set of contests that  should be present on the physical ballot card. Also known as _ballot style_.
  duplicates_in_random_sequence | Integer | Number of times that a discrepancy between the cast vote record with the given imprinted id and the audit board interpretation has been counted toward the risk level
  choices_per_voting_computer | List of Text Strings  | List of voter choices in the given contest on the given ballot card, as interpreted by the vote-tabulation computer system (note: overvotes recorded as blank votes)
  choices_per_audit_board | List of Text Strings | List of voter choices in the given contest on the given ballot card, as interpreted by the Audit Board (note: overvotes recorded as a too-long list of choices)
@@ -81,7 +81,7 @@ contest_name | Text String | Name of contest
 ### m_selected_contest_static
 
 List of contests selected to drive the audit, with information
-  about the contest that doesn't change during the audit, namely the reason for 
+  about each contest that doesn't change during the audit, namely: the reason for 
   the audit, the number of winners allowed in the contest, the tabulated winners of the contest, the numbers of ballot cards recorded as cast in the county (total number as well as the number containing the given contest) and the value of the error inflation factor (gamma).
 
 
@@ -102,7 +102,7 @@ contest_ballot_card_count | Integer | The number of ballot cards recorded in the
 ### m_selected_contest_dynamic
 
  List of contests selected to drive the audit, with current status.  Which contests (if any) have
-  been selected for hand count? How many discrepancies of each type are there?
+  been selected for hand count? How many discrepancies of each type have been found so far (in the random sequence of ballot cards, including duplicates)?
 
  Field | Type | _______________Meaning_______________ 
 --- | --- | ---
@@ -132,12 +132,11 @@ Hashes of ballot manifest files
  Field | Type | _______________Meaning_______________ 
 --- | --- | ---
 county_name | Text String | Name of County
- ballot_manifest_hash | Text String | Hash value entered by the given county after uploading the ballot manifest file
-     to be used in the audit
+ ballot_manifest_hash | Text String | Hash value entered by the given county after uploading the ballot manifest file to be used in the audit
 
 ### all_contest_static
 
-List of all contests, with information about the contest that doesn't change during the audit, namely the reason for the audit, the number of winners allowed in the contest, the tabulated winners of the contest, the numbers of ballot cards recorded as cast in the county (total number as well as the number containing the given contest) and the value of the error inflation factor (gamma).
+List of all contests, with information about each contest that doesn't change during the audit, namely the reason for the audit, the number of winners allowed in the contest, the tabulated winners of the contest, the numbers of ballot cards recorded as cast in the county (total number as well as the number containing the given contest) and the value of the error inflation factor (gamma).
 
  Field | Type | _______________Meaning_______________ 
 --- | --- | ---
@@ -154,14 +153,14 @@ contest_ballot_card_count | Integer | The number of ballot cards recorded in the
 
 ### all_contest_dynamic
 
-List of contests with current status.  Which contests has the  Secretary selected for audit? Which contests (if any) has the  Secretary selected for hand count? How many discrepancies of each type have been found so far?
+List of contests with current status.  Which contests has the  Secretary selected for audit? Which contests (if any) has the  Secretary selected for hand count? How many discrepancies of each type have been found so far (in the random sequence of ballot cards, including duplicates)?
 
  Field | Type | _______________Meaning_______________ 
 --- | --- | ---
 county_name | Text String | Name of County
 contest_name | Text String | Name of contest 
 current_audit_type | Text String | Comparison audit, ballot polling audit or hand count
- computerized_audit_status | Text String | Not started, in progress, risk limit achieved, or ended.  Because declaring a hand count ends the computerized portion of the audit, a contest that is being hand-counted will have the value "ended" in this field.
+ random_audit_status | Text String | Not started, in progress, risk limit achieved, or ended.  Because declaring a hand count ends the computerized portion of the audit, a contest that is being hand-counted will have the value "ended" in this field.
  one_vote_over_count | Integer | The number of ballot cards in the random sequence so far (with duplicates)  on which there is a one-vote overstatement  (per Lindeman & Stark's A Gentle Introduction to Risk Limiting Audits).
  one_vote_under_count | Integer | The number of ballot cards in the random sequence so far (with duplicates)  on which there is a one-vote understatement  (per Lindeman & Stark's A Gentle Introduction to Risk Limiting Audits).
  two_vote_over_count | Integer | The number of ballot cards in the random sequence so far (with duplicates)  on which there is a two-vote overstatement  (per Lindeman & Stark's A Gentle Introduction to Risk Limiting Audits).
@@ -169,7 +168,7 @@ current_audit_type | Text String | Comparison audit, ballot polling audit or han
 
 ### all_contest_audit_details_by_cvr
 
-  For each contest  and for each cast vote record that contains the given contest and has been presented to the 
+  This file contains, for each contest  and for each cast vote record that contains the given contest and has been presented to the 
   Audit Board for verification, 
   the RLA system's record of the Audit Board's review of 
   the physical ballot for that contest.
@@ -182,7 +181,7 @@ current_audit_type | Text String | Comparison audit, ballot polling audit or han
 county_name | Text String | Name of County
 contest_name | Text String | Name of contest  
  imprinted_id | Text String | Combination of scanner number, batch number and position within batch  that uniquely identifies the ballot card  and may be imprinted on the card when the ballot is scanned
- ballot_type | Text String | BallotType from Dominion CVR export file, a code for the set of contests that  should be present on the physical ballot card. Often known as _ballot style_.
+ ballot_type | Text String | BallotType from Dominion CVR export file, a code for the set of contests that  should be present on the physical ballot card. Also known as _ballot style_.
  duplicates_in_random_sequence | Integer | Number of times that a discrepancy between the cast vote record with the given imprinted id and the audit board interpretation has been counted toward the risk level
  choices_per_voting_computer | List of Text Strings | List of voter choices in the given contest on the given ballot card, as interpreted by the vote-tabulation computer system (note: overvotes recorded as blank votes)
  choices_per_audit_board | List of Text Strings | List of voter choices in the given contest on the given ballot card, as interpreted by the Audit Board (note: overvotes recorded as a too-long list of choices)
@@ -208,10 +207,8 @@ sign_out_time  | Timestamp |  End of the given session for the given audit board
 county_name | Text String | Name of County
 scanner_id | Integer | the identification number of a scanner used to create the cast vote record from the physical ballot card
 batch_id | Integer | The identification number of a batch of ballot cards scanned by the given scanner
-count_per_manifest | Integer | The number of ballot cards in the given batch on the given scanner,
-according to the ballot manifest file uploaded by the County
-count_per_cvr_file | Integer | The number of ballot cards in the given batch on the given scanner,
-according to the cast-vote-record file export from the voting computer, uploaded by the County
+count_per_manifest | Integer | The number of ballot cards in the given batch on the given scanner, according to the ballot manifest file uploaded by the County
+count_per_cvr_file | Integer | The number of ballot cards in the given batch on the given scanner, according to the cast-vote-record file export from the voting computer, uploaded by the County
 difference | Integer | The difference between the two counts, which will be zero for a correctly tabulated election. If positive, there are ballots listed in the manifest that are not found in the CVR file; if negative, there are ballots in the CVR file that are not listed in the manifest.
 
 
@@ -287,7 +284,7 @@ round_number | Integer | Round of the audit
 # Technical Notes
 
 ## List Specifications
-Each list of integers are encoded as a json string, i.e., a string enclosed in square brackets ([]) with numbers delimited by commas (,)
+Each list of text strings is encoded as a json string, i.e., a string enclosed in square brackets ([]) with entries separated by commas (,). 
 
 ## Ballots vs. Ballot Cards
 When a ballot extends across more than one piece of paper (a "card"), each card
