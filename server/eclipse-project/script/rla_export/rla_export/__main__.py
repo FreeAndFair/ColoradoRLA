@@ -19,6 +19,8 @@ Full command line usage synopsis:
 See README.md for documentation.
 """
 
+from __future__ import (print_function, division,
+                        absolute_import, unicode_literals)
 import string
 import os
 import sys
@@ -30,6 +32,7 @@ import glob
 import re
 import pkg_resources
 import ConfigParser
+import tempfile
 import psycopg2
 import psycopg2.extras
 import requests
@@ -108,10 +111,10 @@ class fragile(object):
     """A Context Manager to allow breaking out of other context managers.
     Usage:
         with fragile(open(path)) as f:
-            print 'before condition'
+            print('before condition')
             if condition:
                 raise fragile.Break
-            print 'after condition'
+            print('after condition')
 
     Credit to [Break or exit out of "with" statement? answer by Orez](https://stackoverflow.com/a/23665658/507544)
     """
@@ -343,50 +346,64 @@ def random_sequence(args, connection, cursor, county_id, county_name):
     Another straightforward thing to do: get the cvr IDs from the ballot sequence list (because the ballots returned from the endpoint are in the same order) and use those to put the ballots in audit sequence order based on the audit subsequence list.
     """
 
-    cursor.execute(SEQUENCE_SUBSEQUENCE_QUERY, {'county_id': county_id})
+    try:
+        cursor.execute(SEQUENCE_SUBSEQUENCE_QUERY, {'county_id': county_id})
 
-    rows = cursor.fetchall()
-    logging.debug("Row count: %d" % len(rows))
+        rows = cursor.fetchall()
+        logging.debug("Row count: %d" % len(rows))
 
-    if not rows:
-        return
+        if not rows:
+            return
 
-    # Build a dictionary of cvrs, to replay according to the random sequence
-    cvrs = {}
+        # Build a dictionary of cvrs, to replay according to the random sequence
+        cvrs = {}
 
-    print("county_name,round_number,random_sequence_index,scanner_id,batch_id,record_id,imprinted_id,ballot_type")
-    prefix = 0
-    for sequences in rows:
-        round_number = sequences['round_number']
-        ballot_sequence = json.loads(sequences['ballot_sequence'])
-        audit_subsequence = json.loads(sequences['audit_subsequence'])
 
-        logging.debug("random_sequence: ballot_sequence for county %s, round %d: %s" %
-                      (county_name, round_number, ballot_sequence))
-        logging.debug("random_sequence: audit_subsequence for county %s, round %d: %s" %
-                      (county_name, round_number, audit_subsequence))
+        with tempfile.NamedTemporaryFile(mode="w", dir=args.export_dir, delete=False) as stream:
+            print("county_name,round_number,random_sequence_index,scanner_id,batch_id,record_id,imprinted_id,ballot_type",
+                  file=stream)
+            prefix = 0
+            for sequences in rows:
+                round_number = sequences['round_number']
+                ballot_sequence = json.loads(sequences['ballot_sequence'])
+                audit_subsequence = json.loads(sequences['audit_subsequence'])
 
-        cursor.execute(CVR_SELECTION_QUERY,
-                       {'cvr_id_list': tuple(ballot_sequence)})
+                logging.debug("random_sequence: ballot_sequence for county %s, round %d: %s" %
+                              (county_name, round_number, ballot_sequence))
+                logging.debug("random_sequence: audit_subsequence for county %s, round %d: %s" %
+                              (county_name, round_number, audit_subsequence))
 
-        for cvr in cursor.fetchall():
-            cvrs[cvr['id']] = cvr
+                cursor.execute(CVR_SELECTION_QUERY,
+                               {'cvr_id_list': tuple(ballot_sequence)})
 
-        for i, cvr_id in enumerate(audit_subsequence):
-            cvr = cvrs[cvr_id]
-            print('"%s",%d,%d,%d,%d,%d,"%s","%s"' % (
-                cvr['county_name'],
-                round_number,
-                prefix + i + 1,
-                cvr['scanner_id'],
-                cvr['batch_id'],
-                cvr['record_id'],
-                cvr['imprinted_id'],
-                cvr['ballot_type']))
+                for cvr in cursor.fetchall():
+                    cvrs[cvr['id']] = cvr
 
-        prefix += i + 1
-        logging.debug('Total of %d selected in round %d, prefix=%d' % (i + 1, round_number, prefix))
+                for i, cvr_id in enumerate(audit_subsequence):
+                    cvr = cvrs[cvr_id]
+                    print('"%s",%d,%d,%d,%d,%d,"%s","%s"' % (
+                        cvr['county_name'],
+                        round_number,
+                        prefix + i + 1,
+                        cvr['scanner_id'],
+                        cvr['batch_id'],
+                        cvr['record_id'],
+                        cvr['imprinted_id'],
+                        cvr['ballot_type']),
+                      file=stream)
 
+                prefix += i + 1
+                logging.debug('Total of %d selected in round %d, prefix=%d' % (i + 1, round_number, prefix))
+
+            filename = os.path.join(args.export_dir, 'random_sequence_%s.csv' % county_name)
+            os.rename(stream.name, filename)
+
+    except IOError as e:
+        print("I/O error({0}): {1}".format(e.errno, e.strerror))
+
+    except Exception as e:
+        print("e: %s, type(e): %s" % (e, type(e)))
+        logging.error("rla_export: random_sequence: failure: %s" % e)
 
 def show_elapsed(r, *args, **kwargs):
     print("Endpoint %s: %s. Elapsed time %.3f" % (r.url, r, r.elapsed.total_seconds()))
