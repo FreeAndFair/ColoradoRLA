@@ -10,28 +10,26 @@ in the [public code repository](https://github.com/FreeAndFair/ColoradoRLA/tree/
 The `README.rst` file gives instructions for installing the python package, and describes various run-time options. For a catalog of the exports produced by the command, see below.
 
 
-## Database Exports
-The `rla_export` command exports many of the files necessary for independent verification of 
-the RLA, whether by candidates, parties, other organizations. 
-Specific exports are detailed below.
-
-
-
-### Minimum Data Required to Allow Public to Reproduce Audit Calculations
+# Minimum Data Required to Allow Public to Reproduce Audit Calculations
 
 To allow independent verification of the RLA, 
-the Colorado Department of State must provide to the public all the export files listed in this section,  along with:
+the Colorado Department of State must provide to the following to the public :
 
-- all CVR files
-- all ballot manifest files
+- all CVR files and their hashes
+- all ballot manifest files and their hashes
+- the list of contests selected for audit, and which if any have been designated for hand count
 - opportunity to observe the random seed selection
+- for each County, the random sequence of ballot cards determined by the random seed and the pseudo-random number generator
 - opportunity to observe the activities of the County Audit Boards
 - announced tabulated results for contests selected for audit
 - the risk limit
 - the error inflation factor
+- the tabulation of results and counts of ballot cards used to calculate the diluted margin (including the number of winners for each contest selected for audit)
+- for each County and each round of the audit, the list of ballot cards assigned to the Audit Board for review
+- for each contest selected for audit, and for each cast vote record that contains the given contest and has been presented to the Audit Board for verification, the RLA system's record of the Audit Board's review of the physical ballot for that contest
 
-Providing the above to the public, along with the database exports listed below will fulfill the minimum
-requirements of a publicly-verifiable audit.
+
+# Exports
 
 The data files in this section are generated based on ``sql`` query files.
 These are always produced in two formats: json and csv.
@@ -39,11 +37,23 @@ The basename of each resulting file is the same as the basename of the query fil
 Thus, given the query file ``seed.sql``, the files ``seed.json`` and ``seed.csv``
 will be produced.
 
-When a ballot extends across more than one piece of paper (a "card"), each card
-is tabulated independently.  In counties which have any multi-card ballots, the
-ballot card counts provided will therefore not match turnout figures reported elsewhere.
+## Database Exports in.csv and .json format
 
-#### m_selected_contest_audit_details_by_cvr
+The `rla_export` command exports many of the files necessary for independent verification of 
+the RLA, whether by candidates, parties, other organizations. 
+Specific exports are detailed below.
+
+### m_tabulate.sql
+
+ Field | Type | _______________Meaning_______________ 
+--- | --- | ---
+county_name | Text String | Name of County
+contest_name | Text String | Name of contest 
+choice | Text String | Name of candidate or for a ballot question "Yes" or "No" 
+votes | Integer | Number of votes recorded for the given choice in the given contest in the given County
+
+
+### m_selected_contest_audit_details_by_cvr
 
  For each contest under audit, and for each cast vote record that contains the given contest and has been presented to the 
   Audit Board for verification, 
@@ -68,7 +78,7 @@ contest_name | Text String | Name of contest
  cvr_id | Integer | Internal database id for the cast vote record
 
 
-#### m_selected_contest_static
+### m_selected_contest_static
 
 List of contests selected to drive the audit, with information
   about the contest that doesn't change during the audit, namely the reason for 
@@ -89,11 +99,9 @@ contest_ballot_card_count | Integer | The number of ballot cards recorded in the
  gamma | Number | Error inflation factor defined in Stark's paper, Super-simple simultaneous single-ballot risk-limiting audits, which is cited in Lindeman and Stark's paper, A Gentle Introduction to Risk Limiting Audits, which is cited in Rule 25.2.2(j))
 
   
-#### m_selected_contest_dynamic
+### m_selected_contest_dynamic
 
- List of contests selected to drive the audit, with current status.
-  Which contests are driving the audit, vs which are (by default) being audited
-  opportunisticly? Which contests (if any) have
+ List of contests selected to drive the audit, with current status.  Which contests (if any) have
   been selected for hand count? How many discrepancies of each type are there?
 
  Field | Type | _______________Meaning_______________ 
@@ -108,7 +116,7 @@ random_audit_status | Text String |  NOT_STARTED, NOT_AUDITABLE, IN_PROGRESS or 
  two_vote_under_count | Integer | The number of ballot cards in the random sequence so far (with duplicates)  on which there is a two-vote understatement  (per Lindeman & Stark's A Gentle Introduction to Risk Limiting Audits).
 
 
-#### m_cvr_hash
+### m_cvr_hash
 
 Hashes of CVR files
 
@@ -117,7 +125,7 @@ Hashes of CVR files
 county_name | Text String | Name of County
  cvr_export_hash | Text String | Hash value entered by the given county after uploading the cast vote record file to be used in the audit
 
-#### m_manifest_hash
+### m_manifest_hash
 
 Hashes of ballot manifest files
 
@@ -127,23 +135,7 @@ county_name | Text String | Name of County
  ballot_manifest_hash | Text String | Hash value entered by the given county after uploading the ballot manifest file
      to be used in the audit
 
-
-
-#### m_tabulate.sql
-
- Field | Type | _______________Meaning_______________ 
---- | --- | ---
-county_name | Text String | Name of County
-contest_name | Text String | Name of contest 
-choice | Text String | Name of candidate or for a ballot question "Yes" or "No" 
-votes | Integer | Number of votes recorded for the given choice in the given contest in the given County
-
-
-### Other Data Exports 
-
-The exports in this section, while not strictly necessary for independent verification of the audit calculations, will be of interest and value to the public.
-
-#### all_contest_static
+### all_contest_static
 
 List of all contests, with information about the contest that doesn't change during the audit, namely the reason for the audit, the number of winners allowed in the contest, the tabulated winners of the contest, the numbers of ballot cards recorded as cast in the county (total number as well as the number containing the given contest) and the value of the error inflation factor (gamma).
 
@@ -160,7 +152,7 @@ county_ballot_card_count | Integer | The number of ballot cards recorded in the 
 contest_ballot_card_count | Integer | The number of ballot cards recorded in the given County that contain the contest in question
  gamma | Number | Error inflation factor defined in Stark's paper, Super-simple simultaneous single-ballot risk-limiting audits, which is cited in Lindeman and Stark's paper, A Gentle Introduction to Risk Limiting Audits, which is cited in Rule 25.2.2(j))
 
-#### all_contest_dynamic
+### all_contest_dynamic
 
 List of contests with current status.  Which contests has the  Secretary selected for audit? Which contests (if any) has the  Secretary selected for hand count? How many discrepancies of each type have been found so far?
 
@@ -175,7 +167,7 @@ current_audit_type | Text String | Comparison audit, ballot polling audit or han
  two_vote_over_count | Integer | The number of ballot cards in the random sequence so far (with duplicates)  on which there is a two-vote overstatement  (per Lindeman & Stark's A Gentle Introduction to Risk Limiting Audits).
  two_vote_under_count | Integer | The number of ballot cards in the random sequence so far (with duplicates)  on which there is a two-vote understatement  (per Lindeman & Stark's A Gentle Introduction to Risk Limiting Audits).
 
-#### all_contest_audit_details_by_cvr
+### all_contest_audit_details_by_cvr
 
   For each contest  and for each cast vote record that contains the given contest and has been presented to the 
   Audit Board for verification, 
@@ -200,17 +192,8 @@ contest_name | Text String | Name of contest
  cvr_id | Integer | Internal database id for the cast vote record
 
 
-#### sequence_subsequence
 
- Field | Type | _______________Meaning_______________
---- | --- | ---
-county_name | Text String | Name of County
-round_number | Integer | Round of the audit
-ballot_sequence | List of Integers | List of the internal database ids of the cast vote records presented to the Audit Board for review in the given County in the given round of the audit
-audit_subsequence | List of Integers | List of the internal database ids of the portion of the random sequence (with duplicates) included in the given round in the given County.
-
-
-#### auditboards
+### auditboards
 
  Field | Type | _______________Meaning_______________ 
 --- | --- | ---
@@ -219,7 +202,7 @@ member  | Text String | Name of audit board member
 sign_in_time | Timestamp |  Beginning of an audit board member's RLA Tool session
 sign_out_time  | Timestamp |  End of the given session for the given audit board member
 
-#### batch_count_comparison
+### batch_count_comparison
  Field | Type | _______________Meaning_______________ 
 --- | --- | ---
 county_name | Text String | Name of County
@@ -234,20 +217,20 @@ difference | Integer | The difference between the two counts, which will be zero
 
 
 
-#### prefix_length
+### prefix_length
 
  Field | Type | _______________Meaning_______________ 
 --- | --- | ---
 county_name | Text String | Name of County
 audited_prefix_length | Integer | Length of the longest prefix of the random sequence of cvr selections containing only cvrs that have been audited
 
-#### seed
+### seed
 
  Field | Type | _______________Meaning_______________ 
 --- | --- | ---
 seed | 20-Digit String | the random seed for the pseudo-random number generator
 
-#### upload_status
+### upload_status
 
  Field | Type | _______________Meaning_______________ 
 --- | --- | ---
@@ -259,13 +242,58 @@ size | Integer | Size of file in bytes
 status | Text String | IMPORTED_AS_BALLOT_MANIFEST, IMPORTED_AS_CVR_EXPORT or NOT_IMPORTED
 timestamp | Timestamp | Date and time of the most recent update to the upload status of the given file
 
-## State and County Audit Reports
 
-Other export files are the same as the files available via the GUI interface,
-for example ``state_report.xlsx``.
 
-## Technical Notes
+## Reports in .xlsx Format
 
-### List Specifications
-Lists of integers are formatted as json data, i.e., list enclosed in square brackets ([]) and items delimited by commas (,).
+Some files are exported from the application server in .xlsx format.
+
+### County Audit Reports
+There is a separate report (in .xlsx format) for each County. Within each County's report there is a separate spreadsheet for each round of the audit containing the list of ballot cards assigned to the County Audit Board for that Round. For each ballot card in the list the spreadsheet indicates whether it has been reviewed, whether any discrepancies were found on the card and whether the Audit Board disagreed on the interpretation of the card. There is a summary page with a variety of audit information, and an affirmation page (which will be blank).
+
+### State Audit Report
+Within this report (in .xlsx format) there is a separate spreadsheet for each County containing the information from that County's round spreadsheets. The summary spreadsheet contains a variety of audit information, both general and county-specific.
+
+## Lists in .csv Format
+
+Some files are exported from the application server in .csv format.
+
+### County Ballot Card List by Round 
+
+ Field | Type | _______________Meaning_______________ 
+--- | --- | ---
+ scanner_id | Integer | TabulatorNum from Dominion CVR export file,  identifying the tabulator used to read the physical ballot card   
+ batch_id | Integer | BatchId from Dominion CVR export file,  identifying the batch of physical ballot cards in which the card was scanned
+ record_id | Integer | RecordId from Dominion CVR export file, indicating the position of the card  in its batch of physical ballot cards 
+ imprinted_id | Text String | combination of scanner, batch and record ids  that uniquely identifies the ballot card  and may be imprinted on the card
+ ballot_type | Text String | BallotType from Dominion CVR export file, a code for the set of contests that  should be present on the physical ballot card. Also known as _ballot style_.
+storage_location |  Text String | The physical location of the ballot
+cvr_number | Integer | The index of the given cast vote record in the CVR file, starting at 1, used to associate lines of the CVR file to numbers generated by the pseudo-random number generator
+audited | Yes/No | Yes if the ballot card has been reviewed by the Audit Board; otherwise No.
+
+### County Random Sequence 
+
+Field | Type | _______________Meaning_______________ 
+--- | --- | ---
+county_name | Text String | Name of County
+round_number | Integer | Round of the audit
+ random_sequence_index | Integer | The position in the random sequence for the given County
+ scanner_id | Integer | TabulatorNum from Dominion CVR export file,  identifying the tabulator used to read the physical ballot card   
+ batch_id | Integer | BatchId from Dominion CVR export file,  identifying the batch of physical ballot cards in which the card was scanned
+ record_id | Integer | RecordId from Dominion CVR export file, indicating the position of the card  in its batch of physical ballot cards 
+ imprinted_id | Text String | combination of scanner, batch and record ids  that uniquely identifies the ballot card  and may be imprinted on the card
+ ballot_type | Text String | BallotType from Dominion CVR export file, a code for the set of contests that  should be present on the physical ballot card. Also known as _ballot style_.
+
+# Technical Notes
+
+## List Specifications
+Each list of integers are encoded as a json string, i.e., a string enclosed in square brackets ([]) with numbers delimited by commas (,)
+
+## Ballots vs. Ballot Cards
+When a ballot extends across more than one piece of paper (a "card"), each card
+is tabulated independently.  In Counties which have any multi-card ballots, the
+ballot card counts provided will be greater than the turnout figures reported elsewhere. For example, 
+in November 2017 the County of Denver had a two-card ballot.
+
+
 
