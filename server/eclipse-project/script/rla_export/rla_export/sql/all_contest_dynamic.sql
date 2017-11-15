@@ -6,10 +6,14 @@ SELECT
    cn.name AS contest_name,
    cta.audit AS current_audit_type,
    ccca.audit_status as random_audit_status,
+   ccca.audited_sample_count,
+   ccca.optimistic_samples_to_audit,
+   ccca.estimated_samples_to_audit,
    ccca.two_vote_over_count,
    ccca.one_vote_over_count,
    ccca.one_vote_under_count,
-   ccca.two_vote_under_count
+   ccca.two_vote_under_count,
+   ccca.disagreement_count
 FROM 
    county_contest_comparison_audit AS ccca
 LEFT JOIN

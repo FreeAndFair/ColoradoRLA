@@ -17,3 +17,5 @@ cp -p ../../../../docs/export_manual.html $deliverable
 pandoc -t html README.rst > $deliverable/README.html
 
 zip -r $deliverable.zip $deliverable
+
+# Then tag -v tagname and git push --tags origin tagname
