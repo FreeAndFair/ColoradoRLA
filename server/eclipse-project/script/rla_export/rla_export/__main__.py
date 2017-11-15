@@ -85,7 +85,8 @@ parser.add_argument('-u, --url', dest='url',
 parser.add_argument('-v, --version', dest='version', action='store_true',
                     help='Print version number')
 parser.add_argument("-d, --debuglevel", type=int, default=logging.WARNING, dest="debuglevel",
-  help="Set logging level to debuglevel: DEBUG=10, INFO=20,\n WARNING=30 (the default), ERROR=40, CRITICAL=50")
+  help="Set logging level to debuglevel, expressed as an integer: "
+  "DEBUG=10, INFO=20, endpoint timing=25, WARNING=30 (the default), ERROR=40, CRITICAL=50")
 
 parser.add_argument('--test',
   action="store_true", default=False,
@@ -493,7 +494,7 @@ def random_sequence(args, connection, cursor, county_id, county_name):
         logging.error("rla_export: random_sequence: failure: %s" % e)
 
 def show_elapsed(r, *args, **kwargs):
-    print("Endpoint %s: %s. Elapsed time %.3f" % (r.url, r, r.elapsed.total_seconds()))
+    logging.loglevel(25,"Endpoint %s: %s. Elapsed time %.3f" % (r.url, r, r.elapsed.total_seconds()))
 
 
 def parse_corla_config(filename):
