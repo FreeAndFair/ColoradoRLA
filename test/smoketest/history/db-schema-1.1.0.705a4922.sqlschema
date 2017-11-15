@@ -1,0 +1,1041 @@
+--
+-- PostgreSQL database dump
+--
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET search_path = public, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: administrator; Type: TABLE; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE TABLE administrator (
+    id bigint NOT NULL,
+    full_name character varying(255) NOT NULL,
+    last_login_time timestamp without time zone,
+    last_logout_time timestamp without time zone,
+    type character varying(255) NOT NULL,
+    username character varying(255) NOT NULL,
+    version bigint,
+    county_id bigint
+);
+
+
+ALTER TABLE public.administrator OWNER TO corla;
+
+--
+-- Name: asm_state; Type: TABLE; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE TABLE asm_state (
+    id bigint NOT NULL,
+    asm_class character varying(255) NOT NULL,
+    asm_identity character varying(255),
+    state_class character varying(255),
+    state_value character varying(255),
+    version bigint
+);
+
+
+ALTER TABLE public.asm_state OWNER TO corla;
+
+--
+-- Name: audit_board; Type: TABLE; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE TABLE audit_board (
+    dashboard_id bigint NOT NULL,
+    members text,
+    sign_in_time timestamp without time zone NOT NULL,
+    sign_out_time timestamp without time zone,
+    index integer NOT NULL
+);
+
+
+ALTER TABLE public.audit_board OWNER TO corla;
+
+--
+-- Name: audit_intermediate_report; Type: TABLE; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE TABLE audit_intermediate_report (
+    dashboard_id bigint NOT NULL,
+    report character varying(255),
+    "timestamp" timestamp without time zone,
+    index integer NOT NULL
+);
+
+
+ALTER TABLE public.audit_intermediate_report OWNER TO corla;
+
+--
+-- Name: audit_investigation_report; Type: TABLE; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE TABLE audit_investigation_report (
+    dashboard_id bigint NOT NULL,
+    name character varying(255),
+    report character varying(255),
+    "timestamp" timestamp without time zone,
+    index integer NOT NULL
+);
+
+
+ALTER TABLE public.audit_investigation_report OWNER TO corla;
+
+--
+-- Name: ballot_manifest_info; Type: TABLE; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE TABLE ballot_manifest_info (
+    id bigint NOT NULL,
+    batch_id integer NOT NULL,
+    batch_size integer NOT NULL,
+    county_id bigint NOT NULL,
+    scanner_id integer NOT NULL,
+    storage_location character varying(255) NOT NULL,
+    version bigint
+);
+
+
+ALTER TABLE public.ballot_manifest_info OWNER TO corla;
+
+--
+-- Name: cast_vote_record; Type: TABLE; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE TABLE cast_vote_record (
+    id bigint NOT NULL,
+    ballot_type character varying(255) NOT NULL,
+    batch_id integer NOT NULL,
+    county_id bigint NOT NULL,
+    cvr_number integer NOT NULL,
+    imprinted_id character varying(255) NOT NULL,
+    record_id integer NOT NULL,
+    record_type character varying(255) NOT NULL,
+    scanner_id integer NOT NULL,
+    sequence_number integer,
+    "timestamp" timestamp without time zone,
+    version bigint
+);
+
+
+ALTER TABLE public.cast_vote_record OWNER TO corla;
+
+--
+-- Name: contest; Type: TABLE; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE TABLE contest (
+    id bigint NOT NULL,
+    description character varying(255) NOT NULL,
+    name character varying(255) NOT NULL,
+    sequence_number integer NOT NULL,
+    version bigint,
+    votes_allowed integer NOT NULL,
+    winners_allowed integer NOT NULL,
+    county_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.contest OWNER TO corla;
+
+--
+-- Name: contest_choice; Type: TABLE; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE TABLE contest_choice (
+    contest_id bigint NOT NULL,
+    description character varying(255),
+    fictitious boolean NOT NULL,
+    name character varying(255),
+    qualified_write_in boolean NOT NULL,
+    index integer NOT NULL
+);
+
+
+ALTER TABLE public.contest_choice OWNER TO corla;
+
+--
+-- Name: contest_to_audit; Type: TABLE; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE TABLE contest_to_audit (
+    dashboard_id bigint NOT NULL,
+    audit character varying(255),
+    contest_id bigint NOT NULL,
+    reason character varying(255)
+);
+
+
+ALTER TABLE public.contest_to_audit OWNER TO corla;
+
+--
+-- Name: county; Type: TABLE; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE TABLE county (
+    id bigint NOT NULL,
+    name character varying(255) NOT NULL,
+    version bigint
+);
+
+
+ALTER TABLE public.county OWNER TO corla;
+
+--
+-- Name: county_contest_comparison_audit; Type: TABLE; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE TABLE county_contest_comparison_audit (
+    id bigint NOT NULL,
+    audit_reason character varying(255) NOT NULL,
+    audit_status character varying(255) NOT NULL,
+    audited_sample_count integer NOT NULL,
+    disagreement_count integer NOT NULL,
+    estimated_recalculate_needed boolean NOT NULL,
+    estimated_samples_to_audit integer NOT NULL,
+    gamma numeric(10,8) NOT NULL,
+    one_vote_over_count integer NOT NULL,
+    one_vote_under_count integer NOT NULL,
+    optimistic_recalculate_needed boolean NOT NULL,
+    optimistic_samples_to_audit integer NOT NULL,
+    other_count integer NOT NULL,
+    risk_limit numeric(10,8) NOT NULL,
+    two_vote_over_count integer NOT NULL,
+    two_vote_under_count integer NOT NULL,
+    version bigint,
+    contest_id bigint NOT NULL,
+    contest_result_id bigint NOT NULL,
+    dashboard_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.county_contest_comparison_audit OWNER TO corla;
+
+--
+-- Name: county_contest_comparison_audit_disagreement; Type: TABLE; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE TABLE county_contest_comparison_audit_disagreement (
+    county_contest_comparison_audit_id bigint NOT NULL,
+    cvr_audit_info_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.county_contest_comparison_audit_disagreement OWNER TO corla;
+
+--
+-- Name: county_contest_comparison_audit_discrepancy; Type: TABLE; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE TABLE county_contest_comparison_audit_discrepancy (
+    county_contest_comparison_audit_id bigint NOT NULL,
+    discrepancy integer,
+    cvr_audit_info_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.county_contest_comparison_audit_discrepancy OWNER TO corla;
+
+--
+-- Name: county_contest_result; Type: TABLE; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE TABLE county_contest_result (
+    id bigint NOT NULL,
+    contest_ballot_count integer,
+    county_ballot_count integer,
+    losers text,
+    max_margin integer,
+    min_margin integer,
+    version bigint,
+    winners text,
+    winners_allowed integer NOT NULL,
+    contest_id bigint NOT NULL,
+    county_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.county_contest_result OWNER TO corla;
+
+--
+-- Name: county_contest_vote_total; Type: TABLE; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE TABLE county_contest_vote_total (
+    result_id bigint NOT NULL,
+    vote_total integer,
+    choice character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.county_contest_vote_total OWNER TO corla;
+
+--
+-- Name: county_dashboard; Type: TABLE; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE TABLE county_dashboard (
+    id bigint NOT NULL,
+    audit_timestamp timestamp without time zone,
+    audited_prefix_length integer,
+    audited_sample_count integer,
+    ballots_audited integer NOT NULL,
+    ballots_in_manifest integer NOT NULL,
+    current_audit_board_index integer,
+    current_round_index integer,
+    cvr_import_error_message character varying(255),
+    cvr_import_state character varying(255),
+    cvr_import_timestamp timestamp without time zone,
+    cvrs_imported integer NOT NULL,
+    disagreements text NOT NULL,
+    discrepancies text NOT NULL,
+    estimated_samples_to_audit integer,
+    optimistic_samples_to_audit integer,
+    version bigint,
+    county_id bigint NOT NULL,
+    cvr_file_id bigint,
+    manifest_file_id bigint
+);
+
+
+ALTER TABLE public.county_dashboard OWNER TO corla;
+
+--
+-- Name: cvr_audit_info; Type: TABLE; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE TABLE cvr_audit_info (
+    id bigint NOT NULL,
+    counted integer NOT NULL,
+    disagreement text NOT NULL,
+    discrepancy text NOT NULL,
+    multiplicity integer NOT NULL,
+    version bigint,
+    acvr_id bigint,
+    cvr_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.cvr_audit_info OWNER TO corla;
+
+--
+-- Name: cvr_contest_info; Type: TABLE; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE TABLE cvr_contest_info (
+    cvr_id bigint NOT NULL,
+    choices text,
+    comment character varying(255),
+    consensus character varying(255),
+    contest_id bigint NOT NULL,
+    index integer NOT NULL
+);
+
+
+ALTER TABLE public.cvr_contest_info OWNER TO corla;
+
+--
+-- Name: dos_dashboard; Type: TABLE; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE TABLE dos_dashboard (
+    id bigint NOT NULL,
+    election_date timestamp without time zone,
+    election_type character varying(255),
+    public_meeting_date timestamp without time zone,
+    risk_limit numeric(10,8),
+    seed character varying(255),
+    version bigint
+);
+
+
+ALTER TABLE public.dos_dashboard OWNER TO corla;
+
+--
+-- Name: driving_contest; Type: TABLE; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE TABLE driving_contest (
+    dashboard_id bigint NOT NULL,
+    contest_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.driving_contest OWNER TO corla;
+
+--
+-- Name: hibernate_sequence; Type: SEQUENCE; Schema: public; Owner: corla
+--
+
+CREATE SEQUENCE hibernate_sequence
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.hibernate_sequence OWNER TO corla;
+
+--
+-- Name: log; Type: TABLE; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE TABLE log (
+    id bigint NOT NULL,
+    authentication_data character varying(255),
+    client_host character varying(255),
+    hash character varying(255) NOT NULL,
+    information character varying(255) NOT NULL,
+    result_code integer,
+    "timestamp" timestamp without time zone NOT NULL,
+    version bigint,
+    previous_entry bigint
+);
+
+
+ALTER TABLE public.log OWNER TO corla;
+
+--
+-- Name: round; Type: TABLE; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE TABLE round (
+    dashboard_id bigint NOT NULL,
+    actual_audited_prefix_length integer,
+    actual_count integer NOT NULL,
+    audit_subsequence text NOT NULL,
+    ballot_sequence text NOT NULL,
+    disagreements text NOT NULL,
+    discrepancies text NOT NULL,
+    end_time timestamp without time zone,
+    expected_audited_prefix_length integer NOT NULL,
+    expected_count integer NOT NULL,
+    number integer NOT NULL,
+    previous_ballots_audited integer NOT NULL,
+    signatories text,
+    start_audited_prefix_length integer NOT NULL,
+    start_time timestamp without time zone NOT NULL,
+    index integer NOT NULL
+);
+
+
+ALTER TABLE public.round OWNER TO corla;
+
+--
+-- Name: uploaded_file; Type: TABLE; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE TABLE uploaded_file (
+    id bigint NOT NULL,
+    approximate_record_count integer NOT NULL,
+    file oid NOT NULL,
+    filename character varying(255),
+    hash character varying(255) NOT NULL,
+    hash_status character varying(255) NOT NULL,
+    size bigint NOT NULL,
+    status character varying(255) NOT NULL,
+    "timestamp" timestamp without time zone NOT NULL,
+    version bigint,
+    county_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.uploaded_file OWNER TO corla;
+
+--
+-- Name: administrator_pkey; Type: CONSTRAINT; Schema: public; Owner: corla; Tablespace: 
+--
+
+ALTER TABLE ONLY administrator
+    ADD CONSTRAINT administrator_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: asm_state_pkey; Type: CONSTRAINT; Schema: public; Owner: corla; Tablespace: 
+--
+
+ALTER TABLE ONLY asm_state
+    ADD CONSTRAINT asm_state_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: audit_board_pkey; Type: CONSTRAINT; Schema: public; Owner: corla; Tablespace: 
+--
+
+ALTER TABLE ONLY audit_board
+    ADD CONSTRAINT audit_board_pkey PRIMARY KEY (dashboard_id, index);
+
+
+--
+-- Name: audit_intermediate_report_pkey; Type: CONSTRAINT; Schema: public; Owner: corla; Tablespace: 
+--
+
+ALTER TABLE ONLY audit_intermediate_report
+    ADD CONSTRAINT audit_intermediate_report_pkey PRIMARY KEY (dashboard_id, index);
+
+
+--
+-- Name: audit_investigation_report_pkey; Type: CONSTRAINT; Schema: public; Owner: corla; Tablespace: 
+--
+
+ALTER TABLE ONLY audit_investigation_report
+    ADD CONSTRAINT audit_investigation_report_pkey PRIMARY KEY (dashboard_id, index);
+
+
+--
+-- Name: ballot_manifest_info_pkey; Type: CONSTRAINT; Schema: public; Owner: corla; Tablespace: 
+--
+
+ALTER TABLE ONLY ballot_manifest_info
+    ADD CONSTRAINT ballot_manifest_info_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cast_vote_record_pkey; Type: CONSTRAINT; Schema: public; Owner: corla; Tablespace: 
+--
+
+ALTER TABLE ONLY cast_vote_record
+    ADD CONSTRAINT cast_vote_record_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: contest_choice_pkey; Type: CONSTRAINT; Schema: public; Owner: corla; Tablespace: 
+--
+
+ALTER TABLE ONLY contest_choice
+    ADD CONSTRAINT contest_choice_pkey PRIMARY KEY (contest_id, index);
+
+
+--
+-- Name: contest_pkey; Type: CONSTRAINT; Schema: public; Owner: corla; Tablespace: 
+--
+
+ALTER TABLE ONLY contest
+    ADD CONSTRAINT contest_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: contest_to_audit_pkey; Type: CONSTRAINT; Schema: public; Owner: corla; Tablespace: 
+--
+
+ALTER TABLE ONLY contest_to_audit
+    ADD CONSTRAINT contest_to_audit_pkey PRIMARY KEY (dashboard_id, contest_id);
+
+
+--
+-- Name: county_contest_comparison_audit_disagreement_pkey; Type: CONSTRAINT; Schema: public; Owner: corla; Tablespace: 
+--
+
+ALTER TABLE ONLY county_contest_comparison_audit_disagreement
+    ADD CONSTRAINT county_contest_comparison_audit_disagreement_pkey PRIMARY KEY (county_contest_comparison_audit_id, cvr_audit_info_id);
+
+
+--
+-- Name: county_contest_comparison_audit_discrepancy_pkey; Type: CONSTRAINT; Schema: public; Owner: corla; Tablespace: 
+--
+
+ALTER TABLE ONLY county_contest_comparison_audit_discrepancy
+    ADD CONSTRAINT county_contest_comparison_audit_discrepancy_pkey PRIMARY KEY (county_contest_comparison_audit_id, cvr_audit_info_id);
+
+
+--
+-- Name: county_contest_comparison_audit_pkey; Type: CONSTRAINT; Schema: public; Owner: corla; Tablespace: 
+--
+
+ALTER TABLE ONLY county_contest_comparison_audit
+    ADD CONSTRAINT county_contest_comparison_audit_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: county_contest_result_pkey; Type: CONSTRAINT; Schema: public; Owner: corla; Tablespace: 
+--
+
+ALTER TABLE ONLY county_contest_result
+    ADD CONSTRAINT county_contest_result_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: county_contest_vote_total_pkey; Type: CONSTRAINT; Schema: public; Owner: corla; Tablespace: 
+--
+
+ALTER TABLE ONLY county_contest_vote_total
+    ADD CONSTRAINT county_contest_vote_total_pkey PRIMARY KEY (result_id, choice);
+
+
+--
+-- Name: county_dashboard_pkey; Type: CONSTRAINT; Schema: public; Owner: corla; Tablespace: 
+--
+
+ALTER TABLE ONLY county_dashboard
+    ADD CONSTRAINT county_dashboard_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: county_pkey; Type: CONSTRAINT; Schema: public; Owner: corla; Tablespace: 
+--
+
+ALTER TABLE ONLY county
+    ADD CONSTRAINT county_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cvr_audit_info_pkey; Type: CONSTRAINT; Schema: public; Owner: corla; Tablespace: 
+--
+
+ALTER TABLE ONLY cvr_audit_info
+    ADD CONSTRAINT cvr_audit_info_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cvr_contest_info_pkey; Type: CONSTRAINT; Schema: public; Owner: corla; Tablespace: 
+--
+
+ALTER TABLE ONLY cvr_contest_info
+    ADD CONSTRAINT cvr_contest_info_pkey PRIMARY KEY (cvr_id, index);
+
+
+--
+-- Name: dos_dashboard_pkey; Type: CONSTRAINT; Schema: public; Owner: corla; Tablespace: 
+--
+
+ALTER TABLE ONLY dos_dashboard
+    ADD CONSTRAINT dos_dashboard_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: driving_contest_pkey; Type: CONSTRAINT; Schema: public; Owner: corla; Tablespace: 
+--
+
+ALTER TABLE ONLY driving_contest
+    ADD CONSTRAINT driving_contest_pkey PRIMARY KEY (dashboard_id, contest_id);
+
+
+--
+-- Name: idx_ccr_county_contest; Type: CONSTRAINT; Schema: public; Owner: corla; Tablespace: 
+--
+
+ALTER TABLE ONLY county_contest_result
+    ADD CONSTRAINT idx_ccr_county_contest UNIQUE (county_id, contest_id);
+
+
+--
+-- Name: log_pkey; Type: CONSTRAINT; Schema: public; Owner: corla; Tablespace: 
+--
+
+ALTER TABLE ONLY log
+    ADD CONSTRAINT log_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: round_pkey; Type: CONSTRAINT; Schema: public; Owner: corla; Tablespace: 
+--
+
+ALTER TABLE ONLY round
+    ADD CONSTRAINT round_pkey PRIMARY KEY (dashboard_id, index);
+
+
+--
+-- Name: uk_6lcjowb4rw9xav8nqnf5v2klk; Type: CONSTRAINT; Schema: public; Owner: corla; Tablespace: 
+--
+
+ALTER TABLE ONLY county_dashboard
+    ADD CONSTRAINT uk_6lcjowb4rw9xav8nqnf5v2klk UNIQUE (county_id);
+
+
+--
+-- Name: uk_esogmqxeek1uwdyhxvubme3qf; Type: CONSTRAINT; Schema: public; Owner: corla; Tablespace: 
+--
+
+ALTER TABLE ONLY administrator
+    ADD CONSTRAINT uk_esogmqxeek1uwdyhxvubme3qf UNIQUE (username);
+
+
+--
+-- Name: uk_npkepig28dujo4w98bkmaclhp; Type: CONSTRAINT; Schema: public; Owner: corla; Tablespace: 
+--
+
+ALTER TABLE ONLY county
+    ADD CONSTRAINT uk_npkepig28dujo4w98bkmaclhp UNIQUE (name);
+
+
+--
+-- Name: ukdv45ptogm326acwp45hm46uaf; Type: CONSTRAINT; Schema: public; Owner: corla; Tablespace: 
+--
+
+ALTER TABLE ONLY contest
+    ADD CONSTRAINT ukdv45ptogm326acwp45hm46uaf UNIQUE (name, county_id, description, votes_allowed);
+
+
+--
+-- Name: uploaded_file_pkey; Type: CONSTRAINT; Schema: public; Owner: corla; Tablespace: 
+--
+
+ALTER TABLE ONLY uploaded_file
+    ADD CONSTRAINT uploaded_file_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: idx_bmi_county; Type: INDEX; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE INDEX idx_bmi_county ON ballot_manifest_info USING btree (county_id);
+
+
+--
+-- Name: idx_ccca_dashboard; Type: INDEX; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE INDEX idx_ccca_dashboard ON county_contest_comparison_audit USING btree (dashboard_id);
+
+
+--
+-- Name: idx_ccr_contest; Type: INDEX; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE INDEX idx_ccr_contest ON county_contest_result USING btree (contest_id);
+
+
+--
+-- Name: idx_ccr_county; Type: INDEX; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE INDEX idx_ccr_county ON county_contest_result USING btree (county_id);
+
+
+--
+-- Name: idx_contest_name; Type: INDEX; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE INDEX idx_contest_name ON contest USING btree (name);
+
+
+--
+-- Name: idx_contest_name_county_description_votes_allowed; Type: INDEX; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE INDEX idx_contest_name_county_description_votes_allowed ON contest USING btree (name, county_id, description, votes_allowed);
+
+
+--
+-- Name: idx_cvr_county_cvr_number; Type: INDEX; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE INDEX idx_cvr_county_cvr_number ON cast_vote_record USING btree (county_id, cvr_number);
+
+
+--
+-- Name: idx_cvr_county_cvr_number_type; Type: INDEX; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE INDEX idx_cvr_county_cvr_number_type ON cast_vote_record USING btree (county_id, cvr_number, record_type);
+
+
+--
+-- Name: idx_cvr_county_imprinted_id_type; Type: INDEX; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE INDEX idx_cvr_county_imprinted_id_type ON cast_vote_record USING btree (county_id, imprinted_id, record_type);
+
+
+--
+-- Name: idx_cvr_county_sequence_number_type; Type: INDEX; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE INDEX idx_cvr_county_sequence_number_type ON cast_vote_record USING btree (county_id, sequence_number, record_type);
+
+
+--
+-- Name: idx_cvr_county_type; Type: INDEX; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE INDEX idx_cvr_county_type ON cast_vote_record USING btree (county_id, record_type);
+
+
+--
+-- Name: idx_uploaded_file_county; Type: INDEX; Schema: public; Owner: corla; Tablespace: 
+--
+
+CREATE INDEX idx_uploaded_file_county ON uploaded_file USING btree (county_id);
+
+
+--
+-- Name: fk1bg939xcuwen7fohfkdx10ueb; Type: FK CONSTRAINT; Schema: public; Owner: corla
+--
+
+ALTER TABLE ONLY county_dashboard
+    ADD CONSTRAINT fk1bg939xcuwen7fohfkdx10ueb FOREIGN KEY (county_id) REFERENCES county(id);
+
+
+--
+-- Name: fk2n0rxgwa4njtnsm8l4hwc8khy; Type: FK CONSTRAINT; Schema: public; Owner: corla
+--
+
+ALTER TABLE ONLY cvr_audit_info
+    ADD CONSTRAINT fk2n0rxgwa4njtnsm8l4hwc8khy FOREIGN KEY (acvr_id) REFERENCES cast_vote_record(id);
+
+
+--
+-- Name: fk39q8rjoa19c4fdjmv4m9iir06; Type: FK CONSTRAINT; Schema: public; Owner: corla
+--
+
+ALTER TABLE ONLY county_contest_comparison_audit_discrepancy
+    ADD CONSTRAINT fk39q8rjoa19c4fdjmv4m9iir06 FOREIGN KEY (county_contest_comparison_audit_id) REFERENCES county_contest_comparison_audit(id);
+
+
+--
+-- Name: fk6rb04heyw700ep1ynn0r31xv3; Type: FK CONSTRAINT; Schema: public; Owner: corla
+--
+
+ALTER TABLE ONLY county_dashboard
+    ADD CONSTRAINT fk6rb04heyw700ep1ynn0r31xv3 FOREIGN KEY (cvr_file_id) REFERENCES uploaded_file(id);
+
+
+--
+-- Name: fk7yt9a4fjcdctwmftwwsksdnma; Type: FK CONSTRAINT; Schema: public; Owner: corla
+--
+
+ALTER TABLE ONLY county_contest_comparison_audit_disagreement
+    ADD CONSTRAINT fk7yt9a4fjcdctwmftwwsksdnma FOREIGN KEY (county_contest_comparison_audit_id) REFERENCES county_contest_comparison_audit(id);
+
+
+--
+-- Name: fk8gh92iwaes042cc1uvi6714yj; Type: FK CONSTRAINT; Schema: public; Owner: corla
+--
+
+ALTER TABLE ONLY uploaded_file
+    ADD CONSTRAINT fk8gh92iwaes042cc1uvi6714yj FOREIGN KEY (county_id) REFERENCES county(id);
+
+
+--
+-- Name: fk8te9gv7q10wxbhg5pgttbj3mv; Type: FK CONSTRAINT; Schema: public; Owner: corla
+--
+
+ALTER TABLE ONLY county_contest_comparison_audit
+    ADD CONSTRAINT fk8te9gv7q10wxbhg5pgttbj3mv FOREIGN KEY (contest_id) REFERENCES contest(id);
+
+
+--
+-- Name: fk932jeyl0hqd21fmakkco5tfa3; Type: FK CONSTRAINT; Schema: public; Owner: corla
+--
+
+ALTER TABLE ONLY contest
+    ADD CONSTRAINT fk932jeyl0hqd21fmakkco5tfa3 FOREIGN KEY (county_id) REFERENCES county(id);
+
+
+--
+-- Name: fk9lhehe4o2dgqde06pxycydlu6; Type: FK CONSTRAINT; Schema: public; Owner: corla
+--
+
+ALTER TABLE ONLY county_contest_comparison_audit_disagreement
+    ADD CONSTRAINT fk9lhehe4o2dgqde06pxycydlu6 FOREIGN KEY (cvr_audit_info_id) REFERENCES cvr_audit_info(id);
+
+
+--
+-- Name: fkai07es6t6bdw8hidapxxa5xnp; Type: FK CONSTRAINT; Schema: public; Owner: corla
+--
+
+ALTER TABLE ONLY audit_board
+    ADD CONSTRAINT fkai07es6t6bdw8hidapxxa5xnp FOREIGN KEY (dashboard_id) REFERENCES county_dashboard(id);
+
+
+--
+-- Name: fkcuw4fb39imk9pyw360bixorm3; Type: FK CONSTRAINT; Schema: public; Owner: corla
+--
+
+ALTER TABLE ONLY county_contest_result
+    ADD CONSTRAINT fkcuw4fb39imk9pyw360bixorm3 FOREIGN KEY (county_id) REFERENCES county(id);
+
+
+--
+-- Name: fkdks3q3g0srpa44rkkoj3ilve6; Type: FK CONSTRAINT; Schema: public; Owner: corla
+--
+
+ALTER TABLE ONLY cvr_audit_info
+    ADD CONSTRAINT fkdks3q3g0srpa44rkkoj3ilve6 FOREIGN KEY (cvr_id) REFERENCES cast_vote_record(id);
+
+
+--
+-- Name: fkdox65w3y11hyhtcba5hrekq9u; Type: FK CONSTRAINT; Schema: public; Owner: corla
+--
+
+ALTER TABLE ONLY audit_investigation_report
+    ADD CONSTRAINT fkdox65w3y11hyhtcba5hrekq9u FOREIGN KEY (dashboard_id) REFERENCES county_dashboard(id);
+
+
+--
+-- Name: fke2fqsfmj0uqq311l4c3i0nt7r; Type: FK CONSTRAINT; Schema: public; Owner: corla
+--
+
+ALTER TABLE ONLY cvr_contest_info
+    ADD CONSTRAINT fke2fqsfmj0uqq311l4c3i0nt7r FOREIGN KEY (contest_id) REFERENCES contest(id);
+
+
+--
+-- Name: fke3kvxe5r43a4xmeugp8lnme9e; Type: FK CONSTRAINT; Schema: public; Owner: corla
+--
+
+ALTER TABLE ONLY round
+    ADD CONSTRAINT fke3kvxe5r43a4xmeugp8lnme9e FOREIGN KEY (dashboard_id) REFERENCES county_dashboard(id);
+
+
+--
+-- Name: fkfw6ikly73lha9g9em13n3kat4; Type: FK CONSTRAINT; Schema: public; Owner: corla
+--
+
+ALTER TABLE ONLY log
+    ADD CONSTRAINT fkfw6ikly73lha9g9em13n3kat4 FOREIGN KEY (previous_entry) REFERENCES log(id);
+
+
+--
+-- Name: fkh6rcfib1ishmhry9ctgm16gie; Type: FK CONSTRAINT; Schema: public; Owner: corla
+--
+
+ALTER TABLE ONLY administrator
+    ADD CONSTRAINT fkh6rcfib1ishmhry9ctgm16gie FOREIGN KEY (county_id) REFERENCES county(id);
+
+
+--
+-- Name: fkid09bdp5ifs6m4cnyw3ycyo1s; Type: FK CONSTRAINT; Schema: public; Owner: corla
+--
+
+ALTER TABLE ONLY contest_to_audit
+    ADD CONSTRAINT fkid09bdp5ifs6m4cnyw3ycyo1s FOREIGN KEY (contest_id) REFERENCES contest(id);
+
+
+--
+-- Name: fkip5dfccmp5x5ubssgar17qpwk; Type: FK CONSTRAINT; Schema: public; Owner: corla
+--
+
+ALTER TABLE ONLY county_contest_vote_total
+    ADD CONSTRAINT fkip5dfccmp5x5ubssgar17qpwk FOREIGN KEY (result_id) REFERENCES county_contest_result(id);
+
+
+--
+-- Name: fkjlw9bpyarqou0j26hq7mmq8qm; Type: FK CONSTRAINT; Schema: public; Owner: corla
+--
+
+ALTER TABLE ONLY contest_to_audit
+    ADD CONSTRAINT fkjlw9bpyarqou0j26hq7mmq8qm FOREIGN KEY (dashboard_id) REFERENCES dos_dashboard(id);
+
+
+--
+-- Name: fkjqsy22cartoerpteub9xmmd0g; Type: FK CONSTRAINT; Schema: public; Owner: corla
+--
+
+ALTER TABLE ONLY county_contest_comparison_audit
+    ADD CONSTRAINT fkjqsy22cartoerpteub9xmmd0g FOREIGN KEY (contest_result_id) REFERENCES county_contest_result(id);
+
+
+--
+-- Name: fkmvj30ou8ik3u7avvycsw0vjx8; Type: FK CONSTRAINT; Schema: public; Owner: corla
+--
+
+ALTER TABLE ONLY audit_intermediate_report
+    ADD CONSTRAINT fkmvj30ou8ik3u7avvycsw0vjx8 FOREIGN KEY (dashboard_id) REFERENCES county_dashboard(id);
+
+
+--
+-- Name: fknsr30axyiavqhyupxohtfy0sl; Type: FK CONSTRAINT; Schema: public; Owner: corla
+--
+
+ALTER TABLE ONLY contest_choice
+    ADD CONSTRAINT fknsr30axyiavqhyupxohtfy0sl FOREIGN KEY (contest_id) REFERENCES contest(id);
+
+
+--
+-- Name: fkon2wldpt0279jqex3pjx1mhm7; Type: FK CONSTRAINT; Schema: public; Owner: corla
+--
+
+ALTER TABLE ONLY county_contest_result
+    ADD CONSTRAINT fkon2wldpt0279jqex3pjx1mhm7 FOREIGN KEY (contest_id) REFERENCES contest(id);
+
+
+--
+-- Name: fkov0ynu4530sytbjlc0hu999k6; Type: FK CONSTRAINT; Schema: public; Owner: corla
+--
+
+ALTER TABLE ONLY driving_contest
+    ADD CONSTRAINT fkov0ynu4530sytbjlc0hu999k6 FOREIGN KEY (contest_id) REFERENCES contest(id);
+
+
+--
+-- Name: fkpe25737bc4mpt170y53ba7il2; Type: FK CONSTRAINT; Schema: public; Owner: corla
+--
+
+ALTER TABLE ONLY county_contest_comparison_audit_discrepancy
+    ADD CONSTRAINT fkpe25737bc4mpt170y53ba7il2 FOREIGN KEY (cvr_audit_info_id) REFERENCES cvr_audit_info(id);
+
+
+--
+-- Name: fkqgpocp8n0p0dx2073sf6gpwwy; Type: FK CONSTRAINT; Schema: public; Owner: corla
+--
+
+ALTER TABLE ONLY driving_contest
+    ADD CONSTRAINT fkqgpocp8n0p0dx2073sf6gpwwy FOREIGN KEY (dashboard_id) REFERENCES county_dashboard(id);
+
+
+--
+-- Name: fkrs4q3gwfv0up7swx7q1q6xlwo; Type: FK CONSTRAINT; Schema: public; Owner: corla
+--
+
+ALTER TABLE ONLY county_dashboard
+    ADD CONSTRAINT fkrs4q3gwfv0up7swx7q1q6xlwo FOREIGN KEY (manifest_file_id) REFERENCES uploaded_file(id);
+
+
+--
+-- Name: fkrsovkqe4e839e0aels78u7a3g; Type: FK CONSTRAINT; Schema: public; Owner: corla
+--
+
+ALTER TABLE ONLY cvr_contest_info
+    ADD CONSTRAINT fkrsovkqe4e839e0aels78u7a3g FOREIGN KEY (cvr_id) REFERENCES cast_vote_record(id);
+
+
+--
+-- Name: fksycb9uto400qabgb97d4ihbat; Type: FK CONSTRAINT; Schema: public; Owner: corla
+--
+
+ALTER TABLE ONLY county_contest_comparison_audit
+    ADD CONSTRAINT fksycb9uto400qabgb97d4ihbat FOREIGN KEY (dashboard_id) REFERENCES county_dashboard(id);
+
+
+--
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- PostgreSQL database dump complete
+--
+

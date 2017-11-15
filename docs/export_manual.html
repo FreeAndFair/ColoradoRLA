@@ -1,0 +1,761 @@
+<p>Separate from the RLA application server and client software that supports the Department of State and the Counties in carrying out the Risk Limiting Audit, there is a command, called <code>rla_export</code>, allowing export of data from the central server and the underlying database.</p>
+<p>The command is part of a python package, whose technical description can be found in a <code>README.rst</code> file in the python site-packages directory tree wherever the package is installed. The most current online version (which may or may not match the version you have installed) is available in the <a href="https://github.com/FreeAndFair/ColoradoRLA/tree/auditcenter/server/eclipse-project/script/rla_export">public code repository</a>.</p>
+<p>The <code>README.rst</code> file gives instructions for installing the python package, and describes various run-time options. For a catalog of the exports produced by the command, see below.</p>
+<h1 id="minimum-data-required-to-allow-public-to-reproduce-audit-calculations"><a href="#minimum-data-required-to-allow-public-to-reproduce-audit-calculations">Minimum Data Required to Allow Public to Reproduce Audit Calculations</a></h1>
+<p>To allow independent verification of the RLA, the Colorado Department of State must provide to the following to the public :</p>
+<ul>
+<li>all CVR files and their SHA-256 hashes</li>
+<li>all ballot manifest files and their SHA-256 hashes</li>
+<li>the list of contests selected for audit, and which if any have been designated for hand count</li>
+<li>opportunity to observe the random seed selection</li>
+<li>for each County, the random sequence of ballot cards determined by the random seed and the pseudo-random number generator</li>
+<li>opportunity to observe the activities of the County Audit Boards</li>
+<li>announced tabulated results for contests selected for audit</li>
+<li>the risk limit</li>
+<li>the error inflation factor</li>
+<li>the tabulation of results and counts of ballot cards used to calculate the diluted margin (including the number of winners for each contest selected for audit)</li>
+<li>for each County and each round of the audit, the list of ballot cards assigned to the Audit Board for review</li>
+<li>for each contest selected for audit, and for each cast vote record that contains the given contest and has been presented to the Audit Board for verification, the RLA system's record of the Audit Board's review of the physical ballot for that contest</li>
+</ul>
+<h1 id="exports"><a href="#exports">Exports</a></h1>
+<p>The <code>rla_export</code> command exports many of the files necessary for independent verification of the RLA, whether by candidates, parties, other organizations.</p>
+<h2 id="database-exports-in.csv-and-.json-format"><a href="#database-exports-in.csv-and-.json-format">Database Exports in.csv and .json format</a></h2>
+<p>These data files in this section are generated based on <code>sql</code> query files. These are always produced in two formats: <code>.json</code> and <code>.csv</code>. The basename of each resulting file is the same as the basename of the query file. For example, the query file <code>seed.sql</code>, produces files <code>seed.json</code> and <code>seed.csv</code>.</p>
+<p>Specific exports are detailed below.</p>
+<h3 id="m_tabulate.sql"><a href="#m_tabulate.sql">m_tabulate.sql</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">_______________Meaning_______________</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">county_name</td>
+<td align="left">Text String</td>
+<td align="left">Name of County</td>
+</tr>
+<tr class="even">
+<td align="left">contest_name</td>
+<td align="left">Text String</td>
+<td align="left">Name of contest</td>
+</tr>
+<tr class="odd">
+<td align="left">choice</td>
+<td align="left">Text String</td>
+<td align="left">Name of candidate or for a ballot question e.g. &quot;Yes&quot; or &quot;No&quot;</td>
+</tr>
+<tr class="even">
+<td align="left">votes</td>
+<td align="left">Integer</td>
+<td align="left">Number of votes recorded for the given choice in the given contest in the given County</td>
+</tr>
+</tbody>
+</table>
+<h3 id="m_selected_contest_audit_details_by_cvr"><a href="#m_selected_contest_audit_details_by_cvr">m_selected_contest_audit_details_by_cvr</a></h3>
+<p>This file contains, for each contest under audit, and for each cast vote record that contains the given contest and has been presented to the Audit Board for verification, the RLA system's record of the Audit Board's review of the physical ballot for that contest.</p>
+<p>Note that the number of discrepancies each cast vote record contributes to the risk level calculation depends not only on the discrepancies found between the cast vote record and the Audit Board interpretation, but also on the number of times that the cast vote record has occurred in the random sequence.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">_______________Meaning_______________</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">county_name</td>
+<td align="left">Text String</td>
+<td align="left">Name of County</td>
+</tr>
+<tr class="even">
+<td align="left">contest_name</td>
+<td align="left">Text String</td>
+<td align="left">Name of contest</td>
+</tr>
+<tr class="odd">
+<td align="left">imprinted_id</td>
+<td align="left">Text String</td>
+<td align="left">Combination of scanner number, batch number and position within batch that uniquely identifies the ballot card and may be imprinted on the card when the ballot is scanned</td>
+</tr>
+<tr class="even">
+<td align="left">ballot_type</td>
+<td align="left">Text String</td>
+<td align="left">BallotType from Dominion CVR export file, a code for the set of contests that should be present on the physical ballot card. Also known as <em>ballot style</em>.</td>
+</tr>
+<tr class="odd">
+<td align="left">counted</td>
+<td align="left">Integer</td>
+<td align="left">Number of times that a discrepancy between the cast vote record with the given imprinted id and the audit board interpretation has been counted toward the risk level. Can be more than one when there have been duplicate selections.</td>
+</tr>
+<tr class="even">
+<td align="left">choices_per_voting_computer</td>
+<td align="left">List of Text Strings</td>
+<td align="left">List of voter choices in the given contest on the given ballot card, as interpreted by the vote-tabulation computer system (note: overvotes recorded as blank votes)</td>
+</tr>
+<tr class="odd">
+<td align="left">choices_per_audit_board</td>
+<td align="left">List of Text Strings</td>
+<td align="left">List of voter choices in the given contest on the given ballot card, as interpreted by the Audit Board (note: overvotes recorded as a too-long list of choices)</td>
+</tr>
+<tr class="even">
+<td align="left">consensus</td>
+<td align="left">YES/NO</td>
+<td align="left">YES if the Audit Board came to consensus on the interpretation of the given ballot card; NO if not; blank if the card has not been reviewed by the Audit Board.</td>
+</tr>
+<tr class="odd">
+<td align="left">audit_board_comment</td>
+<td align="left">Text String</td>
+<td align="left">Text of comment entered by Audit Board about the given contest on the given ballot card, or indication that the ballot was not found.</td>
+</tr>
+<tr class="even">
+<td align="left">timestamp</td>
+<td align="left">Timestamp</td>
+<td align="left">Date and time of Audit Board's submission of their interpretation to the RLA Tool</td>
+</tr>
+<tr class="odd">
+<td align="left">cvr_id</td>
+<td align="left">Integer</td>
+<td align="left">Internal database id for the cast vote record</td>
+</tr>
+</tbody>
+</table>
+<h3 id="m_selected_contest_static"><a href="#m_selected_contest_static">m_selected_contest_static</a></h3>
+<p>List of contests selected to drive the audit, with information about each contest that doesn't change during the audit, namely: the reason for the audit, the number of winners allowed in the contest, the tabulated winners of the contest, the numbers of ballot cards recorded as cast in the county (total number as well as the number containing the given contest), the risk limit, and the value of the error inflation factor (gamma).</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">_______________Meaning_______________</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">county_name</td>
+<td align="left">Text String</td>
+<td align="left">Name of County</td>
+</tr>
+<tr class="even">
+<td align="left">contest_name</td>
+<td align="left">Text String</td>
+<td align="left">Name of contest</td>
+</tr>
+<tr class="odd">
+<td align="left">audit_reason</td>
+<td align="left">Text String</td>
+<td align="left">Reason for audit (STATE_WIDE_CONTEST and COUNTY_WIDE_CONTEST refer to the types of contests that must be chosen to drive the audit, per Rule 25.2.2(i))</td>
+</tr>
+<tr class="even">
+<td align="left">votes_allowed</td>
+<td align="left">Integer</td>
+<td align="left">Maximum number of choices that can be recorded on one ballot in the given contest</td>
+</tr>
+<tr class="odd">
+<td align="left">winners_allowed</td>
+<td align="left">Integer</td>
+<td align="left">Number of winners allowed for the contest (required to calculate diluted margin)</td>
+</tr>
+<tr class="even">
+<td align="left">winners</td>
+<td align="left">List of Text Strings</td>
+<td align="left">List of all winners of the given contest in the given County. (Note that for multi-county contests this list includes the highest vote-getters within the County, even if these were not the winners across all Counties.)</td>
+</tr>
+<tr class="odd">
+<td align="left">min_margin</td>
+<td align="left">Integer</td>
+<td align="left">The smallest margin between any winner and any loser</td>
+</tr>
+<tr class="even">
+<td align="left">county_ballot_card_count</td>
+<td align="left">Integer</td>
+<td align="left">The number of ballot cards recorded in the given County in the election (including cards that do not contain the contest in question)</td>
+</tr>
+<tr class="odd">
+<td align="left">contest_ballot_card_count</td>
+<td align="left">Integer</td>
+<td align="left">The number of ballot cards recorded in the given County that contain the contest in question</td>
+</tr>
+<tr class="even">
+<td align="left">risk_limit</td>
+<td align="left">Number</td>
+<td align="left">The risk limit, as a fraction</td>
+</tr>
+<tr class="odd">
+<td align="left">gamma</td>
+<td align="left">Number</td>
+<td align="left">Error inflation factor defined in Stark's paper, Super-simple simultaneous single-ballot risk-limiting audits, which is cited in Lindeman and Stark's paper, A Gentle Introduction to Risk Limiting Audits, which is cited in Rule 25.2.2(j))</td>
+</tr>
+</tbody>
+</table>
+<h3 id="m_selected_contest_dynamic"><a href="#m_selected_contest_dynamic">m_selected_contest_dynamic</a></h3>
+<p>List of contests selected to drive the audit, with current status. Which contests (if any) have been selected for hand count? How many discrepancies of each type have been found so far (in the random sequence of ballot cards, including duplicates)?</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">_______________Meaning_______________</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">county_name</td>
+<td align="left">Text String</td>
+<td align="left">Name of County</td>
+</tr>
+<tr class="even">
+<td align="left">contest_name</td>
+<td align="left">Text String</td>
+<td align="left">Name of contest</td>
+</tr>
+<tr class="odd">
+<td align="left">current_audit_type</td>
+<td align="left">Text String</td>
+<td align="left">COMPARISON, HAND_COUNT, NOT_AUDITABLE or NONE. Note that NOT_AUDITABLE means the contest can't drive an audit, but it still can be audited opportunisticly.</td>
+</tr>
+<tr class="even">
+<td align="left">random_audit_status</td>
+<td align="left">Text String</td>
+<td align="left">NOT_STARTED, NOT_AUDITABLE, IN_PROGRESS or ENDED. Because declaring a hand count ends the random selection portion of the audit, a contest that is being hand-counted will have the value ENDED in this field.</td>
+</tr>
+<tr class="odd">
+<td align="left">two_vote_over_count</td>
+<td align="left">Integer</td>
+<td align="left">The number of ballot cards in the random sequence so far (with duplicates) on which there is a two-vote overstatement (per Lindeman &amp; Stark's A Gentle Introduction to Risk Limiting Audits).</td>
+</tr>
+<tr class="even">
+<td align="left">one_vote_over_count</td>
+<td align="left">Integer</td>
+<td align="left">The number of ballot cards in the random sequence so far (with duplicates) on which there is a one-vote overstatement (per Lindeman &amp; Stark's A Gentle Introduction to Risk Limiting Audits).</td>
+</tr>
+<tr class="odd">
+<td align="left">one_vote_under_count</td>
+<td align="left">Integer</td>
+<td align="left">The number of ballot cards in the random sequence so far (with duplicates) on which there is a one-vote understatement (per Lindeman &amp; Stark's A Gentle Introduction to Risk Limiting Audits).</td>
+</tr>
+<tr class="even">
+<td align="left">two_vote_under_count</td>
+<td align="left">Integer</td>
+<td align="left">The number of ballot cards in the random sequence so far (with duplicates) on which there is a two-vote understatement (per Lindeman &amp; Stark's A Gentle Introduction to Risk Limiting Audits).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="m_cvr_hash"><a href="#m_cvr_hash">m_cvr_hash</a></h3>
+<p>Hashes of CVR files</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">_______________Meaning_______________</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">county_name</td>
+<td align="left">Text String</td>
+<td align="left">Name of County</td>
+</tr>
+<tr class="even">
+<td align="left">cvr_export_hash</td>
+<td align="left">Text String</td>
+<td align="left">SHA-256 hash value entered by the given county after uploading the cast vote record file to be used in the audit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="m_manifest_hash"><a href="#m_manifest_hash">m_manifest_hash</a></h3>
+<p>Hashes of ballot manifest files</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">_______________Meaning_______________</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">county_name</td>
+<td align="left">Text String</td>
+<td align="left">Name of County</td>
+</tr>
+<tr class="even">
+<td align="left">ballot_manifest_hash</td>
+<td align="left">Text String</td>
+<td align="left">SHA-256 hash value entered by the given county after uploading the ballot manifest file to be used in the audit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="all_contest_static"><a href="#all_contest_static">all_contest_static</a></h3>
+<p>List of all contests, with information about each contest that doesn't change during the audit, namely the reason for the audit, the number of winners allowed in the contest, the tabulated winners of the contest, the numbers of ballot cards recorded as cast in the county (total number as well as the number containing the given contest), the risk limit, and the value of the error inflation factor (gamma).</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">_______________Meaning_______________</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">county_name</td>
+<td align="left">Text String</td>
+<td align="left">Name of County</td>
+</tr>
+<tr class="even">
+<td align="left">contest_name</td>
+<td align="left">Text String</td>
+<td align="left">Name of contest</td>
+</tr>
+<tr class="odd">
+<td align="left">audit_reason</td>
+<td align="left">Text String</td>
+<td align="left">Reason for audit (STATE_WIDE_CONTEST and COUNTY_WIDE_CONTEST refer to the types of contests that must be chosen to drive the audit, per Rule 25.2.2(i); other reasons from the Rule include CLOSE_CONTEST, TIED_CONTEST, GEOGRAPHICAL_SCOPE, CONCERN_REGARDING_ACCURACY, and COUNTY_CLERK_ABILITY; the audits of other contests on the ballot are OPPORTUNISTIC_BENEFITS)</td>
+</tr>
+<tr class="even">
+<td align="left">votes_allowed</td>
+<td align="left">Integer</td>
+<td align="left">Maximum number of choices that can be recorded on one ballot in the given contest</td>
+</tr>
+<tr class="odd">
+<td align="left">winners_allowed</td>
+<td align="left">Integer</td>
+<td align="left">Number of winners allowed for the contest (required to calculate diluted margin)</td>
+</tr>
+<tr class="even">
+<td align="left">winners</td>
+<td align="left">List of Text Strings</td>
+<td align="left">List of all winners of the given contest in the given County. (Note that for multi-county contests this list includes the highest vote-getters within the County, even if these were not the winners across all Counties.)</td>
+</tr>
+<tr class="odd">
+<td align="left">min_margin</td>
+<td align="left">Integer</td>
+<td align="left">The smallest margin between any winner and any loser</td>
+</tr>
+<tr class="even">
+<td align="left">county_ballot_card_count</td>
+<td align="left">Integer</td>
+<td align="left">The number of ballot cards recorded in the given County in the election (including cards that do not contain the contest in question)</td>
+</tr>
+<tr class="odd">
+<td align="left">contest_ballot_card_count</td>
+<td align="left">Integer</td>
+<td align="left">The number of ballot cards recorded in the given County that contain the contest in question</td>
+</tr>
+<tr class="even">
+<td align="left">risk_limit</td>
+<td align="left">Number</td>
+<td align="left">The risk limit, as a fraction</td>
+</tr>
+<tr class="odd">
+<td align="left">gamma</td>
+<td align="left">Number</td>
+<td align="left">Error inflation factor defined in Stark's paper, Super-simple simultaneous single-ballot risk-limiting audits, which is cited in Lindeman and Stark's paper, A Gentle Introduction to Risk Limiting Audits, which is cited in Rule 25.2.2(j))</td>
+</tr>
+</tbody>
+</table>
+<h3 id="all_contest_dynamic"><a href="#all_contest_dynamic">all_contest_dynamic</a></h3>
+<p>List of contests with current status. Which contests has the Secretary selected for audit? Which contests (if any) has the Secretary selected for hand count? How many discrepancies of each type have been found so far (in the random sequence of ballot cards, including duplicates)?</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">_______________Meaning_______________</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">county_name</td>
+<td align="left">Text String</td>
+<td align="left">Name of County</td>
+</tr>
+<tr class="even">
+<td align="left">contest_name</td>
+<td align="left">Text String</td>
+<td align="left">Name of contest</td>
+</tr>
+<tr class="odd">
+<td align="left">current_audit_type</td>
+<td align="left">Text String</td>
+<td align="left">Comparison audit, ballot polling audit or hand count</td>
+</tr>
+<tr class="even">
+<td align="left">random_audit_status</td>
+<td align="left">Text String</td>
+<td align="left">Not started, in progress, risk limit achieved, or ended. Because declaring a hand count ends the random selection portion of the audit, a contest that is being hand-counted will have the value &quot;ended&quot; in this field.</td>
+</tr>
+<tr class="odd">
+<td align="left">two_vote_over_count</td>
+<td align="left">Integer</td>
+<td align="left">The number of ballot cards in the random sequence so far (with duplicates) on which there is a two-vote overstatement (per Lindeman &amp; Stark's A Gentle Introduction to Risk Limiting Audits).</td>
+</tr>
+<tr class="even">
+<td align="left">one_vote_over_count</td>
+<td align="left">Integer</td>
+<td align="left">The number of ballot cards in the random sequence so far (with duplicates) on which there is a one-vote overstatement (per Lindeman &amp; Stark's A Gentle Introduction to Risk Limiting Audits).</td>
+</tr>
+<tr class="odd">
+<td align="left">one_vote_under_count</td>
+<td align="left">Integer</td>
+<td align="left">The number of ballot cards in the random sequence so far (with duplicates) on which there is a one-vote understatement (per Lindeman &amp; Stark's A Gentle Introduction to Risk Limiting Audits).</td>
+</tr>
+<tr class="even">
+<td align="left">two_vote_under_count</td>
+<td align="left">Integer</td>
+<td align="left">The number of ballot cards in the random sequence so far (with duplicates) on which there is a two-vote understatement (per Lindeman &amp; Stark's A Gentle Introduction to Risk Limiting Audits).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="all_contest_audit_details_by_cvr"><a href="#all_contest_audit_details_by_cvr">all_contest_audit_details_by_cvr</a></h3>
+<p>This file contains, for each contest and for each cast vote record that contains the given contest and has been presented to the Audit Board for verification, the RLA system's record of the Audit Board's review of the physical ballot for that contest.</p>
+<p>Note that the number of discrepancies each cast vote record contributes to the risk level calculation depends not only on the discrepancies found between the cast vote record and the Audit Board interpretation, but also on the number of times that the cast vote record has occurred in the random sequence.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">_______________Meaning_______________</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">county_name</td>
+<td align="left">Text String</td>
+<td align="left">Name of County</td>
+</tr>
+<tr class="even">
+<td align="left">contest_name</td>
+<td align="left">Text String</td>
+<td align="left">Name of contest</td>
+</tr>
+<tr class="odd">
+<td align="left">imprinted_id</td>
+<td align="left">Text String</td>
+<td align="left">Combination of scanner number, batch number and position within batch that uniquely identifies the ballot card and may be imprinted on the card when the ballot is scanned</td>
+</tr>
+<tr class="even">
+<td align="left">ballot_type</td>
+<td align="left">Text String</td>
+<td align="left">BallotType from Dominion CVR export file, a code for the set of contests that should be present on the physical ballot card. Also known as <em>ballot style</em>.</td>
+</tr>
+<tr class="odd">
+<td align="left">counted</td>
+<td align="left">Integer</td>
+<td align="left">Number of times that a discrepancy between the cast vote record with the given imprinted id and the audit board interpretation has been counted toward the risk level. Can be more than one when there have been duplicate selections.</td>
+</tr>
+<tr class="even">
+<td align="left">choices_per_voting_computer</td>
+<td align="left">List of Text Strings</td>
+<td align="left">List of voter choices in the given contest on the given ballot card, as interpreted by the vote-tabulation computer system (note: overvotes recorded as blank votes)</td>
+</tr>
+<tr class="odd">
+<td align="left">choices_per_audit_board</td>
+<td align="left">List of Text Strings</td>
+<td align="left">List of voter choices in the given contest on the given ballot card, as interpreted by the Audit Board (note: overvotes recorded as a too-long list of choices)</td>
+</tr>
+<tr class="even">
+<td align="left">consensus</td>
+<td align="left">YES/NO</td>
+<td align="left">YES if the Audit Board came to consensus on the interpretation of the given ballot card; NO if not; blank if the card has not been reviewed by the Audit Board.</td>
+</tr>
+<tr class="odd">
+<td align="left">audit_board_comment</td>
+<td align="left">Text String</td>
+<td align="left">Text of comment entered by Audit Board about the given contest on the given ballot card, or indication that the ballot was not found.</td>
+</tr>
+<tr class="even">
+<td align="left">timestamp</td>
+<td align="left">Timestamp</td>
+<td align="left">Date and time of Audit Board's submission of their interpretation to the RLA Tool</td>
+</tr>
+<tr class="odd">
+<td align="left">cvr_id</td>
+<td align="left">Integer</td>
+<td align="left">Internal database id for the cast vote record</td>
+</tr>
+</tbody>
+</table>
+<h3 id="auditboards"><a href="#auditboards">auditboards</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">_______________Meaning_______________</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">county_name</td>
+<td align="left">Text String</td>
+<td align="left">Name of County</td>
+</tr>
+<tr class="even">
+<td align="left">member</td>
+<td align="left">Text String</td>
+<td align="left">Name of audit board member</td>
+</tr>
+<tr class="odd">
+<td align="left">sign_in_time</td>
+<td align="left">Timestamp</td>
+<td align="left">Beginning of an audit board member's RLA Tool session</td>
+</tr>
+<tr class="even">
+<td align="left">sign_out_time</td>
+<td align="left">Timestamp</td>
+<td align="left">End of the given session for the given audit board member</td>
+</tr>
+</tbody>
+</table>
+<h3 id="batch_count_comparison"><a href="#batch_count_comparison">batch_count_comparison</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">_______________Meaning_______________</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">county_name</td>
+<td align="left">Text String</td>
+<td align="left">Name of County</td>
+</tr>
+<tr class="even">
+<td align="left">scanner_id</td>
+<td align="left">Integer</td>
+<td align="left">the identification number of a scanner used to create the cast vote record from the physical ballot card</td>
+</tr>
+<tr class="odd">
+<td align="left">batch_id</td>
+<td align="left">Integer</td>
+<td align="left">The identification number of a batch of ballot cards scanned by the given scanner</td>
+</tr>
+<tr class="even">
+<td align="left">count_per_manifest</td>
+<td align="left">Integer</td>
+<td align="left">The number of ballot cards in the given batch on the given scanner, according to the ballot manifest file uploaded by the County</td>
+</tr>
+<tr class="odd">
+<td align="left">count_per_cvr_file</td>
+<td align="left">Integer</td>
+<td align="left">The number of ballot cards in the given batch on the given scanner, according to the cast-vote-record file export from the voting computer, uploaded by the County</td>
+</tr>
+<tr class="even">
+<td align="left">difference</td>
+<td align="left">Integer</td>
+<td align="left">The difference between the two counts, which will be zero for a correctly tabulated election. If positive, there are ballots listed in the manifest that are not found in the CVR file; if negative, there are ballots in the CVR file that are not listed in the manifest.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="prefix_length"><a href="#prefix_length">prefix_length</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">_______________Meaning_______________</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">county_name</td>
+<td align="left">Text String</td>
+<td align="left">Name of County</td>
+</tr>
+<tr class="even">
+<td align="left">audited_prefix_length</td>
+<td align="left">Integer</td>
+<td align="left">Length of the longest prefix of the random sequence of cvr selections containing only cvrs that have been audited</td>
+</tr>
+</tbody>
+</table>
+<h3 id="seed"><a href="#seed">seed</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">_______________Meaning_______________</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">seed</td>
+<td align="left">String</td>
+<td align="left">the random seed for the pseudo-random number generator</td>
+</tr>
+</tbody>
+</table>
+<h3 id="upload_status"><a href="#upload_status">upload_status</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">_______________Meaning_______________</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">county_name</td>
+<td align="left">Text String</td>
+<td align="left">Name of County</td>
+</tr>
+<tr class="even">
+<td align="left">filename</td>
+<td align="left">Text String</td>
+<td align="left">Name of file</td>
+</tr>
+<tr class="odd">
+<td align="left">hash_status</td>
+<td align="left">Text String</td>
+<td align="left">VERIFIED, MISMATCH, or NOT_CHECKED</td>
+</tr>
+<tr class="even">
+<td align="left">approx_count</td>
+<td align="left">Integer</td>
+<td align="left">Approximate number of lines in the file</td>
+</tr>
+<tr class="odd">
+<td align="left">size</td>
+<td align="left">Integer</td>
+<td align="left">Size of file in bytes</td>
+</tr>
+<tr class="even">
+<td align="left">status</td>
+<td align="left">Text String</td>
+<td align="left">IMPORTED_AS_BALLOT_MANIFEST, IMPORTED_AS_CVR_EXPORT or NOT_IMPORTED</td>
+</tr>
+<tr class="odd">
+<td align="left">timestamp</td>
+<td align="left">Timestamp</td>
+<td align="left">Date and time of the most recent update to the upload status of the given file</td>
+</tr>
+</tbody>
+</table>
+<h2 id="reports-in-.xlsx-format"><a href="#reports-in-.xlsx-format">Reports in .xlsx Format</a></h2>
+<p>Some files are exported from the application server in .xlsx format.</p>
+<h3 id="county-audit-reports"><a href="#county-audit-reports">County Audit Reports</a></h3>
+<p>There is a separate report (in .xlsx format) for each County. Within each County's report there is a separate spreadsheet for each round of the audit containing the list of ballot cards assigned to the County Audit Board for that Round. For each ballot card in the list the spreadsheet indicates whether it has been reviewed, whether any discrepancies were found on the card and whether the Audit Board disagreed on the interpretation of the card. There is a summary page with a variety of audit information, and an affirmation page (which will be blank).</p>
+<h3 id="state-audit-report"><a href="#state-audit-report">State Audit Report</a></h3>
+<p>Within this report (in .xlsx format) there is a separate spreadsheet for each County containing the information from that County's round spreadsheets. The summary spreadsheet contains a variety of audit information, both general and county-specific.</p>
+<h2 id="lists-in-.csv-format"><a href="#lists-in-.csv-format">Lists in .csv Format</a></h2>
+<p>Some files are exported from the application server in .csv format.</p>
+<h3 id="county-ballot-card-list-by-round"><a href="#county-ballot-card-list-by-round">County Ballot Card List by Round</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">_______________Meaning_______________</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">scanner_id</td>
+<td align="left">Integer</td>
+<td align="left">TabulatorNum from Dominion CVR export file, identifying the tabulator used to read the physical ballot card</td>
+</tr>
+<tr class="even">
+<td align="left">batch_id</td>
+<td align="left">Integer</td>
+<td align="left">BatchId from Dominion CVR export file, identifying the batch of physical ballot cards in which the card was scanned</td>
+</tr>
+<tr class="odd">
+<td align="left">record_id</td>
+<td align="left">Integer</td>
+<td align="left">RecordId from Dominion CVR export file, indicating the position of the card in its batch of physical ballot cards</td>
+</tr>
+<tr class="even">
+<td align="left">imprinted_id</td>
+<td align="left">Text String</td>
+<td align="left">combination of scanner, batch and record ids that uniquely identifies the ballot card and may be imprinted on the card</td>
+</tr>
+<tr class="odd">
+<td align="left">ballot_type</td>
+<td align="left">Text String</td>
+<td align="left">BallotType from Dominion CVR export file, a code for the set of contests that should be present on the physical ballot card. Also known as <em>ballot style</em>.</td>
+</tr>
+<tr class="even">
+<td align="left">storage_location</td>
+<td align="left">Text String</td>
+<td align="left">The physical location of the ballot</td>
+</tr>
+<tr class="odd">
+<td align="left">cvr_number</td>
+<td align="left">Integer</td>
+<td align="left">The index of the given cast vote record in the CVR file, starting at 1, used to associate lines of the CVR file to numbers generated by the pseudo-random number generator</td>
+</tr>
+<tr class="even">
+<td align="left">audited</td>
+<td align="left">Yes/No</td>
+<td align="left">Yes if the ballot card has been reviewed by the Audit Board; otherwise No.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="county-random-sequence"><a href="#county-random-sequence">County Random Sequence</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Field</th>
+<th align="left">Type</th>
+<th align="left">_______________Meaning_______________</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">county_name</td>
+<td align="left">Text String</td>
+<td align="left">Name of County</td>
+</tr>
+<tr class="even">
+<td align="left">round_number</td>
+<td align="left">Integer</td>
+<td align="left">Round of the audit</td>
+</tr>
+<tr class="odd">
+<td align="left">random_sequence_index</td>
+<td align="left">Integer</td>
+<td align="left">The position in the random sequence for the given County</td>
+</tr>
+<tr class="even">
+<td align="left">scanner_id</td>
+<td align="left">Integer</td>
+<td align="left">TabulatorNum from Dominion CVR export file, identifying the tabulator used to read the physical ballot card</td>
+</tr>
+<tr class="odd">
+<td align="left">batch_id</td>
+<td align="left">Integer</td>
+<td align="left">BatchId from Dominion CVR export file, identifying the batch of physical ballot cards in which the card was scanned</td>
+</tr>
+<tr class="even">
+<td align="left">record_id</td>
+<td align="left">Integer</td>
+<td align="left">RecordId from Dominion CVR export file, indicating the position of the card in its batch of physical ballot cards</td>
+</tr>
+<tr class="odd">
+<td align="left">imprinted_id</td>
+<td align="left">Text String</td>
+<td align="left">combination of scanner, batch and record ids that uniquely identifies the ballot card and may be imprinted on the card</td>
+</tr>
+<tr class="even">
+<td align="left">ballot_type</td>
+<td align="left">Text String</td>
+<td align="left">BallotType from Dominion CVR export file, a code for the set of contests that should be present on the physical ballot card. Also known as <em>ballot style</em>.</td>
+</tr>
+</tbody>
+</table>
+<h1 id="technical-notes"><a href="#technical-notes">Technical Notes</a></h1>
+<h2 id="character-encoding"><a href="#character-encoding">Character encoding</a></h2>
+<p>Files are provided in Unicode's UTF-8 encoding.</p>
+<h2 id="list-specifications"><a href="#list-specifications">List Specifications</a></h2>
+<p>Lists of choices are provided as JSON-format lists. When these strings occur within csv or json files, that may require an additional level of quoting.</p>
+<h2 id="ballots-vs.-ballot-cards"><a href="#ballots-vs.-ballot-cards">Ballots vs. Ballot Cards</a></h2>
+<p>When a ballot extends across more than one piece of paper (a &quot;card&quot;), each card is tabulated independently. In Counties which have any multi-card ballots, the ballot card counts provided will be greater than the turnout figures reported elsewhere. For example, in November 2017 the County of Denver had mostly two-card ballots.</p>

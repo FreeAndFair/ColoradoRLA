@@ -11,7 +11,7 @@ MD_DOCS := 01_book.md 05_license.md 15_installation.md 25_developer.md \
            50_requirements.md 55_specification.md 65_deployment.md 70_team.md \
            89_glossary.md 99_bibliography.md
 
-all: book.pdf book.html county_runbook.docx sos_runbook.docx user_manual.docx 
+all: book.pdf book.html county_runbook.docx sos_runbook.docx user_manual.docx export_manual.docx export_manual.html
 
 book.pdf: $(MD_DOCS)
 	pandoc $(MD_DOCS) --toc --variable linkcolor -f markdown -t latex -o book.pdf
@@ -27,6 +27,12 @@ sos_runbook.docx: 24_sos_runbook.md
 
 user_manual.docx: 20_user_manual.md
 	pandoc 20_user_manual.md 89_glossary.md --variable linkcolor --table-of-contents --reference-docx=reference_fandf_pages.docx -f markdown -t docx -o user_manual.docx
+
+export_manual.docx: 26_export_manual.md
+	pandoc 26_export_manual.md --variable linkcolor --table-of-contents --reference-docx=reference_fandf_pages.docx -f markdown -t docx -o export_manual.docx 
+
+export_manual.html: 26_export_manual.md
+	pandoc 26_export_manual.md --variable linkcolor --table-of-contents -f markdown -o export_manual.html
 
 clean:
 	rm -f book.pdf book.html runbook.docx county_runbook.docx sos_runbook.docx user_manual.docx
