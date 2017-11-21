@@ -17,6 +17,9 @@ Full command line usage synopsis:
  rla_export -h
 
 See README.md for documentation.
+
+Copyright (c) 2017 Colorado Department of State
+SPDX-License-Identifier: GPL-3.0
 """
 
 from __future__ import (print_function, division,
@@ -41,8 +44,6 @@ import getpass
 
 __author__ = "Neal McBurnett <nealmcb@freeandfair.us>"
 __date__ = "2017-10-03"
-__copyright__ = "Copyright (c) 2017 Colorado Department of State"
-__license__ = "AGPLv3"
 
 MYPACKAGE = 'rla_export'
 CORLA_INI_FILE = pkg_resources.resource_filename(MYPACKAGE, 'corla.ini')
@@ -214,7 +215,8 @@ class fragile(object):
 class Dotable(dict):
     """Make nested python dictionaries (json-like objects) accessable using dot notation.
 
-    MIT License. Copyright 2013 Andy Hayden <http://hayd.github.io/2013/dotable-dictionaries> 
+    This function Copyright 2013 Andy Hayden <http://hayd.github.io/2013/dotable-dictionaries> 
+    SPDX-License-Identifier: MIT
     """
 
     __getattr__= dict.__getitem__
@@ -494,7 +496,7 @@ def random_sequence(args, connection, cursor, county_id, county_name):
         logging.error("rla_export: random_sequence: failure: %s" % e)
 
 def show_elapsed(r, *args, **kwargs):
-    logging.log(25,"Endpoint %s: %s. Elapsed time %.3f" % (r.url, r, r.elapsed.total_seconds()))
+    logging.log(25, "Endpoint %s: %s. Elapsed time %.3f" % (r.url, r, r.elapsed.total_seconds()))
 
 
 def parse_corla_config(filename):
