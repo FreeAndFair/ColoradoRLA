@@ -417,6 +417,7 @@ You should also get your employer (if you work as a programmer) or school, if an
 if necessary. For more information on this, and how to apply and follow the GNU AGPL, see <https://www.gnu.org/licenses/>.
 
 CLASSPATH EXCEPTION
+
 Linking this library statically or dynamically with other modules is making a combined work based on this library. Thus, the terms and 
 conditions of the GNU General Public License cover the whole combination.
 As a special exception, the copyright holders of this library give you permission to link this library with independent modules to 
