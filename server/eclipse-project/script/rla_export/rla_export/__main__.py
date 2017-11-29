@@ -42,7 +42,7 @@ import getpass
 __author__ = "Neal McBurnett <nealmcb@freeandfair.us>"
 __date__ = "2017-10-03"
 __copyright__ = "Copyright (c) 2017 Colorado Department of State"
-__license__ = "AGPLv3"
+__license__ = "AGPLv3 with a classpath exception"
 
 MYPACKAGE = 'rla_export'
 CORLA_INI_FILE = pkg_resources.resource_filename(MYPACKAGE, 'corla.ini')

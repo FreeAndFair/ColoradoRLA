@@ -13,7 +13,7 @@
         "test.watch": "karma start karma.config.js --auto-watch"
     },
     "author": "Free & Fair",
-    "license": "UNLICENSED",
+    "license": "AGPL v3.0 with a classpath exception",
     "dependencies": {
         "@blueprintjs/core": "^1.23.0",
         "@blueprintjs/datetime": "^1.19.0",
