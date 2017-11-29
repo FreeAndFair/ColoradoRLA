@@ -155,7 +155,7 @@ import requests
 
 
 __author__ = "Neal McBurnett <http://neal.mcburnett.org/>"
-__license__ = "GPLv3+"
+__license__ = "APLv3 with classpath exception"
 
 
 parser = argparse.ArgumentParser(description='Drive testing for ColoradoRLA auditing.')
