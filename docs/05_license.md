@@ -3,8 +3,4 @@
 License
 =======
 
-This project will be licensed under an OSI-approved license.
-Discussions are ongoing with the Colorado Department of State about
-which Open Source license is most appropriate for this system.
-
-* TBD: justification for license choice
+This project is licensed under the OSI-approved GNU Affero General Public License v3.0](https://www.gnu.org/licenses/agpl.txt).
