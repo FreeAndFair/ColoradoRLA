@@ -412,6 +412,7 @@ SEQUENCE_SUBSEQUENCE_QUERY = """
 CVR_SELECTION_QUERY = """
     SELECT
        cvr_s.id,
+       cvr_s.cvr_number,
        cty.name AS county_name,
        cvr_s.scanner_id,
        cvr_s.batch_id,
@@ -448,7 +449,7 @@ def random_sequence(args, connection, cursor, county_id, county_name):
 
 
         with UmaskNamedTemporaryFile(mode="w", dir=args.export_dir, delete=False) as stream:
-            print("county_name,round_number,random_sequence_index,scanner_id,batch_id,record_id,imprinted_id,ballot_type",
+            print("county_name,round_number,random_sequence_index,cvr_number,scanner_id,batch_id,record_id,imprinted_id,ballot_type",
                   file=stream)
             prefix = 0
             for sequences in rows:
@@ -469,10 +470,11 @@ def random_sequence(args, connection, cursor, county_id, county_name):
 
                 for i, cvr_id in enumerate(audit_subsequence):
                     cvr = cvrs[cvr_id]
-                    print('"%s",%d,%d,%d,%d,%d,"%s","%s"' % (
+                    print('"%s",%d,%d,%d,%d,%d,%d,"%s","%s"' % (
                         cvr['county_name'],
                         round_number,
                         prefix + i + 1,
+                        cvr['cvr_number'],
                         cvr['scanner_id'],
                         cvr['batch_id'],
                         cvr['record_id'],
@@ -494,7 +496,7 @@ def random_sequence(args, connection, cursor, county_id, county_name):
         logging.error("rla_export: random_sequence: failure: %s" % e)
 
 def show_elapsed(r, *args, **kwargs):
-    logging.loglevel(25,"Endpoint %s: %s. Elapsed time %.3f" % (r.url, r, r.elapsed.total_seconds()))
+    logging.log(25, "Endpoint %s: %s. Elapsed time %.3f" % (r.url, r, r.elapsed.total_seconds()))
 
 
 def parse_corla_config(filename):
