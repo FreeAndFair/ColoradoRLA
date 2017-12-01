@@ -1,22 +1,28 @@
-There are ongoing discussions with the Colorado Department of State
-about which Open Source license is most appropriate for this system.
+# ColoradoRLA Licensing
 
-They have agreed to license it under a variant of the GPLv3, but the
-final decision about which variant it will be licensed under is still
-under discussion.
+The code in this Colorado RLA Tool repository, except as explicitly noted
+otherwise, is Copyright (C) 2017 the Colorado Department of State.
 
-In particular, should it be licensed under
-[AGPLv3](https://www.gnu.org/licenses/agpl-3.0.en.html) or
-[GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html)? Please see the
-FSF document, ["Why the Affero
-GPL"](https://www.gnu.org/licenses/why-affero-gpl.en.html), for a
-relevant discussion.
+The code, except as explicitly noted, is licensed under the GNU Affero General
+Public License Version 3 (AGPLv3). A copy of the AGPLv3 is provided in the
+file agplv3.txt.
 
-If you, the reader, have input on this decision, please add a comment
-to [Issue #452](https://github.com/FreeAndFair/ColoradoRLA/issues/452).
+The code in the `server` directory tree is provided with the following additional
+permission.
 
-Thus, as of now, this system is not licensed for any use whatsoever
-beyond its owner, the Colorado Department of State.
+1. Grant of Additional Permission.
 
+The copyright holders of this software give you permission to link the
+ColoradoRLA application server with independent modules to produce an
+executable, regardless of the license terms of these independent modules, and
+to copy and distribute the resulting executable under terms of your choice,
+provided that you also meet, for each linked independent module, the terms and
+conditions of the license of that module. An independent module is a module
+which is not derived from or based on this software. If you modify the
+application server, you may extend this exception to your version of the
+software, but you are not obliged to do so. If you do not wish to do so, delete
+this exception statement from your version.
 
-
+This Grant of Additional Permission is intended, for example, to allow the
+us.freeandfair.corla.auth.AuthenticationInterface to be linked with a
+proprietary two-factor authentication method.
