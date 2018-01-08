@@ -4,7 +4,6 @@
  * @title ColoradoRLA
  * @created Jul 27, 2017
  * @copyright 2017 Colorado Department of State
- * @license GNU Affero General Public License v3 with Classpath Exception
  * @creator Daniel M. Zimmerman <dmz@freeandfair.us>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
