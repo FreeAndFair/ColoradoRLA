@@ -58,9 +58,9 @@ Contributors
   and automatic server test infrastructure
 * Morgan Miller (Principled Usability Specialist) UX expert, conducted
   interviews with CDOS and County personnel, initial UI design
-* Joe Ranweiler (Principled Computer Scientist) Principle author of
+* Joe Ranweiler (Principled Computer Scientist) Principal author of
   RLA Tool Client
-* Daniel Zimmerman (Principled Computer Scientist) Principle author of
+* Daniel Zimmerman (Principled Computer Scientist) Principal author of
   RLA Tool Server
 
 More information about our team members [is available](docs/70_team.md).
