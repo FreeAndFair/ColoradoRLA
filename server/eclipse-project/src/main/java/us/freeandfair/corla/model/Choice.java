@@ -4,7 +4,8 @@
  * @title ColoradoRLA
  * @created Jul 25, 2017
  * @copyright 2017 Colorado Department of State
- * @author Joey Dodds <jdodds@galois.com>
+ * @license SPDX-License-Identifier: AGPL-3.0-or-later
+ * @creator Joey Dodds <jdodds@galois.com>
  * @model_review Joseph R. Kiniry <kiniry@freeandfair.us>
  * @design In the formal model this concept is currently called "option".
  * @description A system to assist in conducting statewide risk-limiting audits.

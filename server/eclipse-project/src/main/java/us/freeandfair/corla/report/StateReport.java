@@ -4,6 +4,7 @@
  * @title ColoradoRLA
  * @created Aug 30, 2017
  * @copyright 2017 Colorado Department of State
+ * @license SPDX-License-Identifier: AGPL-3.0-or-later
  * @creator Daniel M. Zimmerman <dmz@freeandfair.us>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */

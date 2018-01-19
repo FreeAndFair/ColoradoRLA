@@ -2,15 +2,10 @@
  * Free & Fair Colorado RLA System
  * 
  * @title ColoradoRLA
- * 
  * @created Jul 25, 2017
- * 
  * @copyright 2017 Colorado Department of State
- * 
- * 
- * @author Joey Dodds <jdodds@freeandfair.us>
- * @author Joseph Kiniry <kiniry@freeandfair.us>
- * 
+ * @license SPDX-License-Identifier: AGPL-3.0-or-later
+ * @creator Joey Dodds <jdodds@freeandfair.us>
  * @description A system to assist in conducting state-wide risk-limiting audits.
  */
 
