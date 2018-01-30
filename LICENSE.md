@@ -5,7 +5,7 @@ otherwise, is Copyright (C) 2017 the Colorado Department of State.
 
 The code, except as explicitly noted, is licensed under the GNU Affero General
 Public License Version 3 (AGPLv3). A copy of the AGPLv3 is provided in the
-file agplv3.txt.
+file [agplv3.txt](./agplv3.txt).
 
 The code in the `server` directory tree is provided with the following additional
 permission.

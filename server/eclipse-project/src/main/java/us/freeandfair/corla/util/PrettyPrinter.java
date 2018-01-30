@@ -4,8 +4,8 @@
  * @title ColoradoRLA
  * @created Oct 2, 2017
  * @copyright 2017 Colorado Department of State
- * @license GNU Affero General Public License v3 with Classpath Exception
- * @author Daniel M. Zimmerman <dmz@galois.com>
+ * @license SPDX-License-Identifier: AGPL-3.0-or-later
+ * @creator Daniel M. Zimmerman <dmz@galois.com>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
 

@@ -1,9 +1,10 @@
 /*
  * Free & Fair Colorado RLA System
+ *
  * @title ColoradoRLA
  * @created Aug 8, 2017
  * @copyright 2017 Colorado Department of State
- * @license GNU Affero General Public License v3 with Classpath Exception
+ * @license SPDX-License-Identifier: AGPL-3.0-or-later
  * @creator Joseph R. Kiniry <kiniry@freeandfair.us>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */

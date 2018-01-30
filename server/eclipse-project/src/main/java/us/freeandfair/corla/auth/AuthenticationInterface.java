@@ -4,10 +4,34 @@
  * @title ColoradoRLA
  * @created Aug 27, 2017
  * @copyright 2017 Colorado Department of State
- * @license GNU Affero General Public License v3 with Classpath Exception
+ * @license GNU Affero General Public License v3 with
+ *          Grant of Additional Permission
  * @creator Joseph R. Kiniry <kiniry@freeandfair.us>
  * @description A system to assist in conducting statewide risk-limiting audits.
  */
+
+/*
+This code is licensed under the GNU Affero General Public License Version 3
+(AGPLv3) with the following additional permission.
+
+1. Grant of Additional Permission.
+
+The copyright holders of this software give you permission to link the
+ColoradoRLA application server with an alternative implementation of
+us.freeandfair.corla.auth.AuthenticationInterface.java to produce an
+executable, regardless of the license terms of the implementation, and to copy
+and distribute the resulting executable under terms of your choice, provided
+that you also meet the terms and conditions of the license of that
+implementation.
+
+If you modify the application server, you may extend this exception to your
+version of the software, but you are not obliged to do so. If you do not wish
+to do so, delete this exception statement from your version.
+
+This Grant of Additional Permission is only for the purpose of allowing the
+application server to be linked with a proprietary two-factor authentication
+method.
+*/
 
 package us.freeandfair.corla.auth;
 

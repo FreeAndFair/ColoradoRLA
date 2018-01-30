@@ -33,8 +33,8 @@
  * @title ${project_name}
  * @created ${date}
  * @copyright ${year} Free &amp; Fair
- * @license GNU General Public License 3.0
- * @author ${name:git_config(user.name)} &lt;${email:git_config(user.email)}&gt;
+ * @license SPDX-License-Identifier: AGPL-3.0-or-later
+ * @creator ${name:git_config(user.name)} &lt;${email:git_config(user.email)}&gt;
  * @description A system to assist in conducting statewide risk-limiting audits.
  */</template><template autoinsert="false" context="typecomment_context" deleted="false" description="Comment for created types" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.typecomment" name="typecomment">/**
  * @description &lt;description&gt;
