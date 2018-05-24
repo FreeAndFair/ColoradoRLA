@@ -53,13 +53,16 @@ Contributors
 * Joseph Kiniry (Principled CEO and Chief Scientist) Project Head,
   author of formal specification, design and implementation of ASMs
   and 2FA
-* Neal McBurnett (Principled Elections Auditing Expert) RLA expert,
+* Michael Kiniry (Principled Documentarian) User-facing documentation
+* Neal McBurnett (Principled Elections Auditing Expert and Computer Scientist) RLA expert,
   design and implementation of data export application
   and automatic server test infrastructure
 * Morgan Miller (Principled Usability Specialist) UX expert, conducted
   interviews with CDOS and County personnel, initial UI design
 * Joe Ranweiler (Principled Computer Scientist) Principal author of
   RLA Tool Client
+* Stephanie Singer (Principled Elections Expert and Data Scientist) Query design for
+  data export application, user-facing documentation
 * Daniel Zimmerman (Principled Computer Scientist) Principal author of
   RLA Tool Server
 
