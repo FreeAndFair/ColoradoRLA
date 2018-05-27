@@ -32,34 +32,61 @@ parser = argparse.ArgumentParser(description='ColoradoRLA utilities.')
 parser.add_argument('precinct_er', nargs='+',
                     help='Election results by precinct, in Hart contest_table.csv format')
 
+class Choice(object):
+    def __init__(self, name):
+        self.name = name
+        self.votes = 0
+
+    def __str__(self):
+        self.name
+
 class Contest(object):
     """
     An election contest, along with the set of choices and vote totals for each choice.
     """
     def __init__(self, name):
         self.name = name
+        self.choices = {}
+        self.precinct_count = 0
 
     def __str__(self):
         #return "%s %s\t%s\t%s" % (self.FirstName, self.LastName, self.Committee, self.Contribution)
-        return ', '.join([a + ": '" + str(getattr(self, a)) + "'"   for a in dir(self)  if not a.startswith("_")])
+        # return ', '.join([a + ": '" + str(getattr(self, a)) + "'"   for a in dir(self)  if not a.startswith("_")])
+        return "%s(%d): %s" % (self.name, self.precinct_count,
+                               ', '.join(self.choices))
 
 def parse_hart_contest_table(parser):
 
     args = parser.parse_args()
 
     rows = []
+    contests = {}
+    last_title = None
 
     for name in args.precinct_er:
 
         reader = csv.DictReader(open(name))
 
         for row in reader:
-            row = Contest(row)
+            title = row['Contest_title']
+            contest = contests.setdefault(title, Contest(title))
+            if last_title != title:
+                contest.precinct_count += 1
+                last_title = title
+
+            candidate_name = row['Candidate_name']
+            choice = contest.choices.setdefault(candidate_name, Choice(candidate_name))
             rows.append(row)
+
+    for contest in contests.values():
+        print contest
+        #print("%s: %d" % (contest.name, contest.precinct_count))
+
 
     for row in rows:
         # print(row.name)
-        print('\t'.join([(row.name.get(column)) for column in ['Contest_title', 'Candidate_name', 'Precinct_Name']]))
+        # print('\t'.join([(row.name.get(column)) for column in ['Contest_title', 'Candidate_name', 'Precinct_Name']]))
+        pass
 
 if __name__ == "__main__":
     parse_hart_contest_table(parser)
