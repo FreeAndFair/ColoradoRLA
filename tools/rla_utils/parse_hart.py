@@ -6,6 +6,9 @@ Summarize contents by contest:
   Sort contests by reverse number of precincts per contest
   Generate mock cvr file
   Overall results per choice per contest
+
+Todo:
+    produce separate files for contest summaries and results by contest by choice
 """
 
 Sample_data = """"Precinct_Name","Split_Name","precinct_splitId","Reg_voters","Ballots","Reporting","Contest_id","Contest_title","Contest_party","Choice_id","Candidate_name","Choice_party","Candidate_Type","Absentee_votes","Early_votes","Election_Votes"
@@ -26,7 +29,7 @@ import csv
 import argparse
 import argparse
 from datetime import datetime
-from operator import itemgetter
+from operator import itemgetter, attrgetter
 
 parser = argparse.ArgumentParser(description='ColoradoRLA utilities.')
 parser.add_argument('precinct_er', nargs='+',
@@ -35,6 +38,9 @@ parser.add_argument('precinct_er', nargs='+',
 class Choice(object):
     def __init__(self, name):
         self.name = name
+        self.absentee_votes = 0
+        self.early_votes = 0
+        self.election_votes = 0
         self.votes = 0
 
     def __str__(self):
@@ -48,18 +54,18 @@ class Contest(object):
         self.name = name
         self.choices = {}
         self.precinct_count = 0
+        self.registered = 0
+        self.ballots = 0
 
     def __str__(self):
         #return "%s %s\t%s\t%s" % (self.FirstName, self.LastName, self.Committee, self.Contribution)
         # return ', '.join([a + ": '" + str(getattr(self, a)) + "'"   for a in dir(self)  if not a.startswith("_")])
-        return "%s(%d): %s" % (self.name, self.precinct_count,
-                               ', '.join(self.choices))
+        return "%d\t%d\t%d\t%s): %s" % (self.registered, self.ballots, self.precinct_count, self.name)
 
 def parse_hart_contest_table(parser):
 
     args = parser.parse_args()
 
-    rows = []
     contests = {}
     last_title = None
 
@@ -73,20 +79,25 @@ def parse_hart_contest_table(parser):
             if last_title != title:
                 contest.precinct_count += 1
                 last_title = title
+            contest.registered += int(row['Reg_voters'])
+            contest.ballots += int(row['Ballots'])
 
             candidate_name = row['Candidate_name']
             choice = contest.choices.setdefault(candidate_name, Choice(candidate_name))
-            rows.append(row)
+            choice.absentee_votes += int(row['Absentee_votes'])
+            choice.early_votes += int(row['Early_votes'])
+            choice.election_votes += int(row['Election_Votes'])
+            choice.votes = choice.absentee_votes + choice.early_votes + choice.election_votes
 
-    for contest in contests.values():
-        print contest
+    print("registered\tballots\tprecinct_count\tcontest_name")
+    for contest in sorted(contests.values(), key=attrgetter('precinct_count'), reverse=True):
+        print("{registered}\t{ballots}\t{precinct_count}\t{name}".format(**contest.__dict__))
         #print("%s: %d" % (contest.name, contest.precinct_count))
 
-
-    for row in rows:
-        # print(row.name)
-        # print('\t'.join([(row.name.get(column)) for column in ['Contest_title', 'Candidate_name', 'Precinct_Name']]))
-        pass
+    print("votes\tabsentee_votes\tearly_votes\telection_votes\tchoice_name")
+    for contest in sorted(contests.values(), key=attrgetter('precinct_count'), reverse=True):
+        for choice in sorted(contest.choices.values(), key=attrgetter('votes'), reverse=True):
+            print("{votes}\t{absentee_votes}\t{early_votes}\t{election_votes}\t{name}".format(**choice.__dict__))
 
 if __name__ == "__main__":
     parse_hart_contest_table(parser)
