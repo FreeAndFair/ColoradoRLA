@@ -40,8 +40,9 @@ parser = argparse.ArgumentParser(description='ColoradoRLA utilities.')
 parser.add_argument("-n, --num_cvrs", type=int, default=1099, dest="num_cvrs",
   help="number of CVRs to list in mock cvr")
 
-parser.add_argument("-p, --minprecinctcount", type=int, default=1561, dest="minprecinctcount",
-  help="minimum precinct count for selected contests in mock cvr")
+parser.add_argument("-p, --minprecinctcount", type=int, default=-1, dest="minprecinctcount",
+  help="minimum precinct count for selected contests in mock cvr."
+       " -1 (the default) means the max precinct count seen")
 
 parser.add_argument("-d, --debuglevel", type=int, default=logging.WARNING, dest="debuglevel",
   help="Set logging level to debuglevel, expressed as an integer: "
@@ -107,6 +108,10 @@ def parse_hart_contest_table(parser):
             choice.election_votes += int(row['Election_Votes'])
             choice.votes = choice.absentee_votes + choice.early_votes + choice.election_votes
 
+    if args.minprecinctcount == -1:
+        # -1 means use the max
+        args.minprecinctcount = max((contest.precinct_count for contest in contests.values()))
+
     contests_sorted = contests.values()
     contests_sorted.sort(key=attrgetter('precedence'))
     contests_filtered = [contest for contest in contests_sorted if contest.precinct_count >= args.minprecinctcount]
@@ -126,42 +131,45 @@ def parse_hart_contest_table(parser):
 
     contests_filtered = [contest for contest in contests_sorted if contest.precinct_count >= args.minprecinctcount]
 
-    with codecs.open("/tmp/cvr.csv", "w", "utf-8") as cvrfile:
+    with codecs.open("/tmp/cvr.csv", "wb", "utf-8") as cvrfile:
+        csvwriter = csv.writer(cvrfile)
+        info_headers = ["CvrNumber","TabulatorNum","BatchId","RecordId","ImprintedId","BallotType"]
+
         # line 1: election info
-        cvrfile.write('MockCVR,1.0,,,,\n')
+        csvwriter.writerow(['MockCVR', 'v1.0'])
 
         # line 2: contest names, one per choice
-        cvrfile.write(',,,,,')
+        row = [None] * len(info_headers)
         for contest in contests_filtered:
-            cvrfile.write((',"' + contest.name + ' (Vote For=1)"') * len(contest.choices))
-        cvrfile.write('\n')
+            row.extend([(contest.name + ' (Vote For=1)')] * len(contest.choices))
+        csvwriter.writerow(row)
 
         # line 3: choice names.
-        cvrfile.write(',,,,,')
+        row = [None] * len(info_headers)
         for contest in contests_filtered:
             for choice in contest.choices:
-               cvrfile.write(",'%s'" % choice) # FIXME: replace with robust csv-quoting of choice name
-        cvrfile.write('\n')
+               row.append(choice)
+        csvwriter.writerow(row)
 
         # line 4: nominally party names
-        cvrfile.write('"CvrNumber","TabulatorNum","BatchId","RecordId","ImprintedId","BallotType"')
-        cvrfile.write(',' * sum((len(contest.choices) for contest in contests_filtered)))
-        cvrfile.write('\n')
+        row = info_headers
+        row.extend([None] * sum((len(contest.choices) for contest in contests_filtered)))
+        csvwriter.writerow(row)
 
         # content lines
         for cvrid in range(1, args.num_cvrs + 1):
-            cvrfile.write("%d,%d,%d,%d,%s,%s" % (cvrid, 1, 1, cvrid, '"1-1-1"', 'std'))
+            row = [cvrid, 1, 1, cvrid, "1-1-%d" % cvrid, "std"]
             for i, contest in enumerate(contests_filtered):
                 # First line (cvrid == 1) is for the winner, then alternate for loser and for winner
                 if len(contest.choices) > 1:
                     if (cvrid > 1) and (cvrid % 2 == 1):
-                        cvrfile.write(',0,1')
+                        row.extend([0, 1])
                     else:
-                        cvrfile.write(',1,0')
-                    cvrfile.write((',0') * (len(contest.choices) - 2))
+                        row.extend([1, 0])
+                    row.extend([0] * (len(contest.choices) - 2))
                 else:
-                    cvrfile.write(',1')
-            cvrfile.write('\n')
+                    row.extend([1])
+            csvwriter.writerow(row)
 
 
 if __name__ == "__main__":
