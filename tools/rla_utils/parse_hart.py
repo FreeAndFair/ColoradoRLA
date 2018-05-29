@@ -8,7 +8,7 @@ Summarize contents by contest:
   Overall results per choice per contest
 
 Todo:
-    produce separate files for contest summaries and results by contest by choice
+    See inline FIXME and TODO lists
 """
 
 from __future__ import print_function
@@ -37,7 +37,7 @@ Sample_data = """"Precinct_Name","Split_Name","precinct_splitId","Reg_voters","B
 
 parser = argparse.ArgumentParser(description='ColoradoRLA utilities.')
 
-parser.add_argument("-n, --num_cvrs", type=int, default=19, dest="num_cvrs",
+parser.add_argument("-n, --num_cvrs", type=int, default=1099, dest="num_cvrs",
   help="number of CVRs to list in mock cvr")
 
 parser.add_argument("-p, --minprecinctcount", type=int, default=1561, dest="minprecinctcount",
@@ -71,7 +71,6 @@ class Contest(object):
         Contest.num_instances += 1
         self.precedence = Contest.num_instances
         self.name = name
-        print("%s: %d" % (self.name, self.precedence))
 
         self.choices = {}
         self.precinct_count = 0
@@ -79,8 +78,6 @@ class Contest(object):
         self.ballots = 0
 
     def __str__(self):
-        #return "%s %s\t%s\t%s" % (self.FirstName, self.LastName, self.Committee, self.Contribution)
-        # return ', '.join([a + ": '" + str(getattr(self, a)) + "'"   for a in dir(self)  if not a.startswith("_")])
         return "%d\t%d\t%d\t%s): %s" % (self.registered, self.ballots, self.precinct_count, self.name)
 
 def parse_hart_contest_table(parser):
@@ -131,29 +128,29 @@ def parse_hart_contest_table(parser):
 
     with codecs.open("/tmp/cvr.csv", "w", "utf-8") as cvrfile:
         # line 1: election info
-        cvrfile.write('MockCVR,1.0,,,\n')
+        cvrfile.write('MockCVR,1.0,,,,\n')
 
         # line 2: contest names, one per choice
-        cvrfile.write(',,,,')
+        cvrfile.write(',,,,,')
         for contest in contests_filtered:
-            cvrfile.write((',"' + contest.name + '"') * len(contest.choices))
+            cvrfile.write((',"' + contest.name + ' (Vote For=1)"') * len(contest.choices))
         cvrfile.write('\n')
 
-        # line 3: choice names.  Perhaps add (Vote For=1)?
-        cvrfile.write(',,,,')
+        # line 3: choice names.
+        cvrfile.write(',,,,,')
         for contest in contests_filtered:
             for choice in contest.choices:
-               cvrfile.write(',"%s"' % choice)
+               cvrfile.write(",'%s'" % choice) # FIXME: replace with robust csv-quoting of choice name
         cvrfile.write('\n')
 
         # line 4: nominally party names
-        cvrfile.write('"CvrNumber","TabulatorNum","BatchId","RecordId","ImprintedId"')
-        cvrfile.write(',' * sum((len(contest.choices) for choice in contests_filtered)))
+        cvrfile.write('"CvrNumber","TabulatorNum","BatchId","RecordId","ImprintedId","BallotType"')
+        cvrfile.write(',' * sum((len(contest.choices) for contest in contests_filtered)))
         cvrfile.write('\n')
 
         # content lines
         for cvrid in range(1, args.num_cvrs + 1):
-            cvrfile.write("%d,%d,%d,%d,%s" % (cvrid, 1, 1, cvrid, '"1-1-1"'))
+            cvrfile.write("%d,%d,%d,%d,%s,%s" % (cvrid, 1, 1, cvrid, '"1-1-1"', 'std'))
             for i, contest in enumerate(contests_filtered):
                 # First line (cvrid == 1) is for the winner, then alternate for loser and for winner
                 if len(contest.choices) > 1:
