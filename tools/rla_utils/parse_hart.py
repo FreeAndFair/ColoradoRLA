@@ -8,10 +8,14 @@ Summarize contents by contest:
   Overall results per choice per contest
 
 Todo:
+    Calculate winners and losers, assuming all are 2-winner contests
+    Skip single-choice contests
+    Option to select contests
     See inline FIXME and TODO lists
 """
 
 from __future__ import print_function
+from __future__ import division
 
 import os
 import sys
@@ -19,7 +23,7 @@ import codecs
 import csv
 import logging
 import argparse
-import argparse
+import json
 from datetime import datetime
 from operator import itemgetter, attrgetter
 
@@ -66,6 +70,7 @@ class Contest(object):
     """
     An election contest, along with the set of choices and vote totals for each choice.
     """
+
     num_instances = 0
 
     def __init__(self, name):
@@ -81,15 +86,49 @@ class Contest(object):
     def __str__(self):
         return "%d\t%d\t%d\t%s): %s" % (self.registered, self.ballots, self.precinct_count, self.name)
 
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__,
+            sort_keys=True, indent=4)
+
+    def tally(self):
+        ranked = sorted(self.choices.values(), key=attrgetter('votes'), reverse=True)
+        self.winners = [choice.name for choice in ranked[:2]]
+        self.losers = [choice.name for choice in ranked[2:]]
+        self.margin = self.ballots
+        if len(ranked) > 2:
+            self.margin = ranked[1].votes - ranked[2].votes
+
+
+def obj_dict(obj):
+    return obj.__dict__
+
+
+def unicode_csv_DictReader(unicode_csv_data, dialect=csv.excel, **kwargs):
+    # csv.py doesn't do Unicode; encode temporarily as UTF-8:
+    csv_reader = csv.DictReader(utf_8_encoder(unicode_csv_data),
+                            dialect=dialect, **kwargs)
+    for row in csv_reader:
+        # decode UTF-8 back to Unicode, cell by cell:
+        yield [unicode(cell, 'utf-8') for cell in row]
+
+def utf_8_encoder(unicode_csv_data):
+    for line in unicode_csv_data:
+        yield line.encode('utf-8')
+
+
 def parse_hart_contest_table(parser):
 
     args = parser.parse_args()
+    logging.basicConfig(level=args.debuglevel)
+    print("parse_hart: %s" % (args,))
+
 
     contests = {}
     last_title = None
 
     for name in args.precinct_er:
 
+        # reader = unicode_csv_DictReader(open(name))
         reader = csv.DictReader(open(name))
 
         for row in reader:
@@ -108,9 +147,13 @@ def parse_hart_contest_table(parser):
             choice.election_votes += int(row['Election_Votes'])
             choice.votes = choice.absentee_votes + choice.early_votes + choice.election_votes
 
+    max_precinct_count = max((contest.precinct_count for contest in contests.values()))
+    print("Max precinct count: %d" % max_precinct_count)
+
     if args.minprecinctcount == -1:
-        # -1 means use the max
-        args.minprecinctcount = max((contest.precinct_count for contest in contests.values()))
+        # -1 means use the maximum precinct count seen as the minimum requirement:
+        # I.e. only audit county-wide contests
+        args.minprecinctcount = max_precinct_count
 
     contests_sorted = contests.values()
     contests_sorted.sort(key=attrgetter('precedence'))
@@ -128,6 +171,18 @@ def parse_hart_contest_table(parser):
             for choice in sorted(contest.choices.values(), key=attrgetter('votes'), reverse=True):
                 print("{contest.name}\t{choice.votes}\t{choice.absentee_votes}\t{choice.early_votes}\t{choice.election_votes}\t{choice.name}"
                       .format(**locals()), file=choicefile)
+
+    for contest in contests.values():
+        contest.tally()
+        # print(contest.winners.toJSON())
+        print("Margin %.4f for %d-candidate %s; winners: %s" % (contest.margin / contest.ballots, len(contest.choices), contest.name, contest.winners))
+        # print(json.dumps(contest.choices.__dict__))
+        #json.dump(contest.choices, open("/tmp/choices.json", "w"))
+
+    #json.dump(contests.__dict__, open("/tmp/contests.json", "w"))
+
+    #json.dump(contests.values(), open("/tmp/contests.json", "w"), default=obj_dict, indent=4)
+    json.dump(contests, open("/tmp/contests.json", "w"), default=obj_dict, indent=4)
 
     contests_filtered = [contest for contest in contests_sorted if contest.precinct_count >= args.minprecinctcount]
 
