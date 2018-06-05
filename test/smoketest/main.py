@@ -26,7 +26,7 @@ crtest -l "Clear Winner" -s "22345123451234512345" -p "1 17"
 # Test ballot-not-found
 crtest -C 1 -n "8 15"
 
-# Simple quick retrievals
+# Simple quick status retrievals
 crtest -E /audit-board-asm-state
 crtest -e /dos-asm-state
 
@@ -501,6 +501,7 @@ def publish_ballots_to_audit(ac, cvrs):
         N = len(county_cvrs)
         # TODO: perhaps calculate from margin etc
         n = 12  # matches default crtest run, Regent contest, 2 rounds, 2 dups, 10 unique ballots
+        n = 516  # arapahoe
         seed = "01234567890123456789"
 
         _, new_list = sampler.generate_outputs(n, True, 1, N, seed, False)
@@ -715,12 +716,12 @@ def county_audit(ac, county_id):
     if county_dashboard['asm_state'] == "COUNTY_AUDIT_COMPLETE":
         return(True)
 
-    audit_board_set = [{"first_name": "Mary",
-                        "last_name": "Doe",
-                        "political_party": "Democrat"},
-                       {"first_name": "John",
-                        "last_name": "Doe",
-                        "political_party": "Republican"}]
+    audit_board_set = [{"first_name": "Rosalind",
+                        "last_name": "Franklin",
+                        "political_party": "Independent"},
+                       {"first_name": "Horst",
+                        "last_name": "Feistel",
+                        "political_party": "Unaffiliated"}]
 
     r = test_endpoint_get(ac, county_s, "/audit-board-asm-state")
     if ((r.json()['current_state'] == "WAITING_FOR_ROUND_START_NO_AUDIT_BOARD") or
@@ -794,6 +795,9 @@ def county_audit(ac, county_id):
                     if ci['choices'] != ac.false_choices:
                         message = "Discrepancy: %s in %d, was %s" % (ac.false_choices, ac.audited_contests[0], ci['choices'])
                         ci['choices'] = ac.false_choices
+                        ci['comments'] = message
+                        print("acvr prior: %s" % acvr)
+                        print("adding comment for %d" % acvr['id'])
                     break
             print(message)
 
@@ -1139,7 +1143,7 @@ def main():
     contests = r.json()
 
     for i, contest in enumerate(contests):
-        print("Contest {}: vote for {votes_allowed} in {name}".format(i, **contest))
+        print("County {county_id} Contest {}: vote for {votes_allowed} in {name}".format(i, **contest))
 
     logging.log(5, "Contests: %s" % contests)
 
