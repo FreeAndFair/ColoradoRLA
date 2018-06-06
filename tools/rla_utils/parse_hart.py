@@ -86,10 +86,6 @@ class Contest(object):
     def __str__(self):
         return "%d\t%d\t%d\t%s): %s" % (self.registered, self.ballots, self.precinct_count, self.name)
 
-    def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__,
-            sort_keys=True, indent=4)
-
     def tally(self):
         ranked = sorted(self.choices.values(), key=attrgetter('votes'), reverse=True)
         self.winners = [choice.name for choice in ranked[:2]]

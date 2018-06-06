@@ -176,7 +176,7 @@ parser.add_argument('-C, --contest', dest='contests', metavar='CONTEST', action=
                     type=int,
                     help='numeric contest_index of contest to use for the given audit commands '
                     'E.g. 0 for first one from the CVRs. May be specified multiple times. '
-                    '-1 means "audit all contests')
+                    '-1 means "audit all contests. Default: 0')
 parser.add_argument('-l, --loser', dest='loser', default="UNDERVOTE",
                     help='Loser to use for -p, default "UNDERVOTE"')
 parser.add_argument('-p, --discrepancy-plan', dest='plan', default="2 17",
@@ -192,6 +192,11 @@ parser.add_argument('-n, --notfound-plan', dest='notfound_plan', default="-1 1",
 
 parser.add_argument('-R, --rounds', type=int, dest='rounds', default=-1,
                     help='Set maximum number of rounds. Default is all rounds.')
+
+parser.add_argument('-B, --ballot-polling-tally', dest='ballot_polling_tally',
+                    help='ballot polling tally results filename, for creating ACVRs.')
+parser.add_argument('-N, --num_samples', type=int, dest='num_samples', default=-1,
+                    help='Set maximum number of samples. Default is a full round.')
 
 parser.add_argument('-r, --risk-limit', type=float, dest='risk_limit', default=0.1,
                     help='risk limit, e.g. 0.1')
@@ -757,7 +762,7 @@ def county_audit(ac, county_id):
     if len(selected) < 1:
         print("No ballots_to_audit")
 
-    for i in range(len(selected)):
+    for i in range(min(len(selected), ac.args.num_samples)):
         if ac.args.debuglevel >= logging.INFO:
             r = test_endpoint_get(ac, ac.state_s, "/dos-dashboard", show=False)
             discrepancies = ""
@@ -776,6 +781,8 @@ def county_audit(ac, county_id):
 
         r = test_endpoint_get(ac, county_s, "/cvr/id/%d" % selected[i]['db_id'], show=False)
         acvr = r.json()
+        if ac.args.ballot_polling_tally:
+            acvr['contest_info'] = ballot_polling_sample(acvr['contest_info'], ac.args.ballot_polling_tally)
         logging.debug("Original CVR: %s" % json.dumps(acvr))
         acvr['record_type'] = 'AUDITOR_ENTERED'
 
@@ -829,6 +836,34 @@ def county_audit(ac, county_id):
 
     return(remaining)
 
+def ballot_polling_sample(contest_info, ballot_polling_tally):
+    """Return ACVR with distribution matching given json file
+    # contest_info sample: [{u'choices': [u'DARRYL W. PERRY'], u'contest': 25829}]
+    # FIXME: Only works for one contest. Figure out how to match up contest ids with contests
+    # Hmmm - they should be in order....
+    """
+
+    import numpy as np
+    logging.warning("ACVR Contest Info: %s" % contest_info)
+
+    # TODO: Ensure tally file has been read and parsed
+    # Pick a random sample from it for each contest - how do we know which?
+    # Hard code 2016 president for now
+    """
+    PRESIDENT OF THE UNITED STATES	700	371	0	329	HILLARY CLINTON
+    PRESIDENT OF THE UNITED STATES	563	373	0	190	DONALD TRUMP
+    PRESIDENT OF THE UNITED STATES	440	208	0	232	BERNIE SANDERS
+    PRESIDENT OF THE UNITED STATES	95	56	0	39	TED CRUZ
+    PRESIDENT OF THE UNITED STATES	84	38	0	46	JOHN R. KASICH
+    PRESIDENT OF THE UNITED STATES	20	12	0	8	BEN CARSON
+    ...
+    """
+    choices = [u'HILLARY CLINTON', u'DONALD TRUMP', u'BERNIE SANDERS', u'TED CRUZ', u'JOHN R. KASICH', u'BEN CARSON', u'other']
+    counts = np.array([700, 563, 440, 95, 84, 20, 7+5+3+3+3+3+2+2+2+1+1+1+1+1])
+    probabilities = counts / sum(counts)
+    contest_info[0]['choices'] = [np.random.choice(choices, 1, p=probabilities)[0]]
+    print(contest_info)
+    return contest_info
 
 def download_report(ac, s, path, extension):
     "Download and save the given report, adding the given extension"

@@ -3,12 +3,10 @@
 """
 Analyze results of auditing results from rla_export, and assess whether more auditing is needed.
 
-From the election tabulation system vote totals, for each contest, for each winner-loser pair (w,k),
- calculate s_wk = (number of votes for w)/(number of votes for w + number of votes for k)
-For each contest, for each winner-loser pair (w,k), set T_wk =1.
-For each line in `all_contest_audit_details_by_cvr` with consensus = “YES”, change any T_wk values as indicated by the BRAVO algorithm.
-Multiply the final T_wk values by the risk limit. If for any contest the result is greater than or equal to one, that contest has met the risk limit.
+Based on “BRAVO: Ballot-polling Risk-limiting Audits to Verify Outcomes” by Lindeman, Stark and Yates, 2012
+ https://www.usenix.org/system/files/conference/evtwote12/evtwote12-final27.pdf
 
+TODO: check also for sampling with replacement
 """
 
 from __future__ import print_function
@@ -47,7 +45,7 @@ def analyze_rounds(parser):
 
     acvrs = json.load(open(args.exports[0] + "/all_contest_audit_details_by_cvr.json"))
 
-    # Tally acvrs
+    # Tally acvrs. TODO: check if necessary for consensus = "YES"
     acvr_tallies = collections.Counter((cvr['contest_name'], cvr['choice_per_audit_board']) for cvr in acvrs).items()
     print("acvr tallies: %s" % (acvr_tallies,))
     for id, sample_votes in acvr_tallies:
@@ -76,6 +74,8 @@ def analyze_rounds(parser):
         else:
             max_risk = 0.0
         # TODO: deal with majority option
+
+        # TODO: compute an initial mean sample size
         print("%.3f is max risk for contest with %d candidates: %s" % (max_risk, len(contest['choices']), contest['name']))
     # Report minumum across all contests, then levels for all contests
 
@@ -84,11 +84,18 @@ def analyze_rounds(parser):
         print("%s\t%s\t%s" % (result, key[0], key[1]))
 
 
+# TODO: move to rlacalc.py
 def ballot_polling_risk_level(winner_votes, loser_votes, winner_obs, loser_obs):
     """
     Return the ballot polling risk level for a contest with the given overall
     vote totals and observed votes on selected ballots during a ballot polling
     risk-limiting audit.
+
+    From the election tabulation system vote totals, for each contest, for each winner-loser pair (w,k),
+    calculate s_wk = (number of votes for w)/(number of votes for w + number of votes for k)
+    For each contest, for each winner-loser pair (w,k), set T_wk =1.
+    For each line in `all_contest_audit_details_by_cvr` with consensus = "YES", change any T_wk values as indicated by the BRAVO algorithm.
+    Multiply the final T_wk values by the risk limit. If for any contest the result is greater than or equal to one, that contest has met the risk limit.
 
     >>> ballot_polling_risk_level(1410, 1132, 170, 135) # Custer County 2018
     0.1342382069344721
@@ -96,7 +103,11 @@ def ballot_polling_risk_level(winner_votes, loser_votes, winner_obs, loser_obs):
     0.470020272422901
     """
 
-    s_wl = winner_votes / (winner_votes + loser_votes)
+    try:
+        s_wl = winner_votes / (winner_votes + loser_votes)
+    except ZeroDivisionError:
+        return 1.0
+
     T_wl = 1.0
     T_wl = T_wl * ((s_wl)/0.5) ** winner_obs
     T_wl = T_wl * ((1.0 - s_wl)/0.5) ** loser_obs
