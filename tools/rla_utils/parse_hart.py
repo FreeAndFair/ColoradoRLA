@@ -52,6 +52,16 @@ parser.add_argument("-d, --debuglevel", type=int, default=logging.WARNING, dest=
   help="Set logging level to debuglevel, expressed as an integer: "
   "DEBUG=10, INFO=20, endpoint timing=25, WARNING=30 (the default), ERROR=40, CRITICAL=50")
 
+parser.add_argument('-C, --cvr_contests', dest="cvr_contests",
+                    help='Contests to include in CVR, as an JSON array.')
+
+"""
+parser.add_argument('-C, --cvr_contests', nargs='+',
+                    help='Contests to include in CVR, by index.')
+
+but get: parse_hart: error: too few arguments
+"""
+
 parser.add_argument('precinct_er', nargs='+',
                     help='Election results by precinct, in Hart contest_table.csv format')
 
@@ -118,7 +128,6 @@ def parse_hart_contest_table(parser):
     logging.basicConfig(level=args.debuglevel)
     print("parse_hart: %s" % (args,))
 
-
     contests = {}
     last_title = None
 
@@ -180,7 +189,14 @@ def parse_hart_contest_table(parser):
     #json.dump(contests.values(), open("/tmp/contests.json", "w"), default=obj_dict, indent=4)
     json.dump(contests, open("/tmp/contests.json", "w"), default=obj_dict, indent=4)
 
+    # Set sensible default for cvr_contests
+    if args.cvr_contests == []:
+        args.cvr_contests = range(len(contests_filtered))
+    else:
+        args.cvr_contests = json.loads(args.cvr_contests)
+
     contests_filtered = [contest for contest in contests_sorted if contest.precinct_count >= args.minprecinctcount]
+    contests_filtered = [contests_filtered[i] for i in args.cvr_contests]
 
     with codecs.open("/tmp/cvr.csv", "wb", "utf-8") as cvrfile:
         csvwriter = csv.writer(cvrfile)
