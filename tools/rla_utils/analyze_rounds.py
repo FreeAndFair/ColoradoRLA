@@ -1,10 +1,24 @@
 #!/usr/bin/env python
 # coding=utf-8
 """
-Analyze results of auditing results from rla_export, and assess whether more auditing is needed.
+Analyze results of auditing results from rla_export, and assess whether
+more auditing is needed.
 
-Based on “BRAVO: Ballot-polling Risk-limiting Audits to Verify Outcomes” by Lindeman, Stark and Yates, 2012
+Based on “BRAVO: Ballot-polling Risk-limiting Audits to Verify Outcomes”
+ by Lindeman, Stark and Yates, 2012
  https://www.usenix.org/system/files/conference/evtwote12/evtwote12-final27.pdf
+
+Note: for strict compliance with step 5 of the BRAVO algorithm as
+presented, the votes have to be interpreted sequentially.
+
+  5. If any T w` ≥ 1/α, reject the corresponding null hypothesis
+  for each such T w`.  Once a null hypothesis is rejected, do not
+  update its T w` after subsequent draws.
+
+For contests with votes_allowed > 1, steps 3 and 4 imply that the number of
+sampled votes for each candidate can vary depending on which other candidate
+they are being compared with, since votes for both candidates are not counted
+at all for either.
 
 TODO: check also for sampling with replacement
 """
@@ -21,6 +35,7 @@ import logging
 import argparse
 import collections
 import pprint
+import rlacalc
 from operator import itemgetter, attrgetter
 
 
@@ -30,7 +45,7 @@ parser.add_argument("-d, --debuglevel", type=int, default=logging.WARNING, dest=
   help="Set logging level to debuglevel, expressed as an integer: "
   "DEBUG=10, INFO=20, endpoint timing=25, WARNING=30 (the default), ERROR=40, CRITICAL=50")
 
-parser.add_argument('exports', nargs='+',
+parser.add_argument('exports',
                     help='Directory with rla_export reports')
 
 
@@ -44,9 +59,11 @@ def analyze_rounds(parser):
 
     contests = json.load(open("/tmp/contests.json", "r"))
 
-    acvrs = json.load(open(args.exports[0] + "/all_contest_audit_details_by_cvr.json"))
+    acvrs = json.load(open(args.exports + "/all_contest_audit_details_by_cvr.json"))
 
-    # Tally acvrs. TODO: check if necessary for consensus = "YES"
+    # Tally acvrs.
+    # FIXME: check for consensus = "YES"
+    # FIXME: check for, ignore overvotes
     acvr_tallies = collections.Counter((cvr['contest_name'], cvr['choice_per_audit_board']) for cvr in acvrs).items()
     print("acvr tallies: %s" % (acvr_tallies,))
     for id, sample_votes in acvr_tallies:
@@ -75,26 +92,28 @@ def analyze_rounds(parser):
         else:
             max_risk = 0.0
 
-        # TODO: deal with majority option
+        # TODO: deal with single outright majority winner outcome: winner vs all others combined in a pool
         w = contests[contest['name']]['choices'][contest['winners'][0]]
         w_votes = w['votes']
         w_sample_tallies = w.get('sample_tally', 0)
-        others = [choice for choice in contests[contest['name']]['choices'].values() if choice['name'] != w['name']]
-        other_votes = sum(choice['votes'] for choice in others)
-        other_sample_tallies = sum(choice.get('sample_tally', 0) for choice in others)
+        pool = [choice for choice in contests[contest['name']]['choices'].values() if choice['name'] != w['name']]
+        pool_votes = sum(choice['votes'] for choice in pool)
+        pool_sample_tallies = sum(choice.get('sample_tally', 0) for choice in pool)
 
-        # If highest-vote-getter got less than 50%, swap with the sum of the others
-        if w_votes < other_votes:
-            w_votes, other_votes = other_votes , w_votes
-            w_sample_tallies, other_sample_tallies = other_sample_tallies, w_sample_tallies
+        # If highest-vote-getter got less than 50%, swap with the sum of the pool of losers
+        if w_votes < pool_votes:
+            w_votes, pool_votes = pool_votes , w_votes
+            w_sample_tallies, pool_sample_tallies = pool_sample_tallies, w_sample_tallies
 
-        majority_risk = ballot_polling_risk_level(w_votes, other_votes, w_sample_tallies, other_sample_tallies)
+        majority_risk = ballot_polling_risk_level(w_votes, pool_votes, w_sample_tallies, pool_sample_tallies)
         contest_name = contest['name']
-        logging.warning("risk {majority_risk} for {contest_name}: {w_votes}, {w_sample_tallies}  vs {other_votes}, {other_sample_tallies}".format(**locals()))
+        logging.warning("risk {majority_risk} for {contest_name}: {w_votes}, {w_sample_tallies}  vs {pool_votes}, {pool_sample_tallies}".format(**locals()))
         max_risk = max(max_risk, majority_risk)
 
         # TODO: compute an initial mean sample size
-        print("%.3f is max risk for contest with %d candidates: %s" % (max_risk, len(contest['choices']), contest['name']))
+        risk_limit = 0.2 # TODO: set as an option
+        sample_size = rlacalc.findAsn(risk_limit, contest['margin'], max_risk)
+        print("%d mean sample size, %.3f max risk for contest with %d candidates: %s" % (sample_size, max_risk, len(contest['choices']), contest['name']))
     # Report minumum across all contests, then levels for all contests
 
     # debugging

@@ -62,7 +62,7 @@ parser.add_argument('-C, --cvr_contests', nargs='+',
 but get: parse_hart: error: too few arguments
 """
 
-parser.add_argument('precinct_er', nargs='+',
+parser.add_argument('precinct_er',
                     help='Election results by precinct, in Hart contest_table.csv format')
 
 class Choice(object):
@@ -97,12 +97,24 @@ class Contest(object):
         return "%d\t%d\t%d\t%s): %s" % (self.registered, self.ballots, self.precinct_count, self.name)
 
     def tally(self):
+        "Tally the contest. FIXME: assumes 2-winner contest, ignores runoff 50% winner margin"
+
         ranked = sorted(self.choices.values(), key=attrgetter('votes'), reverse=True)
         self.winners = [choice.name for choice in ranked[:2]]
         self.losers = [choice.name for choice in ranked[2:]]
-        self.margin = self.ballots
-        if len(ranked) > 2:
-            self.margin = ranked[1].votes - ranked[2].votes
+
+        pool_votes = sum([choice.votes for choice in ranked[1:]])
+        voted_ballots = ranked[0].votes + pool_votes
+
+        if voted_ballots > 0:
+            if len(ranked) > 2:
+                self.margin = (ranked[1].votes - ranked[2].votes) / voted_ballots
+            else:
+                self.margin = 1.0
+            self.majority_margin = (ranked[0].votes - pool_votes) / voted_ballots
+        else:
+            self.margin = float('NaN')
+            self.majority_margin = self.margin
 
 
 def obj_dict(obj):
@@ -131,10 +143,10 @@ def parse_hart_contest_table(parser):
     contests = {}
     last_title = None
 
-    for name in args.precinct_er:
-
-        # reader = unicode_csv_DictReader(open(name))
-        reader = csv.DictReader(open(name))
+    # Tally Election results by precinct
+    if True:  # "with" won't work: AttributeError: DictReader instance has no attribute '__exit__'
+        reader = csv.DictReader(open(args.precinct_er))
+        # FIXME: get utf-8 working e.g. via reader = unicode_csv_DictReader(open(name))
 
         for row in reader:
             title = row['Contest_title']
@@ -180,7 +192,8 @@ def parse_hart_contest_table(parser):
     for contest in contests.values():
         contest.tally()
         # print(contest.winners.toJSON())
-        print("Margin %.4f for %d-candidate %s; winners: %s" % (contest.margin / contest.ballots, len(contest.choices), contest.name, contest.winners))
+
+        print("Margin %.4f MajMargin %.4f for %d-candidate %s; winners: %s" % (contest.margin, contest.majority_margin, len(contest.choices), contest.name, contest.winners))
         # print(json.dumps(contest.choices.__dict__))
         #json.dump(contest.choices, open("/tmp/choices.json", "w"))
 
@@ -190,7 +203,7 @@ def parse_hart_contest_table(parser):
     json.dump(contests, open("/tmp/contests.json", "w"), default=obj_dict, indent=4)
 
     # Set sensible default for cvr_contests
-    if args.cvr_contests == []:
+    if args.cvr_contests is None:
         args.cvr_contests = range(len(contests_filtered))
     else:
         args.cvr_contests = json.loads(args.cvr_contests)
