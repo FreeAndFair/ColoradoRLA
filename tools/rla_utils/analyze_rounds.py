@@ -45,7 +45,7 @@ parser.add_argument("-d, --debuglevel", type=int, default=logging.WARNING, dest=
   help="Set logging level to debuglevel, expressed as an integer: "
   "DEBUG=10, INFO=20, endpoint timing=25, WARNING=30 (the default), ERROR=40, CRITICAL=50")
 
-parser.add_argument('exports',
+parser.add_argument('exports', nargs='?',
                     help='Directory with rla_export reports')
 
 
@@ -59,7 +59,10 @@ def analyze_rounds(parser):
 
     contests = json.load(open("/tmp/contests.json", "r"))
 
-    acvrs = json.load(open(args.exports + "/all_contest_audit_details_by_cvr.json"))
+    try:
+        acvrs = json.load(open(args.exports + "/all_contest_audit_details_by_cvr.json"))
+    except:
+        acvrs = []
 
     # Tally acvrs.
     # FIXME: check for consensus = "YES"
@@ -72,15 +75,18 @@ def analyze_rounds(parser):
             contests[contest]['choices'][choice]['sample_tally'] = sample_votes
 
     # print(contests)
+    print("maxsample\t2nd_vs_3rd\toutright\tmaxrisk\toutrightrisk\tcandidates\tcontest")
     for contest in contests.values():
         # print margin
         logging.debug("Contest with %d candidates: %s" % (len(contest['choices']), contest['name']))
+        if 'selected' not in contest:
+            continue
         contest['risk_levels'] = []
         for winner in contest['winners']:
             w = contests[contest['name']]['choices'][winner]
             for loser in contest['losers']:
                 l = contests[contest['name']]['choices'][loser]
-                risk_level = ballot_polling_risk_level(w['votes'], l['votes'], w.get('sample_tally', 0), l.get('sample_tally', 0))
+                risk_level = rlacalc.ballot_polling_risk_level(w['votes'], l['votes'], w.get('sample_tally', 0), l.get('sample_tally', 0))
                 logging.warning("%.3f for %s: %d %d %d %d in %s vs %s" % (risk_level, contest['name'], w['votes'], l['votes'], w.get('sample_tally', 0), l.get('sample_tally', 0), w['name'], l['name']))
                 contest['risk_levels'].append((risk_level, w, l))
                 # contests[contest['name']]['choices'][choice]['risk_level'] = risk_level
@@ -92,7 +98,7 @@ def analyze_rounds(parser):
         else:
             max_risk = 0.0
 
-        # TODO: deal with single outright majority winner outcome: winner vs all others combined in a pool
+        # Deal with single outright majority winner outcome: winner vs all others combined in a pool
         w = contests[contest['name']]['choices'][contest['winners'][0]]
         w_votes = w['votes']
         w_sample_tallies = w.get('sample_tally', 0)
@@ -105,66 +111,24 @@ def analyze_rounds(parser):
             w_votes, pool_votes = pool_votes , w_votes
             w_sample_tallies, pool_sample_tallies = pool_sample_tallies, w_sample_tallies
 
-        majority_risk = ballot_polling_risk_level(w_votes, pool_votes, w_sample_tallies, pool_sample_tallies)
+        majority_risk = rlacalc.ballot_polling_risk_level(w_votes, pool_votes, w_sample_tallies, pool_sample_tallies)
         contest_name = contest['name']
         logging.warning("risk {majority_risk} for {contest_name}: {w_votes}, {w_sample_tallies}  vs {pool_votes}, {pool_sample_tallies}".format(**locals()))
         max_risk = max(max_risk, majority_risk)
 
-        # TODO: compute an initial mean sample size
+        # Compute an initial mean sample size.
         risk_limit = 0.2 # TODO: set as an option
         sample_size = rlacalc.findAsn(risk_limit, contest['margin'], max_risk)
-        print("%d mean sample size, %.3f max risk for contest with %d candidates: %s" % (sample_size, max_risk, len(contest['choices']), contest['name']))
+        sample_size_maj = rlacalc.findAsn(risk_limit, contest['majority_margin'], majority_risk)
+        max_sample_size = max(sample_size, sample_size_maj)
+        print("%.0f\t%.0f\t%.0f\t%.3f\t%.3f\t%s\t%s" % (max_sample_size, sample_size, sample_size_maj, max_risk, majority_risk, len(contest['choices']), contest['name']))
+        # print("2nd vs 3rd: %d mean sample size, %.3f max risk for contest with %d candidates: %s" % (sample_size, max_risk, len(contest['choices']), contest['name']))
+        # print("Majority: %d mean sample size, %.3f risk for contest with %d candidates: %s" % (sample_size_maj, majority_risk, len(contest['choices']), contest['name']))
     # Report minumum across all contests, then levels for all contests
 
     # debugging
     for key, result in sorted(collections.Counter((cvr['contest_name'], cvr['choice_per_audit_board']) for cvr in acvrs).items()):
         print("%s\t%s\t%s" % (result, key[0], key[1]))
-
-
-# TODO: move to rlacalc.py
-def ballot_polling_risk_level(winner_votes, loser_votes, winner_obs, loser_obs):
-    """
-    Return the ballot polling risk level for a contest with the given overall
-    vote totals and observed votes on selected ballots during a ballot polling
-    risk-limiting audit.
-
-    From the election tabulation system vote totals, for each contest, for each winner-loser pair (w,k),
-    calculate s_wk = (number of votes for w)/(number of votes for w + number of votes for k)
-    For each contest, for each winner-loser pair (w,k), set T_wk =1.
-    For each line in `all_contest_audit_details_by_cvr` with consensus = "YES", change any T_wk values as indicated by the BRAVO algorithm.
-    Multiply the final T_wk values by the risk limit. If for any contest the result is greater than or equal to one, that contest has met the risk limit.
-
-    >>> ballot_polling_risk_level(1410, 1132, 170, 135) # Custer County 2018
-    0.1342382069344729
-    >>> ballot_polling_risk_level(2894, 1695, 45, 32)   # Las Animas County 2018
-    0.47002027242290234
-    >>> ballot_polling_risk_level(0, 0, 2000, 0)
-    1.0
-    >>> ballot_polling_risk_level(2894, 0, 1130, 0)   # Test overflow
-    nan
-    >>> ballot_polling_risk_level(100000, 0, 50000, 0)   # Test overflow
-    nan
-
-    The code is equivalent to this, but uses logs to prevent overflow
-    T_wl = 1.0
-    T_wl = T_wl * ((s_wl)/0.5) ** winner_obs
-    T_wl = T_wl * ((1.0 - s_wl)/0.5) ** loser_obs
-    """
-
-    try:
-        s_wl = winner_votes / (winner_votes + loser_votes)
-    except ZeroDivisionError:
-        return 1.0
-
-    log_T_wl = math.log(1.0)
-    try:
-        log_T_wl = log_T_wl + ((math.log(s_wl) - math.log(0.5)) * winner_obs)
-        log_T_wl = log_T_wl + ((math.log(1.0 - s_wl) - math.log(0.5)) * loser_obs)
-        risk_level = math.log(1.0) - log_T_wl
-    except ValueError:
-        risk_level = float('NaN')
-
-    return math.exp(risk_level)
 
 
 if __name__ == "__main__":

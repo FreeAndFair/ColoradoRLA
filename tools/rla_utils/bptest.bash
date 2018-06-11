@@ -16,7 +16,10 @@ mkdir $outdir
 ./parse_hart.py > $outdir/parse_hart.out "$@"    # creates files like /tmp/cvr.csv /tmp/contests.json
 # ../../test/smoketest/main.py -p '-1 1' -f /tmp/cvr.csv | tee $outdir/crtest.out
 
-crtest -N 124 -R 1 -p '-1 1' -f /tmp/cvr.csv -F ../../test/e-1/arapahoe-manifest.csv -B tallyfile | tee $outdir/crtest.out # 13.8% margin, 20% risk limit 174 * .71 (50th percentile)
+# This reads from rla_export detail and tallies from /tmp/contests.json
+./analyze_rounds.py 2> $outdir/analyze_rounds-pre.detail | tee $outdir/analyze_rounds-pre.out
+
+crtest -N 124 -C -1 -R 1 -p '-1 1' -f /tmp/cvr.csv -F ../../test/e-1/arapahoe-manifest.csv -B tallyfile | tee $outdir/crtest.out # 13.8% margin, 20% risk limit 174 * .71 (50th percentile)
 # crtest -N 519 -R 1 -p '-1 1' -f /tmp/cvr.csv -F ../../test/e-1/arapahoe-manifest.csv -B tallyfile | tee $outdir/crtest.out # 13.8% margin, 248 * 2.09 (90th percentile)
 # crtest -N 176 -C -1 -R 1 -p '-1 1' -f /tmp/cvr.csv -F ../../test/e-1/arapahoe-manifest.csv -B tallyfile | tee $outdir/crtest.out # 13.8% margin, 248 * 0.71 (50th percentile)
 
@@ -30,4 +33,4 @@ rla_export -e $exports
 
 echo $exports
 
-analyze_rounds $exports 2> $outdir/analyze_rounds.detail | tee $outdir/analyze_rounds.out # reads from rla_export detail and tallies from /tmp/contests.json
+./analyze_rounds.py $exports 2> $outdir/analyze_rounds.detail | tee $outdir/analyze_rounds.out # reads from rla_export detail and tallies from /tmp/contests.json

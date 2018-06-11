@@ -1,15 +1,44 @@
-**rla_utils**: **parse_hart** and **analyze_rounds** allow the RLAtool used for ballot-comparison risk-limiting audits in Colorado in 2017 (ColoradoRLA), to be used in a ballot-polling risk-limiting audit.  `parse_hart` is used to create a mock CVR from the `contest_table` CSV file produced by Hart's BallotNow system.  `rla_export` and `analyze_rounds` can then be used to estimate an initial sample sizes.  Election officials can then use other software, such as Philip Stark's `https://www.stat.berkeley.edu/~stark/Vote/ballotPollTools.htm` to record "Audit CVRs" to produce random selections from the official ballot (and/or ballot-card) manifest. One or more audit boards can then enter interpretations of each selected ballot into the RLAtool in parallel, using one or more "counties" in RLAtool terminology.  `rla_export` and `analyze_rounds` can then be used to assess the progress of the audit. It provides risk levels for all contests, and an estimate of the number of remaining samples to audit.  If the risk limit has not yet been satisfied, additional rounds of audit board entry and assesment can continue until either the risk limit is satisfied or a full hand count is ordered.
+**rla_utils**: **parse_hart** and **analyze_rounds** allow the RLAtool used
+for ballot-comparison risk-limiting audits in Colorado in 2017 (ColoradoRLA),
+to be used in a ballot-polling risk-limiting audit.
+`parse_hart` is used to create a mock CVR from the `contest_table` CSV file
+produced by Hart's BallotNow system.
+`rla_export` and `analyze_rounds` can then be used to estimate
+an initial sample size.  Election officials can then use other software,
+such as Philip Stark's [`https://www.stat.berkeley.edu/~stark/Vote/ballotPollTools.htm`[(`https://www.stat.berkeley.edu/~stark/Vote/ballotPollTools.htm)
+to record "Audit CVRs" to produce random selections from the official ballot
+(and/or ballot-card) manifest.
+One or more audit boards can then enter interpretations of each selected ballot
+into the RLAtool in parallel, using one or more "counties" in RLAtool terminology.
+`rla_export` and `analyze_rounds` can then be used to assess
+the progress of the audit. It provides risk levels for all contests,
+and an estimate of the number of remaining samples to audit.
+If the risk limit has not yet been satisfied, additional rounds of audit board
+entry and assesment can continue until either the risk limit is satisfied
+or a full hand count is ordered.
 
-Note: since Hart's system does not provide CVRs which can be matched to the corresponding paper ballots, and RLAtool does not yet support ballot-polling audits, we construct a mock CVR file just to get it to allow entry of a sufficient number of ballots, all within a single huge round which we never expect to complete.  The votes indicated in the mock CVR file bear no resemblance to the actual votes, and the discrepancy reports from the RLAtool are ignored.  We just use RLAtool to record and timestamp the audit board entry of the ballots, and use other software to tally the sampled ballots, calculate risk levels, and estimate sample sizes.
+Note: since Hart's system does not provide CVRs which can be matched to
+the corresponding paper ballots, and RLAtool does not yet support
+ballot-polling audits, we construct a mock CVR file just to get it
+to allow entry of a sufficient number of ballots, all within a single huge round
+which we never expect to complete.  The votes indicated in the mock CVR file
+bear no resemblance to the actual votes, and the discrepancy reports from
+the RLAtool are ignored.  We just use RLAtool to record and timestamp
+the audit board entry of the ballots, and use other software to tally
+the sampled ballots, calculate risk levels, and estimate sample sizes.
 
 # Installation
 The software has been tested on Ubuntu Linux 18.04 LTS ("bionic").
 
-Install the "rlatool" branch of rlacalc from `https://github.com/nealmcb/audit_cvrs`.  Only the rlacalc.py and hug_noop.py files are needed.
+Install the "ballot-polling" branch of rlacalc
+from `https://github.com/nealmcb/audit_cvrs`.
+Only the rlacalc.py and hug_noop.py files are needed.
 
-Install the "orange" branch of ColoradoRLA from https://github.com/nealmcb/ColoradoRLA/tree/orange
+Install the "orange" branch of ColoradoRLA from
+https://github.com/nealmcb/ColoradoRLA/tree/orange
 
-Install the python package `rla_export` found in ColoradoRLA/server/eclipse-project/script/rla_export
+Install the python package `rla_export` found in
+ColoradoRLA/server/eclipse-project/script/rla_export
 (TODO: put install file up as a release under github?)
 
 Add the directory with all those python files to $PATH.
@@ -44,7 +73,10 @@ For now, use the `--help` option of each tool for help, and/or read the comments
     rla_export -e $DATADIR/export
     analyze_rounds.py $DATADIR/export 2> $DATADIR/analyze_rounds.detail | tee $DATADIR/analyze_rounds.out
 
-    # Use the data in $DATADIR/analyze_rounds.out to help choose a sample size, or just use a small sample size like 10 or 20 samples per audit board.
+    # Use the data in $DATADIR/analyze_rounds.out to help choose a sample size,
+    # or just use a small sample size like 10 or 20 samples per audit board.
+    # If there are multiple cards per ballot, and they are sampled individually, multiply
+    # sample size estimates by the average number of cards per ballot.
     # TODO: improve tool to help clarify which contest is closest, which sample sizes to go with
 
     # Use https://www.stat.berkeley.edu/~stark/Vote/ballotPollTools.htm

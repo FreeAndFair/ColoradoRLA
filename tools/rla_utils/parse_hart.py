@@ -41,8 +41,8 @@ Sample_data = """"Precinct_Name","Split_Name","precinct_splitId","Reg_voters","B
 
 parser = argparse.ArgumentParser(description='ColoradoRLA utilities.')
 
-parser.add_argument("-n, --num_cvrs", type=int, default=1099, dest="num_cvrs",
-  help="number of CVRs to list in mock cvr")
+parser.add_argument("-n, --num_cvrs", type=int, default=2000, dest="num_cvrs",
+  help="number of CVRs to list in mock cvr (max number of audited ballots)")
 
 parser.add_argument("-p, --minprecinctcount", type=int, default=-1, dest="minprecinctcount",
   help="minimum precinct count for selected contests in mock cvr."
@@ -97,7 +97,7 @@ class Contest(object):
         return "%d\t%d\t%d\t%s): %s" % (self.registered, self.ballots, self.precinct_count, self.name)
 
     def tally(self):
-        "Tally the contest. FIXME: assumes 2-winner contest, ignores runoff 50% winner margin"
+        "Tally the contest. FIXME: assumes 2-winner contest"
 
         ranked = sorted(self.choices.values(), key=attrgetter('votes'), reverse=True)
         self.winners = [choice.name for choice in ranked[:2]]
@@ -175,7 +175,7 @@ def parse_hart_contest_table(parser):
     contests_sorted = contests.values()
     contests_sorted.sort(key=attrgetter('precedence'))
     contests_filtered = [contest for contest in contests_sorted if contest.precinct_count >= args.minprecinctcount]
-    contests_sorted = contests_filtered # TODO: decide whether to keep this and never show anything about filtered-out contests
+    contests_sorted = contests_filtered
 
     with codecs.open("/tmp/contests.csv", "w", "utf-8") as contestfile:
         print("registered\tballots\tprecinct_count\tcontest_name", file=contestfile)
@@ -189,10 +189,21 @@ def parse_hart_contest_table(parser):
                 print("{contest.name}\t{choice.votes}\t{choice.absentee_votes}\t{choice.early_votes}\t{choice.election_votes}\t{choice.name}"
                       .format(**locals()), file=choicefile)
 
+    # Set sensible default for value of cvr_contests
+    if args.cvr_contests is None:
+        args.cvr_contests = range(len(contests_filtered))
+    else:
+        args.cvr_contests = json.loads(args.cvr_contests)
+
+    contests_filtered = [contest for contest in contests_sorted if contest.precinct_count >= args.minprecinctcount]
+    contests_filtered = [contests_filtered[i] for i in args.cvr_contests]
+
     for contest in contests.values():
         contest.tally()
         # print(contest.winners.toJSON())
 
+    for contest in contests_filtered:
+        contest.selected = True
         print("Margin %.4f MajMargin %.4f for %d-candidate %s; winners: %s" % (contest.margin, contest.majority_margin, len(contest.choices), contest.name, contest.winners))
         # print(json.dumps(contest.choices.__dict__))
         #json.dump(contest.choices, open("/tmp/choices.json", "w"))
@@ -201,15 +212,6 @@ def parse_hart_contest_table(parser):
 
     #json.dump(contests.values(), open("/tmp/contests.json", "w"), default=obj_dict, indent=4)
     json.dump(contests, open("/tmp/contests.json", "w"), default=obj_dict, indent=4)
-
-    # Set sensible default for cvr_contests
-    if args.cvr_contests is None:
-        args.cvr_contests = range(len(contests_filtered))
-    else:
-        args.cvr_contests = json.loads(args.cvr_contests)
-
-    contests_filtered = [contest for contest in contests_sorted if contest.precinct_count >= args.minprecinctcount]
-    contests_filtered = [contests_filtered[i] for i in args.cvr_contests]
 
     with codecs.open("/tmp/cvr.csv", "wb", "utf-8") as cvrfile:
         csvwriter = csv.writer(cvrfile)
@@ -240,9 +242,10 @@ def parse_hart_contest_table(parser):
         for cvrid in range(1, args.num_cvrs + 1):
             row = [cvrid, 1, 1, cvrid, "1-1-%d" % cvrid, "std"]
             for i, contest in enumerate(contests_filtered):
-                # First line (cvrid == 1) is for the winner, then alternate for loser and for winner
+                # First 7 lines are for the winner, then alternate for loser and for winner
+                # TODO: make 7 a parameter
                 if len(contest.choices) > 1:
-                    if (cvrid > 1) and (cvrid % 2 == 1):
+                    if (cvrid > 5) and (cvrid % 2 == 1):
                         row.extend([0, 1])
                     else:
                         row.extend([1, 0])
