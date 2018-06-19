@@ -1,7 +1,7 @@
 ColoradoRLA
 ===========
 
-[![Build Status](https://travis-ci.org/FreeAndFair/ColoradoRLA.svg?branch=master)](https://travis-ci.org/FreeAndFair/ColoradoRLA)
+[![Build Status](https://travis-ci.org/democracyworks/ColoradoRLA.svg?branch=master)](https://travis-ci.org/democracyworks/ColoradoRLA)
 
 The **ColoradoRLA** system is software to facilitate risk-limiting
 audits at the state level, developed for Colorado's Department of
