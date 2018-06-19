@@ -1,7 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
 
-
 module.exports = config => {
     config.set({
         plugins: [
@@ -65,7 +64,13 @@ module.exports = config => {
             noInfo: true
         },
 
-        browsers: ['ChromeHeadless'],
+        browsers: ['ChromeHeadlessNoSandbox'],
+        customLaunchers: {
+            ChromeHeadlessNoSandbox: {
+                base: 'ChromeHeadless',
+                flags: ['--no-sandbox']
+            }
+        },
         port: 9876,
 
         reporters: ['tap-pretty'],
