@@ -1,0 +1,29 @@
+---
+version: "2.1"
+services:
+  server:
+    build:
+      context: .
+      dockerfile: ./docker/server/Dockerfile
+      args:
+        - VERSION=1.1.0
+    depends_on:
+      - postgresql
+    ports:
+      - "8888:8888"
+
+  postgresql:
+    build:
+      context: .
+      dockerfile: ./docker/postgresql/Dockerfile
+
+  httpd:
+    build:
+      context: .
+      dockerfile: ./docker/httpd/Dockerfile
+    depends_on:
+      - server
+    links:
+      - "server:backend"
+    ports:
+      - "8080:80"
