@@ -14,6 +14,7 @@ package us.freeandfair.corla.query;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -154,4 +155,35 @@ public final class BallotManifestInfoQueries {
 
     return result;
   }
+
+  // public static Set<BallotManifestInfo> where (cond) {}
+
+  /**
+     Find the batch(bmi) that would hold the sequence number given.
+   */
+  public static Optional<BallotManifestInfo> holdingSequenceNumber(final Long the_n) {
+    Set<BallotManifestInfo> result = null;
+
+    try {
+      final Session s = Persistence.currentSession();
+      final CriteriaBuilder cb = s.getCriteriaBuilder();
+      final CriteriaQuery<BallotManifestInfo> cq =
+          cb.createQuery(BallotManifestInfo.class);
+      final Root<BallotManifestInfo> root = cq.from(BallotManifestInfo.class);
+      final List<Predicate> disjuncts = new ArrayList<Predicate>();
+      final Predicate start = cb.greaterThanOrEqualTo(root.get("my_sequence_start"), the_n);
+      final Predicate end = cb.lessThanOrEqualTo(root.get("my_sequence_end"), the_n);
+      disjuncts.add(start);
+      disjuncts.add(end);
+      cq.select(root).where(cb.or(disjuncts.toArray(new Predicate[disjuncts.size()])));
+      final TypedQuery<BallotManifestInfo> query = s.createQuery(cq);
+      result = new HashSet<BallotManifestInfo>(query.getResultList());
+    } catch (final PersistenceException e) {
+      Main.LOGGER.error("Exception when reading ballot manifests from database: ", e);
+    }
+    return result.stream().findFirst();
+  }
+
+
+
 }

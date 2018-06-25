@@ -39,7 +39,8 @@ import us.freeandfair.corla.persistence.PersistentEntity;
 @Immutable // this is a Hibernate-specific annotation, but there is no JPA alternative
 @Cacheable(true)
 @Table(name = "ballot_manifest_info",
-       indexes = { @Index(name = "idx_bmi_county", columnList = "county_id") })
+       indexes = { @Index(name = "idx_bmi_county", columnList = "county_id"),
+                   @Index(name = "idx_bmi_seqs", columnList = "sequence_start,sequence_end")})
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
@@ -80,7 +81,7 @@ public class BallotManifestInfo implements PersistentEntity, Serializable {
    * The batch number.
    */
   @Column(updatable = false, nullable = false)
-  private String my_batch_id;
+  private Integer my_batch_id;
 
   /**
    * The size of the batch.
@@ -95,6 +96,22 @@ public class BallotManifestInfo implements PersistentEntity, Serializable {
   private String my_storage_location;
 
   /**
+   * The first sequence number (of all ballots) in this batch. Used to find a batch
+   * based on a random sequence number.
+   */
+  @Column(updatable = false, nullable = false, name = "sequence_start")
+  private Long my_sequence_start;
+
+  /**
+   * The last sequence number (of all ballots) in this batch. Used to find a batch
+   * based on a random sequence number.
+   */
+  @Column(updatable = false, nullable = false, name = "sequence_end")
+  private Long my_sequence_end;
+
+
+
+  /** 
    * Constructs an empty ballot manifest information record, solely
    * for persistence.
    */
@@ -113,15 +130,19 @@ public class BallotManifestInfo implements PersistentEntity, Serializable {
    */
   public BallotManifestInfo(final Long the_county_id,
                             final Integer the_scanner_id,
-                            final String the_batch_id,
+                            final Integer the_batch_id,
                             final int the_batch_size,
-                            final String the_storage_location) {
+                            final String the_storage_location,
+                            final Long the_sequence_start,
+                            final Long the_sequence_end) {
     super();
     my_county_id = the_county_id;
     my_scanner_id = the_scanner_id;
     my_batch_id = the_batch_id;
     my_batch_size = the_batch_size;
     my_storage_location = the_storage_location;
+    my_sequence_start = the_sequence_start;
+    my_sequence_end = the_sequence_end;
   }
 
   /**
@@ -165,7 +186,7 @@ public class BallotManifestInfo implements PersistentEntity, Serializable {
   /**
    * @return the batch number.
    */
-  public String batchID() {
+  public Integer batchID() {
     return my_batch_id;
   }
 
@@ -181,6 +202,20 @@ public class BallotManifestInfo implements PersistentEntity, Serializable {
    */
   public String storageLocation() {
     return my_storage_location;
+  }
+
+  /**
+   * @return the sequence start
+   */
+  public Long sequenceStart() {
+    return my_sequence_start;
+  }
+
+  /**
+   * @return the sequence end
+   */
+  public Long sequenceEnd() {
+    return my_sequence_end;
   }
 
   /**
