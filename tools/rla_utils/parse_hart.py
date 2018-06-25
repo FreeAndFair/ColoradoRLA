@@ -172,8 +172,7 @@ def parse_hart_contest_table(parser):
         # I.e. only audit county-wide contests
         args.minprecinctcount = max_precinct_count
 
-    contests_sorted = contests.values()
-    contests_sorted.sort(key=attrgetter('precedence'))
+    contests_sorted = sorted(contests.values(), key=attrgetter('precedence'))
     contests_filtered = [contest for contest in contests_sorted if contest.precinct_count >= args.minprecinctcount]
     contests_sorted = contests_filtered
 

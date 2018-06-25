@@ -5,7 +5,7 @@ to be used in a ballot-polling risk-limiting audit.
 produced by Hart's BallotNow system.
 `rla_export` and `analyze_rounds` can then be used to estimate
 an initial sample size.  Election officials can then use other software,
-such as Philip Stark's [`https://www.stat.berkeley.edu/~stark/Vote/ballotPollTools.htm`[(`https://www.stat.berkeley.edu/~stark/Vote/ballotPollTools.htm)
+such as Philip Stark's [`https://www.stat.berkeley.edu/~stark/Vote/ballotPollTools.htm`](`https://www.stat.berkeley.edu/~stark/Vote/ballotPollTools.htm)
 to record "Audit CVRs" to produce random selections from the official ballot
 (and/or ballot-card) manifest.
 One or more audit boards can then enter interpretations of each selected ballot
@@ -28,7 +28,8 @@ the audit board entry of the ballots, and use other software to tally
 the sampled ballots, calculate risk levels, and estimate sample sizes.
 
 # Installation
-The software has been tested on Ubuntu Linux 18.04 LTS ("bionic").
+The software works in both Python 2.7 and Python 3.6,
+and has been tested on Ubuntu Linux 18.04 LTS ("bionic").
 
 Install the "ballot-polling" branch of rlacalc
 from `https://github.com/nealmcb/audit_cvrs`.
