@@ -1,6 +1,6 @@
 /*
  * Free & Fair Colorado RLA System
- * 
+ *
  * @title ColoradoRLA
  * @created Aug 8, 2017
  * @copyright 2017 Colorado Department of State
@@ -36,7 +36,7 @@ import us.freeandfair.corla.persistence.Persistence;
 
 /**
  * Queries having to do with BallotManfestInfo entities.
- * 
+ *
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 1.0.0
  */
@@ -47,21 +47,21 @@ public final class BallotManifestInfoQueries {
   private BallotManifestInfoQueries() {
     // do nothing
   }
-  
+
   /**
    * Returns the set of ballot manifests matching the specified county IDs.
-   * 
+   *
    * @param the_county_ids The set of county IDs.
    * @return the ballot manifests matching the specified set of county IDs,
    * or null if the query fails.
    */
   public static Set<BallotManifestInfo> getMatching(final Set<Integer> the_county_ids) {
     Set<BallotManifestInfo> result = null;
-    
+
     try {
       final Session s = Persistence.currentSession();
       final CriteriaBuilder cb = s.getCriteriaBuilder();
-      final CriteriaQuery<BallotManifestInfo> cq = 
+      final CriteriaQuery<BallotManifestInfo> cq =
           cb.createQuery(BallotManifestInfo.class);
       final Root<BallotManifestInfo> root = cq.from(BallotManifestInfo.class);
       final List<Predicate> disjuncts = new ArrayList<Predicate>();
@@ -77,16 +77,16 @@ public final class BallotManifestInfoQueries {
 
     return result;
   }
-  
+
   /**
    * Returns the location for the specified CVR, assuming one can be found.
-   * 
+   *
    * @param the_cvr The CVR.
    * @return the location for the CVR, or null if no location can be found.
    */
   public static String locationFor(final CastVoteRecord the_cvr) {
     String result = null;
-    
+
     try {
       final Session s = Persistence.currentSession();
       final CriteriaBuilder cb = s.getCriteriaBuilder();
@@ -98,7 +98,7 @@ public final class BallotManifestInfoQueries {
                       cb.equal(root.get("my_batch_id"), the_cvr.batchID())));
       final TypedQuery<String> query = s.createQuery(cq);
       final List<String> query_result = query.getResultList();
-      // there should never be more than one result, but if there is, we'll 
+      // there should never be more than one result, but if there is, we'll
       // return the first one
       if (!query_result.isEmpty()) {
         result = query_result.get(0);
@@ -106,13 +106,13 @@ public final class BallotManifestInfoQueries {
     } catch (final PersistenceException e) {
       Main.LOGGER.error("Exception when finding ballot location: " + e);
     }
-    
+
     return result;
   }
-  
+
   /**
    * Deletes the set of ballot manifests for the specified county ID.
-   * 
+   *
    * @param the_county_id The county ID.
    * @exception PersistenceException if the ballot manifests cannot be deleted.
    */
@@ -131,15 +131,15 @@ public final class BallotManifestInfoQueries {
     });
     return count.get();
   }
-  
+
   /**
    * Count the uploaded ballot manifest info records in storage.
-   * 
+   *
    * @return the number of uploaded records.
    */
   public static OptionalLong count() {
     OptionalLong result = OptionalLong.empty();
-    
+
     try {
       final Session s = Persistence.currentSession();
       final CriteriaBuilder cb = s.getCriteriaBuilder();
@@ -151,7 +151,7 @@ public final class BallotManifestInfoQueries {
     } catch (final PersistenceException e) {
       // ignore
     }
-    
+
     return result;
   }
 }
