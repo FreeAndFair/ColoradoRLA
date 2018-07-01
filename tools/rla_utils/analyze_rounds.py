@@ -53,7 +53,42 @@ parser.add_argument('datadir', nargs='?',
                     help='Data directory with rla_export reports')
 
 
+def outright_risk(contest, contests, possible_winner):
+    """Calculate and display RLA risk level that reported results match sampled results
+    on whether given candidate is actually outright winner.
+    If a candidate has more votes than all others combined, they are the outright winner.
+    Return the risk level.
+    """
+
+    # Get tallies for possible_winner and the pool of their opponents
+    w = contests[contest['name']]['choices'][possible_winner]
+    w_votes = w['votes']
+    w_sample_tallies = w.get('sample_tally', 0)
+    pool = [choice for choice in contests[contest['name']]['choices'].values() if choice['name'] != w['name']]
+    pool_votes = sum(choice['votes'] for choice in pool)
+    pool_sample_tallies = sum(choice.get('sample_tally', 0) for choice in pool)
+
+    # We want to confirm whether the reported result is right, and want
+    # "w" to represent the reported winner, whether that is possible_winner or the pool.
+    # So if possible_winner got less than 50%, swap with the sum of the pool of losers,
+    if w_votes < pool_votes:
+        w_votes, pool_votes = pool_votes , w_votes
+        w_sample_tallies, pool_sample_tallies = pool_sample_tallies, w_sample_tallies
+
+    majority_risk = rlacalc.ballot_polling_risk_level(w_votes, pool_votes, w_sample_tallies, pool_sample_tallies)
+    print("\tMajority risk {majority_risk:.3f} with counts W: {w_votes} L: {pool_votes} w: {w_sample_tallies} l: {pool_sample_tallies}".format(**locals()))
+
+    return majority_risk
+
+
 def contest_risk(contest, contests):
+    """Calculate and display risk levels for the first phase of a runoff election.
+    If a candidate has more votes than all others combined, they are the outright winner
+    Otherwise, two candidates advance to a runoff.
+
+    TODO: return overall risk
+    """
+
     # print margin
     logging.debug("Contest with %d candidates: %s" % (len(contest['choices']), contest['name']))
     if 'selected' not in contest:
@@ -61,6 +96,7 @@ def contest_risk(contest, contests):
 
     print("\nContest: %s, with %d candidates" % (contest['name'], len(contest['choices'])))
 
+    # Compute risk levels for each pair of a winner and a loser
     contest['risk_levels'] = []
     for winner in contest['winners']:
         w = contests[contest['name']]['choices'][winner]
@@ -69,31 +105,20 @@ def contest_risk(contest, contests):
             risk_level = rlacalc.ballot_polling_risk_level(w['votes'], l['votes'], w.get('sample_tally', 0), l.get('sample_tally', 0))
             print("\tdetail:  Risk %.3f with counts W: %d L: %d w: %d l: %d for %s vs %s" % (risk_level, w['votes'], l['votes'], w.get('sample_tally', 0), l.get('sample_tally', 0), w['name'], l['name']))
             contest['risk_levels'].append((risk_level, w, l))
-            # contests[contest['name']]['choices'][choice]['risk_level'] = risk_level
-            # Track minimum risk level across all combinations
-            # print("%s %s %s: %s" % (contest, w, l, ballot_polling_risk_level(winner_votes, loser_votes, winner_obs, loser_obs)))
-            # If minimum is more than risk level, estimate how much more to do
+
     if contest['risk_levels']:
         max_risk = max(triple[0] for triple in contest['risk_levels'])
     else:
         max_risk = 0.0
 
     # Deal with single outright majority winner outcome: winner vs all others combined in a pool
-        w = contests[contest['name']]['choices'][contest['winners'][0]]
-    w_votes = w['votes']
-    w_sample_tallies = w.get('sample_tally', 0)
-    pool = [choice for choice in contests[contest['name']]['choices'].values() if choice['name'] != w['name']]
-    pool_votes = sum(choice['votes'] for choice in pool)
-    pool_sample_tallies = sum(choice.get('sample_tally', 0) for choice in pool)
+    for choice in contests[contest['name']]['choices'].values():
+        majority_risk = outright_risk(contest, contests, choice['name'])
+        overall_max_risk = max(max_risk, majority_risk)  # TODO - unused for now
 
-    # If highest-vote-getter got less than 50%, swap with the sum of the pool of losers
-    if w_votes < pool_votes:
-        w_votes, pool_votes = pool_votes , w_votes
-        w_sample_tallies, pool_sample_tallies = pool_sample_tallies, w_sample_tallies
+    # If highest-vote-getter got more than 50%, all we have to audit is whether they
+    # really won outright.
 
-    majority_risk = rlacalc.ballot_polling_risk_level(w_votes, pool_votes, w_sample_tallies, pool_sample_tallies)
-    contest_name = contest['name']
-    print("\tMajority risk {majority_risk:.3f} with counts W: {w_votes} L: {pool_votes} w: {w_sample_tallies} l: {pool_sample_tallies}".format(**locals()))
     overall_max_risk = max(max_risk, majority_risk) # TODO - unused for now
 
     # Compute an initial mean sample size.
