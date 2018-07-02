@@ -208,7 +208,7 @@ def analyze_rounds(parser):
         print()
 
         for choice in sorted(contests[contest['name']]['choices'].values(), key=itemgetter('votes'), reverse=True):
-            print("  %d reported votes, %d sample votes for %s" % (choice['votes'], choice['sample_tally'], choice['name']))
+            print("  %d reported votes, %d sample votes for %s" % (choice['votes'], choice.get('sample_tally', 0), choice['name']))
 
         print()
 
