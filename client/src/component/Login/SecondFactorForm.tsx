@@ -4,44 +4,32 @@ import login2F from 'corla/action/login2F';
 
 
 function isFormValid(form: Form): boolean {
-    const token = form.tokenParts.join('');
+    return form.token !== '';
+}
 
-    return token !== '';
+function formatChallenge(challenge: Array<[string, string]>): string {
+    return challenge.map(box => {
+        return '[' + box.join('') + ']';
+    }).join(' ');
 }
 
 interface ChallengeFormProps {
     loginChallenge: LoginChallenge;
-    onTokenChange: (index: number) => (e: React.ChangeEvent<any>) => void;
-    tokenParts: string[];
+    onTokenChange: () => (e: React.ChangeEvent<any>) => void;
+    token: string;
 }
 
 const ChallengeForm = (props: ChallengeFormProps) => {
-    const { loginChallenge, onTokenChange, tokenParts } = props;
-
-    const challengeFields = loginChallenge.map((box, index) => {
-        const text = box.join('');
-
-        return (
-            <div key={ `${text}${index}` }>
-                <label className='pt-label'>
-                    { text }
-                    <input className='pt-input password'
-                           type='password'
-                           onChange={ onTokenChange(index) }
-                           value={ tokenParts[index] || '' } />
-                </label>
-            </div>
-        );
-    });
-
+    const { loginChallenge, onTokenChange, token } = props;
     return (
         <div className='pt-card'>
-            <div><strong>Grid Challenge:</strong></div>
-            <div className='pt-card'>
-                { challengeFields }
-            </div>
-        </div>
-    );
+            <label className='pt-label'>
+                <input className='pt-input password'
+                       type='password'
+                       onChange={ onTokenChange() }
+                       value={ token || '' } />
+            </label>
+        </div>);
 };
 
 interface FormProps {
@@ -54,14 +42,14 @@ interface FormState {
 }
 
 interface Form {
-    tokenParts: string[];
+    token: string;
     username: string;
 }
 
 export default class SecondFactorForm extends React.Component<FormProps, FormState> {
     public state: FormState = {
         form: {
-            tokenParts: [],
+            token: '',
             username: '',
         },
     };
@@ -69,18 +57,19 @@ export default class SecondFactorForm extends React.Component<FormProps, FormSta
     public render() {
         const { loginChallenge, username } = this.props;
         const { form } = this.state;
-
         const disabled = !isFormValid(form);
+        const challenge = formatChallenge(loginChallenge);
 
         return (
             <div>
                 <div className='pt-card'>
-                    Enter challenge for user: { username }
+                <div><strong>Grid Challenge:</strong></div>
+                Enter a response to the grid challenge {challenge} for the user: {username}
                 </div>
                 <ChallengeForm
                     loginChallenge={ loginChallenge }
                     onTokenChange={ this.onTokenChange }
-                    tokenParts={ form.tokenParts } />
+                    token={ form.token } />
                 <button
                     className='pt-button pt-intent-primary submit'
                     disabled={ disabled }
@@ -91,17 +80,14 @@ export default class SecondFactorForm extends React.Component<FormProps, FormSta
         );
     }
 
-    private onTokenChange = (index: number) => (e: React.ChangeEvent<any>) => {
+    private onTokenChange = () => (e: React.ChangeEvent<any>) => {
         const s = { ...this.state };
-        s.form.tokenParts[index] = e.target.value;
+        s.form.token = e.target.value.replace(/\s*/g, '');
         this.setState(s);
     }
 
     private buttonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-        const { username, tokenParts } = this.state.form;
-
-        const token = tokenParts.join(' ');
-
+        const { username, token } = this.state.form;
         login2F(this.props.username, token);
     }
 }
