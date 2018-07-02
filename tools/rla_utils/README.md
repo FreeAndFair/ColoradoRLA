@@ -28,7 +28,7 @@ the audit board entry of the ballots, and use other software to tally
 the sampled ballots, calculate risk levels, and estimate sample sizes.
 
 # Installation
-The software works in both Python 2.7 and Python 3.6,
+The software requires Python 3.6,
 and has been tested on Ubuntu Linux 18.04 LTS ("bionic").
 
 Install the "ballot-polling" branch of rlacalc
