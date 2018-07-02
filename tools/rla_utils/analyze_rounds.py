@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # coding=utf-8
 """
 Analyze results of auditing results from rla_export, and assess whether
@@ -38,8 +38,9 @@ import argparse
 import collections
 import pprint
 import rlacalc
+import functools
+import types
 from operator import itemgetter, attrgetter
-
 
 parser = argparse.ArgumentParser(description='analyze_rounds.')
 
@@ -52,18 +53,49 @@ parser.add_argument('contests', nargs='?', default="contests.json",
 parser.add_argument('datadir', nargs='?',
                     help='Data directory with rla_export reports')
 
+@functools.total_ordering
+class Risk_record(object):
+    """Record the risk that the reported results for a given choice
+    in a given contest were wrong, along with expected sample size and
+    associated data.
+    """
+
+    def __init__(self, risk_limit, winner_name, loser_name, winner_votes, loser_votes, winner_obs, loser_obs):
+        self.winner_name = winner_name
+        self.loser_name = loser_name
+        self.winner_votes = winner_votes
+        self.loser_votes = loser_votes
+        self.winner_obs = winner_obs
+        self.loser_obs = loser_obs
+
+        self.margin = (winner_votes - loser_votes) / (winner_votes + loser_votes)
+        self.risk = rlacalc.ballot_polling_risk_level(winner_votes, loser_votes, winner_obs, loser_obs)
+        self.sample_est = max(0, rlacalc.findAsn(risk_limit, self.margin, self.risk))
+        logging.info("Risk record: %s" % self)
+
+    def __str__(self):
+        return "Sample {sample_est}: Risk {risk:.2%} with margin: {margin:.2%}; counts W: {winner_votes} L: {loser_votes} w: {winner_obs} l: {loser_obs} for {winner_name} vs {loser_name}".format(**self.__dict__)
+
+    def __eq__(self, other):
+        return (self.sample_est == other.sample_est)
+
+    def __lt__(self, other):
+        return (self.sample_est < other.sample_est)
 
 def outright_risk(contest, contests, possible_winner):
     """Calculate and display RLA risk level that reported results match sampled results
     on whether given candidate is actually outright winner.
     If a candidate has more votes than all others combined, they are the outright winner.
-    Return the risk level.
+
+    Return Risk_record
     """
 
     # Get tallies for possible_winner and the pool of their opponents
     w = contests[contest['name']]['choices'][possible_winner]
+    w_name = w['name']
     w_votes = w['votes']
     w_sample_tallies = w.get('sample_tally', 0)
+    pool_name = "pool"
     pool = [choice for choice in contests[contest['name']]['choices'].values() if choice['name'] != w['name']]
     pool_votes = sum(choice['votes'] for choice in pool)
     pool_sample_tallies = sum(choice.get('sample_tally', 0) for choice in pool)
@@ -71,14 +103,19 @@ def outright_risk(contest, contests, possible_winner):
     # We want to confirm whether the reported result is right, and want
     # "w" to represent the reported winner, whether that is possible_winner or the pool.
     # So if possible_winner got less than 50%, swap with the sum of the pool of losers,
+
     if w_votes < pool_votes:
-        w_votes, pool_votes = pool_votes , w_votes
-        w_sample_tallies, pool_sample_tallies = pool_sample_tallies, w_sample_tallies
+        winner_name, winner_votes, winner_obs = pool_name, pool_votes, pool_sample_tallies
+        loser_name, loser_votes, loser_obs = w_name, w_votes, w_sample_tallies
+    else:
+        winner_name, winner_votes, winner_obs = w_name, w_votes, w_sample_tallies
+        loser_name, loser_votes, loser_obs = pool_name, pool_votes, pool_sample_tallies
 
-    majority_risk = rlacalc.ballot_polling_risk_level(w_votes, pool_votes, w_sample_tallies, pool_sample_tallies)
-    print("\tMajority risk {majority_risk:.3f} with counts W: {w_votes} L: {pool_votes} w: {w_sample_tallies} l: {pool_sample_tallies}".format(**locals()))
+    risk_limit = 0.2 # TODO: set as an option
 
-    return majority_risk
+    risk_record = Risk_record(risk_limit, winner_name, loser_name, winner_votes, loser_votes, winner_obs, loser_obs)
+
+    return risk_record
 
 
 def contest_risk(contest, contests):
@@ -86,7 +123,7 @@ def contest_risk(contest, contests):
     If a candidate has more votes than all others combined, they are the outright winner
     Otherwise, two candidates advance to a runoff.
 
-    TODO: return overall risk
+    Return Risk_record
     """
 
     # print margin
@@ -94,7 +131,22 @@ def contest_risk(contest, contests):
     if 'selected' not in contest:
         return
 
-    print("\nContest: %s, with %d candidates" % (contest['name'], len(contest['choices'])))
+    # TODO: avoid kludge to create magic risk_record that is less than any other
+    max_risk_record = types.SimpleNamespace()
+    max_risk_record.sample_est = -99999
+
+    for choice in sorted(contests[contest['name']]['choices'].values(), key=itemgetter('votes'), reverse=True):
+        risk_record = outright_risk(contest, contests, choice['name'])
+        print("       %s" % risk_record)
+        max_risk_record = max(max_risk_record, risk_record)
+
+    # If highest-vote-getter got more than 50%, all we had to audit is whether they
+    # really won outright.
+
+    if contest['majority_margin'] > 0:
+        return max_risk_record
+
+    risk_limit = 0.2 # FIXME: set as an option
 
     # Compute risk levels for each pair of a winner and a loser
     contest['risk_levels'] = []
@@ -102,35 +154,11 @@ def contest_risk(contest, contests):
         w = contests[contest['name']]['choices'][winner]
         for loser in contest['losers']:
             l = contests[contest['name']]['choices'][loser]
-            risk_level = rlacalc.ballot_polling_risk_level(w['votes'], l['votes'], w.get('sample_tally', 0), l.get('sample_tally', 0))
-            print("\tdetail:  Risk %.3f with counts W: %d L: %d w: %d l: %d for %s vs %s" % (risk_level, w['votes'], l['votes'], w.get('sample_tally', 0), l.get('sample_tally', 0), w['name'], l['name']))
-            contest['risk_levels'].append((risk_level, w, l))
+            risk_record = Risk_record(risk_limit, w['name'], l['name'], w['votes'], l['votes'], w.get('sample_tally', 0), l.get('sample_tally', 0))
+            print("       %s" % risk_record)
+            max_risk_record = max(max_risk_record, risk_record)
 
-    if contest['risk_levels']:
-        max_risk = max(triple[0] for triple in contest['risk_levels'])
-    else:
-        max_risk = 0.0
-
-    # Deal with single outright majority winner outcome: winner vs all others combined in a pool
-    for choice in contests[contest['name']]['choices'].values():
-        majority_risk = outright_risk(contest, contests, choice['name'])
-        overall_max_risk = max(max_risk, majority_risk)  # TODO - unused for now
-
-    # If highest-vote-getter got more than 50%, all we have to audit is whether they
-    # really won outright.
-
-    overall_max_risk = max(max_risk, majority_risk) # TODO - unused for now
-
-    # Compute an initial mean sample size.
-    risk_limit = 0.2 # TODO: set as an option
-    sample_size = rlacalc.findAsn(risk_limit, contest['margin'], max_risk)
-    sample_size_maj = rlacalc.findAsn(risk_limit, abs(contest['majority_margin']), majority_risk)
-    max_sample_size = max(sample_size, sample_size_maj)
-    print("\n\tmaxsamp\t2_vs_3\twin_now\tmaxrisk\twinrisk\tcands\tcontest")
-    print("overall\t%.0f\t%.0f\t%.0f\t%.3f\t%.3f\t%s\t%s" % (max_sample_size, sample_size, sample_size_maj, max_risk, majority_risk, len(contest['choices']), contest['name']))
-    # print("2nd vs 3rd: %d mean sample size, %.3f max risk for contest with %d candidates: %s" % (sample_size, max_risk, len(contest['choices']), contest['name']))
-    # print("Majority: %d mean sample size, %.3f risk for contest with %d candidates: %s" % (sample_size_maj, majority_risk, len(contest['choices']), contest['name']))
-
+    return max_risk_record
 
 
 def analyze_rounds(parser):
@@ -149,17 +177,15 @@ def analyze_rounds(parser):
         except (IOError):
             logging.warning("Can't open ACVR file %s, assuming there are none" % acvr_file)
 
-    # Tally acvrs.
+    # Count ACVRs per contest
+    acvr_ballots = collections.Counter(cvr['contest_name'] for cvr in acvrs)
+    logging.info("ACVRs entered: %s" % acvr_ballots.items())
+
+    # Tally ACVRs
     # FIXME: check for consensus = "YES"
     # FIXME: check for, ignore overvotes
     acvr_tallies = collections.Counter((cvr['contest_name'], cvr['choice_per_audit_board']) for cvr in acvrs).items()
     logging.debug("acvr tallies: %s" % (acvr_tallies,))
-
-    print("ACVRs entered: %s" % collections.Counter(cvr['contest_name'] for cvr in acvrs).items())
-
-    print("\nHere are the non-zero tallies of the sampled ballots, by contest by choice.")
-    for key, result in sorted(collections.Counter((cvr['contest_name'], cvr['choice_per_audit_board']) for cvr in acvrs).items()):
-        print("%s\t%s\t%s" % (result, key[0], key[1]))
 
     # Update contests data structure with sample_tally data
     for id, sample_votes in acvr_tallies:
@@ -169,11 +195,29 @@ def analyze_rounds(parser):
 
     logging.debug("Contests: %s" % contests)
 
-    print("\nDetails then Status by contest: sample sizes for two outcomes and max of them; risk levels for each")
+    overall_max_risk_record = types.SimpleNamespace()
+    overall_max_risk_record.sample_est = -99999
+
     for contest in contests.values():
-        contest_risk(contest, contests)
+        if 'selected' not in contest:
+            continue
+
+        print("Contest: %s, with %d candidates. %d samples entered" %
+              (contest['name'], len(contest['choices']), acvr_ballots[contest['name']]))
+
+        print()
+
+        for choice in sorted(contests[contest['name']]['choices'].values(), key=itemgetter('votes'), reverse=True):
+            print("  %d reported votes, %d sample votes for %s" % (choice['votes'], choice['sample_tally'], choice['name']))
+
+        print()
+
+        risk_record = contest_risk(contest, contests)
+        print("\n  Max: %s\n\n" % risk_record)
+        overall_max_risk_record = max(overall_max_risk_record, risk_record)
 
     # Report minumum across all contests, then levels for all contests
+    # print("\n\nOverall max: %s" % overall_max_risk_record)
 
 
 if __name__ == "__main__":
