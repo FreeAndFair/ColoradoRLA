@@ -42,7 +42,7 @@ interface SelectedContestsProps {
     contests: DOS.Contests;
 }
 
-const SelectedContests = (props: SelectedContestsProps) => {
+export const SelectedContests = (props: SelectedContestsProps) => {
     const { auditedContests, contests } = props;
 
     const rows = _.map(props.auditedContests, audited => {

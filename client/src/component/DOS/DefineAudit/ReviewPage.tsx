@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import Nav from '../Nav';
 
+import {SelectedContests} from './SelectContestsPage';
 
 const Breadcrumb = () => (
     <ul className='pt-breadcrumbs'>
@@ -68,6 +69,8 @@ const AuditReview = (props: AuditReviewProps) => {
                     </tbody>
                 </table>
             </div>
+            <SelectedContests auditedContests={dosState.auditedContests}
+                              contests={dosState.contests} />
             <div>
                 <button onClick={ back } className='pt-button'>
                     Back
