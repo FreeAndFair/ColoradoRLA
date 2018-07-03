@@ -102,6 +102,6 @@ export default class SecondFactorForm extends React.Component<FormProps, FormSta
 
         const token = tokenParts.join(' ');
 
-        login2F(this.props.username.toLowerCase(), token);
+        login2F(this.props.username, token);
     }
 }
