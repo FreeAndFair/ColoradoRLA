@@ -40,6 +40,7 @@ import javax.persistence.Version;
 import org.hibernate.annotations.Immutable;
 
 import us.freeandfair.corla.persistence.PersistentEntity;
+import us.freeandfair.corla.util.NaturalOrderComparator;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
@@ -132,7 +133,7 @@ public class CastVoteRecord implements PersistentEntity, Serializable {
    * The batch ID of this cast vote record.
    */
   @Column(updatable = false, nullable = false)
-  private Integer my_batch_id;
+  private String my_batch_id;
 
   /**
    * The record ID of this cast vote record.
@@ -191,7 +192,7 @@ public class CastVoteRecord implements PersistentEntity, Serializable {
    * @param the_record_id The record ID.
    * @param the_imprinted_id The imprinted ID.
    * @param the_ballot_type The ballot type.
-   * @param the_choices A map of the choices made in each contest.
+   * @param the_contest_info A map of the choices made in each contest.
    */
   @SuppressWarnings("PMD.ExcessiveParameterList")
   public CastVoteRecord(final RecordType the_record_type,
@@ -200,7 +201,7 @@ public class CastVoteRecord implements PersistentEntity, Serializable {
                         final Integer the_cvr_number,
                         final Integer the_sequence_number,
                         final Integer the_scanner_id,
-                        final Integer the_batch_id,
+                        final String the_batch_id,
                         final Integer the_record_id,
                         final String the_imprinted_id,
                         final String the_ballot_type,
@@ -290,7 +291,7 @@ public class CastVoteRecord implements PersistentEntity, Serializable {
   /**
    * @return the batch ID.
    */
-  public Integer batchID() {
+  public String batchID() {
     return my_batch_id;
   }
 
@@ -465,19 +466,19 @@ public class CastVoteRecord implements PersistentEntity, Serializable {
     private static final long serialVersionUID = 1;
 
     /**
-     * Orders two CVRToAuditResponses lexicographically by the triple
+     * Orders two CastVoteRecord lexicographically by the triple
      * (scanner_id, batch_id, record_id).
      *
-     * @param the_first The first response.
-     * @param the_second The second response.
+     * @param the_first The first CVR.
+     * @param the_second The second CVR.
      * @return a positive, negative, or 0 value as the first response is
      * greater than, equal to, or less than the second, respectively.
      */
     @SuppressWarnings("PMD.ConfusingTernary")
-    public int compare(final CastVoteRecord the_first,
-                       final CastVoteRecord the_second) {
+    public int compare(final CastVoteRecord the_first, final CastVoteRecord the_second) {
       final int scanner = the_first.scannerID() - the_second.scannerID();
-      final int batch = the_first.batchID() - the_second.batchID();
+      final int batch = NaturalOrderComparator.INSTANCE.compare(the_first.batchID(),
+                                                             the_second.batchID());
       final int record = the_first.recordID() - the_second.recordID();
 
       final int result;

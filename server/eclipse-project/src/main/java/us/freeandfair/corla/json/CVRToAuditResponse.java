@@ -14,6 +14,7 @@ package us.freeandfair.corla.json;
 import java.io.Serializable;
 import java.util.Comparator;
 
+import us.freeandfair.corla.util.NaturalOrderComparator;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
@@ -39,7 +40,7 @@ public class CVRToAuditResponse {
   /**
    * The CVR batch ID.
    */
-  protected final int my_batch_id;
+  protected final String my_batch_id;
 
   /**
    * The CVR record ID.
@@ -93,7 +94,7 @@ public class CVRToAuditResponse {
   @SuppressWarnings("PMD.ExcessiveParameterList")
   public CVRToAuditResponse(final int the_audit_sequence_number,
                             final int the_scanner_id,
-                            final int the_batch_id,
+                            final String the_batch_id,
                             final int the_record_id,
                             final String the_imprinted_id,
                             final int the_cvr_number,
@@ -130,7 +131,7 @@ public class CVRToAuditResponse {
   /**
    * @return the batch ID.
    */
-  public int batchID() {
+  public String batchID() {
     return my_batch_id;
   }
 
@@ -208,7 +209,8 @@ public class CVRToAuditResponse {
     public int compare(final CVRToAuditResponse the_first,
                        final CVRToAuditResponse the_second) {
       final int scanner = the_first.my_scanner_id - the_second.my_scanner_id;
-      final int batch = the_first.my_batch_id - the_second.my_batch_id;
+      final int batch = NaturalOrderComparator.INSTANCE.compare(the_first.batchID(),
+                                                             the_second.batchID());
       final int record = the_first.my_record_id - the_second.my_record_id;
 
       final int result;

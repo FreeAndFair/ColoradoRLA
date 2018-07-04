@@ -471,25 +471,27 @@ public class DominionCVRExportParser implements CVRExportParser {
    * Extract a CVR from a line of the file.
    *
    * @param the_line The line representing the CVR.
-   * @param the_timestamp The import timestamp.
    * @return the resulting CVR.
    */
   @SuppressWarnings("PMD.CyclomaticComplexity")
   private CastVoteRecord extractCVR(final CSVRecord the_line) {
     try {
       final int cvr_id =
-          Integer.parseInt(stripEqualQuotes(the_line.get(my_columns.get(CVR_NUMBER_HEADER))));
+              Integer.parseInt(
+                      stripEqualQuotes(the_line.get(my_columns.get(CVR_NUMBER_HEADER))));
       final int tabulator_id =
-          Integer.parseInt(stripEqualQuotes(the_line.get(my_columns.
-                                                         get(TABULATOR_NUMBER_HEADER))));
-      final int batch_id =
-          Integer.parseInt(stripEqualQuotes(the_line.get(my_columns.get(BATCH_ID_HEADER))));
+              Integer.parseInt(
+                      stripEqualQuotes(
+                              the_line.get(my_columns.get(TABULATOR_NUMBER_HEADER))));
+      final String batch_id =
+              stripEqualQuotes(the_line.get(my_columns.get(BATCH_ID_HEADER)));
       final int record_id =
-          Integer.parseInt(stripEqualQuotes(the_line.get(my_columns.get(RECORD_ID_HEADER))));
+              Integer.parseInt(
+                      stripEqualQuotes(the_line.get(my_columns.get(RECORD_ID_HEADER))));
       final String imprinted_id =
-          stripEqualQuotes(the_line.get(my_columns.get(IMPRINTED_ID_HEADER)));
+              stripEqualQuotes(the_line.get(my_columns.get(IMPRINTED_ID_HEADER)));
       final String ballot_type =
-          stripEqualQuotes(the_line.get(my_columns.get(BALLOT_TYPE_HEADER)));
+              stripEqualQuotes(the_line.get(my_columns.get(BALLOT_TYPE_HEADER)));
       final List<CVRContestInfo> contest_info = new ArrayList<CVRContestInfo>();
 
       // for each contest, see if choices exist on the CVR; "0" or "1" are

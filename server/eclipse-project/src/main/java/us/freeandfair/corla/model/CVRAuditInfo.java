@@ -32,6 +32,7 @@ import javax.persistence.Version;
 
 import us.freeandfair.corla.persistence.AuditReasonSetConverter;
 import us.freeandfair.corla.persistence.PersistentEntity;
+import us.freeandfair.corla.util.NaturalOrderComparator;
 
 /**
  * A class representing a contest to audit or hand count.
@@ -307,19 +308,19 @@ public class CVRAuditInfo implements PersistentEntity {
     private static final long serialVersionUID = 1;
 
     /**
-     * Orders two CVRToAuditResponses lexicographically by the triple
+     * Orders two CVRToAuditInfo lexicographically by the triple
      * (scanner_id, batch_id, record_id).
      *
-     * @param the_first The first response.
-     * @param the_second The second response.
+     * @param the_first The first to compare.
+     * @param the_second The second to compare.
      * @return a positive, negative, or 0 value as the first response is
      * greater than, equal to, or less than the second, respectively.
      */
     @SuppressWarnings("PMD.ConfusingTernary")
-    public int compare(final CVRAuditInfo the_first,
-                       final CVRAuditInfo the_second) {
+    public int compare(final CVRAuditInfo the_first, final CVRAuditInfo the_second) {
       final int scanner = the_first.cvr().scannerID() - the_second.cvr().scannerID();
-      final int batch = the_first.cvr().batchID() - the_second.cvr().batchID();
+      final int batch = NaturalOrderComparator.INSTANCE.compare(the_first.cvr().batchID(),
+                                                             the_second.cvr().batchID());
       final int record = the_first.cvr().recordID() - the_second.cvr().recordID();
 
       final int result;
