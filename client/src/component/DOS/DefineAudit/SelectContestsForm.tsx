@@ -116,6 +116,7 @@ type SortOrder = 'asc' | 'desc';
 
 interface FormProps {
     contests: DOS.Contests;
+    auditedContests: DOS.AuditedContests;
     forms: DOS.Form.SelectContests.Ref;
     isAuditable: OnClick;
 }
@@ -130,6 +131,8 @@ interface FormState {
 class SelectContestsForm extends React.Component<FormProps, FormState> {
     constructor(props: FormProps) {
         super(props);
+        const {auditedContests} = props;
+        const auditedContestIds = _.map(auditedContests, ac => {return ac.id});
 
         this.state = {
             filter: '',
@@ -143,7 +146,8 @@ class SelectContestsForm extends React.Component<FormProps, FormState> {
 
             if (auditable) {
                 this.state.form[c.id] = {
-                    audit: false,
+                    // by using the dosState we can fix mistakes to selected contests
+                    audit: auditedContestIds.includes(c.id),
                     handCount: false,
                     reason: { ...auditReasons[0] },
                 };

@@ -196,6 +196,14 @@ public class DoSDashboard implements PersistentEntity, Serializable {
     
     return result;
   }
+
+  /**
+   * Remove all ContestsToAudit from this dashboard
+   **/
+  public void removeContestsToAudit(){
+    my_contests_to_audit.clear();
+  }
+
   /**
    * Update the audit status of a contest. 
    * 
