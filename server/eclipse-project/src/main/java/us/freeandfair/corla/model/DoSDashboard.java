@@ -200,7 +200,7 @@ public class DoSDashboard implements PersistentEntity, Serializable {
   /**
    * Remove all ContestsToAudit from this dashboard
    **/
-  public void removeContestsToAudit(){
+  public void removeContestsToAudit() {
     my_contests_to_audit.clear();
   }
 

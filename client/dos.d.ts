@@ -109,8 +109,6 @@ declare namespace DOS {
 
         namespace RiskLimit {
             interface Form {
-                ballotPollingField: string;
-                ballotPollingLimit: number;
                 comparisonField: string;
                 comparisonLimit: number;
             }

@@ -12,8 +12,6 @@ interface FormProps {
 }
 
 interface FormState {
-    ballotPollingField: string;
-    ballotPollingLimit: number;
     comparisonField: string;
     comparisonLimit: number;
 }
@@ -40,37 +38,21 @@ function toPercent(val: number) {
 
 
 class RiskLimitForm extends React.Component<FormProps, FormState> {
+
+    public initRiskLimit: number = (this.props.riskLimit || DEFAULT_RISK_LIMIT);
     public state: FormState = {
-        ballotPollingField: `${toPercent(DEFAULT_RISK_LIMIT)}`,
-        ballotPollingLimit: DEFAULT_RISK_LIMIT,
-        comparisonField: `${toPercent(DEFAULT_RISK_LIMIT).toFixed(2)}`,
-        comparisonLimit: DEFAULT_RISK_LIMIT,
+        comparisonField: `${toPercent(this.initRiskLimit).toFixed(2)}`,
+        comparisonLimit: this.initRiskLimit,
     };
 
     public render() {
+
         const {
-            ballotPollingField,
-            ballotPollingLimit,
             comparisonField,
             comparisonLimit,
         } = this.state;
 
         this.props.forms.riskLimit = this.state;
-
-        const ballotPollingFormField = (
-            <label>
-                Ballot Polling Audits (%)
-                <NumericInput
-                    allowNumericCharactersOnly={ true }
-                    min={ toPercent(MIN_RISK_LIMIT) }
-                    max={ toPercent(MAX_RISK_LIMIT) }
-                    minorStepSize={ toPercent(0.001) }
-                    onBlur={ this.onBlur }
-                    stepSize={ toPercent(0.01) }
-                    value={ ballotPollingField }
-                    onValueChange={ this.onBallotPollingValueChange } />
-            </label>
-        );
 
         const comparisonFormField = (
             <label>
@@ -109,28 +91,12 @@ class RiskLimitForm extends React.Component<FormProps, FormState> {
     private onBlur = () => {
         const s = { ...this.state };
 
-        const parsedBallotPollingField = parseFloat(s.ballotPollingField);
-        if (isValidRiskLimit(parsedBallotPollingField)) {
-            s.ballotPollingLimit = fromPercent(parsedBallotPollingField);
-        } else {
-            s.ballotPollingField = `${toPercent(s.ballotPollingLimit)}`;
-        }
-
         const parsedComparisonField = parseFloat(s.comparisonField);
         if (isValidRiskLimit(parsedComparisonField)) {
             s.comparisonLimit = fromPercent(parsedComparisonField);
         } else {
             s.comparisonField = `${toPercent(s.comparisonLimit).toFixed(2)}`;
         }
-
-        this.setState(s);
-        this.syncParent(s);
-    }
-
-    private onBallotPollingValueChange = (_: number, field: string) => {
-        const s = { ...this.state };
-
-        s.ballotPollingField = field;
 
         this.setState(s);
         this.syncParent(s);

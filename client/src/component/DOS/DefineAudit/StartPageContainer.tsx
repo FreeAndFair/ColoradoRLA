@@ -20,14 +20,13 @@ interface ContainerProps {
 }
 
 interface ContainerState {
-    riskLimit: boolean;
     type: boolean;
 }
 
 class StartPageContainer extends React.Component<ContainerProps, ContainerState> {
     public state = {
         riskLimit: true,
-        type: false,
+        type: !!(this.props.election && this.props.election.type),
     };
 
     public render() {
@@ -46,6 +45,7 @@ class StartPageContainer extends React.Component<ContainerProps, ContainerState>
         }
 
         const props = {
+            dosState,
             election,
             formValid: this.formIsValid(),
             nextPage: () => history.push('/sos/audit/select-contests'),

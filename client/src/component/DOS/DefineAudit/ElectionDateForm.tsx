@@ -8,12 +8,21 @@ import { timezone } from 'corla/config';
 import corlaDate from 'corla/date';
 
 
-function defaultElectionDate(): string {
-    return moment.tz(timezone).format('YYYY-MM-DD');
+function defaultElectionDate(initDate: Date): string {
+
+    if (initDate) {
+        // date is formatted as utc in corlaDate.format
+        // if we don't use utc here we'll get the wrong day sometimes it appears.
+        // there may be a better way to do this.
+        return moment(initDate).tz('utc').format('YYYY-MM-DD');
+    } else {
+        return moment.tz(timezone).format('YYYY-MM-DD');
+    }
 }
 
 interface FormProps {
     forms: DOS.Form.AuditDef.Forms;
+    initDate: Date;
 }
 
 interface FormState {
@@ -21,7 +30,9 @@ interface FormState {
 }
 
 class ElectionDateForm extends React.Component<FormProps, FormState> {
-    public state = { date: defaultElectionDate() };
+    public state = {
+        date: defaultElectionDate(this.props.initDate),
+    };
 
     public render() {
         this.props.forms.electionDateForm = this.state;

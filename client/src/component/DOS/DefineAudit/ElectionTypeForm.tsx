@@ -11,6 +11,7 @@ const ELECTION_TYPES: ElectionType[] =
 interface FormProps {
     forms: DOS.Form.AuditDef.Forms;
     setFormValid: OnClick;
+    initType: ElectionType;
 }
 
 interface FormState {
@@ -19,7 +20,7 @@ interface FormState {
 
 class ElectionTypeForm extends React.Component<FormProps, FormState> {
     public state: FormState = {
-        type: undefined,
+        type: this.props.initType,
     };
 
     public render() {

@@ -11,7 +11,7 @@
 
 package us.freeandfair.corla.endpoint;
 
-import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.PUBLIC_SEED_EVENT;
+import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.PARTIAL_AUDIT_INFO_EVENT;
 
 import javax.persistence.PersistenceException;
 
@@ -60,7 +60,7 @@ public class SetRandomSeed extends AbstractDoSDashboardEndpoint {
    */
   @Override
   protected ASMEvent endpointEvent() {
-    return PUBLIC_SEED_EVENT;
+    return PARTIAL_AUDIT_INFO_EVENT;
   }
 
   /**

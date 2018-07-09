@@ -48,15 +48,6 @@ const AuditSeedPage = (props: PageProps) => {
         nextPage();
     };
 
-    const setSeedDiv = (
-        <div>
-            Random seed: { seed }
-        </div>
-    );
-
-    const dynamicSeedForm = <SeedForm forms={ forms } />;
-    const seedForm = seed ? setSeedDiv : dynamicSeedForm;
-
     const formattedPublicMeetingDate = corlaDate.format(publicMeetingDate);
 
     return (
@@ -69,12 +60,7 @@ const AuditSeedPage = (props: PageProps) => {
                     Enter the random seed generated from the public meeting on { formattedPublicMeetingDate }.
                 </div>
                 <div className='pt-card'>
-                    <span className='pt-icon pt-intent-warning pt-icon-warning-sign' />
-                    <span> </span>
-                    Once saved, this random seed cannot be modified.
-                </div>
-                <div className='pt-card'>
-                    { seedForm }
+                    <SeedForm forms={ forms } initSeed={ seed } />
                 </div>
             </div>
             <div>

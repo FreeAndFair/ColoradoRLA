@@ -13,7 +13,6 @@ package us.freeandfair.corla.endpoint;
 import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.*;
 import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.*;
 import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.*;
-import static us.freeandfair.corla.asm.ASMState.DoSDashboardState.RANDOM_SEED_PUBLISHED;
 import static us.freeandfair.corla.asm.ASMState.DoSDashboardState.COMPLETE_AUDIT_INFO_SET;
 
 import java.math.BigDecimal;
@@ -104,9 +103,7 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
   @Override
   public String endpointBody(final Request the_request,
                          final Response the_response) {
-    if ((my_asm.get().currentState() == RANDOM_SEED_PUBLISHED)
-        ||
-        (my_asm.get().currentState() == COMPLETE_AUDIT_INFO_SET)) {
+    if (my_asm.get().currentState() == COMPLETE_AUDIT_INFO_SET) {
       // the audit hasn't started yet, so start round 1 and ignore the parameters
       // we were sent
       my_event.set(DOS_START_ROUND_EVENT);

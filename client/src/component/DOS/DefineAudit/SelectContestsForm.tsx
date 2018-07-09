@@ -132,7 +132,7 @@ class SelectContestsForm extends React.Component<FormProps, FormState> {
     constructor(props: FormProps) {
         super(props);
         const {auditedContests} = props;
-        const auditedContestIds = _.map(auditedContests, ac => {return ac.id});
+        const auditedContestIds = _.map(auditedContests, ac => ac.id);
 
         this.state = {
             filter: '',
