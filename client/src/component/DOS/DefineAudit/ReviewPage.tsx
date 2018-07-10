@@ -6,6 +6,8 @@ import Nav from '../Nav';
 
 import counties from 'corla/data/counties';
 
+import { format } from 'corla/date';
+
 const Breadcrumb = () => (
     <ul className='pt-breadcrumbs'>
         <li>
@@ -110,6 +112,18 @@ const AuditReview = (props: AuditReviewProps) => {
             <div className='pt-card'>
                 <table className='pt-table'>
                     <tbody>
+                        <tr>
+                            <td>Public Meeting Date:</td>
+                            <td>{ dosState.publicMeetingDate && format(dosState.publicMeetingDate) }</td>
+                        </tr>
+                        <tr>
+                            <td>Election Date:</td>
+                            <td>{ dosState.election && dosState.election.date && format(dosState.election.date) }</td>
+                        </tr>
+                        <tr>
+                            <td>Election Type:</td>
+                            <td>{ dosState.election && dosState.election.type }</td>
+                        </tr>
                         <tr>
                             <td>Risk Limit:</td>
                             <td>{ riskLimitPercent }%</td>
