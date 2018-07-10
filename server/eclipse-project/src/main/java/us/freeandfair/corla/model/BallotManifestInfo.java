@@ -81,7 +81,7 @@ public class BallotManifestInfo implements PersistentEntity, Serializable {
    * The batch number.
    */
   @Column(updatable = false, nullable = false)
-  private Integer my_batch_id;
+  private String my_batch_id;
 
   /**
    * The size of the batch.
@@ -130,7 +130,7 @@ public class BallotManifestInfo implements PersistentEntity, Serializable {
    */
   public BallotManifestInfo(final Long the_county_id,
                             final Integer the_scanner_id,
-                            final Integer the_batch_id,
+                            final String the_batch_id,
                             final int the_batch_size,
                             final String the_storage_location,
                             final Long the_sequence_start,
@@ -186,7 +186,7 @@ public class BallotManifestInfo implements PersistentEntity, Serializable {
   /**
    * @return the batch number.
    */
-  public Integer batchID() {
+  public String batchID() {
     return my_batch_id;
   }
 
