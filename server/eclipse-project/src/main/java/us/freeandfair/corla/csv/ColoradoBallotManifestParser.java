@@ -157,14 +157,27 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
     BallotManifestInfo result = null;
 
     try {
+      final int batch_size = Integer.parseInt(the_line.get(NUM_BALLOTS_COLUMN));
+      Long sequence_start;
+      if (my_ballot_count == 0) {
+        // this is the first row. also, sequence is not zero based
+        sequence_start = 1L;
+      } else {
+        // rest of the rows. also, batch sequences don't overlap or touch
+        sequence_start = Long.valueOf(my_ballot_count) + 1L;
+      }
+      // this is used to set my_ballot_count below
+      final Long sequence_end = sequence_start + Long.valueOf(batch_size) - 1L;
       // TODO: should we check for mismatched county IDs between the
       // one we were passed at construction and the county name string
       // in the file?
       result = new BallotManifestInfo(my_county_id,
                                       Integer.parseInt(the_line.get(SCANNER_ID_COLUMN)),
-                                      the_line.get(BATCH_NUMBER_COLUMN),
-                                      Integer.parseInt(the_line.get(NUM_BALLOTS_COLUMN)),
-                                      the_line.get(BATCH_LOCATION_COLUMN));
+                                      Integer.parseInt(the_line.get(BATCH_NUMBER_COLUMN)),
+                                      batch_size,
+                                      the_line.get(BATCH_LOCATION_COLUMN),
+                                      sequence_start,
+                                      sequence_end);
       Persistence.saveOrUpdate(result);
       my_parsed_manifests.add(result);
       checkForFlush();
@@ -211,7 +224,7 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
           break;
         } else {
           my_record_count = my_record_count + 1;
-          my_ballot_count = my_ballot_count + bmi.batchSize();
+          my_ballot_count = Math.toIntExact(bmi.sequenceEnd());
         }
       }
     } catch (final NoSuchElementException e) {
