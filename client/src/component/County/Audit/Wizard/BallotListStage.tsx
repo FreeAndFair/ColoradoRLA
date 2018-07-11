@@ -79,11 +79,11 @@ const BallotListStage = (props: BallotListStageProps) => {
                 className='pt-button pt-intent-primary'
                 onClick={ nextStage }>
                 Start audit
-            </button>            
+            </button>
             <div className='pt-card'>
                 <button className='pt-button pt-intent-primary' onClick={ downloadCsv } >
                    Download ballot list as CSV
-                </button>            
+                </button>
                 <div className='pt-card'>
                     <table className='pt-table pt-bordered pt-condensed'>
                         <thead>

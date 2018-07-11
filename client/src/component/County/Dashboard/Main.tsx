@@ -59,7 +59,9 @@ const Main = (props: MainProps) => {
         startAudit,
     } = props;
 
-    let directions = "Upload the ballot manifest and cast voter records (CVR) files. These need to be CSV files. \n\nAfter uploading the files wait for an email from the Department of State saying that you can continue the audit.";
+    let directions = 'Upload the ballot manifest and cast voter records (CVR) files. These need to be CSV files.'
+                   + '\n\nAfter uploading the files wait for an email from the Department of State saying that you can'
+                   + ' continue the audit.';
 
     if (auditBoardSignedIn) {
         if (auditButtonDisabled) {
@@ -68,17 +70,21 @@ const Main = (props: MainProps) => {
             if (currentRoundNumber) {
                 directions = `You can start round ${currentRoundNumber} of the audit.`;
             } else {
-                directions = 'You have completed the round. More ballots need to be audited. Wait for the next round to start.';
+                directions = 'You have completed the round. More ballots need to be audited.'
+                           + ' Wait for the next round to start.';
             }
         }
     } else {
         if (!signInButtonDisabled) {
-            directions = 'The Department of State has defined the audit and your list of ballots is now available for download on this page. The audit board must sign in to advance to the audit.';
+            directions = 'The Department of State has defined the audit and your list of ballots is now available for'
+                       + ' download on this page. The audit board must sign in to advance to the audit.';
         }
     }
 
     if (auditComplete) {
-        directions = 'You have successfully completed the Risk-Limiting Audit! Print all pages of your final audit report. Have the judges and county clerk sign the last page of the report and email it to RLA@sos.state.co.us. You can now proceed to canvass!';
+        directions = 'You have successfully completed the Risk-Limiting Audit! Print all pages of your final audit'
+                   + ' report. Have the judges and county clerk sign the last page of the report and email it to'
+                   + ' RLA@sos.state.co.us. You can now proceed to canvass!';
     }
 
     const fileUploadContainer = auditStarted
@@ -121,7 +127,7 @@ const Main = (props: MainProps) => {
                     </button>
                 </div>
                 <div>
-                  <AuditBoardInfo signedIn={ auditBoardSignedIn } />                    
+                  <AuditBoardInfo signedIn={ auditBoardSignedIn } />
                   <button
                       className='pt-button pt-intent-primary audit'
                       disabled={ signInButtonDisabled }
