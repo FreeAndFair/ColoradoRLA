@@ -165,7 +165,8 @@ public class UpdateAuditInfo extends AbstractDoSDashboardEndpoint {
     final AuditInfo info = the_dosdb.auditInfo();
 
     if (info.electionDate() == null || info.electionType() == null ||
-        info.publicMeetingDate() == null || info.riskLimit() == null) {
+        info.publicMeetingDate() == null || info.riskLimit() == null ||
+        info.seed() == null || the_dosdb.contestsToAudit().isEmpty()) {
       Main.LOGGER.debug("partial audit information submitted");
       result = PARTIAL_AUDIT_INFO_EVENT;
     } else {
