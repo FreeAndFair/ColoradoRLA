@@ -51,15 +51,15 @@ const BallotListStage = (props: BallotListStageProps) => {
 
     return (
         <div className='rla-page'>
-            <h3>Ballot Cards to Audit</h3>
+            <h2>Ballot Cards to Audit</h2>
             <div className='pt-card'>
-                <div>
-                    The Secretary of State has established the following risk limit(s) for
-                    the following ballot contest(s) to audit:
-                </div>
-                <ul>
-                    { contestsUnderAuditListItems }
-                </ul>
+                    <div>
+                        The Secretary of State has established the following risk limit(s) for
+                        the following ballot contest(s) to audit:
+                    </div>
+                    <ul>
+                        { contestsUnderAuditListItems }
+                    </ul>
             </div>
             <div className='pt-card'>
                 The Secretary of State has randomly selected { cvrsToAudit.length } ballot cards
@@ -72,6 +72,18 @@ const BallotListStage = (props: BallotListStageProps) => {
                 round of this risk-limiting audit:
             </div>
             <div className='pt-card'>
+                Audit Board: Click Start audit to begin reporting the votes you observe on each
+                of the above ballot cards.
+            </div>
+            <button
+                className='pt-button pt-intent-primary'
+                onClick={ nextStage }>
+                Start audit
+            </button>            
+            <div className='pt-card'>
+                <button className='pt-button pt-intent-primary' onClick={ downloadCsv } >
+                   Download ballot list as CSV
+                </button>            
                 <div className='pt-card'>
                     <table className='pt-table pt-bordered pt-condensed'>
                         <thead>
@@ -89,19 +101,7 @@ const BallotListStage = (props: BallotListStageProps) => {
                         </tbody>
                     </table>
                 </div>
-                <button className='pt-button' onClick={ downloadCsv } >
-                    Download as CSV
-                </button>
             </div>
-            <div className='pt-card'>
-                Audit Board: Click Next to start reporting the votes you observe on each
-                of the above ballot cards.
-            </div>
-            <button
-                className='pt-button pt-intent-primary'
-                onClick={ nextStage }>
-                Next
-            </button>
         </div>
     );
 };

@@ -36,13 +36,13 @@ class ElectionTypeForm extends React.Component<FormProps, FormState> {
 
         return (
             <div className='pt-card'>
-                <RadioGroup
-                    className='rla-radio-group'
-                    selectedValue={ type }
-                    onChange={ this.onFormChange }
-                    label='Election Type'>
-                    { radios }
-                </RadioGroup>
+                    <RadioGroup
+                        className='rla-radio-group'
+                        selectedValue={ type }
+                        onChange={ this.onFormChange }
+                        label='Election Type'>
+                        { radios }
+                    </RadioGroup>
             </div>
         );
     }

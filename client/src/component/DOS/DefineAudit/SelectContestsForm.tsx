@@ -37,7 +37,7 @@ const TiedContestRow = (props: RowProps) => {
                           disabled={ true } />
             </td>
             <td>
-                <em>Contest cannot be audited due to a reported tie.</em>
+                Contest cannot be audited due to a reported tie.
             </td>
         </tr>
     );
@@ -237,16 +237,16 @@ class SelectContestsForm extends React.Component<FormProps, FormState> {
         return (
             <div>
                 <div className='pt-card'>
-                    According to Colorado statute, at least one statewide contest and
+                   <h5>According to Colorado statute, at least one statewide contest and
                     one countywide contest must be chosen for audit. The Secretary of State
                     will select other ballot contests for audit if in any particular election
                     there is no statewide contest or a countywide contest in any county. Once
                     these contests for audit have been selected and published, they cannot be
                     changed. The Secretary of State can decide that a contest must witness a
-                    full hand count at any time.
+                    full hand count at any time.</h5>
                 </div>
                 <div className='pt-card'>
-                    Filter by County or Contest Name:
+                    <strong>Filter by County or Contest Name:</strong>
                     <span> </span>
                     <EditableText
                         className='pt-input'

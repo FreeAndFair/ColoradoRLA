@@ -138,12 +138,12 @@ const AuditReview = (props: AuditReviewProps) => {
             <SelectedContests auditedContests={dosState.auditedContests}
                               contests={dosState.contests} />
             <div>
-                <button onClick={ back } className='pt-button'>
+                <button onClick={ back } className='pt-button pt-intent-primary pt-breadcrumb'>
                     Back
                 </button>
                 <button disabled={ disableLaunchButton }
                         onClick={ launch }
-                        className='pt-button pt-intent-primary'>
+                        className='pt-button pt-intent-primary pt-breadcrumb'>
                     Launch Audit
                 </button>
             </div>

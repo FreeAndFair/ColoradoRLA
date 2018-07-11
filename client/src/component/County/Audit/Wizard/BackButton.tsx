@@ -6,7 +6,7 @@ interface Props {
 }
 
 const BackButton = ({ back }: Props) => {
-    return <button className='pt-button' onClick={ back }>Back</button>;
+    return <button className='pt-button pt-intent-primary' onClick={ back }>Back</button>;
 };
 
 
