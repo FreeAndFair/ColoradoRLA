@@ -9,8 +9,8 @@ import corlaDate from 'corla/date';
 
 
 function defaultElectionDate(initDate: Date): string {
-    // not sure where this string comes from
-    if (initDate && 'Invalid Date' !== initDate.toString()) {
+    // a Date initialized with an empty string is still a Date, so we catch that here
+    if (initDate && moment(initDate).isValid()) {
         // date is formatted as utc in corlaDate.format
         // if we don't use utc here we'll get the wrong day sometimes it appears.
         // there may be a better way to do this.
