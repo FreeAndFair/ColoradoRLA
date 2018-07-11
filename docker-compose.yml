@@ -16,6 +16,8 @@ services:
     build:
       context: .
       dockerfile: ./docker/postgresql/Dockerfile
+    ports:
+      - "5432:5432"
 
   httpd:
     build:
