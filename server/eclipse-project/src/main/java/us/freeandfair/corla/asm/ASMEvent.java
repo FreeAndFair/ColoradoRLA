@@ -25,7 +25,6 @@ public interface ASMEvent extends Event {
   enum DoSDashboardEvent implements ASMEvent {
     PARTIAL_AUDIT_INFO_EVENT, // public inbound event 
     COMPLETE_AUDIT_INFO_EVENT, // public inbound event
-    PUBLIC_SEED_EVENT, // public inbound event
     DOS_START_ROUND_EVENT, // public inbound event
     DOS_ROUND_COMPLETE_EVENT, // private internal event
     AUDIT_EVENT, // private internal event

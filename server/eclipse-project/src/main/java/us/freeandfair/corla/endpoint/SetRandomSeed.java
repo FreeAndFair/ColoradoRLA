@@ -11,7 +11,8 @@
 
 package us.freeandfair.corla.endpoint;
 
-import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.PUBLIC_SEED_EVENT;
+import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.COMPLETE_AUDIT_INFO_EVENT;
+import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.PARTIAL_AUDIT_INFO_EVENT;
 
 import javax.persistence.PersistenceException;
 
@@ -38,7 +39,12 @@ public class SetRandomSeed extends AbstractDoSDashboardEndpoint {
    * The "random seed" parameter.
    */
   public static final String RANDOM_SEED = "random_seed";
-  
+
+  /**
+   * The event to return for this endpoint.
+   */
+  private final ThreadLocal<ASMEvent> my_event = new ThreadLocal<ASMEvent>();
+
   /**
    * {@inheritDoc}
    */
@@ -54,13 +60,13 @@ public class SetRandomSeed extends AbstractDoSDashboardEndpoint {
   public String endpointName() {
     return "/random-seed";
   }
-  
+
   /**
    * {@inheritDoc}
    */
   @Override
   protected ASMEvent endpointEvent() {
-    return PUBLIC_SEED_EVENT;
+    return my_event.get();
   }
 
   /**
@@ -92,6 +98,7 @@ public class SetRandomSeed extends AbstractDoSDashboardEndpoint {
             new AuditInfo(null, null, null, submitted.seed(), null);
         dosdb.updateAuditInfo(seed);
         Persistence.saveOrUpdate(dosdb);
+        my_event.set(nextEvent(dosdb));
         ok(the_response, "random seed set to " + seed.seed());
       } else {
         invariantViolation(the_response, "invalid random seed specified: " + submitted.seed());
@@ -103,5 +110,27 @@ public class SetRandomSeed extends AbstractDoSDashboardEndpoint {
       badDataContents(the_response, "malformed random seed");
     }
     return my_endpoint_result.get();
+  }
+
+
+  /**
+   * Computes the event of this endpoint based on audit info completeness.
+   *
+   * @param the_dosdb The DoS dashboard.
+   */
+  private ASMEvent nextEvent(final DoSDashboard the_dosdb) {
+    final ASMEvent result;
+    final AuditInfo info = the_dosdb.auditInfo();
+
+    if (info.electionDate() == null || info.electionType() == null ||
+        info.publicMeetingDate() == null || info.riskLimit() == null) {
+      Main.LOGGER.debug("partial audit information submitted");
+      result = PARTIAL_AUDIT_INFO_EVENT;
+    } else {
+      Main.LOGGER.debug("complete audit information submitted");
+      result = COMPLETE_AUDIT_INFO_EVENT;
+    }
+
+    return result;
   }
 }
