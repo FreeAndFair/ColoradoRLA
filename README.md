@@ -13,6 +13,65 @@ State in July and August of 2017.
 
 * *To be written:* Future Work
 
+Docker Quick Start
+==================
+
+Primarily used to spin up the system for development in a controlled way. This
+is a work in progress (automating the artifact build steps would be nice), but
+is usable.
+
+Requirements
+------------
+
+- `docker`
+- `docker-compose`
+- Build tools for the client and server (TypeScript, maven, etc.)
+
+Setup
+-----
+
+```sh
+## Build the client
+cd client; npm install; npm run dist
+## Switch back to project root
+cd ..
+## Build the server
+cd server/eclipse-project; mvn package
+```
+
+Running
+-------
+
+Assuming you have built artifacts, you can bring up the system with those
+artifacts:
+
+```sh
+## This step is optional the first time, but you need to run it subsequently
+## whenever artifacts change (refer to the **Setup** instructions above).
+docker-compose build
+
+docker-compose up
+```
+
+Once the system is running, the server will create the PostgreSQL schema. After
+this, you most likely want to install test credentials, which are already inside
+the PostgreSQL image:
+
+```sh
+docker exec -i coloradorla_postgresql_1 \
+  /bin/bash -c \
+  'psql -U corla -d corla < /root/corla-test-credentials.psql'
+```
+
+Note that `coloradorla_postgresql_1` is the output of "Name" from
+
+```sh
+docker-compose ps postgresql
+```
+
+but should be consistent assuming you have checked out the code to a directory
+named the same as the repository.
+
 Installation and Use
 ====================
 
