@@ -38,11 +38,10 @@ Only the rlacalc.py and hug_noop.py files are needed.
 Install the "orange" branch of ColoradoRLA from
 https://github.com/nealmcb/ColoradoRLA/tree/orange
 
-Install the python package `rla_export` found in
-ColoradoRLA/server/eclipse-project/script/rla_export
-(TODO: put install file up as a release under github?)
+Install the [Python package rla_export](https://github.com/FreeAndFair/ColoradoRLA/releases/tag/v1.1.0.3).
+It requires Python 2.7.
 
-Add the directory with all those python files to $PATH.
+Add the directories of all those Python files to $PATH.
 
 # Documentation
 For now, use the `--help` option of each tool for help, and/or read the comments.
