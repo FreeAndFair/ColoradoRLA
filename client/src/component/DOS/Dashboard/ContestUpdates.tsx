@@ -145,7 +145,7 @@ class ContestUpdates extends React.Component<UpdatesProps, UpdatesState> {
             <div className='pt-card'>
                 <h3>Contest Updates</h3>
                 <div className='pt-card'>
-                    Filter by County or Contest Name:
+                    <strong>Filter by County or Contest Name:</strong>
                     <span> </span>
                     <EditableText
                         className='pt-input'

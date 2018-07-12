@@ -64,10 +64,10 @@ const AuditSeedPage = (props: PageProps) => {
                 </div>
             </div>
             <div>
-                <button onClick={ back } className='pt-button'>
+                <button onClick={ back } className='pt-button pt-intent-primary pt-breadcrumb'>
                     Back
                 </button>
-                <button onClick={ onSaveAndNext } className='pt-button pt-intent-primary'>
+                <button onClick={ onSaveAndNext } className='pt-button pt-intent-primary pt-breadcrumb'>
                     Save & Next
                 </button>
             </div>

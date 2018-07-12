@@ -23,7 +23,7 @@ class SeedForm extends React.Component<FormProps, FormState> {
 
         return (
             <label>
-                Seed
+               <strong> Seed:  </strong>
                 <EditableText
                     className='pt-input'
                     minWidth={ 64 }

@@ -40,10 +40,10 @@ const WaitingForContestsPage = ({ back }: WaitingPageProps) => {
                 Waiting for counties to upload contest data.
             </div>
             <div>
-                <button onClick={ back } className='pt-button'>
+                <button onClick={ back } className='pt-button pt-intent-primary pt-breadcrumb'>
                     Back
                 </button>
-                <button disabled className='pt-button pt-intent-primary'>
+                <button disabled className='pt-button pt-intent-primary pt-breadcrumb'>
                     Save & Next
                 </button>
             </div>
@@ -93,10 +93,10 @@ const SelectContestsPage = (props: PageProps) => {
                                 isAuditable={ isAuditable } />
 
             <div>
-                <button onClick={ back } className='pt-button'>
+                <button onClick={ back } className='pt-button pt-intent-primary pt-breadcrumb'>
                     Back
                 </button>
-                <button onClick={ onSaveAndNext } className='pt-button pt-intent-primary'>
+                <button onClick={ onSaveAndNext } className='pt-button pt-intent-primary pt-breadcrumb'>
                     Save & Next
                 </button>
             </div>

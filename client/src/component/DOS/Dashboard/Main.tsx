@@ -47,7 +47,7 @@ const Definition = ({ dosState }: DefinitionProps) => {
 
 const NotDefined = () => {
     return (
-        <div><em>The audit has not yet been defined.</em></div>
+        <div><h3>The audit has not yet been defined.</h3></div>
     );
 };
 
@@ -73,12 +73,12 @@ const Main = (props: MainProps) => {
             <div className='sos-notifications pt-card'>
                 { auditDefinition }
                 <div className='pt-card'>
-                    Congratulations! The audit is complete.
+                <div className='pt-ui-text-large'>Congratulations! The audit is complete.</div>
                 </div>
                 <div className='pt-card'>
-                    <div>Click to download final audit report.</div>
+                    <div className='pt-ui-text-large'>Click to download final audit report.</div>
                     <button
-                        className='pt-button'
+                        className='pt-button pt-intent-primary'
                         onClick={ fetchReport }>
                         Download
                     </button>
@@ -92,9 +92,9 @@ const Main = (props: MainProps) => {
             { auditDefinition }
             <RoundContainer />
             <div className='pt-card'>
-                <div>Click to download intermediate audit report.</div>
+                <div className='pt-ui-text-large'>Click to download intermediate audit report.</div>
                 <button
-                    className='pt-button'
+                    className='pt-button  pt-intent-primary'
                     disabled={ !canRenderReport }
                     onClick={ fetchReport }>
                     Download

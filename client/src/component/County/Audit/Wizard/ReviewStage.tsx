@@ -34,7 +34,7 @@ const BallotContestReview = (props: BallotContestReviewProps) => {
     const markedChoiceDivs = _.map(markedChoices, (_, name) => {
         return (
             <div key={ name } className='pt-card'>
-                <div>{ name }</div>
+                <strong><div>{ name }</div></strong>
             </div>
         );
     });
@@ -50,7 +50,7 @@ const BallotContestReview = (props: BallotContestReviewProps) => {
 
         return (
             <div>
-                <strong>Votes for:</strong>
+                Votes for:
                 { markedChoiceDivs.length ? markedChoiceDivs : noMarksDiv }
             </div>
         );
@@ -59,8 +59,8 @@ const BallotContestReview = (props: BallotContestReviewProps) => {
     return (
         <div className='pt-card'>
             <div className='pt-card'>
-                <div>{ contest.name }</div>
-                <div>{ contest.description }</div>
+                <strong><div>{ contest.name }</div></strong>
+                <strong><div>{ contest.description }</div></strong>
                 <div>Vote for { contest.votesAllowed }</div>
             </div>
             <div className='pt-card'>
@@ -135,7 +135,7 @@ const ReviewStage = (props: ReviewStageProps) => {
             <BallotReview countyState={ countyState } marks={ marks } />
             <div className='pt-card'>
                 <BackButton back={ prevStage } />
-                <button className='pt-button pt-intent-primary' onClick={ onClick }>
+                <button className='pt-button pt-intent-primary pt-breadcrumb' onClick={ onClick }>
                     Submit & Next Ballot Card
                 </button>
             </div>
