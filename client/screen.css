@@ -17,7 +17,11 @@ div{
 }
 
 .county-root .info {
-  #  display: flex;
+    /*
+     * Removed by CDOS - causes "Contest Info" to drop below "County Info"
+     * rather than to the right of "County Info".
+     */
+    /*display: flex;*/
     flex-direction: row;
     justify-content: space-evenly;
 }
