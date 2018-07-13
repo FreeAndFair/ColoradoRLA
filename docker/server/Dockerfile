@@ -1,7 +1,7 @@
 FROM openjdk:8
 LABEL maintainer="Democracy Works, Inc. <dev@democracy.works>"
 
-ARG VERSION=1.1.0
+ARG VERSION
 
 ## TODO: How can we architect this such that passing -Dthe.prop=value works as
 ## expected?

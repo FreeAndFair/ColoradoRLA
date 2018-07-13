@@ -6,7 +6,6 @@ POSTGRESQL_TAG ?= latest
 
 SERVER_REPOSITORY ?= quay.io/democracyworks/rla-server
 SERVER_TAG ?= latest
-SERVER_VERSION ?= 1.1.0
 
 ### Apache httpd
 
@@ -34,9 +33,10 @@ postgresql-deploy:
 .PHONY: server-build server-deploy
 
 server-build:
+
 	cd ../server/eclipse-project; mvn package
 	docker build -f server/Dockerfile -t $(SERVER_REPOSITORY):$(SERVER_TAG) \
-		--build-arg VERSION=$(SERVER_VERSION) \
+		--build-arg VERSION=$(shell cd ../server/eclipse-project; mvn help:evaluate -Dexpression=project.version | grep '^[[:digit:]].\+') \
 		../
 
 server-deploy:
