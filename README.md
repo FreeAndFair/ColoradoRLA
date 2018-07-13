@@ -1,26 +1,80 @@
-ColoradoRLA
-===========
+# Colorado Risk-Limiting Audit (RLA) Tool
 
 [![Build Status](https://travis-ci.org/democracyworks/ColoradoRLA.svg?branch=master)](https://travis-ci.org/democracyworks/ColoradoRLA)
 
-The **ColoradoRLA** system is software to facilitate risk-limiting
-audits at the state level, developed for Colorado's Department of
-State in July and August of 2017.
+The **Colorado RLA** system is software to facilitate risk-limiting audits at
+the state level, developed for Colorado's Department of State in July and August
+of 2017.
 
-* Blog announcement: [Free & Fair to build risk-limiting audit system for State of Colorado](http://freeandfair.us/blog/risk-limiting-audits/)
+## What is a risk-limiting audit?
 
-* *To be written:* Project Background
+A [risk-limiting audit](https://en.wikipedia.org/wiki/Risk-limiting_audit) is an
+audit of the results of an election which uses statistical methods to give high
+confidence that the correct winners of the election were identified. This
+method, under most circumstances, requires far fewer ballots to be audited than
+a full hand count in which auditors must check every ballot.
 
-* *To be written:* Future Work
+# Docker Quick Start
 
-Installation and Use
-====================
+Primarily used to spin up the system for development in a controlled way. This
+is a work in progress (automating the artifact build steps would be nice), but
+is usable.
+
+## Requirements
+
+- `docker`
+- `docker-compose`
+- Build tools for the client and server (TypeScript, maven, etc.)
+
+## Setup
+
+```sh
+## Build the client
+cd client; npm install; npm run dist
+## Switch back to project root
+cd ..
+## Build the server
+cd server/eclipse-project; mvn package
+```
+
+## Running
+
+Assuming you have built artifacts, you can bring up the system with those
+artifacts:
+
+```sh
+## This step is optional the first time, but you need to run it subsequently
+## whenever artifacts change (refer to the **Setup** instructions above).
+docker-compose build
+
+docker-compose up
+```
+
+Once the system is running, the server will create the PostgreSQL schema. After
+this, you most likely want to install test credentials, which are already inside
+the PostgreSQL image:
+
+```sh
+docker exec -i coloradorla_postgresql_1 \
+  /bin/bash -c \
+  'psql -U corla -d corla < /root/corla-test-credentials.psql'
+```
+
+Note that `coloradorla_postgresql_1` is the output of "Name" from
+
+```sh
+docker-compose ps postgresql
+```
+
+but should be consistent assuming you have checked out the code to a directory
+named the same as the repository.
+
+# Installation and Use
 
 A document describing how to download, install, and use this system is
 found in [the docs directory](docs/15_installation.md).
 
-System Documentation
-====================
+# System Documentation
 
 Documentation about this project and the Colorado RLA system includes:
 * a [User Manual (docx)](docs/user_manual.docx)
@@ -45,8 +99,7 @@ Documentation about this project and the Colorado RLA system includes:
 * all [contributors](#contributors) to the design and development of
   this system are listed below.
 
-Contributors
-============
+# Contributors
 
 * Joey Dodds (Principled Computer Scientist) RLA core computations
   implementation
