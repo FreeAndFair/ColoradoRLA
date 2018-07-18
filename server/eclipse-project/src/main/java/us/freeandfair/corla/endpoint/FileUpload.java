@@ -360,7 +360,7 @@ public class FileUpload extends AbstractEndpoint {
     final Properties properties = Main.properties();
     final String os_name = System.getProperty("os.name").toLowerCase(Locale.US);
     final boolean is_windows = os_name.startsWith("windows");
-    String archive_file_location;
+    final String archive_file_location;
     if (is_windows) {
       archive_file_location = properties.getProperty("windows_upload_file_location");
     } else { // it's UNIX

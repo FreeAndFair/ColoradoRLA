@@ -13,18 +13,22 @@ package us.freeandfair.corla.endpoint;
 
 import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.*;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Instant;
 
 import javax.persistence.PersistenceException;
 
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
+import us.freeandfair.corla.csv.ContestNameParser;
 import us.freeandfair.corla.model.AuditInfo;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
@@ -76,32 +80,72 @@ public class UpdateAuditInfo extends AbstractDoSDashboardEndpoint {
   }
 
   /**
-   * Attempts to set the election information.
+   * JSON extraction
+   */
+  public String contestsFromJSON(final String s) {
+    final JsonParser parser = new JsonParser();
+    final JsonObject object;
+
+    try {
+      object = parser.parse(s).getAsJsonObject();
+
+      return object
+        .getAsJsonArray("upload_file")
+        .get(0)
+        .getAsJsonObject()
+        .get("contents")
+        .getAsString();
+    } catch (final IndexOutOfBoundsException | JsonParseException e) {
+      Main.LOGGER.error("Failed to parse malformed JSON", e);
+      throw e;
+    }
+  }
+
+  /**
+   * Attempts to set the audit information.
    *
-   * @param the_request The request.
-   * @param the_response The response.
+   * @param request The request.
+   * @param response The response.
    */
   @Override
   @SuppressWarnings("PMD.UselessParentheses")
-  public String endpointBody(final Request the_request, final Response the_response) {
+  public String endpointBody(final Request request, final Response response) {
     try {
-      final AuditInfo info =
-          Main.GSON.fromJson(the_request.body(), AuditInfo.class);
+      final String json = request.body();
+      final String contests = contestsFromJSON(json);
+      final AuditInfo info = Main.GSON.fromJson(json, AuditInfo.class);
+
+      final ContestNameParser p = new ContestNameParser(contests);
+      if (p.parse()) {
+        info.setCanonicalContests(p.contests());
+      } else {
+        badDataContents(response,
+                        String.format("[duplicates=%s; errors=%s]",
+                                      p.duplicates(),
+                                      p.errors()));
+      }
+
       final DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
       if (dosdb == null) {
         Main.LOGGER.error("could not get department of state dashboard");
-        serverError(the_response, "could not update audit information");
+        serverError(response, "could not update audit information");
       }
-      if (validateElectionInfo(info, dosdb, the_response)) {
+
+      if (validateElectionInfo(info, dosdb, response)) {
         dosdb.updateAuditInfo(info);
         my_event.set(nextEvent(dosdb));
-        ok(the_response, "audit information updated");
+        Main.LOGGER.info("AuditInfo updated: " + info);
+        ok(response, "audit information updated.");
       }
     } catch (final PersistenceException e) {
-      serverError(the_response, "unable to update audit information: " + e);
-    } catch (final JsonParseException e) {
-      badDataContents(the_response, "malformed audit information specified");
+      serverError(response, "unable to update audit information: " + e.getMessage());
+    } catch (final IndexOutOfBoundsException | JsonParseException e) {
+      badDataContents(response, "malformed audit information: " + e.getMessage());
+    } catch (final IOException e) {
+      Main.LOGGER.error("Failed to parse canonical contest file", e);
+      serverError(response, "Failed to parse canonical contest file");
     }
+
     return my_endpoint_result.get();
   }
 
