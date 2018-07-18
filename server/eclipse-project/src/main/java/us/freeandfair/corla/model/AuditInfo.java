@@ -17,9 +17,16 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Embeddable;
+import javax.persistence.MapKey;
+
+import us.freeandfair.corla.persistence.CountyCanonicalContestsMapConverter;
 
 /**
  * Election information.
@@ -74,31 +81,65 @@ public class AuditInfo implements Serializable {
   private BigDecimal my_risk_limit;
 
   /**
-   * Constructs an empty ElectionInfo.
+   * The mapping of county name to a set of contest names within each
+   * county.
+   */
+  @Convert(converter = CountyCanonicalContestsMapConverter.class)
+  @Column(name = "canonical_contests", columnDefinition = "text")
+  @MapKey(name = "my_id")
+  private Map<String, Set<String>>
+    canonicalContests = new TreeMap<String, Set<String>>();
+
+  /**
+   * Constructs an empty AuditInfo using defaults
    */
   public AuditInfo() {
     // defaults
   }
-  
+
   /**
-   * Constructs a new SubmittedElectionInfo.
-   * 
-   * @param the_election_type The election type.
-   * @param the_election_date The election date.
-   * @param the_public_meeting_date The public meeting date.
-   * @param the_seed The random seed.
-   * @param the_risk_limit The risk limit (as a string).
+   * Constructs a new AuditInfo.
+   *
+   * @param electionType The election type.
+   * @param electionDate The election date.
+   * @param publicMeetingDate The public meeting date.
+   * @param seed The random seed.
+   * @param riskLimit The risk limit
    */
-  public AuditInfo(final String the_election_type,
-                               final Instant the_election_date,
-                               final Instant the_public_meeting_date,
-                               final String the_seed,
-                               final BigDecimal the_risk_limit) {
-    my_election_type = the_election_type;
-    my_election_date = the_election_date;
-    my_public_meeting_date = the_public_meeting_date;
-    my_seed = the_seed;
-    my_risk_limit = the_risk_limit;
+  public AuditInfo(final String electionType,
+                   final Instant electionDate,
+                   final Instant publicMeetingDate,
+                   final String seed,
+                   final BigDecimal riskLimit) {
+    my_election_type = electionType;
+    my_election_date = electionDate;
+    my_public_meeting_date = publicMeetingDate;
+    my_seed = seed;
+    my_risk_limit = riskLimit;
+  }
+
+  /**
+   * Constructs a new AuditInfo with a collection of canonical contests.
+   *
+   * @param electionType The election type.
+   * @param electionDate The election date.
+   * @param publicMeetingDate The public meeting date.
+   * @param seed The random seed.
+   * @param riskLimit The risk limit
+   * @param contests The map of canonical contest names for counties
+   */
+  public AuditInfo(final String electionType,
+                   final Instant electionDate,
+                   final Instant publicMeetingDate,
+                   final String seed,
+                   final BigDecimal riskLimit,
+                   final Map<String, Set<String>> contests) {
+    my_election_type = electionType;
+    my_election_date = electionDate;
+    my_public_meeting_date = publicMeetingDate;
+    my_seed = seed;
+    my_risk_limit = riskLimit;
+    this.canonicalContests = contests;
   }
 
   /**
@@ -163,8 +204,12 @@ public class AuditInfo implements Serializable {
     return this.canonicalContests;
   }
 
-  public void setCanonicalContests(Map<String, Set<String>> x) {
-    this.canonicalContests = x;
+  /**
+   * setter of county-contest mapping
+   * @param m The map you want to set
+   */
+  public void setCanonicalContests(final Map<String, Set<String>> m) {
+    this.canonicalContests = m;
   }
 
   /**
@@ -231,5 +276,19 @@ public class AuditInfo implements Serializable {
   @Override
   public int hashCode() {
     return nullableHashCode(seed());
+  }
+
+  /**
+   * a good practice
+   */
+  @Override
+  public String toString() {
+    return
+      "AuditInfo[canonicalContests=" + canonicalContests() +
+      ", electionType=" + electionType() +
+      ", electionDate=" + electionDate() +
+      ", publicMeetingDate=" + publicMeetingDate() +
+      ", seed=" + seed() +
+      ", riskLimit" + riskLimit();
   }
 }
