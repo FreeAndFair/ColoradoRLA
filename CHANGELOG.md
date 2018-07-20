@@ -11,7 +11,7 @@ The sprint beginning on 7/18/2018 and ending on 7/31/2018
 ## 1.3.0
 
 This represents the two sprints beginning on 6/19/2018 and ending on 7/17/2018
-- [Documentation Updates][pr1X]
+- [Documentation Updates][pr15]
 - [UI - Lowercase username parameter to login2F][pr13]
 - [remove parameter name constraint][pr11]
 - [INFRA - Add support for running in virtual environments][pr10]
@@ -40,3 +40,4 @@ This is [FreeAndFair's most recent tag][1.1.0.3].
 [pr10]: https://github.com/democracyworks/ColoradoRLA/pull/10
 [pr11]: https://github.com/democracyworks/ColoradoRLA/pull/11
 [pr13]: https://github.com/democracyworks/ColoradoRLA/pull/13
+[pr15]: https://github.com/democracyworks/ColoradoRLA/pull/15
