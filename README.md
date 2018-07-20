@@ -2,17 +2,40 @@
 
 [![Build Status](https://travis-ci.org/democracyworks/ColoradoRLA.svg?branch=master)](https://travis-ci.org/democracyworks/ColoradoRLA)
 
-The **Colorado RLA** system is software to facilitate risk-limiting audits at
-the state level, developed for Colorado's Department of State in July and August
-of 2017.
+The Colorado RLA Tool is designed to help local and state election officials conduct efficient and effective risk-limiting audits of their elections. The initial code was developed by the Colorado Department of State through a contract with Free & Fair in 2017, and is now being developed and maintained by [Democracy Works](https://democracy.works), a 501(c)3 nonpartisan, nonprofit organization.
+
+# Objectives 
+
+- State and county election officials are able to successfully conduct a statewide risk-limiting audit of their election
+
+- Election administrators and citizen Audit Boards find the RLA Tool easy to use and helpful in conducting the audit
+
+- Public observers have increased confidence in the electoral outcomes as a result of the risk-limiting audit
+
+- The RLA tool is reliable, scalable, and performant
+
+# Description
+
+The RLA Tool is designed to facilitate a statistically valid audit of vote tabulation processes by comparing the votes marked on a random sample of original paper ballots with the electronically recorded votes for those same ballots. 
+
+The RLA Tool:
+1) Calculates how many original paper ballots need to be audited for the targeted contest(s) 
+
+2) randomly selects which original paper ballots will be audited and creates lists to help local election officials find the necessary ballots in storage,
+
+3) provides an interface for Audit Board teams to record the votes they see marked on the original paper ballot(s),
+
+4) checks whether the audited votes and recorded votes for each ballot match, and determines at the end of the audit round whether the desired confidence interval has been achieved based on these results (if not, additional ballots are randomly selected and audited)
+
+5) provides metrics and monitoring capabilities for election officials & public observers that indicate the progress and outcome of the audit.
+
+
 
 ## What is a risk-limiting audit?
 
-A [risk-limiting audit](https://en.wikipedia.org/wiki/Risk-limiting_audit) is an
-audit of the results of an election which uses statistical methods to give high
-confidence that the correct winners of the election were identified. This
-method, under most circumstances, requires far fewer ballots to be audited than
-a full hand count in which auditors must check every ballot.
+A [risk-limiting audit](https://en.wikipedia.org/wiki/Risk-limiting_audit) is an audit of the results of an election which uses statistical methods to give high confidence that the winner(s) of the election were reported correctly. 
+
+In Colorado, citizen Audit Boards examine a random sample of original paper ballots from an election, comparing the votes marked on each original paper ballot with the electronic representation of votes recorded by the vote tabulation system. Under most circumstances, this method requires auditing far fewer ballots than a full hand recount or fixed-percentage audit, while also providing strong statistical evidence that the outcome of the election was correct.
 
 # Docker Quick Start
 
@@ -101,23 +124,8 @@ Documentation about this project and the Colorado RLA system includes:
 
 # Contributors
 
-* Joey Dodds (Principled Computer Scientist) RLA core computations
-  implementation
-* Joseph Kiniry (Principled CEO and Chief Scientist) Project Head,
-  author of formal specification, design and implementation of ASMs
-  and 2FA
-* Michael Kiniry (Principled Documentarian) User-facing documentation
-* Neal McBurnett (Principled Elections Auditing Expert and Computer Scientist) RLA expert,
-  design and implementation of data export application
-  and automatic server test infrastructure
-* Morgan Miller (Principled Usability Specialist) UX expert, conducted
-  interviews with CDOS and County personnel, initial UI design
-* Joe Ranweiler (Principled Computer Scientist) Principal author of
-  RLA Tool Client
-* Stephanie Singer (Principled Elections Expert and Data Scientist) Query design for
-  data export application, user-facing documentation
-* Daniel Zimmerman (Principled Computer Scientist) Principal author of
-  RLA Tool Server
-* Mike Prasad (CDOS Developer/Architect) Authored enhancements to RLA Tool Client and Server
-
-More information about our team members [is available](docs/70_team.md).
+* [Democracy Works](https://democracy.works) 
+* [Free & Fair](https://http://freeandfair.us)
+* [Colorado Department of State](https://www.sos.state.co.us/pubs/elections/auditCenter.html)
+* [Colorado County Clerks Association](www.clerkandrecorder.org/) 
+* Special thanks also to Philip Stark, Ron Rivest, Mark Lindeman, and others in the State Audit Working Group and RLA Representative Group for their work to develop and refine risk-limiting audits 
