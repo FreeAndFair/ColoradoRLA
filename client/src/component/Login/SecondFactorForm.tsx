@@ -88,6 +88,6 @@ export default class SecondFactorForm extends React.Component<FormProps, FormSta
 
     private buttonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         const { username, token } = this.state.form;
-        login2F(this.props.username.toLowerCase(), token);
+        login2F(this.props.username.toLowerCase(), token.split('').join(' '));
     }
 }
