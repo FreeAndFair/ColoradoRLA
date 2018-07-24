@@ -766,7 +766,6 @@ public final class ComparisonAuditController {
         }
 
         cvrai.setMultiplicity(cvrai.multiplicity() + multiplicity);
-        cvrai.setCounted(cvrai.counted() + multiplicity);
       }
     }
   }
