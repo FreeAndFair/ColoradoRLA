@@ -54,7 +54,7 @@ div{
 }
 
 .audit{
-    margin-top: 10px;	
+    margin-top: 10px;
 }
 
 .truncate {
@@ -65,7 +65,7 @@ div{
 }
 
 .pt-breadcrumb {
-    margin: 10px; 
+    margin: 10px;
 }
 
 .pt-table {
@@ -92,12 +92,12 @@ div{
     line-height: 30px;
     content: "Browse"; }
 
-	  
+
   .pt-file-upload-input:hover::after {
     box-shadow: inset 0 0 0 1px rgba(16, 22, 26, 0.2), inset 0 -1px 0 rgba(16, 22, 26, 0.1);
     background-clip: padding-box;
-    background-color: #137cbd; }	  
-	
+    background-color: #137cbd; }
+
 h2 {
     padding: 10px;
 }
@@ -108,7 +108,7 @@ h3 {
 
 .pt-ui-text-large {
   line-height: 1.25;
-  font-size: 16px; 
+  font-size: 16px;
   font-weight: bold;
 }
 
@@ -164,4 +164,8 @@ th.rla-county-contest-info {
 
 .rla-file-upload-progress {
     width: 50%;
+}
+
+.import-file {
+  display: none;
 }

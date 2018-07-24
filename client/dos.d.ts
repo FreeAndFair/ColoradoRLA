@@ -77,6 +77,7 @@ declare namespace DOS {
         election: Election;
         publicMeetingDate: Date;
         riskLimit: number;
+        uploadFile: any;
     }
 
     namespace Form {
@@ -86,6 +87,7 @@ declare namespace DOS {
                 electionTypeForm?: DOS.Form.ElectionType.Form;
                 publicMeetingDateForm?: DOS.Form.PublicMeetingDate.Form;
                 riskLimit?: DOS.Form.RiskLimit.Form;
+                uploadFile?: DOS.Form.UploadFile.Form;
             }
         }
 
@@ -113,6 +115,12 @@ declare namespace DOS {
                 ballotPollingLimit: number;
                 comparisonField: string;
                 comparisonLimit: number;
+            }
+        }
+
+        namespace UploadFile {
+            interface Form {
+                files: Array<Object>;
             }
         }
 
