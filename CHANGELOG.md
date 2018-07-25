@@ -5,8 +5,16 @@ Releases correspond to Git tags. Changes between releases are described below wi
 - `API` refers to the server component
 - `INFRA` referes to infrastructure changes such as Docker, HTTPD configuration, etc.
 
-## 1.4.0 - In Progress
+## 1.3.2 - In Progress
+
 The sprint beginning on 7/18/2018 and ending on 7/31/2018
+
+- [Random ballot selection is driven by ballot manifests](https://github.com/democracyworks/ColoradoRLA/pull/14)
+
+## 1.3.1 - Bugfixes
+
+- [API - Fix the bug preventing Alamosa from starting a third round](https://github.com/democracyworks/ColoradoRLA/pull/17)
+- [UI - Challenge response separates coordinates](https://github.com/democracyworks/ColoradoRLA/pull/18)
 
 ## 1.3.0
 
