@@ -60,7 +60,7 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
  * The file upload endpoint.
- * 
+ *
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 1.0.0
  */
@@ -70,12 +70,12 @@ public class FileUpload extends AbstractEndpoint {
    * The "hash" form data field name.
    */
   public static final String HASH = "hash";
-  
+
   /**
    * The "file" form data field name.
    */
   public static final String FILE = "file";
-  
+
   /**
    * The upload buffer size, in bytes.
    */
@@ -104,17 +104,17 @@ public class FileUpload extends AbstractEndpoint {
 
   /**
    * This endpoint requires county authorization.
-   * 
+   *
    * @return COUNTY
    */
   @Override
   public AuthorizationType requiredAuthorization() {
     return AuthorizationType.COUNTY;
   }
-  
+
   /**
    * Attempts to save the specified file in the database.
-   * 
+   *
    * @param the_response The response object (for error reporting).
    * @param the_info The upload info about the file and hash.
    * @param the_county The county that uploaded the file.
@@ -122,22 +122,22 @@ public class FileUpload extends AbstractEndpoint {
    */
   // we are deliberately ignoring the return value of lnr.skip()
   @SuppressFBWarnings("SR_NOT_CHECKED")
-  private UploadedFile attemptFilePersistence(final Response the_response, 
+  private UploadedFile attemptFilePersistence(final Response the_response,
                                               final UploadInformation the_info,
                                               final County the_county) {
     UploadedFile result = null;
-    
+
     try (FileInputStream is = new FileInputStream(the_info.my_file);
-         LineNumberReader lnr = 
-             new LineNumberReader(new InputStreamReader(new FileInputStream(the_info.my_file), 
+         LineNumberReader lnr =
+             new LineNumberReader(new InputStreamReader(new FileInputStream(the_info.my_file),
                                                         "UTF-8"))) {
       final Blob blob = Persistence.blobFor(is, the_info.my_file.length());
       final HashStatus hash_status;
-      
+
       // first, compute the approximate number of records in the file
       lnr.skip(Integer.MAX_VALUE);
       final int approx_records = lnr.getLineNumber();
-      
+
       if (the_info.my_computed_hash == null) {
         hash_status = HashStatus.NOT_CHECKED;
       } else if (the_info.my_computed_hash.equals(the_info.my_uploaded_hash)) {
@@ -145,27 +145,27 @@ public class FileUpload extends AbstractEndpoint {
       } else {
         hash_status = HashStatus.MISMATCH;
       }
-      result = new UploadedFile(the_info.my_timestamp, 
+      result = new UploadedFile(the_info.my_timestamp,
                                 the_county,
                                 the_info.my_filename,
-                                FileStatus.NOT_IMPORTED, 
+                                FileStatus.NOT_IMPORTED,
                                 the_info.my_uploaded_hash,
-                                hash_status, blob, 
+                                hash_status, blob,
                                 the_info.my_file.length(),
                                 approx_records);
       Persistence.save(result);
       Persistence.flush();
     } catch (final PersistenceException | IOException e) {
-      badDataType(the_response, "could not persist file of size " + 
+      badDataType(the_response, "could not persist file of size " +
                                 the_info.my_file.length());
       the_info.my_ok = false;
     }
     return result;
   }
-  
+
   /**
    * Handles the upload of the file, updating the provided UploadInformation.
-   * 
+   *
    * @param the_request The request to use.
    * @param the_info The upload information to update.
    */
@@ -211,7 +211,7 @@ public class FileUpload extends AbstractEndpoint {
           }
         }
       }
-      
+
       if (the_info.my_file == null) {
         // no file was actually uploaded
         the_info.my_ok = false;
@@ -371,7 +371,7 @@ public class FileUpload extends AbstractEndpoint {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    */
   @Override
   public String endpointBody(final Request the_request, final Response the_response) {
@@ -385,7 +385,7 @@ public class FileUpload extends AbstractEndpoint {
     if (county == null) {
       unauthorized(the_response, "unauthorized administrator for CVR export upload");
       return my_endpoint_result.get();
-    } 
+    }
 
     // we can exit in several different ways, so let's make sure we delete
     // the temp file even if we exit exceptionally
@@ -396,7 +396,7 @@ public class FileUpload extends AbstractEndpoint {
       // enabled
 
       UploadedFile uploaded_file = null;
-    
+
       if (info.my_ok) {
         info.my_computed_hash = HashChecker.hashFile(info.my_file);
         info.my_uploaded_hash =
@@ -420,10 +420,10 @@ public class FileUpload extends AbstractEndpoint {
           // ignored - should never happen
         }
       }
-    } 
+    }
     return my_endpoint_result.get();
   }
-  
+
   /**
    * A small class to encapsulate data dealt with during an upload.
    */
@@ -437,7 +437,7 @@ public class FileUpload extends AbstractEndpoint {
      * The original name of the uploaded file.
      */
     protected String my_filename;
-    
+
     /**
      * The timestamp of the upload.
      */
@@ -457,7 +457,7 @@ public class FileUpload extends AbstractEndpoint {
      * The uploaded hash.
      */
     protected String my_uploaded_hash;
-    
+
     /**
      * The computed hash.
      */

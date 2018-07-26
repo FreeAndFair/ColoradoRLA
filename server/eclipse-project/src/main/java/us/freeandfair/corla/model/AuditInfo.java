@@ -1,6 +1,6 @@
 /*
  * Free & Fair Colorado RLA System
- * 
+ *
  * @title ColoradoRLA
  * @created Aug 13, 2017
  * @copyright 2017 Colorado Department of State
@@ -23,7 +23,7 @@ import javax.persistence.Embeddable;
 
 /**
  * Election information.
- * 
+ *
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 1.0.0
  */
@@ -36,7 +36,7 @@ public class AuditInfo implements Serializable {
    * The database stored precision for decimal types.
    */
   public static final int PRECISION = 10;
-  
+
   /**
    * The database stored scale for decimal types.
    */
@@ -51,22 +51,22 @@ public class AuditInfo implements Serializable {
    * The election type.
    */
   private String my_election_type;
-  
+
   /**
    * The election date (stored as an instant).
    */
   private Instant my_election_date;
-  
+
   /**
    * The public meeting date (stored as an instant).
    */
   private Instant my_public_meeting_date;
-  
+
   /**
    * The random seed.
    */
   private String my_seed;
-  
+
   /**
    * The risk limit.
    */
@@ -100,92 +100,112 @@ public class AuditInfo implements Serializable {
     my_seed = the_seed;
     my_risk_limit = the_risk_limit;
   }
-  
+
   /**
    * @return the election type.
    */
   public String electionType() {
     return my_election_type;
   }
-  
+
   /**
    * @return a capitalized string for the election type.
    */
   @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
   public String capitalizedElectionType() {
     final String result;
-    
+
     if (my_election_type == null) {
-      result = null; 
+      result = null;
     } else if (my_election_type.length() > 1) {
       result = my_election_type.substring(0, 1).toUpperCase(Locale.getDefault()) +
                my_election_type.substring(1).toLowerCase(Locale.getDefault());
     } else {
       result = my_election_type.toUpperCase(Locale.getDefault());
     }
-    
+
     return result;
   }
-  
+
   /**
    * @return the election date (as an instant).
    */
   public Instant electionDate() {
     return my_election_date;
   }
-  
+
   /**
    * @return the public meeting date (as an instant).
    */
   public Instant publicMeetingDate() {
     return my_public_meeting_date;
   }
-  
+
   /**
    * @return the random seed.
    */
   public String seed() {
     return my_seed;
   }
-  
+
   /**
    * @return the risk limit.
    */
   public BigDecimal riskLimit() {
     return my_risk_limit;
   }
-  
+
   /**
-   * Updates this ElectionInfo with information from the specified one.
-   * Any non-null fields in the specified ElectionInfo replace the 
-   * corresponding fields of this ElectionInfo; any null fields in the 
-   * specified ElectionInfo are ignored. It is not possible to nullify 
-   * a field of an ElectionInfo once it has been set, only to replace 
+   * @return some kind of canonical contests thingy
+   */
+
+  public Map<String, Set<String>> canonicalContests() {
+    return this.canonicalContests;
+  }
+
+  public void setCanonicalContests(Map<String, Set<String>> x) {
+    this.canonicalContests = x;
+  }
+
+  /**
+   * Updates this AuditInfo with information from the specified one.
+   * Any non-null fields in the specified AuditInfo replace the
+   * corresponding fields of this AuditInfo; any null fields in the
+   * specified AuditInfo are ignored. It is not possible to nullify
+   * a field of an AuditInfo once it has been set, only to replace
    * it with a new non-null value.
-   * 
+   *
    * @param the_other_info The other ElectionInfo.
    */
   public void updateFrom(final AuditInfo the_other_info) {
     if (the_other_info.my_election_type != null) {
       my_election_type = the_other_info.my_election_type;
     }
+
     if (the_other_info.my_election_date != null) {
       my_election_date = the_other_info.my_election_date;
     }
+
     if (the_other_info.my_public_meeting_date != null) {
       my_public_meeting_date = the_other_info.my_public_meeting_date;
     }
+
     if (the_other_info.my_seed != null) {
       my_seed = the_other_info.my_seed;
     }
+
     if (the_other_info.my_risk_limit != null) {
       my_risk_limit = the_other_info.my_risk_limit;
     }
+
+    if (the_other_info.canonicalContests != null) {
+      canonicalContests = the_other_info.canonicalContests;
+    }
   }
-  
+
   /**
    * Compare this object with another for equivalence.
-   * 
+   *
    * @param the_other The other object.
    * @return true if the objects are equivalent, false otherwise.
    */
@@ -204,7 +224,7 @@ public class AuditInfo implements Serializable {
     }
     return result;
   }
-  
+
   /**
    * @return a hash code for this object.
    */

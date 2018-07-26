@@ -1,6 +1,6 @@
 /*
  * Free & Fair Colorado RLA System
- * 
+ *
  * @title ColoradoRLA
  * @created Aug 9, 2017
  * @copyright 2017 Colorado Department of State
@@ -31,7 +31,7 @@ import us.freeandfair.corla.persistence.Persistence;
 
 /**
  * The endpoint for setting the election information.
- * 
+ *
  * @author Daniel M Zimmerman
  * @version 1.0.0
  */
@@ -41,7 +41,7 @@ public class UpdateAuditInfo extends AbstractDoSDashboardEndpoint {
    * The event to return for this endpoint.
    */
   private final ThreadLocal<ASMEvent> my_event = new ThreadLocal<ASMEvent>();
-  
+
   /**
    * {@inheritDoc}
    */
@@ -49,12 +49,13 @@ public class UpdateAuditInfo extends AbstractDoSDashboardEndpoint {
   public EndpointType endpointType() {
     return EndpointType.POST;
   }
-  
+
   /**
    * {@inheritDoc}
    */
   @Override
   public String endpointName() {
+
     return "/update-audit-info";
   }
 
@@ -73,10 +74,10 @@ public class UpdateAuditInfo extends AbstractDoSDashboardEndpoint {
   protected void reset() {
     my_event.set(null);
   }
-  
+
   /**
    * Attempts to set the election information.
-   * 
+   *
    * @param the_request The request.
    * @param the_response The response.
    */
@@ -84,13 +85,13 @@ public class UpdateAuditInfo extends AbstractDoSDashboardEndpoint {
   @SuppressWarnings("PMD.UselessParentheses")
   public String endpointBody(final Request the_request, final Response the_response) {
     try {
-      final AuditInfo info = 
+      final AuditInfo info =
           Main.GSON.fromJson(the_request.body(), AuditInfo.class);
       final DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
       if (dosdb == null) {
         Main.LOGGER.error("could not get department of state dashboard");
         serverError(the_response, "could not update audit information");
-      } 
+      }
       if (validateElectionInfo(info, dosdb, the_response)) {
         dosdb.updateAuditInfo(info);
         my_event.set(nextEvent(dosdb));
@@ -103,10 +104,10 @@ public class UpdateAuditInfo extends AbstractDoSDashboardEndpoint {
     }
     return my_endpoint_result.get();
   }
-  
+
   /**
    * Validates the specified election info.
-   * 
+   *
    * @param the_info The info.
    * @param the_dosdb The DoS dashboard.
    * @param the_response The response (for reporting failures).
@@ -116,7 +117,7 @@ public class UpdateAuditInfo extends AbstractDoSDashboardEndpoint {
                                        final DoSDashboard the_dosdb,
                                        final Response the_response) {
     boolean result = true;
-    
+
     // check for valid relationship between meeting date and election date
     final Instant effective_public_meeting_date;
     if (the_info.publicMeetingDate() == null) {
@@ -124,40 +125,40 @@ public class UpdateAuditInfo extends AbstractDoSDashboardEndpoint {
     } else {
       effective_public_meeting_date = the_info.publicMeetingDate();
     }
-    
+
     final Instant effective_election_date;
     if (the_info.electionDate() == null) {
       effective_election_date = the_dosdb.auditInfo().electionDate();
     } else {
       effective_election_date = the_info.electionDate();
     }
-    
+
     if (effective_public_meeting_date != null && effective_election_date != null &&
         !effective_public_meeting_date.isAfter(effective_election_date)) {
       result = false;
       invariantViolation(the_response, "public meeting must be after election");
     }
-    
+
     // check that the 0 <= risk limit <= 1
     if (the_info.riskLimit() != null &&
-        (0 < BigDecimal.ZERO.compareTo(the_info.riskLimit()) || 
+        (0 < BigDecimal.ZERO.compareTo(the_info.riskLimit()) ||
          0 < the_info.riskLimit().compareTo(BigDecimal.ONE))) {
       result = false;
       invariantViolation(the_response, "invalid risk limit specified");
     }
-    
+
     // check that no seed is specified
     if (the_info.seed() != null) {
       result = false;
       invariantViolation(the_response, "cannot specify random seed through this endpoint");
     }
-    
+
     return result;
   }
-  
+
   /**
    * Computes the event of this endpoint based on audit info completeness.
-   * 
+   *
    * @param the_dosdb The DoS dashboard.
    */
   private ASMEvent nextEvent(final DoSDashboard the_dosdb) {

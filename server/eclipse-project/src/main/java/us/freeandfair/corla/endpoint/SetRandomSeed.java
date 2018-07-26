@@ -1,6 +1,6 @@
 /*
  * Free & Fair Colorado RLA System
- * 
+ *
  * @title ColoradoRLA
  * @created Aug 9, 2017
  * @copyright 2017 Colorado Department of State
@@ -29,7 +29,7 @@ import us.freeandfair.corla.persistence.Persistence;
 
 /**
  * The endpoint for setting the random seed.
- * 
+ *
  * @author Daniel M Zimmerman
  * @version 1.0.0
  */
@@ -52,7 +52,7 @@ public class SetRandomSeed extends AbstractDoSDashboardEndpoint {
   public EndpointType endpointType() {
     return EndpointType.POST;
   }
-  
+
   /**
    * {@inheritDoc}
    */
@@ -73,16 +73,16 @@ public class SetRandomSeed extends AbstractDoSDashboardEndpoint {
    * Attempts to set the random seed for comparison audits. The random seed
    * should be provided as an integer in base 10, as Colorado rolls a
    * 10-sided die to determine each digit.
-   * 
+   *
    * @param the_request The request.
    * @param the_response The response.
    */
   @Override
   public String endpointBody(final Request the_request, final Response the_response) {
     try {
-      final AuditInfo submitted = 
+      final AuditInfo submitted =
           Main.GSON.fromJson(the_request.body(), AuditInfo.class);
-      
+
       if (submitted == null) {
         badDataContents(the_response, "malformed random seed");
       } else if (DoSDashboard.isValidSeed(submitted.seed())) {
@@ -92,9 +92,9 @@ public class SetRandomSeed extends AbstractDoSDashboardEndpoint {
           Main.LOGGER.error("could not get department of state dashboard");
           serverError(the_response, "could not set random seed");
         }
-        
+
         // anything in the submitted audit info that isn't a random seed is ignored
-        final AuditInfo seed = 
+        final AuditInfo seed =
             new AuditInfo(null, null, null, submitted.seed(), null);
         dosdb.updateAuditInfo(seed);
         Persistence.saveOrUpdate(dosdb);
@@ -102,8 +102,9 @@ public class SetRandomSeed extends AbstractDoSDashboardEndpoint {
         ok(the_response, "random seed set to " + seed.seed());
       } else {
         invariantViolation(the_response, "invalid random seed specified: " + submitted.seed());
-      }  
+      }
     } catch (final PersistenceException e) {
+
       serverError(the_response, "unable to set random seed: " + e);
 
     } catch (final JsonParseException e) {
