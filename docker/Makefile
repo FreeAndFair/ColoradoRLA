@@ -12,7 +12,6 @@ SERVER_TAG ?= latest
 .PHONY: httpd-build httpd-deploy
 
 httpd-build:
-	cd ../client; npm install; npm run dist
 	docker build -f httpd/Dockerfile -t $(HTTPD_REPOSITORY):$(HTTPD_TAG) ../
 
 httpd-deploy:
@@ -33,8 +32,6 @@ postgresql-deploy:
 .PHONY: server-build server-deploy
 
 server-build:
-
-	cd ../server/eclipse-project; mvn package
 	docker build -f server/Dockerfile -t $(SERVER_REPOSITORY):$(SERVER_TAG) \
 		--build-arg VERSION=$(shell cd ../server/eclipse-project; mvn help:evaluate -Dexpression=project.version | grep '^[[:digit:]].\+') \
 		../
