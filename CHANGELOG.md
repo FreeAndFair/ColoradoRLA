@@ -13,7 +13,7 @@ The sprint beginning on 7/18/2018 and ending on 7/31/2018
 
 ## 1.3.1 - Bugfixes
 
-- [API - Fix the bug preventing Alamosa from starting a third round](https://github.com/democracyworks/ColoradoRLA/pull/17)
+- [API - Fix the "freeze" bug preventing Alamosa from completing their audit](https://github.com/democracyworks/ColoradoRLA/pull/17)
 - [UI - Challenge response separates coordinates](https://github.com/democracyworks/ColoradoRLA/pull/18)
 
 ## 1.3.0
