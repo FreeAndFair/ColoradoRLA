@@ -195,7 +195,7 @@ public final class BallotManifestInfoQueries {
   /**
    * Get the max sequence number which is the total number of CVRs there should be
    */
-  public static OptionalLong maxSequence(final Long the_county) {
+  public static OptionalLong maxSequence(final Long countyId) {
     OptionalLong result = OptionalLong.empty();
 
     try {
@@ -204,7 +204,7 @@ public final class BallotManifestInfoQueries {
       final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
       final Root<BallotManifestInfo> root = cq.from(BallotManifestInfo.class);
       cq.select(cb.max(root.get("my_sequence_end")));
-      cq.where(cb.equal(root.get(COUNTY_ID), the_county));
+      cq.where(cb.equal(root.get(COUNTY_ID), countyId));
 
       final TypedQuery<Long> query = s.createQuery(cq);
       result = OptionalLong.of(query.getSingleResult());

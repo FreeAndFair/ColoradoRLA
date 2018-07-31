@@ -1,7 +1,6 @@
 package us.freeandfair.corla.controllers;
 
 import us.freeandfair.corla.controller.BallotSelection;
-import us.freeandfair.corla.json.CVRToAuditResponse;
 import us.freeandfair.corla.model.BallotManifestInfo;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.persistence.Persistence;
@@ -16,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.testng.annotations.Test;
 import org.testng.Assert;
@@ -31,18 +31,18 @@ public class BallotSelectionTest {
   public void testSelectBallotsReturnsListOfOnes(){
     Long rand = 1L;
     Long sequence_start = 1L;
-    List<CVRToAuditResponse> results = makeSelection(rand,sequence_start);
+    List<CastVoteRecord> results = makeSelection(rand,sequence_start);
     Assert.assertEquals(1, results.size());
-    Assert.assertEquals(results.get(0).imprintedID(), "1-1-1");
+    Assert.assertEquals(results.get(0).imprintedID(), "1-Batch1-1");
   }
 
   @Test()
   public void testSelectBallotsReturnsListHappyPath(){
     Long rand = 47L;
     Long sequence_start = 41L;
-    List<CVRToAuditResponse> results = makeSelection(rand,sequence_start);
+    List<CastVoteRecord> results = makeSelection(rand,sequence_start);
     Assert.assertEquals(1, results.size());
-    Assert.assertEquals(results.get(0).imprintedID(), "1-1-7");
+    Assert.assertEquals(results.get(0).imprintedID(), "1-Batch1-1");
   }
 
   @Test()
@@ -51,14 +51,14 @@ public class BallotSelectionTest {
     Long sequence_start = 41L;
     // overwrite var
     return_cvr = false;
-    List<CVRToAuditResponse> results = makeSelection(rand,sequence_start);
+    List<CastVoteRecord> results = makeSelection(rand,sequence_start);
     Assert.assertEquals(1, results.size());
-    Assert.assertEquals(results.get(0).imprintedID(), "1-1-7");
+    Assert.assertEquals(results.get(0).imprintedID(), "");
     Assert.assertEquals(results.get(0).ballotType(), "PHANTOM RECORD");
-    Assert.assertEquals(results.get(0).cvrNumber(), 0);
+    Assert.assertEquals((int)results.get(0).cvrNumber(), (int)0);
   }
 
-  private List<CVRToAuditResponse> makeSelection(Long rand, Long sequence_start) {
+  private List<CastVoteRecord> makeSelection(Long rand, Long sequence_start) {
     // setup
     Long sequence_end = rand - sequence_start + 1L;
     List<Long> rands = new ArrayList<Long>();
@@ -70,9 +70,10 @@ public class BallotSelectionTest {
                                      Integer scanner_id,
                                      String batch_id,
                                      Long position) -> fakeCVR();
+    List<Integer> lols = rands.stream().map(l -> (int)l.intValue()).collect(Collectors.toList());
 
     // subject under test
-    return BallotSelection.selectBallots(rands, 0L, query, queryCVR);
+    return BallotSelection.selectCVRs(lols, 0L, query, queryCVR);
   }
 
   public CastVoteRecord fakeCVR() {

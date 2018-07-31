@@ -42,6 +42,7 @@ import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.model.Round;
 import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.query.BallotManifestInfoQueries;
 import us.freeandfair.corla.query.CastVoteRecordQueries;
 import us.freeandfair.corla.query.CountyContestResultQueries;
 
@@ -76,7 +77,7 @@ public final class ComparisonAuditController {
                                                            final int the_min_index,
                                                            final int the_max_index) {
     final OptionalLong count =
-        CastVoteRecordQueries.countMatching(the_county.id(), RecordType.UPLOADED);
+        BallotManifestInfoQueries.maxSequence(the_county.id());
 
     if (!count.isPresent()) {
       throw new IllegalStateException("unable to count CVRs for county " + the_county.id());
@@ -109,15 +110,8 @@ public final class ComparisonAuditController {
   public static List<CastVoteRecord>
       getCVRsForSequenceNumbers(final County the_county,
                                 final List<Integer> the_seq_num_list) {
-    final Map<Integer, CastVoteRecord> matching_cvrs =
-        CastVoteRecordQueries.get(the_county.id(), RecordType.UPLOADED, the_seq_num_list);
-    final List<CastVoteRecord> result = new ArrayList<>();
-
-    for (final int index : the_seq_num_list) {
-      result.add(matching_cvrs.get(index));
-    }
-
-    return result;
+    return BallotSelection.selectCVRs(the_seq_num_list,
+                                      the_county.id());
   }
 
   /**
