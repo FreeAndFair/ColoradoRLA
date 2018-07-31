@@ -92,24 +92,23 @@ public final class BallotManifestInfoQueries {
    * @param the_cvr The CVR.
    * @return the location for the CVR, or null if no location can be found.
    */
-  public static String locationFor(final CastVoteRecord the_cvr) {
-    String result = null;
+  public static Optional<BallotManifestInfo> locationFor(final CastVoteRecord the_cvr) {
+    Optional<BallotManifestInfo> result = Optional.empty();
 
     try {
       final Session s = Persistence.currentSession();
       final CriteriaBuilder cb = s.getCriteriaBuilder();
-      final CriteriaQuery<String> cq = cb.createQuery(String.class);
+      final CriteriaQuery<BallotManifestInfo> cq = cb.createQuery(BallotManifestInfo.class);
       final Root<BallotManifestInfo> root = cq.from(BallotManifestInfo.class);
-      cq.select(root.get("my_storage_location"));
       cq.where(cb.and(cb.equal(root.get("my_county_id"), the_cvr.countyID()),
                       cb.equal(root.get("my_scanner_id"), the_cvr.scannerID()),
                       cb.equal(root.get("my_batch_id"), the_cvr.batchID())));
-      final TypedQuery<String> query = s.createQuery(cq);
-      final List<String> query_result = query.getResultList();
+      final TypedQuery<BallotManifestInfo> query = s.createQuery(cq);
+      final List<BallotManifestInfo> query_result = query.getResultList();
       // there should never be more than one result, but if there is, we'll
       // return the first one
       if (!query_result.isEmpty()) {
-        result = query_result.get(0);
+        result = Optional.of(query_result.get(0));
       }
     } catch (final PersistenceException e) {
       Main.LOGGER.error("Exception when finding ballot location: " + e);

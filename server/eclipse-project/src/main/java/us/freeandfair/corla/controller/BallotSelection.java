@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+import us.freeandfair.corla.json.CVRToAuditResponse;
 import us.freeandfair.corla.model.BallotManifestInfo;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.query.BallotManifestInfoQueries;
@@ -76,7 +77,58 @@ public final class BallotSelection {
     return cvr;
   }
 
- /**
+  /** render cvrs using BallotManifestInfo **/
+  public static List<CVRToAuditResponse>
+      toResponseList(final List<CastVoteRecord> cvrs) {
+
+    final List<CVRToAuditResponse> responses = new LinkedList<CVRToAuditResponse>();
+
+    int i = 0;
+    for (final CastVoteRecord cvr: cvrs) {
+      final BallotManifestInfo bmi =
+          bmiMaybe(BallotManifestInfoQueries.locationFor(cvr), Long.valueOf(cvr.cvrNumber()));
+
+      responses.add(toResponse(i,
+                               Long.valueOf(cvr.cvrNumber()),
+                               bmi,
+                               cvr));
+      i++;
+    }
+    return responses;
+  }
+
+  /** get the bmi or blow up with a hopefully helpful message **/
+  public static BallotManifestInfo
+      bmiMaybe(final Optional<BallotManifestInfo> bmi, final Long rand) {
+
+    if (!bmi.isPresent()) {
+      final String msg = "could not find a ballot manifest for number: " + rand;
+      throw new BallotSelection.MissingBallotManifestException(msg);
+    }
+    return bmi.get();
+  }
+
+  /**
+   * get ready to render the data
+   **/
+  public static CVRToAuditResponse toResponse(final int audit_sequence_number,
+                                              final Long rand,
+                                              final BallotManifestInfo bmi,
+                                              final CastVoteRecord cvr) {
+
+    return new CVRToAuditResponse(audit_sequence_number,
+                                  bmi.scannerID(),
+                                  bmi.batchID(),
+                                  bmi.ballotPosition(rand).intValue(),
+                                  bmi.imprintedID(rand),
+                                  cvr.cvrNumber(),
+                                  cvr.id(),
+                                  cvr.ballotType(),
+                                  bmi.storageLocation(),
+                                  cvr.auditFlag());
+  }
+
+  /**
    * this is bad, it could be one of two things:
    * - a random number was generated outside of the number of (theoretical) ballots
    * - there is a gap in the sequence_start and sequence_end values of the

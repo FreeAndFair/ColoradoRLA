@@ -219,7 +219,8 @@ public class BallotManifestInfo implements PersistentEntity, Serializable {
   }
 
   /**
-   * computed value based on other values
+   * computed value based on scannerId,batchID, and ballotPosition (in the bin)
+   * This is what the auditors will use to confirm they have the correct card.
    **/
   public String imprintedID(final Long rand) {
     return scannerID() + "-" +
@@ -228,7 +229,7 @@ public class BallotManifestInfo implements PersistentEntity, Serializable {
   }
 
   /**
-   * computed value based on other values
+   * where the ballot sits in it's storage bin
    **/
   public Long ballotPosition(final Long rand) {
     // position is the nth (1 based)
