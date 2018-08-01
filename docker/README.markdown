@@ -19,8 +19,6 @@ use.
 
 - `make` if you want to use the Makefile targets
 - `docker` for building and deploying Docker images
-- `mvn` (Maven) for building the RLA server
-- `npm` (node.js) for building the frontend
 
 ## Services
 
@@ -80,7 +78,6 @@ You may set the following environment variables for `make`:
 
 - `SERVER_REPOSITORY`: Docker repository for the built image
 - `SERVER_TAG`: Docker image tag for the built image
-- `SERVER_VERSION`: The version of the RLA server (name of the JAR)
 
 #### Building
 
