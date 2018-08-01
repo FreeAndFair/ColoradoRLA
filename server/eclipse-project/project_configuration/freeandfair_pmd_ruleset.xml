@@ -7,7 +7,7 @@
   <description>
 The Free &amp; Fair ruleset checks Java code for possible issues.
   </description>
-  
+
   <rule ref="rulesets/java/basic.xml"/>
   <rule ref="rulesets/java/braces.xml"/>
   <rule ref="rulesets/java/clone.xml"/>
@@ -20,6 +20,11 @@ The Free &amp; Fair ruleset checks Java code for possible issues.
     <exclude name="UseConcurrentHashMap"/>
   </rule>
   <rule ref="rulesets/java/coupling.xml">
+    <!-- If package coupling is something you want to check, specify
+         packages and classes as described:
+         https://pmd.github.io/pmd-5.8.1/pmd-java/rules/java/coupling.html
+    -->
+    <exclude name="LoosePackageCoupling" />
     <exclude name="LawOfDemeter"/>
   </rule>
   <rule ref="rulesets/java/design.xml">
@@ -49,21 +54,21 @@ The Free &amp; Fair ruleset checks Java code for possible issues.
   <rule ref="rulesets/java/typeresolution.xml"/>
   <rule ref="rulesets/java/unnecessary.xml"/>
   <rule ref="rulesets/java/unusedcode.xml"/>
-  
+
   <!-- customize the comment size rule -->
   <rule ref="rulesets/java/comments.xml/CommentSize">
     <properties>
       <property name="maxLines" value="100"/> <!-- effectively, no maximum -->
     </properties>
   </rule>
-  
+
   <!-- customize the empty catch block rule -->
   <rule ref="rulesets/java/empty.xml/EmptyCatchBlock">
     <properties>
       <property name="allowCommentedBlocks" value="true"/>
     </properties>
   </rule>
- 
+
  <!-- customize the "too many methods" rule -->
  <!-- unfortunately there's no better way to get PMD to deal with the fact -->
  <!-- that we don't prefix getters with "get". -->
