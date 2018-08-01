@@ -140,4 +140,9 @@ declare namespace JSON {
         contest: number;
         reason: string;
     }
+
+    interface StandardizeContest {
+        contest: number;
+        name: string;
+    }
 }

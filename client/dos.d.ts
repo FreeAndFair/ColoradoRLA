@@ -5,6 +5,7 @@ declare namespace DOS {
         auditTypes: ContestAuditTypes;
         contests: DOS.Contests;
         countyStatus: DOS.CountyStatuses;
+        canonicalContests?: DOS.CanonicalContests;
         discrepancyCounts?: DOS.DiscrepancyCounts;
         election?: Election;
         publicMeetingDate?: Date;
@@ -27,6 +28,10 @@ declare namespace DOS {
     interface DiscrepancyCount {
         // The index type is really limited to `DiscrepancyType`.
         [type: string]: number;
+    }
+
+    interface CanonicalContests {
+        [countyId: string]: string[]
     }
 
     interface CountyStatuses {
@@ -154,6 +159,20 @@ declare namespace DOS {
 
             interface FormData {
                 [contestId: number]: ContestStatus;
+            }
+        }
+
+        namespace StandardizeContests {
+            interface Ref {
+                standardizeContestsForm?: DOS.Form.StandardizeContests.FormData;
+            }
+
+            interface ContestName {
+                name: string;
+            }
+
+            interface FormData {
+                [contestId: number]: ContestName;
             }
         }
     }
