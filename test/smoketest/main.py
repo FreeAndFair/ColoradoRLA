@@ -182,11 +182,14 @@ parser.add_argument('-C, --contest', dest='contests', metavar='CONTEST', action=
                     '-1 means "audit all contests')
 parser.add_argument('-l, --loser', dest='loser', default="UNDERVOTE",
                     help='Loser to use for -p, default "UNDERVOTE"')
-parser.add_argument('-p, --discrepancy-plan', dest='plan', default="2 17",
-                    help='Planned discrepancies. Default is "2 17", i.e. '
+parser.add_argument('-p, --discrepancy-plan', dest='plan', default="5 17",
+                    help='Planned discrepancies. Default is "5 17", i.e. '
                     'Every 17 ACVR uploads, upload a possible discrepancy once, '
                     'when the remainder of dividing the upload index is 2. '
-                    'Discrepancies thus come with the 3rd of every 17 ACVR uploads.')
+                    'Discrepancies thus come with the 3rd of every 17 ACVR uploads.'
+                    'This default is designed to hit a known ballot and to trigger a second round.'
+                    'You will see different audits happen from different discrepancies happening '
+                    '(or not happening) on different ballots.')
 parser.add_argument('-P, --discrepancy-end', dest='plan_limit', type=int, default=sys.maxint,
                     help='Last upload with possible discrepancy is # PLAN_LIMIT')
 
