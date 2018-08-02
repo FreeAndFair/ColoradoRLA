@@ -368,4 +368,39 @@ public final class CastVoteRecordQueries {
 
     return result;
   }
+
+  /**
+   * join query
+   **/
+  public static CastVoteRecord atPosition(final Long county_id,
+                                          final Integer scanner_id,
+                                          final String batch_id,
+                                          final Long position) {
+    List<CastVoteRecord> result = null;
+
+    try {
+      final Session s = Persistence.currentSession();
+      final CriteriaBuilder cb = s.getCriteriaBuilder();
+      final CriteriaQuery<CastVoteRecord> cq = cb.createQuery(CastVoteRecord.class);
+      final Root<CastVoteRecord> root = cq.from(CastVoteRecord.class);
+      cq.select(root).where(cb.and(cb.equal(root.get("my_county_id"), county_id),
+                                   cb.equal(root.get("my_scanner_id"), scanner_id),
+                                   cb.equal(root.get("my_batch_id"), batch_id),
+                                   cb.equal(root.get("my_record_id"), position)));
+      final TypedQuery<CastVoteRecord> query = s.createQuery(cq);
+      result = query.getResultList();
+    } catch (final PersistenceException e) {
+      Main.LOGGER.error(COULD_NOT_QUERY_DATABASE);
+    }
+
+    switch (result.size()) {
+      case 1:
+        return result.get(0);
+      case 0:
+        return null;
+      default:
+        Main.LOGGER.error("found more than one cvr atPosition: \n" + result);
+        return result.get(0);
+    }
+  }
 }

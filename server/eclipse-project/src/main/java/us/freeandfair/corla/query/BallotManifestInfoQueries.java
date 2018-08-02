@@ -42,6 +42,13 @@ import us.freeandfair.corla.persistence.Persistence;
  * @version 1.0.0
  */
 public final class BallotManifestInfoQueries {
+
+  /**
+   * The "county ID" field.
+   */
+  private static final String COUNTY_ID = "my_county_id";
+
+
   /**
    * Private constructor to prevent instantiation.
    */
@@ -67,7 +74,7 @@ public final class BallotManifestInfoQueries {
       final Root<BallotManifestInfo> root = cq.from(BallotManifestInfo.class);
       final List<Predicate> disjuncts = new ArrayList<Predicate>();
       for (final Integer county_id : the_county_ids) {
-        disjuncts.add(cb.equal(root.get("my_county_id"), county_id));
+        disjuncts.add(cb.equal(root.get(COUNTY_ID), county_id));
       }
       cq.select(root).where(cb.or(disjuncts.toArray(new Predicate[disjuncts.size()])));
       final TypedQuery<BallotManifestInfo> query = s.createQuery(cq);
@@ -85,24 +92,23 @@ public final class BallotManifestInfoQueries {
    * @param the_cvr The CVR.
    * @return the location for the CVR, or null if no location can be found.
    */
-  public static String locationFor(final CastVoteRecord the_cvr) {
-    String result = null;
+  public static Optional<BallotManifestInfo> locationFor(final CastVoteRecord the_cvr) {
+    Optional<BallotManifestInfo> result = Optional.empty();
 
     try {
       final Session s = Persistence.currentSession();
       final CriteriaBuilder cb = s.getCriteriaBuilder();
-      final CriteriaQuery<String> cq = cb.createQuery(String.class);
+      final CriteriaQuery<BallotManifestInfo> cq = cb.createQuery(BallotManifestInfo.class);
       final Root<BallotManifestInfo> root = cq.from(BallotManifestInfo.class);
-      cq.select(root.get("my_storage_location"));
       cq.where(cb.and(cb.equal(root.get("my_county_id"), the_cvr.countyID()),
                       cb.equal(root.get("my_scanner_id"), the_cvr.scannerID()),
                       cb.equal(root.get("my_batch_id"), the_cvr.batchID())));
-      final TypedQuery<String> query = s.createQuery(cq);
-      final List<String> query_result = query.getResultList();
+      final TypedQuery<BallotManifestInfo> query = s.createQuery(cq);
+      final List<BallotManifestInfo> query_result = query.getResultList();
       // there should never be more than one result, but if there is, we'll
       // return the first one
       if (!query_result.isEmpty()) {
-        result = query_result.get(0);
+        result = Optional.of(query_result.get(0));
       }
     } catch (final PersistenceException e) {
       Main.LOGGER.error("Exception when finding ballot location: " + e);
@@ -123,7 +129,7 @@ public final class BallotManifestInfoQueries {
     final CriteriaBuilder cb = s.getCriteriaBuilder();
     final CriteriaQuery<BallotManifestInfo> cq = cb.createQuery(BallotManifestInfo.class);
     final Root<BallotManifestInfo> root = cq.from(BallotManifestInfo.class);
-    cq.where(cb.equal(root.get("my_county_id"), the_county_id));
+    cq.where(cb.equal(root.get(COUNTY_ID), the_county_id));
     final Query<BallotManifestInfo> query = s.createQuery(cq);
     final Stream<BallotManifestInfo> to_delete = query.stream();
     to_delete.forEach((the_bmi) -> {
@@ -156,12 +162,11 @@ public final class BallotManifestInfoQueries {
     return result;
   }
 
-  // public static Set<BallotManifestInfo> where (cond) {}
-
   /**
      Find the batch(bmi) that would hold the sequence number given.
    */
-  public static Optional<BallotManifestInfo> holdingSequenceNumber(final Long the_n) {
+  public static Optional<BallotManifestInfo>
+      holdingSequenceNumber(final Long rand, final Long countyId) {
     Set<BallotManifestInfo> result = null;
 
     try {
@@ -171,11 +176,13 @@ public final class BallotManifestInfoQueries {
           cb.createQuery(BallotManifestInfo.class);
       final Root<BallotManifestInfo> root = cq.from(BallotManifestInfo.class);
       final List<Predicate> disjuncts = new ArrayList<Predicate>();
-      final Predicate start = cb.greaterThanOrEqualTo(root.get("my_sequence_start"), the_n);
-      final Predicate end = cb.lessThanOrEqualTo(root.get("my_sequence_end"), the_n);
+      final Predicate start = cb.lessThanOrEqualTo(root.get("my_sequence_start"), rand);
+      final Predicate end = cb.greaterThanOrEqualTo(root.get("my_sequence_end"), rand);
+      final Predicate county = cb.equal(root.get(COUNTY_ID), countyId);
       disjuncts.add(start);
       disjuncts.add(end);
-      cq.select(root).where(cb.or(disjuncts.toArray(new Predicate[disjuncts.size()])));
+      disjuncts.add(county);
+      cq.select(root).where(cb.and(disjuncts.toArray(new Predicate[disjuncts.size()])));
       final TypedQuery<BallotManifestInfo> query = s.createQuery(cq);
       result = new HashSet<BallotManifestInfo>(query.getResultList());
     } catch (final PersistenceException e) {
@@ -184,6 +191,26 @@ public final class BallotManifestInfoQueries {
     return result.stream().findFirst();
   }
 
+  /**
+   * Get the max sequence number which is the total number of CVRs there should be
+   */
+  public static OptionalLong maxSequence(final Long countyId) {
+    OptionalLong result = OptionalLong.empty();
 
+    try {
+      final Session s = Persistence.currentSession();
+      final CriteriaBuilder cb = s.getCriteriaBuilder();
+      final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+      final Root<BallotManifestInfo> root = cq.from(BallotManifestInfo.class);
+      cq.select(cb.max(root.get("my_sequence_end")));
+      cq.where(cb.equal(root.get(COUNTY_ID), countyId));
+
+      final TypedQuery<Long> query = s.createQuery(cq);
+      result = OptionalLong.of(query.getSingleResult());
+    } catch (final PersistenceException e) {
+      Main.LOGGER.error("Exception when reading ballot manifests from database: ", e);
+    }
+    return result;
+  }
 
 }
