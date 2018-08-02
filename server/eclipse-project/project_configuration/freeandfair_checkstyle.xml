@@ -15,10 +15,6 @@
     <module name="ConstantName">
       <message key="name.invalidPattern" value="Constant ''{0}'' must be named IN_ALL_UPPER_CASE_WITH_UNDERSCORES."/>
     </module>
-    <module name="MemberName">
-      <property name="format" value="^my_[a-z0-9]*(_[a-z0-9]+)*$"/>
-      <message key="name.invalidPattern" value="Instance field ''{0}'' must start with &quot;my_&quot; and contain only lowercase letters, numbers, and underscores."/>
-    </module>
     <module name="MethodName">
       <message key="name.invalidPattern" value="Method name &quot;{0}&quot; must start with a lowercase letter and contain only letters and numbers."/>
       <message key="method.name.equals.class.name" value="Method name ''{0}'' must not equal the enclosing class name."/>
@@ -113,7 +109,9 @@
     <module name="ExplicitInitialization"/>
     <module name="FallThrough"/>
     <module name="FinalLocalVariable"/>
-    <module name="HiddenField"/>
+    <module name="HiddenField">
+      <property name="tokens" value="VARIABLE_DEF"/>
+    </module>
     <module name="IllegalThrows"/>
     <module name="IllegalType">
       <property name="tokens" value="METHOD_DEF,PARAMETER_DEF,VARIABLE_DEF"/>
