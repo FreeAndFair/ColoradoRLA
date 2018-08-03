@@ -47,20 +47,6 @@ public class BallotSelectionTest {
   }
 
   @Test()
-  public void testSelectBallotsRecordId(){
-    // this rand matches the sequence_number in fakeCVR() which also determines
-    // the recordID
-    Long rand = 45L;
-    Long sequence_start = 41L;
-    BallotSelection.BMILOCQ query = (CastVoteRecord cvr)
-        -> Optional.of(fakeBMI(sequence_start, rand + 1L));
-    List<CastVoteRecord> cvrs = makeSelection(rand,sequence_start);
-    List<CVRToAuditResponse> results = BallotSelection.toResponseList(cvrs, query);
-    Assert.assertEquals(1, results.size());
-    Assert.assertEquals(results.get(0).recordID(), 5);
-  }
-
-  @Test()
   public void testSelectBallotsReturnsPhantomRecord(){
     Long rand = 47L;
     Long sequence_start = 41L;
