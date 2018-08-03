@@ -85,6 +85,10 @@ interface AuditReviewProps {
     dosState: DOS.AppState;
 }
 
+function riskLimitPercent(dosState: DOS.AppState) {
+    return (dosState.riskLimit! * 100).toFixed(2);
+}
+
 const AuditReview = (props: AuditReviewProps) => {
     const { back, publishBallotsToAudit, saveAndDone, dosState } = props;
 
@@ -92,8 +96,6 @@ const AuditReview = (props: AuditReviewProps) => {
         publishBallotsToAudit();
         saveAndDone();
     };
-
-    const riskLimitPercent = dosState.riskLimit! * 100;
 
     const disableLaunchButton = !dosState.seed;
 
@@ -126,7 +128,7 @@ const AuditReview = (props: AuditReviewProps) => {
                         </tr>
                         <tr>
                             <td>Risk Limit:</td>
-                            <td>{ riskLimitPercent }%</td>
+                            <td>{ riskLimitPercent(dosState) }%</td>
                         </tr>
                         <tr>
                             <td>Random Number Generator Seed:</td>
