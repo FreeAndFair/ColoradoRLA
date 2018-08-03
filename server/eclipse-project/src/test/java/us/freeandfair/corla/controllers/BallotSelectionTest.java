@@ -4,6 +4,7 @@ import us.freeandfair.corla.controller.BallotSelection;
 import us.freeandfair.corla.model.BallotManifestInfo;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.json.CVRToAuditResponse;
 
 import java.time.Instant;
 
@@ -46,6 +47,20 @@ public class BallotSelectionTest {
   }
 
   @Test()
+  public void testSelectBallotsRecordId(){
+    // this rand matches the sequence_number in fakeCVR() which also determines
+    // the recordID
+    Long rand = 45L;
+    Long sequence_start = 41L;
+    BallotSelection.BMILOCQ query = (CastVoteRecord cvr)
+        -> Optional.of(fakeBMI(sequence_start, rand + 1L));
+    List<CastVoteRecord> cvrs = makeSelection(rand,sequence_start);
+    List<CVRToAuditResponse> results = BallotSelection.toResponseList(cvrs, query);
+    Assert.assertEquals(1, results.size());
+    Assert.assertEquals(results.get(0).recordID(), 5);
+  }
+
+  @Test()
   public void testSelectBallotsReturnsPhantomRecord(){
     Long rand = 47L;
     Long sequence_start = 41L;
@@ -83,7 +98,7 @@ public class BallotSelectionTest {
                                               now,
                                               64L,          // county_id
                                               1,            // cvr_number
-                                              1,            // sequence_number
+                                              45,           // sequence_number
                                               1,            // scanner_id
                                               "Batch1",     // batch_id
                                               1,            // record_id

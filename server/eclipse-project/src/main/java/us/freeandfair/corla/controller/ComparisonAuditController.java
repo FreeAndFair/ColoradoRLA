@@ -196,7 +196,7 @@ public final class ComparisonAuditController {
                                                         final boolean the_duplicates,
                                                         final boolean the_audited) {
     final OptionalLong county_ballots_found =
-        CastVoteRecordQueries.countMatching(the_cdb.id(), RecordType.UPLOADED);
+        BallotManifestInfoQueries.maxSequence(the_cdb.county().id());
     final long county_ballots;
     if (county_ballots_found.isPresent() && 0 < county_ballots_found.getAsLong()) {
       county_ballots = county_ballots_found.getAsLong();
@@ -507,7 +507,7 @@ public final class ComparisonAuditController {
       startNewRoundFromEstimates(final CountyDashboard the_cdb,
                                  final BigDecimal the_multiplier) {
     final OptionalLong cvr_count =
-        CastVoteRecordQueries.countMatching(the_cdb.id(), RecordType.UPLOADED);
+        BallotManifestInfoQueries.maxSequence(the_cdb.county().id());
     if (!cvr_count.isPresent()) {
       throw new IllegalArgumentException("no cvrs");
     }

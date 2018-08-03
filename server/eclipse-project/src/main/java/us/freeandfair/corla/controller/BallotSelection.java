@@ -76,20 +76,24 @@ public final class BallotSelection {
     cvr.setID(0L);
     return cvr;
   }
+  public static List<CVRToAuditResponse>
+    toResponseList(final List<CastVoteRecord> cvrs) {
+    return toResponseList(cvrs, BallotManifestInfoQueries::locationFor);
+  }
 
   /** render cvrs using BallotManifestInfo **/
   public static List<CVRToAuditResponse>
-      toResponseList(final List<CastVoteRecord> cvrs) {
+    toResponseList(final List<CastVoteRecord> cvrs,
+                   final BMILOCQ bmiq) {
 
     final List<CVRToAuditResponse> responses = new LinkedList<CVRToAuditResponse>();
 
     int i = 0;
     for (final CastVoteRecord cvr: cvrs) {
       final BallotManifestInfo bmi =
-          bmiMaybe(BallotManifestInfoQueries.locationFor(cvr), Long.valueOf(cvr.cvrNumber()));
+          bmiMaybe(bmiq.apply(cvr), Long.valueOf(cvr.cvrNumber()));
 
       responses.add(toResponse(i,
-                               Long.valueOf(cvr.cvrNumber()),
                                bmi,
                                cvr));
       i++;
@@ -111,16 +115,15 @@ public final class BallotSelection {
   /**
    * get ready to render the data
    **/
-  public static CVRToAuditResponse toResponse(final int audit_sequence_number,
-                                              final Long rand,
+  public static CVRToAuditResponse toResponse(final int i,
                                               final BallotManifestInfo bmi,
                                               final CastVoteRecord cvr) {
 
-    return new CVRToAuditResponse(audit_sequence_number,
+    return new CVRToAuditResponse(i,
                                   bmi.scannerID(),
                                   bmi.batchID(),
-                                  bmi.ballotPosition(rand).intValue(),
-                                  bmi.imprintedID(rand),
+                                  cvr.recordID(),
+                                  cvr.imprintedID(),
                                   cvr.cvrNumber(),
                                   cvr.id(),
                                   cvr.ballotType(),
@@ -163,5 +166,11 @@ public final class BallotSelection {
     /** how to query the database **/
     Optional<BallotManifestInfo> apply(Long rand,
                                        Long countyId);
+  }
+
+  public interface BMILOCQ {
+
+    /** how to query the database **/
+    Optional<BallotManifestInfo> apply(CastVoteRecord cvr);
   }
 }
