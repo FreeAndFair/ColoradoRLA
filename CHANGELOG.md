@@ -5,11 +5,16 @@ Releases correspond to Git tags. Changes between releases are described below wi
 - `API` refers to the server component
 - `INFRA` referes to infrastructure changes such as Docker, HTTPD configuration, etc.
 
-## 1.3.2 - In Progress
+## 1.3.2 - New Features
 
 The sprint beginning on 7/18/2018 and ending on 7/31/2018
 
-- [Random ballot selection is driven by ballot manifests](https://github.com/democracyworks/ColoradoRLA/pull/14)
+- Random ballot selection is driven by ballot manifests (#23) see the
+  [wiki](https://github.com/democracyworks/ColoradoRLA/wiki/Random-Number-flow)
+  for details. Some attributes still come from the CVR data(imprintedID for
+  one). We hope to change that in the future.
+- Add support for standardizing contest names (#24 and #25)
+
 
 ## 1.3.1 - Bugfixes
 
