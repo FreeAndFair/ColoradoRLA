@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Build a ColoradoRLA release zip file
 
 set -eux -o pipefail
@@ -13,25 +15,27 @@ export CLIENT_DIR="${TRAVIS_BUILD_DIR}/client"
 export SERVER_DIR="${TRAVIS_BUILD_DIR}/server/eclipse-project"
 export TEST_DIR="${TRAVIS_BUILD_DIR}/test"
 
+version=$(sed < "${SERVER_DIR}/pom.xml" '2 s/xmlns=".*"//g' | xmllint --xpath '/project/version/text()' - 2>/dev/null)
+relname=ColoradoRLA-$version
+reldir=$SERVER_DIR/target/$relname
+
+mkdir -p $reldir
+
 cd $SERVER_DIR
 mkdir -p target
 mvn package > target/mvn.stdout
-
-version=$(sed < pom.xml '2 s/xmlns=".*"//g' | xmllint --xpath '/project/version/text()' - 2>/dev/null)
-relname=ColoradoRLA-$version
-reldir=$SERVER_DIR/target/$relname
-mkdir -p $reldir
-
 jar=target/colorado_rla-$version-shaded.jar
 cp $jar $reldir/corla-server.jar
 
+# httpd
 cp ../deploy/corla.conf $reldir
 
 echo 'Checkout an alternate branch now if desired. Hit return when ready.'
 read
 echo Proceeding
 
-cd /srv/s/electionaudits/ColoradoRLA/client
+# cd /srv/s/electionaudits/ColoradoRLA/client
+cd $CLIENT_DIR
 npm install
 script/dist
 cd dist
