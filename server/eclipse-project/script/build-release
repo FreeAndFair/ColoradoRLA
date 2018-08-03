@@ -16,7 +16,7 @@ export SERVER_DIR="${TRAVIS_BUILD_DIR}/server/eclipse-project"
 export TEST_DIR="${TRAVIS_BUILD_DIR}/test"
 
 version=$(sed < "${SERVER_DIR}/pom.xml" '2 s/xmlns=".*"//g' | xmllint --xpath '/project/version/text()' - 2>/dev/null)
-relname=ColoradoRLA-$version
+relname=colorado-rla-release-$version
 reldir=$SERVER_DIR/target/$relname
 
 mkdir -p $reldir
@@ -34,7 +34,6 @@ echo 'Checkout an alternate branch now if desired. Hit return when ready.'
 read
 echo Proceeding
 
-# cd /srv/s/electionaudits/ColoradoRLA/client
 cd $CLIENT_DIR
 npm install
 script/dist
