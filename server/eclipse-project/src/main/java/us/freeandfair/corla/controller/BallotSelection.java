@@ -76,14 +76,16 @@ public final class BallotSelection {
     cvr.setID(0L);
     return cvr;
   }
+
+  /** render cvrs using BallotManifestInfo **/
   public static List<CVRToAuditResponse>
-    toResponseList(final List<CastVoteRecord> cvrs) {
+      toResponseList(final List<CastVoteRecord> cvrs) {
     return toResponseList(cvrs, BallotManifestInfoQueries::locationFor);
   }
 
   /** render cvrs using BallotManifestInfo **/
   public static List<CVRToAuditResponse>
-    toResponseList(final List<CastVoteRecord> cvrs,
+      toResponseList(final List<CastVoteRecord> cvrs,
                    final BMILOCQ bmiq) {
 
     final List<CVRToAuditResponse> responses = new LinkedList<CVRToAuditResponse>();
@@ -168,6 +170,10 @@ public final class BallotSelection {
                                        Long countyId);
   }
 
+
+  /**
+   * a functional interface to pass a function as an argument
+   **/
   public interface BMILOCQ {
 
     /** how to query the database **/
