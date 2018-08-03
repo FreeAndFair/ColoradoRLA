@@ -109,7 +109,9 @@
     <module name="ExplicitInitialization"/>
     <module name="FallThrough"/>
     <module name="FinalLocalVariable"/>
-    <module name="HiddenField"/>
+    <module name="HiddenField">
+      <property name="tokens" value="VARIABLE_DEF"/>
+    </module>
     <module name="IllegalThrows"/>
     <module name="IllegalType">
       <property name="tokens" value="METHOD_DEF,PARAMETER_DEF,VARIABLE_DEF"/>

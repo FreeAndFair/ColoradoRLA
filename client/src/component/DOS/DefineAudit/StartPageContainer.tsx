@@ -48,7 +48,7 @@ class StartPageContainer extends React.Component<ContainerProps, ContainerState>
             dosState,
             election,
             formValid: this.formIsValid(),
-            nextPage: () => history.push('/sos/audit/select-contests'),
+            nextPage: () => history.push('/sos/audit/standardize-contests'),
             publicMeetingDate,
             riskLimit,
             setFormValid: this.setFormValid,

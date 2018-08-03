@@ -1,6 +1,6 @@
 /*
  * Free & Fair Colorado RLA System
- * 
+ *
  * @title ColoradoRLA
  * @created Aug 9, 2017
  * @copyright 2017 Colorado Department of State
@@ -13,25 +13,29 @@ package us.freeandfair.corla.endpoint;
 
 import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.*;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Instant;
 
 import javax.persistence.PersistenceException;
 
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 
 import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
+import us.freeandfair.corla.csv.ContestNameParser;
 import us.freeandfair.corla.model.AuditInfo;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 
 /**
  * The endpoint for setting the election information.
- * 
+ *
  * @author Daniel M Zimmerman
  * @version 1.0.0
  */
@@ -41,7 +45,7 @@ public class UpdateAuditInfo extends AbstractDoSDashboardEndpoint {
    * The event to return for this endpoint.
    */
   private final ThreadLocal<ASMEvent> my_event = new ThreadLocal<ASMEvent>();
-  
+
   /**
    * {@inheritDoc}
    */
@@ -49,12 +53,13 @@ public class UpdateAuditInfo extends AbstractDoSDashboardEndpoint {
   public EndpointType endpointType() {
     return EndpointType.POST;
   }
-  
+
   /**
    * {@inheritDoc}
    */
   @Override
   public String endpointName() {
+
     return "/update-audit-info";
   }
 
@@ -73,40 +78,80 @@ public class UpdateAuditInfo extends AbstractDoSDashboardEndpoint {
   protected void reset() {
     my_event.set(null);
   }
-  
+
   /**
-   * Attempts to set the election information.
-   * 
-   * @param the_request The request.
-   * @param the_response The response.
+   * JSON extraction
+   */
+  public String contestsFromJSON(final String s) {
+    final JsonParser parser = new JsonParser();
+    final JsonObject object;
+
+    try {
+      object = parser.parse(s).getAsJsonObject();
+
+      return object
+        .getAsJsonArray("upload_file")
+        .get(0)
+        .getAsJsonObject()
+        .get("contents")
+        .getAsString();
+    } catch (final IndexOutOfBoundsException | JsonParseException e) {
+      Main.LOGGER.error("Failed to parse malformed JSON", e);
+      throw e;
+    }
+  }
+
+  /**
+   * Attempts to set the audit information.
+   *
+   * @param request The request.
+   * @param response The response.
    */
   @Override
   @SuppressWarnings("PMD.UselessParentheses")
-  public String endpointBody(final Request the_request, final Response the_response) {
+  public String endpointBody(final Request request, final Response response) {
     try {
-      final AuditInfo info = 
-          Main.GSON.fromJson(the_request.body(), AuditInfo.class);
+      final String json = request.body();
+      final String contests = contestsFromJSON(json);
+      final AuditInfo info = Main.GSON.fromJson(json, AuditInfo.class);
+
+      final ContestNameParser p = new ContestNameParser(contests);
+      if (p.parse()) {
+        info.setCanonicalContests(p.contests());
+      } else {
+        badDataContents(response,
+                        String.format("[duplicates=%s; errors=%s]",
+                                      p.duplicates(),
+                                      p.errors()));
+      }
+
       final DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
       if (dosdb == null) {
         Main.LOGGER.error("could not get department of state dashboard");
-        serverError(the_response, "could not update audit information");
-      } 
-      if (validateElectionInfo(info, dosdb, the_response)) {
+        serverError(response, "could not update audit information");
+      }
+
+      if (validateElectionInfo(info, dosdb, response)) {
         dosdb.updateAuditInfo(info);
         my_event.set(nextEvent(dosdb));
-        ok(the_response, "audit information updated");
+        Main.LOGGER.info("AuditInfo updated: " + info);
+        ok(response, "audit information updated.");
       }
     } catch (final PersistenceException e) {
-      serverError(the_response, "unable to update audit information: " + e);
-    } catch (final JsonParseException e) {
-      badDataContents(the_response, "malformed audit information specified");
+      serverError(response, "unable to update audit information: " + e.getMessage());
+    } catch (final IndexOutOfBoundsException | JsonParseException e) {
+      badDataContents(response, "malformed audit information: " + e.getMessage());
+    } catch (final IOException e) {
+      Main.LOGGER.error("Failed to parse canonical contest file", e);
+      serverError(response, "Failed to parse canonical contest file");
     }
+
     return my_endpoint_result.get();
   }
-  
+
   /**
    * Validates the specified election info.
-   * 
+   *
    * @param the_info The info.
    * @param the_dosdb The DoS dashboard.
    * @param the_response The response (for reporting failures).
@@ -116,7 +161,7 @@ public class UpdateAuditInfo extends AbstractDoSDashboardEndpoint {
                                        final DoSDashboard the_dosdb,
                                        final Response the_response) {
     boolean result = true;
-    
+
     // check for valid relationship between meeting date and election date
     final Instant effective_public_meeting_date;
     if (the_info.publicMeetingDate() == null) {
@@ -124,40 +169,40 @@ public class UpdateAuditInfo extends AbstractDoSDashboardEndpoint {
     } else {
       effective_public_meeting_date = the_info.publicMeetingDate();
     }
-    
+
     final Instant effective_election_date;
     if (the_info.electionDate() == null) {
       effective_election_date = the_dosdb.auditInfo().electionDate();
     } else {
       effective_election_date = the_info.electionDate();
     }
-    
+
     if (effective_public_meeting_date != null && effective_election_date != null &&
         !effective_public_meeting_date.isAfter(effective_election_date)) {
       result = false;
       invariantViolation(the_response, "public meeting must be after election");
     }
-    
+
     // check that the 0 <= risk limit <= 1
     if (the_info.riskLimit() != null &&
-        (0 < BigDecimal.ZERO.compareTo(the_info.riskLimit()) || 
+        (0 < BigDecimal.ZERO.compareTo(the_info.riskLimit()) ||
          0 < the_info.riskLimit().compareTo(BigDecimal.ONE))) {
       result = false;
       invariantViolation(the_response, "invalid risk limit specified");
     }
-    
+
     // check that no seed is specified
     if (the_info.seed() != null) {
       result = false;
       invariantViolation(the_response, "cannot specify random seed through this endpoint");
     }
-    
+
     return result;
   }
-  
+
   /**
    * Computes the event of this endpoint based on audit info completeness.
-   * 
+   *
    * @param the_dosdb The DoS dashboard.
    */
   private ASMEvent nextEvent(final DoSDashboard the_dosdb) {

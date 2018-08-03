@@ -8,6 +8,7 @@ import ElectionDateForm from './ElectionDateForm';
 import ElectionTypeForm from './ElectionTypeForm';
 import PublicMeetingDateForm from './PublicMeetingDateForm';
 import RiskLimitForm from './RiskLimitForm';
+import UploadFileButton from './UploadFileButton';
 
 import setAuditInfo from 'corla/action/dos/setAuditInfo';
 
@@ -48,6 +49,7 @@ const SaveButton = (props: SaveButtonProps) => {
         if (!forms.electionDateForm) { return; }
         if (!forms.electionTypeForm) { return; }
         if (!forms.publicMeetingDateForm) { return; }
+        if (!forms.uploadFile) { return; }
 
         if (!forms.electionDateForm.date) { return; }
         if (!forms.electionTypeForm.type) { return; }
@@ -60,6 +62,8 @@ const SaveButton = (props: SaveButtonProps) => {
         if (!forms.riskLimit) { return; }
         const riskLimit = forms.riskLimit.comparisonLimit;
 
+        const uploadFile = forms.uploadFile.files.map((file: any) => file);
+
         setAuditInfo({
             election: {
                 date: electionDate,
@@ -67,6 +71,7 @@ const SaveButton = (props: SaveButtonProps) => {
             },
             publicMeetingDate,
             riskLimit,
+            uploadFile,
         });
         nextPage();
     };
@@ -140,6 +145,12 @@ const AuditPage = (props: PageProps) => {
                                setFormValid={ setFormValid } />
 
             </div>
+
+            <div className='pt-card'>
+                <h3>Contests</h3>
+                <UploadFileButton forms={ forms } />
+            </div>
+
             <div className='control-buttons'>
               <SaveButton disabled={ disableButton }
                           forms={ forms }

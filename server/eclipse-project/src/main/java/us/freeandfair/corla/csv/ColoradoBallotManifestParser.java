@@ -158,7 +158,7 @@ public class ColoradoBallotManifestParser implements BallotManifestParser {
 
     try {
       final int batch_size = Integer.parseInt(the_line.get(NUM_BALLOTS_COLUMN));
-      Long sequence_start;
+      final Long sequence_start;
       if (my_ballot_count == 0) {
         // this is the first row. also, sequence is not zero based
         sequence_start = 1L;
