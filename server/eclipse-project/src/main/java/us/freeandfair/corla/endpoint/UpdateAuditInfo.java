@@ -106,9 +106,9 @@ public class UpdateAuditInfo extends AbstractDoSDashboardEndpoint {
   }
 
   private Boolean hasFile(final JsonObject o) {
-    return (o != null
-            && o.getAsJsonArray("upload_file").size() > 0
-            && o.getAsJsonArray("upload_file").get(0) != null);
+    return o != null
+        && o.getAsJsonArray("upload_file").size() > 0
+        && o.getAsJsonArray("upload_file").get(0) != null;
   }
 
   /**
