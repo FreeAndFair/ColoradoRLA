@@ -48,9 +48,9 @@ class UploadFileButton extends React.Component<UploadFileButtonProps, UploadFile
               <div>File requirements:</div>
               <ul>
                 <li>File must be CSV formatted, with a <em>.csv</em> or <em>.txt</em>
-                    extension. Other file types are not accepted</li>
+                    &nbsp;extension. Other file types are not accepted</li>
                 <li>The file must contain a header row consisting of <em>CountyName</em>
-                    and <em>ContestName</em>.</li>
+                    &nbsp;and <em>ContestName</em>.</li>
                 <li>The file may not contain duplicate records</li>
               </ul>
             </div>

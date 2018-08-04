@@ -88,17 +88,27 @@ public class UpdateAuditInfo extends AbstractDoSDashboardEndpoint {
 
     try {
       object = parser.parse(s).getAsJsonObject();
+      if (hasFile(object)){
+        return object
+          .getAsJsonArray("upload_file")
+          .get(0)
+          .getAsJsonObject()
+          .get("contents")
+          .getAsString();
+      } else {
+        return "";
+      }
 
-      return object
-        .getAsJsonArray("upload_file")
-        .get(0)
-        .getAsJsonObject()
-        .get("contents")
-        .getAsString();
     } catch (final IndexOutOfBoundsException | JsonParseException e) {
       Main.LOGGER.error("Failed to parse malformed JSON", e);
       throw e;
     }
+  }
+
+  private Boolean hasFile(final JsonObject o) {
+    return (o != null
+            && o.getAsJsonArray("upload_file").size() > 0
+            && o.getAsJsonArray("upload_file").get(0) != null);
   }
 
   /**
@@ -115,15 +125,18 @@ public class UpdateAuditInfo extends AbstractDoSDashboardEndpoint {
       final String contests = contestsFromJSON(json);
       final AuditInfo info = Main.GSON.fromJson(json, AuditInfo.class);
 
-      final ContestNameParser p = new ContestNameParser(contests);
-      if (p.parse()) {
-        info.setCanonicalContests(p.contests());
-      } else {
-        badDataContents(response,
-                        String.format("[duplicates=%s; errors=%s]",
-                                      p.duplicates(),
-                                      p.errors()));
+      if (!contests.isEmpty()) {
+        final ContestNameParser p = new ContestNameParser(contests);
+        if (p.parse()) {
+          info.setCanonicalContests(p.contests());
+        } else {
+          badDataContents(response,
+                          String.format("[duplicates=%s; errors=%s]",
+                                        p.duplicates(),
+                                        p.errors()));
+        }
       }
+
 
       final DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
       if (dosdb == null) {
