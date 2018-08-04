@@ -18,6 +18,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.Cacheable;
 import javax.persistence.CollectionTable;
@@ -198,10 +199,18 @@ public class DoSDashboard implements PersistentEntity, Serializable {
   }
 
   /**
-   * Remove all ContestsToAudit from this dashboard
+   * Remove all ContestsToAudit that are auditable from this dashboard because
+   * they may have been unchecked in the ui. The checked ones should be added
+   * back in a following step. Unaditable contests are not able to be checked in
+   * the ui so they can stay.
+   *
+   *  note: an alternative approach would be to set a hidden field for every
+   *  checkbox in the ui
    **/
-  public void removeContestsToAudit() {
-    my_contests_to_audit.clear();
+  public void removeAuditableContestsToAudit() {
+    my_contests_to_audit.removeAll(my_contests_to_audit.stream()
+                                   .filter(c -> c.isAuditable())
+                                   .collect(Collectors.toList()));
   }
 
   /**

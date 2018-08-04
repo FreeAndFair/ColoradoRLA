@@ -90,7 +90,7 @@ public class SelectContestsForAudit extends AbstractDoSDashboardEndpoint {
         serverError(the_response, "Could not select contests");
       } else {
         // unchecked contests are not posted so that which is not added, is removed.
-        dosdb.removeContestsToAudit();
+        dosdb.removeAuditableContestsToAudit();
         for (final ContestToAudit c : contests) {
           Main.LOGGER.info("updating contest audit status: " + c);
           dosdb.updateContestToAudit(c);
