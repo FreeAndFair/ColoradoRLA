@@ -12,7 +12,7 @@ The sprint beginning on 7/18/2018 and ending on 7/31/2018
 Fixes bugs from 1.3.0 and 1.3.2 releases 
 
 - unauditable contests becoming auditable
-- large decimal in rate limit display
+- large decimal in risk limit display
 - fixed issue where no canonical contests file is uploaded
 - removed 0 from range of random numbers
 
