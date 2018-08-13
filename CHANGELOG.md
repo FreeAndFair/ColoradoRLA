@@ -5,6 +5,10 @@ Releases correspond to Git tags. Changes between releases are described below wi
 - `API` refers to the server component
 - `INFRA` referes to infrastructure changes such as Docker, HTTPD configuration, etc.
 
+## 1.4.0 - In Progress
+
+The sprint beginning on 8/1/2018 and ending on 8/14/2018
+
 ## 1.3.3 - Bugfixes
 
 The sprint beginning on 7/18/2018 and ending on 7/31/2018
