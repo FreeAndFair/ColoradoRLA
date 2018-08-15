@@ -36,7 +36,6 @@ class UploadFileButton extends React.Component<UploadFileButtonProps, UploadFile
         <div className='dropzone'>
           <Dropzone
             onDrop={this.onDrop.bind(this)}
-            accept='text/csv, text/plain'
             activeStyle={activeStyle}
             multiple={false}
             style={dropStyle}>
