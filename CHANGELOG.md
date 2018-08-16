@@ -9,11 +9,15 @@ Releases correspond to Git tags. Changes between releases are described below wi
 
 The sprint beginning on 8/1/2018 and ending on 8/14/2018
 
+## 1.3.4 - Bugfixes
+
+- [UI - Using MIME type is unreliable][pr29]
+
 ## 1.3.3 - Bugfixes
 
 The sprint beginning on 7/18/2018 and ending on 7/31/2018
 
-Fixes bugs from 1.3.0 and 1.3.2 releases 
+Fixes bugs from 1.3.0 and 1.3.2 releases
 
 - unauditable contests becoming auditable
 - large decimal in risk limit display
@@ -69,3 +73,4 @@ This is [FreeAndFair's most recent tag][1.1.0.3].
 [pr11]: https://github.com/democracyworks/ColoradoRLA/pull/11
 [pr13]: https://github.com/democracyworks/ColoradoRLA/pull/13
 [pr15]: https://github.com/democracyworks/ColoradoRLA/pull/15
+[pr29]: https://github.com/democracyworks/ColoradoRLA/pull/29
