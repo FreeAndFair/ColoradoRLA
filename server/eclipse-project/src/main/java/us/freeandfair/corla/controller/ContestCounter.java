@@ -1,17 +1,16 @@
 /** Copyright (C) 2018 the Colorado Department of State  **/
 package us.freeandfair.corla.controller;
 
+
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.HashMap;
-import java.util.Set;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.ContestResult;
 import us.freeandfair.corla.model.CountyContestResult;
 import us.freeandfair.corla.query.ContestResultQueries;
@@ -28,18 +27,18 @@ public final class ContestCounter {
    **/
   public static ContestResult countContest(final String contestName) {
     final List<CountyContestResult> countyResults =
-      CountyContestResultQueries.withContestName(contestName);
+        CountyContestResultQueries.withContestName(contestName);
     final ContestResult contestResult = ContestResultQueries.findOrCreate(contestName);
-    contestResult.setVoteTotals( accumulateVoteTotals(countyResults.stream()
-                                                      .map((cr) -> cr.voteTotals())
-                                                      .collect(Collectors.toList())));
+    contestResult.setVoteTotals(accumulateVoteTotals(countyResults.stream()
+                                                     .map((cr) -> cr.voteTotals())
+                                                     .collect(Collectors.toList())));
     return contestResult;
   }
 
   /** add em up **/
-  public static Map<String,Integer> accumulateVoteTotals(final List<Map<String,Integer>> voteTotals) {
+  public static Map<String,Integer>
+    accumulateVoteTotals(final List<Map<String,Integer>> voteTotals) {
     final Map<String,Integer> acc = new HashMap<String,Integer>();
-    System.out.println("voteTotals " + voteTotals.size());
     return voteTotals.stream().reduce(acc,
                                       (a, vt) -> addVoteTotal(a, vt));
   }
@@ -49,7 +48,7 @@ public final class ContestCounter {
                                                  final Map<String,Integer> vt) {
     // we iterate over vt because it may have a key that the accumulator has not
     // seen yet
-    vt.forEach((k,v) -> acc.merge(k, v, (v1,v2) -> {return (null == v1) ? v2: v1 + v2;}));
+    vt.forEach((k,v) -> acc.merge(k, v, (v1,v2) -> { return (null == v1) ? v2 : v1 + v2; } ));
     return acc;
   }
 

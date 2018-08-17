@@ -2,10 +2,9 @@
 
 package us.freeandfair.corla.query;
 
-import java.util.List;
+import java.util.Optional;
 
-import javax.persistence.Query;
-
+import org.hibernate.query.Query;
 import org.hibernate.Session;
 
 import us.freeandfair.corla.model.ContestResult;
@@ -28,13 +27,13 @@ public final class ContestResultQueries {
     final Query q = s.createQuery("select cr from ContestResult cr " +
                                   "where cr.contestName = :contestName");
     q.setParameter("contestName", contestName);
-    final List<ContestResult> results = q.getResultList();
-    if (results.isEmpty()) {
+    final Optional<ContestResult> contestResultMaybe = q.uniqueResultOptional();
+    if (contestResultMaybe.isPresent()) {
+      return contestResultMaybe.get();
+    } else {
       final ContestResult cr = new ContestResult(contestName);
       Persistence.save(cr);
       return cr;
-    } else {
-      return results.get(0);
     }
   }
 }

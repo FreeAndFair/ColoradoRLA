@@ -15,9 +15,9 @@ import java.util.TreeSet;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.io.input.ReaderInputStream;
-import org.apache.commons.io.IOUtils;
 
 /**
  * A simple CSV parser built atop commons.csv
@@ -59,7 +59,8 @@ public class ContestNameParser {
    */
   public ContestNameParser(final Reader r)
     throws IOException {
-    final Reader reader = new InputStreamReader(new BOMInputStream(new ReaderInputStream(r)), "UTF-8");
+    final Reader reader =
+        new InputStreamReader(new BOMInputStream(new ReaderInputStream(r)), "UTF-8");
     parser = new CSVParser(reader, csvFormat);
   }
 
@@ -68,7 +69,8 @@ public class ContestNameParser {
    */
   public ContestNameParser(final String string)
     throws IOException {
-    final Reader reader = new InputStreamReader(new BOMInputStream(IOUtils.toInputStream(string)), "UTF-8");
+    final Reader reader =
+        new InputStreamReader(new BOMInputStream(IOUtils.toInputStream(string)), "UTF-8");
     parser = new CSVParser(reader, csvFormat);
   }
 

@@ -82,14 +82,14 @@ public class ContestResult implements PersistentEntity, Serializable {
    */
   @Column(name = "winners", columnDefinition = "text")
   @Convert(converter = StringSetConverter.class)
-  final private Set<String> winners = new HashSet<>();
+  private final Set<String> winners = new HashSet<>();
 
   /**
    * The set of contest losers.
    */
   @Column(name = "losers", columnDefinition = "text")
   @Convert(converter = StringSetConverter.class)
-  final private Set<String> losers = new HashSet<>();
+  private final Set<String> losers = new HashSet<>();
 
   /**
    * A map from choices to vote totals.
@@ -100,7 +100,7 @@ public class ContestResult implements PersistentEntity, Serializable {
                                              referencedColumnName = ID))
   @MapKeyColumn(name = "choice")
   @Column(name = "vote_total")
-  private Map<String, Integer> vote_totals = new HashMap<>();
+  private  Map<String, Integer> vote_totals = new HashMap<>();
 
   /**
    * A ContestResult has many counties - supporting auditing multi-county
@@ -110,7 +110,7 @@ public class ContestResult implements PersistentEntity, Serializable {
   @JoinTable(name = "counties_to_contest_results",
              joinColumns = { @JoinColumn(name = "contest_result_id") },
              inverseJoinColumns = { @JoinColumn(name = "county_id") })
-  final private Set<County> counties = new HashSet<>();
+  private final Set<County> counties = new HashSet<>();
 
 
   /**
@@ -121,7 +121,7 @@ public class ContestResult implements PersistentEntity, Serializable {
   @JoinTable(name = "contests_to_contest_results",
              joinColumns = { @JoinColumn(name = "contest_result_id") },
              inverseJoinColumns = { @JoinColumn(name = "contest_id") })
-  final private Set<Contest> contests = new HashSet<>();
+  private final Set<Contest> contests = new HashSet<>();
 
   /**
    * The contest name.
@@ -137,8 +137,8 @@ public class ContestResult implements PersistentEntity, Serializable {
   }
 
   /**
-   * Constructs a new ContestResult for the specified county. The countyName is
-   * what links Contests together as well as ContestResults.
+   * Constructs a new ContestResult with the specified contestName. The contestName is
+   * what links Contests together (along with one ContestResult).
    *
    * @param the_contest The contest.
    */
