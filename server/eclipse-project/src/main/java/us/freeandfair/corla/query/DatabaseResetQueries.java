@@ -46,16 +46,30 @@ public final class DatabaseResetQueries {
     // the records in the following list of tables will be deleted, in order:
     
     final String[] tables = {
-        "log", "audit_board", "audit_intermediate_report", 
-        "audit_investigation_report", "ballot_manifest_info",
-        "contest_choice", "contest_to_audit", 
-        "county_contest_vote_total", 
+        "log",
+        "audit_board",
+        "audit_intermediate_report",
+        "audit_investigation_report",
+        "ballot_manifest_info",
+        "counties_to_contest_results",
+        "contest_choice",
+        "contest_to_audit",
+        "county_contest_vote_total",
+        "contest_vote_total",
         "county_contest_comparison_audit_discrepancy", 
         "county_contest_comparison_audit_disagreement",
         "county_contest_comparison_audit", 
-        "county_contest_result", "cvr_contest_info", 
-        "driving_contest", "contest", "cvr_audit_info", "cast_vote_record", 
-        "dos_dashboard", "round", "audit_board", "county_dashboard",
+        "county_contest_result",
+        "contest_result",
+        "cvr_contest_info",
+        "driving_contest",
+        "contest",
+        "cvr_audit_info",
+        "cast_vote_record",
+        "dos_dashboard",
+        "round",
+        "audit_board",
+        "county_dashboard",
         "uploaded_file"
     };
     
