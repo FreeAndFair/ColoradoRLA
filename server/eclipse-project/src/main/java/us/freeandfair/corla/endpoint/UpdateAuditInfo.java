@@ -47,7 +47,7 @@ public class UpdateAuditInfo extends AbstractDoSDashboardEndpoint {
   private final ThreadLocal<ASMEvent> my_event = new ThreadLocal<ASMEvent>();
 
   /** json key to look for files in **/
-  private final static String uploadKey = "upload_file";
+  private final static String UPLOAD_KEY = "upload_file";
 
   /**
    * {@inheritDoc}
@@ -93,7 +93,7 @@ public class UpdateAuditInfo extends AbstractDoSDashboardEndpoint {
       object = parser.parse(s).getAsJsonObject();
       if (hasFile(object)){
         return object
-          .getAsJsonArray(uploadKey)
+          .getAsJsonArray(UPLOAD_KEY)
           .get(0)
           .getAsJsonObject()
           .get("contents")
@@ -110,9 +110,9 @@ public class UpdateAuditInfo extends AbstractDoSDashboardEndpoint {
 
   private Boolean hasFile(final JsonObject o) {
     return o != null
-        && o.getAsJsonArray(uploadKey) != null
-        && o.getAsJsonArray(uploadKey).size() > 0
-        && o.getAsJsonArray(uploadKey).get(0) != null;
+        && o.getAsJsonArray(UPLOAD_KEY) != null
+        && o.getAsJsonArray(UPLOAD_KEY).size() > 0
+        && o.getAsJsonArray(UPLOAD_KEY).get(0) != null;
   }
 
   /**

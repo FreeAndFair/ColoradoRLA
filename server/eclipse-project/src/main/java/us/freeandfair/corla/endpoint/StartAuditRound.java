@@ -36,8 +36,6 @@ import us.freeandfair.corla.asm.CountyDashboardASM;
 import us.freeandfair.corla.controller.ComparisonAuditController;
 import us.freeandfair.corla.controller.ContestCounter;
 import us.freeandfair.corla.json.SubmittedAuditRoundStart;
-import us.freeandfair.corla.model.Contest;
-import us.freeandfair.corla.model.ContestResult;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
@@ -141,8 +139,8 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
         .filter(Boolean::valueOf)
         .collect(Collectors.toList());
 
-    assert countedContests.size() == dosdb.contestsToAudit().size()
-           : "not all targeted contests were counted";
+    assert countedContests.size() == dosdb.contestsToAudit().size() :
+        "not all targeted contests were counted";
 
     // update every county dashboard with a list of ballots to audit
     try {
