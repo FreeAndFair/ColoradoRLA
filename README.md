@@ -78,19 +78,10 @@ this, you most likely want to install test credentials, which are already inside
 the PostgreSQL image:
 
 ```sh
-docker exec -i coloradorla_postgresql_1 \
+docker-compose exec postgresql \
   /bin/bash -c \
   'psql -U corla -d corla < /root/corla-test-credentials.psql'
 ```
-
-Note that `coloradorla_postgresql_1` is the output of "Name" from
-
-```sh
-docker-compose ps postgresql
-```
-
-but should be consistent assuming you have checked out the code to a directory
-named the same as the repository.
 
 # Installation and Use
 
