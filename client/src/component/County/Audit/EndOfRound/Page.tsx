@@ -22,8 +22,8 @@ const PreviousRoundSignedOff = (props: PreviousRoundProps) => {
             <CountyNav />
             <h3> End of Round { roundNumber }</h3>
             <div className='pt-card'>
-                The current round, Round { roundNumber }, is complete.
-                Please wait for the Department of State to begin the next round.
+               <h3>The current round, Round { roundNumber }, is complete.
+                Please wait for the Department of State to begin the next round.</h3>
             </div>
         </div>
     );
@@ -35,8 +35,8 @@ const LastRoundComplete = () => {
             <CountyNav />
             <h3> End of All Audit Rounds</h3>
             <div className='pt-card'>
-                All audit rounds are complete. Please use the form below to
-                certify that the county has completed the audit.
+                <h3>All audit rounds are complete. Please use the form below to
+                certify that the county has completed the audit.</h3>
             </div>
             <div className='pt-card'>
                 <button className='pt-button pt-intent-primary' onClick={ finishAudit }>
@@ -87,17 +87,18 @@ const EndOfRoundPage = (props: PageProps) => {
             <CountyNav />
             <h3> End of Round { roundNumber }</h3>
             <div className='pt-card'>
-                Congratulations! You have completed reporting the votes on all ballots
+                <h3> Congratulations! You have completed reporting the votes on all ballots
                 randomly selected for this round of the risk-limiting audit of the
                 <span> { countyName } </span> County <span> { electionDate } </span>
-                <span> { electionType} </span>.
+                <span> { electionType} </span>. After the judges have signed off on the round,
+                updated audit status will be displayed on the next page.  </h3>
             </div>
 
             <div className='pt-card'>
-                Please complete this audit round by entering your names in the fields below,
+                <h3> Please complete this audit round by entering your names in the fields below,
                 making the following certification, and selecting Submit. By entering his or
                 her name and selecting Submit below, each Audit Board member individually
-                certifies that he or she:
+                certifies that he or she: </h3>
 
                 <ul>
                     <li>

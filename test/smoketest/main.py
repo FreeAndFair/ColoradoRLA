@@ -182,11 +182,14 @@ parser.add_argument('-C, --contest', dest='contests', metavar='CONTEST', action=
                     '-1 means "audit all contests')
 parser.add_argument('-l, --loser', dest='loser', default="UNDERVOTE",
                     help='Loser to use for -p, default "UNDERVOTE"')
-parser.add_argument('-p, --discrepancy-plan', dest='plan', default="2 17",
-                    help='Planned discrepancies. Default is "2 17", i.e. '
+parser.add_argument('-p, --discrepancy-plan', dest='plan', default="5 17",
+                    help='Planned discrepancies. Default is "5 17", i.e. '
                     'Every 17 ACVR uploads, upload a possible discrepancy once, '
                     'when the remainder of dividing the upload index is 2. '
-                    'Discrepancies thus come with the 3rd of every 17 ACVR uploads.')
+                    'Discrepancies thus come with the 3rd of every 17 ACVR uploads.'
+                    'This default is designed to hit a known ballot and to trigger a second round.'
+                    'You will see different audits happen from different discrepancies happening '
+                    '(or not happening) on different ballots.')
 parser.add_argument('-P, --discrepancy-end', dest='plan_limit', type=int, default=sys.maxint,
                     help='Last upload with possible discrepancy is # PLAN_LIMIT')
 
@@ -553,9 +556,9 @@ def upload_files(ac, s):
         ("../e-1/arapahoe-regent-3-clear-CVR_Export.csv",
                     "49bd5d56e6107ff6b7381a6f563121e3b1d5d967bba1c29e6ffe31583d646e6d"),
         ("../dominion-2017-CVR_Export_20170310104116.csv",
-                    "4e3844b0dabfcea64a499d65bc1cdc00d139cd5cdcaf502f20dd2beaa3d518d2"),
+                    "8eae05406ca282895aa6705f60a44715c873cd6bd2b7a76d3852ea73702def92"),
         ("../Denver2016Test/CVR_Export_20170804111144.csv",
-                    "1def4aa4c0e1421b4e5adcd4cc18a8d275f709bc07820a37e76e11a038195d02"),
+                    "99a848b6a8bb05912b1991437080763f04f5160bf738fd93a6481349e1f9a5f6"),
         ("../e-1/arapahoe-regent-3-clear-CVR_Export.csv",
                     "invalid hash"),
         ("../e-1/arapahoe-regent-3-clear-CVR_Export.csv",

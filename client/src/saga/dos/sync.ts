@@ -65,8 +65,8 @@ export default function* pollSaga() {
         countyDetailSaga(),
         countyOverviewSaga(),
         dashboardPollSaga(),
-        defineAuditReviewSaga(),
         defineAuditSaga(),
+        defineAuditReviewSaga(),
         randomSeedSaga(),
         selectContestsPollSaga(),
     ]);

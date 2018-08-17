@@ -2,6 +2,8 @@ import * as React from 'react';
 
 import FileUploadContainer from './FileUploadContainer';
 
+import downloadCvrsToAuditCsv from 'corla/action/county/downloadCvrsToAuditCsv';
+
 import fetchReport from 'corla/action/county/fetchReport';
 
 import FileDownloadButtons from 'corla/component/FileDownloadButtons';
@@ -57,26 +59,32 @@ const Main = (props: MainProps) => {
         startAudit,
     } = props;
 
-    let directions = 'You may now upload the Ballot Manifest and Cast Vote Records.';
+    let directions = 'Upload the ballot manifest and cast voter records (CVR) files. These need to be CSV files.'
+                   + '\n\nAfter uploading the files wait for an email from the Department of State saying that you can'
+                   + ' continue the audit.';
 
     if (auditBoardSignedIn) {
         if (auditButtonDisabled) {
-            directions = 'Please stand by for the state to begin the audit.';
+            directions = 'Wait for the audit to start.';
         } else {
             if (currentRoundNumber) {
-                directions = `You may proceed with Round ${currentRoundNumber} of the audit.`;
+                directions = `You can start round ${currentRoundNumber} of the audit.`;
             } else {
-                directions = 'Please wait for the next round to start.';
+                directions = 'You have completed the round. More ballots need to be audited.'
+                           + ' Wait for the next round to start.';
             }
         }
     } else {
         if (!signInButtonDisabled) {
-            directions = 'Please have the audit board sign in.';
+            directions = 'The Department of State has defined the audit and your list of ballots is now available for'
+                       + ' download on this page. The audit board must sign in to advance to the audit.';
         }
     }
 
     if (auditComplete) {
-        directions = 'The audit is complete.';
+        directions = 'You have successfully completed the Risk-Limiting Audit! Print all pages of your final audit'
+                   + ' report. Have the judges and county clerk sign the last page of the report and email it to'
+                   + ' RLA@sos.state.co.us. You can now proceed to canvass!';
     }
 
     const fileUploadContainer = auditStarted
@@ -88,42 +96,57 @@ const Main = (props: MainProps) => {
                               : <div />;
 
     const reportType = auditComplete
-                     ? 'final'
-                     : 'intermediate';
+                     ? 'Final'
+                     : 'Intermediate';
+
+    const downloadCsv = () => downloadCvrsToAuditCsv(currentRoundNumber);
 
     return (
         <div className='county-main pt-card'>
             <h1>Hello, { name } County!</h1>
             <div>
-                <div className='pt-card'>{ directions }</div>
+                <div className='pt-card'><h3>{ directions }</h3></div>
                 { fileUploadContainer }
                 { fileDownloadButtons }
-                <AuditBoardInfo signedIn={ auditBoardSignedIn } />
                 <div className='pt-card'>
-                    <div>Click to download { reportType} audit report.</div>
+                    <div className='pt-ui-text-large'>{ reportType} audit report (CSV)</div>
                     <button
-                        className='pt-button'
+                        className='pt-button  pt-intent-primary'
                         disabled={ !canRenderReport }
                         onClick={ fetchReport }>
                         Download
                     </button>
                 </div>
-                <button
-                    className='pt-button pt-intent-primary'
-                    disabled={ signInButtonDisabled }
-                    onClick={ boardSignIn }>
-                    <span className='pt-icon-standard pt-icon-people' />
-                    <span> </span>
-                    Audit Board
-                </button>
-                <button
-                    className='pt-button pt-intent-primary'
-                    disabled={ auditButtonDisabled }
-                    onClick={ startAudit }>
-                    <span className='pt-icon-standard pt-icon-eye-open' />
-                    <span> </span>
-                    Start Audit
-                </button>
+                <div className='pt-card'>
+                    <div className='pt-ui-text-large'>List of ballots to audit (CSV)</div>
+                    <button
+                        className='pt-button  pt-intent-primary'
+                        disabled={ !canRenderReport }
+                        onClick={ downloadCsv }>
+                        Download
+                    </button>
+                </div>
+                <div>
+                  <AuditBoardInfo signedIn={ auditBoardSignedIn } />
+                  <button
+                      className='pt-button pt-intent-primary audit'
+                      disabled={ signInButtonDisabled }
+                      onClick={ boardSignIn }>
+                      <span className='pt-icon-standard pt-icon-people' />
+                      <span> </span>
+                      Audit Board
+                  </button>
+                  <br/>
+                  <p/>
+                  <button
+                      className='pt-button pt-intent-primary audit'
+                      disabled={ auditButtonDisabled }
+                      onClick={ startAudit }>
+                      <span className='pt-icon-standard pt-icon-eye-open' />
+                      <span> </span>
+                      Start Audit
+                  </button>
+                </div>
             </div>
         </div>
     );

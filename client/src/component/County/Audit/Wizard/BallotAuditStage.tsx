@@ -85,15 +85,15 @@ const AuditInstructions = (props: InstructionsProps) => {
                     </div>
                 </div>
                 <div className='pt-card'>
-                    Ballot card #{ currentBallotNumber } has
-                    Ballot Type <span> { currentBallot.ballotType } </span>.
+                    <h5>Ballot card #{ currentBallotNumber } is
+                    Ballot Type <span>{ currentBallot.ballotType }</span>. </h5>
                     Please ensure that the paper ballot you are examining is the same Ballot
                     Type.
                 </div>
                 <div className='pt-card'>
                     <div>
                         Record here the <strong> voter intent </strong> as described by the Voter
-                        Intent Guide from the Secretary of State. All markings <strong> do not </strong>
+                        Intent Guide from the Secretary of State. All markings <strong>do not </strong>
                         need to be recorded. Replicate on this page all <strong> valid votes </strong> in
                         each ballot contest contained on this paper ballot card. Or, in case of an
                         <strong> overvote</strong>, record all final voter choices that contribute to
@@ -118,8 +118,8 @@ const ContestInfo = ({ contest }: ContestInfoProps) => {
 
     return (
         <div className='pt-card'>
-            <div>{ name }</div>
-            <div>{ description }</div>
+            <strong><div>{ name }</div></strong>
+            <strong><div>{ description }</div></strong>
             <div>Vote for { votesAllowed } out of { choices.length }</div>
         </div>
     );
@@ -301,7 +301,7 @@ const BallotAuditStage = (props: StageProps) => {
                 updateBallotMarks={ updateBallotMarks }
             />
             <BackButton back={ prevStage } />
-            <button className='pt-button pt-intent-primary' onClick={ nextStage }>
+            <button className='pt-button pt-intent-primary pt-breadcrumb' onClick={ nextStage }>
                 Review
             </button>
         </div>

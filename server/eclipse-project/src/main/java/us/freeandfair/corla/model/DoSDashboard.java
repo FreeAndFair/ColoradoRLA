@@ -1,6 +1,6 @@
 /*
  * Free & Fair Colorado RLA System
- * 
+ *
  * @title ColoradoRLA
  * @created Jul 27, 2017
  * @copyright 2017 Colorado Department of State
@@ -18,6 +18,8 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.Cacheable;
 import javax.persistence.CollectionTable;
@@ -34,7 +36,7 @@ import us.freeandfair.corla.persistence.PersistentEntity;
 
 /**
  * The Department of State dashboard.
- * 
+ *
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 1.0.0
  */
@@ -46,49 +48,49 @@ import us.freeandfair.corla.persistence.PersistentEntity;
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
-public class DoSDashboard implements PersistentEntity, Serializable {  
+public class DoSDashboard implements PersistentEntity, Serializable {
   /**
    * The DoS dashboard ID (it is a singleton).
    */
   public static final Long ID = Long.valueOf(0);
-  
+
   /**
    * The minimum number of random seed characters.
    */
   public static final int MIN_SEED_LENGTH = 20;
-  
+
   /**
    * The serialVersionUID.
    */
-  private static final long serialVersionUID = 1; 
-  
+  private static final long serialVersionUID = 1;
+
   /**
    * The ID. This is always 0, because this object is a singleton.
    */
   @Id
   private Long my_id = ID;
-  
+
   /**
    * The version (for optimistic locking).
    */
   @Version
   private Long my_version;
-  
+
   /**
    * The contests to be audited and the reasons for auditing.
    */
   @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name = "contest_to_audit",
-                   joinColumns = @JoinColumn(name = "dashboard_id", 
+                   joinColumns = @JoinColumn(name = "dashboard_id",
                                              referencedColumnName = "my_id"))
   private Set<ContestToAudit> my_contests_to_audit = new HashSet<>();
-  
+
   /**
    * The election info.
    */
   @Embedded
   private AuditInfo my_audit_info = new AuditInfo();
-  
+
   /**
    * Constructs a new Department of State dashboard with default values.
    */
@@ -98,7 +100,7 @@ public class DoSDashboard implements PersistentEntity, Serializable {
   public DoSDashboard() {
     super();
   }
-  
+
   /**
    * @return the database ID for this dashboard, which is the same as
    * its county ID.
@@ -107,11 +109,11 @@ public class DoSDashboard implements PersistentEntity, Serializable {
   public Long id() {
     return my_id;
   }
-  
+
   /**
    * Sets the database ID for this dashboard.
-   * 
-   * @param the_id The ID, effectively ignored; the database ID for a DoS 
+   *
+   * @param the_id The ID, effectively ignored; the database ID for a DoS
    * dashboard is always 0.
    * @exception IllegalArgumentException if the ID is not 0.
    */
@@ -130,18 +132,18 @@ public class DoSDashboard implements PersistentEntity, Serializable {
   public Long version() {
     return my_version;
   }
-  
+
   /**
    * Checks the validity of a random seed. To be valid, a random seed must
    * have at least MIN_SEED_CHARACTERS characters, and all characters must
    * be digits.
-   * 
+   *
    * @param the_seed The seed.
    * @return true if the seed meets the validity requirements, false otherwise.
    */
   public static boolean isValidSeed(final String the_seed) {
     boolean result = true;
-    
+
     if (the_seed != null && the_seed.length() >= MIN_SEED_LENGTH) {
       for (final char c : the_seed.toCharArray()) {
         if (!Character.isDigit(c)) {
@@ -152,39 +154,39 @@ public class DoSDashboard implements PersistentEntity, Serializable {
     } else {
       result = false;
     }
-    
+
     return result;
   }
-  
+
   /**
    * @return the audit info.
    */
   public AuditInfo auditInfo() {
     return my_audit_info;
   }
-  
+
   /**
-   * Updates the audit info, using the non-null fields of the specified 
+   * Updates the audit info, using the non-null fields of the specified
    * AuditInfo. This method does not do any sanity checks on the fields;
    * it is assumed that they are checked by the caller.
-   * 
+   *
    * @param the_new_info The new info.
    */
   public void updateAuditInfo(final AuditInfo the_new_info) {
     my_audit_info.updateFrom(the_new_info);
   }
-  
+
   /**
-   * Removes all contests to audit for the specified county. This is 
+   * Removes all contests to audit for the specified county. This is
    * typically done if the county re-uploads their CVRs (generating new
    * contest information).
-   * 
+   *
    * @param the_county The county.
    * @return true if any contests to audit were removed, false otherwise.
    */
   public boolean removeContestsToAuditForCounty(final County the_county) {
     boolean result = false;
-    
+
     final Set<ContestToAudit> contests_to_remove = new HashSet<>();
     for (final ContestToAudit c : my_contests_to_audit) {
       if (c.contest().county().equals(the_county)) {
@@ -193,20 +195,36 @@ public class DoSDashboard implements PersistentEntity, Serializable {
       }
     }
     my_contests_to_audit.removeAll(contests_to_remove);
-    
+
     return result;
   }
+
   /**
-   * Update the audit status of a contest. 
-   * 
+   * Remove all ContestsToAudit that are auditable from this dashboard because
+   * they may have been unchecked in the ui. The checked ones should be added
+   * back in a following step. Unaditable contests are not able to be checked in
+   * the ui so they can stay.
+   *
+   *  note: an alternative approach would be to set a hidden field for every
+   *  checkbox in the ui
+   **/
+  public void removeAuditableContestsToAudit() {
+    my_contests_to_audit.removeAll(my_contests_to_audit.stream()
+                                   .filter(c -> c.isAuditable())
+                                   .collect(Collectors.toList()));
+  }
+
+  /**
+   * Update the audit status of a contest.
+   *
    * @param the_contest_to_audit The new status of the contest to audit.
-   * @return true if the contest was already being audited or hand counted, 
+   * @return true if the contest was already being audited or hand counted,
    * false otherwise.
    */
   //@ requires the_contest_to_audit != null;
   public boolean updateContestToAudit(final ContestToAudit the_contest_to_audit) {
     boolean auditable = true;
-    
+
     // check to see if the contest is in our set
     ContestToAudit contest_to_remove = null;
     for (final ContestToAudit c : my_contests_to_audit) {
@@ -217,17 +235,17 @@ public class DoSDashboard implements PersistentEntity, Serializable {
         break;
       }
     }
-    
+
     if (auditable) {
       my_contests_to_audit.remove(contest_to_remove);
       if (the_contest_to_audit.audit() != AuditType.NONE) {
         my_contests_to_audit.add(the_contest_to_audit);
       }
     }
-    
+
     return auditable;
   }
-  
+
   /**
    * @return the current set of contests to audit. This is an unmodifiable
    * set; to update, use updateContestToAudit().
@@ -235,7 +253,16 @@ public class DoSDashboard implements PersistentEntity, Serializable {
   public Set<ContestToAudit> contestsToAudit() {
     return Collections.unmodifiableSet(my_contests_to_audit);
   }
-  
+
+  /**
+   * data access helper
+   * @return contests of contestsToAudit a.k.a selected contests, targeted contests
+   */
+  public Stream<Contest> targetedContests() {
+    return contestsToAudit().stream()
+      .map(a -> a.contest());
+  }
+
   /**
    * @return a String representation of this contest.
    */
@@ -243,10 +270,10 @@ public class DoSDashboard implements PersistentEntity, Serializable {
   public String toString() {
     return "DoSDashboard [county=" + id() + "]";
   }
-  
+
   /**
    * Compare this object with another for equivalence.
-   * 
+   *
    * @param the_other The other object.
    * @return true if the objects are equivalent, false otherwise.
    */
@@ -264,7 +291,7 @@ public class DoSDashboard implements PersistentEntity, Serializable {
     }
     return result;
   }
-  
+
   /**
    * @return a hash code for this object.
    */
