@@ -17,7 +17,9 @@ import static us.freeandfair.corla.util.EqualsHashcodeHelper.*;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 import java.util.stream.Collectors;
 
 import javax.persistence.Cacheable;
@@ -251,6 +253,15 @@ public class DoSDashboard implements PersistentEntity, Serializable {
    */
   public Set<ContestToAudit> contestsToAudit() {
     return Collections.unmodifiableSet(my_contests_to_audit);
+  }
+
+  /**
+   * data access helper
+   * @return contests of contestsToAudit a.k.a selected contests, targeted contests
+   */
+  public Stream<Contest> targetedContests() {
+    return contestsToAudit().stream()
+      .map(a -> a.contest());
   }
 
   /**

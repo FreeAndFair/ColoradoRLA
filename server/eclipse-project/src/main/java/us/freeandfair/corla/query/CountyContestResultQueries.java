@@ -24,6 +24,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.Contest;
@@ -94,7 +95,23 @@ public final class CountyContestResultQueries {
     }
     return result;
   }
-  
+
+  /**
+   * Gets CountyContestResults that have the contestName.
+   *
+   * @param contestName The name to match Contest#name.
+   * @return the matching CountyContestResults, or an empty set.
+   */
+  public static List<CountyContestResult> withContestName(final String contestName) {
+    final Session s = Persistence.currentSession();
+    final Query q = s.createQuery("select ccr from CountyContestResult ccr " +
+                                  "inner join Contest c " +
+                                  "on ccr.my_contest = c " +
+                                  "where c.my_name = :contestName");
+    q.setParameter("contestName", contestName);
+    return q.list();
+  }
+
   /**
    * Gets CountyContestResults that are in the specified county.
    * 

@@ -18,6 +18,7 @@ import static us.freeandfair.corla.asm.ASMState.DoSDashboardState.COMPLETE_AUDIT
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.PersistenceException;
 
@@ -33,8 +34,12 @@ import us.freeandfair.corla.asm.ASMUtilities;
 import us.freeandfair.corla.asm.AuditBoardDashboardASM;
 import us.freeandfair.corla.asm.CountyDashboardASM;
 import us.freeandfair.corla.controller.ComparisonAuditController;
+import us.freeandfair.corla.controller.ContestCounter;
 import us.freeandfair.corla.json.SubmittedAuditRoundStart;
+import us.freeandfair.corla.model.Contest;
+import us.freeandfair.corla.model.ContestResult;
 import us.freeandfair.corla.model.CountyDashboard;
+import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
@@ -123,6 +128,22 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
    * @return the result for endpoint.
    */
   public String startRoundOne(final Request the_request, final Response the_response) {
+
+    final DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
+
+    // Update every targeted contest's voteTotals from the counties. This needs
+    // to happen between all counties uploading there data and before the
+    // ballot selection happens
+    final List<Boolean> countedContests = dosdb.targetedContests()
+        .map(c -> c.name())
+        .map(ContestCounter::countContest)
+        .map(Persistence::saveOrUpdate)
+        .filter(Boolean::valueOf)
+        .collect(Collectors.toList());
+
+    assert countedContests.size() == dosdb.contestsToAudit().size()
+           : "not all targeted contests were counted";
+
     // update every county dashboard with a list of ballots to audit
     try {
       final List<CountyDashboard> cdbs = Persistence.getAll(CountyDashboard.class);
