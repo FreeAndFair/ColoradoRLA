@@ -5,8 +5,6 @@ services:
     build:
       context: .
       dockerfile: ./docker/server/Dockerfile
-      args:
-        - VERSION=1.4.0-SNAPSHOT
     depends_on:
       - postgresql
     ports:

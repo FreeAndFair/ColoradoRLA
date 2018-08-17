@@ -12,7 +12,10 @@ SERVER_TAG ?= latest
 .PHONY: httpd-build httpd-deploy
 
 httpd-build:
-	docker build -f httpd/Dockerfile -t $(HTTPD_REPOSITORY):$(HTTPD_TAG) ../
+	docker build \
+		-f httpd/Dockerfile \
+		-t $(HTTPD_REPOSITORY):$(HTTPD_TAG) \
+		../
 
 httpd-deploy:
 	docker push $(HTTPD_REPOSITORY):$(HTTPD_TAG)
@@ -22,7 +25,10 @@ httpd-deploy:
 .PHONY: postgresql-build postgresql-deploy
 
 postgresql-build:
-	docker build -f postgresql/Dockerfile -t $(POSTGRESQL_REPOSITORY):$(POSTGRESQL_TAG) ../
+	docker build \
+		-f postgresql/Dockerfile \
+		-t $(POSTGRESQL_REPOSITORY):$(POSTGRESQL_TAG) \
+		../
 
 postgresql-deploy:
 	docker push $(POSTGRESQL_REPOSITORY):$(POSTGRESQL_TAG)
@@ -32,8 +38,9 @@ postgresql-deploy:
 .PHONY: server-build server-deploy
 
 server-build:
-	docker build -f server/Dockerfile -t $(SERVER_REPOSITORY):$(SERVER_TAG) \
-		--build-arg VERSION=$(shell cd ../server/eclipse-project; mvn help:evaluate -Dexpression=project.version | grep '^[[:digit:]].\+') \
+	docker build \
+		-f server/Dockerfile \
+		-t $(SERVER_REPOSITORY):$(SERVER_TAG) \
 		../
 
 server-deploy:
