@@ -92,6 +92,22 @@ docker-compose ps postgresql
 but should be consistent assuming you have checked out the code to a directory
 named the same as the repository.
 
+# Tests
+
+Unit tests can be run from the command line:
+
+```sh
+mvn test
+```
+
+By default, integration tests requiring a database are excluded. To avoid
+excluding those tests, you can override the excluded groups from the command
+line:
+
+```sh
+mvn test -Dcorla.test.excludedGroups=""
+```
+
 # Installation and Use
 
 A document describing how to download, install, and use this system is
