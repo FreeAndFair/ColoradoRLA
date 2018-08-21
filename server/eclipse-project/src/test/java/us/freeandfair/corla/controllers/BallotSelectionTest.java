@@ -74,10 +74,8 @@ public class BallotSelectionTest {
                                      Long position) -> fakeCVR();
     List<Integer> lols = rands.stream().map(l -> (int)l.intValue()).collect(Collectors.toList());
 
-    ContestResult contestResult = new ContestResult();
-
     // subject under test
-    return BallotSelection.selectCVRs(lols, contestResult, query, queryCVR);
+    return BallotSelection.selectCVRs(lols, 0L, query, queryCVR);
   }
 
   public CastVoteRecord fakeCVR() {

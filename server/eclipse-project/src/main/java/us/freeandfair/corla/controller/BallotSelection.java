@@ -3,14 +3,16 @@
  **/
 package us.freeandfair.corla.controller;
 
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.Optional;
-import java.util.TreeSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import us.freeandfair.corla.crypto.PseudoRandomNumberGenerator;
 import us.freeandfair.corla.json.CVRToAuditResponse;
 import us.freeandfair.corla.model.BallotManifestInfo;
 import us.freeandfair.corla.model.CastVoteRecord;
@@ -24,38 +26,51 @@ public final class BallotSelection {
   private BallotSelection() {
   }
 
-  public class Segment {
+  /** A data transfer object that links a county to the CVRs it is supposed to
+   * audit **/
+  public static class Segment {
 
-    Long countyId;
-    List<Long> subdivision;
+    /** the county **/
+    public Long countyId;
+    /** the random numbers that should resolve to CVRS that this county should
+     * audit **/
+    public List<Integer> subdivision;
 
-    public static Segment(final Long countyId,
-                          final List<Long> subdivision) {
-      this.countyId = countyID;
+    /** constructor **/
+    public Segment(final Long countyId,
+                   final List<Integer> subdivision) {
+      this.countyId = countyId;
       this.subdivision = subdivision;
     }
   }
 
-  public static List<Segment> segmentsForContest(ContestResult contestResult,
-                                                 Integer min_index,
-                                                 Integer max_index) {
-    int globalTotal = Long.intValue(ultimateTotal(contestResult.countyIds()));
-    PseudoRandomNumberGenerator gen = new PseudoRandomNumberGenerator(seed,
+  /**
+   * create a random list of numbers and divide them into the appropriate
+   * counties
+   **/
+  public static List<Segment> segmentsForContest(final  ContestResult contestResult,
+                                                 final String seed ,
+                                                 final Integer min_index,
+                                                 final Integer max_index) {
+    final int globalTotal = ultimateTotal(contestResult.countyIds()).intValue();
+    final PseudoRandomNumberGenerator gen = new PseudoRandomNumberGenerator(seed,
                                                                       true, // allow dups
                                                                       1, // minimum value
                                                                       globalTotal);
 
-    List<Long> globalRands = gen.getRandomNumbers(min_index, max_index);
+    final List<Integer> globalRands = gen.getRandomNumbers(min_index, max_index);
     return contestCVRs(globalRands,
                        contestResult.countyIds());
   }
 
+  /** resolve cvrs from random numbers  - scoped to a county **/
   public static List<CastVoteRecord> resolveCVRs(final Segment segment) {
-    return selectCVRs(segment.rands, segment.countyId);
+    return selectCVRs(segment.subdivision, segment.countyId);
   }
 
-  public static List<CastVoteRecord> contestCVRs(final List<Integer> rands,
-                                                 final List<Long> countyIds) {
+  /** divide a list of random numbers into Segments  **/
+  public static List<Segment> contestCVRs(final List<Integer> rands,
+                                          final List<Long> countyIds) {
     return contestCVRs(rands, countyIds, BallotManifestInfoQueries::getMatching);
   }
 
@@ -64,36 +79,21 @@ public final class BallotSelection {
                                           final MATCHINGQ queryMatching) {
 
     final Set<BallotManifestInfo> contestBmis = queryMatching.apply(countyIds);
-    final Map<Long,List<Long>> countyRands = new HashMap<>();
-    rands.stream().
-      .reduce(countyRands,
-              (acc, rand) -> {
-                final Long countyId = selectCountyId(rand, contestBmis);
-                segment.countyId = countyId;
-                segment.subdivision = addToList(acc.get(countyID), rand);
-                return acc;
-              });
+    final Map<Long,List<Integer>> countyRands = new HashMap<Long,List<Integer>>();
+    globalRands.forEach(rand -> {
+        final Long countyId = selectCountyId(Long.valueOf(rand), contestBmis);
+        countyRands.put(countyId, addToList(countyRands.get(countyId), rand));
+      });
+
     return countyRands.entrySet().stream()
-      .map(e -> new Segment(e.getKey(), e.getValue()))
+      .map(e -> { return new Segment(e.getKey(), e.getValue()); } )
       .collect(Collectors.toList());
   }
 
-  public static <T> List<T> toList(List<T> l, T t) {
+  public static <T> List<T> addToList(List<T> l, T t) {
     l = (null == l) ? new ArrayList<T>() : l;
     l.add(t);
     return l;
-  }
-
-  public static Map addToList(final Map acc,
-                              final Map rand) {
-    acc.merge(k, v, (v1,v2) -> { return toList(v1, v2); } ));
-    return acc;
-  }
-
-  public static List<CastVoteRecord> selectCVRs(final List<Integer> rands,
-                                                final Long countyId
-                                                ) {
-    return null;
   }
 
   /** select CVRs from random numbers through ballot manifest info
@@ -102,7 +102,7 @@ public final class BallotSelection {
   public static List<CastVoteRecord> selectCVRs(final List<Integer> rands,
                                                 final Long countyId) {
     return selectCVRs(rands,
-                      contestResult,
+                      countyId,
                       BallotManifestInfoQueries::holdingSequenceNumber,
                       CastVoteRecordQueries::atPosition);
   }

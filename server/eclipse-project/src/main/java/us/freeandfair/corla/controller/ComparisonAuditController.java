@@ -332,7 +332,7 @@ public final class ComparisonAuditController {
    * an audit round might not be started if there are no driving contests in the
    * county, or if the county needs to audit 0 ballots to meet the risk limit.
    */
-  public static boolean initializeAuditData(final CountyDashboard the_cdb, final Segment segments) {
+  public static boolean initializeAuditData(final CountyDashboard the_cdb) {
     boolean result = true;
     final DoSDashboard dosdb =
         Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
@@ -342,42 +342,37 @@ public final class ComparisonAuditController {
     final Set<CountyContestComparisonAudit> comparison_audits = new HashSet<>();
     final Map<Contest, AuditReason> contest_reasons = new HashMap<>();
 
-    // for (final ContestToAudit cta : dosdb.contestsToAudit()) {
-    //   if (cta.audit() == AuditType.COMPARISON) {
-    //     all_driving_contests.add(cta.contest());
-    //   }
-    //   contest_reasons.put(cta.contest(), cta.reason());
-    // }
+    int to_audit = Integer.MIN_VALUE;
+
+    for (final ContestToAudit cta : dosdb.contestsToAudit()) {
+      if (cta.audit() == AuditType.COMPARISON) {
+        all_driving_contests.add(cta.contest());
+      }
+      contest_reasons.put(cta.contest(), cta.reason());
+    }
 
     the_cdb.setAuditedPrefixLength(0);
     the_cdb.setAuditedSampleCount(0);
-
-    // for (final CountyContestResult ccr :
-    //      CountyContestResultQueries.forCounty(the_cdb.county())) {
-    //   AuditReason reason = contest_reasons.get(ccr.contest());
-    //   if (reason == null) {
-    //     reason = AuditReason.OPPORTUNISTIC_BENEFITS;
-    //   }
-    //   final CountyContestComparisonAudit audit =
-    //       new CountyContestComparisonAudit(the_cdb, ccr, risk_limit, reason);
-    //   final Contest contest = audit.contest();
-    //   comparison_audits.add(audit);
-    //   if (all_driving_contests.contains(contest)) {
-    //     to_audit = Math.max(to_audit, audit.initialSamplesToAudit());
-    //     county_driving_contests.add(contest);
-    //   }
-    // }
-
-
-    //idk how to get these
-    int to_audit = 0;
-
-    Set<ContestComparisonAudit> comparison_audits = new HashSet<>();
+    for (final CountyContestResult ccr :
+         CountyContestResultQueries.forCounty(the_cdb.county())) {
+      AuditReason reason = contest_reasons.get(ccr.contest());
+      if (reason == null) {
+        reason = AuditReason.OPPORTUNISTIC_BENEFITS;
+      }
+      final CountyContestComparisonAudit audit =
+          new CountyContestComparisonAudit(the_cdb, ccr, risk_limit, reason);
+      final Contest contest = audit.contest();
+      comparison_audits.add(audit);
+      if (all_driving_contests.contains(contest)) {
+        to_audit = Math.max(to_audit, audit.initialSamplesToAudit());
+        county_driving_contests.add(contest);
+      }
+    }
     the_cdb.setComparisonAudits(comparison_audits);
+    Main.LOGGER.info("driving contests setting: " + county_driving_contests);
     the_cdb.setDrivingContests(county_driving_contests);
-    the_cdb.setEstimatedSamplesToAudit(to_audit);
-    the_cdb.setOptimisticSamplesToAudit(to_audit);
-
+    the_cdb.setEstimatedSamplesToAudit(Math.max(0,  to_audit));
+    the_cdb.setOptimisticSamplesToAudit(Math.max(0,  to_audit));
     if (!county_driving_contests.isEmpty() && 0 < to_audit) {
       // the list of CVRs to audit, in audit sequence order
       final List<CastVoteRecord> cvrs_to_audit =
@@ -399,8 +394,7 @@ public final class ComparisonAuditController {
       }
 
       the_cdb.startRound(sorted_deduplicated_cvrs.size(),
-                         to_audit,
-                         0,
+                         to_audit, 0,
                          ballot_ids_to_audit,
                          audit_subsequence_ids);
       updateRound(the_cdb, the_cdb.currentRound());

@@ -1,9 +1,9 @@
-
+/** Copyright (C) 2018 the Colorado Department of State  **/
+package us.freeandfair.corla.controller;
 
 public final class CaCa {
 
-  public static boolean (final CountyDashboard the_cdb) {
-
+  // public static boolean (final CountyDashboard the_cdb) {
 
     // Maybe????
     // the_cdb.setComparisonAudits(comparison_audits);
@@ -21,5 +21,5 @@ public final class CaCa {
     // updateCVRUnderAudit(the_cdb);
 
 
-  }
+  // }
 }
