@@ -19,6 +19,7 @@ import java.util.OptionalLong;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
@@ -54,6 +55,12 @@ public final class BallotManifestInfoQueries {
    */
   private BallotManifestInfoQueries() {
     // do nothing
+  }
+
+  //** lame **/
+  public static Set<BallotManifestInfo> getMatching(final List<Long> county_ids) {
+    // Set<Integer> countyIds = new HashSet<Integer>();
+    return getMatching(county_ids.stream().map(Long::intValue).collect(Collectors.toSet()));
   }
 
   /**

@@ -14,6 +14,7 @@ package us.freeandfair.corla.model;
 import static us.freeandfair.corla.util.EqualsHashcodeHelper.*;
 
 import java.io.Serializable;
+import java.util.Comparator;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
@@ -110,6 +111,22 @@ public class BallotManifestInfo implements PersistentEntity, Serializable {
   private Long my_sequence_end;
 
 
+  public Long ultimateSequenceStart;
+  public Long ultimateSequenceEnd;
+
+  public void setUltimate(Long start) {
+    this.ultimateSequenceStart = start;
+    this.ultimateSequenceEnd = start + rangeSize();
+  }
+
+  public Long rangeSize() {
+    return my_sequence_end - my_sequence_start;
+  }
+
+  public Boolean isHolding(Long rand) {
+    return this.ultimateSequenceStart
+      <= rand && rand <= this.ultimateSequenceEnd;
+  }
 
   /** 
    * Constructs an empty ballot manifest information record, solely
@@ -274,5 +291,20 @@ public class BallotManifestInfo implements PersistentEntity, Serializable {
   @Override
   public int hashCode() {
     return nullableHashCode(storageLocation());
+  }
+
+  /**
+   * sort across counties by comparing countyID() as well as sequenceEnd()
+   **/
+  public static class Sort implements Comparator<BallotManifestInfo> {
+
+    @Override
+    public int compare(BallotManifestInfo bmi1, BallotManifestInfo bmi2) {
+      if (bmi1.countyID() == bmi2.countyID()) {
+        return bmi1.sequenceEnd().compareTo(bmi2.sequenceEnd());
+      } else {
+        return bmi1.countyID().compareTo(bmi2.countyID());
+      }
+    }
   }
 }
