@@ -179,6 +179,13 @@ public class ContestResult implements PersistentEntity, Serializable {
   }
 
   /**
+   * set the set of counties
+   */
+  public boolean setCounties(Set<County> cs) {
+    return this.counties.addAll(cs);
+  }
+
+  /**
    * @return the counties related to this contestresult.
    */
   public Set<County> getCounties() {
