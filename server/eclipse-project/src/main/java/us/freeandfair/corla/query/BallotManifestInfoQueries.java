@@ -59,7 +59,6 @@ public final class BallotManifestInfoQueries {
 
   //** lame **/
   public static Set<BallotManifestInfo> getMatching(final List<Long> county_ids) {
-    // Set<Integer> countyIds = new HashSet<Integer>();
     return getMatching(county_ids.stream().map(Long::intValue).collect(Collectors.toSet()));
   }
 
@@ -71,7 +70,8 @@ public final class BallotManifestInfoQueries {
    * or null if the query fails.
    */
   public static Set<BallotManifestInfo> getMatching(final Set<Integer> the_county_ids) {
-    Set<BallotManifestInfo> result = null;
+    Set<BallotManifestInfo> result =
+      new TreeSet<BallotManifestInfo>(new BallotManifestInfo.Sort());
 
     try {
       final Session s = Persistence.currentSession();
@@ -85,7 +85,7 @@ public final class BallotManifestInfoQueries {
       }
       cq.select(root).where(cb.or(disjuncts.toArray(new Predicate[disjuncts.size()])));
       final TypedQuery<BallotManifestInfo> query = s.createQuery(cq);
-      result = new HashSet<BallotManifestInfo>(query.getResultList());
+      result.addAll(query.getResultList());
     } catch (final PersistenceException e) {
       Main.LOGGER.error("Exception when reading ballot manifests from database: " + e);
     }

@@ -29,7 +29,7 @@ public class BallotSelectionTest {
 
   private Boolean return_cvr = true;
 
-  @Test(enabled=false)
+  @Test()
   public void testSelectBallotsReturnsListOfOnes(){
     Long rand = 1L;
     Long sequence_start = 1L;
@@ -38,7 +38,7 @@ public class BallotSelectionTest {
     Assert.assertEquals(results.get(0).imprintedID(), "1-Batch1-1");
   }
 
-  @Test(enabled=false)
+  @Test()
   public void testSelectBallotsReturnsListHappyPath(){
     Long rand = 47L;
     Long sequence_start = 41L;
@@ -47,7 +47,7 @@ public class BallotSelectionTest {
     Assert.assertEquals(results.get(0).imprintedID(), "1-Batch1-1");
   }
 
-  @Test(enabled=false)
+  @Test()
   public void testSelectBallotsReturnsPhantomRecord(){
     Long rand = 47L;
     Long sequence_start = 41L;

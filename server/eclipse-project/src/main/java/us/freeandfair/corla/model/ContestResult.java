@@ -185,6 +185,12 @@ public class ContestResult implements PersistentEntity, Serializable {
     return Collections.unmodifiableSet(this.counties);
   }
 
+  public List<Long> countyIds() {
+    return getCounties().stream()
+      .map(c -> c.id())
+      .collect(Collectors.toList());
+  }
+
   /**
    * @return the contests related to this ContestResult
    * (should be contests that have the same name as this.contestName)

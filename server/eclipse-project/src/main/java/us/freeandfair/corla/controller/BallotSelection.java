@@ -24,6 +24,72 @@ public final class BallotSelection {
   private BallotSelection() {
   }
 
+  public class Segment {
+
+    Long countyId;
+    List<Long> subdivision;
+
+    public static Segment(final Long countyId,
+                          final List<Long> subdivision) {
+      this.countyId = countyID;
+      this.subdivision = subdivision;
+    }
+  }
+
+  public static List<Segment> segmentsForContest(ContestResult contestResult,
+                                                 Integer min_index,
+                                                 Integer max_index) {
+    int globalTotal = Long.intValue(ultimateTotal(contestResult.countyIds()));
+    PseudoRandomNumberGenerator gen = new PseudoRandomNumberGenerator(seed,
+                                                                      true, // allow dups
+                                                                      1, // minimum value
+                                                                      globalTotal);
+
+    List<Long> globalRands = gen.getRandomNumbers(min_index, max_index);
+    return contestCVRs(globalRands,
+                       contestResult.countyIds());
+  }
+
+  public static List<CastVoteRecord> resolveCVRs(final Segment segment) {
+    return selectCVRs(segment.rands, segment.countyId);
+  }
+
+  public static List<CastVoteRecord> contestCVRs(final List<Integer> rands,
+                                                 final List<Long> countyIds) {
+    return contestCVRs(rands, countyIds, BallotManifestInfoQueries::getMatching);
+  }
+
+  public static List<Segment> contestCVRs(final List<Integer> globalRands,
+                                          final List<Long> countyIds,
+                                          final MATCHINGQ queryMatching) {
+
+    final Set<BallotManifestInfo> contestBmis = queryMatching.apply(countyIds);
+    final Map<Long,List<Long>> countyRands = new HashMap<>();
+    rands.stream().
+      .reduce(countyRands,
+              (acc, rand) -> {
+                final Long countyId = selectCountyId(rand, contestBmis);
+                segment.countyId = countyId;
+                segment.subdivision = addToList(acc.get(countyID), rand);
+                return acc;
+              });
+    return countyRands.entrySet().stream()
+      .map(e -> new Segment(e.getKey(), e.getValue()))
+      .collect(Collectors.toList());
+  }
+
+  public static <T> List<T> toList(List<T> l, T t) {
+    l = (null == l) ? new ArrayList<T>() : l;
+    l.add(t);
+    return l;
+  }
+
+  public static Map addToList(final Map acc,
+                              final Map rand) {
+    acc.merge(k, v, (v1,v2) -> { return toList(v1, v2); } ));
+    return acc;
+  }
+
   public static List<CastVoteRecord> selectCVRs(final List<Integer> rands,
                                                 final Long countyId
                                                 ) {
@@ -34,9 +100,7 @@ public final class BallotSelection {
       in "audit sequence order"
    **/
   public static List<CastVoteRecord> selectCVRs(final List<Integer> rands,
-                                                // final Long countyId
-                                                final ContestResult contestResult
-                                                ) {
+                                                final Long countyId) {
     return selectCVRs(rands,
                       contestResult,
                       BallotManifestInfoQueries::holdingSequenceNumber,
@@ -45,22 +109,13 @@ public final class BallotSelection {
 
   /** same as above with dependency injection **/
   public static List<CastVoteRecord> selectCVRs(final List<Integer> rands,
-                                                // final Long countyId,
-                                                final ContestResult contestResult,
+                                                final Long countyId,
                                                 final BMIQ queryBMI,
                                                 final CVRQ queryCVR) {
     final List<CastVoteRecord> cvrs = new LinkedList<CastVoteRecord>();
-    final List<Long> countyIds = contestResult.getCounties().stream()
-      .map(c -> c.id())
-      .collect(Collectors.toList());
-    final Set<BallotManifestInfo> contestBmis =
-        new TreeSet<BallotManifestInfo>(new BallotManifestInfo.Sort());
-    contestBmis.addAll(BallotManifestInfoQueries.getMatching(countyIds));
 
     for (final Integer r: rands) {
       final Long rand = Long.valueOf(r);
-      // project a random number onto a list of
-      final Long countyId = selectCountyId(rand, contestBmis);
 
       // could we get them all at once? I'm not sure
       final Optional<BallotManifestInfo> bmiMaybe = queryBMI.apply(rand, countyId);
@@ -246,4 +301,14 @@ public final class BallotSelection {
     /** how to query the database **/
     Optional<BallotManifestInfo> apply(CastVoteRecord cvr);
   }
+
+  /**
+   * a functional interface to pass a function as an argument
+   **/
+  public interface MATCHINGQ {
+
+    /** how to query the database **/
+    Set<BallotManifestInfo> apply(final List<Long> county_ids);
+  }
+
 }
