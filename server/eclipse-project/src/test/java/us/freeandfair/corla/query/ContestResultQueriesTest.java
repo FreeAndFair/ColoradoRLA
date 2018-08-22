@@ -15,6 +15,7 @@ import us.freeandfair.corla.model.ContestResult;
 import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.County;
 
+@Test(groups = {"integration"})
 public class ContestResultQueriesTest {
 
 

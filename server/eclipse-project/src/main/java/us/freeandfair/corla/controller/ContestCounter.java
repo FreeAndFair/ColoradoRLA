@@ -32,6 +32,10 @@ public final class ContestCounter {
     contestResult.setVoteTotals(accumulateVoteTotals(countyResults.stream()
                                                      .map((cr) -> cr.voteTotals())
                                                      .collect(Collectors.toList())));
+
+    contestResult.setCounties(countyResults.stream()
+                              .map((cr) -> cr.county())
+                              .collect(Collectors.toSet()));
     return contestResult;
   }
 

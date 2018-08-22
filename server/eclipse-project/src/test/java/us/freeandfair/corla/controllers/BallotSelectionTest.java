@@ -1,31 +1,61 @@
 package us.freeandfair.corla.controllers;
 
 import us.freeandfair.corla.controller.BallotSelection;
+import us.freeandfair.corla.controller.ContestCounter;
+import us.freeandfair.corla.json.CVRToAuditResponse;
 import us.freeandfair.corla.model.BallotManifestInfo;
 import us.freeandfair.corla.model.CastVoteRecord;
+import us.freeandfair.corla.model.Choice;
+import us.freeandfair.corla.model.Contest;
 import us.freeandfair.corla.model.ContestResult;
+import us.freeandfair.corla.model.County;
+import us.freeandfair.corla.model.CountyContestResult;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.json.CVRToAuditResponse;
+import us.freeandfair.corla.query.BallotManifestInfoQueries;
+import us.freeandfair.corla.query.ContestResultQueries;
+import us.freeandfair.corla.query.CountyQueries;
+import us.freeandfair.corla.query.Setup;
 
 import java.time.Instant;
 
-
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.TreeMap;
+
 import java.util.function.Function;
+
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.testng.annotations.Test;
-import org.testng.Assert;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.AfterTest;
+import static org.testng.Assert.*;
 
 public class BallotSelectionTest {
 
+  @BeforeTest(enabled=true)
+  public void setUp() {
+    Setup.setProperties();
+    Persistence.beginTransaction();
+  }
 
-  private BallotSelectionTest (){};
+  @AfterTest(enabled=true)
+  public void tearDown() {
+    try {
+    Persistence.rollbackTransaction();
+    } catch (Exception e) {
+    }
+  }
+
+  private BallotSelectionTest() {};
 
   private Boolean return_cvr = true;
 
@@ -33,31 +63,31 @@ public class BallotSelectionTest {
   public void testSelectBallotsReturnsListOfOnes(){
     Long rand = 1L;
     Long sequence_start = 1L;
-    List<CastVoteRecord> results = makeSelection(rand,sequence_start);
-    Assert.assertEquals(1, results.size());
-    Assert.assertEquals(results.get(0).imprintedID(), "1-Batch1-1");
+    List<CastVoteRecord> results = makeSelection(rand, sequence_start);
+    assertEquals(1, results.size());
+    assertEquals(results.get(0).imprintedID(), "1-Batch1-1");
   }
 
   @Test()
-  public void testSelectBallotsReturnsListHappyPath(){
+  public void testSelectBallotsReturnsListHappyPath() {
     Long rand = 47L;
     Long sequence_start = 41L;
-    List<CastVoteRecord> results = makeSelection(rand,sequence_start);
-    Assert.assertEquals(1, results.size());
-    Assert.assertEquals(results.get(0).imprintedID(), "1-Batch1-1");
+    List<CastVoteRecord> results = makeSelection(rand, sequence_start);
+    assertEquals(1, results.size());
+    assertEquals(results.get(0).imprintedID(), "1-Batch1-1");
   }
 
   @Test()
-  public void testSelectBallotsReturnsPhantomRecord(){
+  public void testSelectBallotsReturnsPhantomRecord() {
     Long rand = 47L;
     Long sequence_start = 41L;
     // overwrite var
     return_cvr = false;
-    List<CastVoteRecord> results = makeSelection(rand,sequence_start);
-    Assert.assertEquals(1, results.size());
-    Assert.assertEquals(results.get(0).imprintedID(), "");
-    Assert.assertEquals(results.get(0).ballotType(), "PHANTOM RECORD");
-    Assert.assertEquals((int)results.get(0).cvrNumber(), (int)0);
+    List<CastVoteRecord> results = makeSelection(rand, sequence_start);
+    assertEquals(1, results.size());
+    assertEquals(results.get(0).imprintedID(), "");
+    assertEquals(results.get(0).ballotType(), "PHANTOM RECORD");
+    assertEquals((int)results.get(0).cvrNumber(), (int)0);
   }
 
   private List<CastVoteRecord> makeSelection(Long rand, Long sequence_start) {
@@ -111,5 +141,136 @@ public class BallotSelectionTest {
                                                     sequence_end    // sequence_end
                                                     );
     return bmi;
+  }
+
+  public ContestResult
+    fakeContestResult(String contestName,
+                      Set<County> counties,
+                      Set<Contest> contests) {
+    return new ContestResult();
+  }
+
+  @Test(enabled=true)
+  public void testCountyCreation() {
+    // Two counties have submitted CVRs and Ballot Manifests
+    County adamsCounty = new County("Adams", 1L);
+    County chaffeeCounty = new County("Chaffee", 8L);
+    County denverCounty = new County("Denver", 16L);
+    Persistence.saveOrUpdate(adamsCounty);
+    Persistence.saveOrUpdate(chaffeeCounty);
+    Persistence.saveOrUpdate(denverCounty);
+
+    Set<County> countyUniverse = new HashSet<County>();
+    countyUniverse.add(adamsCounty);
+    countyUniverse.add(chaffeeCounty);
+    countyUniverse.add(denverCounty);
+
+    // Adams County has four batches of ballots
+    BallotManifestInfo adamsInfo1 = new BallotManifestInfo(adamsCounty.id(), 1, "1", 100, "adams-bin-1", 1L, 100L);
+    BallotManifestInfo adamsInfo2 = new BallotManifestInfo(adamsCounty.id(), 1, "2", 100, "adams-bin-2", 101L, 200L);
+    BallotManifestInfo adamsInfo3 = new BallotManifestInfo(adamsCounty.id(), 1, "2", 100, "adams-bin-3", 201L, 300L);
+    BallotManifestInfo adamsInfo4 = new BallotManifestInfo(adamsCounty.id(), 1, "2", 100, "adams-bin-4", 301L, 400L);
+    // Chaffee County has two batches of ballots
+    BallotManifestInfo chaffeeInfo1 = new BallotManifestInfo(chaffeeCounty.id(), 1, "1", 50, "chaffee-bin-1", 1L, 50L);
+    BallotManifestInfo chaffeeInfo2 = new BallotManifestInfo(chaffeeCounty.id(), 1, "2", 50, "chaffee-bin-2", 51L, 100L);
+    // Denver County is larger and has six batches of ballots over two scanners. Also, the
+    // scanners have a higher capacity.
+    BallotManifestInfo denverInfo1 = new BallotManifestInfo(denverCounty.id(), 1, "1", 200, "denver-bin-1", 1L, 200L);
+    BallotManifestInfo denverInfo2 = new BallotManifestInfo(denverCounty.id(), 1, "2", 200, "denver-bin-2", 201L, 400L);
+    BallotManifestInfo denverInfo3 = new BallotManifestInfo(denverCounty.id(), 1, "3", 200, "denver-bin-3", 4011L, 600L);
+    BallotManifestInfo denverInfo4 = new BallotManifestInfo(denverCounty.id(), 2, "1", 200, "denver-bin-4", 601L, 800L);
+    BallotManifestInfo denverInfo5 = new BallotManifestInfo(denverCounty.id(), 2, "2", 200, "denver-bin-5", 801L, 1000L);
+    BallotManifestInfo denverInfo6 = new BallotManifestInfo(denverCounty.id(), 2, "3", 200, "denver-bin-6", 1001L, 1200L);
+
+    Set<BallotManifestInfo> manifests =
+      Stream
+      .of(adamsInfo1, adamsInfo2, adamsInfo3, adamsInfo4, chaffeeInfo1, chaffeeInfo2,
+          denverInfo1, denverInfo2, denverInfo3, denverInfo4, denverInfo5, denverInfo6)
+      .collect(Collectors.toSet());
+
+    for (BallotManifestInfo b : manifests) {
+      Persistence.saveOrUpdate(b);
+    }
+
+    // Two options for governor
+    Choice govRep = new Choice("Walker Stapelton", "current state treasurer", false, false);
+    Choice govDem = new Choice("Jared Polis", "the rep from Boulder", false, false);
+
+    List<Choice> govChoices = new ArrayList<Choice>();
+    govChoices.add(govRep); govChoices.add(govDem);
+
+    // Two options for secretary of state
+    Choice sosRep = new Choice("Wayne", "the incumbent", false, false);
+    Choice sosDem = new Choice("Anti-Wayne", "the new person", false, false);
+
+    List<Choice> sosChoices = new ArrayList<Choice>();
+    sosChoices.add(sosRep); sosChoices.add(sosDem);
+
+    // When two counties have the same contest name and choices, we'll
+    // combine them into one logical contest
+
+    Contest adamsGov = new Contest("Governor", adamsCounty, "2018 Governor's Race", govChoices, 1, 1, 1);
+    Contest adamsSOS = new Contest("SOS", adamsCounty, "2018 SOS Race", sosChoices, 1, 1, 1);
+
+    Contest chaffeeGov = new Contest("Governor", chaffeeCounty, "2018 Governor's Race", govChoices, 1, 1, 1);
+    Contest chaffeeSOS = new Contest("SOS", chaffeeCounty, "2018 SOS Race", sosChoices, 1, 1, 1);
+
+    Contest denverGov = new Contest("Governor", denverCounty, "2018 Governor's Race", govChoices, 1, 1, 1);
+    Contest denverSOS = new Contest("SOS", denverCounty, "2018 SOS Race", sosChoices, 1, 1, 1);
+
+    Persistence.saveOrUpdate(chaffeeGov); Persistence.saveOrUpdate(chaffeeSOS);
+    Persistence.saveOrUpdate(adamsGov);  Persistence.saveOrUpdate(adamsSOS);
+    Persistence.saveOrUpdate(denverGov); Persistence.saveOrUpdate(denverSOS);
+
+    CountyContestResult result1 = new CountyContestResult(adamsCounty, adamsGov);
+    CountyContestResult result2 = new CountyContestResult(adamsCounty, adamsSOS);
+    CountyContestResult result3 = new CountyContestResult(chaffeeCounty, chaffeeGov);
+    CountyContestResult result4 = new CountyContestResult(chaffeeCounty, chaffeeSOS);
+    CountyContestResult result5 = new CountyContestResult(denverCounty, denverGov);
+    CountyContestResult result6 = new CountyContestResult(denverCounty, denverSOS);
+
+    List<CountyContestResult> countyContestResults =
+      Stream.of(result1, result2, result3,
+                result4, result5, result6)
+      .collect(Collectors.toList());
+
+    for (CountyContestResult x : countyContestResults) {
+      Persistence.saveOrUpdate(x);
+    }
+
+    Set<Contest> multiCountyContests =
+    Stream.of(chaffeeGov,chaffeeSOS,
+              denverGov, denverSOS,
+              adamsGov, adamsSOS)
+      .collect(Collectors.toSet());
+
+    for (Contest c: multiCountyContests) {
+      ContestCounter.countContest(c.name());
+    }
+
+    final ContestResult governorContest = ContestResultQueries.findOrCreate("Governor");
+    assertEquals(governorContest.getCounties().stream().map((x) -> x.id()).collect(Collectors.toSet()),
+                 Stream.of(1L, 8L, 16L).collect(Collectors.toSet()),
+                 "The ballot universe contains the county IDs in question.");
+
+    // TODO let's rework how we represent a universe
+    // Adams:   1-400
+    // Chaffee: 401-500
+    // Denver:  501-1700
+    // Total: 1700
+    Map<Long, Map<String, Long>> govManifest = governorContest.ballotManifest();
+
+    assertEquals(governorContest.countyForBallotSample(1L,    govManifest), (Long) 1L);
+    assertEquals(governorContest.countyForBallotSample(323L,  govManifest), (Long) 1L);
+    assertEquals(governorContest.countyForBallotSample(400L,  govManifest), (Long) 1L);
+    assertEquals(governorContest.countyForBallotSample(401L,  govManifest), (Long) 8L);
+    assertEquals(governorContest.countyForBallotSample(500L,  govManifest), (Long) 8L);
+    assertEquals(governorContest.countyForBallotSample(501L,  govManifest), (Long) 16L);
+    assertEquals(governorContest.countyForBallotSample(1500L, govManifest), (Long) 16L);
+
+    // negative tests, what to do if we ask for a position we can't
+    // have? return an OptionalLong instead?
+    assertEquals(governorContest.countyForBallotSample(1701L, govManifest), (Long) 0L);
+    //assertEquals(countyForBallotSample(1700L, universe), null);
   }
 }
