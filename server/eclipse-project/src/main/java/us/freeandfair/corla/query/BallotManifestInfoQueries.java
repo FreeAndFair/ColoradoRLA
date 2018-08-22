@@ -63,7 +63,7 @@ public final class BallotManifestInfoQueries {
    * @return the ballot manifests matching the specified set of county IDs,
    * or null if the query fails.
    */
-  public static Set<BallotManifestInfo> getMatching(final Set<Integer> the_county_ids) {
+  public static Set<BallotManifestInfo> getMatching(final Set<Long> the_county_ids) {
     Set<BallotManifestInfo> result = null;
 
     try {
@@ -73,7 +73,7 @@ public final class BallotManifestInfoQueries {
           cb.createQuery(BallotManifestInfo.class);
       final Root<BallotManifestInfo> root = cq.from(BallotManifestInfo.class);
       final List<Predicate> disjuncts = new ArrayList<Predicate>();
-      for (final Integer county_id : the_county_ids) {
+      for (final Long county_id : the_county_ids) {
         disjuncts.add(cb.equal(root.get(COUNTY_ID), county_id));
       }
       cq.select(root).where(cb.or(disjuncts.toArray(new Predicate[disjuncts.size()])));
