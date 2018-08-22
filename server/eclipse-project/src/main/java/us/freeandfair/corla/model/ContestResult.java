@@ -2,16 +2,15 @@ package us.freeandfair.corla.model;
 
 import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 
+import java.math.BigDecimal;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.List;
+import java.util.Optional;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
-
 import javax.persistence.Cacheable;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -34,7 +33,6 @@ import javax.persistence.Version;
 
 import us.freeandfair.corla.persistence.PersistentEntity;
 import us.freeandfair.corla.persistence.StringSetConverter;
-import us.freeandfair.corla.query.BallotManifestInfoQueries;
 
 /**
  * A class representing the results for a contest across counties.
@@ -48,6 +46,7 @@ import us.freeandfair.corla.query.BallotManifestInfoQueries;
        indexes = { @Index(name = "idx_cr_contest",
                           columnList = "contest_name",
                           unique = true)})
+@SuppressWarnings({"PMD.ExcessiveImports"}) // you complain if we import x.y.z.*, so....
 public class ContestResult implements PersistentEntity, Serializable {
 
   /**
@@ -132,6 +131,18 @@ public class ContestResult implements PersistentEntity, Serializable {
   private String contestName;
 
   /**
+   * The gap between winner and second place divided by total number of ballots.
+   */
+  @Column(name = "diluted_margin")
+  private BigDecimal dilutedMargin;
+
+  /**
+   * AuditReason
+   */
+  @Column(name = "audit_reason")
+  private AuditReason auditReason;
+
+  /**
    * Constructs a new empty ContestResult (solely for persistence).
    */
   public ContestResult() {
@@ -139,10 +150,11 @@ public class ContestResult implements PersistentEntity, Serializable {
   }
 
   /**
-   * Constructs a new ContestResult with the specified contestName. The contestName is
-   * what links Contests together (along with one ContestResult).
+   * Constructs a new ContestResult with the specified contestName. The
+   * contestName is what links Contests together (along with one
+   * ContestResult).
    *
-   * @param the_contest The contest.
+   * @param contestName The contest.
    */
   public ContestResult(final String contestName) {
     super();
@@ -181,10 +193,29 @@ public class ContestResult implements PersistentEntity, Serializable {
   }
 
   /**
+   * @return the AuditReason.
+   */
+  public AuditReason getAuditReason() {
+    return this.auditReason;
+  }
+
+  /** set it **/
+  public void setAuditReason(final AuditReason auditReason) {
+    this.auditReason = auditReason;
+  }
+
+  /**
    * set the set of counties
    */
-  public boolean setCounties(Set<County> cs) {
+  public boolean addCounties(final Set<County> cs) {
     return this.counties.addAll(cs);
+  }
+
+  /**
+   * set the set of counties
+   */
+  public boolean addContests(final Set<Contest> cs) {
+    return this.contests.addAll(cs);
   }
 
   /**
@@ -192,12 +223,6 @@ public class ContestResult implements PersistentEntity, Serializable {
    */
   public Set<County> getCounties() {
     return Collections.unmodifiableSet(this.counties);
-  }
-
-  public List<Long> countyIds() {
-    return getCounties().stream()
-      .map(c -> c.id())
-      .collect(Collectors.toList());
   }
 
   /**
@@ -209,10 +234,42 @@ public class ContestResult implements PersistentEntity, Serializable {
   }
 
   /**
+   * @param county the county owning the contest you want
+   * @return the contest belonging to county
+   */
+  public Contest contestFor(final County county) {
+    final Optional<Contest> contestMaybe = getContests().stream()
+      .filter(c -> c.county().id().equals(county.id()))
+      .findFirst(); // should only be one?
+
+    if (contestMaybe.isPresent()) {
+      return contestMaybe.get();
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * @param winners a set of the choices that won the contest
+   */
+  public void setWinners (final Set<String> winners) {
+    this.winners.clear();
+    this.winners.addAll(winners);
+  }
+
+  /**
    * @return the winners for thie ContestResult.
    */
   public Set<String> getWinners() {
     return Collections.unmodifiableSet(this.winners);
+  }
+
+  /**
+   * @param losers a set of the choices that did not win the contest
+   */
+  public void setLosers (final Set<String> losers) {
+    this.losers.clear();
+    this.losers.addAll(losers);
   }
 
   /**
@@ -236,107 +293,36 @@ public class ContestResult implements PersistentEntity, Serializable {
     this.vote_totals = voteTotals;
   }
 
-  private Set<Long> countyIDs () {
+  /**
+   * set dilutedMargin.
+   */
+  public void setDilutedMargin(final BigDecimal dilutedMargin) {
+    this.dilutedMargin = dilutedMargin;
+  }
+
+  /**
+   * The diluted margin (μ) of this ContestResult
+   */
+  public BigDecimal getDilutedMargin() {
+    return this.dilutedMargin;
+  }
+
+  /**
+   * The set of county ids related to this ContestResult
+   */
+  public Set<Long> countyIDs() {
     return this.getCounties().stream()
-      .map((x) -> (x.id()))
+      .map(x -> x.id())
       .collect(Collectors.toSet());
   }
 
   /**
-   *
+   * The set of contest ids related to this ContestResult
    */
-  private Long ballotsInManifest(final Set<BallotManifestInfo> xs) {
-    return xs.stream()
-      .mapToLong((x) -> x.sequenceEnd())
-      .max()
-      .getAsLong();
-  }
-
-  /**
-   * @param Set<BallotManifestInfo> xs - a collection of manifest
-   * records. Each belongs to a county.
-   *
-   * @return Map<Long, Set<BallotManifestInfo>> universe a ballot
-   * universe from a collection of manifest info objects. Guaranteed to
-   * be in stable, sorted order by County ID.
-   */
-  private Map<Long, Set<BallotManifestInfo>> ballotUniverse() {
-    Map<Long, Set<BallotManifestInfo>> universe =
-      new TreeMap<Long, Set<BallotManifestInfo>>();
-
-    // Network side-effect!
-    Set<BallotManifestInfo> countyManifests =
-      BallotManifestInfoQueries.getMatching(this.countyIDs());
-
-    // FIXME This isn't as nice and LISPy as I'd like!
-    for(BallotManifestInfo x : countyManifests) {
-      final Long countyID = x.countyID();
-      Set<BallotManifestInfo> manifest;
-
-      if (universe.containsKey(countyID)){
-        manifest = universe.get(countyID);
-        manifest.add(x);
-        universe.put(countyID, manifest);
-      } else {
-        manifest = new HashSet<BallotManifestInfo>();
-        manifest.add(x);
-        universe.put(countyID, manifest);
-      }
-    }
-
-    return universe;
-  }
-
-  /**
-   * @return BallotManifest a view of counties and their manifest
-   * metadata for this contest.
-   */
-  public Map<Long, Map<String, Long>> ballotManifest() {
-    Map<Long, Map<String, Long>> manifest =
-      new TreeMap<Long, Map<String, Long>>();
-
-    Map<Long, Set<BallotManifestInfo>> universe = this.ballotUniverse();
-
-    Long offset = 0L;
-    for (Map.Entry<Long, Set<BallotManifestInfo>> e : universe.entrySet()) {
-      Map<String, Long> info = new HashMap<String, Long>();
-      Long ballots = ballotsInManifest(e.getValue());
-
-      info.put("offset", offset);
-      info.put("start", offset + 1);
-      info.put("end", offset + ballots);
-
-      manifest.put(e.getKey(), info);
-
-      offset += ballots;
-    }
-
-    System.out.println("ContestResult.ballotManifest: " + manifest);
-    return manifest;
-  }
-
-  // TODO accept a manifest like we build below.
-  public Long countyForBallotSample(final Long idx,
-                                    Map<Long, Map<String, Long>> manifest) {
-    //FIXME reducing a stream of longs isn't right.
-    Long countyId;
-
-    try {
-    countyId =
-      manifest.entrySet().stream()
-      .filter(x -> {
-          Map<String, Long> m = x.getValue();
-          return m.get("start") <= idx && m.get("end") >= idx;
-        })
-      .map(x -> x.getKey())
-      .sorted()
-      .collect(Collectors.toList()).get(0);
-    } catch (Exception e) {
-      // FIXME this is wrong.
-      return 0L;
-    }
-
-    return countyId;
+  public Set<Long> contestIDs() {
+    return this.getContests().stream()
+      .map(x -> x.id())
+      .collect(Collectors.toSet());
   }
 
   /**

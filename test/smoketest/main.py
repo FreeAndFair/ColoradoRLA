@@ -626,9 +626,9 @@ def dos_init(ac):
     r = test_endpoint_json(ac, ac.state_s, "/update-audit-info",
                            { "election_type": "coordinated",
                              "election_date": "2017-11-09T02:00:00Z",
+                             "upload_file": [{"contents": open("../contest-names/canonical-contests.csv").read()}],
                              "public_meeting_date": "2017-11-19T02:00:00Z",
                              "risk_limit": ac.args.risk_limit } )
-
 def county_setup(ac, county_id):
 
     logging.debug("county setup for county_id %d" % county_id)

@@ -463,6 +463,16 @@ public final class Persistence {
   }
 
   /**
+   * Like saveOrUpdate, but returns the thing you wanted to save instead
+   * of a boolean.
+   * @param obj the thing to persist
+   */
+  public static <T> T persist(final T obj) {
+    currentSession().saveOrUpdate(obj);
+    return obj;
+  }
+
+  /**
    * Saves the specified object in persistent storage. This will cause an
    * exception if there is already an object in persistent storage with the same
    * class and ID. This method must be called within a transaction.

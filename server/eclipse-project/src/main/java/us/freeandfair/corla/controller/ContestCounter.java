@@ -3,18 +3,22 @@ package us.freeandfair.corla.controller;
 
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import us.freeandfair.corla.Main;
+import us.freeandfair.corla.math.Audit;
 import us.freeandfair.corla.model.ContestResult;
 import us.freeandfair.corla.model.CountyContestResult;
+import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.query.BallotManifestInfoQueries;
 import us.freeandfair.corla.query.ContestResultQueries;
-import us.freeandfair.corla.query.CountyContestResultQueries;
 
 public final class ContestCounter {
 
@@ -22,20 +26,64 @@ public final class ContestCounter {
   private ContestCounter() {
   }
 
-  /** set voteTotals on CONTEST based on all counties that have that Contest
-   * name in their uploaded CVRs
-   **/
-  public static ContestResult countContest(final String contestName) {
-    final List<CountyContestResult> countyResults =
-        CountyContestResultQueries.withContestName(contestName);
-    final ContestResult contestResult = ContestResultQueries.findOrCreate(contestName);
-    contestResult.setVoteTotals(accumulateVoteTotals(countyResults.stream()
-                                                     .map((cr) -> cr.voteTotals())
-                                                     .collect(Collectors.toList())));
+  /**
+   * Group all CountyContestResults by contest name and tally the votes
+   * across all counties that have reported results.
+   *
+   * @return List<ContestResult> A high level view of contests and their
+   * participants.
+   */
+  public static List<ContestResult> countAllContests() {
+    return
+      Persistence.getAll(CountyContestResult.class)
+      .stream()
+      .collect(Collectors.groupingBy(x -> x.contest().name()))
+      .entrySet()
+      .stream()
+      .map(ContestCounter::countContest)
+      .collect(Collectors.toList());
+  }
 
-    contestResult.setCounties(countyResults.stream()
-                              .map((cr) -> cr.county())
+  /**
+   * Set voteTotals on CONTEST based on all counties that have that
+   * Contest name in their uploaded CVRs
+   **/
+  public static ContestResult countContest(final Map.Entry<String,
+                                           List<CountyContestResult>>
+                                           countyContestResults) {
+    final ContestResult contestResult =
+      ContestResultQueries.findOrCreate(countyContestResults.getKey());
+
+    final Map<String,Integer> voteTotals = accumulateVoteTotals(countyContestResults.
+                                                          getValue().stream()
+                                                          .map((cr) -> cr.voteTotals())
+                                                          .collect(Collectors.toList()));
+    contestResult.setVoteTotals(voteTotals);
+    // TODO how many winners are allowed?
+    contestResult.setWinners(winners(voteTotals));
+    contestResult.setLosers(losers(voteTotals, contestResult.getWinners()));
+
+    contestResult.addContests(countyContestResults.getValue().stream()
+                              .map(cr -> cr.contest())
                               .collect(Collectors.toSet()));
+    contestResult.addCounties(countyContestResults.getValue().stream()
+                              .map(cr -> cr.county())
+                              .collect(Collectors.toSet()));
+    final Long ballotCount =
+      BallotManifestInfoQueries.totalBallots(contestResult.countyIDs());
+
+    if (ballotCount == 0L) {
+      Main.LOGGER.error("contest has no ballot manifests!:"
+                        + contestResult.getContestName()
+                        + " for countyIDs: "
+                        + contestResult.countyIDs());
+    }
+
+    // dilutedMargin of zero is ok here, it means the contest is uncontested
+    // and the contest will not be auditable, so samples should not be selected for it
+    final BigDecimal dilutedMargin =
+      Audit.dilutedMargin(margin(contestResult.getVoteTotals()), ballotCount);
+    contestResult.setDilutedMargin(dilutedMargin);
     return contestResult;
   }
 
@@ -56,38 +104,59 @@ public final class ContestCounter {
     return acc;
   }
 
-
   /** extract totals, then sort reversed so the winner is first  **/
-  public static List<Integer> rankTotals(final Map<String,Integer> voteTotals) {
+  public static List<Entry> rankTotals(final Map<String,Integer> voteTotals) {
     return voteTotals.entrySet().stream()
-        .map(Entry::getValue)
-        .sorted(Comparator.reverseOrder())
-        .collect(Collectors.toList());
+      .sorted(Comparator.comparing((Entry e) -> -(Integer)e.getValue()))
+      .collect(Collectors.toList());
   }
 
   /** gap between winner and runner-up **/
-  public static Integer minMargin(final Map<String,Integer> voteTotals) {
-    final List<Integer> totals = rankTotals(voteTotals);
+  public static Integer margin(final Map<String,Integer> voteTotals) {
+    final List<Entry> totals = rankTotals(voteTotals);
     final int two = 2;//pmd
     if (two <= totals.size()) {
-      return totals.get(0) - totals.get(1);
+      return (Integer)totals.get(0).getValue() - (Integer)totals.get(1).getValue();
     } else {
       // uncontested
       return 0;
     }
   }
 
-  /** simple sum of all totals **/
-  public static Integer ballotCount(final Map<String,Integer> voteTotals) {
-    return rankTotals(voteTotals).stream().reduce(0, Integer::sum);
+  /**
+   * Find the set of winners for the ranking of voteTotals. Assumes only
+   * one winner allowed.
+   * @param voteTotals a map of choice name to number of votes
+   */
+  public static Set<String> winners(final Map<String,Integer> voteTotals) {
+    return winners(voteTotals, 1);
   }
 
-  /** calculate the diluted margin - gap between first and second, divided by
-   * total ballots
-   **/
-  public static BigDecimal dilutedMargin(final Map<String,Integer> voteTotals) {
-    final BigDecimal min_margin = BigDecimal.valueOf(minMargin(voteTotals));
-    final BigDecimal ballot_count = BigDecimal.valueOf(ballotCount(voteTotals));
-    return min_margin.divide(ballot_count, MathContext.DECIMAL128);
+  /**
+   * Find the set of winners for the ranking of voteTotals.
+   * @param voteTotals a map of choice name to number of votes
+   * @param winnersAllowed how many can win this contest?
+   */
+  public static Set<String> winners(final Map<String,Integer> voteTotals,
+                                    final Integer winnersAllowed) {
+    return rankTotals(voteTotals).stream()
+      .limit(winnersAllowed)
+      .map(Entry::getKey)
+      .map(k -> k.toString()) // types?
+      .collect(Collectors.toSet());
+  }
+
+  /**
+   * Find the set of losers give a ranking of voteTotals and some set
+   * of contest winners.
+   * @param voteTotals a map of choice name to number of votes
+   * @param winners the choices that aren't losers
+   */
+  public static Set<String> losers(final Map<String,Integer> voteTotals,
+                                   final Set<String> winners) {
+    final Set<String> l = new HashSet<String>();
+    l.addAll((Set<String>)voteTotals.keySet());
+    l.removeAll(winners);
+    return l;
   }
 }

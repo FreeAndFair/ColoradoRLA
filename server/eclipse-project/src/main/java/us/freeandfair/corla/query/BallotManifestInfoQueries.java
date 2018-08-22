@@ -11,6 +11,7 @@
 
 package us.freeandfair.corla.query;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -20,7 +21,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
-import java.util.stream.Collectors;
 
 import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
@@ -66,7 +66,7 @@ public final class BallotManifestInfoQueries {
    * or null if the query fails.
    */
   public static Set<BallotManifestInfo> getMatching(final Set<Long> the_county_ids) {
-    Set<BallotManifestInfo> result =
+    final Set<BallotManifestInfo> result =
       new TreeSet<BallotManifestInfo>(new BallotManifestInfo.Sort());
 
     try {
@@ -216,4 +216,27 @@ public final class BallotManifestInfoQueries {
     return result;
   }
 
+  /**
+   * Get the number of ballots for a given set of counties.
+   */
+  public static Long totalBallots(final Set<Long> countyIds) {
+    final Session s = Persistence.currentSession();
+    final Query q =
+      s.createNativeQuery("with county_ballots as " +
+                    "(select max(sequence_end) as ballots " +
+                    "from ballot_manifest_info " +
+                    "where county_id in (:countyIds) " +
+                    "group by county_id) " +
+                    "select sum(ballots) from county_ballots");
+    q.setParameter("countyIds", countyIds);
+
+    final Optional<BigDecimal> res = q.uniqueResultOptional();
+
+    if (res.isPresent()) {
+      return res.get().longValue();
+    } else {
+      return 0L;
+    }
+
+  }
 }

@@ -30,13 +30,11 @@ public class ContestCounterTest {
   }
 
   @Test()
-  public void testDilutedMargin(){
+  public void testMargin(){
     Map<String,Integer> voteTotal = exampleVoteTotal();
-    BigDecimal result = ContestCounter.dilutedMargin(voteTotal);
-    // 15 - 20 = 5 | 15 + 20 = 35
-    // 5 / 35 = 1/7 = 0.1428...
-    Assert.assertEquals(result.setScale(3, RoundingMode.CEILING),
-                        BigDecimal.valueOf(0.1428).setScale(3, RoundingMode.CEILING));
+    Integer result = ContestCounter.margin(voteTotal);
+    // 20 - 15 = 5
+    Assert.assertEquals((Integer)5, (Integer)result);
   }
 
   private Map<String,Integer> exampleVoteTotal (){
