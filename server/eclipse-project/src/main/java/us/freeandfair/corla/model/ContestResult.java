@@ -5,11 +5,11 @@ import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
-
-
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import javax.persistence.Cacheable;
 import javax.persistence.CollectionTable;
@@ -33,6 +33,7 @@ import javax.persistence.Version;
 
 import us.freeandfair.corla.persistence.PersistentEntity;
 import us.freeandfair.corla.persistence.StringSetConverter;
+import us.freeandfair.corla.query.BallotManifestInfoQueries;
 
 /**
  * A class representing the results for a contest across counties.
@@ -226,6 +227,109 @@ public class ContestResult implements PersistentEntity, Serializable {
    */
   public void setVoteTotals(final Map<String, Integer> voteTotals) {
     this.vote_totals = voteTotals;
+  }
+
+  private Set<Long> countyIDs () {
+    return this.getCounties().stream()
+      .map((x) -> (x.id()))
+      .collect(Collectors.toSet());
+  }
+
+  /**
+   *
+   */
+  private Long ballotsInManifest(final Set<BallotManifestInfo> xs) {
+    return xs.stream()
+      .mapToLong((x) -> x.sequenceEnd())
+      .max()
+      .getAsLong();
+  }
+
+  /**
+   * @param Set<BallotManifestInfo> xs - a collection of manifest
+   * records. Each belongs to a county.
+   *
+   * @return Map<Long, Set<BallotManifestInfo>> universe a ballot
+   * universe from a collection of manifest info objects. Guaranteed to
+   * be in stable, sorted order by County ID.
+   */
+  private Map<Long, Set<BallotManifestInfo>> ballotUniverse() {
+    Map<Long, Set<BallotManifestInfo>> universe =
+      new TreeMap<Long, Set<BallotManifestInfo>>();
+
+    // Network side-effect!
+    Set<BallotManifestInfo> countyManifests =
+      BallotManifestInfoQueries.getMatching(this.countyIDs());
+
+    // FIXME This isn't as nice and LISPy as I'd like!
+    for(BallotManifestInfo x : countyManifests) {
+      final Long countyID = x.countyID();
+      Set<BallotManifestInfo> manifest;
+
+      if (universe.containsKey(countyID)){
+        manifest = universe.get(countyID);
+        manifest.add(x);
+        universe.put(countyID, manifest);
+      } else {
+        manifest = new HashSet<BallotManifestInfo>();
+        manifest.add(x);
+        universe.put(countyID, manifest);
+      }
+    }
+
+    return universe;
+  }
+
+  /**
+   * @return BallotManifest a view of counties and their manifest
+   * metadata for this contest.
+   */
+  public Map<Long, Map<String, Long>> ballotManifest() {
+    Map<Long, Map<String, Long>> manifest =
+      new TreeMap<Long, Map<String, Long>>();
+
+    Map<Long, Set<BallotManifestInfo>> universe = this.ballotUniverse();
+
+    Long offset = 0L;
+    for (Map.Entry<Long, Set<BallotManifestInfo>> e : universe.entrySet()) {
+      Map<String, Long> info = new HashMap<String, Long>();
+      Long ballots = ballotsInManifest(e.getValue());
+
+      info.put("offset", offset);
+      info.put("start", offset + 1);
+      info.put("end", offset + ballots);
+
+      manifest.put(e.getKey(), info);
+
+      offset += ballots;
+    }
+
+    System.out.println("ContestResult.ballotManifest: " + manifest);
+    return manifest;
+  }
+
+  // TODO accept a manifest like we build below.
+  public Long countyForBallotSample(final Long idx,
+                                    Map<Long, Map<String, Long>> manifest) {
+    //FIXME reducing a stream of longs isn't right.
+    Long countyId;
+
+    try {
+    countyId =
+      manifest.entrySet().stream()
+      .filter(x -> {
+          Map<String, Long> m = x.getValue();
+          return m.get("start") <= idx && m.get("end") >= idx;
+        })
+      .map(x -> x.getKey())
+      .sorted()
+      .collect(Collectors.toList()).get(0);
+    } catch (Exception e) {
+      // FIXME this is wrong.
+      return 0L;
+    }
+
+    return countyId;
   }
 
   /**
