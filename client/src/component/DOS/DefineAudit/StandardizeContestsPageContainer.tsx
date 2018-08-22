@@ -69,37 +69,21 @@ interface ContainerProps {
     dosState: DOS.AppState;
 }
 
+/**
+ * The URL path part for the page logically following this one.
+ */
+const NEXT_PAGE = '/sos/audit/select-contests';
+
+/**
+ * The URL path part for the page logically preceding this one.
+ */
+const PREVIOUS_PAGE = '/sos/audit';
+
 class StandardizeContestsPageContainer extends React.Component<ContainerProps> {
-    private areContestsLoaded: boolean;
-    private areCanonicalContestsLoaded: boolean;
     private forms: DOS.Form.StandardizeContests.Ref;
-    private nextPage: string;
-    private previousPage: string;
-
-    // XXX: This is *really bad* React. I know, and I'm sorry about it.
-    public constructor(props: ContainerProps) {
-        super(props);
-
-        this.nextPage = '/sos/audit/select-contests';
-        this.previousPage = '/sos/audit';
-    }
 
     public componentDidMount() {
-        this.areContestsLoaded = false;
-        this.areCanonicalContestsLoaded = false;
         this.forms = { standardizeContestsForm: {} };
-    }
-
-    // XXX: Hack to work around waiting on a network to receive these new
-    // props.
-    public componentDidUpdate(prevProps: ContainerProps) {
-        if (this.props.contests !== prevProps.contests) {
-            this.areContestsLoaded = true;
-        }
-
-        if (this.props.canonicalContests !== prevProps.canonicalContests) {
-            this.areCanonicalContestsLoaded = true;
-        }
     }
 
     public render() {
@@ -114,9 +98,9 @@ class StandardizeContestsPageContainer extends React.Component<ContainerProps> {
             return <div />;
         }
 
-        const previousPage = () => history.push(this.previousPage);
+        const previousPage = () => history.push(PREVIOUS_PAGE);
 
-        if (!this.areContestsLoaded || !this.areCanonicalContestsLoaded) {
+        if (_.isEmpty(contests) || _.isEmpty(canonicalContests)) {
             return <WaitingForContests back={ previousPage } />;
         }
 
@@ -127,7 +111,7 @@ class StandardizeContestsPageContainer extends React.Component<ContainerProps> {
         const filteredContests = contestsToDisplay(contests, canonicalContests);
 
         if (_.isEmpty(filteredContests)) {
-            return <Redirect to={ this.nextPage } />;
+            return <Redirect to={ NEXT_PAGE } />;
         }
 
         const props = {
@@ -139,7 +123,7 @@ class StandardizeContestsPageContainer extends React.Component<ContainerProps> {
             forms: this.forms,
             nextPage: () => {
                 standardizeContests(this.forms.standardizeContestsForm || {});
-                history.push(this.nextPage);
+                history.push(NEXT_PAGE);
             },
         };
 
