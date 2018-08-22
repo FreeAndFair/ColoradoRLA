@@ -21,21 +21,21 @@ import counties from 'corla/data/counties';
 
 const contestsToDisplay = (contests: DOS.Contests,
                            canonicalContests: DOS.CanonicalContests) => {
-    const cs: DOS.Contests = {};
+    const displayedContests: DOS.Contests = {};
 
     // XXX: Make this a map / filter chain. TypeScript complains about using
     // `DOS.Contests` in a `_.filter` context, and I do not know how to make it
     // happy.
-    _.forEach(contests, (c: Contest) => {
-        const countyName = counties[c.countyId].name;
+    _.forEach(contests, (contest: Contest) => {
+        const countyName = counties[contest.countyId].name;
         const countyStandards = canonicalContests[countyName] || [];
 
-        if (!_.isEmpty(countyStandards) && !_.includes(countyStandards, c.name)) {
-          cs[c.id] = c;
+        if (!_.isEmpty(countyStandards) && !_.includes(countyStandards, contest.name)) {
+          displayedContests[contest.id] = contest;
         }
     });
 
-    return cs;
+    return displayedContests;
 };
 
 interface WaitingForContestsProps {
