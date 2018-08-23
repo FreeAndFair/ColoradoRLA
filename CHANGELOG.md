@@ -7,7 +7,9 @@ Releases correspond to Git tags. Changes between releases are described below wi
 
 ## 1.4.0 - In Progress
 
-The sprint beginning on 8/1/2018 and ending on 8/14/2018
+The sprint ending on 8/29/2018
+
+- [API - Log on phantom CVR creation][pr33]
 
 ## 1.3.4 - Bugfixes
 
@@ -74,3 +76,4 @@ This is [FreeAndFair's most recent tag][1.1.0.3].
 [pr13]: https://github.com/democracyworks/ColoradoRLA/pull/13
 [pr15]: https://github.com/democracyworks/ColoradoRLA/pull/15
 [pr29]: https://github.com/democracyworks/ColoradoRLA/pull/29
+[pr33]: https://github.com/democracyworks/ColoradoRLA/pull/33
