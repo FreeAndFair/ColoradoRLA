@@ -41,7 +41,8 @@ class AuditBoardSignInPage extends React.Component<PageProps, PageState> {
             return <div />;
         }
 
-        const submit = () => auditBoardSignIn(this.state.form);
+        // TODO: Set the index according to the button clicked...
+        const submit = () => auditBoardSignIn(0, this.state.form);
 
         const disableButton = !isValidAuditBoard(this.state.form);
 

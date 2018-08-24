@@ -45,6 +45,7 @@ declare namespace JSON {
 
     interface CountyDashboard {
         asm_state: string;
+        audit_board_count?: number;
         audit_board: any;
         audit_info: any;
         audit_time: string;

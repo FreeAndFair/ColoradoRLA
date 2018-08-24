@@ -68,6 +68,10 @@ div{
     margin: 10px;
 }
 
+.pt-button-group.corla-spaced > .pt-button:not(:last-child) {
+  margin-right: 10px;
+}
+
 .pt-table {
     border-spacing: 0;
     font-size: 16px !important;

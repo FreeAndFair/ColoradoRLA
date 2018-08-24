@@ -73,11 +73,16 @@ public class CountyDashboardRefreshResponse {
    * @todo this needs to be connected to something
    */
   private final SortedMap<String, String> my_general_information;
-  
+
   /**
-   * The audit board members.
+   * The desired number of audit boards.
    */
-  private final AuditBoard my_audit_board;
+  private final Integer my_audit_board_count;
+
+  /**
+   * The audit boards.
+   */
+  private final Map<Integer, AuditBoard> my_audit_boards;
   
   /**
    * The ballot manifest file.
@@ -182,7 +187,8 @@ public class CountyDashboardRefreshResponse {
    * @param the_audit_board_asm_state The audit board ASM state.
    * @param the_general_information The general information.
    * @param the_risk_limit The risk limit.
-   * @param the_audit_board The current audit board.
+   * @param the_audit_board_count The desired number of audit boards.
+   * @param the_audit_boards The current audit boards.
    * @param the_ballot_manifest_file The ballot manifest file.
    * @param the_cvr_export_file The CVR export file.
    * @param the_contests The contests.
@@ -217,7 +223,8 @@ public class CountyDashboardRefreshResponse {
                                            final ASMState the_audit_board_asm_state,
                                            final SortedMap<String, String> 
                                                the_general_information,
-                                           final AuditBoard the_audit_board, 
+                                           final Integer the_audit_board_count,
+                                           final Map<Integer, AuditBoard> the_audit_boards,
                                            final UploadedFile the_ballot_manifest_file,
                                            final UploadedFile the_cvr_export_file,
                                            final List<Long> the_contests,
@@ -231,9 +238,9 @@ public class CountyDashboardRefreshResponse {
                                            final Integer the_cvr_export_count,
                                            final ImportStatus the_cvr_import_status,
                                            final Integer the_audited_ballot_count,
-                                           final Map<AuditSelection, Integer> 
-                                               the_discrepancy_count, 
-                                           final Map<AuditSelection, Integer> 
+                                           final Map<AuditSelection, Integer>
+                                               the_discrepancy_count,
+                                           final Map<AuditSelection, Integer>
                                                the_disagreement_count,
                                            final Long the_ballot_under_audit_id,
                                            final Integer the_audited_prefix_length,
@@ -244,7 +251,8 @@ public class CountyDashboardRefreshResponse {
     my_asm_state = the_asm_state;
     my_audit_board_asm_state = the_audit_board_asm_state;
     my_general_information = the_general_information;
-    my_audit_board = the_audit_board;
+    my_audit_board_count = the_audit_board_count;
+    my_audit_boards = the_audit_boards;
     my_ballot_manifest_file = the_ballot_manifest_file;
     my_cvr_export_file = the_cvr_export_file;
     my_contests = the_contests;
@@ -332,7 +340,8 @@ public class CountyDashboardRefreshResponse {
                                               asm.currentState(),
                                               audit_board_asm.currentState(),
                                               general_information,
-                                              the_dashboard.currentAuditBoard(),
+                                              the_dashboard.auditBoardCount(),
+                                              the_dashboard.auditBoards(),
                                               the_dashboard.manifestFile(),
                                               the_dashboard.cvrFile(),
                                               contests,
@@ -397,7 +406,8 @@ public class CountyDashboardRefreshResponse {
                                               asm.currentState(),
                                               audit_board_asm.currentState(),
                                               null,
-                                              the_dashboard.currentAuditBoard(),
+                                              the_dashboard.auditBoardCount(),
+                                              the_dashboard.auditBoards(),
                                               the_dashboard.manifestFile(),
                                               the_dashboard.cvrFile(),
                                               null,

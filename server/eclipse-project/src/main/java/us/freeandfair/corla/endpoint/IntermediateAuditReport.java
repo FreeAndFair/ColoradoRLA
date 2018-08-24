@@ -82,9 +82,11 @@ public class IntermediateAuditReport extends AbstractAuditBoardDashboardEndpoint
         serverError(the_response, "Could not save intermediate audit report");
       } else {
         cdb.submitIntermediateReport(report);
-        // sign the audit board out
-        cdb.signOutAuditBoard();
 
+        // TODO: Do we need to sign out all audit boards?
+        for (int i : cdb.auditBoards().keySet()) {
+          cdb.signOutAuditBoard(i);
+        }
       }
       Persistence.saveOrUpdate(cdb);
     } catch (final JsonParseException e) {

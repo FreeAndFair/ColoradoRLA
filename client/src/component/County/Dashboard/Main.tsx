@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import AuditBoardNumberSelector from 'corla/component/County/Dashboard/AuditBoardNumberSelector';
+
 import FileUploadContainer from './FileUploadContainer';
 
 import downloadCvrsToAuditCsv from 'corla/action/county/downloadCvrsToAuditCsv';
@@ -9,26 +11,39 @@ import fetchReport from 'corla/action/county/fetchReport';
 import FileDownloadButtons from 'corla/component/FileDownloadButtons';
 
 
-interface AuditBoardInfoProps {
-    signedIn: boolean;
+interface AuditBoardButtonsProps {
+    numberOfBoards: number;
+    isShown: boolean;
 }
 
-const AuditBoardInfo = (props: AuditBoardInfoProps) => {
-    const { signedIn } = props;
+const AuditBoardButtons = (props: AuditBoardButtonsProps) => {
+    const { isShown, numberOfBoards } = props;
 
-    const icon = signedIn
-               ? <span className='pt-icon pt-intent-success pt-icon-tick-circle' />
-               : <span className='pt-icon pt-intent-danger pt-icon-error' />;
+    if (!isShown) {
+        return null;
+    }
 
-    const text = signedIn ? 'signed in' : 'not signed in';
+    const boardButton = (boardIndex: number) => {
+        return (
+            <button className='pt-button pt-intent-primary pt-icon-people'
+                    key={ boardIndex.toString() }>
+                Audit Board { boardIndex + 1 }
+            </button>
+        );
+    };
+
+    let buttons = [];
+    for (let i = 0; i < numberOfBoards; i++) {
+        buttons.push(boardButton(i));
+    }
 
     return (
         <div className='pt-card'>
-            <span>{ icon } </span>
-            Audit board is <strong>{ text }.</strong>
+            <h5 className='pt-ui-text-large'>Sign in to an audit board</h5>
+            <div className="pt-button-group pt-large corla-spaced">{ buttons }</div>
         </div>
     );
-};
+}
 
 interface MainProps {
     auditBoardSignedIn: boolean;
@@ -126,27 +141,12 @@ const Main = (props: MainProps) => {
                         Download
                     </button>
                 </div>
-                <div>
-                  <AuditBoardInfo signedIn={ auditBoardSignedIn } />
-                  <button
-                      className='pt-button pt-intent-primary audit'
-                      disabled={ auditBoardButtonDisabled }
-                      onClick={ boardSignIn }>
-                      <span className='pt-icon-standard pt-icon-people' />
-                      <span> </span>
-                      Audit Board
-                  </button>
-                  <br/>
-                  <p/>
-                  <button
-                      className='pt-button pt-intent-primary audit'
-                      disabled={ startAuditButtonDisabled }
-                      onClick={ startAudit }>
-                      <span className='pt-icon-standard pt-icon-eye-open' />
-                      <span> </span>
-                      Start Audit
-                  </button>
-                </div>
+                <AuditBoardNumberSelector auditBoardCount={ countyState.auditBoardCount || 1 }
+                                          numberOfBallotsToAudit={ countyState.ballotsRemainingInRound }
+                                          isShown={ !auditBoardButtonDisabled }
+                                          isEnabled={ !countyState.auditBoardCount } />
+                <AuditBoardButtons numberOfBoards={ countyState.auditBoardCount || 1 }
+                                   isShown={ countyState.auditBoardCount != null } />
             </div>
         </div>
     );

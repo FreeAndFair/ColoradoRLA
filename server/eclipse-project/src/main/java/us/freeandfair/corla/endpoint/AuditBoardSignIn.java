@@ -18,6 +18,8 @@ import java.util.List;
 
 import javax.persistence.PersistenceException;
 
+import com.google.gson.JsonParser;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
@@ -67,10 +69,11 @@ public class AuditBoardSignIn extends AbstractAuditBoardDashboardEndpoint {
    * {@inheritDoc}
    */
   @Override
+  // TODO: Only emit this event when *all* audit boards have signed in
   protected ASMEvent endpointEvent() {
     return SIGN_IN_AUDIT_BOARD_EVENT;
   }
-  
+
   /**
    * Establish the audit board for a county.
    */
@@ -79,10 +82,18 @@ public class AuditBoardSignIn extends AbstractAuditBoardDashboardEndpoint {
   @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
   public String endpointBody(final Request the_request,
                          final Response the_response) {
+    final JsonParser parser = new JsonParser();
+    final JsonObject object;
+
     try {
-      final Type list_type = new TypeToken<List<Elector>>() { }.getType();
-      final List<Elector> parsed_audit_board = 
-          Main.GSON.fromJson(the_request.body(), list_type);
+      object = parser.parse(the_request.body()).getAsJsonObject();
+
+      final int index = object.get("index").getAsInt();
+      final List<Elector> parsed_audit_board =
+          Main.GSON.fromJson(
+              object.get("audit_board"),
+              new TypeToken<List<Elector>>() { }.getType());
+
       if (parsed_audit_board.size() >= CountyDashboard.MIN_AUDIT_BOARD_MEMBERS) {
         final County county = Main.authentication().authenticatedCounty(the_request); 
         if (county == null) { 
@@ -94,10 +105,11 @@ public class AuditBoardSignIn extends AbstractAuditBoardDashboardEndpoint {
             Main.LOGGER.error("could not get county dashboard");
             serverError(the_response, "could not sign in audit board");
           } else {
-            cdb.signInAuditBoard(parsed_audit_board);
+            cdb.signInAuditBoard(index, parsed_audit_board);
             Persistence.saveOrUpdate(cdb);
-            ok(the_response, "audit board for county " + county.id() +  
-                             " signed in: " + parsed_audit_board);
+            ok(the_response,
+               String.format("audit board #%d for county %d signed in: %s",
+                   index, county.id(), parsed_audit_board));
           }
         }
       } else {
@@ -109,6 +121,7 @@ public class AuditBoardSignIn extends AbstractAuditBoardDashboardEndpoint {
     } catch (final JsonParseException e) {
       badDataContents(the_response, "invalid audit board data");
     }
+
     return my_endpoint_result.get();
   }
 }

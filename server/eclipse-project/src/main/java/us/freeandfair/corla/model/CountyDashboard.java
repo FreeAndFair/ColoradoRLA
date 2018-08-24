@@ -38,12 +38,14 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.ImportStatus.ImportState;
 import us.freeandfair.corla.persistence.AuditSelectionIntegerMapConverter;
 import us.freeandfair.corla.persistence.Persistence;
@@ -162,22 +164,23 @@ public class CountyDashboard implements PersistentEntity {
    * The timestamp for the start of the audit.
    */
   private Instant my_audit_timestamp; 
-  
+
   /**
-   * The members of the audit board.
+   * The audit boards.
    */
   @ElementCollection(fetch = FetchType.LAZY)
-  @OrderColumn(name = INDEX)
+  @MapKeyColumn(name = INDEX)
   @CollectionTable(name = "audit_board",
                    joinColumns = @JoinColumn(name = DASHBOARD_ID, 
                                              referencedColumnName = MY_ID))
-  private List<AuditBoard> my_audit_boards = new ArrayList<>();
- 
+  private Map<Integer, AuditBoard> my_audit_boards = new HashMap<>();
+
   /**
-   * The current audit board.
+   * The number of audit boards.
    */
-  private Integer my_current_audit_board_index;
-  
+  @Column(name="audit_board_count")
+  private Integer auditBoardCount;
+
   /**
    * The audit rounds.
    */
@@ -378,26 +381,31 @@ public class CountyDashboard implements PersistentEntity {
    */
   public void setAuditTimestamp(final Instant the_timestamp) {
     my_audit_timestamp = the_timestamp;
-  }  
+  }
 
   /**
-   * @return the current audit board.
+   * @return the number of audit boards.
    */
-  public AuditBoard currentAuditBoard() {
-    if (my_current_audit_board_index == null) {
-      return null; 
-    } else {
-      return my_audit_boards.get(my_current_audit_board_index);
-    }
+  public Integer auditBoardCount() {
+    return this.auditBoardCount;
   }
-  
+
+  /**
+   * Set the expected number of audit boards.
+   *
+   * @param count number of audit boards
+   */
+  public void setAuditBoardCount(Integer count) {
+    this.auditBoardCount = count;
+  }
+
   /**
    * @return the entire list of audit boards.
    */
-  public List<AuditBoard> auditBoards() {
-    return Collections.unmodifiableList(my_audit_boards);
+  public Map<Integer, AuditBoard> auditBoards() {
+    return Collections.unmodifiableMap(my_audit_boards);
   }
-  
+
   /**
    * Signs in the specified audit board as of the present time; 
    * the supplied set of electors must be the full set of electors on
@@ -406,32 +414,52 @@ public class CountyDashboard implements PersistentEntity {
    * 
    * @param the_members The members.
    */
-  public void signInAuditBoard(final List<Elector> the_members) {
-    if (my_current_audit_board_index == null) {
-      my_current_audit_board_index = my_audit_boards.size();
-    } else {
-      final AuditBoard current = my_audit_boards.get(my_current_audit_board_index);
-      current.setSignOutTime(Instant.now());
-      my_current_audit_board_index = my_current_audit_board_index + 1;
+  public void signInAuditBoard(final Integer index,
+                               final List<Elector> the_members) {
+    final AuditBoard currentBoard = my_audit_boards.get(index);
+    final AuditBoard newBoard = new AuditBoard(the_members, Instant.now());
+
+    if (currentBoard != null) {
+      this.signOutAuditBoard(index);
     }
-    my_audit_boards.add(new AuditBoard(the_members, Instant.now()));
+
+    my_audit_boards.put(index, newBoard);
   }
-  
+
   /**
    * Signs out the current audit board.
-   * 
-   * @exception IllegalStateException if no audit board is signed in.
+   *
+   * If no audit board is present at the given index, nothing is changed.
    */
-  public void signOutAuditBoard() {
-    if (my_current_audit_board_index == null) {
-      throw new IllegalArgumentException("no audit board signed in");
-    } else {
-      final AuditBoard current = my_audit_boards.get(my_current_audit_board_index);
-      current.setSignOutTime(Instant.now());
-      my_current_audit_board_index = NO_CONTENT;
+  public void signOutAuditBoard(final Integer index) {
+    final AuditBoard currentBoard = my_audit_boards.get(index);
+
+    if (currentBoard != null) {
+      currentBoard.setSignOutTime(Instant.now());
     }
   }
-  
+
+  /**
+   * Test if the desired number of audit boards have signed in.
+   *
+   * Note: Currently does not do anything about more audit boards than
+   * explicitly asked for.
+   *
+   * @return boolean
+   */
+  public boolean areAuditBoardsSignedIn() {
+    boolean result = true;
+
+    for (int i = 0; i < this.auditBoardCount(); i++) {
+      if (my_audit_boards.get(i) == null) {
+        result = false;
+        break;
+      }
+    }
+
+    return result;
+  }
+
   /**
    * @return all the audit rounds.
    */

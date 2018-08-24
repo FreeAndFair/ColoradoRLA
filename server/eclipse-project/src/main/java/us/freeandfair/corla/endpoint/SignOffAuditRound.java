@@ -207,6 +207,14 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
                         DoSDashboardASM.class, 
                         DoSDashboardASM.IDENTITY);
     }
-    the_cdb.signOutAuditBoard();
+
+    // TODO: Do we need to sign out all audit boards?
+    //
+    // We only need to sign out all audit boards when the entire audit is
+    // complete; we probably need an intermediate step to sign off on a given
+    // audit board’s portion of work.
+    for (int i : the_cdb.auditBoards().keySet()) {
+      the_cdb.signOutAuditBoard(i);
+    }
   }
 }

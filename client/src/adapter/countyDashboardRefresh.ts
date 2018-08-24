@@ -141,6 +141,7 @@ export function parse(data: JSON.CountyDashboard, state: County.AppState) {
 
     return {
         asm_state: data.asm_state,
+        auditBoardCount: data.audit_board_count,
         auditBoard: parseAuditBoard(data.audit_board),
         auditTime: data.audit_time ? parseTimestamp(data.audit_time) : null,
         auditedBallotCount: data.audited_ballot_count,

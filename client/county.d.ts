@@ -3,6 +3,7 @@ declare namespace County {
         acvrs: ACVRs;
         asm: ASMStates;
         auditBoard: AuditBoard;
+        auditBoardCount?: number;
         auditedBallotCount?: number;
         ballotManifest?: UploadedFile;
         ballotManifestCount?: number;
