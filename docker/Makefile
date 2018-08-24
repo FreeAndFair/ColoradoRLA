@@ -12,7 +12,7 @@ SERVER_TAG ?= latest
 .PHONY: httpd-build httpd-deploy
 
 httpd-build:
-	docker build \
+	docker build --pull \
 		-f httpd/Dockerfile \
 		-t $(HTTPD_REPOSITORY):$(HTTPD_TAG) \
 		../
@@ -25,7 +25,7 @@ httpd-deploy:
 .PHONY: postgresql-build postgresql-deploy
 
 postgresql-build:
-	docker build \
+	docker build --pull \
 		-f postgresql/Dockerfile \
 		-t $(POSTGRESQL_REPOSITORY):$(POSTGRESQL_TAG) \
 		../
@@ -38,7 +38,7 @@ postgresql-deploy:
 .PHONY: server-build server-deploy
 
 server-build:
-	docker build \
+	docker build --pull \
 		-f server/Dockerfile \
 		-t $(SERVER_REPOSITORY):$(SERVER_TAG) \
 		../
