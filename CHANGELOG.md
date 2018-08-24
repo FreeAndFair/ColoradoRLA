@@ -11,6 +11,7 @@ The sprint ending on 8/29/2018
 
 - [API - Log on phantom CVR creation][pr33]
 - [UI - Fix a bug where standardized contests would sometimes not display on first run][pr34]
+- [INFRA - Always pull new base Docker images when building][pr35]
 
 ## 1.3.4 - Bugfixes
 
@@ -79,3 +80,4 @@ This is [FreeAndFair's most recent tag][1.1.0.3].
 [pr29]: https://github.com/democracyworks/ColoradoRLA/pull/29
 [pr33]: https://github.com/democracyworks/ColoradoRLA/pull/33
 [pr34]: https://github.com/democracyworks/ColoradoRLA/pull/34
+[pr35]: https://github.com/democracyworks/ColoradoRLA/pull/35
