@@ -32,7 +32,7 @@ const AuditBoardInfo = (props: AuditBoardInfoProps) => {
 
 interface MainProps {
     auditBoardSignedIn: boolean;
-    auditButtonDisabled: boolean;
+    startAuditButtonDisabled: boolean;
     auditComplete: boolean;
     auditStarted: boolean;
     boardSignIn: OnClick;
@@ -40,14 +40,14 @@ interface MainProps {
     countyState: County.AppState;
     currentRoundNumber: number;
     name: string;
-    signInButtonDisabled: boolean;
+    auditBoardButtonDisabled: boolean;
     startAudit: OnClick;
 }
 
 const Main = (props: MainProps) => {
     const {
         auditBoardSignedIn,
-        auditButtonDisabled,
+        startAuditButtonDisabled,
         auditComplete,
         auditStarted,
         boardSignIn,
@@ -55,7 +55,7 @@ const Main = (props: MainProps) => {
         countyState,
         currentRoundNumber,
         name,
-        signInButtonDisabled,
+        auditBoardButtonDisabled,
         startAudit,
     } = props;
 
@@ -64,7 +64,7 @@ const Main = (props: MainProps) => {
                    + ' continue the audit.';
 
     if (auditBoardSignedIn) {
-        if (auditButtonDisabled) {
+        if (startAuditButtonDisabled) {
             directions = 'Wait for the audit to start.';
         } else {
             if (currentRoundNumber) {
@@ -75,7 +75,7 @@ const Main = (props: MainProps) => {
             }
         }
     } else {
-        if (!signInButtonDisabled) {
+        if (!auditBoardButtonDisabled) {
             directions = 'The Department of State has defined the audit and your list of ballots is now available for'
                        + ' download on this page. The audit board must sign in to advance to the audit.';
         }
@@ -109,7 +109,7 @@ const Main = (props: MainProps) => {
                 { fileUploadContainer }
                 { fileDownloadButtons }
                 <div className='pt-card'>
-                    <div className='pt-ui-text-large'>{ reportType} audit report (CSV)</div>
+                    <div className='pt-ui-text-large'>{ reportType } audit report (CSV)</div>
                     <button
                         className='pt-button  pt-intent-primary'
                         disabled={ !canRenderReport }
@@ -130,7 +130,7 @@ const Main = (props: MainProps) => {
                   <AuditBoardInfo signedIn={ auditBoardSignedIn } />
                   <button
                       className='pt-button pt-intent-primary audit'
-                      disabled={ signInButtonDisabled }
+                      disabled={ auditBoardButtonDisabled }
                       onClick={ boardSignIn }>
                       <span className='pt-icon-standard pt-icon-people' />
                       <span> </span>
@@ -140,7 +140,7 @@ const Main = (props: MainProps) => {
                   <p/>
                   <button
                       className='pt-button pt-intent-primary audit'
-                      disabled={ auditButtonDisabled }
+                      disabled={ startAuditButtonDisabled }
                       onClick={ startAudit }>
                       <span className='pt-icon-standard pt-icon-eye-open' />
                       <span> </span>

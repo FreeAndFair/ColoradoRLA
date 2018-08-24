@@ -40,8 +40,8 @@ const CountyDashboardPage = (props: PageProps) => {
         startAudit,
     } = props;
 
-    const auditButtonDisabled = !canAudit || auditComplete;
-    const signInButtonDisabled = !canSignIn;
+    const startAuditButtonDisabled = !canAudit || auditComplete;
+    const auditBoardButtonDisabled = !canSignIn;
 
     return (
         <div>
@@ -55,9 +55,9 @@ const CountyDashboardPage = (props: PageProps) => {
                           canRenderReport={ canRenderReport }
                           countyState={ countyState }
                           currentRoundNumber={ currentRoundNumber }
-                          auditButtonDisabled={ auditButtonDisabled }
+                          startAuditButtonDisabled={ startAuditButtonDisabled }
                           name={ countyInfo.name }
-                          signInButtonDisabled={ signInButtonDisabled }
+                          auditBoardButtonDisabled={ auditBoardButtonDisabled }
                           startAudit={ startAudit } />
                     <Info info={ countyInfo }
                           contests={ contests }
