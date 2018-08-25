@@ -74,7 +74,7 @@ const Main = (props: MainProps) => {
         startAudit,
     } = props;
 
-    let directions = 'Upload the ballot manifest and cast voter records (CVR) files. These need to be CSV files.'
+    let directions = 'Upload the ballot manifest and cast vote record (CVR) files. These need to be CSV files.'
                    + '\n\nAfter uploading the files wait for an email from the Department of State saying that you can'
                    + ' continue the audit.';
 
@@ -92,7 +92,7 @@ const Main = (props: MainProps) => {
     } else {
         if (!auditBoardButtonDisabled) {
             directions = 'The Department of State has defined the audit and your list of ballots is now available for'
-                       + ' download on this page. The audit board must sign in to advance to the audit.';
+                       + ' download on this page. The audit board(s) must sign in to advance to the audit.';
         }
     }
 
