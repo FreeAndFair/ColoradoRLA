@@ -17,7 +17,7 @@ public final class Audit {
   /**
    * Stark's gamma from the literature. As seen in a controller.
    */
-  public static BigDecimal GAMMA = BigDecimal.valueOf(1.03905);
+  public static final BigDecimal GAMMA = BigDecimal.valueOf(1.03905);
 
   private Audit() {
   }
@@ -128,7 +128,4 @@ public final class Audit {
 
     return result;
   }
-
-
-
 }

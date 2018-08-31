@@ -58,7 +58,7 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
  */
 @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.StdCyclomaticComplexity",
                    "PMD.AtLeastOneConstructor", "PMD.ModifiedCyclomaticComplexity",
-                   "PMD.NPathComplexity"})
+                   "PMD.NPathComplexity", "PMD.ExcessiveImports"})
 public class StartAuditRound extends AbstractDoSDashboardEndpoint {
   /**
    * The "county " string.
@@ -128,50 +128,48 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
   }
 
   /**
-   * Starts the first audit round.
-   *
-   * @param the_request The HTTP request.
-   * @param the_response The HTTP response.
-   * @return the result for endpoint.
+   * Provide the reasons for auditing each targeted contest
+   * @return a map of contest name to audit reason
    */
-  public String startRoundOne(final Request the_request, final Response the_response) {
-
-    final DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
-    final BigDecimal riskLimit = dosdb.auditInfo().riskLimit();
-    final Set<Contest> targetedContests = dosdb.targetedContests().collect(Collectors.toSet());
-
-    final Map<String,List<ContestToAudit>> contestToAudits = dosdb.contestsToAudit().stream()
+  public Map<String, AuditReason> targetedContestReasons(final Set<ContestToAudit> ctas) {
+    final Map<String,List<ContestToAudit>> contestToAudits = ctas.stream()
       .collect(Collectors.groupingBy((ContestToAudit cta) -> cta.contest().name()));
 
-    final Map<String,AuditReason> targetedContestReasons = contestToAudits
+    return contestToAudits
       .entrySet()
       .stream()
       .collect(Collectors.toMap((Map.Entry<String,List<ContestToAudit>> e) -> e.getKey(),
                                 // every getValue has at least one because of groupingBy
                                 // every ContestToAudit has a reason
                                 (Map.Entry<String,List<ContestToAudit>> e) -> e.getValue().get(0).reason()));
+  }
 
-
-    // Update every - targeted and opportunistic both - contest's
-    // voteTotals from the counties. This needs to happen between all
-    // counties uploading there data and before the ballot selection
-    // happens
-    //
-    final List<ContestResult> allContestResults = ContestCounter.countAllContests();
-
-    // set reason on all ContestResults and save them
-    final List<ContestResult> persistedContestResults = allContestResults.stream()
-      .map(cr -> {cr.setAuditReason(targetedContestReasons.getOrDefault(cr.getContestName(),
-                                                                        AuditReason.OPPORTUNISTIC_BENEFITS));
+  /**
+   * Update every - targeted and opportunistic both - contest's
+   * voteTotals from the counties. This needs to happen between all
+   * counties uploading there data and before the ballot selection
+   * happens
+   */
+  public List<ContestResult> countAndSaveContests(final Set<ContestToAudit> cta) {
+    return
+      ContestCounter.countAllContests().stream()
+      .map(cr -> {cr.setAuditReason(targetedContestReasons(cta)
+                                    .getOrDefault(cr.getContestName(),
+                                                  AuditReason.OPPORTUNISTIC_BENEFITS));
                   return cr; })
       .map(Persistence::persist)
       .collect(Collectors.toList());
+  }
 
-    final List<Map<Long,List<Integer>>> segments = new ArrayList<Map<Long,List<Integer>>>();
-
-    final List<ContestResult> targetedContestResults = persistedContestResults.stream()
-      .filter(cr -> cr.getAuditReason() != AuditReason.OPPORTUNISTIC_BENEFITS)
-      .collect(Collectors.toList());
+  /**
+   * Select random ballots for each targeted contest. Returns
+   */
+  public Map<Long, List<Integer>> combineSegments(final String seed,
+                                                  final BigDecimal riskLimit,
+                                                  final List<ContestResult>
+                                                  targetedContestResults) {
+    final List<Map<Long, List<Integer>>> segments =
+      new ArrayList<Map<Long, List<Integer>>>();
 
     for(final ContestResult contestResult: targetedContestResults) {
       final BigDecimal optimistic =
@@ -184,17 +182,41 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
 
       // translate 1-based number-of-samples to audit(optimistic) to 0-based
       // random number list index maximum
+      final Integer startIndex = 0;
       final Integer endIndex = optimistic.intValue() - 1;
-      segments.add(BallotSelection.segmentsForContest(contestResult,
-                                                      dosdb.auditInfo().seed(),
-                                                      0,//startIndex
-                                                      endIndex));
+
+      segments.add(BallotSelection.segmentsForContest(contestResult, seed,
+                                                      startIndex, endIndex));
     }
 
-    final Map<Long,List<Integer>> combinedSegments = segments.stream()
+    return segments.stream()
       .reduce(new HashMap<Long,List<Integer>>(),
               (a, seg) -> BallotSelection.combineSegment(a, seg));
+  }
 
+  /**
+   * Starts the first audit round.
+   *
+   * @param the_request The HTTP request.
+   * @param the_response The HTTP response.
+   * @return the result for endpoint.
+   */
+  // FIXME With some refactoring, we won't have excessive method length.
+  @SuppressWarnings({"PMD.ExcessiveMethodLength"})
+  public String startRoundOne(final Request the_request, final Response the_response) {
+    final DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
+    final BigDecimal riskLimit = dosdb.auditInfo().riskLimit();
+    final String seed = dosdb.auditInfo().seed();
+    final Set<Contest> targetedContests = dosdb.targetedContests().collect(Collectors.toSet());
+    final List<ContestResult> persistedContestResults = countAndSaveContests(dosdb.contestsToAudit());
+
+    final List<ContestResult> targetedContestResults = persistedContestResults.stream()
+      .filter(cr -> cr.getAuditReason() != AuditReason.OPPORTUNISTIC_BENEFITS)
+      .collect(Collectors.toList());
+    final Map<Long, List<Integer>> auditSegments = combineSegments(seed, riskLimit, targetedContestResults);
+
+    // FIXME extract-fn: updateDashboards(auditSegments);
+    // Nothing in this try-block should know about HTTP requests / responses
     // update every county dashboard with a list of ballots to audit
     try {
       final List<CountyDashboard> cdbs = Persistence.getAll(CountyDashboard.class);
@@ -210,7 +232,7 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
             Main.LOGGER.info(COUNTY + cdb.id() + " missed the file upload deadline");
           } else {
             // find the initial window
-            final List<Integer> subsequence = combinedSegments.get(cdb.county().id());
+            final List<Integer> subsequence = auditSegments.get(cdb.county().id());
 
             final boolean started =
               ComparisonAuditController
@@ -234,6 +256,7 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
             }
             Persistence.saveOrUpdate(cdb);
           }
+          // FIXME extract-fn: updateASMs(dashboardID, ,,,)
           // update the ASMs for the county and audit board
           if (!DISABLE_ASM) {
             final CountyDashboardASM asm =
@@ -264,6 +287,8 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
             // figure out whether this county is done, or whether there's an audit to run
             audit_complete &= asm.isInFinalState();
           }
+        // FIXME hoist me; we don't need to know about HTTP requests or
+        // responses at this level.
         } catch (final IllegalArgumentException e) {
           e.printStackTrace(System.out);
           serverError(the_response, "could not start round 1 for county " +
@@ -273,13 +298,14 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
           illegalTransition(the_response, e.getMessage());
         }
       }
-
+      // FIXME hoist me
       if (audit_complete) {
         my_event.set(DOS_AUDIT_COMPLETE_EVENT);
         ok(the_response, "audit complete");
       } else {
         ok(the_response, "round 1 started");
       }
+      // end of extraction. Now we can talk about HTTP requests / responses again!
     } catch (final PersistenceException e) {
       serverError(the_response, "could not start round 1");
     }

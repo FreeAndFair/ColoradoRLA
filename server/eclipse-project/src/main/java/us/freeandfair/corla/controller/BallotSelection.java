@@ -94,6 +94,7 @@ public final class BallotSelection {
   /**
    * @description add an element to a list, l, where l may be null.
    **/
+  @SuppressWarnings({"PMD.AvoidReassigningParameters"}) // FIXME Don't reassign.
   public static <T> List<T> addToList(List<T> l, final T t) {
     l = (null == l) ? new ArrayList<T>() : l;
     l.add(t);
@@ -108,6 +109,7 @@ public final class BallotSelection {
    * @param l the list to add into
    * @param t the list being added
    */
+  @SuppressWarnings({"PMD.AvoidReassigningParameters"}) // FIXME Don't reassign.
   public static <T> List<T> addAllToList(List<T> l, final List<T> t) {
     l = (null == l) ? new ArrayList<T>() : l;
     l.addAll(t);
