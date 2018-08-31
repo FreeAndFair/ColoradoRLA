@@ -11,7 +11,9 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.Set;
 
-import us.freeandfair.corla.Main;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import us.freeandfair.corla.crypto.PseudoRandomNumberGenerator;
 import us.freeandfair.corla.json.CVRToAuditResponse;
 import us.freeandfair.corla.model.BallotManifestInfo;
@@ -21,6 +23,11 @@ import us.freeandfair.corla.query.BallotManifestInfoQueries;
 import us.freeandfair.corla.query.CastVoteRecordQueries;
 
 public final class BallotSelection {
+  /**
+   * Class-wide logger
+   */
+  public static final Logger LOGGER =
+      LogManager.getLogger(BallotSelection.class);
 
   /** prevent construction **/
   private BallotSelection() {
@@ -42,11 +49,11 @@ public final class BallotSelection {
 
     final List<Integer> globalRands = gen.getRandomNumbers(min_index, max_index);
 
-    Main.LOGGER.info("seed:" + seed);
-    Main.LOGGER.info("globalTotal:" + globalTotal);
-    Main.LOGGER.info("min_index:" + min_index);
-    Main.LOGGER.info("max_index:" + max_index);
-    Main.LOGGER.info("globalRands:" + globalRands.size());
+    LOGGER.info("seed:" + seed);
+    LOGGER.info("globalTotal:" + globalTotal);
+    LOGGER.info("min_index:" + min_index);
+    LOGGER.info("max_index:" + max_index);
+    LOGGER.info("globalRands:" + globalRands.size());
     return contestCVRs(globalRands,
                        contestResult.countyIDs());
   }
@@ -155,6 +162,14 @@ public final class BallotSelection {
                                           bmi.ballotPosition(rand));
       if (cvr == null) {
         // TODO: create a discrepancy when this happens
+        LOGGER.warn(
+            String.format("Corresponding CVR not found for selected ballot"
+                + " manifest entry; creating a phantom CVR as a placeholder"
+                + " [countyId=%d, scannerId=%d, batchId=%s, ballotPosition=%d]",
+                bmi.countyID(),
+                bmi.scannerID(),
+                bmi.batchID(),
+                bmi.ballotPosition(rand)));
         cvr = phantomRecord();
       }
 

@@ -29,8 +29,6 @@ The RLA Tool:
 
 5) provides metrics and monitoring capabilities for election officials & public observers that indicate the progress and outcome of the audit.
 
-
-
 ## What is a risk-limiting audit?
 
 A [risk-limiting audit](https://en.wikipedia.org/wiki/Risk-limiting_audit) is an audit of the results of an election which uses statistical methods to give high confidence that the winner(s) of the election were reported correctly. 
@@ -40,36 +38,28 @@ In Colorado, citizen Audit Boards examine a random sample of original paper ball
 # Docker Quick Start
 
 Primarily used to spin up the system for development in a controlled way. This
-is a work in progress (automating the artifact build steps would be nice), but
-is usable.
+is a work in progress but is usable.
 
 ## Requirements
 
-- `docker`
-- `docker-compose`
-- Build tools for the client and server (TypeScript, maven, etc.)
+- [`docker`](https://docs.docker.com/install/)
+- [`docker-compose`](https://docs.docker.com/compose/)
 
 ## Setup
 
+This step is optional the first time, but you need to run it when you have new
+code changes you want to incorporate. You can pass specific services to
+`docker-compose build` if you don’t want to rebuild everything.
+
 ```sh
-## Build the client
-cd client; npm install; npm run dist
-## Switch back to project root
-cd ..
-## Build the server
-cd server/eclipse-project; mvn package
+docker-compose build
 ```
 
 ## Running
 
-Assuming you have built artifacts, you can bring up the system with those
-artifacts:
+Assuming you have built images, you can bring up the system with those images:
 
 ```sh
-## This step is optional the first time, but you need to run it subsequently
-## whenever artifacts change (refer to the **Setup** instructions above).
-docker-compose build
-
 docker-compose up
 ```
 
@@ -78,7 +68,7 @@ this, you most likely want to install test credentials, which are already inside
 the PostgreSQL image:
 
 ```sh
-docker exec -i coloradorla_postgresql_1 \
+docker-compose exec postgresql \
   /bin/bash -c \
   'psql -U corla -d corla < /root/corla-test-credentials.psql'
 ```
