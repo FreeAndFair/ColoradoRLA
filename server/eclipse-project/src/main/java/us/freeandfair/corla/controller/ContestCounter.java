@@ -12,7 +12,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import us.freeandfair.corla.Main;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import us.freeandfair.corla.math.Audit;
 import us.freeandfair.corla.model.ContestResult;
 import us.freeandfair.corla.model.CountyContestResult;
@@ -21,6 +23,11 @@ import us.freeandfair.corla.query.BallotManifestInfoQueries;
 import us.freeandfair.corla.query.ContestResultQueries;
 
 public final class ContestCounter {
+  /**
+   * Class-wide logger
+   */
+  public static final Logger LOGGER =
+      LogManager.getLogger(ContestCounter.class);
 
   /** prevent contruction **/
   private ContestCounter() {
@@ -54,10 +61,10 @@ public final class ContestCounter {
     final ContestResult contestResult =
       ContestResultQueries.findOrCreate(countyContestResults.getKey());
 
-    final Map<String,Integer> voteTotals = accumulateVoteTotals(countyContestResults.
-                                                          getValue().stream()
-                                                          .map((cr) -> cr.voteTotals())
-                                                          .collect(Collectors.toList()));
+    final Map<String,Integer> voteTotals =
+      accumulateVoteTotals(countyContestResults.getValue().stream()
+                           .map((cr) -> cr.voteTotals())
+                           .collect(Collectors.toList()));
     contestResult.setVoteTotals(voteTotals);
     // TODO how many winners are allowed?
     contestResult.setWinners(winners(voteTotals));
@@ -73,10 +80,10 @@ public final class ContestCounter {
       BallotManifestInfoQueries.totalBallots(contestResult.countyIDs());
 
     if (ballotCount == 0L) {
-      Main.LOGGER.error("contest has no ballot manifests!:"
-                        + contestResult.getContestName()
-                        + " for countyIDs: "
-                        + contestResult.countyIDs());
+      LOGGER.error("contest has no ballot manifests!:"
+                   + contestResult.getContestName()
+                   + " for countyIDs: "
+                   + contestResult.countyIDs());
     }
 
     // dilutedMargin of zero is ok here, it means the contest is uncontested
@@ -100,7 +107,8 @@ public final class ContestCounter {
                                                  final Map<String,Integer> vt) {
     // we iterate over vt because it may have a key that the accumulator has not
     // seen yet
-    vt.forEach((k,v) -> acc.merge(k, v, (v1,v2) -> { return (null == v1) ? v2 : v1 + v2; } ));
+    vt.forEach((k,v) -> acc.merge(k, v,
+                                  (v1,v2) -> { return (null == v1) ? v2 : v1 + v2; }));
     return acc;
   }
 

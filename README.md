@@ -4,7 +4,7 @@
 
 The Colorado RLA Tool is designed to help local and state election officials conduct efficient and effective risk-limiting audits of their elections. The initial code was developed by the Colorado Department of State through a contract with Free & Fair in 2017, and is now being developed and maintained by [Democracy Works](https://democracy.works), a 501(c)3 nonpartisan, nonprofit organization.
 
-# Objectives 
+# Objectives
 
 - State and county election officials are able to successfully conduct a statewide risk-limiting audit of their election
 
@@ -16,10 +16,10 @@ The Colorado RLA Tool is designed to help local and state election officials con
 
 # Description
 
-The RLA Tool is designed to facilitate a statistically valid audit of vote tabulation processes by comparing the votes marked on a random sample of original paper ballots with the electronically recorded votes for those same ballots. 
+The RLA Tool is designed to facilitate a statistically valid audit of vote tabulation processes by comparing the votes marked on a random sample of original paper ballots with the electronically recorded votes for those same ballots.
 
 The RLA Tool:
-1) Calculates how many original paper ballots need to be audited for the targeted contest(s) 
+1) Calculates how many original paper ballots need to be audited for the targeted contest(s)
 
 2) randomly selects which original paper ballots will be audited and creates lists to help local election officials find the necessary ballots in storage,
 
@@ -31,7 +31,7 @@ The RLA Tool:
 
 ## What is a risk-limiting audit?
 
-A [risk-limiting audit](https://en.wikipedia.org/wiki/Risk-limiting_audit) is an audit of the results of an election which uses statistical methods to give high confidence that the winner(s) of the election were reported correctly. 
+A [risk-limiting audit](https://en.wikipedia.org/wiki/Risk-limiting_audit) is an audit of the results of an election which uses statistical methods to give high confidence that the winner(s) of the election were reported correctly.
 
 In Colorado, citizen Audit Boards examine a random sample of original paper ballots from an election, comparing the votes marked on each original paper ballot with the electronic representation of votes recorded by the vote tabulation system. Under most circumstances, this method requires auditing far fewer ballots than a full hand recount or fixed-percentage audit, while also providing strong statistical evidence that the outcome of the election was correct.
 
@@ -72,15 +72,6 @@ docker-compose exec postgresql \
   /bin/bash -c \
   'psql -U corla -d corla < /root/corla-test-credentials.psql'
 ```
-
-Note that `coloradorla_postgresql_1` is the output of "Name" from
-
-```sh
-docker-compose ps postgresql
-```
-
-but should be consistent assuming you have checked out the code to a directory
-named the same as the repository.
 
 # Tests
 
@@ -130,8 +121,8 @@ Documentation about this project and the Colorado RLA system includes:
 
 # Contributors
 
-* [Democracy Works](https://democracy.works) 
+* [Democracy Works](https://democracy.works)
 * [Free & Fair](https://http://freeandfair.us)
 * [Colorado Department of State](https://www.sos.state.co.us/pubs/elections/auditCenter.html)
-* [Colorado County Clerks Association](www.clerkandrecorder.org/) 
-* Special thanks also to Philip Stark, Ron Rivest, Mark Lindeman, and others in the State Audit Working Group and RLA Representative Group for their work to develop and refine risk-limiting audits 
+* [Colorado County Clerks Association](www.clerkandrecorder.org/)
+* Special thanks also to Philip Stark, Ron Rivest, Mark Lindeman, and others in the State Audit Working Group and RLA Representative Group for their work to develop and refine risk-limiting audits

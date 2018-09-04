@@ -4,10 +4,10 @@
 package us.freeandfair.corla.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Optional;
 import java.util.Set;
 
@@ -38,36 +38,34 @@ public final class BallotSelection {
    * counties
    **/
   public static Map<Long,List<Integer>> segmentsForContest(final ContestResult contestResult,
-                                                                 final String seed ,
-                                                                 final Integer min_index,
-                                                                 final Integer max_index) {
-    final int globalTotal = ultimateTotal(contestResult.countyIDs()).intValue();
-    final PseudoRandomNumberGenerator gen = new PseudoRandomNumberGenerator(seed,
-                                                                      true, // allow dups
-                                                                      1, // minimum value
-                                                                      globalTotal);
+                                                           final String seed,
+                                                           final Integer minIndex,
+                                                           final Integer maxIndex) {
+    final int globalTotal = ballotsCast(contestResult.countyIDs()).intValue();
+    final PseudoRandomNumberGenerator gen =
+      new PseudoRandomNumberGenerator(seed, true, 1, globalTotal);
 
-    final List<Integer> globalRands = gen.getRandomNumbers(min_index, max_index);
+    final List<Integer> globalRands = gen.getRandomNumbers(minIndex, maxIndex);
 
-    LOGGER.info("seed:" + seed);
-    LOGGER.info("globalTotal:" + globalTotal);
-    LOGGER.info("min_index:" + min_index);
-    LOGGER.info("max_index:" + max_index);
-    LOGGER.info("globalRands:" + globalRands.size());
-    return contestCVRs(globalRands,
-                       contestResult.countyIDs());
+    LOGGER.info(String.format("Building segments for contest:"
+                              + " [contestResult=%s, seed=%s, globalTotal=%d,"
+                              + " minIndex=%d, maxIndex=%d, samples=%d]",
+                              contestResult, seed, globalTotal,
+                              minIndex, maxIndex, globalRands.size()));
+
+    return contestCVRs(globalRands, contestResult.countyIDs());
   }
 
   /**
-   * Divide a list of random numbers into Segments
+   * Divide a list of random numbers into segments
    **/
   public static Map<Long,List<Integer>> contestCVRs(final List<Integer> rands,
-                                                          final Set<Long> countyIds) {
+                                                    final Set<Long> countyIds) {
     return contestCVRs(rands, countyIds, BallotManifestInfoQueries::getMatching);
   }
 
   /**
-   * Divide a list of random numbers into Segments
+   * Divide a list of random numbers into segments
    **/
   public static Map<Long,List<Integer>> contestCVRs(final List<Integer> globalRands,
                                                     final Set<Long> countyIds,
@@ -101,11 +99,10 @@ public final class BallotSelection {
   /**
    * @description add an element to a list, l, where l may be null.
    **/
-  @SuppressWarnings({"PMD.AvoidReassigningParameters"}) // FIXME Don't reassign.
-  public static <T> List<T> addToList(List<T> l, final T t) {
-    l = (null == l) ? new ArrayList<T>() : l;
-    l.add(t);
-    return l;
+  public static <T> List<T> addToList(final List<T> l, final T t) {
+    final List<T> ret = (null == l) ? new ArrayList<T>() : l;
+    ret.add(t);
+    return ret;
   }
 
   /**
@@ -116,11 +113,10 @@ public final class BallotSelection {
    * @param l the list to add into
    * @param t the list being added
    */
-  @SuppressWarnings({"PMD.AvoidReassigningParameters"}) // FIXME Don't reassign.
-  public static <T> List<T> addAllToList(List<T> l, final List<T> t) {
-    l = (null == l) ? new ArrayList<T>() : l;
-    l.addAll(t);
-    return l;
+  public static <T> List<T> addAllToList(final List<T> l, final List<T> t) {
+    final List<T> ret = (null == l) ? new ArrayList<T>() : l;
+    ret.addAll(t);
+    return ret;
   }
 
   /**
@@ -211,9 +207,12 @@ public final class BallotSelection {
   }
 
   /**
-   * Calculate the total number of ballots across a set of counties
+   * The total number of ballots across a set of counties
+   * @param countyIds a set of counties to count
+   * @return the number of ballots in the ballot manifests belonging to
+   * countyIds
    **/
-  public static Long ultimateTotal(final Set<Long> countyIds) {
+  public static Long ballotsCast(final Set<Long> countyIds) {
     // could use voteTotals but that would be impure; using cvr data
     //
     // If a county has only one ballot for a contest, all the ballots from that

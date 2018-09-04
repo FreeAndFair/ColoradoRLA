@@ -2,8 +2,8 @@ package us.freeandfair.corla.model;
 
 import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 
-import java.math.BigDecimal;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,8 +25,8 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 import javax.persistence.MapKeyColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
@@ -212,17 +212,17 @@ public class ContestResult implements PersistentEntity, Serializable {
   }
 
   /**
-   * set the set of counties
-   */
-  public boolean addContests(final Set<Contest> cs) {
-    return this.contests.addAll(cs);
-  }
-
-  /**
    * @return the counties related to this contestresult.
    */
   public Set<County> getCounties() {
     return Collections.unmodifiableSet(this.counties);
+  }
+
+  /**
+   * set the set of contests
+   */
+  public boolean addContests(final Set<Contest> cs) {
+    return this.contests.addAll(cs);
   }
 
   /**
@@ -252,7 +252,7 @@ public class ContestResult implements PersistentEntity, Serializable {
   /**
    * @param winners a set of the choices that won the contest
    */
-  public void setWinners (final Set<String> winners) {
+  public void setWinners(final Set<String> winners) {
     this.winners.clear();
     this.winners.addAll(winners);
   }
@@ -267,7 +267,7 @@ public class ContestResult implements PersistentEntity, Serializable {
   /**
    * @param losers a set of the choices that did not win the contest
    */
-  public void setLosers (final Set<String> losers) {
+  public void setLosers(final Set<String> losers) {
     this.losers.clear();
     this.losers.addAll(losers);
   }
