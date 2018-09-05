@@ -22,7 +22,6 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.persistence.Persistence;
@@ -86,7 +85,7 @@ public class SetAuditBoardCount extends AbstractCountyDashboardEndpoint {
         serverError(response, "could not set audit board count");
       }
 
-      countyDashboard.setAuditBoardCount(input.get("count").intValue());
+      countyDashboard.setAuditBoardCount(input.get("count"));
       Persistence.saveOrUpdate(countyDashboard);
 
       ok(response, String.format("set the number of audit boards to %d",
@@ -106,11 +105,7 @@ public class SetAuditBoardCount extends AbstractCountyDashboardEndpoint {
    *
    * @param body the unmarshalled input
    */
-  private static boolean validateRequestBody(Map<String, Integer> body) {
-    if (body.containsKey("count")) {
-      return true;
-    }
-
-    return false;
+  private static boolean validateRequestBody(final Map<String, Integer> body) {
+    return body.containsKey("count");
   }
 }

@@ -84,7 +84,7 @@ public class IntermediateAuditReport extends AbstractAuditBoardDashboardEndpoint
         cdb.submitIntermediateReport(report);
 
         // TODO: Do we need to sign out all audit boards?
-        for (int i : cdb.auditBoards().keySet()) {
+        for (final int i : cdb.auditBoards().keySet()) {
           cdb.signOutAuditBoard(i);
         }
       }

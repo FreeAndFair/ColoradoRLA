@@ -213,7 +213,7 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
     // We only need to sign out all audit boards when the entire audit is
     // complete; we probably need an intermediate step to sign off on a given
     // audit board’s portion of work.
-    for (int i : the_cdb.auditBoards().keySet()) {
+    for (final int i : the_cdb.auditBoards().keySet()) {
       the_cdb.signOutAuditBoard(i);
     }
   }

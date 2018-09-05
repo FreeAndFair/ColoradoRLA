@@ -21,4 +21,4 @@ export default (params: SetAuditBoardCountParams) => {
   const req = { count: params.auditBoardCount };
 
   setAuditBoardCount(req);
-}
+};

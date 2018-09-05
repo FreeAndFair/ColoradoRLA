@@ -13,7 +13,6 @@ package us.freeandfair.corla.endpoint;
 
 import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.SIGN_IN_AUDIT_BOARD_EVENT;
 
-import java.lang.reflect.Type;
 import java.util.List;
 
 import javax.persistence.PersistenceException;

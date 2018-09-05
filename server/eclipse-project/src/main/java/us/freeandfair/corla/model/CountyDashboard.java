@@ -45,7 +45,6 @@ import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
-import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.ImportStatus.ImportState;
 import us.freeandfair.corla.persistence.AuditSelectionIntegerMapConverter;
 import us.freeandfair.corla.persistence.Persistence;
@@ -395,7 +394,7 @@ public class CountyDashboard implements PersistentEntity {
    *
    * @param count number of audit boards
    */
-  public void setAuditBoardCount(Integer count) {
+  public void setAuditBoardCount(final Integer count) {
     this.auditBoardCount = count;
   }
 

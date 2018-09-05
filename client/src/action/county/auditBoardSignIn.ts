@@ -18,4 +18,4 @@ const auditBoardSignIn = createSubmitAction({
 
 export default (index: number, board: AuditBoard) => {
     auditBoardSignIn(format(index, board));
-}
+};

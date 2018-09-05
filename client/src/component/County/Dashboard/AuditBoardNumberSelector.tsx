@@ -30,42 +30,14 @@ class AuditBoardNumberSelector
 
         this.state = {
           auditBoardCount: props.auditBoardCount,
-          isEnabled: props.isEnabled
+          isEnabled: props.isEnabled,
         };
 
         this.handleChangeAuditBoards = this.handleChangeAuditBoards.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    handleChangeAuditBoards(asNumber: number, asString: string) {
-        if (asNumber >= 1) {
-          this.setState({ auditBoardCount: asNumber });
-        }
-    }
-
-    handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-        e.preventDefault();
-
-        const { auditBoardCount } = this.state;
-
-        this.setState({ isEnabled: false });
-        setNumberOfAuditBoards({ auditBoardCount });
-    }
-
-    helperText(toAudit?: number) {
-        if (!toAudit) {
-            return null;
-        }
-
-        return (
-            <div className='pt-form-helper-text'>
-                There are <b>{ toAudit }</b>  ballot cards to audit in this
-                round.
-            </div>
-        );
-    }
-
-    render() {
+    public render() {
         const { isShown, numberOfBallotsToAudit } = this.props;
         const { isEnabled } = this.state;
 
@@ -95,6 +67,34 @@ class AuditBoardNumberSelector
             </div>
         );
     }
-};
+
+    private handleChangeAuditBoards(asNumber: number, asString: string) {
+        if (asNumber >= 1) {
+          this.setState({ auditBoardCount: asNumber });
+        }
+    }
+
+    private handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+
+        const { auditBoardCount } = this.state;
+
+        this.setState({ isEnabled: false });
+        setNumberOfAuditBoards({ auditBoardCount });
+    }
+
+    private helperText(toAudit?: number) {
+        if (!toAudit) {
+            return null;
+        }
+
+        return (
+            <div className='pt-form-helper-text'>
+                There are <b>{ toAudit }</b>  ballot cards to audit in this
+                round.
+            </div>
+        );
+    }
+}
 
 export default AuditBoardNumberSelector;

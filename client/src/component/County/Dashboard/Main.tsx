@@ -32,7 +32,7 @@ const AuditBoardButtons = (props: AuditBoardButtonsProps) => {
         );
     };
 
-    let buttons = [];
+    const buttons = [];
     for (let i = 0; i < numberOfBoards; i++) {
         buttons.push(boardButton(i));
     }
@@ -40,10 +40,10 @@ const AuditBoardButtons = (props: AuditBoardButtonsProps) => {
     return (
         <div className='pt-card'>
             <h5 className='pt-ui-text-large'>Sign in to an audit board</h5>
-            <div className="pt-button-group pt-large corla-spaced">{ buttons }</div>
+            <div className='pt-button-group pt-large corla-spaced'>{ buttons }</div>
         </div>
     );
-}
+};
 
 interface MainProps {
     auditBoardSignedIn: boolean;
