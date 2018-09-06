@@ -64,13 +64,11 @@ class CountyDashboardContainer extends React.Component<DashboardProps> {
         }
 
         const countyInfo = counties[countyState.id];
-        const boardSignIn = () => history.push('/county/board');
         const startAudit = () => history.push('/county/audit');
 
         const props = {
             allRoundsComplete,
             auditStarted,
-            boardSignIn,
             canAudit,
             canRenderReport,
             canSignIn,

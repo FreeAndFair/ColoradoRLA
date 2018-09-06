@@ -34,7 +34,7 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
  * @author Daniel M. Zimmerman <dmz@freeandFair.us>
  * @version 1.0.0
  */
-@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.ExcessiveImports"})
+@SuppressWarnings({"PMD.AtLeastOneConstructor"})
 public class AuditBoardSignOut extends AbstractAuditBoardDashboardEndpoint {
   /**
    * {@inheritDoc}

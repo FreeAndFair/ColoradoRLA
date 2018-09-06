@@ -21,6 +21,7 @@ interface ContainerProps {
     countyName: string;
     hasAuditedAnyBallot: boolean;
     history: History;
+    match: any;
 }
 
 class AuditBoardSignInContainer extends React.Component<ContainerProps> {
@@ -31,6 +32,7 @@ class AuditBoardSignInContainer extends React.Component<ContainerProps> {
             countyName,
             hasAuditedAnyBallot,
             history,
+            match,
         } = this.props;
 
         if (auditBoardSignedIn) {
@@ -39,13 +41,16 @@ class AuditBoardSignInContainer extends React.Component<ContainerProps> {
 
             return (
                 <SignedInPage auditBoard={ auditBoard }
+                              auditBoardIndex={ parseInt(match.params.id, 10) }
                               auditBoardStartOrContinue={ auditBoardStartOrContinue }
                               countyName={ countyName }
                               hasAuditedAnyBallot={ hasAuditedAnyBallot } />
             );
         }
 
-        return <AuditBoardPage { ...this.props } />;
+        return <AuditBoardPage auditBoard={ auditBoard }
+                               auditBoardIndex={ parseInt(match.params.id, 10) }
+                               countyName={ countyName } />;
     }
 }
 

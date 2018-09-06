@@ -7,6 +7,7 @@ import auditBoardSignOut from 'corla/action/county/auditBoardSignOut';
 
 interface PageProps {
     auditBoard: AuditBoard;
+    auditBoardIndex: number;
     auditBoardStartOrContinue: OnClick;
     countyName: string;
     hasAuditedAnyBallot: boolean;
@@ -15,6 +16,7 @@ interface PageProps {
 const SignedInPage = (props: PageProps) => {
     const {
         auditBoard,
+        auditBoardIndex,
         auditBoardStartOrContinue,
         countyName,
         hasAuditedAnyBallot,
@@ -26,7 +28,7 @@ const SignedInPage = (props: PageProps) => {
         <div>
             <CountyNav />
             <div>
-                <h2>Audit Board</h2>
+                <h2>Audit Board { auditBoardIndex + 1 }</h2>
                 <div className='pt-card'>
                     <h5>The Audit Board members below are signed in.
                     To sign the Audit Board out, click the "Sign Out" button below.</h5>

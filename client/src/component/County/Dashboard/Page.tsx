@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 
+import { History } from 'history';
+
 import LicenseFooter from 'corla/component/LicenseFooter';
 
 import CountyNav from '../Nav';
@@ -13,7 +15,6 @@ interface PageProps {
     auditBoardSignedIn: boolean;
     auditComplete: boolean;
     auditStarted: boolean;
-    boardSignIn: OnClick;
     canAudit: boolean;
     canRenderReport: boolean;
     canSignIn: boolean;
@@ -21,6 +22,7 @@ interface PageProps {
     countyInfo: CountyInfo;
     countyState: County.AppState;
     currentRoundNumber: number;
+    history: History;
     startAudit: OnClick;
 }
 
@@ -29,7 +31,6 @@ const CountyDashboardPage = (props: PageProps) => {
         auditBoardSignedIn,
         auditComplete,
         auditStarted,
-        boardSignIn,
         canAudit,
         canRenderReport,
         canSignIn,
@@ -37,6 +38,7 @@ const CountyDashboardPage = (props: PageProps) => {
         countyInfo,
         countyState,
         currentRoundNumber,
+        history,
         startAudit,
     } = props;
 
@@ -51,10 +53,10 @@ const CountyDashboardPage = (props: PageProps) => {
                     <Main auditComplete={ auditComplete }
                           auditStarted={ auditStarted }
                           auditBoardSignedIn={ auditBoardSignedIn }
-                          boardSignIn={ boardSignIn }
                           canRenderReport={ canRenderReport }
                           countyState={ countyState }
                           currentRoundNumber={ currentRoundNumber }
+                          history={ history }
                           startAuditButtonDisabled={ startAuditButtonDisabled }
                           name={ countyInfo.name }
                           auditBoardButtonDisabled={ auditBoardButtonDisabled }

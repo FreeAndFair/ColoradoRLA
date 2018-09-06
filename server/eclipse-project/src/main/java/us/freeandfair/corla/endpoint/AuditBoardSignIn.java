@@ -13,6 +13,8 @@ package us.freeandfair.corla.endpoint;
 
 import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.SIGN_IN_AUDIT_BOARD_EVENT;
 
+import java.lang.reflect.Type;
+
 import java.util.List;
 
 import javax.persistence.PersistenceException;
@@ -31,7 +33,6 @@ import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.Elector;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
  * Signs in the audit board for a county.
@@ -39,8 +40,19 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
  * @author Daniel M. Zimmerman <dmz@freeandFair.us>
  * @version 1.0.0
  */
-@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.ExcessiveImports"})
+@SuppressWarnings({"PMD.AtLeastOneConstructor"})
 public class AuditBoardSignIn extends AbstractAuditBoardDashboardEndpoint {
+  /**
+   * The event to return for this endpoint.
+   */
+  private final ThreadLocal<ASMEvent> asmEvent = new ThreadLocal<ASMEvent>();
+
+  /**
+   * Type of a list of electors for easier unmarshaling with GSON
+   */
+  private static final Type ELECTOR_LIST =
+      new TypeToken<List<Elector>>() { }.getType();
+
   /**
    * {@inheritDoc}
    */
@@ -68,17 +80,14 @@ public class AuditBoardSignIn extends AbstractAuditBoardDashboardEndpoint {
    * {@inheritDoc}
    */
   @Override
-  // TODO: Only emit this event when *all* audit boards have signed in
   protected ASMEvent endpointEvent() {
-    return SIGN_IN_AUDIT_BOARD_EVENT;
+    return this.asmEvent.get();
   }
 
   /**
    * Establish the audit board for a county.
    */
   @Override
-  // false positive about inner class declaration
-  @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
   public String endpointBody(final Request the_request,
                          final Response the_response) {
     final JsonParser parser = new JsonParser();
@@ -91,7 +100,7 @@ public class AuditBoardSignIn extends AbstractAuditBoardDashboardEndpoint {
       final List<Elector> parsed_audit_board =
           Main.GSON.fromJson(
               object.get("audit_board"),
-              new TypeToken<List<Elector>>() { }.getType());
+              ELECTOR_LIST);
 
       if (parsed_audit_board.size() >= CountyDashboard.MIN_AUDIT_BOARD_MEMBERS) {
         final County county = Main.authentication().authenticatedCounty(the_request); 
@@ -106,6 +115,7 @@ public class AuditBoardSignIn extends AbstractAuditBoardDashboardEndpoint {
           } else {
             cdb.signInAuditBoard(index, parsed_audit_board);
             Persistence.saveOrUpdate(cdb);
+            this.asmEvent.set(this.nextEvent(cdb));
             ok(the_response,
                String.format("audit board #%d for county %d signed in: %s",
                    index, county.id(), parsed_audit_board));
@@ -122,5 +132,20 @@ public class AuditBoardSignIn extends AbstractAuditBoardDashboardEndpoint {
     }
 
     return my_endpoint_result.get();
+  }
+
+  /**
+   * Computes an ASM event to emit when the audit board is signed in.
+   *
+   * Returns null if no ASM event should be emitted.
+   *
+   * @param cdb the county dashboard
+   */
+  private ASMEvent nextEvent(final CountyDashboard cdb) {
+    if (cdb.areAuditBoardsSignedIn()) {
+      return SIGN_IN_AUDIT_BOARD_EVENT;
+    }
+
+    return null;
   }
 }

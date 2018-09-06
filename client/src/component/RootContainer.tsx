@@ -53,7 +53,7 @@ export class RootContainer extends React.Component<RootContainerProps> {
                                     path='/county'
                                     page={ CountyDashboardPageContainer } />
                         <LoginRoute exact
-                                    path='/county/board'
+                                    path='/county/board/:id'
                                     page={ AuditBoardPageContainer } />
                         <LoginRoute exact
                                     path='/county/audit'

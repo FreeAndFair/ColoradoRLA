@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import { History } from 'history';
+
 import AuditBoardNumberSelector from 'corla/component/County/Dashboard/AuditBoardNumberSelector';
 
 import FileUploadContainer from './FileUploadContainer';
@@ -12,21 +14,29 @@ import FileDownloadButtons from 'corla/component/FileDownloadButtons';
 
 
 interface AuditBoardButtonsProps {
-    numberOfBoards: number;
+    history: History;
     isShown: boolean;
+    numberOfBoards: number;
 }
 
 const AuditBoardButtons = (props: AuditBoardButtonsProps) => {
-    const { isShown, numberOfBoards } = props;
+    const { history, isShown, numberOfBoards } = props;
 
     if (!isShown) {
         return null;
     }
 
+    const handleButtonClick = (e: any, boardIndex: number) => {
+        e.preventDefault();
+
+        history.push('/county/board/' + boardIndex);
+    };
+
     const boardButton = (boardIndex: number) => {
         return (
             <button className='pt-button pt-intent-primary pt-icon-people'
-                    key={ boardIndex.toString() }>
+                    key={ boardIndex.toString() }
+                    onClick={ (e: any) => handleButtonClick(e, boardIndex) }>
                 Audit Board { boardIndex + 1 }
             </button>
         );
@@ -46,32 +56,32 @@ const AuditBoardButtons = (props: AuditBoardButtonsProps) => {
 };
 
 interface MainProps {
+    auditBoardButtonDisabled: boolean;
     auditBoardSignedIn: boolean;
-    startAuditButtonDisabled: boolean;
     auditComplete: boolean;
     auditStarted: boolean;
-    boardSignIn: OnClick;
     canRenderReport: boolean;
     countyState: County.AppState;
     currentRoundNumber: number;
+    history: History;
     name: string;
-    auditBoardButtonDisabled: boolean;
     startAudit: OnClick;
+    startAuditButtonDisabled: boolean;
 }
 
 const Main = (props: MainProps) => {
     const {
+        auditBoardButtonDisabled,
         auditBoardSignedIn,
-        startAuditButtonDisabled,
         auditComplete,
         auditStarted,
-        boardSignIn,
         canRenderReport,
         countyState,
         currentRoundNumber,
+        history,
         name,
-        auditBoardButtonDisabled,
         startAudit,
+        startAuditButtonDisabled,
     } = props;
 
     let directions = 'Upload the ballot manifest and cast vote record (CVR) files. These need to be CSV files.'
@@ -145,8 +155,9 @@ const Main = (props: MainProps) => {
                                           numberOfBallotsToAudit={ countyState.ballotsRemainingInRound }
                                           isShown={ !auditBoardButtonDisabled }
                                           isEnabled={ !countyState.auditBoardCount } />
-                <AuditBoardButtons numberOfBoards={ countyState.auditBoardCount || 1 }
-                                   isShown={ countyState.auditBoardCount != null } />
+                <AuditBoardButtons history={ history }
+                                   isShown={ countyState.auditBoardCount != null }
+                                   numberOfBoards={ countyState.auditBoardCount || 1 } />
             </div>
         </div>
     );

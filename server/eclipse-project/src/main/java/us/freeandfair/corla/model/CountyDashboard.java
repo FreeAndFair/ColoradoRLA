@@ -426,7 +426,7 @@ public class CountyDashboard implements PersistentEntity {
   }
 
   /**
-   * Signs out the current audit board.
+   * Signs out the audit board at index.
    *
    * If no audit board is present at the given index, nothing is changed.
    */
@@ -435,14 +435,29 @@ public class CountyDashboard implements PersistentEntity {
 
     if (currentBoard != null) {
       currentBoard.setSignOutTime(Instant.now());
+      my_audit_boards.remove(index);
+    }
+  }
+
+  /**
+   * Signs out all audit boards.
+   */
+  public void signOutAllAuditBoards() {
+    for (final int i : my_audit_boards.keySet()) {
+      this.signOutAuditBoard(i);
     }
   }
 
   /**
    * Test if the desired number of audit boards have signed in.
    *
-   * Note: Currently does not do anything about more audit boards than
-   * explicitly asked for.
+   * Note: Only works properly for indexes less than the current audit board
+   * count in case there are orphaned boards outside of the current expected
+   * key range, because just counting the number of keys in the audit board map
+   * might yield the wrong answer if there are orphaned audit boards.
+   *
+   * Use signOutAllAuditBoards to properly clear out the data structure holding
+   * all audit boards, signing out audit boards as necessary.
    *
    * @return boolean
    */
