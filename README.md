@@ -63,6 +63,8 @@ Assuming you have built images, you can bring up the system with those images:
 docker-compose up
 ```
 
+The application frontend will then be accessible at **`localhost:8080`**.
+
 Once the system is running, the server will create the PostgreSQL schema. After
 this, you most likely want to install test credentials, which are already inside
 the PostgreSQL image:
@@ -72,6 +74,14 @@ docker-compose exec postgresql \
   /bin/bash -c \
   'psql -U corla -d corla < /root/corla-test-credentials.psql'
 ```
+
+With the test credentials loaded, you should be able to log in as a state
+administrator using `stateadmin1` as the username with any password, and as a
+county administrator with `countyadmin1` as the username along with any
+password. There are other usernames, especially for the counties (`countyadmin1`
+maps to a specific county). You may be able to use this file as a hint for the
+others:
+`server/eclipse-project/src/main/resources/us/freeandfair/corla/county_ids.properties`
 
 # Installation and Use
 
