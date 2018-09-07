@@ -156,7 +156,7 @@ public class CountyReport {
     for (final Round r : my_rounds) {
       final List<CVRAuditInfo> cvrs_to_audit = 
           ComparisonAuditController.cvrsToAuditInRound(my_cdb, r.number());
-      cvrs_to_audit.sort(new CVRAuditInfo.BallotOrderComparator());
+      cvrs_to_audit.sort(null);
       my_cvrs_to_audit_by_round.put(r.number(), cvrs_to_audit);
     }
     my_dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);

@@ -1,10 +1,12 @@
 package us.freeandfair.corla.model;
 
 import java.time.Instant;
-import java.util.Comparator;
+
 import org.testng.annotations.*;
-import static org.testng.Assert.*;
+
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
+
+import static org.testng.Assert.*;
 
 public class CastVoteRecordTest {
     private CastVoteRecord cvr1;
@@ -12,7 +14,6 @@ public class CastVoteRecordTest {
     private CastVoteRecord cvr3;
     private CastVoteRecord cvr4;
     private Instant now;
-    private Comparator c = new CastVoteRecord.BallotOrderComparator();
 
     @BeforeClass
     public void CastVoteRecordTest() {
@@ -26,8 +27,8 @@ public class CastVoteRecordTest {
 
     @Test()
     public void comparatorTest() {
-        assertEquals(c.compare(cvr1, cvr2), -1);
-        assertEquals(c.compare(cvr2, cvr4), 0);
-        assertEquals(c.compare(cvr3, cvr2), 1);
+        assertEquals(cvr1.compareTo(cvr2), -1);
+        assertEquals(cvr2.compareTo(cvr4), 0);
+        assertEquals(cvr3.compareTo(cvr2), 1);
     }
 }

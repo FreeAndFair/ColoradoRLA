@@ -38,7 +38,6 @@ import us.freeandfair.corla.Main;
 import us.freeandfair.corla.controller.BallotSelection;
 import us.freeandfair.corla.controller.ComparisonAuditController;
 import us.freeandfair.corla.json.CVRToAuditResponse;
-import us.freeandfair.corla.json.CVRToAuditResponse.BallotOrderComparator;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
@@ -88,8 +87,8 @@ public class CVRToAuditDownload extends AbstractEndpoint {
    * The CSV headers for formatting the response.
    */
   private static final String[] CSV_HEADERS = {
-      "scanner_id", "batch_id", "record_id", "imprinted_id", "ballot_type",
-      "storage_location", "cvr_number", "audited"
+      "storage_location", "scanner_id", "batch_id", "record_id", "imprinted_id",
+      "ballot_type", "cvr_number", "audited"
   };
   
   /**
@@ -236,7 +235,7 @@ public class CVRToAuditDownload extends AbstractEndpoint {
       }
      
       response_list.addAll(BallotSelection.toResponseList(cvr_to_audit_list));
-      response_list.sort(new BallotOrderComparator());
+      response_list.sort(null);
       
       // generate a CSV file from the response list
       the_response.type("text/csv");
@@ -291,9 +290,9 @@ public class CVRToAuditDownload extends AbstractEndpoint {
                                           CSVFormat.DEFAULT.withHeader(CSV_HEADERS).
                                           withQuoteMode(QuoteMode.NON_NUMERIC))) {
       for (final CVRToAuditResponse cvr : the_cvrs) {
-        csvp.printRecord(cvr.scannerID(), cvr.batchID(), cvr.recordID(), cvr.imprintedID(),
-                         cvr.ballotType(), cvr.storageLocation(), cvr.cvrNumber(), 
-                         booleanYesNo(cvr.audited()));
+        csvp.printRecord(cvr.storageLocation(), cvr.scannerID(), cvr.batchID(),
+                         cvr.recordID(), cvr.imprintedID(), cvr.ballotType(),
+                         cvr.cvrNumber(), booleanYesNo(cvr.audited()));
       }
     } 
   }

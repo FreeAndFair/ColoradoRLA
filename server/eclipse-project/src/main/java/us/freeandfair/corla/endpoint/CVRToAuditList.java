@@ -24,7 +24,6 @@ import us.freeandfair.corla.Main;
 import us.freeandfair.corla.controller.BallotSelection;
 import us.freeandfair.corla.controller.ComparisonAuditController;
 import us.freeandfair.corla.json.CVRToAuditResponse;
-import us.freeandfair.corla.json.CVRToAuditResponse.BallotOrderComparator;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
@@ -212,7 +211,7 @@ public class CVRToAuditList extends AbstractEndpoint {
       }
 
       response_list.addAll(BallotSelection.toResponseList(cvr_to_audit_list));
-      response_list.sort(new BallotOrderComparator());
+      response_list.sort(null);
       okJSON(the_response, Main.GSON.toJson(response_list));
     } catch (final PersistenceException e) {
       serverError(the_response, "could not generate cvr list");

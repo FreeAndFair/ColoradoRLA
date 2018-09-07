@@ -390,7 +390,7 @@ public final class ComparisonAuditController {
 
       // deduplicate the CVRs and put them in ballot order
       final SortedSet<CastVoteRecord> sorted_deduplicated_cvrs =
-          new TreeSet<CastVoteRecord>(new CastVoteRecord.BallotOrderComparator());
+          new TreeSet<CastVoteRecord>();
       sorted_deduplicated_cvrs.addAll(cvrs_to_audit);
       final List<Long> ballot_ids_to_audit = new ArrayList<Long>();
       for (final CastVoteRecord cvr : sorted_deduplicated_cvrs) {
@@ -504,7 +504,7 @@ public final class ComparisonAuditController {
 
     List<CastVoteRecord> extra_cvrs = new_cvrs;
     final SortedSet<CastVoteRecord> sorted_deduplicated_new_cvrs =
-        new TreeSet<>(new CastVoteRecord.BallotOrderComparator());
+        new TreeSet<CastVoteRecord>();
     sorted_deduplicated_new_cvrs.addAll(new_cvrs);
     while (!extra_cvrs.isEmpty() &&
            sorted_deduplicated_new_cvrs.size() < the_round_length) {
@@ -590,7 +590,7 @@ public final class ComparisonAuditController {
       // use estimates based on current error rate to get length of round
       // we keep doing this until we find a CVR to actually audit
       final SortedSet<CastVoteRecord> sorted_deduplicated_new_cvrs =
-          new TreeSet<>(new CastVoteRecord.BallotOrderComparator());
+          new TreeSet<CastVoteRecord>();
       final List<CastVoteRecord> new_cvrs = new ArrayList<>();
       int expected_prefix_length = 0;
       while (sorted_deduplicated_new_cvrs.isEmpty()) {

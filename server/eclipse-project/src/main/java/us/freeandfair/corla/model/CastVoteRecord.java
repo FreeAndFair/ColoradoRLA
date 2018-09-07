@@ -75,7 +75,9 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
 // restored when the class is unserialized, because we intentionally made it
 // transient so it wouldn't be. Since that's what "transient" means.
 @SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-public class CastVoteRecord implements PersistentEntity, Serializable {
+public class CastVoteRecord implements Comparable<CastVoteRecord>,
+                                       PersistentEntity,
+                                       Serializable {
   /**
    * The serialVersionUID.
    */
@@ -475,44 +477,29 @@ public class CastVoteRecord implements PersistentEntity, Serializable {
   }
 
   /**
-   * A comparator to sort CastVoteRecord objects by scanner ID, then batch ID,
-   * then record ID.
+   * Compares this object to another.
+   *
+   * The sorting happens by the triple (scannerID(), batchID(), recordID()) and
+   * will return a negative, positive, or 0-valued result if this should come
+   * before, after, or at the same point as the other object, respectively.
+   *
+   * @return int
    */
-  @SuppressWarnings("PMD.AtLeastOneConstructor")
-  public static class BallotOrderComparator
-      implements Serializable, Comparator<CastVoteRecord> {
-    /**
-     * The serialVersionUID.
-     */
-    private static final long serialVersionUID = 1;
+  @Override
+  public int compareTo(final CastVoteRecord other) {
+    final int scanner = this.scannerID() - other.scannerID();
 
-    /**
-     * Orders two CastVoteRecord lexicographically by the triple
-     * (scanner_id, batch_id, record_id).
-     *
-     * @param the_first The first CVR.
-     * @param the_second The second CVR.
-     * @return a positive, negative, or 0 value as the first response is
-     * greater than, equal to, or less than the second, respectively.
-     */
-    @SuppressWarnings("PMD.ConfusingTernary")
-    public int compare(final CastVoteRecord the_first, final CastVoteRecord the_second) {
-      final int scanner = the_first.scannerID() - the_second.scannerID();
-      final int batch = NaturalOrderComparator.INSTANCE.compare(the_first.batchID(),
-                                                             the_second.batchID());
-      final int record = the_first.recordID() - the_second.recordID();
-
-      final int result;
-
-      if (scanner != 0) {
-        result = scanner;
-      } else if (batch != 0) {
-        result = batch;
-      } else {
-        result = record;
-      }
-
-      return result;
+    if (scanner != 0) {
+      return scanner;
     }
+
+    final int batch = NaturalOrderComparator.INSTANCE.compare(
+        this.batchID(), other.batchID());
+
+    if (batch != 0) {
+      return batch;
+    }
+
+    return this.recordID() - other.recordID();
   }
 }
