@@ -386,7 +386,8 @@ public final class CastVoteRecordQueries {
       cq.select(root).where(cb.and(cb.equal(root.get("my_county_id"), county_id),
                                    cb.equal(root.get("my_scanner_id"), scanner_id),
                                    cb.equal(root.get("my_batch_id"), batch_id),
-                                   cb.equal(root.get("my_record_id"), position)));
+                                   cb.equal(root.get("my_record_id"), position),
+                                   cb.equal(root.get("my_record_type"), RecordType.UPLOADED)));
       final TypedQuery<CastVoteRecord> query = s.createQuery(cq);
       result = query.getResultList();
     } catch (final PersistenceException e) {

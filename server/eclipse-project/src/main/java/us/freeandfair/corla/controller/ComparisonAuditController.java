@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalInt;
@@ -23,6 +24,7 @@ import java.util.OptionalLong;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.crypto.PseudoRandomNumberGenerator;
@@ -43,6 +45,7 @@ import us.freeandfair.corla.model.Round;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.BallotManifestInfoQueries;
 import us.freeandfair.corla.query.CastVoteRecordQueries;
+import us.freeandfair.corla.query.ContestQueries;
 import us.freeandfair.corla.query.CountyContestResultQueries;
 
 /**
@@ -378,6 +381,13 @@ public final class ComparisonAuditController {
       final List<CastVoteRecord> cvrs_to_audit =
           getCVRsInAuditSequence(the_cdb.county(), 0, to_audit - 1);
 
+      cvrs_to_audit.stream()
+          .filter(c -> { return c.recordType() == CastVoteRecord.RecordType.PHANTOM_RECORD; } )
+          // in case the random number occurs twice, we only want to create one
+          // discrepency because the multiplicity is accounted for in that process
+          .distinct()
+          .forEach(c -> { createPhantomRecord(the_cdb, c); } );
+
       // the IDs of the CVRs to audit, in audit sequence order
       final List<Long> audit_subsequence_ids = new ArrayList<Long>();
       for (final CastVoteRecord cvr : cvrs_to_audit) {
@@ -404,6 +414,47 @@ public final class ComparisonAuditController {
     }
 
     return result;
+  }
+
+  /** create a discrepency as if it was submitted by the client **/
+  public static void createPhantomRecord(final CountyDashboard cdb,
+                                         final CastVoteRecord cvr) {
+    // the cvr will only be selected for one county
+    // however we need to make sure this is not done twice
+    // let's assume the list of phantom records has been deduped, I think that will get us there
+
+    // we need to create a discrepancy for every contest that COULD have appeared on the ballot,
+    // which we take to mean all the contests that occur in the county
+    Set<Contest> contests = ContestQueries.forCounty(cdb.county());
+
+    List<CVRContestInfo> phantomContestInfos = contests.stream()
+      .map(c -> {return new CVRContestInfo(c,
+                                           "PHANTOM_RECORD - CVR not found",
+                                           null,
+                                           new ArrayList<String>()); } )
+      .collect(Collectors.toList());
+
+    cvr.setContestInfo(phantomContestInfos);
+    Persistence.saveOrUpdate(cvr);
+    // this relation is created when a cvr is prepared for audit
+    // we won't be actually auditing this cvr, but we need this relation to make
+    // the app work
+    CVRAuditInfo cvrAuditInfo = new CVRAuditInfo(cvr);
+    Persistence.saveOrUpdate(cvrAuditInfo);
+    final CastVoteRecord acvr = new CastVoteRecord(CastVoteRecord.RecordType.PHANTOM_RECORD,
+                                                   Instant.now(),
+                                                   cvr.countyID(),
+                                                   cvr.cvrNumber(),
+                                                   null,
+                                                   cvr.scannerID(),
+                                                   cvr.batchID(),
+                                                   cvr.recordID(),
+                                                   cvr.imprintedID(),
+                                                   cvr.ballotType(),
+                                                   phantomContestInfos);
+    Persistence.saveOrUpdate(acvr);
+
+    submitAuditCVR(cdb, cvr, acvr);
   }
 
   /**
@@ -918,6 +969,8 @@ public final class ComparisonAuditController {
   private static boolean checkACVRSanity(final CastVoteRecord the_cvr,
                                          final CastVoteRecord the_acvr) {
     return the_cvr.isAuditPairWith(the_acvr) &&
-           the_acvr.recordType().isAuditorGenerated();
+      (the_acvr.recordType().isAuditorGenerated()
+       || the_acvr.recordType().isSystemGenerated())
+      ;
   }
 }
