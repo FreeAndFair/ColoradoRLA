@@ -11,6 +11,7 @@ const ELECTION_TYPES: ElectionType[] =
 interface FormProps {
     forms: DOS.Form.AuditDef.Forms;
     setFormValid: OnClick;
+    initType: ElectionType;
 }
 
 interface FormState {
@@ -19,7 +20,7 @@ interface FormState {
 
 class ElectionTypeForm extends React.Component<FormProps, FormState> {
     public state: FormState = {
-        type: undefined,
+        type: this.props.initType,
     };
 
     public render() {
@@ -35,13 +36,13 @@ class ElectionTypeForm extends React.Component<FormProps, FormState> {
 
         return (
             <div className='pt-card'>
-                <RadioGroup
-                    className='rla-radio-group'
-                    selectedValue={ type }
-                    onChange={ this.onFormChange }
-                    label='Election Type'>
-                    { radios }
-                </RadioGroup>
+                    <RadioGroup
+                        className='rla-radio-group'
+                        selectedValue={ type }
+                        onChange={ this.onFormChange }
+                        label='Election Type'>
+                        { radios }
+                    </RadioGroup>
             </div>
         );
     }

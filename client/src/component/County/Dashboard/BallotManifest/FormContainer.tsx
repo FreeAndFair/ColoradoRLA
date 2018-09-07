@@ -19,10 +19,10 @@ const UploadedBallotManifest = (props: UploadedProps) => {
 
     return (
         <div className='pt-card'>
-            <div>Ballot Manifest <strong>uploaded</strong>.</div>
-            <div>File name: "{ file.name }"</div>
-            <div>SHA-256 hash: { file.hash }</div>
-            <button className='pt-button' onClick={ enableReupload }>
+            <div><strong>Ballot Manifest</strong></div>
+            <div><strong>File name: </strong>"{ file.name }"</div>
+            <div><strong>SHA-256 hash: </strong> { file.hash }</div>
+            <button className='pt-button pt-intent-primary' onClick={ enableReupload }>
                 Re-upload
             </button>
         </div>

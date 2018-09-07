@@ -42,8 +42,8 @@ const BallotManifestForm = (props: FormProps) => {
     return (
         <div className='pt-card'>
             <div className='pt-card'>
-                <div>
-                    Ballot Manifest file
+                <div className='pt-ui-text-large'>
+                    Ballot Manifest
                 </div>
                 <label className='pt-file-upload truncate'>
                     <input type='file' onChange={ onFileChange } />
@@ -51,8 +51,8 @@ const BallotManifestForm = (props: FormProps) => {
                 </label>
             </div>
             <div className='pt-card'>
-                <div>
-                    SHA-256 hash for Ballot Manifest file
+                <div className='pt-ui-text-large'>
+                   SHA-256 hash for Ballot Manifest
                 </div>
                 <label>
                     <EditableText
@@ -64,7 +64,7 @@ const BallotManifestForm = (props: FormProps) => {
                 </label>
             </div>
             { renderedCancelButton }
-            <button className='pt-button' onClick={ upload }>
+            <button className='pt-button pt-intent-primary' onClick={ upload }>
                 Upload
             </button>
         </div>

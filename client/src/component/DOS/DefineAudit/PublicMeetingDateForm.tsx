@@ -8,12 +8,20 @@ import { timezone } from 'corla/config';
 import corlaDate from 'corla/date';
 
 
-function defaultPublicMeetingDate(): string {
-    return moment.tz(timezone).add(7, 'days').format('YYYY-MM-DD');
+function defaultPublicMeetingDate(initDate: Date): string {
+    if (initDate) {
+        // date is formatted as utc in corlaDate.format
+        // if we don't use utc here we'll get the wrong day sometimes it appears.
+        // there may be a better way to do this.
+        return moment(initDate).tz('utc').format('YYYY-MM-DD');
+    } else {
+        return moment.tz(timezone).add(7, 'days').format('YYYY-MM-DD');
+    }
 }
 
 interface FormProps {
     forms: DOS.Form.AuditDef.Forms;
+    initDate: Date;
 }
 
 interface FormState {
@@ -21,7 +29,7 @@ interface FormState {
 }
 
 class PublicMeetingDateForm extends React.Component<FormProps, FormState> {
-    public state = { date: defaultPublicMeetingDate() };
+    public state = { date: defaultPublicMeetingDate(this.props.initDate) };
 
     public render() {
         this.props.forms.publicMeetingDateForm = this.state;

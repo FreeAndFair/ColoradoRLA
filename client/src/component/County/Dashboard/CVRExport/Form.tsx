@@ -42,8 +42,8 @@ const CVRExportForm = (props: FormProps) => {
     return (
         <div className='pt-card'>
             <div className='pt-card'>
-                <div>
-                    Cast Vote Record Export file
+                <div className='pt-ui-text-large'>
+                   CVR Export
                 </div>
                 <label className='pt-file-upload truncate'>
                     <input type='file' onChange={ onFileChange } />
@@ -51,8 +51,8 @@ const CVRExportForm = (props: FormProps) => {
                 </label>
             </div>
             <div className='pt-card'>
-                <div>
-                    SHA-256 hash for Cast Vote Record Export file
+                <div className='pt-ui-text-large'>
+                   SHA-256 hash for CVR Export
                 </div>
                 <label>
                     <EditableText
@@ -64,7 +64,7 @@ const CVRExportForm = (props: FormProps) => {
                 </label>
             </div>
             { renderedCancelButton }
-            <button className='pt-button' onClick={ upload }>
+            <button className='pt-button pt-intent-primary' onClick={ upload }>
                 Upload
             </button>
         </div>

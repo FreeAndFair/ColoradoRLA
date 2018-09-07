@@ -27,14 +27,14 @@ const SignInForm = (props: FormProps) => {
             <h3>Audit Board Member</h3>
             <div className='pt-card'>
                 <label>
-                    First Name:
+                    <strong>First Name: </strong>
                     <EditableText
                         className='pt-input'
                         value={ firstName }
                         onChange={ onFirstNameChange }
                         onConfirm={ onTextConfirm }
                     />
-                    Last Name:
+                    <strong> Last Name: </strong>
                     <EditableText
                         className='pt-input'
                         value={ lastName }

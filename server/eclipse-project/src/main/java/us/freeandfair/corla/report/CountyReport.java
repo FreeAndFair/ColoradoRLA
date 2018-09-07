@@ -68,7 +68,7 @@ public class CountyReport {
    */
   public static final String AFFIRMATION_STATEMENT = 
       "We hereby affirm that the results presented in this report\n" + 
-      "are accurate to the best of our knowledge.";
+      " are accurate to the best of our knowledge.";
   
   /**
    * The font size for Excel.

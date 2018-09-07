@@ -44,8 +44,10 @@ import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.ImportStatus.ImportState;
 import us.freeandfair.corla.persistence.AuditSelectionIntegerMapConverter;
+import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.persistence.PersistentEntity;
 
 /**
@@ -592,6 +594,7 @@ public class CountyDashboard implements PersistentEntity {
    */
   public Long cvrUnderAudit() {
     final Round round = currentRound();
+    // expectedCount is expected to be the ballotSequence size
     if (round == null || round.actualCount().compareTo(round.expectedCount()) >= 0) {
       return null;
     } else {
@@ -599,7 +602,28 @@ public class CountyDashboard implements PersistentEntity {
       return round.ballotSequence().get(round.actualCount());
     }
   }
-  
+
+  /** skip over PHANTOM_RECORDs **/
+  public Long skipOverNextMaybe() {
+    Long cvrId = cvrUnderAudit();
+    // expectedCount is expected to be the ballotSequence size
+    if (cvrId == null) {
+      return null;
+    } else {
+      CastVoteRecord cvr = Persistence.getByID(cvrId, CastVoteRecord.class);
+      // this could also be a check for audited/audit_flag I think
+      if (cvr.recordType() != CastVoteRecord.RecordType.PHANTOM_RECORD) {
+        return cvr.id();
+      } else {
+        // skip it
+        round.setActualCount(round.actualCount() + 1);
+
+        // try this again
+        return skipOverNextMaybe();
+      }
+    }
+  }
+
   /**
    * @return the number of ballots audited.
    */

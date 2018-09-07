@@ -50,9 +50,7 @@ public class UIToASMEventRelation {
     // All Department of State Dashboard pairs.
     my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         PARTIAL_AUDIT_INFO_EVENT));
-    my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
-        PUBLIC_SEED_EVENT));
-    my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
+    my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED,
         DOS_START_ROUND_EVENT));
     my_relation.add(new Pair<UIEvent, ASMEvent>(UNDEFINED, 
         PUBLISH_AUDIT_REPORT_EVENT));

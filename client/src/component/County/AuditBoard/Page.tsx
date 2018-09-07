@@ -51,9 +51,9 @@ class AuditBoardSignInPage extends React.Component<PageProps, PageState> {
                 <div>
                     <h2>Audit Board</h2>
                     <div className='pt-card'>
-                        Enter the full names and party affiliations of each member of
+                        <h5>Enter the full names and party affiliations of each member of
                         the { countyName } County Audit Board who will be conducting this
-                        audit today:
+                        audit today:</h5>
                     </div>
                 </div>
                 <SignInForm

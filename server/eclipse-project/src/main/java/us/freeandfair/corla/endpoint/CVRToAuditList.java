@@ -1,6 +1,6 @@
 /*
  * Free & Fair Colorado RLA System
- * 
+ *
  * @title ColoradoRLA
  * @created Jul 27, 2017
  * @copyright 2017 Colorado Department of State
@@ -21,6 +21,7 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.controller.BallotSelection;
 import us.freeandfair.corla.controller.ComparisonAuditController;
 import us.freeandfair.corla.json.CVRToAuditResponse;
 import us.freeandfair.corla.json.CVRToAuditResponse.BallotOrderComparator;
@@ -28,11 +29,10 @@ import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.BallotManifestInfoQueries;
 
 /**
  * The CVR to audit list endpoint.
- * 
+ *
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 1.0.0
  */
@@ -43,32 +43,32 @@ public class CVRToAuditList extends AbstractEndpoint {
    * The "start" parameter.
    */
   public static final String START = "start";
-  
+
   /**
    * The "ballot_count" parameter.
    */
   public static final String BALLOT_COUNT = "ballot_count";
-  
+
   /**
    * The "include duplicates" parameter.
    */
   public static final String INCLUDE_DUPLICATES = "include_duplicates";
-  
+
   /**
    * The "include audited" parameter.
    */
   public static final String INCLUDE_AUDITED = "include_audited";
-  
+
   /**
    * The "round" parameter.
    */
   public static final String ROUND = "round";
-  
+
   /**
    * The "county" parameter.
    */
   public static final String COUNTY = "county";
-  
+
   /**
    * {@inheritDoc}
    */
@@ -76,7 +76,7 @@ public class CVRToAuditList extends AbstractEndpoint {
   public EndpointType endpointType() {
     return EndpointType.GET;
   }
-  
+
   /**
    * {@inheritDoc}
    */
@@ -84,7 +84,7 @@ public class CVRToAuditList extends AbstractEndpoint {
   public String endpointName() {
     return "/cvr-to-audit-list";
   }
-  
+
   /**
    * This endpoint requires any kind of authentication.
    */
@@ -96,7 +96,7 @@ public class CVRToAuditList extends AbstractEndpoint {
   /**
    * Validate the request parameters. In this case, the two parameters
    * must exist and both be non-negative integers.
-   * 
+   *
    * @param the_request The request.
    */
   @Override
@@ -105,10 +105,10 @@ public class CVRToAuditList extends AbstractEndpoint {
     final String ballot_count = the_request.queryParams(BALLOT_COUNT);
     final String round = the_request.queryParams(ROUND);
     final String county = the_request.queryParams(COUNTY);
-    
+
     boolean result = start != null && ballot_count != null ||
                      round != null;
-    
+
     if (result) {
       try {
         if (start != null) {
@@ -117,12 +117,12 @@ public class CVRToAuditList extends AbstractEndpoint {
           final int b = Integer.parseInt(ballot_count);
           result &= b >= 0;
         }
-        
+
         if (round != null) {
           final int r = Integer.parseInt(round);
           result &= r > 0;
         }
-        
+
         if (county == null && Main.authentication().authenticatedCounty(the_request) == null) {
           // it's a DoS user, but they didn't specify a county
           result = false;
@@ -133,10 +133,10 @@ public class CVRToAuditList extends AbstractEndpoint {
         result = false;
       }
     }
-    
+
     return result;
   }
-  
+
   /**
    * {@inheritDoc}
    */
@@ -148,7 +148,7 @@ public class CVRToAuditList extends AbstractEndpoint {
     County county = Main.authentication().authenticatedCounty(the_request);
 
     if (county == null) {
-      county = 
+      county =
           Persistence.getByID(Long.parseLong(the_request.queryParams(COUNTY)), County.class);
       if (county == null) {
         badDataContents(the_response, "county " + the_request.queryParams(COUNTY) +
@@ -156,7 +156,7 @@ public class CVRToAuditList extends AbstractEndpoint {
       }
       assert county != null; // makes FindBugs happy
     }
-    
+
     try {
       // get the request parameters
       final String start_param = the_request.queryParams(START);
@@ -187,40 +187,31 @@ public class CVRToAuditList extends AbstractEndpoint {
       }
       // get other things we need
       final CountyDashboard cdb = Persistence.getByID(county.id(), CountyDashboard.class);
-      final List<CastVoteRecord> cvr_to_audit_list;      
+      final List<CastVoteRecord> cvr_to_audit_list;
       final List<CVRToAuditResponse> response_list = new ArrayList<>();
-      
+
       // compute the round, if any
-      OptionalInt round = OptionalInt.empty(); 
+      OptionalInt round = OptionalInt.empty();
       if (round_param != null) {
         final int round_number = Integer.parseInt(round_param);
         if (0 < round_number && round_number <= cdb.rounds().size()) {
           round = OptionalInt.of(round_number);
         } else {
-          badDataContents(the_response, "cvr list requested for invalid round " + 
+          badDataContents(the_response, "cvr list requested for invalid round " +
                                         round_param + " for county " + cdb.id());
         }
       }
-      
+
       if (round.isPresent()) {
-        cvr_to_audit_list = 
+        cvr_to_audit_list =
             ComparisonAuditController.ballotsToAudit(cdb, round.getAsInt(), audited);
       } else {
-        cvr_to_audit_list = 
-            ComparisonAuditController.computeBallotOrder(cdb, index, ballot_count, 
+        cvr_to_audit_list =
+            ComparisonAuditController.computeBallotOrder(cdb, index, ballot_count,
                                                          duplicates, audited);
       }
-     
-      for (int i = 0; i < cvr_to_audit_list.size(); i++) {
-        final CastVoteRecord cvr = cvr_to_audit_list.get(i);
-        final String location = BallotManifestInfoQueries.locationFor(cvr);
-        response_list.add(new CVRToAuditResponse(i, cvr.scannerID(), 
-                                                 cvr.batchID(), cvr.recordID(), 
-                                                 cvr.imprintedID(), 
-                                                 cvr.cvrNumber(), cvr.id(),
-                                                 cvr.ballotType(), location,
-                                                 cvr.auditFlag()));
-      }
+
+      response_list.addAll(BallotSelection.toResponseList(cvr_to_audit_list));
       response_list.sort(new BallotOrderComparator());
       okJSON(the_response, Main.GSON.toJson(response_list));
     } catch (final PersistenceException e) {
