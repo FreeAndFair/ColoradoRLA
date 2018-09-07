@@ -118,7 +118,7 @@ public class CastVoteRecord implements PersistentEntity, Serializable {
 
   /**
    * The sequence number of this cast vote record. Only applicable
-   * to imported CVRs.
+   * to imported CVRs. - nth of the county
    */
   @Column(name = "sequence_number", updatable = false)
   private Integer my_sequence_number;
@@ -136,7 +136,7 @@ public class CastVoteRecord implements PersistentEntity, Serializable {
   private String my_batch_id;
 
   /**
-   * The record ID of this cast vote record.
+   * The record ID of this cast vote record. - nth of the batch
    */
   @Column(updatable = false, nullable = false)
   private Integer my_record_id;
@@ -324,6 +324,13 @@ public class CastVoteRecord implements PersistentEntity, Serializable {
     return Collections.unmodifiableList(my_contest_info);
   }
 
+  /** setter **/
+  public void setContestInfo (List<CVRContestInfo> contestInfos) {
+    this.my_contest_info.clear();
+    this.my_contest_info.addAll(contestInfos);
+  }
+
+
   /**
    * Gets the choices for the specified contest.
    *
@@ -423,8 +430,9 @@ public class CastVoteRecord implements PersistentEntity, Serializable {
       result &= nullableEquals(the_other.recordID(), recordID());
       result &= nullableEquals(the_other.imprintedID(), imprintedID());
       result &= nullableEquals(the_other.ballotType(), ballotType());
-      result &= recordType().isAuditorGenerated() ^
-                the_other.recordType().isAuditorGenerated();
+      // if PHANTOM_RECORD, neither are auditorGenerated
+      // result &= recordType().isAuditorGenerated() ^
+      //           the_other.recordType().isAuditorGenerated();
     }
 
     return result;
@@ -450,6 +458,14 @@ public class CastVoteRecord implements PersistentEntity, Serializable {
      */
     public boolean isAuditorGenerated() {
       return this == AUDITOR_ENTERED || this == PHANTOM_BALLOT;
+    }
+
+    /**
+     * the cvr data did not contain a cvr we looked for so we generate a
+     * discrepancy automatically, at least for PHANTOM_RECORD
+     **/
+    public boolean isSystemGenerated() {
+      return this == PHANTOM_RECORD;
     }
   }
 
