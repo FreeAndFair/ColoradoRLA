@@ -178,6 +178,7 @@ th.rla-county-contest-info {
 
 .audit-page-container {
     padding-top: 40px;
+    color: #333;
 }
 
 .audit-page-title {
@@ -188,13 +189,29 @@ th.rla-county-contest-info {
 
 .audit-page-subtitle {
     font-size: 24px;
+    margin-bottom: 20px;
 }
 
+.ballot-number {
+    font-size: 24px;
+    background-color: #08589A;
+    color: white;
+    font-weight: 200;
+    display: inline-block;
+    padding: 3px 8px;
+}
 
 .col-layout {
     display: grid;
     grid-template-areas: "col1 col2";
     grid-template-columns: 2fr 3fr;
-    border: solid 1px;
+    margin-top: 40px;
 }
 
+.col1 {
+    border: solid 1px red;
+}
+
+.col2 {
+    border: solid 1px red;
+}

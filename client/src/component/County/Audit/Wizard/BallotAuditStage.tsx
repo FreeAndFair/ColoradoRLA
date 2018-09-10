@@ -271,18 +271,6 @@ interface StageProps {
     updateBallotMarks: OnClick;
 }
 
-const ColumnLayout = () => {
-    return (
-        <div className="col-layout">
-            <div className="col-1">
-                dsgkjdlkjgdsg
-            </div>
-            <div className="col-2">
-                dslkgjdslkjgl
-            </div>
-        </div>
-    )
-};
 
 const BallotAuditStage = (props: StageProps) => {
     const {
@@ -307,22 +295,28 @@ const BallotAuditStage = (props: StageProps) => {
     return (
         <div className='rla-page'>
             <div className='audit-page-container'>
-                <h2 className='audit-page-title'>Audit Board { `${auditBoardIndex + 1}` }: Ballot Card Verification</h2>
-                <div className='audit-page-subtitle'>Enter ballot information</div>
+                <div className='audit-page-header'>
+                    <h2 className='audit-page-title'>Audit Board { `${auditBoardIndex + 1}` }: Ballot Card Verification</h2>
+                    <div className='audit-page-subtitle'>Enter ballot information</div>
+                    <div className='ballot-number'>Auditing ballot card { currentBallotNumber } of x</div>
+                </div>
 
-                <ColumnLayout />
-
-                <AuditInstructions
-                    ballotNotFound={ notFound }
-                    countyState={ countyState }
-                    currentBallot={ currentBallot }
-                    currentBallotNumber={ currentBallotNumber }
-                    totalBallotsForBoard={ totalBallotsForBoard } />
-
-                <BallotAuditForm
-                    countyState={ countyState }
-                    currentBallot={ currentBallot }
-                    updateBallotMarks={ updateBallotMarks } />
+                <div className='col-layout'>
+                    <div className='col1'>
+                        <AuditInstructions
+                            ballotNotFound={ notFound }
+                            countyState={ countyState }
+                            currentBallot={ currentBallot }
+                            currentBallotNumber={ currentBallotNumber }
+                            totalBallotsForBoard={ totalBallotsForBoard } />
+                    </div>
+                    <div className='col2'>
+                        <BallotAuditForm
+                        countyState={ countyState }
+                        currentBallot={ currentBallot }
+                        updateBallotMarks={ updateBallotMarks } />
+                    </div>
+                </div>
 
                 <BackButton back={ prevStage } />
 
