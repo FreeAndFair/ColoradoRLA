@@ -2,3 +2,5 @@
 /specs/pvs/.pvscontext
 /specs/pvs/corla.tex
 .DS_Store
+.vagrant/
+/docker-compose.override.yml

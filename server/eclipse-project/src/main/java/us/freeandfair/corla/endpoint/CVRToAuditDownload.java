@@ -35,6 +35,7 @@ import spark.Request;
 import spark.Response;
 
 import us.freeandfair.corla.Main;
+import us.freeandfair.corla.controller.BallotSelection;
 import us.freeandfair.corla.controller.ComparisonAuditController;
 import us.freeandfair.corla.json.CVRToAuditResponse;
 import us.freeandfair.corla.json.CVRToAuditResponse.BallotOrderComparator;
@@ -42,7 +43,6 @@ import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.BallotManifestInfoQueries;
 import us.freeandfair.corla.util.SparkHelper;
 
 /**
@@ -235,16 +235,7 @@ public class CVRToAuditDownload extends AbstractEndpoint {
                                                          duplicates, audited);
       }
      
-      for (int i = 0; i < cvr_to_audit_list.size(); i++) {
-        final CastVoteRecord cvr = cvr_to_audit_list.get(i);
-        final String location = BallotManifestInfoQueries.locationFor(cvr);
-        response_list.add(new CVRToAuditResponse(i, cvr.scannerID(), 
-                                                 cvr.batchID(), cvr.recordID(), 
-                                                 cvr.imprintedID(), 
-                                                 cvr.cvrNumber(), cvr.id(),
-                                                 cvr.ballotType(), location,
-                                                 cvr.auditFlag()));
-      }
+      response_list.addAll(BallotSelection.toResponseList(cvr_to_audit_list));
       response_list.sort(new BallotOrderComparator());
       
       // generate a CSV file from the response list

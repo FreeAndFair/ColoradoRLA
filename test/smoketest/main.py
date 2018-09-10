@@ -182,11 +182,14 @@ parser.add_argument('-C, --contest', dest='contests', metavar='CONTEST', action=
                     '-1 means "audit all contests')
 parser.add_argument('-l, --loser', dest='loser', default="UNDERVOTE",
                     help='Loser to use for -p, default "UNDERVOTE"')
-parser.add_argument('-p, --discrepancy-plan', dest='plan', default="2 17",
-                    help='Planned discrepancies. Default is "2 17", i.e. '
+parser.add_argument('-p, --discrepancy-plan', dest='plan', default="5 17",
+                    help='Planned discrepancies. Default is "5 17", i.e. '
                     'Every 17 ACVR uploads, upload a possible discrepancy once, '
                     'when the remainder of dividing the upload index is 2. '
-                    'Discrepancies thus come with the 3rd of every 17 ACVR uploads.')
+                    'Discrepancies thus come with the 3rd of every 17 ACVR uploads.'
+                    'This default is designed to hit a known ballot and to trigger a second round.'
+                    'You will see different audits happen from different discrepancies happening '
+                    '(or not happening) on different ballots.')
 parser.add_argument('-P, --discrepancy-end', dest='plan_limit', type=int, default=sys.maxint,
                     help='Last upload with possible discrepancy is # PLAN_LIMIT')
 
@@ -582,7 +585,7 @@ def get_county_dashboard(ac, county_s, county_id, i=0, acvr={'id': -1}, show=Tru
     total_audited = 1 + county_dashboard['audited_ballot_count']
 
     if show:
-        logging.debug("county-dashboard: %s" % r.text)
+        logging.log(5, "county-dashboard: %s" % r.text)
         print("Round %d, county %d, upload %d, prefix %d: aCVR %d; ballots_remaining_in_round: %d, optimistic_ballots_to_audit: %s est %s" %
               (ac.round, county_id, total_audited, county_dashboard.get('audited_prefix_length', -1), acvr['id'],  # FIXME
                county_dashboard['ballots_remaining_in_round'], county_dashboard['optimistic_ballots_to_audit'], county_dashboard['estimated_ballots_to_audit']))
@@ -649,7 +652,7 @@ def dos_start(ac):
     'Run DOS steps to start the audit, enabling county auditing to begin: contest selection, seed, etc.'
 
     if len(ac.audited_contests) <= 0:
-        print("No contests to audit, status_code = %d" % r.status_code)
+        print("No contests to audit. Perhaps CVR or -C option is invalid?")
         return
 
     for contest_id in ac.audited_contests:
@@ -750,13 +753,12 @@ def county_audit(ac, county_id):
             r = test_endpoint_get(ac, county_s, "/audit-board-asm-state")
             # print(r.text)
 
+        total_audited = county_dashboard['audited_ballot_count']
+
         r = test_endpoint_get(ac, county_s, "/cvr/id/%d" % selected[i]['db_id'], show=False)
         acvr = r.json()
-        logging.debug("Original CVR: %s" % json.dumps(acvr))
+        logging.debug("Audited ballot %d original CVR: %s" % (total_audited, json.dumps(acvr)))
         acvr['record_type'] = 'AUDITOR_ENTERED'
-
-        total_audited = county_dashboard['audited_ballot_count']
-        # print("total_audited: %d" % total_audited)
 
         # Modify the aCVR sometimes.
         if (total_audited % ac.discrepancy_cycle == ac.discrepancy_remainder

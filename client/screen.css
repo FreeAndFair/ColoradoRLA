@@ -1,5 +1,9 @@
 body {
-    font-family: "Liberation Sans", sans-serif;
+    font-family: "Arial", sans-serif;
+}
+
+div{
+  white-space: pre-wrap;
 }
 
 .login-page {
@@ -13,7 +17,11 @@ body {
 }
 
 .county-root .info {
-    display: flex;
+    /*
+     * Removed by CDOS - causes "Contest Info" to drop below "County Info"
+     * rather than to the right of "County Info".
+     */
+    /*display: flex;*/
     flex-direction: row;
     justify-content: space-evenly;
 }
@@ -45,6 +53,10 @@ body {
     flex: 1;
 }
 
+.audit{
+    margin-top: 10px;
+}
+
 .truncate {
   width: 500px;
   white-space: nowrap;
@@ -56,12 +68,48 @@ body {
     margin: 10px;
 }
 
+.pt-table {
+    border-spacing: 0;
+    font-size: 16px !important;
+}
+
+.pt-file-upload-input::after {
+    background-color: #137cbd;
+    background-image: none;
+	color: #ffffff;
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 100%;
+    margin-left: -1px;
+    border-radius: 3px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    width: 70px;
+    height: 30px;
+    padding: 0 10px;
+    text-align: center;
+    line-height: 30px;
+    content: "Browse"; }
+
+
+  .pt-file-upload-input:hover::after {
+    box-shadow: inset 0 0 0 1px rgba(16, 22, 26, 0.2), inset 0 -1px 0 rgba(16, 22, 26, 0.1);
+    background-clip: padding-box;
+    background-color: #137cbd; }
+
 h2 {
     padding: 10px;
 }
 
 h3 {
     padding: 10px;
+}
+
+.pt-ui-text-large {
+  line-height: 1.25;
+  font-size: 16px;
+  font-weight: bold;
 }
 
 .rla-page {
@@ -116,4 +164,8 @@ th.rla-county-contest-info {
 
 .rla-file-upload-progress {
     width: 50%;
+}
+
+.import-file {
+  display: none;
 }

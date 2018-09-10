@@ -21,6 +21,7 @@ function format(info: DOS.AuditInfo) {
         election_type: get(info, 'election.type'),
         public_meeting_date: info.publicMeetingDate,
         risk_limit: info.riskLimit,
+        upload_file: info.uploadFile,
     };
 
     return omitBy(data, isNil);

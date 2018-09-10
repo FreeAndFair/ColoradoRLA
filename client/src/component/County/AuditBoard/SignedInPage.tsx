@@ -28,8 +28,8 @@ const SignedInPage = (props: PageProps) => {
             <div>
                 <h2>Audit Board</h2>
                 <div className='pt-card'>
-                    The Audit Board members below are signed in.
-                    To sign the Audit Board out, click the "Sign Out" button below.
+                    <h5>The Audit Board members below are signed in.
+                    To sign the Audit Board out, click the "Sign Out" button below.</h5>
                 </div>
             </div>
             <div className='pt-card'>
@@ -53,16 +53,16 @@ const SignedInPage = (props: PageProps) => {
             <div>
                 <button
                     disabled={ true }
-                    className='pt-button pt-intent-primary'>
+                    className='pt-button pt-intent-primary pt-breadcrumb'>
                     Submit
                 </button>
                 <button
-                    className='pt-button pt-intent-primary'
+                    className='pt-button pt-intent-primary pt-breadcrumb'
                     onClick={ auditBoardSignOut }>
                     Sign Out
                 </button>
                 <button
-                    className='pt-button pt-intent-primary'
+                    className='pt-button pt-intent-primary pt-breadcrumb'
                     onClick={ auditBoardStartOrContinue }>
                     { startOrContinueText }
                 </button>
