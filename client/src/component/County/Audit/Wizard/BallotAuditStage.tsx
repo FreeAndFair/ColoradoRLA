@@ -271,6 +271,19 @@ interface StageProps {
     updateBallotMarks: OnClick;
 }
 
+const ColumnLayout = () => {
+    return (
+        <div className="col-layout">
+            <div className="col-1">
+                dsgkjdlkjgdsg
+            </div>
+            <div className="col-2">
+                dslkgjdslkjgl
+            </div>
+        </div>
+    )
+};
+
 const BallotAuditStage = (props: StageProps) => {
     const {
         auditBoardIndex,
@@ -293,23 +306,30 @@ const BallotAuditStage = (props: StageProps) => {
 
     return (
         <div className='rla-page'>
-            <h2>Audit Board { `${auditBoardIndex + 1}` }: Ballot Card Verification</h2>
-            <AuditInstructions
-                ballotNotFound={ notFound }
-                countyState={ countyState }
-                currentBallot={ currentBallot }
-                currentBallotNumber={ currentBallotNumber }
-                totalBallotsForBoard={ totalBallotsForBoard }
-            />
-            <BallotAuditForm
-                countyState={ countyState }
-                currentBallot={ currentBallot }
-                updateBallotMarks={ updateBallotMarks }
-            />
-            <BackButton back={ prevStage } />
-            <button className='pt-button pt-intent-primary pt-breadcrumb' onClick={ nextStage }>
-                Review
-            </button>
+            <div className='audit-page-container'>
+                <h2 className='audit-page-title'>Audit Board { `${auditBoardIndex + 1}` }: Ballot Card Verification</h2>
+                <div className='audit-page-subtitle'>Enter ballot information</div>
+
+                <ColumnLayout />
+
+                <AuditInstructions
+                    ballotNotFound={ notFound }
+                    countyState={ countyState }
+                    currentBallot={ currentBallot }
+                    currentBallotNumber={ currentBallotNumber }
+                    totalBallotsForBoard={ totalBallotsForBoard } />
+
+                <BallotAuditForm
+                    countyState={ countyState }
+                    currentBallot={ currentBallot }
+                    updateBallotMarks={ updateBallotMarks } />
+
+                <BackButton back={ prevStage } />
+
+                <button className='pt-button pt-intent-primary pt-breadcrumb' onClick={ nextStage }>
+                    Review
+                </button>
+            </div>
         </div>
     );
 };

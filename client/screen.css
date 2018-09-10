@@ -173,3 +173,28 @@ th.rla-county-contest-info {
 .import-file {
   display: none;
 }
+
+/* Two-column layout ------------------------------ */
+
+.audit-page-container {
+    padding-top: 40px;
+}
+
+.audit-page-title {
+    font-size: 36px;
+    font-weight: 200;
+    padding: 0;
+}
+
+.audit-page-subtitle {
+    font-size: 24px;
+}
+
+
+.col-layout {
+    display: grid;
+    grid-template-areas: "col1 col2";
+    grid-template-columns: 2fr 3fr;
+    border: solid 1px;
+}
+
