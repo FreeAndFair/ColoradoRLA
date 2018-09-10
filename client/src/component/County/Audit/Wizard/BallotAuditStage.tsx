@@ -22,13 +22,14 @@ const BallotNotFoundForm = (props: NotFoundProps) => {
 
     return (
         <div>
-            <div>
-                If the ballot card corresponding to the above Ballot Type cannot be found,
-                select the "Ballot Card Not Found" button and you will be given a new ballot
-                card to audit.
+            <div className='not-found-header'> Are you looking at the right ballot?</div>
+            <div className='not-found-copy'>
+                Before making any selections below, first make sure the paper ballot you are examining 
+                matches the Current ballot information displayed on the left. If you make selections based 
+                on the wrong ballot, you may have to audit more ballots later.
             </div>
-            <button className='pt-button pt-large pt-intent-primary' onClick={ onClick }>
-                Ballot Card Not Found
+            <button className='pt-button pt-large pt-intent-danger' onClick={ onClick }>
+                Ballot Not Found - Move to next ballot
             </button>
         </div>
     );
@@ -85,7 +86,7 @@ const AuditInstructions = (props: InstructionsProps) => {
                         </table>
                     </div>
                 </div>
-                <div className=''>
+                {/* <div className=''>
                     <h5>Ballot card #{ currentBallotNumber } is
                     Ballot Type <span>{ currentBallot.ballotType }</span>. </h5>
                     Please ensure that the paper ballot you are examining is the same Ballot
@@ -101,10 +102,8 @@ const AuditInstructions = (props: InstructionsProps) => {
         the overvote. Please include notes in the comments field.
                     </div>
                     <MenuDivider />
-                    <BallotNotFoundForm
-                        ballotNotFound={ ballotNotFound }
-                        currentBallot={ currentBallot } />
-                </div>
+                    
+                </div> */}
             </div>
         </div>
     );
@@ -301,8 +300,8 @@ const BallotAuditStage = (props: StageProps) => {
                     <div className='ballot-number'>Auditing ballot card { currentBallotNumber } of x</div>
                 </div>
 
-                <div className='col-layout'>
-                    <div className='col1'>
+                <div className='col-layout row1'>
+                    <div className="col1">
                         <AuditInstructions
                             ballotNotFound={ notFound }
                             countyState={ countyState }
@@ -310,14 +309,23 @@ const BallotAuditStage = (props: StageProps) => {
                             currentBallotNumber={ currentBallotNumber }
                             totalBallotsForBoard={ totalBallotsForBoard } />
                     </div>
-                    <div className='col2'>
-                        <BallotAuditForm
-                        countyState={ countyState }
-                        currentBallot={ currentBallot }
-                        updateBallotMarks={ updateBallotMarks } />
+                    <div className="col2">
+                        <BallotNotFoundForm
+                            ballotNotFound={ ballotNotFound }
+                            currentBallot={ currentBallot } />
                     </div>
                 </div>
 
+                <div className='col-layout'>
+                    <div className="col1">
+                    </div>
+                    <div className="col2">
+                        <BallotAuditForm
+                            countyState={ countyState }
+                            currentBallot={ currentBallot }
+                            updateBallotMarks={ updateBallotMarks } />
+                    </div>
+                </div>
                 <div className='button-container'>
                     <BackButton back={ prevStage } />
 
