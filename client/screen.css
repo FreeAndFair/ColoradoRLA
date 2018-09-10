@@ -121,11 +121,6 @@ h3 {
     max-width: 800px;
 }
 
-.rla-page .pt-card {
-    margin-bottom: 5px;
-    margin-top: 5px;
-}
-
 .rla-page table {
     margin: 0 auto;
 }
@@ -214,4 +209,11 @@ th.rla-county-contest-info {
 
 .col2 {
     border: solid 1px red;
+}
+
+.button-container {
+    display: flex;
+    margin: 40px 0;
+    justify-content: flex-end;
+    align-items: center;
 }

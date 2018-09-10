@@ -27,7 +27,7 @@ const BallotNotFoundForm = (props: NotFoundProps) => {
                 select the "Ballot Card Not Found" button and you will be given a new ballot
                 card to audit.
             </div>
-            <button className='pt-button pt-intent-primary' onClick={ onClick }>
+            <button className='pt-button pt-large pt-intent-primary' onClick={ onClick }>
                 Ballot Card Not Found
             </button>
         </div>
@@ -56,16 +56,16 @@ const AuditInstructions = (props: InstructionsProps) => {
     const storageBin = fullCvr ? fullCvr.storage_location : '—';
 
     return (
-        <div className='pt-card'>
-            <div className='pt-card'>
+        <div className=''>
+            <div className=''>
                 Use this page to report the voter markings on ballot card #{ currentBallotNumber },
                 out of { totalBallotsForBoard } ballots that you must audit in this round.
             </div>
             <div>
-                <div className='pt-card'>
+                <div className=''>
                     The current ballot is:
-                    <div className='pt-card'>
-                        <table className='pt-table pt-bordered pt-condensed'>
+                    <div className=''>
+                        <table className=''>
                             <thead>
                                 <tr>
                                     <th>Storage Bin</th>
@@ -85,13 +85,13 @@ const AuditInstructions = (props: InstructionsProps) => {
                         </table>
                     </div>
                 </div>
-                <div className='pt-card'>
+                <div className=''>
                     <h5>Ballot card #{ currentBallotNumber } is
                     Ballot Type <span>{ currentBallot.ballotType }</span>. </h5>
                     Please ensure that the paper ballot you are examining is the same Ballot
                     Type.
                 </div>
-                <div className='pt-card'>
+                <div className=''>
                     <div>
                         Record here the <strong> voter intent </strong> as described by the Voter
                         Intent Guide from the Secretary of State. All markings <strong>do not </strong>
@@ -118,7 +118,7 @@ const ContestInfo = ({ contest }: ContestInfoProps) => {
     const { name, description, choices, votesAllowed } = contest;
 
     return (
-        <div className='pt-card'>
+        <div className=''>
             <strong><div>{ name }</div></strong>
             <strong><div>{ description }</div></strong>
             <div>Vote for { votesAllowed } out of { choices.length }</div>
@@ -162,7 +162,7 @@ const ContestChoices = (props: ChoicesProps) => {
     });
 
     return (
-        <div className='pt-card'>
+        <div className=''>
             { choiceForms }
         </div>
     );
@@ -177,7 +177,7 @@ const ContestComments = (props: CommentsProps) => {
     const { comments, onChange } = props;
 
     return (
-        <div className='pt-card'>
+        <div className=''>
             <label>
                 Comments:
                 <EditableText multiline value={ comments || '' } onChange={ onChange } />
@@ -209,7 +209,7 @@ const BallotContestMarkForm = (props: MarkFormProps) => {
     };
 
     return (
-        <div className='pt-card'>
+        <div className=''>
             <ContestInfo contest={ contest } />
             <ContestChoices
                 choices={ choices }
@@ -217,7 +217,7 @@ const BallotContestMarkForm = (props: MarkFormProps) => {
                 noConsensus={ !!contestMarks.noConsensus }
                 updateBallotMarks={ updateBallotMarks }
             />
-            <div className='pt-card'>
+            <div className=''>
                 <Checkbox
                     label='No consensus'
                     checked={ !!contestMarks.noConsensus }
@@ -318,11 +318,13 @@ const BallotAuditStage = (props: StageProps) => {
                     </div>
                 </div>
 
-                <BackButton back={ prevStage } />
+                <div className='button-container'>
+                    <BackButton back={ prevStage } />
 
-                <button className='pt-button pt-intent-primary pt-breadcrumb' onClick={ nextStage }>
-                    Review
-                </button>
+                    <button className='pt-large pt-button pt-intent-success pt-breadcrumb' onClick={ nextStage }>
+                        Review
+                    </button>
+                </div>
             </div>
         </div>
     );
