@@ -117,10 +117,10 @@ const ContestInfo = ({ contest }: ContestInfoProps) => {
     const { name, description, choices, votesAllowed } = contest;
 
     return (
-        <div className=''>
-            <strong><div>{ name }</div></strong>
-            <strong><div>{ description }</div></strong>
-            <div>Vote for { votesAllowed } out of { choices.length }</div>
+        <div className='contest-info'>
+            <div className='contest-name'>{ name }</div>
+            <div>{ description }</div>
+            <div className='num-of-choices'>Vote for { votesAllowed } out of { choices.length }</div>
         </div>
     );
 };
@@ -133,7 +133,12 @@ interface ChoicesProps {
 }
 
 const ContestChoices = (props: ChoicesProps) => {
-    const { choices, marks, noConsensus, updateBallotMarks } = props;
+    const { 
+        choices, 
+        marks, 
+        noConsensus, 
+        updateBallotMarks 
+    } = props;
 
     function updateChoiceByName(name: string) {
         function updateChoice(e: React.ChangeEvent<HTMLInputElement>) {
@@ -149,19 +154,20 @@ const ContestChoices = (props: ChoicesProps) => {
         const checked = marks.choices[choice.name];
 
         return (
-            <Checkbox
-                className='rla-contest-choice'
-                key={ choice.name }
-                disabled={ noConsensus }
-                checked={ checked || false }
-                onChange={ updateChoiceByName(choice.name) }
-                label={ choice.name }
-            />
+            <div className='contest-choice-selection'>
+                <Checkbox
+                    className='rla-contest-choice'
+                    key={ choice.name }
+                    disabled={ noConsensus }
+                    checked={ checked || false }
+                    onChange={ updateChoiceByName(choice.name) } >
+                    <span className='choice-name'>{choice.name}</span></Checkbox>
+            </div>
         );
     });
 
     return (
-        <div className=''>
+        <div className='contest-choices'>
             { choiceForms }
         </div>
     );
@@ -208,7 +214,7 @@ const BallotContestMarkForm = (props: MarkFormProps) => {
     };
 
     return (
-        <div className=''>
+        <div className='contest-row'>
             <ContestInfo contest={ contest } />
             <ContestChoices
                 choices={ choices }

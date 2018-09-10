@@ -169,7 +169,7 @@ th.rla-county-contest-info {
   display: none;
 }
 
-/* Two-column layout ------------------------------ */
+/* Audit Stage two-column layout ------------------------------ */
 
 .audit-page-container {
     padding-top: 40px;
@@ -193,22 +193,19 @@ th.rla-county-contest-info {
     color: white;
     font-weight: 200;
     display: inline-block;
-    padding: 3px 8px;
+    padding: 3px 12px;
+    border-radius: 2px;
 }
 
 .col-layout {
     display: grid;
     grid-template-areas: "col1 col2";
-    grid-template-columns: 2fr 3fr;
+    grid-template-columns: 200px 1fr;
     margin-top: 40px;
 }
 
 .col1 {
     margin-right:20px;
-}
-
-.col2 {
-
 }
 
 .row1 {
@@ -232,3 +229,63 @@ th.rla-county-contest-info {
 .not-found-copy {
     margin-bottom: 20px;
 }
+
+.contest-row {
+    background-color: #eee;
+    padding: 20px;
+    border-radius: 2px;
+    margin-bottom: 30px;
+}
+
+.contest-info {
+    margin-bottom: 20px;
+}
+
+.contest-name {
+    font-size: 21px;
+}
+
+.num-of-choices {
+    color: #666;
+}
+
+.contest-choices {
+    display: grid;
+    grid-column-gap: 1rem;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+
+/* hacking my way around blueprint's custom checkbox styles */
+
+.pt-control {
+    padding: 0;
+}
+
+.rla-contest-choice {
+    width: 100%;
+}
+
+.contest-choice-selection .pt-control-indicator {
+    display: none;
+}
+
+.choice-name {
+    padding: 10px;
+    color: #08589A;
+    border: solid 1px transparent;
+    background: #fff;
+    border-radius: 2px;
+    display: block;
+}
+
+.choice-name:hover {
+    border: solid 1px #08589A;
+}
+
+.contest-choice-selection input:checked ~ .choice-name {
+    background-color: #08589A;
+    border:solid 1px #08589A;
+    color: white;
+}
+
