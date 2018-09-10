@@ -14,6 +14,8 @@ package us.freeandfair.corla.json;
 import us.freeandfair.corla.util.NaturalOrderComparator;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
+import static us.freeandfair.corla.util.EqualsHashcodeHelper.*;
+
 /**
  * The standard response provided by the server in response to a request
  * for CVR locations.
@@ -179,6 +181,30 @@ public class CVRToAuditResponse implements Comparable<CVRToAuditResponse> {
    */
   public boolean audited() {
     return my_audited;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean equals(final Object other) {
+    boolean result = true;
+    if (other instanceof CVRToAuditResponse) {
+      final CVRToAuditResponse otherCtar = (CVRToAuditResponse) other;
+      result &= nullableEquals(this.dbID(), otherCtar.dbID());
+    } else {
+      result = false;
+    }
+
+    return result;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public int hashCode() {
+    return nullableHashCode(this.dbID());
   }
 
   /**

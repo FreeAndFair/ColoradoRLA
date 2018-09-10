@@ -627,21 +627,27 @@ public class CountyDashboard implements PersistentEntity {
   public List<IntermediateAuditReportInfo> intermediateReports() {
     return Collections.unmodifiableList(my_intermediate_reports);
   }
-  
+
   /**
-   * @return the current CVR under audit. This is the first entry in the list 
-   * of CVRs to audit that has no corresponding ACVR. Returns null if there is 
-   * no next CVR to audit.
+   * Returns the CVRs under audit indexed by the audit board to which they are
+   * assigned.
+   *
+   * @return A map of audit board indices to the CVR IDs they are assigned.
    */
   public Long cvrUnderAudit() {
+    throw new UnsupportedOperationException("TODO: Implement this.");
+    /*
     final Round round = currentRound();
-    // expectedCount is expected to be the ballotSequence size
-    if (round == null || round.actualCount().compareTo(round.expectedCount()) >= 0) {
+
+    if (forBoardIndex == null ||
+        round == null ||
+        round.actualCount().compareTo(round.expectedCount()) >= 0) {
       return null;
-    } else {
-      // get the current CVR to audit from the round object
-      return round.ballotSequence().get(round.actualCount());
     }
+
+    // get the current CVR to audit from the round object
+    return round.ballotSequence().get(round.actualCount());
+    */
   }
 
   /** skip over PHANTOM_RECORDs **/
