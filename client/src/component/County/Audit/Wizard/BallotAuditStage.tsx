@@ -287,38 +287,40 @@ const BallotAuditStage = (props: StageProps) => {
                     </div>
                 </div>
 
-                <div className='col-layout'>
+                <div className = 'col-layout'>
+
                     <div className='col1'>
                         <div className='sidebar-instructions'>
                             <h3 className='sidebar-heading'>How to match selections with ballot</h3>
-                            <div className='sidebar-accordion'>
+                            
+                            <div className= 'sidebar-accordion'>
                                 <input type='checkbox' id='item1' name='accordion1' className='accordion-item'/>
                                 <label htmlFor='item1' className='accordion-item-label'>Overvote</label>
-                                <div id='content1' className= 'accordion-item-content'>
+                                <div id='content1' className='accordion-item-content'>
                                     <p>
                                         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce eleifend id leo quis rutrum. Curabitur condimentum augue et dolor sodales, vel iaculis lacus feugiat.
                                     </p>
                                 </div>
 
-                                <input type='checkbox' id = 'item2' name = 'accordion1' className='accordion-item' />
+                                <input type='checkbox' id='item2' name='accordion1' className='accordion-item' />
                                 <label htmlFor='item2' className='accordion-item-label'>Undervote</label>
-                                <div id = 'content2' className= 'accordion-item-content'>
+                                <div id='content2' className= 'accordion-item-content'>
                                     <p>
                                         Cras pretium blandit nunc, maximus convallis elit eleifend id. Nullam non posuere eros, sit amet iaculis leo. Morbi tincidunt nibh quis magna dapibus, sit amet imperdiet massa blandit. Maecenas sapien erat, efficitur id est sed, facilisis malesuada magna. Vivamus interdum non urna vel placerat. Duis sed nunc nec mi posuere tempor at sit amet dui. Curabitur faucibus sapien a massa vestibulum, in bibendum orci pharetra.
                                     </p>
                                 </div>
 
-                                <input type = 'checkbox' id = 'item3' name = 'accordion1' className='accordion-item' />
+                                <input type='checkbox' id='item3' name='accordion1' className='accordion-item' />
                                 <label htmlFor='item3' className='accordion-item-label'>Write-in</label>
-                                <div id = 'content3' className= 'accordion-item-content'>
+                                <div id='content3' className='accordion-item-content'>
                                     <p>
                                         Cras pretium blandit nunc, maximus convallis elit eleifend id. Nullam non posuere eros, sit amet iaculis leo. Morbi tincidunt nibh quis magna dapibus, sit amet imperdiet massa blandit. Maecenas sapien erat, efficitur id est sed, facilisis malesuada magna. Vivamus interdum non urna vel placerat. Duis sed nunc nec mi posuere tempor at sit amet dui. Curabitur faucibus sapien a massa vestibulum, in bibendum orci pharetra.
                                     </p>
                                 </div>
 
-                                <input type = 'checkbox' id = 'item4' name = 'accordion1' className='accordion-item' />
+                                <input type='checkbox' id='item4' name='accordion1' className='accordion-item' />
                                 <label htmlFor='item4' className='accordion-item-label'>We can't agree</label>
-                                <div id = 'content4' className= 'accordion-item-content'>
+                                <div id='content4' className= 'accordion-item-content'>
                                     <p>
                                         Cras pretium blandit nunc, maximus convallis elit eleifend id. Nullam non posuere eros, sit amet iaculis leo. Morbi tincidunt nibh quis magna dapibus, sit amet imperdiet massa blandit. Maecenas sapien erat, efficitur id est sed, facilisis malesuada magna. Vivamus interdum non urna vel placerat. Duis sed nunc nec mi posuere tempor at sit amet dui. Curabitur faucibus sapien a massa vestibulum, in bibendum orci pharetra.
                                     </p>
