@@ -231,7 +231,7 @@ th.rla-county-contest-info {
 }
 
 .contest-row {
-    background-color: #eee;
+    background-color: #f1f1f1;
     padding: 20px;
     border-radius: 2px;
     margin-bottom: 30px;
@@ -249,7 +249,7 @@ th.rla-county-contest-info {
     color: #666;
 }
 
-.contest-choices {
+.contest-choice-grid {
     display: grid;
     grid-column-gap: 1rem;
     grid-template-columns: 1fr 1fr 1fr;
@@ -271,10 +271,17 @@ th.rla-county-contest-info {
     display: none;
 }
 
+.contest-choice-selection .pt-disabled .choice-name,
+.contest-choice-selection .pt-disabled .choice-name:hover {
+    background-color: #f1f1f1;
+    color: #888;
+    border: solid 1px #dddddd;
+}
+
 .choice-name {
     padding: 10px;
     color: #333;
-    border: solid 1px transparent;
+    border: solid 1px #dddddd;
     background: #fff;
     border-radius: 2px;
     display: block;
@@ -283,10 +290,21 @@ th.rla-county-contest-info {
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.2s ease;
 }
 
 .choice-name:hover {
     border: solid 1px #08589A;
+}
+
+.no-choice {
+    background-color: #e8e8e8;
+    border: solid 1px #ccc;
+    min-height: unset;
+}
+
+.no-choice:hover {
+    border: solid 1px #aaaaaa;
 }
 
 .contest-choice-selection input:checked ~ .choice-name {

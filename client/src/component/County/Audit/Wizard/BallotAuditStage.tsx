@@ -130,7 +130,7 @@ const ContestChoices = (props: ChoicesProps) => {
     });
 
     return (
-        <div className='contest-choices'>
+        <div className='contest-choice-grid'>
             { choiceForms }
         </div>
     );
@@ -185,13 +185,16 @@ const BallotContestMarkForm = (props: MarkFormProps) => {
                 noConsensus={ !!contestMarks.noConsensus }
                 updateBallotMarks={ updateBallotMarks }
             />
-            <div className=''>
-                <Checkbox
-                    label='No consensus'
-                    checked={ !!contestMarks.noConsensus }
-                    onChange={ updateConsensus }
-                />
+
+            <div className='contest-choice-grid'>
+                <div className='contest-choice-selection'>
+                    <Checkbox
+                        checked={ !!contestMarks.noConsensus }
+                        onChange={ updateConsensus }>
+                        <span className='choice-name no-choice'>No consensus</span></Checkbox>
+                </div>
             </div>
+
             <ContestComments comments={ contestMarks.comments } onChange={ updateComments } />
         </div>
     );
@@ -292,7 +295,7 @@ const BallotAuditStage = (props: StageProps) => {
                     <div className='col1'>
                         <div className='sidebar-instructions'>
                             <h3 className='sidebar-heading'>How to match selections with ballot</h3>
-                            
+
                             <div className= 'sidebar-accordion'>
                                 <input type='checkbox' id='item1' name='accordion1' className='accordion-item'/>
                                 <label htmlFor='item1' className='accordion-item-label'>Overvote</label>
@@ -314,7 +317,9 @@ const BallotAuditStage = (props: StageProps) => {
                                 <label htmlFor='item3' className='accordion-item-label'>Write-in</label>
                                 <div id='content3' className='accordion-item-content'>
                                     <p>
-                                        Cras pretium blandit nunc, maximus convallis elit eleifend id. Nullam non posuere eros, sit amet iaculis leo. Morbi tincidunt nibh quis magna dapibus, sit amet imperdiet massa blandit. Maecenas sapien erat, efficitur id est sed, facilisis malesuada magna. Vivamus interdum non urna vel placerat. Duis sed nunc nec mi posuere tempor at sit amet dui. Curabitur faucibus sapien a massa vestibulum, in bibendum orci pharetra.
+                                        If the voter wrote in a candidate on the “Write-in” line, select the candidate the voter wrote in in the RLA software. 
+                                        If the candidate does not appear in the RLA software, make no selection and 
+                                        add a comment with what is written on the Write-in line. If you need more specific guidance, consult the Voter Intent Guide.
                                     </p>
                                 </div>
 
