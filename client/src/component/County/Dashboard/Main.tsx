@@ -146,7 +146,7 @@ const Main = (props: MainProps) => {
                     <div className='pt-ui-text-large'>List of ballots to audit (CSV)</div>
                     <button
                         className='pt-button  pt-intent-primary'
-                        disabled={ !canRenderReport }
+                        disabled={ countyState.auditBoardCount == null }
                         onClick={ downloadCsv }>
                         Download
                     </button>

@@ -22,6 +22,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.OptionalInt;
 
 import javax.persistence.PersistenceException;
@@ -41,6 +42,7 @@ import us.freeandfair.corla.json.CVRToAuditResponse;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
+import us.freeandfair.corla.model.Round;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.util.SparkHelper;
 
@@ -88,7 +90,7 @@ public class CVRToAuditDownload extends AbstractEndpoint {
    */
   private static final String[] CSV_HEADERS = {
       "storage_location", "scanner_id", "batch_id", "record_id", "imprinted_id",
-      "ballot_type", "cvr_number", "audited"
+      "ballot_type", "cvr_number", "audited", "audit_board"
   };
   
   /**
@@ -210,9 +212,9 @@ public class CVRToAuditDownload extends AbstractEndpoint {
       }
       // get other things we need
       final CountyDashboard cdb = Persistence.getByID(county.id(), CountyDashboard.class);
-      final List<CastVoteRecord> cvr_to_audit_list;      
+      final List<CastVoteRecord> cvr_to_audit_list;
       final List<CVRToAuditResponse> response_list = new ArrayList<>();
-      
+
       // compute the round, if any
       OptionalInt round = OptionalInt.empty(); 
       if (round_param != null) {
@@ -224,7 +226,7 @@ public class CVRToAuditDownload extends AbstractEndpoint {
                                         round_param + " for county " + cdb.id());
         }
       }
-      
+
       if (round.isPresent()) {
         cvr_to_audit_list = 
             ComparisonAuditController.ballotsToAudit(cdb, round.getAsInt(), audited);
@@ -233,10 +235,36 @@ public class CVRToAuditDownload extends AbstractEndpoint {
             ComparisonAuditController.computeBallotOrder(cdb, index, ballot_count, 
                                                          duplicates, audited);
       }
-     
+
       response_list.addAll(BallotSelection.toResponseList(cvr_to_audit_list));
       response_list.sort(null);
-      
+
+      // Add audit board information if the round is present
+      if (round.isPresent()) {
+        final Round roundObject = cdb.rounds().get(round.getAsInt() - 1);
+
+        final List<Map<String, Integer>> bsa =
+          roundObject.ballotSequenceAssignment();
+
+        if (bsa != null) {
+          // Walk the sequence assignments getting the audit boards' index and
+          // count values. Use that information to set the audit board index for
+          // each response row.
+          for (int i = 0; i < bsa.size(); i++) {
+            final Map<String, Integer> m = bsa.get(i);
+
+            final Integer boardIndex = m.get("index");
+            final Integer boardCount = m.get("count");
+
+            for (int j = boardIndex; j < boardIndex + boardCount; j++) {
+              // TODO: Will this always agree with the round information?
+              final CVRToAuditResponse row = response_list.get(j);
+              row.setAuditBoardIndex(i);
+            }
+          }
+        }
+      }
+
       // generate a CSV file from the response list
       the_response.type("text/csv");
       
@@ -276,7 +304,7 @@ public class CVRToAuditDownload extends AbstractEndpoint {
     }
     return my_endpoint_result.get();
   }
-  
+
   /**
    * Writes the specified list of CVRToAuditResponse objects as CSV.
    * 
@@ -292,8 +320,23 @@ public class CVRToAuditDownload extends AbstractEndpoint {
       for (final CVRToAuditResponse cvr : the_cvrs) {
         csvp.printRecord(cvr.storageLocation(), cvr.scannerID(), cvr.batchID(),
                          cvr.recordID(), cvr.imprintedID(), cvr.ballotType(),
-                         cvr.cvrNumber(), booleanYesNo(cvr.audited()));
+                         cvr.cvrNumber(), booleanYesNo(cvr.audited()),
+                         this.boardIndexToName(cvr.auditBoardIndex()));
       }
     } 
+  }
+
+  /**
+   * Converts an audit board index to a human-readable board name.
+   *
+   * @param index audit board index
+   * @return String human-readable name
+   */
+  private String boardIndexToName(final Integer index) {
+    if (index == null) {
+      return "";
+    }
+
+    return String.format("Audit board %d", index + 1);
   }
 }

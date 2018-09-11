@@ -28,5 +28,10 @@ public class BallotAssignmentTest {
     final List<Integer> assignment4 = BallotAssignment.assignToBoards(567, 1);
     assertEquals(assignment4.size(), 1);
     assertEquals(Collections.frequency(assignment4, 567), 1);
+
+    final List<Integer> assignment5 = BallotAssignment.assignToBoards(3, 5);
+    assertEquals(assignment5.size(), 5);
+    assertEquals(Collections.frequency(assignment5, 1), 3);
+    assertEquals(Collections.frequency(assignment5, 0), 2);
   }
 }

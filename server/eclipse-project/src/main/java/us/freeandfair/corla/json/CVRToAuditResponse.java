@@ -72,6 +72,11 @@ public class CVRToAuditResponse implements Comparable<CVRToAuditResponse> {
   protected final String my_storage_location;
 
   /**
+   * The optional audit board index
+   */
+  protected Integer my_audit_board_index;
+
+  /**
    * A flag that indicates whether or not the CVR has been audited.
    */
   protected final boolean my_audited;
@@ -174,6 +179,20 @@ public class CVRToAuditResponse implements Comparable<CVRToAuditResponse> {
    */
   public String storageLocation() {
     return my_storage_location;
+  }
+
+  /**
+   * @return the audit board index or null if not set
+   */
+  public Integer auditBoardIndex() {
+    return my_audit_board_index;
+  }
+
+  /**
+   * Optionally set the audit board index that will be auditing this ballot.
+   */
+  public void setAuditBoardIndex(final Integer auditBoardIndex) {
+    my_audit_board_index = auditBoardIndex;
   }
 
   /**
