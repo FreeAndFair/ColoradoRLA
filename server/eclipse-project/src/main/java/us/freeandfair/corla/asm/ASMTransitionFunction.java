@@ -207,11 +207,10 @@ public interface ASMTransitionFunction {
     O(new ASMTransition(ROUND_IN_PROGRESS,
                         ROUND_COMPLETE_EVENT,
                         WAITING_FOR_ROUND_SIGN_OFF)),
-    /* We probably want this transition eventually, but not for CDOS */
-    // idk, this is what the smoke test is looking for, so let's try it
+    /* We probably want this transition eventually, but not for CDOS
     EARLY(new ASMTransition(ROUND_IN_PROGRESS,
                             RISK_LIMIT_ACHIEVED_EVENT, 
-                            AUDIT_COMPLETE)),
+                            AUDIT_COMPLETE)), */
     P(new ASMTransition(ROUND_IN_PROGRESS_NO_AUDIT_BOARD,
                         SIGN_IN_AUDIT_BOARD_EVENT,
                         ROUND_IN_PROGRESS)),
