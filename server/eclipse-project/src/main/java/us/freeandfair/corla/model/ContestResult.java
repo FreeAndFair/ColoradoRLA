@@ -137,6 +137,18 @@ public class ContestResult implements PersistentEntity, Serializable {
   private BigDecimal dilutedMargin;
 
   /**
+   * The gap between winner and second place
+   */
+  @Column(name = "min_margin")
+  private Integer minMargin;
+
+  /**
+   * The number of ballots cast for this contest
+   */
+  @Column(name = "ballots_count")
+  private Long ballotCount;
+
+  /**
    * AuditReason
    */
   @Column(name = "audit_reason")
@@ -305,6 +317,34 @@ public class ContestResult implements PersistentEntity, Serializable {
    */
   public BigDecimal getDilutedMargin() {
     return this.dilutedMargin;
+  }
+
+  /**
+   * set minMargin.
+   */
+  public void setMinMargin(final Integer minMargin) {
+    this.minMargin = minMargin;
+  }
+
+  /**
+   * The margin between this contest's first and second place choice
+   */
+  public Integer getMinMargin() {
+    return this.minMargin;
+  }
+
+  /**
+   * set ballotCount
+   */
+  public void setBallotCount(final Long n) {
+    this.ballotCount = n;
+  }
+
+  /**
+   * what is the ballotCount?
+   */
+  public Long getBallotCount() {
+    return this.ballotCount;
   }
 
   /**

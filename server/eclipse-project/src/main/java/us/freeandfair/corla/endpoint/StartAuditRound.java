@@ -222,7 +222,13 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
     final DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
     final BigDecimal riskLimit = dosdb.auditInfo().riskLimit();
     final String seed = dosdb.auditInfo().seed();
-    final Set<Contest> targetedContests = dosdb.targetedContests().collect(Collectors.toSet());
+    // TODO we're checking this later, but at that point we should have
+    // the ContestResults setup...
+    final Set<String> targetedContestNames =
+      dosdb.targetedContests()
+      .map(x -> x.name())
+      .collect(Collectors.toSet());
+
     final List<ContestResult> persistedContestResults = countAndSaveContests(dosdb.contestsToAudit());
 
     final List<ContestResult> targetedContestResults = persistedContestResults.stream()
@@ -251,7 +257,7 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
 
             final boolean started =
               ComparisonAuditController
-              .initializeAuditData(targetedContests,
+              .initializeAuditData(targetedContestNames,
                                    cdb,
                                    riskLimit,
                                    persistedContestResults,
@@ -259,13 +265,13 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
 
             if (started) {
               LOGGER.info(COUNTY + cdb.id() + " estimated to audit " +
-                               cdb.estimatedSamplesToAudit() + " ballots in round 1");
-            } else if (cdb.drivingContests().isEmpty()) {
+                          cdb.estimatedSamplesToAudit() + " ballots in round 1");
+            } else if (cdb.drivingContestNames().isEmpty()) {
               LOGGER.info(COUNTY + cdb.id() + " has no driving contests, its " +
-                               "audit is complete.");
+                          "audit is complete.");
             } else if (cdb.estimatedSamplesToAudit() == 0) {
               LOGGER.info(COUNTY + cdb.id() + " needs to audit 0 ballots to " +
-                               "achieve its risk limit, its audit is complete.");
+                          "achieve its risk limit, its audit is complete.");
             } else {
               LOGGER.error("unable to start audit for county " + cdb.id());
             }

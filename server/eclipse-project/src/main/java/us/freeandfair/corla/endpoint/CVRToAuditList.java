@@ -152,7 +152,7 @@ public class CVRToAuditList extends AbstractEndpoint {
           Persistence.getByID(Long.parseLong(the_request.queryParams(COUNTY)), County.class);
       if (county == null) {
         badDataContents(the_response, "county " + the_request.queryParams(COUNTY) +
-                                      " does not exist");
+                        " does not exist");
       }
       assert county != null; // makes FindBugs happy
     }

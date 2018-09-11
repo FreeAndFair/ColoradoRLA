@@ -76,8 +76,15 @@ public final class ContestCounter {
     contestResult.addCounties(countyContestResults.getValue().stream()
                               .map(cr -> cr.county())
                               .collect(Collectors.toSet()));
-    final Long ballotCount =
-      BallotManifestInfoQueries.totalBallots(contestResult.countyIDs());
+
+    final Long ballotCount = BallotManifestInfoQueries.totalBallots(contestResult.countyIDs());
+    final Integer minMargin = margin(contestResult.getVoteTotals());
+    final BigDecimal dilutedMargin = Audit.dilutedMargin(minMargin, ballotCount);
+    // dilutedMargin of zero is ok here, it means the contest is uncontested
+    // and the contest will not be auditable, so samples should not be selected for it
+    contestResult.setBallotCount(ballotCount);
+    contestResult.setMinMargin(minMargin);
+    contestResult.setDilutedMargin(dilutedMargin);
 
     if (ballotCount == 0L) {
       LOGGER.error("contest has no ballot manifests!:"
@@ -86,11 +93,6 @@ public final class ContestCounter {
                    + contestResult.countyIDs());
     }
 
-    // dilutedMargin of zero is ok here, it means the contest is uncontested
-    // and the contest will not be auditable, so samples should not be selected for it
-    final BigDecimal dilutedMargin =
-      Audit.dilutedMargin(margin(contestResult.getVoteTotals()), ballotCount);
-    contestResult.setDilutedMargin(dilutedMargin);
     return contestResult;
   }
 

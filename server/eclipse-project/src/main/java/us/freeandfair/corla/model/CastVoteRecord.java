@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.Cacheable;
 import javax.persistence.CollectionTable;
@@ -338,6 +339,12 @@ public class CastVoteRecord implements PersistentEntity, Serializable {
       }
     }
     return null;
+  }
+
+  public Optional<CVRContestInfo> contestInfoForContestResult(final ContestResult cr) {
+    return my_contest_info.stream()
+      .filter(x -> x.contest().name().equals(cr.getContestName()))
+      .findFirst();
   }
 
   /**
