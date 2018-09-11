@@ -57,53 +57,16 @@ const AuditInstructions = (props: InstructionsProps) => {
     const storageBin = fullCvr ? fullCvr.storage_location : '—';
 
     return (
-        <div className=''>
-            <div className=''>
-                Use this page to report the voter markings on ballot card #{ currentBallotNumber },
-                out of { totalBallotsForBoard } ballots that you must audit in this round.
-            </div>
-            <div>
-                <div className=''>
-                    The current ballot is:
-                    <div className=''>
-                        <table className=''>
-                            <thead>
-                                <tr>
-                                    <th>Storage Bin</th>
-                                    <th>Scanner #</th>
-                                    <th>Batch #</th>
-                                    <th>Ballot Position #</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>{ storageBin }</td>
-                                    <td>{ currentBallot.scannerId }</td>
-                                    <td>{ currentBallot.batchId }</td>
-                                    <td>{ currentBallot.recordId }</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                {/* <div className=''>
-                    <h5>Ballot card #{ currentBallotNumber } is
-                    Ballot Type <span>{ currentBallot.ballotType }</span>. </h5>
-                    Please ensure that the paper ballot you are examining is the same Ballot
-                    Type.
-                </div>
-                <div className=''>
-                    <div>
-                        Record here the <strong> voter intent </strong> as described by the Voter
-                        Intent Guide from the Secretary of State. All markings <strong>do not </strong>
-                        need to be recorded. Replicate on this page all <strong> valid votes </strong> in
-                        each ballot contest contained on this paper ballot card. Or, in case of an
-                        <strong> overvote</strong>, record all final voter choices that contribute to
-        the overvote. Please include notes in the comments field.
-                    </div>
-                    <MenuDivider />
-                    
-                </div> */}
+        <div>
+            <div className='current-ballot-info'>
+                <h3 className='sidebar-heading'>Current ballot:</h3>
+                <ul className='current-ballot-stats'>
+                    <li>Scanner #{ currentBallot.scannerId }</li>
+                    <li>Batch #{ currentBallot.batchId }</li>
+                    <li>Ballot Position #{ currentBallot.recordId }</li>
+                    <li>Storage Bin { storageBin }</li>
+                    <li>Ballot type: { currentBallot.ballotType }</li>
+                </ul>
             </div>
         </div>
     );
@@ -293,6 +256,8 @@ const BallotAuditStage = (props: StageProps) => {
         ballotNotFound(currentBallot.id);
     };
 
+    const { currentRound } = countyState;
+
     if (currentBallot.submitted) {
         return <WaitingForNextBallot />;
     }
@@ -303,11 +268,11 @@ const BallotAuditStage = (props: StageProps) => {
                 <div className='audit-page-header'>
                     <h2 className='audit-page-title'>Audit Board { `${auditBoardIndex + 1}` }: Ballot Card Verification</h2>
                     <div className='audit-page-subtitle'>Enter ballot information</div>
-                    <div className='ballot-number'>Auditing ballot card { currentBallotNumber } of x</div>
+                    <div className='ballot-number'>Auditing ballot card { currentBallotNumber } of { currentRound!.expectedCount }</div>
                 </div>
 
                 <div className='col-layout row1'>
-                    <div className="col1">
+                    <div className='col1'>
                         <AuditInstructions
                             ballotNotFound={ notFound }
                             countyState={ countyState }
@@ -315,7 +280,7 @@ const BallotAuditStage = (props: StageProps) => {
                             currentBallotNumber={ currentBallotNumber }
                             totalBallotsForBoard={ totalBallotsForBoard } />
                     </div>
-                    <div className="col2">
+                    <div className='col2'>
                         <BallotNotFoundForm
                             ballotNotFound={ ballotNotFound }
                             currentBallot={ currentBallot } />
@@ -323,9 +288,46 @@ const BallotAuditStage = (props: StageProps) => {
                 </div>
 
                 <div className='col-layout'>
-                    <div className="col1">
+                    <div className='col1'>
+                        <div className='sidebar-instructions'>
+                            <h3 className='sidebar-heading'>How to match selections with ballot</h3>
+                            <div className='sidebar-accordion'>
+                                <input type='checkbox' id='item1' name='accordion1' className='accordion-item'/>
+                                <label htmlFor='item1' className='accordion-item-label'>Overvote</label>
+                                <div id='content1' className= 'accordion-item-content'>
+                                    <p>
+                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce eleifend id leo quis rutrum. Curabitur condimentum augue et dolor sodales, vel iaculis lacus feugiat.
+                                    </p>
+                                </div>
+
+                                <input type='checkbox' id = 'item2' name = 'accordion1' className='accordion-item' />
+                                <label htmlFor='item2' className='accordion-item-label'>Undervote</label>
+                                <div id = 'content2' className= 'accordion-item-content'>
+                                    <p>
+                                        Cras pretium blandit nunc, maximus convallis elit eleifend id. Nullam non posuere eros, sit amet iaculis leo. Morbi tincidunt nibh quis magna dapibus, sit amet imperdiet massa blandit. Maecenas sapien erat, efficitur id est sed, facilisis malesuada magna. Vivamus interdum non urna vel placerat. Duis sed nunc nec mi posuere tempor at sit amet dui. Curabitur faucibus sapien a massa vestibulum, in bibendum orci pharetra.
+                                    </p>
+                                </div>
+
+                                <input type = 'checkbox' id = 'item3' name = 'accordion1' className='accordion-item' />
+                                <label htmlFor='item3' className='accordion-item-label'>Write-in</label>
+                                <div id = 'content3' className= 'accordion-item-content'>
+                                    <p>
+                                        Cras pretium blandit nunc, maximus convallis elit eleifend id. Nullam non posuere eros, sit amet iaculis leo. Morbi tincidunt nibh quis magna dapibus, sit amet imperdiet massa blandit. Maecenas sapien erat, efficitur id est sed, facilisis malesuada magna. Vivamus interdum non urna vel placerat. Duis sed nunc nec mi posuere tempor at sit amet dui. Curabitur faucibus sapien a massa vestibulum, in bibendum orci pharetra.
+                                    </p>
+                                </div>
+
+                                <input type = 'checkbox' id = 'item4' name = 'accordion1' className='accordion-item' />
+                                <label htmlFor='item4' className='accordion-item-label'>We can't agree</label>
+                                <div id = 'content4' className= 'accordion-item-content'>
+                                    <p>
+                                        Cras pretium blandit nunc, maximus convallis elit eleifend id. Nullam non posuere eros, sit amet iaculis leo. Morbi tincidunt nibh quis magna dapibus, sit amet imperdiet massa blandit. Maecenas sapien erat, efficitur id est sed, facilisis malesuada magna. Vivamus interdum non urna vel placerat. Duis sed nunc nec mi posuere tempor at sit amet dui. Curabitur faucibus sapien a massa vestibulum, in bibendum orci pharetra.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div className="col2">
+
+                    <div className='col2'>
                         <BallotAuditForm
                             countyState={ countyState }
                             currentBallot={ currentBallot }

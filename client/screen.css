@@ -209,9 +209,8 @@ th.rla-county-contest-info {
 }
 
 .row1 {
-    border-bottom: solid 1px #ccc;
-    margin-bottom: 40px;
-    padding-bottom: 40px;
+    border-bottom: solid 3px #eee;
+    padding-bottom: 25px;
 }
 
 .button-container {
@@ -224,6 +223,7 @@ th.rla-county-contest-info {
 .not-found-header {
     font-size: 18px;
     margin-bottom: 20px;
+    white-space: normal;
 }
 
 .not-found-copy {
@@ -253,6 +253,7 @@ th.rla-county-contest-info {
     display: grid;
     grid-column-gap: 1rem;
     grid-template-columns: 1fr 1fr 1fr;
+    margin-bottom: 20px;
 }
 
 
@@ -272,11 +273,12 @@ th.rla-county-contest-info {
 
 .choice-name {
     padding: 10px;
-    color: #08589A;
+    color: #333;
     border: solid 1px transparent;
     background: #fff;
     border-radius: 2px;
     display: block;
+    text-align:center;
 }
 
 .choice-name:hover {
@@ -289,3 +291,81 @@ th.rla-county-contest-info {
     color: white;
 }
 
+.current-ballot-info {
+    border-right: solid 3px #eeeeee;
+}
+
+.sidebar-heading {
+    font-size: 16px;
+    padding: 0;
+    line-height: 1.3;
+}
+
+.current-ballot-stats {
+    list-style-type: none;
+    line-height: 2;
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+
+
+
+
+/* ------------------------------ */
+
+
+.accordion-item{
+    display: none;
+}
+
+.accordion-item + .accordion-item-label {
+    cursor: pointer;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.accordion-item-label::before {
+    content: '\203a';
+    font-size: 18pt;
+    transition: transform .15s ease-in-out;
+    color: rgba(0,0,0,.54);
+}
+
+.accordion-item-label:hover {
+    background-color: #eee;
+}
+
+.accordion-item:checked + .accordion-item-label::before{
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    transform: rotate(90deg);
+}
+
+.accordion-item-content {
+    transform: scaleY(0);
+    transform-origin: top;
+    max-height: 0px;
+    overflow: hidden;
+    position: relative;
+    font-weight: normal;
+    font-size: 14px;
+    transition: all 0.3s ease-in-out;
+}
+
+.accordion-item-content p {
+    padding-top: 10px;
+    padding-bottom: 20px;
+}
+
+#item1:checked ~ #content1,
+#item2:checked ~ #content2,
+#item3:checked ~ #content3,
+#item4:checked ~ #content4 {
+    max-height: 350px;
+    transform: scaleY(1);
+}
