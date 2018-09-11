@@ -378,15 +378,18 @@ public final class ComparisonAuditController {
     the_cdb.setOptimisticSamplesToAudit(Math.max(0,  to_audit));
     if (!county_driving_contests.isEmpty() && 0 < to_audit) {
       // the list of CVRs to audit, in audit sequence order
-      final List<CastVoteRecord> cvrs_to_audit =
+      List<CastVoteRecord> cvrs_to_audit =
           getCVRsInAuditSequence(the_cdb.county(), 0, to_audit - 1);
 
-      cvrs_to_audit.stream()
-          .filter(c -> { return c.recordType() == CastVoteRecord.RecordType.PHANTOM_RECORD; } )
-          // in case the random number occurs twice, we only want to create one
-          // discrepency because the multiplicity is accounted for in that process
-          .distinct()
-          .forEach(c -> { createPhantomRecord(the_cdb, c); } );
+      cvrs_to_audit = cvrs_to_audit.stream()
+        .map(cvr -> { if (cvr.recordType() == CastVoteRecord.RecordType.PHANTOM_RECORD) {
+              return createPhantomRecord(the_cdb, cvr);
+            } else {
+              return cvr;
+            }})
+        .collect(Collectors.toList());
+
+
 
       // the IDs of the CVRs to audit, in audit sequence order
       final List<Long> audit_subsequence_ids = new ArrayList<Long>();
@@ -417,11 +420,15 @@ public final class ComparisonAuditController {
   }
 
   /** create a discrepency as if it was submitted by the client **/
-  public static void createPhantomRecord(final CountyDashboard cdb,
-                                         final CastVoteRecord cvr) {
-    // the cvr will only be selected for one county
-    // however we need to make sure this is not done twice
-    // let's assume the list of phantom records has been deduped, I think that will get us there
+  public static CastVoteRecord createPhantomRecord(final CountyDashboard cdb,
+                                                    CastVoteRecord cvr) {
+    // get the one with the ID
+    CastVoteRecord existing = CastVoteRecordQueries.atPosition(cvr);
+    if (null != existing) {
+      // only create one
+      // multiplicity is handled elsewhere
+      return existing;
+    }
 
     // we need to create a discrepancy for every contest that COULD have appeared on the ballot,
     // which we take to mean all the contests that occur in the county
@@ -441,7 +448,7 @@ public final class ComparisonAuditController {
     // the app work
     CVRAuditInfo cvrAuditInfo = new CVRAuditInfo(cvr);
     Persistence.saveOrUpdate(cvrAuditInfo);
-    final CastVoteRecord acvr = new CastVoteRecord(CastVoteRecord.RecordType.PHANTOM_RECORD,
+    final CastVoteRecord acvr = new CastVoteRecord(CastVoteRecord.RecordType.PHANTOM_RECORD_ACVR,
                                                    Instant.now(),
                                                    cvr.countyID(),
                                                    cvr.cvrNumber(),
@@ -455,6 +462,7 @@ public final class ComparisonAuditController {
     Persistence.saveOrUpdate(acvr);
 
     submitAuditCVR(cdb, cvr, acvr);
+    return cvr;
   }
 
   /**
@@ -581,9 +589,19 @@ public final class ComparisonAuditController {
       while (sorted_deduplicated_new_cvrs.isEmpty()) {
         expected_prefix_length = computeEstimatedSamplesToAudit(the_cdb);
         if (the_cdb.auditedPrefixLength() < expected_prefix_length) {
-          final List<CastVoteRecord> extra_cvrs =
+          List<CastVoteRecord> extra_cvrs =
               getCVRsInAuditSequence(the_cdb.county(), start_index,
                                      expected_prefix_length - 1);
+
+          extra_cvrs = extra_cvrs.stream()
+            .map(cvr -> { if (cvr.recordType() == CastVoteRecord.RecordType.PHANTOM_RECORD) {
+                  return createPhantomRecord(the_cdb, cvr);
+                } else {
+                  return cvr;
+                }})
+            .collect(Collectors.toList());
+
+
           new_cvrs.addAll(extra_cvrs);
           Persistence.saveOrUpdate(the_cdb);
           sorted_deduplicated_new_cvrs.addAll(new_cvrs);
@@ -771,12 +789,12 @@ public final class ComparisonAuditController {
    */
   private static void updateRound(final CountyDashboard the_cdb,
                                   final Round the_round) {
+
     for (final Long cvr_id : new HashSet<>(the_round.auditSubsequence())) {
       final Map<Contest, AuditReason> audit_reasons = new HashMap<>();
       final Set<AuditReason> discrepancies = new HashSet<>();
       final Set<AuditReason> disagreements = new HashSet<>();
       CVRAuditInfo cvrai = Persistence.getByID(cvr_id, CVRAuditInfo.class);
-
       if (cvrai == null) {
         // create it if it doesn't exist
         cvrai = new CVRAuditInfo(Persistence.getByID(cvr_id, CastVoteRecord.class));

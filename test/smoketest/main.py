@@ -803,6 +803,9 @@ def county_audit(ac, county_id):
         if county_dashboard['asm_state'] == "COUNTY_AUDIT_COMPLETE":
             break
 
+    # in case the this didn't happen in the last iteration (because it was a phantom record)
+    county_dashboard = get_county_dashboard(ac, county_s, county_id, i, acvr)
+
     r = test_endpoint_json(ac, county_s, "/sign-off-audit-round", audit_board_set)
 
     remaining = county_dashboard['estimated_ballots_to_audit']

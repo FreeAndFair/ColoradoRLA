@@ -616,7 +616,7 @@ public class CountyDashboard implements PersistentEntity {
         return cvr.id();
       } else {
         // skip it
-        round.setActualCount(round.actualCount() + 1);
+        currentRound().setActualCount(currentRound().actualCount() + 1);
 
         // try this again
         return skipOverNextMaybe();
