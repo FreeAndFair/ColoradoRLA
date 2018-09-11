@@ -28,9 +28,15 @@ import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Embeddable;
 
+import org.hibernate.Session;
+
+import org.hibernate.query.Query;
+
 import us.freeandfair.corla.persistence.AuditSelectionIntegerMapConverter;
+import us.freeandfair.corla.persistence.BallotSequenceAssignmentConverter;
 import us.freeandfair.corla.persistence.ElectorListConverter;
 import us.freeandfair.corla.persistence.LongListConverter;
+import us.freeandfair.corla.persistence.Persistence;
 
 /**
  * Information about an audit round. 
@@ -113,7 +119,23 @@ public class Round implements Serializable {
           name = "ballot_sequence", columnDefinition = TEXT)
   @Convert(converter = LongListConverter.class)
   private List<Long> my_ballot_sequence;
-  
+
+  /**
+   * The assignment of work from the ballot sequence to each audit board.
+   *
+   * Audit boards are represented by the indices of the list, and each entry in
+   * the list is a data structure as follows:
+   *
+   * ({"index": 0, "count": 5}, {"index": 5, "count": 6} ...)
+   *
+   * where "index" represents the index into the ballot sequence list, and
+   * "count" represents the number of ballots assigned to that audit board.
+   */
+  @Column(nullable = false, updatable = false,
+          name = "ballot_sequence_assignment", columnDefinition = TEXT)
+  @Convert(converter = BallotSequenceAssignmentConverter.class)
+  private List<Map<String, Integer>> ballotSequenceAssignment;
+
   /**
    * The CVR IDs for the audit subsequence to audit in this
    * round, in audit sequence order. 
@@ -278,7 +300,74 @@ public class Round implements Serializable {
   public List<Long> ballotSequence() {
     return my_ballot_sequence;
   }
-  
+
+  /**
+   * @return the ballot sequence assignment
+   */
+  public List<Map<String, Integer>> ballotSequenceAssignment() {
+    return this.ballotSequenceAssignment;
+  }
+
+  /**
+   * Set the ballot sequence assignment.
+   *
+   * @param l the list of audit board assignment maps
+   */
+  public void setBallotSequenceAssignment(final List<Map<String, Integer>> l) {
+    this.ballotSequenceAssignment = l;
+  }
+
+  /**
+   * Returns the list of CVRs under audit in this round.
+   *
+   * @return a list whose indices correspond to audit board indices and values
+   *         being the next CVR for the given audit board to audit.
+   */
+  // TODO: Extract into query class
+  public List<Long> cvrsUnderAudit() {
+    final List<Map<String, Integer>> bsa = this.ballotSequenceAssignment();
+
+    if (bsa == null) {
+      return null;
+    }
+
+    final List<Long> bs = this.ballotSequence();
+
+    // All CVR IDs that have no corresponding ACVR
+    final Session s = Persistence.currentSession();
+    final Query q = s.createQuery(
+        "select cvrai.my_cvr.my_id from CVRAuditInfo cvrai " +
+        "where cvrai.my_cvr.my_id in (:ids) " +
+        "and cvrai.my_acvr is null");
+    q.setParameterList("ids", bs);
+    // Put them in a set for quick membership testing
+    final Set<Long> unauditedIds = new HashSet<Long>(q.getResultList());
+
+    // Walk the sequence assignments getting the audit boards' index and count
+    // values, finding the first CVR with no corresponding ACVR *in ballot audit
+    // sequence order*. Any board that has finished the audit will get a null
+    // instead of a CVR ID.
+    final List<Long> result = new ArrayList<Long>();
+    for (int i = 0; i < bsa.size(); i++) {
+      final Map<String, Integer> m = bsa.get(i);
+
+      final Integer index = m.get("index");
+      final Integer count = m.get("count");
+
+      result.add(null);
+      for (int j = index; j < index + count; j++) {
+        final Long cvrId = bs.get(j);
+
+        if (unauditedIds.contains(cvrId)) {
+          result.set(i, cvrId);
+          break;
+        }
+      }
+    }
+
+    return result;
+  }
+
   /**
    * @return the audit subsequence for this round.
    */
@@ -404,14 +493,14 @@ public class Round implements Serializable {
   }
   
   /**
-   * @return a String representation of this elector.
+   * @return a String representation of this round.
    */
   @Override
   public String toString() {
     return "Round [start_time=" + my_start_time + ", end_time=" +
-           my_end_time + ", expected_count=" + my_expected_count + 
-           ", actual_count=" + my_actual_count + ", start_index=" + 
-           my_start_audited_prefix_length + ", discrepancies=" + my_discrepancies + 
+           my_end_time + ", expected_count=" + my_expected_count +
+           ", actual_count=" + my_actual_count + ", start_index=" +
+           my_start_audited_prefix_length + ", discrepancies=" + my_discrepancies +
            "disagreements=" + my_disagreements + ", signatories=" +
            my_signatories + "]";
   }
@@ -449,7 +538,7 @@ public class Round implements Serializable {
   public int hashCode() {
     return nullableHashCode(startTime());
   }
-  
+
   /**
    * @return a version of this Round with no ballot/cvr sequences
    */
@@ -464,7 +553,7 @@ public class Round implements Serializable {
     result.my_disagreements = my_disagreements;
     result.my_signatories = my_signatories;
     result.my_end_time = my_end_time;
-    
+
     return result;
   }
 }

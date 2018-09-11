@@ -155,9 +155,9 @@ public class CountyDashboardRefreshResponse {
   private final Map<AuditSelection, Integer> my_disagreement_count;
 
   /**
-   * The current ballot under audit.
+   * The current ballots under audit, by audit board index.
    */
-  private final Long my_ballot_under_audit_id;
+  private final List<Long> my_ballot_under_audit_ids;
   
   /**
    * The audited prefix length.
@@ -208,7 +208,9 @@ public class CountyDashboardRefreshResponse {
    * mapped by audit reason.
    * @param the_disagreement_count The number of disagreements,
    * mapped by audit reason.
-   * @param the_ballot_under_audit_id The ID of the CVR under audit.
+   * @param the_ballot_under_audit_ids the IDs of the CVRs under audit, in
+   *                                   positions corresponding to the audit
+   *                                   board that should audit it.
    * @param the_audited_prefix_length The length of the audited prefix of the
    * ballots to audit list.
    * @param the_rounds The list of audit rounds.
@@ -242,7 +244,7 @@ public class CountyDashboardRefreshResponse {
                                                the_discrepancy_count,
                                            final Map<AuditSelection, Integer>
                                                the_disagreement_count,
-                                           final Long the_ballot_under_audit_id,
+                                           final List<Long> the_ballot_under_audit_ids,
                                            final Integer the_audited_prefix_length,
                                            final List<Round> the_rounds,
                                            final Round the_current_round,
@@ -267,7 +269,7 @@ public class CountyDashboardRefreshResponse {
     my_audited_ballot_count = the_audited_ballot_count;
     my_discrepancy_count = the_discrepancy_count;
     my_disagreement_count = the_disagreement_count;
-    my_ballot_under_audit_id = the_ballot_under_audit_id;
+    my_ballot_under_audit_ids = the_ballot_under_audit_ids;
     my_audited_prefix_length = the_audited_prefix_length;
     my_rounds = the_rounds;
     my_current_round = the_current_round;
@@ -356,7 +358,7 @@ public class CountyDashboardRefreshResponse {
                                               the_dashboard.ballotsAudited(),
                                               the_dashboard.discrepancies(),
                                               the_dashboard.disagreements(),
-                                              the_dashboard.cvrUnderAudit(),
+                                              the_dashboard.cvrsUnderAudit(),
                                               the_dashboard.auditedPrefixLength(),
                                               rounds,
                                               current_round,

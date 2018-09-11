@@ -165,6 +165,12 @@ public class CountyDashboard implements PersistentEntity {
   private Instant my_audit_timestamp; 
 
   /**
+   * The number of audit boards.
+   */
+  @Column(name="audit_board_count")
+  private Integer auditBoardCount;
+
+  /**
    * The audit boards.
    */
   @ElementCollection(fetch = FetchType.LAZY)
@@ -173,12 +179,6 @@ public class CountyDashboard implements PersistentEntity {
                    joinColumns = @JoinColumn(name = DASHBOARD_ID, 
                                              referencedColumnName = MY_ID))
   private Map<Integer, AuditBoard> my_audit_boards = new HashMap<>();
-
-  /**
-   * The number of audit boards.
-   */
-  @Column(name="audit_board_count")
-  private Integer auditBoardCount;
 
   /**
    * The audit rounds.
@@ -515,6 +515,7 @@ public class CountyDashboard implements PersistentEntity {
     } else {
       throw new IllegalStateException("cannot start a round while one is running");
     }
+
     // note UI round indexing is from 1, not 0
     final Round round = new Round(my_current_round_index + 1, 
                                   Instant.now(), 
@@ -537,6 +538,8 @@ public class CountyDashboard implements PersistentEntity {
     if (my_current_round_index == null) {
       throw new IllegalStateException("no round to end");
     } else {
+      this.setAuditBoardCount(null);
+
       final Round round = my_rounds.get(my_current_round_index);
       round.setSignatories(the_signatories);
       round.setEndTime(Instant.now());
@@ -629,25 +632,21 @@ public class CountyDashboard implements PersistentEntity {
   }
 
   /**
-   * Returns the CVRs under audit indexed by the audit board to which they are
-   * assigned.
+   * Returns the a list of CVR IDs under audit for the assigned audit boards.
    *
-   * @return A map of audit board indices to the CVR IDs they are assigned.
+   * Delegates the actual calculation to the current Round, if one exists.
+   *
+   * @return a list of CVR IDs assigned to each audit board, where the list
+   *         offset matches the audit board offset.
    */
-  public Long cvrUnderAudit() {
-    throw new UnsupportedOperationException("TODO: Implement this.");
-    /*
-    final Round round = currentRound();
+  public List<Long> cvrsUnderAudit() {
+    final Round round = this.currentRound();
 
-    if (forBoardIndex == null ||
-        round == null ||
-        round.actualCount().compareTo(round.expectedCount()) >= 0) {
+    if (round == null) {
       return null;
     }
 
-    // get the current CVR to audit from the round object
-    return round.ballotSequence().get(round.actualCount());
-    */
+    return round.cvrsUnderAudit();
   }
 
   /** skip over PHANTOM_RECORDs **/
