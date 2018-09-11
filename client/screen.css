@@ -279,6 +279,10 @@ th.rla-county-contest-info {
     border-radius: 2px;
     display: block;
     text-align:center;
+    min-height: 55px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .choice-name:hover {
