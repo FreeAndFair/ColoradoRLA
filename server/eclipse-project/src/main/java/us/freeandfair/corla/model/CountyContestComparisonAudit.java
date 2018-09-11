@@ -804,7 +804,6 @@ public class CountyContestComparisonAudit implements PersistentEntity {
     } else if (the_cvr.recordType() == RecordType.PHANTOM_RECORD){
       // similar to the phantom ballot, we use the worst case scenario, a 2-vote
       // overstatement, except here, we don't have a CVR to check anything on.
-      Main.LOGGER.info("computeDiscrepancy two-overstatement for cvr id: " + the_cvr.id());
       result = OptionalInt.of(2);
     }
     else if (cvr_info != null && acvr_info != null) {

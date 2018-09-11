@@ -54,9 +54,9 @@ public class BallotSelectionTest {
     return_cvr = false;
     List<CastVoteRecord> results = makeSelection(rand,sequence_start);
     Assert.assertEquals(1, results.size());
-    Assert.assertEquals(results.get(0).imprintedID(), "");
+    Assert.assertEquals(results.get(0).imprintedID(), "1-1-7"); // calculated
     Assert.assertEquals(results.get(0).ballotType(), "PHANTOM RECORD");
-    Assert.assertEquals((int)results.get(0).cvrNumber(), (int)0);
+    Assert.assertEquals((int)results.get(0).cvrNumber(), (int)0); // Not applicable
   }
 
   private List<CastVoteRecord> makeSelection(Long rand, Long sequence_start) {

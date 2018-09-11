@@ -85,23 +85,22 @@ public final class BallotSelection {
                                              final Integer scanner_id,
                                              final String batch_id,
                                              final Long position) {
-    String imprinted_id = scanner_id +"-"+ batch_id +"-"+ position;
+    final String imprinted_id = scanner_id +"-"+ batch_id +"-"+ position;
     //cvr_number (this would have been in the file)
-    Integer cvr_number = 0;
+    final Integer cvr_number = 0;
     //sequence_number (this would have been set in the file read loop)
-    Integer sequence_number = 0;
-    final CastVoteRecord cvr = new CastVoteRecord(CastVoteRecord.RecordType.PHANTOM_RECORD,
-                                                  null, //timestamp
-                                                  county_id,
-                                                  cvr_number,
-                                                  sequence_number,
-                                                  scanner_id,
-                                                  batch_id,
-                                                  position.intValue(),//record_id
-                                                  imprinted_id,//imprinted_id
-                                                  "PHANTOM RECORD", //ballot_type
-                                                  null);//contest_info - filled in later
-    return cvr;
+    final Integer sequence_number = 0;
+    return new CastVoteRecord(CastVoteRecord.RecordType.PHANTOM_RECORD,
+                              null, //timestamp
+                              county_id,
+                              cvr_number,
+                              sequence_number,
+                              scanner_id,
+                              batch_id,
+                              position.intValue(),//record_id
+                              imprinted_id,//imprinted_id
+                              "PHANTOM RECORD", //ballot_type
+                              null);//contest_info - filled in later
   }
 
   /** render cvrs using BallotManifestInfo **/

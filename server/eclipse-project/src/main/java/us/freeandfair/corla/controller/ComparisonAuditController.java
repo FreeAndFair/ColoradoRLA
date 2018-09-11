@@ -378,18 +378,9 @@ public final class ComparisonAuditController {
     the_cdb.setOptimisticSamplesToAudit(Math.max(0,  to_audit));
     if (!county_driving_contests.isEmpty() && 0 < to_audit) {
       // the list of CVRs to audit, in audit sequence order
-      List<CastVoteRecord> cvrs_to_audit =
-          getCVRsInAuditSequence(the_cdb.county(), 0, to_audit - 1);
-
-      cvrs_to_audit = cvrs_to_audit.stream()
-        .map(cvr -> { if (cvr.recordType() == CastVoteRecord.RecordType.PHANTOM_RECORD) {
-              return createPhantomRecord(the_cdb, cvr);
-            } else {
-              return cvr;
-            }})
-        .collect(Collectors.toList());
-
-
+      final List<CastVoteRecord> cvrs_to_audit =
+          createPhantomRecords(the_cdb,
+                               getCVRsInAuditSequence(the_cdb.county(), 0, to_audit - 1));
 
       // the IDs of the CVRs to audit, in audit sequence order
       final List<Long> audit_subsequence_ids = new ArrayList<Long>();
@@ -419,22 +410,38 @@ public final class ComparisonAuditController {
     return result;
   }
 
+  /**
+   * call createPhantomRecord on each PHANTOM_RECORD (that BallotSelection
+   * generated)
+   **/
+  public static List<CastVoteRecord> createPhantomRecords(final CountyDashboard cdb,
+                                                          final List<CastVoteRecord> cvrs) {
+    return cvrs.stream()
+      .map(cvr -> { if (cvr.recordType() == CastVoteRecord.RecordType.PHANTOM_RECORD) {
+            return createPhantomRecord(cdb, cvr);
+          } else {
+            return cvr;
+          }})
+      .collect(Collectors.toList());
+  }
+
   /** create a discrepency as if it was submitted by the client **/
   public static CastVoteRecord createPhantomRecord(final CountyDashboard cdb,
-                                                    CastVoteRecord cvr) {
+                                                   final CastVoteRecord cvr) {
     // get the one with the ID
-    CastVoteRecord existing = CastVoteRecordQueries.atPosition(cvr);
+    final CastVoteRecord existing = CastVoteRecordQueries.atPosition(cvr);
     if (null != existing) {
       // only create one
       // multiplicity is handled elsewhere
       return existing;
     }
 
-    // we need to create a discrepancy for every contest that COULD have appeared on the ballot,
-    // which we take to mean all the contests that occur in the county
-    Set<Contest> contests = ContestQueries.forCounty(cdb.county());
+    // we need to create a discrepancy for every contest that COULD have
+    // appeared on the ballot, which we take to mean all the contests that occur
+    // in the county
+    final Set<Contest> contests = ContestQueries.forCounty(cdb.county());
 
-    List<CVRContestInfo> phantomContestInfos = contests.stream()
+    final List<CVRContestInfo> phantomContestInfos = contests.stream()
       .map(c -> {return new CVRContestInfo(c,
                                            "PHANTOM_RECORD - CVR not found",
                                            null,
@@ -446,7 +453,7 @@ public final class ComparisonAuditController {
     // this relation is created when a cvr is prepared for audit
     // we won't be actually auditing this cvr, but we need this relation to make
     // the app work
-    CVRAuditInfo cvrAuditInfo = new CVRAuditInfo(cvr);
+    final CVRAuditInfo cvrAuditInfo = new CVRAuditInfo(cvr);
     Persistence.saveOrUpdate(cvrAuditInfo);
     final CastVoteRecord acvr = new CastVoteRecord(CastVoteRecord.RecordType.PHANTOM_RECORD_ACVR,
                                                    Instant.now(),
@@ -589,18 +596,10 @@ public final class ComparisonAuditController {
       while (sorted_deduplicated_new_cvrs.isEmpty()) {
         expected_prefix_length = computeEstimatedSamplesToAudit(the_cdb);
         if (the_cdb.auditedPrefixLength() < expected_prefix_length) {
-          List<CastVoteRecord> extra_cvrs =
-              getCVRsInAuditSequence(the_cdb.county(), start_index,
-                                     expected_prefix_length - 1);
-
-          extra_cvrs = extra_cvrs.stream()
-            .map(cvr -> { if (cvr.recordType() == CastVoteRecord.RecordType.PHANTOM_RECORD) {
-                  return createPhantomRecord(the_cdb, cvr);
-                } else {
-                  return cvr;
-                }})
-            .collect(Collectors.toList());
-
+          final List<CastVoteRecord> extra_cvrs =
+              createPhantomRecords(the_cdb,
+                                   getCVRsInAuditSequence(the_cdb.county(), start_index,
+                                                          expected_prefix_length - 1));
 
           new_cvrs.addAll(extra_cvrs);
           Persistence.saveOrUpdate(the_cdb);

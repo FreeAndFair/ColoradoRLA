@@ -369,13 +369,15 @@ public final class CastVoteRecordQueries {
     return result;
   }
 
-  public static CastVoteRecord atPosition(CastVoteRecord cvr) {
+  /** find a cvr record that matches the given cvr attributes **/
+  public static CastVoteRecord atPosition(final CastVoteRecord cvr) {
     return atPosition(cvr.countyID(),
                       cvr.scannerID(),
                       cvr.batchID(),
                       // position == record_id
                       Long.valueOf(cvr.recordID()));
   }
+
   /**
    * join query
    **/

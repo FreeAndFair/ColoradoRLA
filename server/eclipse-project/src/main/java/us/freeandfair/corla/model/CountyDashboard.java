@@ -44,7 +44,6 @@ import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
-import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.ImportStatus.ImportState;
 import us.freeandfair.corla.persistence.AuditSelectionIntegerMapConverter;
 import us.freeandfair.corla.persistence.Persistence;
@@ -605,21 +604,21 @@ public class CountyDashboard implements PersistentEntity {
 
   /** skip over PHANTOM_RECORDs **/
   public Long skipOverNextMaybe() {
-    Long cvrId = cvrUnderAudit();
+    final Long cvrId = cvrUnderAudit();
     // expectedCount is expected to be the ballotSequence size
     if (cvrId == null) {
       return null;
     } else {
-      CastVoteRecord cvr = Persistence.getByID(cvrId, CastVoteRecord.class);
+      final CastVoteRecord cvr = Persistence.getByID(cvrId, CastVoteRecord.class);
       // this could also be a check for audited/audit_flag I think
-      if (cvr.recordType() != CastVoteRecord.RecordType.PHANTOM_RECORD) {
-        return cvr.id();
-      } else {
+      if (cvr.recordType() == CastVoteRecord.RecordType.PHANTOM_RECORD) {
         // skip it
         currentRound().setActualCount(currentRound().actualCount() + 1);
 
         // try this again
         return skipOverNextMaybe();
+      } else {
+        return cvr.id();
       }
     }
   }

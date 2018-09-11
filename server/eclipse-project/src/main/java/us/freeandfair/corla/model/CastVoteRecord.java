@@ -330,7 +330,7 @@ public class CastVoteRecord implements PersistentEntity, Serializable {
   }
 
   /** setter **/
-  public void setContestInfo (List<CVRContestInfo> contestInfos) {
+  public void setContestInfo (final List<CVRContestInfo> contestInfos) {
     this.my_contest_info.clear();
     this.my_contest_info.addAll(contestInfos);
   }
