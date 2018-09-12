@@ -21,7 +21,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.Comparator;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -215,8 +217,7 @@ public class CountyDashboard implements PersistentEntity {
    * The set of contests that drive our audits. Strings, not "fancy"
    * Abstract Data Types
    */
-  @Column(nullable = false, updatable = false,
-          name = "driving_contests", columnDefinition = TEXT)
+  @Column(name = "driving_contests", columnDefinition = TEXT)
   @Convert(converter = StringSetConverter.class)
   private Set<String> drivingContestNames = new HashSet<>();
 
@@ -224,7 +225,12 @@ public class CountyDashboard implements PersistentEntity {
   /**
    * The audit data.
    */
-  @ManyToMany(mappedBy = "countyDashboards")
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(name = "counties_to_comparison_audits",
+             joinColumns = { @JoinColumn(name = DASHBOARD_ID,
+                                         referencedColumnName = MY_ID) },
+             inverseJoinColumns = { @JoinColumn(name = "comparison_audit_id",
+                                                referencedColumnName = MY_ID) })
   private Set<ComparisonAudit> my_comparison_audits = new HashSet<>();
 
   /**
@@ -537,7 +543,6 @@ public class CountyDashboard implements PersistentEntity {
   /**
    * @return the set of comparison audits being performed.
    */
-  //FIXME this should be a Set<ComparisonAudit>
   public Set<ComparisonAudit> comparisonAudits() {
     return Collections.unmodifiableSet(my_comparison_audits);
   }
@@ -793,7 +798,19 @@ public class CountyDashboard implements PersistentEntity {
    * @return the estimated number of samples to audit.
    */
   public Integer estimatedSamplesToAudit() {
-    return my_estimated_samples_to_audit;
+    // return my_estimated_samples_to_audit;
+    // NOTE: there could be race conditions between audit boards across counties
+    Optional<Integer> maybe = comparisonAudits().stream()
+      .filter(ca -> ca.auditReason() != AuditReason.OPPORTUNISTIC_BENEFITS)
+      .map(ca -> ca.estimatedSamplesToAudit())
+      .max(Comparator.naturalOrder());
+    // NOTE: we may be asking for this when we don't need to; when there are no
+    // audits setup yet
+    if (maybe.isPresent()) {
+      return maybe.get();
+    } else {
+      return 0;
+    }
   }
 
   /**
@@ -809,6 +826,7 @@ public class CountyDashboard implements PersistentEntity {
    * @return the optimistic number of samples to audit.
    */
   public Integer optimisticSamplesToAudit() {
+    // FIXME here is where we left off...
     return my_optimistic_samples_to_audit;
   }
 

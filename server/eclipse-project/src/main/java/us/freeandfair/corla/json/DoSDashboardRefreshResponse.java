@@ -184,13 +184,15 @@ public class DoSDashboardRefreshResponse {
                        // FIXME ca.auditedPrefixLength is
                        // constantly zero until we figure out
                        // how to look at the larger view...
-                       Math.max(0, ca.optimisticSamplesToAudit() - ca.auditedPrefixLength()));
+                       // Math.max(0, ca.optimisticSamplesToAudit() - ca.auditedPrefixLength()));
+                       Math.max(0, ca.optimisticSamplesToAudit() - ca.getAuditedSampleCount()));
             estimated =
               Math.max(estimated,
                        // FIXME ca.auditedPrefixLength is
                        // constantly zero until we figure out
                        // how to look at the larger view...
-                       Math.max(0, ca.estimatedSamplesToAudit() - ca.auditedPrefixLength()));
+                       // Math.max(0, ca.estimatedSamplesToAudit() - ca.auditedPrefixLength()));
+                       Math.max(0, ca.estimatedSamplesToAudit() - ca.getAuditedSampleCount()));
 
 
 

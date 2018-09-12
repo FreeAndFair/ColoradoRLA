@@ -418,7 +418,7 @@ def upload_file(ac, s, import_path, filename, sha256):
                 print("CVR import complete, state: %s" % state)
                 break
 
-            time.sleep(30)
+            time.sleep(3)
 
 
 def download_file(ac, s, file_id, filename):

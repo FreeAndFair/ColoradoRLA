@@ -455,7 +455,7 @@ public final class Persistence {
     try {
       currentSession().saveOrUpdate(the_object);
     } catch (final PersistenceException e) {
-      Main.LOGGER.debug("could not save/update object " + the_object + ": " + e);
+      Main.LOGGER.error("could not save/update object " + the_object + ": " + e);
       result = false;
     }
 

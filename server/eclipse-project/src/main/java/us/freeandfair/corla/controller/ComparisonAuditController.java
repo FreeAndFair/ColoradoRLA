@@ -345,42 +345,36 @@ public final class ComparisonAuditController {
    * an audit round might not be started if there are no driving contests in the
    * county, or if the county needs to audit 0 ballots to meet the risk limit.
    */
-  public static boolean initializeAuditData(final Set<String> targetedContests,
-                                            final CountyDashboard cdb,
-                                            final BigDecimal riskLimit,
-                                            final List<ContestResult> contestResults,
-                                            final List<Integer> subsequence) {
-    final Set<ComparisonAudit> comparisonAudits = new HashSet<>();
-    // we'll use this to copy dosdb.targetedContests to cdb.drivingContests
-    final Set<String> drivingContests = new HashSet<>();
+  public static Set<ComparisonAudit>
+    createAudits(final BigDecimal riskLimit,
+                 final List<ContestResult> contestResults) {
+    return contestResults.stream()
+      .map(cr -> {
+          return new ComparisonAudit(cr,
+                                     riskLimit,
+                                     cr.getDilutedMargin(),
+                                     Audit.GAMMA,
+                                     cr.getAuditReason());
+        })
+      .map(Persistence::persist)
+      .collect(Collectors.toSet());
+  }
 
-    for (final ContestResult cr : contestResults) {
-      final Contest contest = cr.contestFor(cdb.county());
+  public static boolean startFirstRound(final CountyDashboard cdb,
+                                        final Set<ComparisonAudit> audits,
+                                        final List<Integer> subsequence) {
+    Set<String> drivingContestNames = audits.stream()
+      .filter(ca -> ca.contestResult().getAuditReason() != AuditReason.OPPORTUNISTIC_BENEFITS)
+      .map(ca -> ca.contestResult().getContestName())
+      .collect(Collectors.toSet());
 
-      if (contest == null) {
-        LOGGER.warn("could not find contest for county: " + cdb.county().id());
-        continue;
-      }
-
-      // storing numbers for later calculations
-      final ComparisonAudit audit =
-        new ComparisonAudit(cr, riskLimit, cr.getDilutedMargin(),
-                            Audit.GAMMA, cr.getAuditReason());
-
-      LOGGER.debug("estimate for contest " + cr.getContestName() +
-                   ", diluted margin: " + cr.getDilutedMargin());
-
-      Persistence.save(audit);
-      comparisonAudits.add(audit);
-
-      if (targetedContests.contains(cr.getContestName())) {
-        LOGGER.debug(String.format("Contest [%s] is targeted, adding to drivingContests.",
-                                   cr.getContestName()));
-        drivingContests.add(cr.getContestName());
-      } else {
-        LOGGER.debug(String.format("Contest [%s] is not targeted.", cr.getContestName()));
-      }
-    }
+    LOGGER.info(String.format("Starting first Round for %s, drivingContests=%s", cdb.county(), drivingContestNames));
+    cdb.setAuditedPrefixLength(0);
+    cdb.setAuditedSampleCount(0);
+    cdb.setDrivingContestNames(drivingContestNames);
+    cdb.setEstimatedSamplesToAudit(subsequence.size());
+    cdb.setOptimisticSamplesToAudit(subsequence.size());
+    cdb.setComparisonAudits(audits);
 
     final List<CastVoteRecord> castVoteRecords =
       getCVRsForSequenceNumbers(cdb.county(), subsequence);
@@ -395,12 +389,8 @@ public final class ComparisonAuditController {
       .map(cvr -> cvr.id())
       .collect(Collectors.toList());
 
-    cdb.setAuditedPrefixLength(0);
-    cdb.setAuditedSampleCount(0);
-    cdb.setComparisonAudits(comparisonAudits);
-    cdb.setDrivingContestNames(drivingContests);
-    cdb.setEstimatedSamplesToAudit(subsequence.size());
-    cdb.setOptimisticSamplesToAudit(subsequence.size());
+    Persistence.saveOrUpdate(cdb);
+    LOGGER.info("SAVED_CDB with audits: " + cdb.comparisonAudits());
 
     cdb.startRound(ballotSequence.size(),
                    auditSubsequence.size(),
@@ -640,13 +630,18 @@ public final class ComparisonAuditController {
                   ", cvr " + the_cvr_under_audit.id());
     }
     Persistence.flush();
+
+    LOGGER.info(String.format("[Before recalc: auditedSampleCount=%d, estimatedSamples=%d, optimisticSamples=%d",
+                              cdb.auditedSampleCount(),
+                              cdb.estimatedSamplesToAudit(),
+                              cdb.optimisticSamplesToAudit()));
     updateCVRUnderAudit(cdb);
-    cdb.
-        setEstimatedSamplesToAudit(estimatedSamplesToAudit(cdb) -
-                                   cdb.auditedSampleCount());
-    cdb.
-        setOptimisticSamplesToAudit(computeOptimisticSamplesToAudit(cdb) -
-                                    cdb.auditedSampleCount());
+    cdb.setEstimatedSamplesToAudit(estimatedSamplesToAudit(cdb) - cdb.auditedSampleCount());
+    cdb.setOptimisticSamplesToAudit(computeOptimisticSamplesToAudit(cdb) - cdb.auditedSampleCount());
+    LOGGER.info(String.format("[After recalc: auditedSampleCount=%d, estimatedSamples=%d, optimisticSamples=%d",
+                              cdb.auditedSampleCount(),
+                              cdb.estimatedSamplesToAudit(),
+                              cdb.optimisticSamplesToAudit()));
     cdb.updateAuditStatus();
     return result;
   }
@@ -661,17 +656,24 @@ public final class ComparisonAuditController {
    */
   public static int estimatedSamplesToAudit(final CountyDashboard cdb) {
     int to_audit = Integer.MIN_VALUE;
-    // FIXME waht if driving contests were contest names - as strings -
-    // instead of Contest Objects? We're interested in knowing which
-    // numbers to consider relevant here...
     final Set<String> drivingContests = cdb.drivingContestNames();
-    for (final ComparisonAudit ca : cdb.comparisonAudits()) {
-      if (drivingContests.contains(ca.contestResult().getContestName())) {
-        final int bta = ca.estimatedSamplesToAudit();
-        to_audit = Math.max(to_audit, bta);
+
+    LOGGER.debug(String.format("[estimatedSamplesToAudit: "
+                               + "drivingContestNames=%s, comparisonAudits=%s]",
+                               cdb.drivingContestNames(), cdb.comparisonAudits()));
+
+    // FIXME might look better as a stream().filter().
+    for (final ComparisonAudit ca : cdb.comparisonAudits()) { // to_audit = cdb.comparisonAudits.stream()
+      final String contestName = ca.contestResult().getContestName(); // strike
+      if (drivingContests.contains(contestName)) { // .filter(ca -> drivingContests.contains(ca.contestResult().getContestName()))
+        final int bta = ca.estimatedSamplesToAudit(); // .map(ComparisonAudit::estimatedSamplesToAudit)
+        to_audit = Math.max(to_audit, bta);           // .max() gets the biggest of all driving contest estimated samples
+        LOGGER.debug(String.format("[estimatedSamplesToAudit: "
+                                   + "driving contest=%s, bta=%d, to_audit=%d]",
+                                   ca.contestResult().getContestName(), bta, to_audit));
       }
     }
-    return Math.max(0,  to_audit);
+    return Math.max(0, to_audit);
   }
 
   /**
@@ -810,6 +812,7 @@ public final class ComparisonAuditController {
 
     final int audit_count = auditInfo.multiplicity() - auditInfo.counted();
     for (final ComparisonAudit ca : cdb.comparisonAudits()) {
+      // FIXME: check cvrid for presence in ballotSequence
       final OptionalInt discrepancy = ca.computeDiscrepancy(cvr_under_audit, audit_cvr);
 
       if (discrepancy.isPresent()) {
@@ -819,6 +822,7 @@ public final class ComparisonAuditController {
         discrepancies.add(ca.auditReason());
       }
 
+      // NOTE: this may or may not be correct, we're not sure
       if (contest_disagreements.contains(ca.contestResult().getContestName())) {
         for (int i = 0; i < audit_count; i++) {
           ca.recordDisagreement(auditInfo);
@@ -830,7 +834,6 @@ public final class ComparisonAuditController {
       Persistence.saveOrUpdate(ca);
     }
 
-    // FIXME auditInfo is a CVRAuditInfo, which seems to be tied still to a county, or not?
     auditInfo.setDiscrepancy(discrepancies);
     auditInfo.setDisagreement(disagreements);
     auditInfo.setCounted(auditInfo.multiplicity());
@@ -910,6 +913,7 @@ public final class ComparisonAuditController {
   private static void updateCVRUnderAudit(final CountyDashboard the_cdb) {
     // start from where we are in the current round
     final Round round = the_cdb.currentRound();
+    final Set<ComparisonAudit> audits = the_cdb.comparisonAudits();
     if (round != null) {
       final Set<Long> checked_ids = new HashSet<>();
       int index = round.actualAuditedPrefixLength() - round.startAuditedPrefixLength();

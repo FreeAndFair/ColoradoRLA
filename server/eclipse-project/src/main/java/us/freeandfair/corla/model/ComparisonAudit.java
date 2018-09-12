@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
@@ -25,6 +26,7 @@ import java.util.Set;
 import javax.persistence.Cacheable;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -42,10 +44,15 @@ import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import us.freeandfair.corla.math.Audit;
 import us.freeandfair.corla.model.CVRContestInfo.ConsensusValue;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
+import us.freeandfair.corla.persistence.LongListConverter;
 import us.freeandfair.corla.persistence.PersistentEntity;
+
 
 /**
  * A class representing the state of a single audited contest for
@@ -57,6 +64,13 @@ import us.freeandfair.corla.persistence.PersistentEntity;
 @Table(name = "comparison_audit")
 
 public class ComparisonAudit implements PersistentEntity {
+
+  /**
+   * Class-wide logger
+   */
+  public static final Logger LOGGER =
+    LogManager.getLogger(ComparisonAudit.class);
+
   /**
    * The database stored precision for decimal types.
    */
@@ -67,24 +81,11 @@ public class ComparisonAudit implements PersistentEntity {
    */
   public static final int SCALE = 8;
 
-  @ManyToMany()
-  @JoinTable(name = "counties_to_comparison_audits",
-             joinColumns = { @JoinColumn(name = "comparison_audit_id") },
-             inverseJoinColumns = { @JoinColumn(name = "county_dashboard_id") })
-  private final Set<CountyDashboard> countyDashboards = new HashSet<>();
-
-  /**
-   * set the set of counties
-   */
-  public boolean addCountyDashboards(final Set<CountyDashboard> cs) {
-    return this.countyDashboards.addAll(cs);
-  }
-
   /**
    * @return the counties related to this contestresult.
    */
-  public Set<CountyDashboard> getCountyDashboards() {
-    return Collections.unmodifiableSet(this.countyDashboards);
+  public Set<County> getCounties() {
+    return Collections.unmodifiableSet(this.contestResult().getCounties());
   }
 
   /**
@@ -200,6 +201,26 @@ public class ComparisonAudit implements PersistentEntity {
   private Integer my_disagreement_count = 0;
 
   /**
+   * gets incremented
+   */
+  @Column(nullable = true) // true for migration
+  private Integer auditedPrefixLength = 0;
+
+  /**
+   * gets incremented
+   */
+  @Column(nullable = true) // true for migration
+  private BigDecimal auditedSamples = BigDecimal.ZERO;
+
+  /**
+   * gets incremented
+   */
+  @Column(nullable = true) // true for migration
+  private BigDecimal overstatements = BigDecimal.ZERO;
+
+
+
+  /**
    * A flag that indicates whether the optimistic ballots to audit
    * estimate needs to be recalculated.
    */
@@ -258,12 +279,16 @@ public class ComparisonAudit implements PersistentEntity {
                          final BigDecimal dilutedMargin,
                          final BigDecimal gamma,
                          final AuditReason auditReason) {
+
     super();
     my_contest_result = contestResult;
     my_risk_limit = riskLimit;
     this.diluted_margin = dilutedMargin;
     my_gamma = gamma;
     my_audit_reason = auditReason;
+    // compute initial sample size
+    optimisticSamplesToAudit();
+    estimatedSamplesToAudit();
 
     if (contestResult.getDilutedMargin().equals(BigDecimal.ZERO)) {
       // the diluted margin is 0, so this contest is not auditable
@@ -335,6 +360,14 @@ public class ComparisonAudit implements PersistentEntity {
    */
   public AuditStatus auditStatus() {
     return my_audit_status;
+  }
+
+  /** see if the county is participating in this audit(contest) **/
+  public boolean isForCounty(final Long countyId) {
+    Optional<County> result = getCounties().stream()
+      .filter(c -> c.id().equals(countyId))
+      .findFirst();
+    return result.isPresent();
   }
 
   /**
@@ -413,30 +446,71 @@ public class ComparisonAudit implements PersistentEntity {
    * sequence of CVR ids by county, but we need to find a way to
    * replicate that view at a higher level.
    */
-  public Integer auditedPrefixLength() {
-    return 0;
-  }
+  // public Integer auditedPrefixLength() {
+  //   return this.auditedPrefixLength;
+  // }
 
-  public BigDecimal auditedSamples() {
-    // FIXME Originally, we were doing a county level audit. Now, we
-    // need to think about many counties, so we need to find out how
-    // many samples we've audited across all of the counties that
-    // aprticipate.
+  /** set by inc  **/
+  // public void incAuditedPrefixLength() {
+  //   this.auditedPrefixLength = this.auditedPrefixLength + 1;
+  // }
 
-    // return BigDecimal.valueOf(my_dashboard.auditedSampleCount());
-    return BigDecimal.ZERO;
-  }
+  // public BigDecimal auditedSamples() {
+  //   // FIXME Originally, we were doing a county level audit. Now, we
+  //   // need to think about many counties, so we need to find out how
+  //   // many samples we've audited across all of the counties that
+  //   // aprticipate.
 
+  //   return this.auditedSamples;
+  // }
+
+  /** incAuditedSamples **/
+  // public void incAuditedSamples() {
+  //   // FIXME collect the number of 1&2 vote overstatements across
+  //   // participating counties.
+
+  //   this.auditedSamples = this.auditedSamples.add(new BigDecimal(1));
+  // }
+
+  /**  number of both one and two overstatements summed **/
   public BigDecimal overstatements() {
     // FIXME collect the number of 1&2 vote overstatements across
     // participating counties.
 
-    // return BigDecimal.valueOf(my_one_vote_over_count + my_two_vote_over_count);
-    return BigDecimal.ZERO;
+    return this.overstatements;
+  }
+
+  /** incOverStatements **/
+  public void incOverStatements() {
+    // FIXME collect the number of 1&2 vote overstatements across
+    // participating counties.
+
+    this.overstatements = this.overstatements.add(new BigDecimal(1));
+  }
+
+  /** getter **/
+  public Integer getAuditedSampleCount() {
+    return this.my_audited_sample_count;
   }
 
   /**
-   * Recalculates the overall numbers of ballots to audit.
+   * A scaling factor for the estimate, from 1 (when no samples have been audited) upward.
+   * The scaling factor grows as the ratio of overstatements to samples increases.
+   */
+  private BigDecimal scalingFactor() {
+    final BigDecimal auditedSamples = BigDecimal.valueOf(getAuditedSampleCount());
+    if (auditedSamples.equals(BigDecimal.ZERO)) {
+      return BigDecimal.ONE;
+    } else {
+      return BigDecimal.ONE.add(overstatements()
+                                .divide(auditedSamples, MathContext.DECIMAL128));
+      }
+  }
+
+  /**
+   * Recalculates the overall numbers of ballots to audit, setting this
+   * object's `my_optimistic_samples_to_audit` and
+   * `my_estimates_samples_to_audit` fields.
    */
   private void recalculateSamplesToAudit() {
     if (my_optimistic_recalculate_needed) {
@@ -450,25 +524,12 @@ public class ComparisonAudit implements PersistentEntity {
 
     if (my_one_vote_over_count + my_two_vote_over_count == 0) {
       my_estimated_samples_to_audit = my_optimistic_samples_to_audit;
-    } else {
-      // compute the "fudge factor" for the estimate
-      // FIXME extract-fn:
-      // fudge_factor = ComparisonAuditController.scalingFactor(auditedSamples(), overstatements());
-      final BigDecimal audited_samples = auditedSamples();
-      final BigDecimal overstatements = overstatements();
-      final BigDecimal fudge_factor;
-
-      if (audited_samples.equals(BigDecimal.ZERO)) {
-        fudge_factor = BigDecimal.ONE;
-      } else {
-        fudge_factor =
-          BigDecimal.ONE.add(overstatements.divide(audited_samples, MathContext.DECIMAL128));
-      }
-      // extract-fn
-
-      final BigDecimal estimated =
-        BigDecimal.valueOf(my_optimistic_samples_to_audit).multiply(fudge_factor);
-      my_estimated_samples_to_audit = estimated.setScale(0, RoundingMode.CEILING).intValue();
+    } else {;
+      my_estimated_samples_to_audit =
+        BigDecimal.valueOf(my_optimistic_samples_to_audit)
+        .multiply(scalingFactor())
+        .setScale(0, RoundingMode.CEILING)
+        .intValue();
     }
     my_estimated_recalculate_needed = false;
   }
@@ -554,6 +615,14 @@ public class ComparisonAudit implements PersistentEntity {
   public int disagreementCount() {
     return my_disagreement_count;
   }
+
+  /** was the given cvrid selected for this contest? **/
+  public boolean isCovering(Long cvrId) {
+    // if this is an opportunistic audit, this will be empty
+    return contestResult().getContestCVRIds().contains(cvrId);
+  }
+
+
 
   /**
    * Records the specified discrepancy (the valid range is -2 .. 2: -2 and -1 are
@@ -735,6 +804,10 @@ public class ComparisonAudit implements PersistentEntity {
   public OptionalInt computeDiscrepancy(final CastVoteRecord cvr,
                                         final CastVoteRecord auditedCVR) {
     OptionalInt result = OptionalInt.empty();
+
+    if (!isCovering(cvr.id())) {
+      return result;
+    }
 
     // FIXME this needs to get this stuff from the ContestResult
     // - a CastVoteRecord belongs to a county.
@@ -932,5 +1005,14 @@ public class ComparisonAudit implements PersistentEntity {
     }
 
     return result;
+  }
+
+  public String toString() {
+    return  String.format("[ComparisonAudit %s: auditedSampleCount=%d, rands=%s, status=%s, reason=%s]",
+                          this.contestResult().getContestName(),
+                          this.getAuditedSampleCount(),
+                          this.contestResult().getContestRands(),
+                          my_audit_status,
+                          this.auditReason());
   }
 }

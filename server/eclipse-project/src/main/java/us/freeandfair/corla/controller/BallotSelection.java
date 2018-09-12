@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -36,16 +37,31 @@ public final class BallotSelection {
   /**
    * create a random list of numbers and divide them into the appropriate
    * counties
+   * FIXME: setSegments on contestResult for now
    **/
-  public static Map<Long,List<Integer>> segmentsForContest(final ContestResult contestResult,
-                                                           final String seed,
-                                                           final Integer minIndex,
-                                                           final Integer maxIndex) {
+  public static ContestResult segmentsForContest(final ContestResult contestResult,
+                                                 final String seed,
+                                                 final Integer minIndex,
+                                                 final Integer maxIndex) {
     final int globalTotal = ballotsCast(contestResult.countyIDs()).intValue();
     final PseudoRandomNumberGenerator gen =
       new PseudoRandomNumberGenerator(seed, true, 1, globalTotal);
 
     final List<Integer> globalRands = gen.getRandomNumbers(minIndex, maxIndex);
+
+    Map<Long,List<Integer>> segments = contestCVRs(globalRands, contestResult.countyIDs());
+    // order by countyID, but it doesn't really matter, because we only use this to check contains
+    List<Integer> tempCvrIds = segments.values().stream()
+      // flatten
+      .collect(ArrayList::new, ArrayList::addAll, ArrayList::addAll);
+
+    List<Long> cvrIds = tempCvrIds.stream()
+      .map(Long::valueOf)
+      .collect(Collectors.toList());
+
+    contestResult.setContestRands(globalRands);
+    contestResult.setContestCVRIds(cvrIds);
+    contestResult.setSegments(segments);
 
     LOGGER.info(String.format("Building segments for contest:"
                               + " [contestResult=%s, seed=%s, globalTotal=%d,"
@@ -53,7 +69,7 @@ public final class BallotSelection {
                               contestResult, seed, globalTotal,
                               minIndex, maxIndex, globalRands.size()));
 
-    return contestCVRs(globalRands, contestResult.countyIDs());
+    return contestResult;
   }
 
   /**

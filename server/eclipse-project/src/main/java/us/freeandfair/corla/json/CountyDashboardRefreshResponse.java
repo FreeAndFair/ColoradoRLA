@@ -339,8 +339,10 @@ public class CountyDashboardRefreshResponse {
                                               contests,
                                               contests_under_audit,
                                               the_dashboard.auditTimestamp(),
+                                              // FIXME the estimates and optimistc numbers are wrong.
                                               the_dashboard.estimatedSamplesToAudit(),
                                               the_dashboard.optimisticSamplesToAudit(),
+
                                               the_dashboard.ballotsRemainingInCurrentRound(),
                                               the_dashboard.ballotsInManifest(),
                                               the_dashboard.cvrsImported(),

@@ -58,8 +58,8 @@ public final class DatabaseResetQueries {
         "county_contest_vote_total",
         "contest_vote_total",
         // FIXME these might not exist when we get to a PR state.
-        // "comparison_audit_discrepancy",
-        // "comparison_audit_disagreement",
+        "contest_comparison_audit_discrepancy",
+        "contest_comparison_audit_disagreement",
         "counties_to_comparison_audits",
         "comparison_audit",
         "county_contest_comparison_audit_discrepancy",
