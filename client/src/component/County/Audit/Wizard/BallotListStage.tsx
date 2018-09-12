@@ -6,6 +6,7 @@ import downloadCvrsToAuditCsv from 'corla/action/county/downloadCvrsToAuditCsv';
 
 
 interface BallotListStageProps {
+    auditBoardIndex: number;
     countyInfo: CountyInfo;
     countyState: County.AppState;
     cvrsToAudit: JSON.CVR[];
@@ -13,7 +14,11 @@ interface BallotListStageProps {
 }
 
 const BallotListStage = (props: BallotListStageProps) => {
-    const { countyInfo, countyState, cvrsToAudit, nextStage } = props;
+    const { auditBoardIndex,
+            countyInfo,
+            countyState,
+            cvrsToAudit,
+            nextStage, } = props;
 
     const roundNumber = countyState.currentRound!.number;
 
@@ -26,12 +31,15 @@ const BallotListStage = (props: BallotListStageProps) => {
 
         return (
             <tr key={ cvr.imprinted_id }>
+                <td>{ cvr.storage_location }</td>
                 <td>{ cvr.scanner_id }</td>
                 <td>{ cvr.batch_id }</td>
                 <td>{ cvr.record_id }</td>
-                <td>{ cvr.storage_location }</td>
                 <td>{ cvr.ballot_type }</td>
                 <td>{ audited }</td>
+                <td>{ typeof cvr.audit_board_index == "number"
+                      ? `${cvr.audit_board_index + 1}`
+                      : '' }</td>
             </tr>
         );
     });
@@ -51,7 +59,7 @@ const BallotListStage = (props: BallotListStageProps) => {
 
     return (
         <div className='rla-page'>
-            <h2>Ballot Cards to Audit</h2>
+            <h2>Audit Board { `${auditBoardIndex + 1 }` }: Ballot Cards to Audit</h2>
             <div className='pt-card'>
                     <div>
                         The Secretary of State has established the following risk limit(s) for
@@ -63,17 +71,18 @@ const BallotListStage = (props: BallotListStageProps) => {
             </div>
             <div className='pt-card'>
                 The Secretary of State has randomly selected { cvrsToAudit.length } ballot cards
-                for the { countyInfo.name } County Audit Board to examine in Round
-                <span> { roundNumber } </span> to satisfy the risk limit(s) for the audited contest(s).
+                for the { countyInfo.name } County Audit Board(s) to examine in Round
+                <span>{ ' ' + roundNumber }</span> to satisfy the risk limit(s) for the audited contest(s).
             </div>
             <div className='pt-card'>
-                The Audit Board must locate and retrieve, or observe a county staff member
+                The Audit Board(s) must locate and retrieve, or observe a county staff member
                 locate and retrieve, the following randomly selected ballot cards for the initial
                 round of this risk-limiting audit:
             </div>
             <div className='pt-card'>
-                Audit Board: Click Start audit to begin reporting the votes you observe on each
-                of the above ballot cards.
+                Audit Board { `${auditBoardIndex + 1 }` }: Click Start audit to
+                begin reporting the votes you observe on each of the below
+                ballot cards that have been assigned to you.
             </div>
             <button
                 className='pt-button pt-intent-primary'
@@ -88,12 +97,13 @@ const BallotListStage = (props: BallotListStageProps) => {
                     <table className='pt-table pt-bordered pt-condensed'>
                         <thead>
                             <tr>
+                                <th>Storage Bin</th>
                                 <th>Scanner #</th>
                                 <th>Batch #</th>
                                 <th>Ballot Position #</th>
-                                <th>Storage Bin</th>
                                 <th>Ballot Type</th>
                                 <th>Audited</th>
+                                <th>Audit board</th>
                             </tr>
                         </thead>
                         <tbody>

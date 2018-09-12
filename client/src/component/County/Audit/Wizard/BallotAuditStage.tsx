@@ -67,18 +67,18 @@ const AuditInstructions = (props: InstructionsProps) => {
                         <table className='pt-table pt-bordered pt-condensed'>
                             <thead>
                                 <tr>
+                                    <th>Storage Bin</th>
                                     <th>Scanner #</th>
                                     <th>Batch #</th>
                                     <th>Ballot Position #</th>
-                                    <th>Storage Bin</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
+                                    <td>{ storageBin }</td>
                                     <td>{ currentBallot.scannerId }</td>
                                     <td>{ currentBallot.batchId }</td>
                                     <td>{ currentBallot.recordId }</td>
-                                    <td>{ storageBin }</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -260,6 +260,7 @@ const BallotAuditForm = (props: AuditFormProps) => {
 };
 
 interface StageProps {
+    auditBoardIndex: number;
     countyState: County.AppState;
     currentBallot: County.CurrentBallot;
     currentBallotNumber: number;
@@ -270,6 +271,7 @@ interface StageProps {
 
 const BallotAuditStage = (props: StageProps) => {
     const {
+        auditBoardIndex,
         countyState,
         currentBallot,
         currentBallotNumber,
@@ -288,7 +290,7 @@ const BallotAuditStage = (props: StageProps) => {
 
     return (
         <div className='rla-page'>
-            <h2>Ballot Card Verification</h2>
+            <h2>Audit Board { `${auditBoardIndex + 1}` }: Ballot Card Verification</h2>
             <AuditInstructions
                 ballotNotFound={ notFound }
                 countyState={ countyState }

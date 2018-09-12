@@ -13,6 +13,7 @@ package us.freeandfair.corla.endpoint;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.OptionalInt;
 
 import javax.persistence.PersistenceException;
@@ -27,6 +28,7 @@ import us.freeandfair.corla.json.CVRToAuditResponse;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
+import us.freeandfair.corla.model.Round;
 import us.freeandfair.corla.persistence.Persistence;
 
 /**
@@ -212,6 +214,33 @@ public class CVRToAuditList extends AbstractEndpoint {
 
       response_list.addAll(BallotSelection.toResponseList(cvr_to_audit_list));
       response_list.sort(null);
+
+      // Add audit board information if the round is present
+      if (round.isPresent()) {
+        final Round roundObject = cdb.rounds().get(round.getAsInt() - 1);
+
+        final List<Map<String, Integer>> bsa =
+          roundObject.ballotSequenceAssignment();
+
+        if (bsa != null) {
+          // Walk the sequence assignments getting the audit boards' index and
+          // count values. Use that information to set the audit board index for
+          // each response row.
+          for (int i = 0; i < bsa.size(); i++) {
+            final Map<String, Integer> m = bsa.get(i);
+
+            final Integer boardIndex = m.get("index");
+            final Integer boardCount = m.get("count");
+
+            for (int j = boardIndex; j < boardIndex + boardCount; j++) {
+              // TODO: Will this always agree with the round information?
+              final CVRToAuditResponse row = response_list.get(j);
+              row.setAuditBoardIndex(i);
+            }
+          }
+        }
+      }
+
       okJSON(the_response, Main.GSON.toJson(response_list));
     } catch (final PersistenceException e) {
       serverError(the_response, "could not generate cvr list");

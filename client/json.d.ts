@@ -88,6 +88,7 @@ declare namespace JSON {
 
     interface CVR {
         audited?: boolean;
+        audit_board_index?: number;
         ballot_type: string;
         batch_id: number;
         contest_info: JSON.ContestInfo[];

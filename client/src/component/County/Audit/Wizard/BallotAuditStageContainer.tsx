@@ -11,6 +11,7 @@ import currentBallotNumber from 'corla/selector/county/currentBallotNumber';
 
 
 interface ContainerProps {
+    auditBoardIndex: number;
     countyState: County.AppState;
     currentBallot: County.CurrentBallot;
     currentBallotNumber: number;
@@ -33,6 +34,7 @@ function select(countyState: County.AppState) {
     const { currentBallot } = countyState;
 
     return {
+        auditBoardIndex: countyState.auditBoardIndex,
         countyState,
         currentBallot,
         currentBallotNumber: currentBallotNumber(countyState),
