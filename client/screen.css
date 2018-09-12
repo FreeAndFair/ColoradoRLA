@@ -239,6 +239,8 @@ th.rla-county-contest-info {
 
 .contest-info {
     margin-bottom: 20px;
+    border-bottom: solid 1px #ddd;
+    padding-bottom: 20px;
 }
 
 .contest-name {
@@ -321,21 +323,48 @@ th.rla-county-contest-info {
     font-size: 16px;
     padding: 0;
     line-height: 1.3;
+    margin-bottom: 20px;
 }
 
 .current-ballot-stats {
     list-style-type: none;
-    line-height: 2;
+    line-height: 1.7;
     padding: 0;
     margin-bottom: 20px;
 }
 
+.main-col-instructions {
+    margin-bottom: 20px;
+}
 
+.comment-box .pt-editable-content {
+    color: #666;
+}
 
+.comment-box {
+    cursor: pointer;
+}
 
+.comment-box-label {
+    display: flex;
+}
 
-/* ------------------------------ */
+.comment-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    fill: #666;
+}
 
+.comment-box-field {
+    flex-basis: 100%;
+}
+
+/* accordion ------------------------------ */
+
+.sidebar-accordion {
+    border-bottom: solid 1px #eee;
+}
 
 .accordion-item{
     display: none;
@@ -347,6 +376,8 @@ th.rla-county-contest-info {
     flex-direction: row-reverse;
     justify-content: space-between;
     align-items: center;
+    border-top: solid 1px #eee;
+    padding: 5px 10px 5px 5px;
 }
 
 .accordion-item-label::before {

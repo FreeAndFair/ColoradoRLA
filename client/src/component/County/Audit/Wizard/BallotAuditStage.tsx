@@ -6,6 +6,7 @@ import { Checkbox, EditableText, MenuDivider } from '@blueprintjs/core';
 
 import BackButton from './BackButton';
 import WaitingForNextBallot from './WaitingForNextBallot';
+import CommentIcon from '../../../CommentIcon';
 
 import ballotNotFound from 'corla/action/county/ballotNotFound';
 import countyFetchCvr from 'corla/action/county/fetchCvr';
@@ -145,10 +146,10 @@ const ContestComments = (props: CommentsProps) => {
     const { comments, onChange } = props;
 
     return (
-        <div className=''>
-            <label>
-                Comments:
-                <EditableText multiline value={ comments || '' } onChange={ onChange } />
+        <div className='comment-box'>
+            <label className='comment-box-label'>
+                <CommentIcon />
+                <EditableText multiline value={ comments || '' } onChange={ onChange } placeholder="Add comment" className='comment-field'/>
             </label>
         </div>
     );
@@ -335,6 +336,16 @@ const BallotAuditStage = (props: StageProps) => {
                     </div>
 
                     <div className='col2'>
+                        <div className='main-col-instructions'>
+                            <div className='not-found-header'>For each ballot contest:</div>
+                            <p>Select exactly the same voting choices as the voter marked on the paper ballot you are examining.</p>
+        
+                            <p>Example 1: If the voter marked three candidates on their ballot in this contest, select the exact
+                                same three candidates below.</p>
+                                
+                            <p>Example 2: If the voter did not vote for any of the candidates or choices in this contest, select
+                            “Blank vote – no mark”</p>
+                        </div>
                         <BallotAuditForm
                             countyState={ countyState }
                             currentBallot={ currentBallot }
