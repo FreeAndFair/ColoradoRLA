@@ -62,7 +62,7 @@ const AuditInstructions = (props: InstructionsProps) => {
             <div className='current-ballot-info'>
                 <h3 className='sidebar-heading'>Current ballot:</h3>
                 <ul className='current-ballot-stats'>
-                    <li>Scanner #{ currentBallot.scannerId }</li>
+                    <li>Tabulator #{ currentBallot.scannerId }</li>
                     <li>Batch #{ currentBallot.batchId }</li>
                     <li>Ballot Position #{ currentBallot.recordId }</li>
                     <li>Storage Bin { storageBin }</li>
@@ -192,7 +192,7 @@ const BallotContestMarkForm = (props: MarkFormProps) => {
                     <Checkbox
                         checked={ !!contestMarks.noConsensus }
                         onChange={ updateConsensus }>
-                        <span className='choice-name no-choice'>No consensus</span></Checkbox>
+                        <span className='choice-name no-choice'>No audit board consensus</span></Checkbox>
                 </div>
             </div>
 
@@ -298,37 +298,59 @@ const BallotAuditStage = (props: StageProps) => {
                             <h3 className='sidebar-heading'>How to match selections with ballot</h3>
 
                             <div className= 'sidebar-accordion'>
-                                <input type='checkbox' id='item1' name='accordion1' className='accordion-item'/>
+                                <input type='checkbox' id='item1' name='accordion' className='accordion-item'/>
                                 <label htmlFor='item1' className='accordion-item-label'>Overvote</label>
                                 <div id='content1' className='accordion-item-content'>
                                     <p>
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce eleifend id leo quis rutrum. Curabitur condimentum augue et dolor sodales, vel iaculis lacus feugiat.
+                                        Even if you think that the voter voted for too many 
+                                        choices, select all of the choices exactly as they 
+                                        appear on the ballot in the RLA Software. If you need 
+                                        more specific guidance, consult the Voter Intent Guide.
                                     </p>
                                 </div>
 
-                                <input type='checkbox' id='item2' name='accordion1' className='accordion-item' />
+                                <input type='checkbox' id='item2' name='accordion' className='accordion-item' />
                                 <label htmlFor='item2' className='accordion-item-label'>Undervote</label>
                                 <div id='content2' className= 'accordion-item-content'>
                                     <p>
-                                        Cras pretium blandit nunc, maximus convallis elit eleifend id. Nullam non posuere eros, sit amet iaculis leo. Morbi tincidunt nibh quis magna dapibus, sit amet imperdiet massa blandit. Maecenas sapien erat, efficitur id est sed, facilisis malesuada magna. Vivamus interdum non urna vel placerat. Duis sed nunc nec mi posuere tempor at sit amet dui. Curabitur faucibus sapien a massa vestibulum, in bibendum orci pharetra.
+                                        Even if you think that the voter did not select enough 
+                                        choices, select all of the choices exactly as they appear 
+                                        on the ballot. If the voter did not select any choice, mark 
+                                        the “Blank vote – no mark” button. If you need more specific guidance, consult the Voter Intent Guide. 
                                     </p>
                                 </div>
 
-                                <input type='checkbox' id='item3' name='accordion1' className='accordion-item' />
-                                <label htmlFor='item3' className='accordion-item-label'>Write-in</label>
+                                <input type='checkbox' id='item3' name='accordion' className='accordion-item' />
+                                <label htmlFor='item3' className='accordion-item-label'>Blank vote</label>
                                 <div id='content3' className='accordion-item-content'>
                                     <p>
-                                        If the voter wrote in a candidate on the “Write-in” line, select the candidate the voter wrote in in the RLA software. 
-                                        If the candidate does not appear in the RLA software, make no selection and 
-                                        add a comment with what is written on the Write-in line. If you need more specific guidance, consult the Voter Intent Guide.
+                                        If you examine a paper ballot and determine 
+                                        the voter did not intend to vote for any choice in a ballot contest, 
+                                        select “Blank vote – no mark”
                                     </p>
                                 </div>
 
-                                <input type='checkbox' id='item4' name='accordion1' className='accordion-item' />
-                                <label htmlFor='item4' className='accordion-item-label'>We can't agree</label>
-                                <div id='content4' className= 'accordion-item-content'>
+                                <input type='checkbox' id='item4' name='accordion' className='accordion-item' />
+                                <label htmlFor='item4' className='accordion-item-label'>Write-in</label>
+                                <div id='content4' className='accordion-item-content'>
                                     <p>
-                                        Cras pretium blandit nunc, maximus convallis elit eleifend id. Nullam non posuere eros, sit amet iaculis leo. Morbi tincidunt nibh quis magna dapibus, sit amet imperdiet massa blandit. Maecenas sapien erat, efficitur id est sed, facilisis malesuada magna. Vivamus interdum non urna vel placerat. Duis sed nunc nec mi posuere tempor at sit amet dui. Curabitur faucibus sapien a massa vestibulum, in bibendum orci pharetra.
+                                        If the voter wrote in a candidate on the “Write-in” line, 
+                                        select the candidate the voter wrote in in the RLA software. 
+                                        If the candidate does not appear in the RLA software, make no selection and 
+                                        add a comment with what is written on the Write-in line. If you need more 
+                                        specific guidance, consult the Voter Intent Guide. 
+                                    </p>
+                                </div>
+
+                                <input type='checkbox' id='item5' name='accordion' className='accordion-item' />
+                                <label htmlFor='item5' className='accordion-item-label'>We can't agree</label>
+                                <div id='content5' className= 'accordion-item-content'>
+                                    <p>
+                                        If the members of the audit board can’t agree on what the voter intended 
+                                        when they marked their ballot, select the “No consensus” button for that contest. 
+                                        Before moving on, take a break and then try again to reach a consensus using the 
+                                        Voter Intent Guide. If you select “No consensus” you may have to audit more 
+                                        ballots later. 
                                     </p>
                                 </div>
                             </div>

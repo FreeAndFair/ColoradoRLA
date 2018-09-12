@@ -415,10 +415,12 @@ th.rla-county-contest-info {
     padding-bottom: 20px;
 }
 
+/* shouldn't need this */
 #item1:checked ~ #content1,
 #item2:checked ~ #content2,
 #item3:checked ~ #content3,
-#item4:checked ~ #content4 {
+#item4:checked ~ #content4,
+#item5:checked ~ #content5 {
     max-height: 350px;
     transform: scaleY(1);
 }
