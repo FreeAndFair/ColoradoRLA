@@ -302,7 +302,6 @@ th.rla-county-contest-info {
 .no-choice {
     background-color: #e8e8e8;
     border: solid 1px #ccc;
-    min-height: unset;
 }
 
 .no-choice:hover {

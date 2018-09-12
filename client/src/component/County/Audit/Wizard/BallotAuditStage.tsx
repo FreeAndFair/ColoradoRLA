@@ -194,6 +194,14 @@ const BallotContestMarkForm = (props: MarkFormProps) => {
                         onChange={ updateConsensus }>
                         <span className='choice-name no-choice'>No audit board consensus</span></Checkbox>
                 </div>
+
+                {/* duplicate checkbox as "no mark" button placeholder */}
+                <div className='contest-choice-selection'>
+                    <Checkbox
+                        checked={ !!contestMarks.noConsensus }
+                        onChange={ updateConsensus }>
+                        <span className='choice-name no-choice'>Blank vote - no mark</span></Checkbox>
+                </div>
             </div>
 
             <ContestComments comments={ contestMarks.comments } onChange={ updateComments } />
