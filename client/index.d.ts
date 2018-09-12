@@ -56,6 +56,10 @@ interface AuditBoardStatus {
     signIn: Date;
 }
 
+interface AuditBoards {
+    [index: number]: AuditBoardStatus;
+}
+
 interface Elector {
     firstName: string;
     lastName: string;

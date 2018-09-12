@@ -12,7 +12,6 @@ import Main from './Main';
 
 
 interface PageProps {
-    auditBoardSignedIn: boolean;
     auditComplete: boolean;
     auditStarted: boolean;
     canAudit: boolean;
@@ -23,12 +22,10 @@ interface PageProps {
     countyState: County.AppState;
     currentRoundNumber: number;
     history: History;
-    startAudit: OnClick;
 }
 
 const CountyDashboardPage = (props: PageProps) => {
     const {
-        auditBoardSignedIn,
         auditComplete,
         auditStarted,
         canAudit,
@@ -39,7 +36,6 @@ const CountyDashboardPage = (props: PageProps) => {
         countyState,
         currentRoundNumber,
         history,
-        startAudit,
     } = props;
 
     const startAuditButtonDisabled = !canAudit || auditComplete;
@@ -52,15 +48,13 @@ const CountyDashboardPage = (props: PageProps) => {
                 <div>
                     <Main auditComplete={ auditComplete }
                           auditStarted={ auditStarted }
-                          auditBoardSignedIn={ auditBoardSignedIn }
                           canRenderReport={ canRenderReport }
                           countyState={ countyState }
                           currentRoundNumber={ currentRoundNumber }
                           history={ history }
                           startAuditButtonDisabled={ startAuditButtonDisabled }
                           name={ countyInfo.name }
-                          auditBoardButtonDisabled={ auditBoardButtonDisabled }
-                          startAudit={ startAudit } />
+                          auditBoardButtonDisabled={ auditBoardButtonDisabled } />
                     <Info info={ countyInfo }
                           contests={ contests }
                           countyState={ countyState }

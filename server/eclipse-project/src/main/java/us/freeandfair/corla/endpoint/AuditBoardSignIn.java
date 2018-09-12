@@ -113,9 +113,9 @@ public class AuditBoardSignIn extends AbstractAuditBoardDashboardEndpoint {
             Main.LOGGER.error("could not get county dashboard");
             serverError(the_response, "could not sign in audit board");
           } else {
+            this.asmEvent.set(this.nextEvent(cdb));
             cdb.signInAuditBoard(index, parsed_audit_board);
             Persistence.saveOrUpdate(cdb);
-            this.asmEvent.set(this.nextEvent(cdb));
             ok(the_response,
                String.format("audit board #%d for county %d signed in: %s",
                    index, county.id(), parsed_audit_board));
@@ -137,12 +137,13 @@ public class AuditBoardSignIn extends AbstractAuditBoardDashboardEndpoint {
   /**
    * Computes an ASM event to emit when the audit board is signed in.
    *
-   * Returns null if no ASM event should be emitted.
+   * Currently only returns SIGN_IN_AUDIT_BOARD_EVENT when all audit boards are
+   * marked signed out.
    *
    * @param cdb the county dashboard
    */
   private ASMEvent nextEvent(final CountyDashboard cdb) {
-    if (cdb.areAuditBoardsSignedIn()) {
+    if (cdb.areAuditBoardsSignedOut()) {
       return SIGN_IN_AUDIT_BOARD_EVENT;
     }
 

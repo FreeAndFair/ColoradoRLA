@@ -1,3 +1,5 @@
+import * as _ from 'lodash';
+
 import * as React from 'react';
 
 import { History } from 'history';
@@ -14,37 +16,49 @@ import FileDownloadButtons from 'corla/component/FileDownloadButtons';
 
 
 interface AuditBoardButtonsProps {
+    auditBoardCount: number;
+    auditBoards: object;
     history: History;
     isShown: boolean;
-    numberOfBoards: number;
 }
 
 const AuditBoardButtons = (props: AuditBoardButtonsProps) => {
-    const { history, isShown, numberOfBoards } = props;
+    const { auditBoardCount, auditBoards, history, isShown } = props;
 
     if (!isShown) {
         return null;
     }
 
-    const handleButtonClick = (e: any, boardIndex: number) => {
+    const handleButtonClick = (e: any, boardIndex: number, hasBoard: boolean) => {
         e.preventDefault();
 
-        history.push('/county/board/' + boardIndex);
+        let canRedirect = true;
+
+        if (hasBoard) {
+          const message = `Audit board ${boardIndex + 1} is already signed in.` +
+                          ' Are you sure you want to proceed?';
+          canRedirect = confirm(message);
+        }
+
+        if (canRedirect) {
+          history.push('/county/board/' + boardIndex);
+        }
     };
 
-    const boardButton = (boardIndex: number) => {
+    const boardButton = (boardIndex: number, hasBoard: boolean) => {
+        const buttonIntent = hasBoard ? 'pt-intent-warning' : 'pt-intent-primary';
         return (
-            <button className='pt-button pt-intent-primary pt-icon-people'
+            <button className={ 'pt-button pt-icon-people ' + buttonIntent }
                     key={ boardIndex.toString() }
-                    onClick={ (e: any) => handleButtonClick(e, boardIndex) }>
+                    onClick={ (e: any) => handleButtonClick(e, boardIndex, hasBoard) }>
                 Audit Board { boardIndex + 1 }
             </button>
         );
     };
 
     const buttons = [];
-    for (let i = 0; i < numberOfBoards; i++) {
-        buttons.push(boardButton(i));
+    for (let i = 0; i < auditBoardCount; i++) {
+        buttons.push(boardButton(i, _.has(auditBoards, i)));
     }
 
     return (
@@ -57,7 +71,6 @@ const AuditBoardButtons = (props: AuditBoardButtonsProps) => {
 
 interface MainProps {
     auditBoardButtonDisabled: boolean;
-    auditBoardSignedIn: boolean;
     auditComplete: boolean;
     auditStarted: boolean;
     canRenderReport: boolean;
@@ -65,14 +78,12 @@ interface MainProps {
     currentRoundNumber: number;
     history: History;
     name: string;
-    startAudit: OnClick;
     startAuditButtonDisabled: boolean;
 }
 
 const Main = (props: MainProps) => {
     const {
         auditBoardButtonDisabled,
-        auditBoardSignedIn,
         auditComplete,
         auditStarted,
         canRenderReport,
@@ -80,9 +91,10 @@ const Main = (props: MainProps) => {
         currentRoundNumber,
         history,
         name,
-        startAudit,
         startAuditButtonDisabled,
     } = props;
+
+    const auditBoardSignedIn = !_.isEmpty(countyState.auditBoards);
 
     let directions = 'Upload the ballot manifest and cast vote record (CVR) files. These need to be CSV files.'
                    + '\n\nAfter uploading the files wait for an email from the Department of State saying that you can'
@@ -155,9 +167,10 @@ const Main = (props: MainProps) => {
                                           numberOfBallotsToAudit={ countyState.ballotsRemainingInRound }
                                           isShown={ !auditBoardButtonDisabled }
                                           isEnabled={ !countyState.auditBoardCount } />
-                <AuditBoardButtons history={ history }
-                                   isShown={ countyState.auditBoardCount != null }
-                                   numberOfBoards={ countyState.auditBoardCount || 1 } />
+                <AuditBoardButtons auditBoardCount={ countyState.auditBoardCount || 1 }
+                                   auditBoards={ countyState.auditBoards }
+                                   history={ history }
+                                   isShown={ countyState.auditBoardCount != null } />
             </div>
         </div>
     );

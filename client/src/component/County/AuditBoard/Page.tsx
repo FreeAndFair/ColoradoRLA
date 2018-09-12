@@ -10,7 +10,6 @@ import isValidAuditBoard from 'corla/selector/county/isValidAuditBoard';
 
 
 interface PageProps {
-    auditBoard: AuditBoard;
     auditBoardIndex: number;
     countyName: string;
 }
@@ -37,14 +36,9 @@ class AuditBoardSignInPage extends React.Component<PageProps, PageState> {
 
     public render() {
         const {
-          auditBoard,
           auditBoardIndex,
           countyName,
         } = this.props;
-
-        if (!auditBoard) {
-            return <div />;
-        }
 
         const submit = () => {
           auditBoardSignIn(auditBoardIndex, this.state.form);

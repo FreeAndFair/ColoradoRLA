@@ -37,6 +37,11 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
 @SuppressWarnings({"PMD.AtLeastOneConstructor"})
 public class AuditBoardSignOut extends AbstractAuditBoardDashboardEndpoint {
   /**
+   * The event to return for this endpoint.
+   */
+  private final ThreadLocal<ASMEvent> asmEvent = new ThreadLocal<ASMEvent>();
+
+  /**
    * {@inheritDoc}
    */
   @Override
@@ -64,7 +69,7 @@ public class AuditBoardSignOut extends AbstractAuditBoardDashboardEndpoint {
    */
   @Override
   protected ASMEvent endpointEvent() {
-    return SIGN_OUT_AUDIT_BOARD_EVENT;
+    return this.asmEvent.get();
   }
 
   /**
@@ -91,8 +96,9 @@ public class AuditBoardSignOut extends AbstractAuditBoardDashboardEndpoint {
         } else {
           cdb.signOutAuditBoard(index);
           Persistence.saveOrUpdate(cdb);
+          this.asmEvent.set(this.nextEvent(cdb));
           ok(the_response,
-             String.format("audit board %d for county %d signed out",
+             String.format("audit board #%d for county %d signed out",
                            index, county.id()));
         }
       }
@@ -103,5 +109,20 @@ public class AuditBoardSignOut extends AbstractAuditBoardDashboardEndpoint {
     }
 
     return my_endpoint_result.get();
+  }
+
+  /**
+   * Computes the ASM event to emit when the audit board signs out.
+   *
+   * Returns null if no ASM event should be emitted.
+   *
+   * @param cdb the county dashboard
+   */
+  private ASMEvent nextEvent(final CountyDashboard cdb) {
+    if (cdb.areAuditBoardsSignedOut()) {
+      return SIGN_OUT_AUDIT_BOARD_EVENT;
+    }
+
+    return null;
   }
 }

@@ -16,9 +16,9 @@ import hasAuditedAnyBallotSelector from 'corla/selector/county/hasAuditedAnyBall
 
 
 interface ContainerProps {
-    auditBoard: AuditBoard;
-    auditBoardSignedIn: boolean;
+    auditBoards: AuditBoards;
     countyName: string;
+    countyState: County.AppState;
     hasAuditedAnyBallot: boolean;
     history: History;
     match: any;
@@ -27,37 +27,43 @@ interface ContainerProps {
 class AuditBoardSignInContainer extends React.Component<ContainerProps> {
     public render() {
         const {
-            auditBoard,
-            auditBoardSignedIn,
+            auditBoards,
             countyName,
+            countyState,
             hasAuditedAnyBallot,
             history,
             match,
         } = this.props;
 
+        const boardIndex = parseInt(match.params.id, 10);
+
+        const auditBoardSignedIn = auditBoardSignedInSelector(
+            boardIndex,
+            countyState
+        );
+
         if (auditBoardSignedIn) {
             const auditBoardStartOrContinue = () =>
-                history.push('/county/audit');
+                history.push('/county/audit/' + boardIndex);
 
             return (
-                <SignedInPage auditBoard={ auditBoard }
-                              auditBoardIndex={ parseInt(match.params.id, 10) }
+                <SignedInPage auditBoardStatus={ auditBoards[boardIndex] }
+                              auditBoardIndex={ boardIndex }
                               auditBoardStartOrContinue={ auditBoardStartOrContinue }
                               countyName={ countyName }
                               hasAuditedAnyBallot={ hasAuditedAnyBallot } />
             );
         }
 
-        return <AuditBoardPage auditBoard={ auditBoard }
-                               auditBoardIndex={ parseInt(match.params.id, 10) }
+        return <AuditBoardPage auditBoardIndex={ boardIndex }
                                countyName={ countyName } />;
     }
 }
 
 interface SelectProps {
-    auditBoard: AuditBoard;
-    auditBoardSignedIn: boolean;
+    auditBoards: AuditBoards;
     countyName: string;
+    countyState: County.AppState;
     hasAuditedAnyBallot: boolean;
 }
 
@@ -66,9 +72,9 @@ function select(countyState: County.AppState): SelectProps {
     const countyName = countyInfo!.name || '';
 
     return {
-        auditBoard: countyState.auditBoard,
-        auditBoardSignedIn: auditBoardSignedInSelector(countyState),
+        auditBoards: countyState.auditBoards,
         countyName,
+        countyState,
         hasAuditedAnyBallot: hasAuditedAnyBallotSelector(countyState),
     };
 }

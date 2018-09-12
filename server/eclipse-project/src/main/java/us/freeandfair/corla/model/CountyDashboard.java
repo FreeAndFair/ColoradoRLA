@@ -475,6 +475,24 @@ public class CountyDashboard implements PersistentEntity {
   }
 
   /**
+   * Test if all audit boards are signed out.
+   *
+   * @return boolean
+   */
+  public boolean areAuditBoardsSignedOut() {
+    boolean result = true;
+
+    for (int i = 0; i < this.auditBoardCount(); i++) {
+      if (my_audit_boards.get(i) != null) {
+        result = false;
+        break;
+      }
+    }
+
+    return result;
+  }
+
+  /**
    * @return all the audit rounds.
    */
   public List<Round> rounds() {

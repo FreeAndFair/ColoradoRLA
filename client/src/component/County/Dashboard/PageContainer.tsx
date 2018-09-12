@@ -13,7 +13,6 @@ import CountyDashboardPage from './Page';
 import finishAudit from 'corla/action/county/finishAudit';
 
 import allRoundsCompleteSelector from 'corla/selector/county/allRoundsComplete';
-import auditBoardSignedInSelector from 'corla/selector/county/auditBoardSignedIn';
 import auditCompleteSelector from 'corla/selector/county/auditComplete';
 import auditStartedSelector from 'corla/selector/county/auditStarted';
 import canAuditSelector from 'corla/selector/county/canAudit';
@@ -25,7 +24,6 @@ import missedDeadlineSelector from 'corla/selector/county/missedDeadline';
 
 interface DashboardProps {
     allRoundsComplete: boolean;
-    auditBoardSignedIn: boolean;
     auditComplete: boolean;
     auditStarted: boolean;
     canAudit: boolean;
@@ -35,6 +33,7 @@ interface DashboardProps {
     countyState: County.AppState;
     currentRoundNumber: number;
     history: History;
+    match: any;
     missedDeadline: boolean;
 }
 
@@ -48,6 +47,7 @@ class CountyDashboardContainer extends React.Component<DashboardProps> {
             canSignIn,
             countyState,
             history,
+            match,
             missedDeadline,
         } = this.props;
 
@@ -63,8 +63,11 @@ class CountyDashboardContainer extends React.Component<DashboardProps> {
             return <div />;
         }
 
+        const boardIndex = parseInt(match.params.id, 10);
+
         const countyInfo = counties[countyState.id];
-        const startAudit = () => history.push('/county/audit');
+        const startAudit = () =>
+            history.push('/county/audit/' + boardIndex);
 
         const props = {
             allRoundsComplete,
@@ -87,7 +90,6 @@ function select(countyState: County.AppState) {
 
     return {
         allRoundsComplete: allRoundsCompleteSelector(countyState),
-        auditBoardSignedIn: auditBoardSignedInSelector(countyState),
         auditComplete: auditCompleteSelector(countyState),
         auditStarted: auditStartedSelector(countyState),
         canAudit: canAuditSelector(countyState),

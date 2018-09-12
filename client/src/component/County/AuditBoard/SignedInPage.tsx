@@ -6,7 +6,7 @@ import auditBoardSignOut from 'corla/action/county/auditBoardSignOut';
 
 
 interface PageProps {
-    auditBoard: AuditBoard;
+    auditBoardStatus: AuditBoardStatus;
     auditBoardIndex: number;
     auditBoardStartOrContinue: OnClick;
     countyName: string;
@@ -15,12 +15,14 @@ interface PageProps {
 
 const SignedInPage = (props: PageProps) => {
     const {
-        auditBoard,
+        auditBoardStatus,
         auditBoardIndex,
         auditBoardStartOrContinue,
         countyName,
         hasAuditedAnyBallot,
     } = props;
+
+    const members = auditBoardStatus.members;
 
     const startOrContinueText = hasAuditedAnyBallot ? 'Continue Audit' : 'Start Audit';
 
@@ -37,19 +39,19 @@ const SignedInPage = (props: PageProps) => {
             <div className='pt-card'>
                 <h4>Board Member 1:</h4>
                 <div>
-                    Name: { auditBoard[0].firstName } { auditBoard[0].lastName }
+                    Name: { members[0].firstName } { members[0].lastName }
                 </div>
                 <div>
-                    Political party: { auditBoard[0].party }
+                    Political party: { members[0].party }
                 </div>
             </div>
             <div className='pt-card'>
                 <h4>Board Member 2:</h4>
                 <div>
-                    Name: { auditBoard[1].firstName } { auditBoard[1].lastName }
+                    Name: { members[1].firstName } { members[1].lastName }
                 </div>
                 <div>
-                    Political party: { auditBoard[1].party }
+                    Political party: { members[1].party }
                 </div>
             </div>
             <div>
