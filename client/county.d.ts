@@ -10,6 +10,7 @@ declare namespace County {
         ballotManifest?: UploadedFile;
         ballotManifestCount?: number;
         ballotManifestHash?: string;
+        ballotSequenceAssignment?: object[];
         ballotsRemainingInRound?: number;
         ballotUnderAuditIds?: number[];
         contests?: Contest[];

@@ -8,6 +8,7 @@ import action from 'corla/action';
 import ballotNotFound from 'corla/action/county/ballotNotFound';
 
 import currentBallotNumber from 'corla/selector/county/currentBallotNumber';
+import totalBallotsForBoard from 'corla/selector/county/totalBallotsForBoard';
 
 
 interface ContainerProps {
@@ -17,6 +18,7 @@ interface ContainerProps {
     currentBallotNumber: number;
     nextStage: OnClick;
     prevStage: OnClick;
+    totalBallotsForBoard: number;
 }
 
 class BallotAuditStageContainer extends React.Component<ContainerProps> {
@@ -38,6 +40,7 @@ function select(countyState: County.AppState) {
         countyState,
         currentBallot,
         currentBallotNumber: currentBallotNumber(countyState),
+        totalBallotsForBoard: totalBallotsForBoard(countyState),
     };
 }
 

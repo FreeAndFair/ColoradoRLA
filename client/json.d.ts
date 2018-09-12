@@ -58,6 +58,7 @@ declare namespace JSON {
         ballot_manifest_count: number;
         ballot_manifest_file: any;
         ballot_under_audit_ids: number[];
+        ballot_sequence_assignment: object[];
         ballots_remaining_in_round: number;
         current_round: JSON.Round;
         cvr_export_count: number;

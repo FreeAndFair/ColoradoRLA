@@ -36,6 +36,7 @@ const BallotNotFoundForm = (props: NotFoundProps) => {
 
 interface InstructionsProps {
     ballotNotFound: OnClick;
+    totalBallotsForBoard: number;
     countyState: County.AppState;
     currentBallot: CVR;
     currentBallotNumber: number;
@@ -44,12 +45,12 @@ interface InstructionsProps {
 const AuditInstructions = (props: InstructionsProps) => {
     const {
         ballotNotFound,
+        totalBallotsForBoard,
         countyState,
         currentBallot,
         currentBallotNumber,
     } = props;
 
-    const { currentRound } = countyState;
     const isCurrentCvr = (cvr: JSON.CVR) => cvr.db_id === currentBallot.id;
     const fullCvr = _.find(countyState.cvrsToAudit, isCurrentCvr);
     const storageBin = fullCvr ? fullCvr.storage_location : '—';
@@ -58,7 +59,7 @@ const AuditInstructions = (props: InstructionsProps) => {
         <div className='pt-card'>
             <div className='pt-card'>
                 Use this page to report the voter markings on ballot card #{ currentBallotNumber },
-                out of { currentRound!.expectedCount } ballots that you must audit in this round.
+                out of { totalBallotsForBoard } ballots that you must audit in this round.
             </div>
             <div>
                 <div className='pt-card'>
@@ -266,6 +267,7 @@ interface StageProps {
     currentBallotNumber: number;
     nextStage: OnClick;
     prevStage: OnClick;
+    totalBallotsForBoard: number;
     updateBallotMarks: OnClick;
 }
 
@@ -277,6 +279,7 @@ const BallotAuditStage = (props: StageProps) => {
         currentBallotNumber,
         nextStage,
         prevStage,
+        totalBallotsForBoard,
         updateBallotMarks,
     } = props;
 
@@ -296,6 +299,7 @@ const BallotAuditStage = (props: StageProps) => {
                 countyState={ countyState }
                 currentBallot={ currentBallot }
                 currentBallotNumber={ currentBallotNumber }
+                totalBallotsForBoard={ totalBallotsForBoard }
             />
             <BallotAuditForm
                 countyState={ countyState }

@@ -156,6 +156,7 @@ export function parse(data: JSON.CountyDashboard, state: County.AppState) {
         ballotManifest: parseFile(data.ballot_manifest_file),
         ballotManifestCount: data.ballot_manifest_count,
         ballotUnderAuditIds: data.ballot_under_audit_ids,
+        ballotSequenceAssignment: data.ballot_sequence_assignment,
         ballotsRemainingInRound: data.ballots_remaining_in_round,
         contests: parseContests(data.contests, state),
         contestsUnderAudit: parseContestsUnderAudit(data.contests_under_audit, state),

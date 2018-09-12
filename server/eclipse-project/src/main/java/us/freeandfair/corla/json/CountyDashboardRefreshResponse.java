@@ -155,6 +155,11 @@ public class CountyDashboardRefreshResponse {
   private final Map<AuditSelection, Integer> my_disagreement_count;
 
   /**
+   * The current assignment of ballots to audit boards
+   */
+  private final List<Map<String, Integer>> my_ballot_sequence_assignment;
+
+  /**
    * The current ballots under audit, by audit board index.
    */
   private final List<Long> my_ballot_under_audit_ids;
@@ -245,6 +250,7 @@ public class CountyDashboardRefreshResponse {
                                            final Map<AuditSelection, Integer>
                                                the_disagreement_count,
                                            final List<Long> the_ballot_under_audit_ids,
+                                           final List<Map<String, Integer>> the_ballot_sequence_assignment,
                                            final Integer the_audited_prefix_length,
                                            final List<Round> the_rounds,
                                            final Round the_current_round,
@@ -270,6 +276,7 @@ public class CountyDashboardRefreshResponse {
     my_discrepancy_count = the_discrepancy_count;
     my_disagreement_count = the_disagreement_count;
     my_ballot_under_audit_ids = the_ballot_under_audit_ids;
+    my_ballot_sequence_assignment = the_ballot_sequence_assignment;
     my_audited_prefix_length = the_audited_prefix_length;
     my_rounds = the_rounds;
     my_current_round = the_current_round;
@@ -330,11 +337,13 @@ public class CountyDashboardRefreshResponse {
     // sanitized rounds
     
     final List<Round> rounds = new ArrayList<>();
+    List<Map<String, Integer>> ballotSequenceAssignment = null;
     for (final Round round : the_dashboard.rounds()) {
       rounds.add(round.withoutSequences());
     }
     Round current_round = the_dashboard.currentRound();
     if (current_round != null) {
+      ballotSequenceAssignment = current_round.ballotSequenceAssignment();
       current_round = current_round.withoutSequences();
     }
     
@@ -359,6 +368,7 @@ public class CountyDashboardRefreshResponse {
                                               the_dashboard.discrepancies(),
                                               the_dashboard.disagreements(),
                                               the_dashboard.cvrsUnderAudit(),
+                                              ballotSequenceAssignment,
                                               the_dashboard.auditedPrefixLength(),
                                               rounds,
                                               current_round,
@@ -424,6 +434,7 @@ public class CountyDashboardRefreshResponse {
                                               the_dashboard.ballotsAudited(),
                                               the_dashboard.discrepancies(),
                                               the_dashboard.disagreements(),
+                                              null,
                                               null,
                                               the_dashboard.auditedPrefixLength(),
                                               rounds,
