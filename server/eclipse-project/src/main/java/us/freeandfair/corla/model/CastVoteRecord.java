@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.persistence.Cacheable;
 import javax.persistence.CollectionTable;
@@ -35,12 +36,14 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.OrderColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
 import org.hibernate.annotations.Immutable;
 
 import us.freeandfair.corla.persistence.PersistentEntity;
+import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.util.NaturalOrderComparator;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
@@ -71,7 +74,7 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
 // restored when the class is unserialized, because we intentionally made it
 // transient so it wouldn't be. Since that's what "transient" means.
 @SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-public class CastVoteRecord implements PersistentEntity, Serializable {
+public class CastVoteRecord implements PersistentEntity, Serializable, Comparable<CastVoteRecord> {
   /**
    * The serialVersionUID.
    */
@@ -153,6 +156,12 @@ public class CastVoteRecord implements PersistentEntity, Serializable {
    */
   @Column(updatable = false, nullable = false)
   private String my_ballot_type;
+
+  public boolean isAudited() {
+    // this match is enforced in CVRAuditInfo's constructor
+    CVRAuditInfo cvrai = Persistence.getByID(my_id, CVRAuditInfo.class);
+    return cvrai != null;
+  }
 
   /**
    * The contest information in this cast vote record.
@@ -341,6 +350,12 @@ public class CastVoteRecord implements PersistentEntity, Serializable {
     return null;
   }
 
+  /**
+   * Get info about a CVR by way of a ContestResult, matching on contest
+   * name.
+   * @param cr
+   * @return maybe the first CVRContestInfo found, maybe nothing.
+   */
   public Optional<CVRContestInfo> contestInfoForContestResult(final ContestResult cr) {
     return my_contest_info.stream()
       .filter(x -> x.contest().name().equals(cr.getContestName()))
@@ -501,4 +516,32 @@ public class CastVoteRecord implements PersistentEntity, Serializable {
       return result;
     }
   }
+
+  /**
+   * Compares this object to another.
+   *
+   * The sorting happens by the triple (scannerID(), batchID(), recordID()) and
+   * will return a negative, positive, or 0-valued result if this should come
+   * before, after, or at the same point as the other object, respectively.
+   *
+   * @return int
+   */
+  @Override
+  public int compareTo(final CastVoteRecord other) {
+    final int scanner = this.scannerID() - other.scannerID();
+
+    if (scanner != 0) {
+      return scanner;
+    }
+
+    final int batch = NaturalOrderComparator.INSTANCE.compare(
+                                                              this.batchID(), other.batchID());
+
+    if (batch != 0) {
+      return batch;
+    }
+
+    return this.recordID() - other.recordID();
+  }
+
 }

@@ -169,7 +169,7 @@ public final class BallotManifestInfoQueries {
      Find the batch(bmi) that would hold the sequence number given.
    */
   public static Optional<BallotManifestInfo>
-      holdingSequenceNumber(final Long rand, final Long countyId) {
+      holdingSequencePosition(final Long rand, final Long countyId) {
     Set<BallotManifestInfo> result = null;
 
     try {
@@ -220,6 +220,9 @@ public final class BallotManifestInfoQueries {
    * Get the number of ballots for a given set of counties.
    */
   public static Long totalBallots(final Set<Long> countyIds) {
+    if (countyIds.isEmpty()) {
+      return 0L;
+    }
     final Session s = Persistence.currentSession();
     final Query q =
       s.createNativeQuery("with county_ballots as " +

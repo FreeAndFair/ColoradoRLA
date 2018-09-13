@@ -28,7 +28,6 @@ import java.util.Comparator;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Cacheable;
-import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -40,12 +39,15 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import us.freeandfair.corla.controller.BallotSelection;
 import us.freeandfair.corla.model.ImportStatus.ImportState;
 import us.freeandfair.corla.persistence.AuditSelectionIntegerMapConverter;
 import us.freeandfair.corla.persistence.PersistentEntity;
@@ -66,6 +68,12 @@ import us.freeandfair.corla.persistence.StringSetConverter;
 // note: county dashboard is not serializable because it contains an uploaded file
 public class CountyDashboard implements PersistentEntity {
   /**
+   * Class-wide logger
+   */
+  public static final Logger LOGGER =
+      LogManager.getLogger(CountyDashboard.class);
+
+  /**
    * The "text" constant.
    */
   private static final String TEXT = "text";
@@ -84,11 +92,6 @@ public class CountyDashboard implements PersistentEntity {
    * The "no content" constant.
    */
   private static final Integer NO_CONTENT = null;
-
-  /**
-   * The "my_dashboard" string.
-   */
-  private static final String MY_DASHBOARD = "my_dashboard";
 
   /**
    * The "index" string.
@@ -201,19 +204,6 @@ public class CountyDashboard implements PersistentEntity {
   private Integer my_current_round_index;
 
   /**
-   * The set of contests driving the audit.
-   * @deprecated
-   * TODO eventually remove this
-   */
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(name = "driving_contest",
-             joinColumns = @JoinColumn(name = DASHBOARD_ID,
-                                       referencedColumnName = MY_ID),
-             inverseJoinColumns = @JoinColumn(name = "contest_id",
-                                              referencedColumnName = MY_ID))
-  private Set<Contest> my_driving_contests = new HashSet<>();
-
-  /**
    * The set of contests that drive our audits. Strings, not "fancy"
    * Abstract Data Types
    */
@@ -232,6 +222,17 @@ public class CountyDashboard implements PersistentEntity {
              inverseJoinColumns = { @JoinColumn(name = "comparison_audit_id",
                                                 referencedColumnName = MY_ID) })
   private Set<ComparisonAudit> my_comparison_audits = new HashSet<>();
+
+  /**
+   * The audit data.
+   */
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(name = "county_dashboard_to_comparison_audit",
+             joinColumns = { @JoinColumn(name = DASHBOARD_ID,
+                                         referencedColumnName = MY_ID) },
+             inverseJoinColumns = { @JoinColumn(name = "comparison_audit_id",
+                                                referencedColumnName = MY_ID) })
+  private Set<ComparisonAudit> audits = new HashSet<>();
 
   /**
    * The audit investigation reports.
@@ -504,6 +505,7 @@ public class CountyDashboard implements PersistentEntity {
                                   the_ballots_to_audit,
                                   the_audit_subsequence);
     my_rounds.add(round);
+    LOGGER.debug("[startRound ends]");
   }
 
   /**
@@ -527,24 +529,47 @@ public class CountyDashboard implements PersistentEntity {
    * @return the number of ballots remaining in the current round, or 0
    * if there is no current round.
    */
+  // FIXME this is broken; round's expected and actual don't match what the dashboard sees.
   public int ballotsRemainingInCurrentRound() {
     final int result;
 
     if (my_current_round_index == null) {
       result = 0;
     } else {
-      final Round round = currentRound();
-      result = round.expectedCount() - round.actualCount();
-    }
 
+      final Round round = currentRound();
+      // result = round.expectedCount() - round.actualCount();
+
+      Integer prefix = BallotSelection.auditedPrefixLength(round.ballotSequence());
+      result = round.ballotSequence().size() - prefix;
+
+      LOGGER.debug(String.format("[ballotsRemainingInCurrentRound:"
+                                 + " index=%d, result=%d, prefix=%d,"
+                                 + " ballotSequence=%s"
+                                 + " ballotSequence.size=%d"
+                                 + " cdb.auditedSampleCount()=%d]",
+                                 my_current_round_index,
+                                 result,
+                                 prefix,
+                                 round.ballotSequence(),
+                                 round.ballotSequence().size(),
+                                 this.auditedSampleCount()));
+    }
     return result;
   }
 
   /**
    * @return the set of comparison audits being performed.
    */
+  public Set<ComparisonAudit> getAudits() {
+    return Collections.unmodifiableSet(audits);
+  }
+
+  /**
+   * @return the set of comparison audits being performed.
+   */
   public Set<ComparisonAudit> comparisonAudits() {
-    return Collections.unmodifiableSet(my_comparison_audits);
+    return Collections.unmodifiableSet(audits);
   }
 
   /**
@@ -552,9 +577,9 @@ public class CountyDashboard implements PersistentEntity {
    *
    * @param audits The comparison audits.
    */
-  public void setComparisonAudits(final Set<ComparisonAudit> audits) {
-    my_comparison_audits.clear();
-    my_comparison_audits.addAll(audits);
+  public void setAudits(final Set<ComparisonAudit> audits) {
+    this.audits.clear();
+    this.audits.addAll(audits);
   }
 
   /**
@@ -798,7 +823,6 @@ public class CountyDashboard implements PersistentEntity {
    * @return the estimated number of samples to audit.
    */
   public Integer estimatedSamplesToAudit() {
-    // return my_estimated_samples_to_audit;
     // NOTE: there could be race conditions between audit boards across counties
     Optional<Integer> maybe = comparisonAudits().stream()
       .filter(ca -> ca.auditReason() != AuditReason.OPPORTUNISTIC_BENEFITS)
@@ -807,37 +831,31 @@ public class CountyDashboard implements PersistentEntity {
     // NOTE: we may be asking for this when we don't need to; when there are no
     // audits setup yet
     if (maybe.isPresent()) {
-      return maybe.get();
+      LOGGER.debug(String.format("estimatedSamplesToAudit: result=%s auditedSampleCount=%s",
+                                 maybe.get(),
+                                 auditedSampleCount()));
+      return maybe.get() - auditedSampleCount();
     } else {
       return 0;
     }
   }
 
   /**
-   * Sets the estimated number of samples to audit.
-   *
-   * @param the_estimated_samples_to_audit The estimated number of samples to audit.
-   */
-  public void setEstimatedSamplesToAudit(final int the_estimated_samples_to_audit) {
-    my_estimated_samples_to_audit = the_estimated_samples_to_audit;
-  }
-
-  /**
    * @return the optimistic number of samples to audit.
    */
   public Integer optimisticSamplesToAudit() {
-    // FIXME here is where we left off...
-    return my_optimistic_samples_to_audit;
-  }
-
-  /**
-   * Sets the optimistic number of samples to audit.
-   *
-   * @param the_optimistic_samples_to_audit The optimistic number of samples
-   * to audit.
-   */
-  public void setOptimisticSamplesToAudit(final int the_optimistic_samples_to_audit) {
-    my_optimistic_samples_to_audit = the_optimistic_samples_to_audit;
+    // NOTE: there could be race conditions between audit boards across counties
+    Optional<Integer> maybe = comparisonAudits().stream()
+      .filter(ca -> ca.auditReason() != AuditReason.OPPORTUNISTIC_BENEFITS)
+      .map(ca -> ca.optimisticSamplesToAudit())
+      .max(Comparator.naturalOrder());
+    // NOTE: we may be asking for this when we don't need to; when there are no
+    // audits setup yet
+    if (maybe.isPresent()) {
+      return maybe.get();
+    } else {
+      return 0;
+    }
   }
 
   /**
@@ -879,6 +897,7 @@ public class CountyDashboard implements PersistentEntity {
    * @param the_audited_sample_count The audited sample count.
    */
   public void setAuditedSampleCount(final int the_audited_sample_count) {
+    LOGGER.debug(String.format("[setAuditedSampleCount: old=%d, new=%d]", my_audited_sample_count, the_audited_sample_count));
     my_audited_sample_count = the_audited_sample_count;
   }
 
@@ -887,7 +906,7 @@ public class CountyDashboard implements PersistentEntity {
    * that have not achieved their risk limit to ENDED.
    */
   public void endAudits() {
-    for (final ComparisonAudit ca : my_comparison_audits) {
+    for (final ComparisonAudit ca : audits) {
       ca.endAudit();
     }
   }
@@ -897,7 +916,7 @@ public class CountyDashboard implements PersistentEntity {
    * based on whether they have achieved their risk limits.
    */
   public void updateAuditStatus() {
-    for (final ComparisonAudit ca : my_comparison_audits) {
+    for (final ComparisonAudit ca : audits) {
       ca.updateAuditStatus();
     }
   }

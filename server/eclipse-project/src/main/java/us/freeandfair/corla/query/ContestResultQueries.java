@@ -36,4 +36,15 @@ public final class ContestResultQueries {
       return cr;
     }
   }
+
+  /**
+   * Return the ContestResult with the contestName given or create a new
+   * ContestResult with the contestName.
+   **/
+  public static Integer count() {
+    final Session s = Persistence.currentSession();
+    final Query q = s.createQuery("select count(cr) from ContestResult cr ");
+    return ((Long)q.uniqueResult()).intValue();
+  }
+
 }

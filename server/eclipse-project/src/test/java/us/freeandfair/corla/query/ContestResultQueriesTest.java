@@ -56,5 +56,27 @@ public class ContestResultQueriesTest {
     ContestResult cr2 = ContestResultQueries.findOrCreate("ghi");
     // newly contructed and persisted!
     Assert.assertNotEquals(cr2.id(), cr.id());
+
+    //ride along to avoid state mgmt
+    Integer result = ContestResultQueries.count();
+    Assert.assertEquals((int)result, (int) 2);
   }
+
+  // @Test()
+  // public void testCount() {
+  //   County county = new County("abc", 321L);
+  //   Persistence.saveOrUpdate(county);
+  //   Contest contest = new Contest("def",
+  //                                 county,
+  //                                 "desc",
+  //                                 new ArrayList<>(),
+  //                                 1,
+  //                                 1,
+  //                                 0);
+
+  //   Persistence.saveOrUpdate(contest);
+  //   Integer result = ContestResultQueries.count();
+  //   Assert.assertEquals((int)result, (int) 1);
+  // }
+
 }

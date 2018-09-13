@@ -18,6 +18,10 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import org.hibernate.query.Query;
+import org.hibernate.Session;
+
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
@@ -73,4 +77,16 @@ public final class ComparisonAuditQueries {
     }
     return result;
   }
+
+
+  /**
+   * Return the ContestResult with the contestName given or create a new
+   * ContestResult with the contestName.
+   **/
+  public static Integer count() {
+    final Session s = Persistence.currentSession();
+    final Query q = s.createQuery("select count(ca) from ComparisonAudit ca");
+    return ((Long)q.uniqueResult()).intValue();
+  }
+
 }
