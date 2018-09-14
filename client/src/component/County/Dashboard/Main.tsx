@@ -78,7 +78,6 @@ interface MainProps {
     currentRoundNumber: number;
     history: History;
     name: string;
-    startAuditButtonDisabled: boolean;
 }
 
 const Main = (props: MainProps) => {
@@ -91,37 +90,20 @@ const Main = (props: MainProps) => {
         currentRoundNumber,
         history,
         name,
-        startAuditButtonDisabled,
     } = props;
-
-    const auditBoardSignedIn = !_.isEmpty(countyState.auditBoards);
 
     let directions = 'Upload the ballot manifest and cast vote record (CVR) files. These need to be CSV files.'
                    + '\n\nAfter uploading the files wait for an email from the Department of State saying that you can'
                    + ' continue the audit.';
 
-    if (auditBoardSignedIn) {
-        if (startAuditButtonDisabled) {
-            directions = 'Wait for the audit to start.';
-        } else {
-            if (currentRoundNumber) {
-                directions = `You can start round ${currentRoundNumber} of the audit.`;
-            } else {
-                directions = 'You have completed the round. More ballots need to be audited.'
-                           + ' Wait for the next round to start.';
-            }
-        }
-    } else {
-        if (!auditBoardButtonDisabled) {
-            directions = 'The Department of State has defined the audit and your list of ballots is now available for'
-                       + ' download on this page. The audit board(s) must sign in to advance to the audit.';
-        }
-    }
-
-    if (auditComplete) {
+    if (!auditBoardButtonDisabled && !currentRoundNumber && !auditComplete) {
+        directions = 'Please wait for the Department of State to proceed with the audit.';
+    } else if (currentRoundNumber && !auditComplete) {
+        directions = `You may now perform round ${currentRoundNumber} of the audit.`;
+    } else if (auditComplete) {
         directions = 'You have successfully completed the Risk-Limiting Audit! Print all pages of your final audit'
-                   + ' report. Have the judges and county clerk sign the last page of the report and email it to'
-                   + ' RLA@sos.state.co.us. You can now proceed to canvass!';
+            + ' report. Have the judges and county clerk sign the last page of the report and email it to'
+            + ' RLA@sos.state.co.us. You can now proceed to canvass!';
     }
 
     const fileUploadContainer = auditStarted
@@ -158,19 +140,19 @@ const Main = (props: MainProps) => {
                     <div className='pt-ui-text-large'>List of ballots to audit (CSV)</div>
                     <button
                         className='pt-button  pt-intent-primary'
-                        disabled={ countyState.auditBoardCount == null }
+                        disabled={ typeof countyState.auditBoardCount != "number" }
                         onClick={ downloadCsv }>
                         Download
                     </button>
                 </div>
                 <AuditBoardNumberSelector auditBoardCount={ countyState.auditBoardCount || 1 }
                                           numberOfBallotsToAudit={ countyState.ballotsRemainingInRound }
-                                          isShown={ !auditBoardButtonDisabled }
+                                          isShown={ !auditBoardButtonDisabled && !!currentRoundNumber }
                                           isEnabled={ !countyState.auditBoardCount } />
                 <AuditBoardButtons auditBoardCount={ countyState.auditBoardCount || 1 }
                                    auditBoards={ countyState.auditBoards }
                                    history={ history }
-                                   isShown={ countyState.auditBoardCount != null } />
+                                   isShown={ typeof countyState.auditBoardCount == "number" && !!currentRoundNumber } />
             </div>
         </div>
     );

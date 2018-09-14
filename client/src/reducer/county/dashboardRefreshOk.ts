@@ -21,6 +21,9 @@ export default function dashboardRefreshOk(
 ): County.AppState {
     const newState = parse(action.data, state);
 
+    // If it becomes null it will not get overwritten.
+    delete state.auditBoardCount;
+
     const nextState = merge({}, state, newState);
 
     // We want to overwrite these, not deeply merge, because an empty

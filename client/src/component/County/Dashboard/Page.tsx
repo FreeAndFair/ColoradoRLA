@@ -38,7 +38,6 @@ const CountyDashboardPage = (props: PageProps) => {
         history,
     } = props;
 
-    const startAuditButtonDisabled = !canAudit || auditComplete;
     const auditBoardButtonDisabled = !canSignIn;
 
     return (
@@ -52,7 +51,6 @@ const CountyDashboardPage = (props: PageProps) => {
                           countyState={ countyState }
                           currentRoundNumber={ currentRoundNumber }
                           history={ history }
-                          startAuditButtonDisabled={ startAuditButtonDisabled }
                           name={ countyInfo.name }
                           auditBoardButtonDisabled={ auditBoardButtonDisabled } />
                     <Info info={ countyInfo }

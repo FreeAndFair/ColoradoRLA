@@ -62,7 +62,7 @@ const SignedInPage = (props: PageProps) => {
                 </button>
                 <button
                     className='pt-button pt-intent-primary pt-breadcrumb'
-                    onClick={ auditBoardSignOut }>
+                    onClick={ () => auditBoardSignOut(auditBoardIndex) }>
                     Sign Out
                 </button>
                 <button
