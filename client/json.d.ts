@@ -23,6 +23,10 @@ declare namespace JSON {
         last_name: string;
     }
 
+    interface Signatories {
+        [index: number]: JSON.Elector[];
+    }
+
     interface ContestInfo {
         choices: string[];
         comment: string;
@@ -41,7 +45,7 @@ declare namespace JSON {
         discrepancies: number;
         expected_count: number;
         number: number;
-        signatories: JSON.Elector[];
+        signatories: Signatories;
         start_audit_prefix_length: number;
         start_index: number;
         start_time: Date;

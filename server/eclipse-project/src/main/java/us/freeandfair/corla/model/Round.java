@@ -34,7 +34,7 @@ import org.hibernate.query.Query;
 
 import us.freeandfair.corla.persistence.AuditSelectionIntegerMapConverter;
 import us.freeandfair.corla.persistence.BallotSequenceAssignmentConverter;
-import us.freeandfair.corla.persistence.ElectorListConverter;
+import us.freeandfair.corla.persistence.SignatoriesConverter;
 import us.freeandfair.corla.persistence.LongListConverter;
 import us.freeandfair.corla.persistence.Persistence;
 
@@ -160,11 +160,14 @@ public class Round implements Serializable {
   private Map<AuditSelection, Integer> my_disagreements = new HashMap<>();
   
   /**
-   * The signatories for round sign-off
+   * The signatories for round sign-off.
+   *
+   * This is a map from audit board index to list of signatories that were part
+   * of that audit board.
    */
   @Column(name = "signatories", columnDefinition = TEXT)
-  @Convert(converter = ElectorListConverter.class)
-  private List<Elector> my_signatories = new ArrayList<>();
+  @Convert(converter = SignatoriesConverter.class)
+  private Map<Integer, List<Elector>> my_signatories = new HashMap<>();
 
   /**
    * Constructs an empty round, solely for persistence. 
@@ -172,7 +175,7 @@ public class Round implements Serializable {
   public Round() {
     super();
   }
-    
+
   /**
    * Constructs a round with the specified parameters.
    * 
@@ -476,22 +479,22 @@ public class Round implements Serializable {
       my_disagreements.put(s, my_disagreements.getOrDefault(s, 0) - 1);
     }
   }
-  
+
   /**
    * @return the signatories.
    */
-  public List<Elector> signatories() {
-    return Collections.unmodifiableList(my_signatories);
+  public Map<Integer, List<Elector>> signatories() {
+    return Collections.unmodifiableMap(my_signatories);
   }
-  
+
   /**
-   * Sets the signatories.
+   * Sets the signatories for a particular audit board.
    */
-  public void setSignatories(final List<Elector> the_signatories) {
-    my_signatories.clear();
-    my_signatories.addAll(the_signatories);
+  public void setSignatories(final Integer auditBoardIndex,
+                             final List<Elector> signatories) {
+    my_signatories.put(auditBoardIndex, signatories);
   }
-  
+
   /**
    * @return a String representation of this round.
    */

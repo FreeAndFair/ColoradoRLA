@@ -17,7 +17,7 @@ function currentBallotNumber(state: County.AppState): Option<number> {
 
         const { index, count } = bsa;
 
-        return _.slice(cvrsToAudit, index, count);
+        return _.slice(cvrsToAudit, index, index + count);
     };
 
     if (typeof auditBoardIndex != "number") { return null; }

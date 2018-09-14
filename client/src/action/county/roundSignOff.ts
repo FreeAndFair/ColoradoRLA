@@ -14,12 +14,16 @@ const roundSignOff = createSubmitAction({
 });
 
 
-function format(electors: Elector[]): JSON.Elector[] {
-    return electors.map(e => ({
-        first_name: e.firstName,
-        last_name: e.lastName,
-    }));
+function format(auditBoardIndex: number, electors: Elector[]): object {
+    return {
+        "audit_board_index": auditBoardIndex,
+        "signatories": electors.map(e => ({
+            first_name: e.firstName,
+            last_name: e.lastName,
+        })),
+    };
 }
 
 
-export default (electors: Elector[]) => roundSignOff(format(electors));
+export default (auditBoardIndex: number, electors: Elector[]) =>
+    roundSignOff(format(auditBoardIndex, electors));

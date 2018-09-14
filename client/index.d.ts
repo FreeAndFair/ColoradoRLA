@@ -65,6 +65,10 @@ interface Elector {
     lastName: string;
 }
 
+interface Signatories {
+    [index: number]: Elector[];
+}
+
 type RecordType
     = 'UPLOADED'
     | 'PHANTOM_RECORD'
@@ -122,7 +126,7 @@ interface Round {
     discrepancies: number;
     expectedCount: number;
     number: number;
-    signatories: Elector[];
+    signatories: Signatories;
     startAuditPrefixLength: number;
     startIndex: number;
     startTime: Date;

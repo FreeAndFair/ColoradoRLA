@@ -69,16 +69,18 @@ function parseContestsUnderAudit(contestIds: number[], state: County.AppState): 
     });
 }
 
-function parseSignatories(s?: JSON.Elector[]): Elector[] {
+function parseSignatories(s?: JSON.Signatories): Signatories {
     if (!s) {
-        return [];
+        return {};
     }
 
-    return s.map(e => {
-        return {
-            firstName: e.first_name,
-            lastName: e.last_name,
-        };
+    return _.map(s, (electors): Elector[] => {
+        return _.map(electors, (e: JSON.Elector): Elector => {
+            return {
+                firstName: e.first_name,
+                lastName: e.last_name,
+            };
+        })
     });
 }
 

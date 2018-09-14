@@ -8,7 +8,7 @@ const formatContestInfo = (mark: County.ACVRContest, contestId: number): JSON.Co
     const comment = mark.comments;
     const consensus = mark.noConsensus ? 'NO' : 'YES';
 
-    return { choices, comment, consensus, contest: contestId };
+    return { contest: contestId, choices, comment, consensus, };
 };
 
 

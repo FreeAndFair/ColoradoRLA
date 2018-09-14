@@ -443,7 +443,9 @@ public class CountyDashboard implements PersistentEntity {
    * Signs out all audit boards.
    */
   public void signOutAllAuditBoards() {
-    for (final int i : my_audit_boards.keySet()) {
+    final Set<Integer> ks = new HashSet<Integer>(my_audit_boards.keySet());
+
+    for (final Integer i : ks) {
       this.signOutAuditBoard(i);
     }
   }
@@ -545,26 +547,28 @@ public class CountyDashboard implements PersistentEntity {
                                   the_audit_subsequence);
     my_rounds.add(round);
   }
-  
+
   /**
    * Ends the current round.
-   * 
-   * @param the_signatories The signatories for round sign-off.
+   *
+   * Signs out all audit boards, and performs any bookkeeping necessary to end
+   * the round.
+   *
    * @exception IllegalStateException if there is no current round.
    */
-  public void endRound(final List<Elector> the_signatories) {
+  public void endRound() {
     if (my_current_round_index == null) {
       throw new IllegalStateException("no round to end");
     } else {
       this.setAuditBoardCount(null);
+      this.signOutAllAuditBoards();
 
       final Round round = my_rounds.get(my_current_round_index);
-      round.setSignatories(the_signatories);
       round.setEndTime(Instant.now());
       my_current_round_index = NO_CONTENT;
     }
   }
-  
+
   /**
    * @return the number of ballots remaining in the current round, or 0
    * if there is no current round.

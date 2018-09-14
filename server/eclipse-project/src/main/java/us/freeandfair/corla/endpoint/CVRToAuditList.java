@@ -142,7 +142,7 @@ public class CVRToAuditList extends AbstractEndpoint {
    * {@inheritDoc}
    */
   @Override
-  @SuppressWarnings("PMD.NPathComplexity")
+  @SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.NPathComplexity"})
   public String endpointBody(final Request the_request, final Response the_response) {
     // we know we have either state or county authentication; this will be null
     // for state authentication
