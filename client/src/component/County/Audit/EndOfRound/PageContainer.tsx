@@ -27,13 +27,11 @@ function signedOff(auditBoardIndex: number, round: Round): boolean {
 
 interface ContainerProps {
     allRoundsComplete: boolean;
-    areAuditBoardsDone: boolean;
     auditBoardIndex: number;
     countyInfo: CountyInfo;
     currentRoundNumber: number;
     election: Election;
     estimatedBallotsToAudit: number;
-    isAuditBoardDone: boolean;
     previousRound: Round;
     previousRoundSignedOff: boolean;
 }

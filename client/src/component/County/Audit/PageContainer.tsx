@@ -10,7 +10,6 @@ import CountyAuditPage from './Page';
 import notice from 'corla/notice';
 
 import allRoundsCompleteSelector from 'corla/selector/county/allRoundsComplete';
-import areAuditBoardsDoneSelector from 'corla/selector/county/areAuditBoardsDone';
 import auditCompleteSelector from 'corla/selector/county/auditComplete';
 import canAuditSelector from 'corla/selector/county/canAudit';
 import isAuditBoardDoneSelector from 'corla/selector/county/isAuditBoardDone';
@@ -18,7 +17,6 @@ import roundInProgressSelector from 'corla/selector/county/roundInProgress';
 
 
 interface ContainerProps {
-    areAuditBoardsDone: boolean;
     auditBoardIndex: number;
     auditComplete: boolean;
     canAudit: boolean;
@@ -28,11 +26,9 @@ interface ContainerProps {
 
 class CountyAuditContainer extends React.Component<ContainerProps> {
     public render() {
-        const { areAuditBoardsDone,
-                auditComplete,
+        const { auditComplete,
                 canAudit,
-                isAuditBoardDone,
-                showEndOfRoundPage, } = this.props;
+                showEndOfRoundPage } = this.props;
 
         if (auditComplete) {
             notice.ok('The audit is complete.');
@@ -45,9 +41,7 @@ class CountyAuditContainer extends React.Component<ContainerProps> {
         }
 
         if (showEndOfRoundPage) {
-            return <EndOfRoundPageContainer
-                       areAuditBoardsDone={ areAuditBoardsDone }
-                       isAuditBoardDone={ isAuditBoardDone } />;
+            return <EndOfRoundPageContainer />;
         }
 
         return <CountyAuditPage />;
@@ -61,7 +55,6 @@ function select(countyState: County.AppState) {
         || isAuditBoardDone;
 
     return {
-        areAuditBoardsDone: areAuditBoardsDoneSelector(countyState),
         auditBoardIndex: countyState.auditBoardIndex,
         auditComplete: auditCompleteSelector(countyState),
         canAudit: canAuditSelector(countyState),
