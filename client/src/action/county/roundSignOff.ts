@@ -16,8 +16,8 @@ const roundSignOff = createSubmitAction({
 
 function format(auditBoardIndex: number, electors: Elector[]): object {
     return {
-        "audit_board_index": auditBoardIndex,
-        "signatories": electors.map(e => ({
+        audit_board_index: auditBoardIndex,
+        signatories: electors.map(e => ({
             first_name: e.firstName,
             last_name: e.lastName,
         })),

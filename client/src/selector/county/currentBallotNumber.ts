@@ -20,7 +20,7 @@ function currentBallotNumber(state: County.AppState): Option<number> {
         return _.slice(cvrsToAudit, index, index + count);
     };
 
-    if (typeof auditBoardIndex != "number") { return null; }
+    if (typeof auditBoardIndex !== 'number') { return null; }
     if (!ballotSequenceAssignment) { return null; }
     if (!cvrsToAudit) { return null; }
     if (!currentBallot) { return null; }

@@ -18,7 +18,7 @@ const BallotListStage = (props: BallotListStageProps) => {
             countyInfo,
             countyState,
             cvrsToAudit,
-            nextStage, } = props;
+            nextStage } = props;
 
     const roundNumber = countyState.currentRound!.number;
 
@@ -37,7 +37,7 @@ const BallotListStage = (props: BallotListStageProps) => {
                 <td>{ cvr.record_id }</td>
                 <td>{ cvr.ballot_type }</td>
                 <td>{ audited }</td>
-                <td>{ typeof cvr.audit_board_index == "number"
+                <td>{ typeof cvr.audit_board_index === 'number'
                       ? `${cvr.audit_board_index + 1}`
                       : '' }</td>
             </tr>

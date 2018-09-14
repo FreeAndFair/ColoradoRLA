@@ -140,7 +140,7 @@ const Main = (props: MainProps) => {
                     <div className='pt-ui-text-large'>List of ballots to audit (CSV)</div>
                     <button
                         className='pt-button  pt-intent-primary'
-                        disabled={ typeof countyState.auditBoardCount != "number" }
+                        disabled={ typeof countyState.auditBoardCount !== 'number' }
                         onClick={ downloadCsv }>
                         Download
                     </button>
@@ -152,7 +152,8 @@ const Main = (props: MainProps) => {
                 <AuditBoardButtons auditBoardCount={ countyState.auditBoardCount || 1 }
                                    auditBoards={ countyState.auditBoards }
                                    history={ history }
-                                   isShown={ typeof countyState.auditBoardCount == "number" && !!currentRoundNumber } />
+                                   isShown={ typeof countyState.auditBoardCount === 'number'
+                                             && !!currentRoundNumber } />
             </div>
         </div>
     );

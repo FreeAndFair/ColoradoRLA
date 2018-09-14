@@ -37,7 +37,7 @@ function* countyRefreshOk({ data }: any): any {
         }
     }
 
-    if (typeof state.auditBoardIndex != "number") {
+    if (typeof state.auditBoardIndex !== 'number') {
         return;
     }
 

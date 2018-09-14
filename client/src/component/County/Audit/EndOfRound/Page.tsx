@@ -89,7 +89,7 @@ const EndOfRoundPage = (props: PageProps) => {
         notice.ok('Congratulations! You have finished auditing your board’s'
             + ` ballots in round ${roundNumber}. Please wait for any other`
             + ' audit boards to complete the audit.');
-        return <Redirect to="/county" />;
+        return <Redirect to='/county' />;
     }
 
     const electionDate = corlaDate.format(election.date);

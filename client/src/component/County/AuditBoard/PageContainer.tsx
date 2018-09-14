@@ -39,7 +39,7 @@ class AuditBoardSignInContainer extends React.Component<ContainerProps> {
 
         const auditBoardSignedIn = auditBoardSignedInSelector(
             boardIndex,
-            countyState
+            countyState,
         );
 
         if (auditBoardSignedIn) {
