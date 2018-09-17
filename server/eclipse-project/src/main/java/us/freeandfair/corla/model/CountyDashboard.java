@@ -15,6 +15,7 @@ package us.freeandfair.corla.model;
 import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 
 import java.time.Instant;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -46,8 +47,8 @@ import javax.persistence.Table;
 import javax.persistence.Version;
 
 import us.freeandfair.corla.model.ImportStatus.ImportState;
+
 import us.freeandfair.corla.persistence.AuditSelectionIntegerMapConverter;
-import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.persistence.PersistentEntity;
 
 /**

@@ -53,9 +53,6 @@ public class UpdateAuditInfo extends AbstractDoSDashboardEndpoint {
    */
   private final ThreadLocal<ASMEvent> my_event = new ThreadLocal<ASMEvent>();
 
-  /** string **/
-  private final static String UPLOAD_FILE = "upload_file";
-
   /**
    * {@inheritDoc}
    */
