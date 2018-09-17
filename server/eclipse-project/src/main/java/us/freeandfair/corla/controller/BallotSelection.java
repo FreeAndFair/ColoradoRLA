@@ -23,13 +23,20 @@ public final class BallotSelection {
   public static final Logger LOGGER =
       LogManager.getLogger(BallotSelection.class);
 
-  /** prevent construction **/
+  /**
+   * Prevent construction
+   */
   private BallotSelection() {
   }
 
-  /** select CVRs from random numbers through ballot manifest info
-      in "audit sequence order"
-   **/
+  /**
+   * Select CVRs associated with the ballots in the manifest, if they exist.
+   *
+   * CVRs are returned in an order corresponding to the order in rands.
+   *
+   * @param rands random numbers corresponding to ballot manifest positions
+   * @param countyId the county ID
+   */
   public static List<CastVoteRecord> selectCVRs(final List<Integer> rands,
                                                 final Long countyId) {
     return selectCVRs(rands,
@@ -38,7 +45,16 @@ public final class BallotSelection {
                       CastVoteRecordQueries::atPosition);
   }
 
-  /** same as above with dependency injection **/
+  /**
+   * Select CVRs associated with the ballots in the manifest, if they exist.
+   *
+   * CVRs are returned in an order corresponding to the order in rands.
+   *
+   * @param rands random numbers corresponding to ballot manifest positions
+   * @param countyId the county ID
+   * @param queryBMI supplied ballot manifest info query
+   * @param queryCVR supplied CVR query
+   */
   public static List<CastVoteRecord> selectCVRs(final List<Integer> rands,
                                                 final Long countyId,
                                                 final BMIQ queryBMI,
@@ -47,7 +63,8 @@ public final class BallotSelection {
     for (final Integer r: rands) {
       final Long rand = Long.valueOf(r);
       // could we get them all at once? I'm not sure
-      final Optional<BallotManifestInfo> bmiMaybe = queryBMI.apply(rand, countyId);
+      final Optional<BallotManifestInfo> bmiMaybe = queryBMI.apply(
+          rand, countyId);
       if (!bmiMaybe.isPresent()) {
         final String msg = "could not find a ballot manifest for random number: "
             + rand;
@@ -68,39 +85,17 @@ public final class BallotSelection {
                 bmi.batchID(),
                 bmi.ballotPosition(rand)));
         // a discrepancy will be created for this later on
-        cvr = phantomRecord(bmi.countyID(),
-                            bmi.scannerID(),
-                            bmi.batchID(),
-                            bmi.ballotPosition(rand));
-
+        cvr = createPhantomRecord(
+            bmi.countyID(),
+            bmi.scannerID(),
+            bmi.batchID(),
+            bmi.ballotPosition(rand));
       }
 
       cvrs.add(cvr);
     }
-    return cvrs;
-  }
 
-  /** PHANTOM_RECORD conspiracy theory time **/
-  public static CastVoteRecord phantomRecord(final Long county_id,
-                                             final Integer scanner_id,
-                                             final String batch_id,
-                                             final Long position) {
-    final String imprinted_id = scanner_id +"-"+ batch_id +"-"+ position;
-    //cvr_number (this would have been in the file)
-    final Integer cvr_number = 0;
-    //sequence_number (this would have been set in the file read loop)
-    final Integer sequence_number = 0;
-    return new CastVoteRecord(CastVoteRecord.RecordType.PHANTOM_RECORD,
-                              null, //timestamp
-                              county_id,
-                              cvr_number,
-                              sequence_number,
-                              scanner_id,
-                              batch_id,
-                              position.intValue(),//record_id
-                              imprinted_id,//imprinted_id
-                              "PHANTOM RECORD", //ballot_type
-                              null);//contest_info - filled in later
+    return cvrs;
   }
 
   /**
@@ -171,6 +166,37 @@ public final class BallotSelection {
                                   cvr.ballotType(),
                                   bmi.storageLocation(),
                                   cvr.auditFlag());
+  }
+
+  /**
+   * Create a new phantom record.
+   */
+  // PHANTOM_RECORD conspiracy theory time
+  private static CastVoteRecord createPhantomRecord(final Long countyId,
+                                                   final Integer scannerId,
+                                                   final String batchId,
+                                                   final Long position) {
+    final String imprintedId = String.format("%d-%s-%d",
+        scannerId, batchId, position);
+    // Dummy CVR number (this would have been in the imported CVR)
+    final Integer cvrNumber = 0;
+    // Dummy sequence number (this would have been set in the file read loop)
+    final Integer sequenceNumber = 0;
+    return new CastVoteRecord(CastVoteRecord.RecordType.PHANTOM_RECORD,
+        // timestamp
+        null,
+        countyId,
+        cvrNumber,
+        sequenceNumber,
+        scannerId,
+        batchId,
+        // record ID
+        position.intValue(),
+        imprintedId,
+        // ballot type
+        "PHANTOM RECORD",
+        // contest info
+        null);
   }
 
   /**
