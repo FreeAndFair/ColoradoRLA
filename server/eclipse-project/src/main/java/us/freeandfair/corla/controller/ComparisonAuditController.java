@@ -13,8 +13,6 @@ package us.freeandfair.corla.controller;
 
 import java.math.BigDecimal;
 
-import java.time.Instant;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,8 +22,6 @@ import java.util.Map;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
-
-import java.util.stream.Collectors;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.crypto.PseudoRandomNumberGenerator;
@@ -46,9 +42,10 @@ import us.freeandfair.corla.model.Round;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.BallotManifestInfoQueries;
 import us.freeandfair.corla.query.CastVoteRecordQueries;
-import us.freeandfair.corla.query.ContestQueries;
 import us.freeandfair.corla.query.CountyContestResultQueries;
+
 import us.freeandfair.corla.util.BallotSequencer;
+import us.freeandfair.corla.util.PhantomBallots;
 
 /**
  * Controller methods relevant to comparison audits.
@@ -389,8 +386,7 @@ public final class ComparisonAuditController {
     if (!county_driving_contests.isEmpty() && 0 < to_audit) {
       // the list of CVRs to audit, in audit sequence order
       final List<CastVoteRecord> cvrs_to_audit =
-          createPhantomRecords(the_cdb,
-                               getCVRsInAuditSequence(the_cdb.county(), 0, to_audit - 1));
+          getCVRsInAuditSequence(the_cdb.county(), 0, to_audit - 1);
 
       // the IDs of the CVRs to audit, in audit sequence order
       final List<Long> audit_subsequence_ids = new ArrayList<Long>();
@@ -398,9 +394,14 @@ public final class ComparisonAuditController {
         audit_subsequence_ids.add(cvr.id());
       }
 
+      // Audit and remove phantom CVRs
+      final List<CastVoteRecord> nonPhantomCvrs =
+          PhantomBallots.removePhantomRecords(
+              PhantomBallots.auditPhantomRecords(the_cdb, cvrs_to_audit));
+
       // De-duplicate the CVRs and put them in "pull list" order
       final List<Long> ballotIdsToAudit =
-          BallotSequencer.sortAndDeduplicateCVRs(cvrs_to_audit);
+          BallotSequencer.sortAndDeduplicateCVRs(nonPhantomCvrs);
 
       the_cdb.startRound(ballotIdsToAudit.size(),
                          to_audit,
@@ -414,68 +415,6 @@ public final class ComparisonAuditController {
     }
 
     return result;
-  }
-
-  /**
-   * call createPhantomRecord on each PHANTOM_RECORD (that BallotSelection
-   * generated)
-   **/
-  public static List<CastVoteRecord> createPhantomRecords(final CountyDashboard cdb,
-                                                          final List<CastVoteRecord> cvrs) {
-    return cvrs.stream()
-      .map(cvr -> { if (cvr.recordType() == CastVoteRecord.RecordType.PHANTOM_RECORD) {
-            return createPhantomRecord(cdb, cvr);
-          } else {
-            return cvr;
-          }})
-      .collect(Collectors.toList());
-  }
-
-  /** create a discrepency as if it was submitted by the client **/
-  public static CastVoteRecord createPhantomRecord(final CountyDashboard cdb,
-                                                   final CastVoteRecord cvr) {
-    // get the one with the ID
-    final CastVoteRecord existing = CastVoteRecordQueries.atPosition(cvr);
-    if (null != existing) {
-      // only create one
-      // multiplicity is handled elsewhere
-      return existing;
-    }
-
-    // we need to create a discrepancy for every contest that COULD have
-    // appeared on the ballot, which we take to mean all the contests that occur
-    // in the county
-    final Set<Contest> contests = ContestQueries.forCounty(cdb.county());
-
-    final List<CVRContestInfo> phantomContestInfos = contests.stream()
-      .map(c -> {return new CVRContestInfo(c,
-                                           "PHANTOM_RECORD - CVR not found",
-                                           null,
-                                           new ArrayList<String>()); } )
-      .collect(Collectors.toList());
-
-    cvr.setContestInfo(phantomContestInfos);
-    Persistence.saveOrUpdate(cvr);
-    // this relation is created when a cvr is prepared for audit
-    // we won't be actually auditing this cvr, but we need this relation to make
-    // the app work
-    final CVRAuditInfo cvrAuditInfo = new CVRAuditInfo(cvr);
-    Persistence.saveOrUpdate(cvrAuditInfo);
-    final CastVoteRecord acvr = new CastVoteRecord(CastVoteRecord.RecordType.PHANTOM_RECORD_ACVR,
-                                                   Instant.now(),
-                                                   cvr.countyID(),
-                                                   cvr.cvrNumber(),
-                                                   null,
-                                                   cvr.scannerID(),
-                                                   cvr.batchID(),
-                                                   cvr.recordID(),
-                                                   cvr.imprintedID(),
-                                                   cvr.ballotType(),
-                                                   phantomContestInfos);
-    Persistence.saveOrUpdate(acvr);
-
-    submitAuditCVR(cdb, cvr, acvr);
-    return cvr;
   }
 
   /**
@@ -543,14 +482,20 @@ public final class ComparisonAuditController {
     if (deduplicated_new_cvrs.isEmpty()) {
       return false;
     } else {
-      Main.LOGGER.info("starting audit round " + (rounds.size() + 1) + " for county " +
-          the_cdb.id() + " at audit sequence number " + start_index +
-          " with " + deduplicated_new_cvrs.size() + " ballots to audit");
+      // Audit and remove phantom CVRs
+      final List<CastVoteRecord> nonPhantomCvrs =
+          PhantomBallots.removePhantomRecords(
+              PhantomBallots.auditPhantomRecords(
+                  the_cdb,
+                  new ArrayList<CastVoteRecord>(deduplicated_new_cvrs)));
 
       // De-duplicate the CVRs and put them in "pull list" order
       final List<Long> ballotIdsToAudit =
-          BallotSequencer.sortAndDeduplicateCVRs(
-              new ArrayList<CastVoteRecord>(deduplicated_new_cvrs));
+          BallotSequencer.sortAndDeduplicateCVRs(nonPhantomCvrs);
+
+      Main.LOGGER.info("starting audit round " + (rounds.size() + 1) + " for county " +
+          the_cdb.id() + " at audit sequence number " + start_index +
+          " with " + ballotIdsToAudit.size() + " ballots to audit");
 
       the_cdb.startRound(ballotIdsToAudit.size(),
                          start_index + new_cvrs.size(),
@@ -607,9 +552,9 @@ public final class ComparisonAuditController {
         expected_prefix_length = computeEstimatedSamplesToAudit(the_cdb);
         if (the_cdb.auditedPrefixLength() < expected_prefix_length) {
           final List<CastVoteRecord> extra_cvrs =
-              createPhantomRecords(the_cdb,
-                                   getCVRsInAuditSequence(the_cdb.county(), start_index,
-                                                          expected_prefix_length - 1));
+              getCVRsInAuditSequence(the_cdb.county(),
+                  start_index,
+                  expected_prefix_length - 1);
 
           new_cvrs.addAll(extra_cvrs);
           Persistence.saveOrUpdate(the_cdb);
@@ -637,14 +582,21 @@ public final class ComparisonAuditController {
         new_cvr_ids.add(cvr.id());
       }
 
+      // Audit and remove phantom CVRs
+      final List<CastVoteRecord> nonPhantomCvrs =
+          PhantomBallots.removePhantomRecords(
+              PhantomBallots.auditPhantomRecords(
+                  the_cdb,
+                  new ArrayList<CastVoteRecord>(deduplicated_new_cvrs)));
+
       // De-duplicate the CVRs and put them in "pull list" order
       final List<Long> ballotIdsToAudit =
-          BallotSequencer.sortAndDeduplicateCVRs(
-              new ArrayList<CastVoteRecord>(deduplicated_new_cvrs));
+          BallotSequencer.sortAndDeduplicateCVRs(nonPhantomCvrs);
 
       Main.LOGGER.info("starting audit round " + (rounds.size() + 1) + " for county " +
           the_cdb.id() + " at audit sequence number " + start_index +
           " with " + ballotIdsToAudit.size() + " ballots to audit");
+
       the_cdb.startRound(ballotIdsToAudit.size(),
                          expected_prefix_length,
                          start_index,
