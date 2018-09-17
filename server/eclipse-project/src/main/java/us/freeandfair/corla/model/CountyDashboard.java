@@ -671,27 +671,6 @@ public class CountyDashboard implements PersistentEntity {
     return round.cvrsUnderAudit();
   }
 
-  /** skip over PHANTOM_RECORDs **/
-  public Long skipOverNextMaybe() {
-    final Long cvrId = cvrUnderAudit();
-    // expectedCount is expected to be the ballotSequence size
-    if (cvrId == null) {
-      return null;
-    } else {
-      final CastVoteRecord cvr = Persistence.getByID(cvrId, CastVoteRecord.class);
-      // this could also be a check for audited/audit_flag I think
-      if (cvr.recordType() == CastVoteRecord.RecordType.PHANTOM_RECORD) {
-        // skip it
-        currentRound().setActualCount(currentRound().actualCount() + 1);
-
-        // try this again
-        return skipOverNextMaybe();
-      } else {
-        return cvr.id();
-      }
-    }
-  }
-
   /**
    * @return the number of ballots audited.
    */
