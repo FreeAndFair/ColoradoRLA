@@ -37,6 +37,13 @@ class AuditBoardNumberSelector
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
+    public componentWillReceiveProps(nextProps: AuditBoardNumberSelectorProps) {
+        if (!nextProps.isEnabled) {
+            this.setState({ auditBoardCount: nextProps.auditBoardCount,
+                            isEnabled: false });
+        }
+    }
+
     public render() {
         const { isShown, numberOfBallotsToAudit } = this.props;
         const { isEnabled } = this.state;
