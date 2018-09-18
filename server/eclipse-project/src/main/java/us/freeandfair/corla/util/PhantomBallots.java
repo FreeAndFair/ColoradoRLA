@@ -22,7 +22,6 @@ import us.freeandfair.corla.model.CountyDashboard;
 
 import us.freeandfair.corla.persistence.Persistence;
 
-import us.freeandfair.corla.query.CastVoteRecordQueries;
 import us.freeandfair.corla.query.ContestQueries;
 
 /**
@@ -43,9 +42,9 @@ public final class PhantomBallots {
       final List<CastVoteRecord> cvrs) {
     return cvrs.stream()
         .map(cvr -> {
-           return isPhantomRecord(cvr)
-               ? auditPhantomRecord(cdb, cvr)
-               : cvr;
+            return isPhantomRecord(cvr)
+                ? auditPhantomRecord(cdb, cvr)
+                : cvr;
         })
         .collect(Collectors.toList());
   }
@@ -56,11 +55,14 @@ public final class PhantomBallots {
   public static List<CastVoteRecord> removePhantomRecords(
       final List<CastVoteRecord> cvrs) {
     return cvrs.stream()
-      .filter(cvr -> !isPhantomRecord(cvr))
-      .collect(Collectors.toList());
+        .filter(cvr -> !isPhantomRecord(cvr))
+        .collect(Collectors.toList());
   }
 
-  private static boolean isPhantomRecord(final CastVoteRecord cvr) {
+  /**
+   * Tests if the CVR is a phantom record.
+   */
+  public static boolean isPhantomRecord(final CastVoteRecord cvr) {
     return cvr.recordType() == CastVoteRecord.RecordType.PHANTOM_RECORD;
   }
 
@@ -69,12 +71,12 @@ public final class PhantomBallots {
    */
   private static CastVoteRecord auditPhantomRecord(final CountyDashboard cdb,
                                                    final CastVoteRecord cvr) {
-    // get the one with the ID
-    final CastVoteRecord existing = CastVoteRecordQueries.atPosition(cvr);
-    if (null != existing) {
-      // only create one
-      // multiplicity is handled elsewhere
-      return existing;
+    CVRAuditInfo cvrAuditInfo =
+        Persistence.getByID(cvr.id(), CVRAuditInfo.class);
+
+    if (null != cvrAuditInfo && null != cvrAuditInfo.acvr()) {
+      // CVR has already been audited.
+      return cvr;
     }
 
     // we need to create a discrepancy for every contest that COULD have
@@ -83,19 +85,22 @@ public final class PhantomBallots {
     final Set<Contest> contests = ContestQueries.forCounty(cdb.county());
 
     final List<CVRContestInfo> phantomContestInfos = contests.stream()
-      .map(c -> {return new CVRContestInfo(c,
-                                           "PHANTOM_RECORD - CVR not found",
-                                           null,
-                                           new ArrayList<String>()); } )
-      .collect(Collectors.toList());
+        .map(c -> {
+            return new CVRContestInfo(c,
+                "PHANTOM_RECORD - CVR not found",
+                null,
+                new ArrayList<String>());
+        })
+        .collect(Collectors.toList());
 
     cvr.setContestInfo(phantomContestInfos);
     Persistence.saveOrUpdate(cvr);
-    // this relation is created when a cvr is prepared for audit
-    // we won't be actually auditing this cvr, but we need this relation to make
-    // the app work
-    final CVRAuditInfo cvrAuditInfo = new CVRAuditInfo(cvr);
-    Persistence.saveOrUpdate(cvrAuditInfo);
+
+    if (null == cvrAuditInfo) {
+      cvrAuditInfo = new CVRAuditInfo(cvr);
+      Persistence.save(cvrAuditInfo);
+    }
+
     final CastVoteRecord acvr = new CastVoteRecord(
         CastVoteRecord.RecordType.PHANTOM_RECORD_ACVR,
         Instant.now(),
@@ -108,7 +113,7 @@ public final class PhantomBallots {
         cvr.imprintedID(),
         cvr.ballotType(),
         phantomContestInfos);
-    Persistence.saveOrUpdate(acvr);
+    Persistence.save(acvr);
 
     ComparisonAuditController.submitAuditCVR(cdb, cvr, acvr);
 

@@ -173,9 +173,9 @@ public final class BallotSelection {
    */
   // PHANTOM_RECORD conspiracy theory time
   private static CastVoteRecord createPhantomRecord(final Long countyId,
-                                                   final Integer scannerId,
-                                                   final String batchId,
-                                                   final Long position) {
+                                                    final Integer scannerId,
+                                                    final String batchId,
+                                                    final Long position) {
     final String imprintedId = String.format("%d-%s-%d",
         scannerId, batchId, position);
     // Dummy CVR number (this would have been in the imported CVR)

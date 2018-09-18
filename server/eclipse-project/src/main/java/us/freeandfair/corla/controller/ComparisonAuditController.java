@@ -23,6 +23,10 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
 
+import java.util.function.Function;
+
+import java.util.stream.Collectors;
+
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.crypto.PseudoRandomNumberGenerator;
 import us.freeandfair.corla.model.AuditReason;
@@ -107,8 +111,27 @@ public final class ComparisonAuditController {
   public static List<CastVoteRecord>
       getCVRsForSequenceNumbers(final County the_county,
                                 final List<Integer> the_seq_num_list) {
-    return BallotSelection.selectCVRs(the_seq_num_list,
-                                      the_county.id());
+    final List<CastVoteRecord> cvrs =
+        BallotSelection.selectCVRs(the_seq_num_list, the_county.id());
+
+    // A map of a CVR to a CVR so we can get a unique persisted entity from the
+    // database.
+    final Map<CastVoteRecord, CastVoteRecord> phantomCvrs =
+        cvrs.stream()
+            .filter(cvr -> PhantomBallots.isPhantomRecord(cvr))
+            .collect(Collectors.toMap(
+                Function.identity(),
+                Function.identity(),
+                (a, b) -> b));
+
+    // Assign database identifiers to newly-created phantom CVRs.
+    phantomCvrs.entrySet().stream()
+        .forEach(e -> Persistence.saveOrUpdate(e.getValue()));
+
+    // Use the database-mapped CVR if it exists.
+    return cvrs.stream()
+        .map(cvr -> phantomCvrs.getOrDefault(cvr, cvr))
+        .collect(Collectors.toList());
   }
 
   /**
@@ -386,7 +409,9 @@ public final class ComparisonAuditController {
     if (!county_driving_contests.isEmpty() && 0 < to_audit) {
       // the list of CVRs to audit, in audit sequence order
       final List<CastVoteRecord> cvrs_to_audit =
-          getCVRsInAuditSequence(the_cdb.county(), 0, to_audit - 1);
+          PhantomBallots.auditPhantomRecords(
+              the_cdb,
+              getCVRsInAuditSequence(the_cdb.county(), 0, to_audit - 1));
 
       // the IDs of the CVRs to audit, in audit sequence order
       final List<Long> audit_subsequence_ids = new ArrayList<Long>();
@@ -394,14 +419,11 @@ public final class ComparisonAuditController {
         audit_subsequence_ids.add(cvr.id());
       }
 
-      // Audit and remove phantom CVRs
-      final List<CastVoteRecord> nonPhantomCvrs =
-          PhantomBallots.removePhantomRecords(
-              PhantomBallots.auditPhantomRecords(the_cdb, cvrs_to_audit));
-
-      // De-duplicate the CVRs and put them in "pull list" order
+      // Remove phantom CVRs, de-duplicate CVRs and put them in "pull list"
+      // order
       final List<Long> ballotIdsToAudit =
-          BallotSequencer.sortAndDeduplicateCVRs(nonPhantomCvrs);
+          BallotSequencer.sortAndDeduplicateCVRs(
+              PhantomBallots.removePhantomRecords(cvrs_to_audit));
 
       the_cdb.startRound(ballotIdsToAudit.size(),
                          to_audit,
@@ -482,26 +504,30 @@ public final class ComparisonAuditController {
     if (deduplicated_new_cvrs.isEmpty()) {
       return false;
     } else {
-      // Audit and remove phantom CVRs
-      final List<CastVoteRecord> nonPhantomCvrs =
-          PhantomBallots.removePhantomRecords(
-              PhantomBallots.auditPhantomRecords(
-                  the_cdb,
-                  new ArrayList<CastVoteRecord>(deduplicated_new_cvrs)));
+      // CVRs in audit sequence order, all with IDs
+      final List<CastVoteRecord> auditedNewCvrs =
+          PhantomBallots.auditPhantomRecords(
+              the_cdb,
+              new_cvrs);
 
-      // De-duplicate the CVRs and put them in "pull list" order
+      // Remove phantom CVRs, de-duplicate CVRs and put them in "pull list"
+      // order
       final List<Long> ballotIdsToAudit =
-          BallotSequencer.sortAndDeduplicateCVRs(nonPhantomCvrs);
+          BallotSequencer.sortAndDeduplicateCVRs(
+              PhantomBallots.removePhantomRecords(
+                  auditedNewCvrs));
 
       Main.LOGGER.info("starting audit round " + (rounds.size() + 1) + " for county " +
           the_cdb.id() + " at audit sequence number " + start_index +
           " with " + ballotIdsToAudit.size() + " ballots to audit");
 
       the_cdb.startRound(ballotIdsToAudit.size(),
-                         start_index + new_cvrs.size(),
+                         start_index + auditedNewCvrs.size(),
                          start_index,
                          ballotIdsToAudit,
-                         new_cvr_ids);
+                         auditedNewCvrs.stream()
+                             .map(cvr -> cvr.id())
+                             .collect(Collectors.toList()));
       updateRound(the_cdb, the_cdb.currentRound());
       updateCVRUnderAudit(the_cdb);
       return true;
@@ -576,22 +602,17 @@ public final class ComparisonAuditController {
         }
       }
 
-      // the ids of the CVRs to audit, in audit sequence order
-      final List<Long> new_cvr_ids = new ArrayList<>();
-      for (final CastVoteRecord cvr : new_cvrs) {
-        new_cvr_ids.add(cvr.id());
-      }
+      // Audit phantom CVRs
+      final List<CastVoteRecord> auditedCvrs =
+          PhantomBallots.auditPhantomRecords(
+              the_cdb,
+              new_cvrs);
 
-      // Audit and remove phantom CVRs
-      final List<CastVoteRecord> nonPhantomCvrs =
-          PhantomBallots.removePhantomRecords(
-              PhantomBallots.auditPhantomRecords(
-                  the_cdb,
-                  new ArrayList<CastVoteRecord>(deduplicated_new_cvrs)));
-
-      // De-duplicate the CVRs and put them in "pull list" order
+      // Remove phantom records, de-duplicate CVRs and put them in "pull list"
+      // order
       final List<Long> ballotIdsToAudit =
-          BallotSequencer.sortAndDeduplicateCVRs(nonPhantomCvrs);
+          BallotSequencer.sortAndDeduplicateCVRs(
+              PhantomBallots.removePhantomRecords(auditedCvrs));
 
       Main.LOGGER.info("starting audit round " + (rounds.size() + 1) + " for county " +
           the_cdb.id() + " at audit sequence number " + start_index +
@@ -601,7 +622,9 @@ public final class ComparisonAuditController {
                          expected_prefix_length,
                          start_index,
                          ballotIdsToAudit,
-                         new_cvr_ids);
+                         auditedCvrs.stream()
+                             .map(cvr -> cvr.id())
+                             .collect(Collectors.toList()));
       updateRound(the_cdb, the_cdb.currentRound());
       updateCVRUnderAudit(the_cdb);
       result = true;
