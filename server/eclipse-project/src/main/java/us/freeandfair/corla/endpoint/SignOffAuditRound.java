@@ -132,27 +132,29 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
           } else {
             cdb.endRound(parsed_signatories);
             // update the ASM state for the county and maybe DoS
-
             final boolean audit_complete;
-            LOGGER
-              .debug(String.format("[signoff for %s County: cdb.estimatedSamplesToAudit()=%d,"
-                                   + " cdb.auditedSampleCount()=%d,"
-                                   + " cdb.ballotsAudited()=%d]",
-                                   cdb.county().name(),
-                                   cdb.estimatedSamplesToAudit(),
-                                   cdb.auditedSampleCount(),
-                                   cdb.ballotsAudited()));
+            LOGGER.debug
+              (String.format
+               ("[signoff for %s County: cdb.estimatedSamplesToAudit()=%d,"
+                + " cdb.auditedSampleCount()=%d,"
+                + " cdb.ballotsAudited()=%d]",
+                cdb.county().name(),
+                cdb.estimatedSamplesToAudit(),
+                cdb.auditedSampleCount(),
+                cdb.ballotsAudited()));
 
             if (cdb.estimatedSamplesToAudit() <= 0) {
-              LOGGER
-                .debug(String.format("[signoff: RISK_LIMIT_ACHIEVED for %s County: "
-                                     + " cdb.estimatedSamplesToAudit()=%d,"
-                                     + " cdb.auditedSampleCount()=%d,"
-                                     + " cdb.ballotsAudited()=%d]",
-                                     cdb.county().name(),
-                                     cdb.estimatedSamplesToAudit(),
-                                     cdb.auditedSampleCount(),
-                                     cdb.ballotsAudited()));
+              LOGGER.debug
+                (String.format
+                 ("[signoff: RISK_LIMIT_ACHIEVED for %s County: "
+                  + " cdb.estimatedSamplesToAudit()=%d,"
+                  + " cdb.auditedSampleCount()=%d,"
+                  + " cdb.ballotsAudited()=%d]",
+                  cdb.county().name(),
+                  cdb.estimatedSamplesToAudit(),
+                  cdb.auditedSampleCount(),
+                  cdb.ballotsAudited()));
+
               my_event.set(RISK_LIMIT_ACHIEVED_EVENT);
               cdb.endAudits();
               audit_complete = true;
@@ -206,12 +208,16 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
       if (!cdb.id().equals(the_id)) {
         finished &= cdb.currentRound() == null;
       }
+      LOGGER.debug(String.format("[notifyRoundComplete: finished=%b, the_id=%d, cdb=%s]",
+                                 finished, the_id, cdb));
     }
 
     if (finished) {
       ASMUtilities.step(DOS_ROUND_COMPLETE_EVENT,
                         DoSDashboardASM.class,
                         DoSDashboardASM.IDENTITY);
+
+      LOGGER.debug("[notifyRoundComplete stepped DOS_ROUND_COMPLETE_EVENT]");
     }
   }
 

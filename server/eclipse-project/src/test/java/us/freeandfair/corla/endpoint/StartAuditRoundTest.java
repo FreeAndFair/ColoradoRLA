@@ -63,17 +63,7 @@ public class StartAuditRoundTest {
     }
   }
 
-  @Test()
-  public void testReadyToStartTrue() {
-    StartAuditRound sar = new StartAuditRound();
-    County county = new County("c1", 1L);
-    CountyDashboard cdb = new CountyDashboard(county);
-    CountyDashboardASM cdbAsm = new CountyDashboardASM(cdb.id().toString());
-
-    cdbAsm.setCurrentState(CountyDashboardState.BALLOT_MANIFEST_AND_CVRS_OK);
-    assertEquals(true, (boolean)sar.isReadyToStartRound(cdb));
-  }
-
+  // this test doesn't do much yet
   @Test()
   public void testReadyToStartFalse() {
     StartAuditRound sar = new StartAuditRound();
@@ -81,7 +71,7 @@ public class StartAuditRoundTest {
     CountyDashboard cdb = new CountyDashboard(county);
     CountyDashboardASM cdbAsm = new CountyDashboardASM(cdb.id().toString());
 
-    assertEquals(false, (boolean)sar.isReadyToStartRound(cdb));
+    assertEquals(false, (boolean)sar.isReadyToStartAudit(cdb));
   }
 
 }

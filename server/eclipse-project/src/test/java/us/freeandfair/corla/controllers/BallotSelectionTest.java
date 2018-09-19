@@ -38,6 +38,7 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.AfterTest;
 import static org.testng.Assert.*;
 
+import us.freeandfair.corla.query.CastVoteRecordQueries;
 import us.freeandfair.corla.query.Setup;
 
 @Test(groups = {"integration"})
@@ -65,43 +66,19 @@ public class BallotSelectionTest {
   public void testAuditedPrefixLengthWithNone() {
     List<Long> cvrIds = new ArrayList<>();
     Integer result = BallotSelection.auditedPrefixLength(cvrIds);
-    assertEquals((int)0, (int)result);
+    assertEquals((int)result, (int)0);
   }
 
   @Test()
   public void testAuditedPrefixLengthWithSome() {
-    CastVoteRecord cvr1 = fakeCVR(1);
-    CastVoteRecord cvr2 = fakeCVR(2);
-    CastVoteRecord cvr3 = fakeCVR(3);
-    CastVoteRecord cvr4 = fakeCVR(4);
-    CastVoteRecord cvr5 = fakeCVR(5);
+    CastVoteRecord cvr1 = fakeAuditedCVR(1);
+    CastVoteRecord cvr2 = fakeAuditedCVR(2);
+    CastVoteRecord cvr3 = fakeAuditedCVR(3);
+    CastVoteRecord cvr4 = fakeAuditedCVR(4);
+    CastVoteRecord cvr5 = fakeAuditedCVR(5);
     CastVoteRecord cvr6 = fakeCVR(6);
-    CastVoteRecord cvr7 = fakeCVR(7);
-    CastVoteRecord cvr8 = fakeCVR(8);
-    Persistence.saveOrUpdate(cvr1);
-    Persistence.saveOrUpdate(cvr2);
-    Persistence.saveOrUpdate(cvr3);
-    Persistence.saveOrUpdate(cvr4);
-    Persistence.saveOrUpdate(cvr5);
-    Persistence.saveOrUpdate(cvr6);
-    Persistence.saveOrUpdate(cvr7);
-    Persistence.saveOrUpdate(cvr8);
-
-    CVRAuditInfo cai1 = new CVRAuditInfo(cvr1);
-    CVRAuditInfo cai2 = new CVRAuditInfo(cvr2);
-    CVRAuditInfo cai3 = new CVRAuditInfo(cvr3);
-    CVRAuditInfo cai4 = new CVRAuditInfo(cvr4);
-    CVRAuditInfo cai5 = new CVRAuditInfo(cvr5);
-    CVRAuditInfo cai7 = new CVRAuditInfo(cvr7);
-    CVRAuditInfo cai8 = new CVRAuditInfo(cvr8);
-
-    Persistence.saveOrUpdate(cai1);
-    Persistence.saveOrUpdate(cai2);
-    Persistence.saveOrUpdate(cai3);
-    Persistence.saveOrUpdate(cai4);
-    Persistence.saveOrUpdate(cai5);
-    Persistence.saveOrUpdate(cai7);
-    Persistence.saveOrUpdate(cai8);
+    CastVoteRecord cvr7 = fakeAuditedCVR(7);
+    CastVoteRecord cvr8 = fakeAuditedCVR(8);
 
     List<Long> cvrIds = new ArrayList<>();
     cvrIds.add(cvr1.id());
@@ -238,6 +215,23 @@ public class BallotSelectionTest {
     } else {
       return null;
     }
+  }
+
+  public CastVoteRecord fakeAuditedCVR(final Integer recordId) {
+    final CastVoteRecord cvr = fakeCVR(recordId);
+    Persistence.saveOrUpdate(cvr);
+
+    final CastVoteRecord acvr = new CastVoteRecord(CastVoteRecord.RecordType.AUDITOR_ENTERED, Instant.now(),
+                                                   64L, 1, null, 1,
+                                                   "Batch1", recordId, "1-Batch1-1",
+                                                   "paper", null);
+    acvr.setID(null);
+    Persistence.saveOrUpdate(acvr);
+
+    final CVRAuditInfo cai = new CVRAuditInfo(cvr);
+    cai.setACVR(acvr);
+    Persistence.saveOrUpdate(cai);
+    return cvr;
   }
 
   // public BallotManifestInfo fakeBMI(Long sequence_start,Long sequence_end){

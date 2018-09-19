@@ -357,6 +357,9 @@ public final class BallotSelection {
   public static Integer auditedPrefixLength(List<Long> cvrIds) {
     // FIXME extract-fn, then use
     // Map <Long, Boolean> isAuditedById = checkAudited(cvrIds);
+
+    if (cvrIds.isEmpty()) { return 0;}
+
     Map <Long, Boolean> isAuditedById = new HashMap<>();
     for (final Long cvrId: cvrIds) {
       CVRAuditInfo cvrai = Persistence.getByID(cvrId, CVRAuditInfo.class);
@@ -369,12 +372,12 @@ public final class BallotSelection {
     for (int i=0; i < cvrIds.size(); i++) {
       boolean audited = isAuditedById.get(cvrIds.get(i));
       if (audited) {
-        idx = i;
+        idx = i + 1;
       } else { break; }
     }
     LOGGER.debug(String.format("[auditedPrefixLength: isAuditedById=%s, apl=%d]",
                                 isAuditedById, idx));
-    return idx + 1;
+    return idx;
   }
 
   /**

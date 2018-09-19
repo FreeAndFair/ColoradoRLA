@@ -367,104 +367,14 @@ public final class ComparisonAuditController {
                                    final List<Long> ballotSequence) {
     LOGGER.info(String.format("Starting a round for %s, drivingContests=%s",
                               cdb.county(), cdb.drivingContestNames()));
-    cdb.startRound(ballotSequence.size(),
-                   auditSequence.size(),
-                   0,
-                   ballotSequence,
-                   auditSequence);
+    cdb.startRound(ballotSequence.size(), auditSequence.size(),
+                   0, ballotSequence, auditSequence);
     // FIXME it appears these two must happen in this order.
     updateRound(cdb, cdb.currentRound());
     updateCVRUnderAudit(cdb);
 
     // if the round was started there will be ballots to count
     return cdb.ballotsRemainingInCurrentRound() > 0;
-  }
-
-  // FIXME remove this when we no longer need a reference!
-  public static boolean startNewRoundFromEstimates(final CountyDashboard cdb,
-                                                   final BigDecimal multiplier) {
-    final OptionalLong cvr_count =
-        BallotManifestInfoQueries.maxSequence(cdb.county().id());
-    LOGGER.warn("cvr_count = " + cvr_count);
-    if (!cvr_count.isPresent()) {
-      throw new IllegalArgumentException("no cvrs");
-    }
-    final List<Round> rounds = cdb.rounds();
-    int start_index = 0;
-    if (rounds.isEmpty()) {
-      throw new IllegalArgumentException("no previous audit rounds");
-    } else {
-      final Round previous_round = rounds.get(rounds.size() - 1);
-
-      LOGGER.warn("previous_round = " + previous_round);
-      // we start the next round where the previous round actually ended
-      // in the audit sequence
-      start_index = previous_round.actualAuditedPrefixLength();
-
-      LOGGER.warn("start_index = " + start_index);
-    }
-    boolean result = false;
-    if (cdb.ballotsAudited() == cvr_count.getAsLong()) {
-      // if we've audited all the CVRs already, we're done
-      LOGGER.info("all CVRs have been audited, not starting new round");
-    } else {
-      // use estimates based on current error rate to get length of round
-      // we keep doing this until we find a CVR to actually audit
-      final SortedSet<CastVoteRecord> sorted_deduplicated_new_cvrs =
-          new TreeSet<>(new CastVoteRecord.BallotOrderComparator());
-      final List<CastVoteRecord> new_cvrs = new ArrayList<>();
-      int expected_prefix_length = 0;
-      LOGGER.warn("estimatedSamplesToAudit(cdb) = " + estimatedSamplesToAudit(cdb));
-      LOGGER.warn("cdb.auditedPrefixLength() = " + estimatedSamplesToAudit(cdb));
-      while (sorted_deduplicated_new_cvrs.isEmpty()) {
-        expected_prefix_length = estimatedSamplesToAudit(cdb);
-        if (cdb.auditedPrefixLength() < expected_prefix_length) {
-          final List<CastVoteRecord> extra_cvrs =
-              getCVRsInAuditSequence(cdb.county(), start_index,
-                                     expected_prefix_length - 1);
-          new_cvrs.addAll(extra_cvrs);
-          Persistence.saveOrUpdate(cdb);
-          sorted_deduplicated_new_cvrs.addAll(new_cvrs);
-
-          final Set<Long> unique_new_cvr_ids = new HashSet<>();
-          for (final CastVoteRecord cvr : sorted_deduplicated_new_cvrs) {
-            unique_new_cvr_ids.add(cvr.id());
-          }
-          for (final Round round : cdb.rounds()) {
-            for (final Long cvr_id : round.ballotSequence()) {
-              if (unique_new_cvr_ids.contains(cvr_id)) {
-                unique_new_cvr_ids.remove(cvr_id);
-                sorted_deduplicated_new_cvrs.remove(Persistence.getByID(cvr_id,
-                                                                        CastVoteRecord.class));
-              }
-            }
-          }
-        }
-      }
-
-      final int round_length = sorted_deduplicated_new_cvrs.size();
-
-      // the ids of the CVRs to audit, in audit sequence order
-      final List<Long> new_cvr_ids = new ArrayList<>();
-      for (final CastVoteRecord cvr : new_cvrs) {
-        new_cvr_ids.add(cvr.id());
-      }
-
-      // the ids of the CVRs to audit, deduplicated, in ballot order
-      final List<Long> ballot_ids_to_audit = new ArrayList<>();
-      for (final CastVoteRecord cvr : sorted_deduplicated_new_cvrs) {
-        ballot_ids_to_audit.add(cvr.id());
-      }
-      LOGGER.info("starting audit round " + (rounds.size() + 1) + " for county " +
-                  cdb.id() + " at audit sequence number " + start_index +
-                  " with " + round_length + " ballots to audit");
-      cdb.startRound(round_length, expected_prefix_length,
-                         start_index, ballot_ids_to_audit, new_cvr_ids);
-      updateRound(cdb, cdb.currentRound());
-      updateCVRUnderAudit(cdb);
-      result = true;
-    }
-    return result;
   }
 
   /**
@@ -570,27 +480,6 @@ public final class ComparisonAuditController {
   }
 
   /**
-   * Computes the optimistic total number of samples to audit on the specified
-   * county dashboard. This uses the minimum samples to audit calculation.
-   *
-   * @param the_cdb The dashboard.
-   */
-  public static int
-      computeOptimisticSamplesToAudit(final CountyDashboard the_cdb) {
-    int to_audit = Integer.MIN_VALUE;
-    final Set<String> drivingContests = the_cdb.drivingContestNames();
-    for (final ComparisonAudit ca : the_cdb.comparisonAudits()) {
-      // we compute this even for non-driving contests, so we can see if their
-      // risk limits were achieved
-      final int bta = ca.optimisticSamplesToAudit();
-      if (drivingContests.contains(ca.contestResult().getContestName())) {
-        to_audit = Math.max(to_audit, bta);
-      }
-    }
-    return Math.max(0,  to_audit);
-  }
-
-  /**
    * Checks to see if the specified CVR has been audited on the specified county
    * dashboard. This check sets the audit flag on the CVR record in memory,
    * so its result can be accessed later without an expensive database hit.
@@ -637,9 +526,6 @@ public final class ComparisonAuditController {
         Persistence.saveOrUpdate(cvrai);
       } else if (cvrai.acvr() != null) {
         // update the round statistics as necessary
-        //
-        // TODO think about synchronization. comparison audits are
-        // viewable / affected by many counties.
 
         for (final ComparisonAudit ca : cdb.comparisonAudits()) {
           auditReasons.put(ca.contestResult(), ca.auditReason());
@@ -698,16 +584,8 @@ public final class ComparisonAuditController {
 
     final int audit_count = auditInfo.multiplicity() - auditInfo.counted();
 
-    // LOGGER.warn("audit() cas " + cdb.comparisonAudits().size());
-    // LOGGER.warn("audit() cas " + cdb.comparisonAudits().stream()
-    //             .filter(ca -> ca.isCovering(auditInfo.cvr().id()))
-    //             .collect(Collectors.toList()).size());
+    for (final ComparisonAudit ca : cdb.comparisonAudits()) {
 
-    for (final ComparisonAudit ca : cdb.comparisonAudits().stream()
-           .filter(ca -> ca.isCovering(auditInfo.cvr().id()))
-           .collect(Collectors.toList())) {
-
-      // FIXME: check cvrid for presence in ballotSequence
       final OptionalInt discrepancy = ca.computeDiscrepancy(cvr_under_audit, audit_cvr);
 
       if (discrepancy.isPresent()) {

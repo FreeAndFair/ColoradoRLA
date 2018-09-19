@@ -468,11 +468,6 @@ public class ComparisonAudit implements PersistentEntity {
    * `my_estimates_samples_to_audit` fields.
    */
   private void recalculateSamplesToAudit() {
-    LOGGER.warn(String.format("[recalculateSamplestoAudit contestName=%s, "
-                               + "twoUnder=%d, oneUnder=%d, oneOver=%d, twoOver=%d]",
-                               contestResult().getContestName(),
-                               my_two_vote_under_count, my_one_vote_under_count,
-                               my_one_vote_over_count, my_two_vote_over_count));
     if (my_optimistic_recalculate_needed) {
       final BigDecimal optimistic = computeOptimisticSamplesToAudit(my_two_vote_under_count,
                                                                     my_one_vote_under_count,
@@ -498,6 +493,14 @@ public class ComparisonAudit implements PersistentEntity {
         .setScale(0, RoundingMode.CEILING)
         .intValue();
     }
+
+    LOGGER.debug(String.format("[recalculateSamplestoAudit contestName=%s, "
+                               + "twoUnder=%d, oneUnder=%d, oneOver=%d, twoOver=%d"
+                               + " optimistic=%d, estimated=%d]",
+                               contestResult().getContestName(),
+                               my_two_vote_under_count, my_one_vote_under_count,
+                               my_one_vote_over_count, my_two_vote_over_count,
+                               my_optimistic_samples_to_audit, my_estimated_samples_to_audit));
     my_estimated_recalculate_needed = false;
   }
 
@@ -585,24 +588,16 @@ public class ComparisonAudit implements PersistentEntity {
 
   /** was the given cvrid selected for this contest? **/
   public boolean isCovering(Long cvrId) {
-    // if this is an opportunistic audit, this will be empty
-    // LOGGER.warn("isCovering " + contestResult().getContestCVRIds());
-    // LOGGER.warn("isCovering " + cvrId);
-    // LOGGER.warn("isCovering " + contestResult().getContestCVRIds().contains(cvrId));
     return contestResult().getContestCVRIds().contains(cvrId);
-    // if (contestResult().getAuditReason() != AuditReason.OPPORTUNISTIC_BENEFITS) {
-    //   return true;
-    // } else {
-    //   return false;
-    // }
   }
 
-
-
   /**
-   * Records the specified discrepancy (the valid range is -2 .. 2: -2 and -1 are
-   * understatements, 0 is a discrepancy that doesn't affect the RLA calculations,
-   * and 1 and 2 are overstatements).
+   * Records the specified discrepancy. If the discrepancy is for this Contest
+   * but from a CVR/ballot that was not selected for this Contest (selected for
+   * another Contest), is does not contribute to the counts and calculations. It
+   * is still recorded, though, for informational purposes. The valid range is
+   * -2 .. 2: -2 and -1 are understatements, 0 is a discrepancy that doesn't
+   * affect the RLA calculations, and 1 and 2 are overstatements).
    *
    * @param the_record The CVRAuditInfo record that generated the discrepancy.
    * @param the_type The type of discrepancy to add.
@@ -615,34 +610,37 @@ public class ComparisonAudit implements PersistentEntity {
     // we never trigger an estimated recalculate here; it is
     // triggered by signalBallotAudited() regardless of whether there is
     // a discrepancy or not
-    switch (the_type) {
-    case -2:
-      my_two_vote_under_count = my_two_vote_under_count + 1;
-      my_optimistic_recalculate_needed = true;
-      break;
 
-    case -1:
-      my_one_vote_under_count = my_one_vote_under_count + 1;
-      my_optimistic_recalculate_needed = true;
-      break;
+    if (isCovering(the_record.cvr().id())) {
+      switch (the_type) {
+      case -2:
+        my_two_vote_under_count = my_two_vote_under_count + 1;
+        my_optimistic_recalculate_needed = true;
+        break;
 
-    case 0:
-      my_other_count = my_other_count + 1;
-      // no optimistic recalculate needed
-      break;
+      case -1:
+        my_one_vote_under_count = my_one_vote_under_count + 1;
+        my_optimistic_recalculate_needed = true;
+        break;
 
-    case 1:
-      my_one_vote_over_count = my_one_vote_over_count + 1;
-      my_optimistic_recalculate_needed = true;
-      break;
+      case 0:
+        my_other_count = my_other_count + 1;
+        // no optimistic recalculate needed
+        break;
 
-    case 2:
-      my_two_vote_over_count = my_two_vote_over_count + 1;
-      my_optimistic_recalculate_needed = true;
-      break;
+      case 1:
+        my_one_vote_over_count = my_one_vote_over_count + 1;
+        my_optimistic_recalculate_needed = true;
+        break;
 
-    default:
-      throw new IllegalArgumentException("invalid discrepancy type: " + the_type);
+      case 2:
+        my_two_vote_over_count = my_two_vote_over_count + 1;
+        my_optimistic_recalculate_needed = true;
+        break;
+
+      default:
+        throw new IllegalArgumentException("invalid discrepancy type: " + the_type);
+      }
     }
 
     LOGGER.info(String.format("[recordDiscrepancy type=%s, record=%s]",
@@ -781,10 +779,6 @@ public class ComparisonAudit implements PersistentEntity {
   public OptionalInt computeDiscrepancy(final CastVoteRecord cvr,
                                         final CastVoteRecord auditedCVR) {
     OptionalInt result = OptionalInt.empty();
-
-    if (!isCovering(cvr.id())) {
-      return result;
-    }
 
     // FIXME this needs to get this stuff from the ContestResult
     // - a CastVoteRecord belongs to a county.

@@ -21,6 +21,9 @@ import java.util.TreeMap;
 
 import javax.persistence.PersistenceException;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import us.freeandfair.corla.asm.ASMState;
 import us.freeandfair.corla.asm.ASMUtilities;
 import us.freeandfair.corla.asm.DoSDashboardASM;
@@ -49,6 +52,11 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
 // Justification: False positive; there is a default case.
 
 public class DoSDashboardRefreshResponse {
+  /**
+   * Class-wide logger
+   */
+  public static final Logger LOGGER =
+      LogManager.getLogger(DoSDashboardRefreshResponse.class);
   /**
    * The ASM state.
    */
@@ -177,24 +185,13 @@ public class DoSDashboardRefreshResponse {
           audited_contests.put(cta.contest().id(), cta.reason());
 
           // FIXME does looking up the ComparisonAudit by name make sense?
-          for (final ComparisonAudit ca :
-                 ComparisonAuditQueries.matching(cta.contest().name())) {
-            optimistic =
-              Math.max(optimistic,
-                       // FIXME ca.auditedPrefixLength is
-                       // constantly zero until we figure out
-                       // how to look at the larger view...
-                       // Math.max(0, ca.optimisticSamplesToAudit() - ca.auditedPrefixLength()));
-                       Math.max(0, ca.optimisticSamplesToAudit() - ca.getAuditedSampleCount()));
-            estimated =
-              Math.max(estimated,
-                       // FIXME ca.auditedPrefixLength is
-                       // constantly zero until we figure out
-                       // how to look at the larger view...
-                       // Math.max(0, ca.estimatedSamplesToAudit() - ca.auditedPrefixLength()));
-                       Math.max(0, ca.estimatedSamplesToAudit() - ca.getAuditedSampleCount()));
+          for (final ComparisonAudit ca : ComparisonAuditQueries.matching(cta.contest().name())) {
+            // FIXME The dashboard looks funny here.
+            optimistic = Math.max(optimistic, Math.max(0, ca.optimisticSamplesToAudit() - ca.getAuditedSampleCount()));
+            estimated = Math.max(estimated, Math.max(0, ca.estimatedSamplesToAudit() - ca.getAuditedSampleCount()));
 
-
+            LOGGER.debug(String.format("[createResponse: optimistic=%d, estimated = %d, ca.optimisticSamplesToAudit()=%d, ca.estimatedSamplesToAudit()=%d, ca.getAuditedSampleCount()=%d]",
+                                       optimistic, estimated, ca.optimisticSamplesToAudit(), ca.estimatedSamplesToAudit(), ca.getAuditedSampleCount()));
 
             // possible discrepancy types range from -2 to 2 inclusive,
             // and we provide them all in the refresh response
@@ -205,6 +202,7 @@ public class DoSDashboardRefreshResponse {
               discrepancy.put(i, discrepancy.get(i) + ca.discrepancyCount(i));
             }
           }
+
           // FIXME Should we return the ContestResult that is the
           // aggregate of many Contests? Doing so would take us in the
           // direction of being able to clean up the UI; otherwise,

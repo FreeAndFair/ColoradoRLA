@@ -1,0 +1,6 @@
+CountyID,ScannerID,BatchID,NumBallots,StorageLocation
+Alamosa,"10","2",25,Bin 22
+Alamosa,"3","800",20,Bin 1
+Alamosa,"4","1200",50,Bin 1
+Alamosa,"5","1600",20,Bin 17
+Alamosa,"9","3200",50,Bin 17

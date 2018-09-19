@@ -215,6 +215,7 @@ public class CountyDashboard implements PersistentEntity {
   /**
    * The audit data.
    */
+  // FIXME We left this here with the same name for what reason?
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "counties_to_comparison_audits",
              joinColumns = { @JoinColumn(name = DASHBOARD_ID,
@@ -477,19 +478,19 @@ public class CountyDashboard implements PersistentEntity {
    * and expected achieved prefix length, starting at the specified index
    * in the random audit sequence.
    *
-   * @param the_number_of_ballots The number of ballots.
-   * @param the_prefix_length The expected audited prefix length at the round's end.
-   * @param the_start_index The start index.
-   * @param the_ballots_to_audit The ballots to audit in the round, in the order
+   * @param numberOfBallots The number of ballots in this round
+   * @param prefixLength The expected audited prefix length at the round's end.
+   * @param startIndex The start index.
+   * @param ballotSequence The ballots to audit in the round, in the order
    * in which they should be presented.
-   * @param the_audit_subsequence The audit subsequence for the round.
+   * @param auditSubsequence The audit subsequence for the round.
    * @exception IllegalStateException if a round is currently ongoing.
    */
-  public void startRound(final int the_number_of_ballots,
-                         final int the_prefix_length,
-                         final int the_start_index,
-                         final List<Long> the_ballots_to_audit,
-                         final List<Long> the_audit_subsequence) {
+  public void startRound(final int numberOfBallots,
+                         final int prefixLength,
+                         final int startIndex,
+                         final List<Long> ballotSequence,
+                         final List<Long> auditSubsequence) {
     if (my_current_round_index == null) {
       my_current_round_index = my_rounds.size();
     } else {
@@ -498,14 +499,13 @@ public class CountyDashboard implements PersistentEntity {
     // note UI round indexing is from 1, not 0
     final Round round = new Round(my_current_round_index + 1,
                                   Instant.now(),
-                                  the_number_of_ballots,
+                                  numberOfBallots,
                                   my_ballots_audited,
-                                  the_prefix_length,
-                                  the_start_index,
-                                  the_ballots_to_audit,
-                                  the_audit_subsequence);
+                                  prefixLength,
+                                  startIndex,
+                                  ballotSequence,
+                                  auditSubsequence);
     my_rounds.add(round);
-    LOGGER.debug("[startRound ends]");
   }
 
   /**
@@ -563,6 +563,15 @@ public class CountyDashboard implements PersistentEntity {
    */
   public Set<ComparisonAudit> getAudits() {
     return Collections.unmodifiableSet(audits);
+  }
+
+
+  /**
+   * @return true if all of the comparison audits are finished.
+   */
+  public boolean auditsFinished() {
+    return comparisonAudits().stream()
+      .allMatch(c -> c.auditStatus().equals(AuditStatus.RISK_LIMIT_ACHIEVED));
   }
 
   /**
@@ -897,7 +906,6 @@ public class CountyDashboard implements PersistentEntity {
    * @param the_audited_sample_count The audited sample count.
    */
   public void setAuditedSampleCount(final int the_audited_sample_count) {
-    LOGGER.debug(String.format("[setAuditedSampleCount: old=%d, new=%d]", my_audited_sample_count, the_audited_sample_count));
     my_audited_sample_count = the_audited_sample_count;
   }
 
