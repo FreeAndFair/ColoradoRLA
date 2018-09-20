@@ -38,10 +38,10 @@ const AuditInstructions = (props: InstructionsProps) => {
             <div className='current-ballot-info'>
                 <h3 className='sidebar-heading'>Current ballot:</h3>
                 <ul className='current-ballot-stats'>
+                    <li>Storage Bin { storageBin }</li>
                     <li>Tabulator #{ currentBallot.scannerId }</li>
                     <li>Batch #{ currentBallot.batchId }</li>
                     <li>Ballot Position #{ currentBallot.recordId }</li>
-                    <li>Storage Bin { storageBin }</li>
                     <li>Ballot type: { currentBallot.ballotType }</li>
                 </ul>
             </div>
@@ -157,20 +157,24 @@ const BallotReview = (props: BallotReviewProps) => {
 interface ReviewStageProps {
     countyState: County.AppState;
     currentBallot: County.CurrentBallot;
+    currentBallotNumber: number;
     marks: County.ACVR;
     nextStage: OnClick;
     prevStage: OnClick;
     uploadAcvr: OnClick;
+    totalBallotsForBoard: number;
 }
 
 const ReviewStage = (props: ReviewStageProps) => {
     const {
         countyState,
         currentBallot,
+        currentBallotNumber,
         marks,
         nextStage,
         prevStage,
         uploadAcvr,
+        totalBallotsForBoard,
     } = props;
 
     async function onClick() {
@@ -194,7 +198,7 @@ const ReviewStage = (props: ReviewStageProps) => {
               <div className='audit-page-header'>
                   <h2 className='audit-page-title'>Ballot Card Verification</h2>
                   <div className='audit-page-subtitle'>Review ballot</div>
-                  <div className='ballot-number'>Auditing ballot card { /* currentBallotNumber */ } of { /* currentRound!.expectedCount */ }</div>
+                  <div className='ballot-number'>Auditing ballot card { currentBallotNumber } of { totalBallotsForBoard }</div>
               </div>
 
               <div className = 'col-layout row1'>

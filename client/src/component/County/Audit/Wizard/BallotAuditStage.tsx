@@ -37,18 +37,16 @@ const BallotNotFoundForm = (props: NotFoundProps) => {
     );
 };
 
-interface InstructionsProps {
+interface AuditInstructionsProps {
     ballotNotFound: OnClick;
-    totalBallotsForBoard: number;
     countyState: County.AppState;
     currentBallot: CVR;
     currentBallotNumber: number;
 }
 
-const AuditInstructions = (props: InstructionsProps) => {
+const AuditInstructions = (props: AuditInstructionsProps) => {
     const {
         ballotNotFound,
-        totalBallotsForBoard,
         countyState,
         currentBallot,
         currentBallotNumber,
@@ -63,10 +61,10 @@ const AuditInstructions = (props: InstructionsProps) => {
             <div className='current-ballot-info'>
                 <h3 className='sidebar-heading'>Current ballot:</h3>
                 <ul className='current-ballot-stats'>
+                    <li>Storage Bin { storageBin }</li>
                     <li>Tabulator #{ currentBallot.scannerId }</li>
                     <li>Batch #{ currentBallot.batchId }</li>
                     <li>Ballot Position #{ currentBallot.recordId }</li>
-                    <li>Storage Bin { storageBin }</li>
                     <li>Ballot type: { currentBallot.ballotType }</li>
                 </ul>
             </div>
@@ -281,7 +279,7 @@ const BallotAuditStage = (props: StageProps) => {
                 <div className='audit-page-header'>
                     <h2 className='audit-page-title'>Audit Board { `${auditBoardIndex + 1}` }: Ballot Card Verification</h2>
                     <div className='audit-page-subtitle'>Enter ballot information</div>
-                    <div className='ballot-number'>Auditing ballot card { currentBallotNumber } of { currentRound!.expectedCount }</div>
+                    <div className='ballot-number'>Auditing ballot card { currentBallotNumber } of { totalBallotsForBoard }</div>
                 </div>
 
                 <div className='col-layout row1'>
@@ -290,8 +288,7 @@ const BallotAuditStage = (props: StageProps) => {
                             ballotNotFound={ notFound }
                             countyState={ countyState }
                             currentBallot={ currentBallot }
-                            currentBallotNumber={ currentBallotNumber }
-                            totalBallotsForBoard={ totalBallotsForBoard } />
+                            currentBallotNumber={ currentBallotNumber } />
                     </div>
                     <div className='col2'>
                         <BallotNotFoundForm
