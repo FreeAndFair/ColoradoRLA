@@ -258,6 +258,33 @@ th.rla-county-contest-info {
     margin-bottom: 20px;
 }
 
+.contest-choice-review-grid {
+    display: grid;
+    grid-column-gap: 1rem;
+    grid-template-columns: 2fr 1fr;
+}
+
+.contest-choice-review {
+    display: grid;
+    grid-column-gap: 1rem;
+    grid-template-columns: 1fr 1fr;
+}
+
+.contest-choice-review .rla-contest-choice {
+    margin-bottom: 20px;
+}
+
+.edit-button {
+    padding-right: 40px;
+    text-align: right;
+    color: #333;
+}
+
+.comments-container {
+    border-top: solid 1px #ddd;
+    margin-top: 20px;
+    padding-top: 20px;
+}
 
 /* hacking my way around blueprint's custom checkbox styles */
 
@@ -310,7 +337,13 @@ th.rla-county-contest-info {
 
 .contest-choice-selection input:checked ~ .choice-name {
     background-color: #08589A;
-    border:solid 1px #08589A;
+    border: solid 1px #08589A;
+    color: white;
+}
+
+.contest-choice-selection.contest-choice-review .choice-name {
+    background-color: #08589A;
+    border: solid 1px #08589A;
     color: white;
 }
 
@@ -412,6 +445,16 @@ th.rla-county-contest-info {
 .accordion-item-content p {
     padding-top: 10px;
     padding-bottom: 20px;
+}
+
+.blank-vote, .no-consensus {
+    font-size: 2em;
+    padding-right: 20px;
+    vertical-align: middle;
+}
+
+.review-edit-selection {
+    padding-right: 10px;
 }
 
 /* shouldn't need this */
