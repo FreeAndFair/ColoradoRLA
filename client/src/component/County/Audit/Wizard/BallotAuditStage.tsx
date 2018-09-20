@@ -6,6 +6,7 @@ import { Checkbox, EditableText, MenuDivider } from '@blueprintjs/core';
 
 import BackButton from './BackButton';
 import WaitingForNextBallot from './WaitingForNextBallot';
+
 import CommentIcon from '../../../CommentIcon';
 
 import ballotNotFound from 'corla/action/county/ballotNotFound';
@@ -25,8 +26,8 @@ const BallotNotFoundForm = (props: NotFoundProps) => {
         <div>
             <div className='not-found-header'> Are you looking at the right ballot?</div>
             <div className='not-found-copy'>
-                Before making any selections below, first make sure the paper ballot you are examining 
-                matches the Current ballot information displayed on the left. If you make selections based 
+                Before making any selections below, first make sure the paper ballot you are examining
+                matches the Current ballot information displayed on the left. If you make selections based
                 on the wrong ballot, you may have to audit more ballots later.
             </div>
             <button className='pt-button pt-large pt-intent-danger' onClick={ onClick }>
@@ -97,11 +98,11 @@ interface ChoicesProps {
 }
 
 const ContestChoices = (props: ChoicesProps) => {
-    const { 
-        choices, 
-        marks, 
-        noConsensus, 
-        updateBallotMarks 
+    const {
+        choices,
+        marks,
+        noConsensus,
+        updateBallotMarks,
     } = props;
 
     function updateChoiceByName(name: string) {
@@ -149,7 +150,7 @@ const ContestComments = (props: CommentsProps) => {
         <div className='comment-box'>
             <label className='comment-box-label'>
                 <CommentIcon />
-                <EditableText multiline value={ comments || '' } onChange={ onChange } placeholder="Add comment" className='comment-field'/>
+                <EditableText multiline value={ comments || '' } onChange={ onChange } placeholder='Add comment' className='comment-field'/>
             </label>
         </div>
     );
@@ -310,9 +311,9 @@ const BallotAuditStage = (props: StageProps) => {
                                 <label htmlFor='item1' className='accordion-item-label'>Overvote</label>
                                 <div id='content1' className='accordion-item-content'>
                                     <p>
-                                        Even if you think that the voter voted for too many 
-                                        choices, select all of the choices exactly as they 
-                                        appear on the ballot in the RLA Software. If you need 
+                                        Even if you think that the voter voted for too many
+                                        choices, select all of the choices exactly as they
+                                        appear on the ballot in the RLA Software. If you need
                                         more specific guidance, consult the Voter Intent Guide.
                                     </p>
                                 </div>
@@ -321,10 +322,10 @@ const BallotAuditStage = (props: StageProps) => {
                                 <label htmlFor='item2' className='accordion-item-label'>Undervote</label>
                                 <div id='content2' className= 'accordion-item-content'>
                                     <p>
-                                        Even if you think that the voter did not select enough 
-                                        choices, select all of the choices exactly as they appear 
-                                        on the ballot. If the voter did not select any choice, mark 
-                                        the “Blank vote – no mark” button. If you need more specific guidance, consult the Voter Intent Guide. 
+                                        Even if you think that the voter did not select enough
+                                        choices, select all of the choices exactly as they appear
+                                        on the ballot. If the voter did not select any choice, mark
+                                        the “Blank vote – no mark” button. If you need more specific guidance, consult the Voter Intent Guide.
                                     </p>
                                 </div>
 
@@ -332,8 +333,8 @@ const BallotAuditStage = (props: StageProps) => {
                                 <label htmlFor='item3' className='accordion-item-label'>Blank vote</label>
                                 <div id='content3' className='accordion-item-content'>
                                     <p>
-                                        If you examine a paper ballot and determine 
-                                        the voter did not intend to vote for any choice in a ballot contest, 
+                                        If you examine a paper ballot and determine
+                                        the voter did not intend to vote for any choice in a ballot contest,
                                         select “Blank vote – no mark”
                                     </p>
                                 </div>
@@ -342,11 +343,11 @@ const BallotAuditStage = (props: StageProps) => {
                                 <label htmlFor='item4' className='accordion-item-label'>Write-in</label>
                                 <div id='content4' className='accordion-item-content'>
                                     <p>
-                                        If the voter wrote in a candidate on the “Write-in” line, 
-                                        select the candidate the voter wrote in in the RLA software. 
-                                        If the candidate does not appear in the RLA software, make no selection and 
-                                        add a comment with what is written on the Write-in line. If you need more 
-                                        specific guidance, consult the Voter Intent Guide. 
+                                        If the voter wrote in a candidate on the “Write-in” line,
+                                        select the candidate the voter wrote in in the RLA software.
+                                        If the candidate does not appear in the RLA software, make no selection and
+                                        add a comment with what is written on the Write-in line. If you need more
+                                        specific guidance, consult the Voter Intent Guide.
                                     </p>
                                 </div>
 
@@ -354,11 +355,11 @@ const BallotAuditStage = (props: StageProps) => {
                                 <label htmlFor='item5' className='accordion-item-label'>We can't agree</label>
                                 <div id='content5' className= 'accordion-item-content'>
                                     <p>
-                                        If the members of the audit board can’t agree on what the voter intended 
-                                        when they marked their ballot, select the “No consensus” button for that contest. 
-                                        Before moving on, take a break and then try again to reach a consensus using the 
-                                        Voter Intent Guide. If you select “No consensus” you may have to audit more 
-                                        ballots later. 
+                                        If the members of the audit board can’t agree on what the voter intended
+                                        when they marked their ballot, select the “No consensus” button for that contest.
+                                        Before moving on, take a break and then try again to reach a consensus using the
+                                        Voter Intent Guide. If you select “No consensus” you may have to audit more
+                                        ballots later.
                                     </p>
                                 </div>
                             </div>
@@ -369,10 +370,8 @@ const BallotAuditStage = (props: StageProps) => {
                         <div className='main-col-instructions'>
                             <div className='not-found-header'>For each ballot contest:</div>
                             <p>Select exactly the same voting choices as the voter marked on the paper ballot you are examining.</p>
-        
                             <p>Example 1: If the voter marked three candidates on their ballot in this contest, select the exact
                                 same three candidates below.</p>
-                                
                             <p>Example 2: If the voter did not vote for any of the candidates or choices in this contest, select
                             “Blank vote – no mark”</p>
                         </div>

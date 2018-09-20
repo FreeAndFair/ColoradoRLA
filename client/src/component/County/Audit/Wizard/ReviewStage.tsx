@@ -82,7 +82,7 @@ const BallotContestReview = (props: BallotContestReviewProps) => {
         <div className='comments-head'>COMMENT:</div>
         <div className='comments-body'>{ comments }</div>
       </div>
-    )
+    );
 
     const markedChoiceDivs = _.map(markedChoices, (_, name) => {
         return (
