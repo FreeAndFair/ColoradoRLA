@@ -38,11 +38,11 @@ const AuditInstructions = (props: InstructionsProps) => {
             <div className='current-ballot-info'>
                 <h3 className='sidebar-heading'>Current ballot:</h3>
                 <ul className='current-ballot-stats'>
-                    <li>Storage Bin { storageBin }</li>
-                    <li>Tabulator #{ currentBallot.scannerId }</li>
-                    <li>Batch #{ currentBallot.batchId }</li>
-                    <li>Ballot Position #{ currentBallot.recordId }</li>
-                    <li>Ballot type: { currentBallot.ballotType }</li>
+                    <li>Storage bin: <span className='pt-ui-text pt-ui-text-large'>{ storageBin }</span></li>
+                    <li>Tabulator: <span className='pt-ui-text pt-ui-text-large'>{ currentBallot.scannerId }</span></li>
+                    <li>Batch: <span className='pt-ui-text pt-ui-text-large'>{ currentBallot.batchId }</span></li>
+                    <li>Ballot position: <span className='pt-ui-text pt-ui-text-large'>{ currentBallot.recordId }</span></li>
+                    <li>Ballot type: <span className='pt-ui-text pt-ui-text-large'>{ currentBallot.ballotType }</span></li>
                 </ul>
             </div>
         </div>

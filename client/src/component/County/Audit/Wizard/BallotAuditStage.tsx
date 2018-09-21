@@ -21,21 +21,21 @@ interface NotFoundProps {
 const BallotNotFoundForm = (props: NotFoundProps) => {
     const { ballotNotFound, currentBallot } = props;
     const onClick = () => {
-        if (confirm('Ballot Not Found - Move to next ballot?')) {
+        if (confirm('By continuing, this ballot will be recorded as “not found” and you will move on to the next ballot.')) {
             ballotNotFound(currentBallot.id);
         }
     };
 
     return (
         <div>
-            <div className='not-found-header'> Are you looking at the right ballot?</div>
+            <div className='not-found-header'>Are you looking at the right ballot?</div>
             <div className='not-found-copy'>
                 Before making any selections below, first make sure the paper ballot you are examining
-                matches the Current ballot information displayed on the left. If you make selections based
+                matches the current ballot information displayed on the left. If you make selections based
                 on the wrong ballot, you may have to audit more ballots later.
             </div>
             <button className='pt-button pt-large pt-intent-danger' onClick={ onClick }>
-                Ballot Not Found - Move to next ballot
+                Ballot not found - move to next ballot
             </button>
         </div>
     );
@@ -65,11 +65,11 @@ const AuditInstructions = (props: AuditInstructionsProps) => {
             <div className='current-ballot-info'>
                 <h3 className='sidebar-heading'>Current ballot:</h3>
                 <ul className='current-ballot-stats'>
-                    <li>Storage Bin { storageBin }</li>
-                    <li>Tabulator #{ currentBallot.scannerId }</li>
-                    <li>Batch #{ currentBallot.batchId }</li>
-                    <li>Ballot Position #{ currentBallot.recordId }</li>
-                    <li>Ballot type: { currentBallot.ballotType }</li>
+                    <li>Storage bin: <span className='pt-ui-text pt-ui-text-large'>{ storageBin }</span></li>
+                    <li>Tabulator: <span className='pt-ui-text pt-ui-text-large'>{ currentBallot.scannerId }</span></li>
+                    <li>Batch: <span className='pt-ui-text pt-ui-text-large'>{ currentBallot.batchId }</span></li>
+                    <li>Ballot position: <span className='pt-ui-text pt-ui-text-large'>{ currentBallot.recordId }</span></li>
+                    <li>Ballot type: <span className='pt-ui-text pt-ui-text-large'>{ currentBallot.ballotType }</span></li>
                 </ul>
             </div>
         </div>
@@ -294,7 +294,8 @@ const BallotAuditStage = (props: StageProps) => {
     const validatingAcvr = (handler: OnClick) => {
         return (e: any) => {
             if (!validateAcvr()) {
-                alert('You must fill out the audit form completely.');
+                alert('You must record an interpretation of voter intent for each contest.'
+                      + ' Double-check that all contests have an option selected.');
 
                 return false;
             }

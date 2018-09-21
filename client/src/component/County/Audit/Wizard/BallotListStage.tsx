@@ -97,11 +97,11 @@ const BallotListStage = (props: BallotListStageProps) => {
                     <table className='pt-table pt-bordered pt-condensed'>
                         <thead>
                             <tr>
-                                <th>Storage Bin</th>
-                                <th>Scanner #</th>
-                                <th>Batch #</th>
-                                <th>Ballot Position #</th>
-                                <th>Ballot Type</th>
+                                <th>Storage bin</th>
+                                <th>Scanner</th>
+                                <th>Batch</th>
+                                <th>Ballot position</th>
+                                <th>Ballot type</th>
                                 <th>Audited</th>
                                 <th>Audit board</th>
                             </tr>
