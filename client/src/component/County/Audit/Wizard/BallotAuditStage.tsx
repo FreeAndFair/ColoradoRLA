@@ -22,8 +22,8 @@ const BallotNotFoundForm = (props: NotFoundProps) => {
     const { ballotNotFound, currentBallot } = props;
     const onClick = () => {
         if (confirm('Ballot Not Found - Move to next ballot?')) {
-            ballotNotFound(currentBallot.id)
-        };
+            ballotNotFound(currentBallot.id);
+        }
     };
 
     return (
@@ -275,12 +275,11 @@ const BallotAuditStage = (props: StageProps) => {
         ballotNotFound(currentBallot.id);
     };
 
-    const acvr = countyState.acvrs![currentBallot.id];
+    const validateAcvr = () => {
+        const acvr = countyState.acvrs![currentBallot.id];
 
-    const validateAcvr = (acvr: County.ACVR) => {
         const validateContest = (contest: any) => {
-            console.log(contest.choices);
-            return _.every(contest.choices, (choice) => !!choice)
+            return _.every(contest.choices, choice => !!choice)
                 || contest.noConsensus
                 || contest.noMark;
         };
@@ -288,15 +287,15 @@ const BallotAuditStage = (props: StageProps) => {
         return _.every(acvr, validateContest);
     };
 
-    const validatingNextStage = (nextStage: OnClick) => {
+    const validatingAcvr = (handler: OnClick) => {
         return (e: any) => {
-            if (!validateAcvr(acvr)) {
-                alert("You must fill out the audit form completely.");
+            if (!validateAcvr()) {
+                alert('You must fill out the audit form completely.');
 
                 return false;
             }
 
-            return nextStage(e);
+            return handler(e);
         };
     };
 
@@ -413,7 +412,7 @@ const BallotAuditStage = (props: StageProps) => {
                 <div className='button-container'>
                     <BackButton back={ prevStage } />
 
-                    <button className='pt-large pt-button pt-intent-success pt-breadcrumb' onClick={ validatingNextStage(nextStage) }>
+                    <button className='pt-large pt-button pt-intent-success pt-breadcrumb' onClick={ validatingAcvr(nextStage) }>
                         Review
                     </button>
                 </div>
