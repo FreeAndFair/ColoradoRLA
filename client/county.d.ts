@@ -78,6 +78,7 @@ declare namespace County {
         choices: ACVRChoices;
         comments: string;
         noConsensus: boolean;
+        noMark?: boolean;
     }
 
     interface ACVRChoices {

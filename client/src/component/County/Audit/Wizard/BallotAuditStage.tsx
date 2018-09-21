@@ -180,6 +180,10 @@ const BallotContestMarkForm = (props: MarkFormProps) => {
         updateBallotMarks({ noConsensus: !!e.target.checked });
     };
 
+    const updateNoMark = (e: React.ChangeEvent<any>) => {
+        updateBallotMarks({ noMark: !!e.target.checked });
+    };
+
     return (
         <div className='contest-row'>
             <ContestInfo contest={ contest } />
@@ -199,11 +203,10 @@ const BallotContestMarkForm = (props: MarkFormProps) => {
                         <span className='choice-name no-choice'>No audit board consensus</span></Checkbox>
                 </div>
 
-                {/* duplicate checkbox as "no mark" button placeholder */}
                 <div className='contest-choice-selection'>
                     <Checkbox
-                        checked={ !!contestMarks.noConsensus }
-                        onChange={ updateConsensus }>
+                        checked={ !!contestMarks.noMark }
+                        onChange={ updateNoMark }>
                         <span className='choice-name no-choice'>Blank vote - no mark</span></Checkbox>
                 </div>
             </div>
