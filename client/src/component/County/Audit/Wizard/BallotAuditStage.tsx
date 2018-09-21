@@ -177,7 +177,10 @@ const BallotContestMarkForm = (props: MarkFormProps) => {
     };
 
     const updateConsensus = (e: React.ChangeEvent<any>) => {
-        updateBallotMarks({ noConsensus: !!e.target.checked });
+        if (confirm('By continuing, you acknowledge that the audit board could not reach consensus on an interpretation'
+                    + ' of voter intent for this ballot.')) {
+          updateBallotMarks({ noConsensus: !!e.target.checked });
+        }
     };
 
     const updateNoMark = (e: React.ChangeEvent<any>) => {
