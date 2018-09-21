@@ -450,6 +450,9 @@ def random_sequence(args, connection, cursor, county_id, county_name):
 
 
         with UmaskNamedTemporaryFile(mode="w", dir=args.export_dir, delete=False) as stream:
+            filename = os.path.join(args.export_dir, 'random_sequence_%s.csv' % county_name)
+            logging.debug("created %s for %s" % (stream.name, filename))
+
             print("county_name,round_number,random_sequence_index,scanner_id,batch_id,record_id,imprinted_id,ballot_type",
                   file=stream)
             prefix = 0
@@ -471,7 +474,7 @@ def random_sequence(args, connection, cursor, county_id, county_name):
 
                 for i, cvr_id in enumerate(audit_subsequence):
                     cvr = cvrs[cvr_id]
-                    print('"%s",%d,%d,%d,%d,%d,"%s","%s"' % (
+                    print('"%s",%d,%d,%s,%s,%d,"%s","%s"' % (
                         cvr['county_name'],
                         round_number,
                         prefix + i + 1,
@@ -485,18 +488,16 @@ def random_sequence(args, connection, cursor, county_id, county_name):
                 prefix += i + 1
                 logging.debug('Total of %d selected in round %d, prefix=%d' % (i + 1, round_number, prefix))
 
-            filename = os.path.join(args.export_dir, 'random_sequence_%s.csv' % county_name)
             os.rename(stream.name, filename)
 
     except IOError as e:
         print("I/O error({0}): {1}".format(e.errno, e.strerror))
 
     except Exception as e:
-        print("e: %s, type(e): %s" % (e, type(e)))
         logging.error("rla_export: random_sequence: failure: %s" % e)
 
 def show_elapsed(r, *args, **kwargs):
-    logging.log(25, "Endpoint %s: %s. Elapsed time %.3f" % (r.url, r, r.elapsed.total_seconds()))
+    logging.log(25,"Endpoint %s: %s. Elapsed time %.3f" % (r.url, r, r.elapsed.total_seconds()))
 
 
 def parse_corla_config(filename):
