@@ -11,7 +11,7 @@ interface EditButtonProps {
 const EditButton = ({ back }: EditButtonProps) => {
     return (
         <a onClick={ back }>
-            <span className='pt-icon-edit review-edit-selection'></span>
+            <span className='pt-icon-standard pt-icon-edit review-edit-selection'></span>
             Edit
         </a>
     );
@@ -65,14 +65,14 @@ const BallotContestReview = (props: BallotContestReviewProps) => {
 
     const noConsensusDiv = (
         <div>
-            <span className='no-consensus pt-icon-disable'></span>
+            <span className='no-consensus pt-icon-standard pt-icon-disable'></span>
             No audit board consensus
         </div>
     );
 
     const noMarksDiv = (
         <div>
-            <span className='blank-vote pt-icon-cross'></span>
+            <span className='blank-vote pt-icon-standard pt-icon-cross'></span>
             Blank vote - no mark
         </div>
     );
