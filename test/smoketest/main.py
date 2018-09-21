@@ -244,6 +244,9 @@ parser.add_argument('-t, --trackstates', type=bool, dest='trackstates',
 parser.add_argument('-d, --debuglevel', type=int, default=logging.WARNING, dest='debuglevel',
   help='Set logging level to debuglevel: DEBUG=10, INFO=20,\n WARNING=30 (the default), ERROR=40, CRITICAL=50')
 
+parser.add_argument('-X, --contest-names', dest='contestNames', default="../contest-names/canonical-contests.csv",
+                    help='Path to a valid CSV file of canonical names')
+
 parser.add_argument('commands', metavar="COMMAND", nargs='*',
                     help='audit commands to run. May be specified multiple times. '
                     'Possibilities: reset dos_init county_setup dos_start county_audit dos_wrapup')
@@ -626,7 +629,7 @@ def dos_init(ac):
     r = test_endpoint_json(ac, ac.state_s, "/update-audit-info",
                            { "election_type": "coordinated",
                              "election_date": "2017-11-09T02:00:00Z",
-                             "upload_file": [{"contents": open("../contest-names/canonical-contests.csv").read()}],
+                             "upload_file": [{"contents": open(ac.args.contestNames).read()}],
                              "public_meeting_date": "2017-11-19T02:00:00Z",
                              "risk_limit": ac.args.risk_limit } )
 def county_setup(ac, county_id):
