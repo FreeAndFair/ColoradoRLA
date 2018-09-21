@@ -275,6 +275,31 @@ const BallotAuditStage = (props: StageProps) => {
         ballotNotFound(currentBallot.id);
     };
 
+    const acvr = countyState.acvrs![currentBallot.id];
+
+    const validateAcvr = (acvr: County.ACVR) => {
+        const validateContest = (contest: any) => {
+            console.log(contest.choices);
+            return _.every(contest.choices, (choice) => !!choice)
+                || contest.noConsensus
+                || contest.noMark;
+        };
+
+        return _.every(acvr, validateContest);
+    };
+
+    const validatingNextStage = (nextStage: OnClick) => {
+        return (e: any) => {
+            if (!validateAcvr(acvr)) {
+                alert("You must fill out the audit form completely.");
+
+                return false;
+            }
+
+            return nextStage(e);
+        };
+    };
+
     const { currentRound } = countyState;
 
     if (currentBallot.submitted) {
@@ -305,8 +330,7 @@ const BallotAuditStage = (props: StageProps) => {
                     </div>
                 </div>
 
-                <div className = 'col-layout'>
-
+                <div className='col-layout'>
                     <div className='col1'>
                         <div className='sidebar-instructions'>
                             <h3 className='sidebar-heading'>How to match selections with ballot</h3>
@@ -389,7 +413,7 @@ const BallotAuditStage = (props: StageProps) => {
                 <div className='button-container'>
                     <BackButton back={ prevStage } />
 
-                    <button className='pt-large pt-button pt-intent-success pt-breadcrumb' onClick={ nextStage }>
+                    <button className='pt-large pt-button pt-intent-success pt-breadcrumb' onClick={ validatingNextStage(nextStage) }>
                         Review
                     </button>
                 </div>
