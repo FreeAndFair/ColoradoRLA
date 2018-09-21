@@ -1,14 +1,15 @@
 # Build a deliverable for rla_export
 
-relname=rla_export-1.1.0
+# This should match the value in setup.py
+relname=rla_export-1.4.0-SNAPSHOT
 deliverable=deliverable-$relname
 mkdir -p $deliverable
 
 # These should be the same
 diff rla_export/default.properties /srv/s/electionaudits/ColoradoRLA/server/eclipse-project/src/main/resources/us/freeandfair/corla/default.properties
 
-# First run make in the docs directory
-# and runsetup sdist in this directory
+# First, manually, run make in the doc directory
+# and runsetup.bash sdist in this directory
 
 cp -p dist/$relname.tar.gz $deliverable
 cp -p rla_export/corla.ini $deliverable/corla-template.ini

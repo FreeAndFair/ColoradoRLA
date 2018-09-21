@@ -1,3 +1,6 @@
+# Specific to rla_export and build_deliverable.bash
+deliverable-rla_export*
+
 # Compiled python modules.
 *.pyc
 
