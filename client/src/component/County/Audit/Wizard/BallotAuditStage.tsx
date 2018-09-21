@@ -279,7 +279,8 @@ const BallotAuditStage = (props: StageProps) => {
         const acvr = countyState.acvrs![currentBallot.id];
 
         const validateContest = (contest: any) => {
-            return _.every(contest.choices, choice => !!choice)
+            return (_.size(contest.choices) > 0 &&
+                    _.every(contest.choices, choice => !!choice))
                 || contest.noConsensus
                 || contest.noMark;
         };
