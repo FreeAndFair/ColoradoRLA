@@ -65,14 +65,14 @@ const BallotContestReview = (props: BallotContestReviewProps) => {
 
     const noConsensusDiv = (
         <div>
-            <span className='no-consensus pt-icon-blocked-person'></span>
+            <span className='no-consensus pt-icon-disable'></span>
             No audit board consensus
         </div>
     );
 
     const noMarksDiv = (
         <div>
-            <span className='blank-vote pt-icon-square'></span>
+            <span className='blank-vote pt-icon-cross'></span>
             Blank vote - no mark
         </div>
     );

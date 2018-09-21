@@ -20,7 +20,11 @@ interface NotFoundProps {
 
 const BallotNotFoundForm = (props: NotFoundProps) => {
     const { ballotNotFound, currentBallot } = props;
-    const onClick = () => ballotNotFound(currentBallot.id);
+    const onClick = () => {
+        if (confirm('Ballot Not Found - Move to next ballot?')) {
+            ballotNotFound(currentBallot.id)
+        };
+    };
 
     return (
         <div>
@@ -180,6 +184,7 @@ const BallotContestMarkForm = (props: MarkFormProps) => {
         <div className='contest-row'>
             <ContestInfo contest={ contest } />
             <ContestChoices
+                key={ contest.id }
                 choices={ choices }
                 marks={ contestMarks }
                 noConsensus={ !!contestMarks.noConsensus }

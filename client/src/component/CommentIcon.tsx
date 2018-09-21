@@ -3,8 +3,8 @@ import * as React from 'react';
 const CommentIcon = () => {
     return (
       <svg className='comment-icon' width='82px' height='79px' viewBox='0 0 82 79'>
-        <g stroke='none' stroke-width='1' fill-rule='evenodd'>
-            <g fill-rule='nonzero'>
+        <g stroke='none' strokeWidth='1' fillRule='evenodd'>
+            <g fillRule='nonzero'>
                 <g id='Group'>
                     <g>
                         <g>

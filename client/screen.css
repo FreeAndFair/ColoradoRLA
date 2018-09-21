@@ -131,6 +131,10 @@ h3 {
     width: -webkit-fit-content;
 }
 
+.rla-radio-group .pt-control {
+    padding-left: 26px;
+}
+
 .rla-contest-choice {
     width: fit-content;
     width: -moz-fit-content;
