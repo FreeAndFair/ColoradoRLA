@@ -35,6 +35,7 @@ import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.controller.BallotSelection.Tribute;
 
 /**
  * Queries having to do with CastVoteRecord entities.
@@ -345,7 +346,11 @@ public final class CastVoteRecordQueries {
    * or null if the query fails.
    */
   public static List<CastVoteRecord> get(final List<Long> the_ids) {
-    List<CastVoteRecord> result = null;
+    List<CastVoteRecord> result = new ArrayList<>();
+
+    if (the_ids.isEmpty()) {
+      return result;
+    }
 
     try {
       final Session s = Persistence.currentSession();
@@ -362,6 +367,7 @@ public final class CastVoteRecordQueries {
     }
     if (result == null) {
       Main.LOGGER.debug("found no CVRs with ids " + the_ids);
+      return new ArrayList<>();
     } else {
       Main.LOGGER.debug("found " + result.size() + "CVRs ");
     }
@@ -369,13 +375,11 @@ public final class CastVoteRecordQueries {
     return result;
   }
 
-  /** find a cvr record that matches the given cvr attributes **/
-  public static CastVoteRecord atPosition(final CastVoteRecord cvr) {
-    return atPosition(cvr.countyID(),
-                      cvr.scannerID(),
-                      cvr.batchID(),
-                      // position == record_id
-                      Long.valueOf(cvr.recordID()));
+  public static CastVoteRecord atPosition(Tribute tribute) {
+    return atPosition(tribute.countyId,
+                      tribute.scannerId,
+                      tribute.batchId,
+                      tribute.ballotPosition);
   }
 
   /**
@@ -384,7 +388,7 @@ public final class CastVoteRecordQueries {
   public static CastVoteRecord atPosition(final Long county_id,
                                           final Integer scanner_id,
                                           final String batch_id,
-                                          final Long position) {
+                                          final Integer position) {
     List<CastVoteRecord> result = null;
 
     try {
@@ -397,6 +401,7 @@ public final class CastVoteRecordQueries {
                                    cb.equal(root.get("my_batch_id"), batch_id),
                                    cb.equal(root.get("my_record_id"), position),
                                    cb.equal(root.get("my_record_type"), RecordType.UPLOADED)));
+
       final TypedQuery<CastVoteRecord> query = s.createQuery(cq);
       result = query.getResultList();
     } catch (final PersistenceException e) {
@@ -407,10 +412,29 @@ public final class CastVoteRecordQueries {
       case 1:
         return result.get(0);
       case 0:
-        return null;
+        // hmm performance no good, prevents bulk queries
+        return phantomRecord();
       default:
         Main.LOGGER.error("found more than one cvr atPosition: \n" + result);
         return result.get(0);
     }
   }
+
+  /** PHANTOM_RECORD conspiracy theory time **/
+  public static CastVoteRecord phantomRecord() {
+    final CastVoteRecord cvr = new CastVoteRecord(CastVoteRecord.RecordType.PHANTOM_RECORD,
+                                                  null,
+                                                  0L,
+                                                  0,
+                                                  0,
+                                                  0,
+                                                  "",
+                                                  0,
+                                                  "",
+                                                  "PHANTOM RECORD",
+                                                  null);
+    Persistence.save(cvr);
+    return cvr;
+  }
+
 }

@@ -27,6 +27,8 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 import com.google.gson.reflect.TypeToken;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import spark.Request;
 import spark.Response;
@@ -59,6 +61,12 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
    */
   private static final Type ELECTOR_LIST =
       new TypeToken<List<Elector>>() { }.getType();
+
+  /**
+   * Class-wide logger
+   */
+  public static final Logger LOGGER =
+      LogManager.getLogger(SignOffAuditRound.class);
 
   /**
    * The event to return for this endpoint.
@@ -117,7 +125,7 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
     final County county = Main.authentication().authenticatedCounty(request);
 
     if (county == null) {
-      Main.LOGGER.error("could not get authenticated county");
+      LOGGER.error("could not get authenticated county");
       unauthorized(response, "not authorized to sign off on the round");
     }
 
@@ -132,19 +140,20 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
           Main.GSON.fromJson(o.get("signatories"), ELECTOR_LIST);
 
       if (signatories.size() < CountyDashboard.MIN_ROUND_SIGN_OFF_MEMBERS) {
-        Main.LOGGER.error("too few signatories for round sign-off sent");
+        LOGGER.error("[signoff: too few signatories for round sign-off]");
         invariantViolation(response, "too few signatories for round sign-off sent");
       }
 
       final CountyDashboard cdb = Persistence.getByID(county.id(), CountyDashboard.class);
 
       if (cdb == null) {
-        Main.LOGGER.error("could not get county dashboard");
+        LOGGER.error(String.format("[signoff: Could not get county dashboard for %s County id=%d]",
+                                   county.name(), county.id()));
         serverError(response, "could not get county dashboard");
       }
 
       if (cdb.currentRound() == null) {
-        Main.LOGGER.error("no current round on which to sign off");
+        LOGGER.error(String.format("[signoff: No current round for %s County]", cdb.county().name()));
         invariantViolation(response, "no current round on which to sign off");
       }
 
@@ -155,7 +164,7 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
       // If we have not seen all the boards sign off yet, we do not want to end
       // the round.
       if (currentRound.signatories().size() < cdb.auditBoardCount()) {
-        Main.LOGGER.info(String.format(
+        LOGGER.info(String.format(
             "%d of %d audit boards have signed off for county %d",
             currentRound.signatories().size(),
             cdb.auditBoardCount(),
@@ -167,38 +176,60 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
         // update the ASM state for the county and maybe DoS
         if (!DISABLE_ASM) {
           final boolean audit_complete;
+          LOGGER.debug
+            (String.format
+             ("[signoff for %s County: cdb.estimatedSamplesToAudit()=%d,"
+              + " cdb.auditedSampleCount()=%d,"
+              + " cdb.ballotsAudited()=%d]",
+              cdb.county().name(),
+              cdb.estimatedSamplesToAudit(),
+              cdb.auditedSampleCount(),
+              cdb.ballotsAudited()));
+
           if (cdb.estimatedSamplesToAudit() <= 0) {
-            // we've reached the risk limit, so the county is done
+            LOGGER.debug
+              (String.format
+               ("[signoff: RISK_LIMIT_ACHIEVED for %s County: "
+                + " cdb.estimatedSamplesToAudit()=%d,"
+                + " cdb.auditedSampleCount()=%d,"
+                + " cdb.ballotsAudited()=%d]",
+                cdb.county().name(),
+                cdb.estimatedSamplesToAudit(),
+                cdb.auditedSampleCount(),
+                cdb.ballotsAudited()));
             my_event.set(RISK_LIMIT_ACHIEVED_EVENT);
             cdb.endAudits();
             audit_complete = true;
           } else if (cdb.cvrsImported() <= cdb.ballotsAudited()) {
-            // there are no more ballots in the county
+            LOGGER.debug("[signoff: there are no more ballots in the county]");
             my_event.set(BALLOTS_EXHAUSTED_EVENT);
             cdb.endAudits();
             audit_complete = true;
           } else {
-            // the round ended normally
+            LOGGER.debug("[signoff: the round ended normally]");
             my_event.set(ROUND_SIGN_OFF_EVENT);
             audit_complete = false;
           }
 
           if (audit_complete) {
+            LOGGER.debug("[signoff: audit complete]");
             notifyAuditComplete();
           } else {
+            LOGGER.debug("[signoff: round complete]");
             notifyRoundComplete(cdb.id());
           }
         }
       }
     } catch (final PersistenceException e) {
-      Main.LOGGER.error("unable to sign off on round", e);
+      LOGGER.error("[signoff: unable to sign off round.]");
       serverError(response, "unable to sign off round: " + e);
     } catch (final JsonParseException e) {
-      Main.LOGGER.error("bad data sent in an attempt to sign off on round", e);
+      LOGGER.error("[signoff: bad data sent in an attempt to sign off on round]", e);
       badDataContents(response, "invalid request body attempting to sign off on round");
     }
-
+    LOGGER.debug("[signoff: a-ok]");
     ok(response, "audit board signed off");
+
     return my_endpoint_result.get();
   }
 
@@ -216,12 +247,16 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
       if (!cdb.id().equals(the_id)) {
         finished &= cdb.currentRound() == null;
       }
+      LOGGER.debug(String.format("[notifyRoundComplete: finished=%b, the_id=%d, cdb=%s]",
+                                 finished, the_id, cdb));
     }
 
     if (finished) {
       ASMUtilities.step(DOS_ROUND_COMPLETE_EVENT,
                         DoSDashboardASM.class,
                         DoSDashboardASM.IDENTITY);
+
+      LOGGER.debug("[notifyRoundComplete stepped DOS_ROUND_COMPLETE_EVENT]");
     }
   }
 

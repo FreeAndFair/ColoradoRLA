@@ -455,11 +455,21 @@ public final class Persistence {
     try {
       currentSession().saveOrUpdate(the_object);
     } catch (final PersistenceException e) {
-      Main.LOGGER.debug("could not save/update object " + the_object + ": " + e);
+      Main.LOGGER.error("could not save/update object " + the_object + ": " + e);
       result = false;
     }
 
     return result;
+  }
+
+  /**
+   * Like saveOrUpdate, but returns the thing you wanted to save instead
+   * of a boolean.
+   * @param obj the thing to persist
+   */
+  public static <T> T persist(final T obj) {
+    currentSession().saveOrUpdate(obj);
+    return obj;
   }
 
   /**

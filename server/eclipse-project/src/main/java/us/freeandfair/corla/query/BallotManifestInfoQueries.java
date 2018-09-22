@@ -11,12 +11,14 @@
 
 package us.freeandfair.corla.query;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
@@ -63,8 +65,9 @@ public final class BallotManifestInfoQueries {
    * @return the ballot manifests matching the specified set of county IDs,
    * or null if the query fails.
    */
-  public static Set<BallotManifestInfo> getMatching(final Set<Integer> the_county_ids) {
-    Set<BallotManifestInfo> result = null;
+  public static Set<BallotManifestInfo> getMatching(final Set<Long> the_county_ids) {
+    final Set<BallotManifestInfo> result =
+      new TreeSet<BallotManifestInfo>(new BallotManifestInfo.Sort());
 
     try {
       final Session s = Persistence.currentSession();
@@ -73,12 +76,12 @@ public final class BallotManifestInfoQueries {
           cb.createQuery(BallotManifestInfo.class);
       final Root<BallotManifestInfo> root = cq.from(BallotManifestInfo.class);
       final List<Predicate> disjuncts = new ArrayList<Predicate>();
-      for (final Integer county_id : the_county_ids) {
+      for (final Long county_id : the_county_ids) {
         disjuncts.add(cb.equal(root.get(COUNTY_ID), county_id));
       }
       cq.select(root).where(cb.or(disjuncts.toArray(new Predicate[disjuncts.size()])));
       final TypedQuery<BallotManifestInfo> query = s.createQuery(cq);
-      result = new HashSet<BallotManifestInfo>(query.getResultList());
+      result.addAll(query.getResultList());
     } catch (final PersistenceException e) {
       Main.LOGGER.error("Exception when reading ballot manifests from database: " + e);
     }
@@ -166,7 +169,7 @@ public final class BallotManifestInfoQueries {
      Find the batch(bmi) that would hold the sequence number given.
    */
   public static Optional<BallotManifestInfo>
-      holdingSequenceNumber(final Long rand, final Long countyId) {
+      holdingSequencePosition(final Long rand, final Long countyId) {
     Set<BallotManifestInfo> result = null;
 
     try {
@@ -213,4 +216,30 @@ public final class BallotManifestInfoQueries {
     return result;
   }
 
+  /**
+   * Get the number of ballots for a given set of counties.
+   */
+  public static Long totalBallots(final Set<Long> countyIds) {
+    if (countyIds.isEmpty()) {
+      return 0L;
+    }
+    final Session s = Persistence.currentSession();
+    final Query q =
+      s.createNativeQuery("with county_ballots as " +
+                    "(select max(sequence_end) as ballots " +
+                    "from ballot_manifest_info " +
+                    "where county_id in (:countyIds) " +
+                    "group by county_id) " +
+                    "select sum(ballots) from county_ballots");
+    q.setParameter("countyIds", countyIds);
+
+    final Optional<BigDecimal> res = q.uniqueResultOptional();
+
+    if (res.isPresent()) {
+      return res.get().longValue();
+    } else {
+      return 0L;
+    }
+
+  }
 }

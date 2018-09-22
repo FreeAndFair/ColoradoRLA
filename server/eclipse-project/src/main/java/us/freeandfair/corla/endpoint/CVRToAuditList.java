@@ -153,7 +153,7 @@ public class CVRToAuditList extends AbstractEndpoint {
           Persistence.getByID(Long.parseLong(the_request.queryParams(COUNTY)), County.class);
       if (county == null) {
         badDataContents(the_response, "county " + the_request.queryParams(COUNTY) +
-                                      " does not exist");
+                        " does not exist");
       }
       assert county != null; // makes FindBugs happy
     }
@@ -206,17 +206,9 @@ public class CVRToAuditList extends AbstractEndpoint {
       if (round.isPresent()) {
         cvr_to_audit_list =
             ComparisonAuditController.ballotsToAudit(cdb, round.getAsInt(), audited);
-      } else {
-        cvr_to_audit_list =
-            ComparisonAuditController.computeBallotOrder(cdb, index, ballot_count,
-                                                         duplicates, audited);
-      }
+        response_list.addAll(BallotSelection.toResponseList(cvr_to_audit_list));
+        response_list.sort(null);
 
-      response_list.addAll(BallotSelection.toResponseList(cvr_to_audit_list));
-      response_list.sort(null);
-
-      // Add audit board information if the round is present
-      if (round.isPresent()) {
         final Round roundObject = cdb.rounds().get(round.getAsInt() - 1);
 
         final List<Map<String, Integer>> bsa =

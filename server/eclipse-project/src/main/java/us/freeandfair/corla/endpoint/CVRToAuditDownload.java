@@ -1,6 +1,6 @@
 /*
  * Free & Fair Colorado RLA System
- * 
+ *
  * @title ColoradoRLA
  * @created Jul 27, 2017
  * @copyright 2017 Colorado Department of State
@@ -48,7 +48,7 @@ import us.freeandfair.corla.util.SparkHelper;
 
 /**
  * The CVR to audit download endpoint.
- * 
+ *
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 1.0.0
  */
@@ -59,32 +59,32 @@ public class CVRToAuditDownload extends AbstractEndpoint {
    * The "start" parameter.
    */
   public static final String START = "start";
-  
+
   /**
    * The "ballot_count" parameter.
    */
   public static final String BALLOT_COUNT = "ballot_count";
-  
+
   /**
    * The "include duplicates" parameter.
    */
   public static final String INCLUDE_DUPLICATES = "include_duplicates";
-  
+
   /**
    * The "include audited" parameter.
    */
   public static final String INCLUDE_AUDITED = "include_audited";
-  
+
   /**
    * The "round" parameter.
    */
   public static final String ROUND = "round";
-  
+
   /**
    * The "county" parameter.
    */
   public static final String COUNTY = "county";
-  
+
   /**
    * The CSV headers for formatting the response.
    */
@@ -92,7 +92,7 @@ public class CVRToAuditDownload extends AbstractEndpoint {
       "storage_location", "scanner_id", "batch_id", "record_id", "imprinted_id",
       "ballot_type", "cvr_number", "audited", "audit_board"
   };
-  
+
   /**
    * {@inheritDoc}
    */
@@ -100,7 +100,7 @@ public class CVRToAuditDownload extends AbstractEndpoint {
   public EndpointType endpointType() {
     return EndpointType.GET;
   }
-  
+
   /**
    * {@inheritDoc}
    */
@@ -108,7 +108,7 @@ public class CVRToAuditDownload extends AbstractEndpoint {
   public String endpointName() {
     return "/cvr-to-audit-download";
   }
-  
+
   /**
    * This endpoint requires any kind of authentication.
    */
@@ -120,7 +120,7 @@ public class CVRToAuditDownload extends AbstractEndpoint {
   /**
    * Validate the request parameters. In this case, the two parameters
    * must exist and both be non-negative integers.
-   * 
+   *
    * @param the_request The request.
    */
   @Override
@@ -129,10 +129,10 @@ public class CVRToAuditDownload extends AbstractEndpoint {
     final String ballot_count = the_request.queryParams(BALLOT_COUNT);
     final String round = the_request.queryParams(ROUND);
     final String county = the_request.queryParams(COUNTY);
-    
+
     boolean result = start != null && ballot_count != null ||
                      round != null;
-    
+
     if (result) {
       try {
         if (start != null) {
@@ -141,12 +141,12 @@ public class CVRToAuditDownload extends AbstractEndpoint {
           final int b = Integer.parseInt(ballot_count);
           result &= b >= 0;
         }
-        
+
         if (round != null) {
           final int r = Integer.parseInt(round);
           result &= r > 0;
         }
-        
+
         if (county == null && Main.authentication().authenticatedCounty(the_request) == null) {
           // it's a DoS user, but they didn't specify a county
           result = false;
@@ -157,15 +157,15 @@ public class CVRToAuditDownload extends AbstractEndpoint {
         result = false;
       }
     }
-    
+
     return result;
   }
-  
+
   /**
    * {@inheritDoc}
    */
   @Override
-  @SuppressWarnings({"PMD.NPathComplexity", "PMD.ExcessiveMethodLength", 
+  @SuppressWarnings({"PMD.NPathComplexity", "PMD.ExcessiveMethodLength",
                      "checkstyle:methodlength", "checkstyle:executablestatementcount"})
   public String endpointBody(final Request the_request, final Response the_response) {
     // we know we have either state or county authentication; this will be null
@@ -173,7 +173,7 @@ public class CVRToAuditDownload extends AbstractEndpoint {
     County county = Main.authentication().authenticatedCounty(the_request);
 
     if (county == null) {
-      county = 
+      county =
           Persistence.getByID(Long.parseLong(the_request.queryParams(COUNTY)), County.class);
       if (county == null) {
         badDataContents(the_response, "county " + the_request.queryParams(COUNTY) +
@@ -181,7 +181,7 @@ public class CVRToAuditDownload extends AbstractEndpoint {
       }
       assert county != null; // makes FindBugs happy
     }
-    
+
     try {
       // get the request parameters
       final String start_param = the_request.queryParams(START);
@@ -216,31 +216,23 @@ public class CVRToAuditDownload extends AbstractEndpoint {
       final List<CVRToAuditResponse> response_list = new ArrayList<>();
 
       // compute the round, if any
-      OptionalInt round = OptionalInt.empty(); 
+      OptionalInt round = OptionalInt.empty();
       if (round_param != null) {
         final int round_number = Integer.parseInt(round_param);
         if (0 < round_number && round_number <= cdb.rounds().size()) {
           round = OptionalInt.of(round_number);
         } else {
-          badDataContents(the_response, "cvr list requested for invalid round " + 
+          badDataContents(the_response, "cvr list requested for invalid round " +
                                         round_param + " for county " + cdb.id());
         }
       }
 
       if (round.isPresent()) {
-        cvr_to_audit_list = 
+        cvr_to_audit_list =
             ComparisonAuditController.ballotsToAudit(cdb, round.getAsInt(), audited);
-      } else {
-        cvr_to_audit_list = 
-            ComparisonAuditController.computeBallotOrder(cdb, index, ballot_count, 
-                                                         duplicates, audited);
-      }
 
       response_list.addAll(BallotSelection.toResponseList(cvr_to_audit_list));
       response_list.sort(null);
-
-      // Add audit board information if the round is present
-      if (round.isPresent()) {
         final Round roundObject = cdb.rounds().get(round.getAsInt() - 1);
 
         final List<Map<String, Integer>> bsa =
@@ -267,7 +259,7 @@ public class CVRToAuditDownload extends AbstractEndpoint {
 
       // generate a CSV file from the response list
       the_response.type("text/csv");
-      
+
       // the file name should be constructed from the county name and round
       // or start/count
       final StringBuilder sb = new StringBuilder(32);
@@ -284,14 +276,14 @@ public class CVRToAuditDownload extends AbstractEndpoint {
         sb.append(ballot_count);
       }
       sb.append(".csv");
-      
+
       try {
-        the_response.raw().setHeader("Content-Disposition", "attachment; filename=\"" + 
+        the_response.raw().setHeader("Content-Disposition", "attachment; filename=\"" +
                                      Rfc5987Util.encode(sb.toString(), "UTF-8") + "\"");
       } catch (final UnsupportedEncodingException e) {
         serverError(the_response, "UTF-8 is unsupported (this should never happen)");
       }
-      
+
       try (OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();
            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"))) {
         writeCSV(response_list, bw);
@@ -307,14 +299,14 @@ public class CVRToAuditDownload extends AbstractEndpoint {
 
   /**
    * Writes the specified list of CVRToAuditResponse objects as CSV.
-   * 
+   *
    * @param the_cvrs The list of objects.
    * @param the_writer The writer to write to.
    * @exception IOException if there is a problem writing the CSV file.
    */
-  private void writeCSV(final List<CVRToAuditResponse> the_cvrs, final Writer the_writer) 
+  private void writeCSV(final List<CVRToAuditResponse> the_cvrs, final Writer the_writer)
       throws IOException {
-    try (CSVPrinter csvp = new CSVPrinter(the_writer, 
+    try (CSVPrinter csvp = new CSVPrinter(the_writer,
                                           CSVFormat.DEFAULT.withHeader(CSV_HEADERS).
                                           withQuoteMode(QuoteMode.NON_NUMERIC))) {
       for (final CVRToAuditResponse cvr : the_cvrs) {
@@ -323,7 +315,7 @@ public class CVRToAuditDownload extends AbstractEndpoint {
                          cvr.cvrNumber(), booleanYesNo(cvr.audited()),
                          this.boardIndexToName(cvr.auditBoardIndex()));
       }
-    } 
+    }
   }
 
   /**

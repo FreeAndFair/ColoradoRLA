@@ -7,11 +7,16 @@ declare namespace DOS {
         countyStatus: DOS.CountyStatuses;
         canonicalContests?: DOS.CanonicalContests;
         discrepancyCounts?: DOS.DiscrepancyCounts;
+        estimatedBallotsToAudit?: DOS.EstimatedBallotsToAudit;
         election?: Election;
         publicMeetingDate?: Date;
         riskLimit?: number;
         seed?: string;
         type: 'DOS';
+    }
+
+    interface EstimatedBallotsToAudit {
+        [contestId: number]: number;
     }
 
     interface DiscrepancyCount {

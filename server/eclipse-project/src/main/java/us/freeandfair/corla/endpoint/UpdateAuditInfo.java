@@ -46,7 +46,7 @@ public class UpdateAuditInfo extends AbstractDoSDashboardEndpoint {
    *
    * Factored out due to the PMD rule AvoidDuplicateLiterals
    */
-  private static final String UPLOAD_FILE_ATTR = "upload_file";
+  private final static String UPLOAD_KEY = "upload_file";
 
   /**
    * The event to return for this endpoint.
@@ -97,7 +97,7 @@ public class UpdateAuditInfo extends AbstractDoSDashboardEndpoint {
       object = parser.parse(s).getAsJsonObject();
       if (hasFile(object)){
         return object
-          .getAsJsonArray(UPLOAD_FILE_ATTR)
+          .getAsJsonArray(UPLOAD_KEY)
           .get(0)
           .getAsJsonObject()
           .get("contents")
@@ -114,9 +114,9 @@ public class UpdateAuditInfo extends AbstractDoSDashboardEndpoint {
 
   private Boolean hasFile(final JsonObject o) {
     return o != null
-        && o.getAsJsonArray(UPLOAD_FILE_ATTR) != null
-        && o.getAsJsonArray(UPLOAD_FILE_ATTR).size() > 0
-        && o.getAsJsonArray(UPLOAD_FILE_ATTR).get(0) != null;
+        && o.getAsJsonArray(UPLOAD_KEY) != null
+        && o.getAsJsonArray(UPLOAD_KEY).size() > 0
+        && o.getAsJsonArray(UPLOAD_KEY).get(0) != null;
   }
 
   /**
