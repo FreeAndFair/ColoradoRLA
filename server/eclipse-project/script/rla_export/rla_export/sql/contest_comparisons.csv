@@ -15,10 +15,10 @@ SELECT
    cvr_s.imprinted_id,
    cvr_s.ballot_type, 
    cai.counted,
-   cci.choices AS choice_per_voting_computer, 
-   cci_a.choices AS choice_per_audit_board,
+   cci.choices AS choice_per_voting_computer,
+   SUBSTRING(cci.choices, 2, LENGTH(cci.choices) - 2) AS audit_board_selection,
    cci_a.consensus,
-   cvr_s.record_type,
+   LOWER(cvr_s.record_type) as record_type,
    cci_a.comment AS audit_board_comment,
    cvr_a.timestamp,
    cai.cvr_id
