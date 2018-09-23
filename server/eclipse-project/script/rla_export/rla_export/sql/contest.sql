@@ -9,7 +9,7 @@ SELECT
    -- cn.votes_allowed,
    -- cn.winners_allowed,
    ccr.ballots_count AS ballot_card_count,
-   -- ccr.contest_ballot_count AS contest_ballot_card_count,
+   -- ccr.contest_ballot_count AS contest_ballot_card_count,   -- need to SUM from county_contest_results
    SUBSTRING(ccr.winners, 2, LENGTH(ccr.winners) - 2) AS winners,
    ccr.min_margin,
    ccca.risk_limit,
@@ -22,9 +22,9 @@ FROM
    comparison_audit AS ccca
 --LEFT JOIN
 --   contest_to_audit AS cta
---   on ccca.contest_id = cta.contest_id    now use contests_to_contest_results?
+--   on ccca.contest_id = cta.contest_id    -- now pick up via contests_to_contest_results
 -- LEFT JOIN 
---   contest AS cn ON cn.id = ccca.contest_id
+--   contest AS cn ON cn.id = ccca.contest_id -- now pick up via contests_to_contest_results
 LEFT JOIN
    contest_result AS ccr  -- was county_contest_result
    ON ccca.contest_result_id = ccr.id
