@@ -1,20 +1,15 @@
 -- Election Outcomes, Counts and Margins
 
 SELECT
-  county.name AS county_name,
-  contest.name AS contest_name,
-  county_contest_vote_total.choice AS choice,
-  county_contest_vote_total.vote_total AS votes
+  -- county.name AS county_name,
+  contest_result.contest_name AS contest_name,
+  contest_vote_total.choice AS choice,
+  contest_vote_total.vote_total AS votes
 FROM
-  county_contest_vote_total,
-  county_contest_result,
-  contest,
-  county
+  contest_vote_total,
+  contest_result
 WHERE
-  county_contest_vote_total.result_id = county_contest_result.id AND
-  county_contest_result.contest_id = contest.id AND
-  county_contest_result.county_id = county.id
+  contest_vote_total.result_id = contest_result.id
 ORDER BY
-  contest.county_id ASC,
-  contest.id ASC,
-  county_contest_vote_total.vote_total DESC;
+  contest_result.contest_name ASC,
+  contest_vote_total.vote_total DESC;
