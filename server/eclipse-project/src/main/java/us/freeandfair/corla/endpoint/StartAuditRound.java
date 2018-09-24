@@ -273,8 +273,7 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
     for(final ComparisonAudit comparisonAudit: comparisonAudits) {
       final ContestResult contestResult = comparisonAudit.contestResult();
       // only make selection for targeted contests
-      // the only AuditReasons in play are county, state and opportunistic
-      if (contestResult.getAuditReason() != AuditReason.OPPORTUNISTIC_BENEFITS) {
+      if (contestResult.getAuditReason().isTargeted()) {
         final Integer startIndex = BallotSelection.auditedPrefixLength(contestResult.getContestCVRIds());
         final Integer endIndex = comparisonAudit.optimisticSamplesToAudit();
 

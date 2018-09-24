@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalLong;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
@@ -397,46 +398,47 @@ public final class CastVoteRecordQueries {
                                           final Integer position) {
     List<CastVoteRecord> result = null;
 
-    try {
-      final Session s = Persistence.currentSession();
-      final CriteriaBuilder cb = s.getCriteriaBuilder();
-      final CriteriaQuery<CastVoteRecord> cq = cb.createQuery(CastVoteRecord.class);
-      final Root<CastVoteRecord> root = cq.from(CastVoteRecord.class);
-      cq.select(root).where(cb.and(cb.equal(root.get("my_county_id"), county_id),
-                                   cb.equal(root.get("my_scanner_id"), scanner_id),
-                                   cb.equal(root.get("my_batch_id"), batch_id),
-                                   cb.equal(root.get("my_record_id"), position),
-                                   cb.equal(root.get("my_record_type"), RecordType.UPLOADED)));
+    final Session s = Persistence.currentSession();
+    final CriteriaBuilder cb = s.getCriteriaBuilder();
+    final CriteriaQuery<CastVoteRecord> cq = cb.createQuery(CastVoteRecord.class);
+    final Root<CastVoteRecord> root = cq.from(CastVoteRecord.class);
+    cq.select(root).where(cb.and(cb.equal(root.get("my_county_id"), county_id),
+                                 cb.equal(root.get("my_scanner_id"), scanner_id),
+                                 cb.equal(root.get("my_batch_id"), batch_id),
+                                 cb.equal(root.get("my_record_id"), position),
+                                 cb.or(cb.equal(root.get("my_record_type"), RecordType.UPLOADED),
+                                       // in case of duplicate selections on a phantom record
+                                       cb.equal(root.get("my_record_type"), RecordType.PHANTOM_RECORD))));
 
-      final TypedQuery<CastVoteRecord> query = s.createQuery(cq);
-      result = query.getResultList();
-    } catch (final PersistenceException e) {
-      Main.LOGGER.error(COULD_NOT_QUERY_DATABASE);
-    }
+    final Query q = s.createQuery(cq);
+    final Optional<CastVoteRecord> resultMaybe = q.uniqueResultOptional();
 
-    switch (result.size()) {
-      case 1:
-        return result.get(0);
-      case 0:
-        // hmm performance no good, prevents bulk queries
-        return phantomRecord();
-      default:
-        Main.LOGGER.error("found more than one cvr atPosition: \n" + result);
-        return result.get(0);
+    if (resultMaybe.isPresent()) {
+      return resultMaybe.get();
+    } else {
+      // hmm performance no good, prevents bulk queries
+      return phantomRecord(county_id,
+                           scanner_id,
+                           batch_id,
+                           position);
     }
   }
 
   /** PHANTOM_RECORD conspiracy theory time **/
-  public static CastVoteRecord phantomRecord() {
+  public static CastVoteRecord phantomRecord(final Long county_id,
+                                             final Integer scanner_id,
+                                             final String batch_id,
+                                             final Integer position) {
+    String imprintedID = String.format("%d-%s-%d", scanner_id, batch_id, position);
     final CastVoteRecord cvr = new CastVoteRecord(CastVoteRecord.RecordType.PHANTOM_RECORD,
                                                   null,
-                                                  0L,
-                                                  0,
-                                                  0,
-                                                  0,
-                                                  "",
-                                                  0,
-                                                  "",
+                                                  county_id,
+                                                  0, // cvrNumber N/A
+                                                  0, // sequenceNumber N/A
+                                                  scanner_id,
+                                                  batch_id,
+                                                  position,
+                                                  imprintedID,
                                                   "PHANTOM RECORD",
                                                   null);
     Persistence.save(cvr);

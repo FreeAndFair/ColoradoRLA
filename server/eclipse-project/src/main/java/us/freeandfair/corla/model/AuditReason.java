@@ -58,4 +58,8 @@ public enum AuditReason {
       return AuditSelection.AUDITED_CONTEST;
     }
   }
+
+  public Boolean isTargeted() {
+    return selection() == AuditSelection.AUDITED_CONTEST;
+  }
 }
