@@ -721,7 +721,7 @@ def county_audit(ac, county_id):
     sign_in_request = {'index': 0, 'audit_board': audit_board_set}
 
     # This one currently doesn't actually include 'political_party', but this still seems to work
-    sign_off_request = {'audit_board_index': 0, 'signatories': audit_board_set}
+    sign_off_request = {'index': 0, 'audit_board': audit_board_set}
 
     r = test_endpoint_get(ac, county_s, "/audit-board-asm-state")
     if ((r.json()['current_state'] == "WAITING_FOR_ROUND_START_NO_AUDIT_BOARD") or
