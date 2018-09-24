@@ -794,14 +794,19 @@ public class ComparisonAudit implements PersistentEntity {
     final Optional<CVRContestInfo> acvr_info = auditedCVR.contestInfoForContestResult(my_contest_result);
 
     if (auditedCVR.recordType() == RecordType.PHANTOM_BALLOT) {
-      // FIXME I think we can pass the set of ContestResult
-      // winners/losers to computePhantomBallotDiscrepancy
-      result = OptionalInt.of(computePhantomBallotDiscrepancy(cvr_info, my_contest_result));
+      if (cvr_info.isPresent()) {
+        result = OptionalInt.of(computePhantomBallotDiscrepancy(cvr_info.get(), my_contest_result));
+      } else {
+        //not sure why exactly, but that is what computePhantomBallotDiscrepancy
+        //returns if winner_votes is empty, which it is, in this case, if it is
+        //not present
+        result = OptionalInt.of(1);
+      }
     } else if (cvr_info.isPresent() && acvr_info.isPresent()) {
       if (acvr_info.get().consensus() == ConsensusValue.NO) {
         // a lack of consensus for this contest is treated
         // identically to a phantom ballot
-        result = OptionalInt.of(computePhantomBallotDiscrepancy(cvr_info, my_contest_result));
+        result = OptionalInt.of(computePhantomBallotDiscrepancy(cvr_info.get(), my_contest_result));
       } else {
         result = computeAuditedBallotDiscrepancy(cvr_info.get(), acvr_info.get());
       }
@@ -867,7 +872,7 @@ public class ComparisonAudit implements PersistentEntity {
       } else {
         // this winner's votes didn't change
         winner_change = 0;
-        }
+      }
       if (my_contest_result.getLosers().isEmpty()) {
         // if there are no losers, we'll just negate this number - even though in
         // real life, we wouldn't be auditing the contest at all
@@ -933,12 +938,12 @@ public class ComparisonAudit implements PersistentEntity {
    * CVRContestInfo.
    * @return The number of discrepancies
    */
-  private Integer computePhantomBallotDiscrepancy(final Optional<CVRContestInfo> cvrInfo,
+  private Integer computePhantomBallotDiscrepancy(final CVRContestInfo cvrInfo,
                                                   final ContestResult contestResult) {
     int result = 2;
     // the second predicate means "no contest winners had votes on the
     // original CVR"
-    final Set<String> winner_votes = new HashSet<>(cvrInfo.get().choices());
+    final Set<String> winner_votes = new HashSet<>(cvrInfo.choices());
     winner_votes.removeAll(contestResult.getLosers());
     if (winner_votes.isEmpty()) {
       result = 1;
