@@ -59,7 +59,7 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
   /**
    * The type of the JSON request.
    */
-  private static final Type ELECTOR_LIST =
+  private static final Type AUDIT_BOARD =
       new TypeToken<List<Elector>>() { }.getType();
 
   /**
@@ -135,9 +135,9 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
     try {
       o = parser.parse(request.body()).getAsJsonObject();
       final int auditBoardIndex =
-          o.get("audit_board_index").getAsInt();
+          o.get("index").getAsInt();
       final List<Elector> signatories =
-          Main.GSON.fromJson(o.get("signatories"), ELECTOR_LIST);
+          Main.GSON.fromJson(o.get("audit_board"), AUDIT_BOARD);
 
       if (signatories.size() < CountyDashboard.MIN_ROUND_SIGN_OFF_MEMBERS) {
         LOGGER.error("[signoff: too few signatories for round sign-off]");
