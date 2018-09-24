@@ -341,7 +341,7 @@ public final class ComparisonAuditController {
   public static void updateRound(final CountyDashboard cdb,
                                  final Round round) {
     for (final Long cvrID : new HashSet<>(round.auditSubsequence())) {
-      final Map<ContestResult, AuditReason> auditReasons = new HashMap<>();
+      final Map<String, AuditReason> auditReasons = new HashMap<>();
       final Set<AuditReason> discrepancies = new HashSet<>();
       final Set<AuditReason> disagreements = new HashSet<>();
       CVRAuditInfo cvrai = Persistence.getByID(cvrID, CVRAuditInfo.class);
@@ -355,7 +355,7 @@ public final class ComparisonAuditController {
         // update the round statistics as necessary
 
         for (final ComparisonAudit ca : cdb.comparisonAudits()) {
-          auditReasons.put(ca.contestResult(), ca.auditReason());
+          auditReasons.put(ca.contestResult().getContestName(), ca.auditReason());
           if (!discrepancies.contains(ca.auditReason()) &&
               ca.computeDiscrepancy(cvrai.cvr(), cvrai.acvr()).isPresent()) {
             discrepancies.add(ca.auditReason());
@@ -363,7 +363,7 @@ public final class ComparisonAuditController {
         }
 
         for (final CVRContestInfo ci : cvrai.acvr().contestInfo()) {
-          final AuditReason reason = auditReasons.get(ci.contest());
+          final AuditReason reason = auditReasons.get(ci.contest().name());
           if (ci.consensus() == ConsensusValue.NO) {
             disagreements.add(reason);
           }
