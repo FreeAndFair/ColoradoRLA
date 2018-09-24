@@ -37,6 +37,7 @@ import us.freeandfair.corla.Main;
 
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.ASMUtilities;
+import us.freeandfair.corla.asm.AuditBoardDashboardASM;
 import us.freeandfair.corla.asm.CountyDashboardASM;
 import us.freeandfair.corla.asm.DoSDashboardASM;
 
@@ -207,7 +208,13 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
             audit_complete = true;
           } else {
             LOGGER.debug("[signoff: the round ended normally]");
-            my_event.set(ROUND_SIGN_OFF_EVENT);
+            // Workaround for cdb.endRound() signing out the audit board -
+            // our ASM state needs to match the rest of the application state.
+            ASMUtilities.step(
+                ROUND_SIGN_OFF_EVENT,
+                AuditBoardDashboardASM.class,
+                String.valueOf(cdb.id()));
+            my_event.set(SIGN_OUT_AUDIT_BOARD_EVENT);
             audit_complete = false;
           }
 
