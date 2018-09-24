@@ -189,21 +189,10 @@ class SelectContestsForm extends React.Component<FormProps, FormState> {
                 props,
             ];
         });
-        const uniqTally: any = {};
-        const uniqByName = (d: ContestData) => {
-            if (uniqTally[d[1]] == undefined) {
-                uniqTally[d[1]] = 'seen it';
-                return true;
-            } else {
-                return false;
-            }
-        }
 
-        const keyFunc = (d: ContestData) => {
-            const i = this.state.sort === 'contest' ? 1 : 0;
-            return d[i];
-        };
-        const sortedData = _.sortBy(contestData, keyFunc);
+        const sortedData = _.sortBy(contestData, (d: ContestData) => {
+            return d[this.state.sort === 'contest' ? 1 : 0];
+        });
 
         if (this.state.order === 'desc') {
             _.reverse(sortedData);
@@ -219,7 +208,7 @@ class SelectContestsForm extends React.Component<FormProps, FormState> {
 
         };
         const filteredData = _.filter(sortedData, filterFunc);
-        const uniqData = _.filter(filteredData, uniqByName);
+        const uniqData = _.uniqBy(filteredData, (d: ContestData) => d[1]);
 
         const contestRows = _.map(uniqData, (d: ContestData) => {
             const props = d[2];
