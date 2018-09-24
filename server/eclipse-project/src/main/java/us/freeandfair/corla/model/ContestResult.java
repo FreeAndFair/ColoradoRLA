@@ -181,28 +181,6 @@ public class ContestResult implements PersistentEntity, Serializable {
   private List<Long> contestCVRIds = new ArrayList<Long>();
 
   /**
-   * This DTO is here to maintain relationship to help start a round.
-   * TODO shall we keep this around?
-   */
-  @Transient
-  private Selection selection;
-
-  /**
-   * Setter, used only once.
-   * TODO Shall we keep this around?
-   */
-  public void setSelection(final Selection s) {
-    selection = s;
-  }
-
-  /**
-   * getter to silence PMD.
-   */
-  public Selection getSelection() {
-    return this.selection;
-  }
-
-  /**
    * Constructs a new empty ContestResult (solely for persistence).
    */
   public ContestResult() {

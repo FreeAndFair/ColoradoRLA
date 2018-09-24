@@ -289,7 +289,6 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
                                    selection, selection.contestCVRIds(),
                                    startIndex, endIndex));
 
-        contestResult.setSelection(selection);
         contestResult.addContestCVRIds(selection.contestCVRIds());
 
         selections.add(selection);
