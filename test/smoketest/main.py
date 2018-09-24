@@ -717,20 +717,16 @@ def county_audit(ac, county_id):
                         "last_name": "Doe",
                         "political_party": "Republican"}]
 
-    """
-    Request examples:
-    POST /audit-board-sign-in {"audit_board":[{"first_name":"j","last_name":"j","political_party":"Democratic Party"},{"first_name":"j","last_name":"j","political_party":"Republican Party"}],"index":0}
-
-    POST /sign-off-audit-round {"audit_board_index":0,"signatories":[{"first_name":"j","last_name":"j"},{"first_name":"j","last_name":"j"}]}
-
-    """
-
+    audit_board_count_request = {"count": 1}
     sign_in_request = {'index': 0, 'audit_board': audit_board_set}
-    sign_off_request = {'audit_board_index': 0, 'signatories': audit_board_set}  # actually doesn't include 'political_party'?
+
+    # This one currently doesn't actually include 'political_party', but this still seems to work
+    sign_off_request = {'audit_board_index': 0, 'signatories': audit_board_set}
 
     r = test_endpoint_get(ac, county_s, "/audit-board-asm-state")
     if ((r.json()['current_state'] == "WAITING_FOR_ROUND_START_NO_AUDIT_BOARD") or
         (r.json()['current_state'] == "ROUND_IN_PROGRESS_NO_AUDIT_BOARD")):
+        r = test_endpoint_json(ac, county_s, "/set-audit-board-count", audit_board_count_request)
         r = test_endpoint_json(ac, county_s, "/audit-board-sign-in", sign_in_request)
 
     # Print this tool's notion of what should be audited, based on seed etc.
