@@ -717,10 +717,17 @@ def county_audit(ac, county_id):
                         "last_name": "Doe",
                         "political_party": "Republican"}]
 
+    audit_board_count_request = {"count": 1}
+    sign_in_request = {'index': 0, 'audit_board': audit_board_set}
+
+    # This one currently doesn't actually include 'political_party', but this still seems to work
+    sign_off_request = {'index': 0, 'audit_board': audit_board_set}
+
     r = test_endpoint_get(ac, county_s, "/audit-board-asm-state")
     if ((r.json()['current_state'] == "WAITING_FOR_ROUND_START_NO_AUDIT_BOARD") or
         (r.json()['current_state'] == "ROUND_IN_PROGRESS_NO_AUDIT_BOARD")):
-        r = test_endpoint_json(ac, county_s, "/audit-board-sign-in", audit_board_set)
+        r = test_endpoint_json(ac, county_s, "/set-audit-board-count", audit_board_count_request)
+        r = test_endpoint_json(ac, county_s, "/audit-board-sign-in", sign_in_request)
 
     # Print this tool's notion of what should be audited, based on seed etc.
     # for auditing the audit.
@@ -755,11 +762,12 @@ def county_audit(ac, county_id):
                 discrepancies += "%s %2d %2d %2d %2d %2d  " % (contest_id, d["2"], d["1"], d["0"], d["-1"], d["-2"])
             print(discrepancies)
 
+        # Simulate checking out and in on the 5th upload out of every 50 in each round.  TODO - should we drop this?
         if i % 50 == 5:
-            r = test_endpoint_json(ac, county_s, "/audit-board-sign-out", {});
+            r = test_endpoint_json(ac, county_s, "/sign-off-audit-round", sign_off_request)
             r = test_endpoint_get(ac, county_s, "/audit-board-asm-state")
             # print(r.text)
-            r = test_endpoint_json(ac, county_s, "/audit-board-sign-in", audit_board_set)
+            r = test_endpoint_json(ac, county_s, "/audit-board-sign-in", sign_in_request)
             r = test_endpoint_get(ac, county_s, "/audit-board-asm-state")
             # print(r.text)
 
@@ -816,7 +824,7 @@ def county_audit(ac, county_id):
     # in case the this didn't happen in the last iteration (because it was a phantom record)
     county_dashboard = get_county_dashboard(ac, county_s, county_id, i, acvr)
 
-    r = test_endpoint_json(ac, county_s, "/sign-off-audit-round", audit_board_set)
+    r = test_endpoint_json(ac, county_s, "/sign-off-audit-round", sign_off_request)
 
     remaining = county_dashboard['ballots_remaining_in_round']
     if remaining <= 0:
