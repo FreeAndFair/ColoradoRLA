@@ -396,8 +396,6 @@ public final class CastVoteRecordQueries {
                                           final Integer scanner_id,
                                           final String batch_id,
                                           final Integer position) {
-    List<CastVoteRecord> result = null;
-
     final Session s = Persistence.currentSession();
     final CriteriaBuilder cb = s.getCriteriaBuilder();
     final CriteriaQuery<CastVoteRecord> cq = cb.createQuery(CastVoteRecord.class);
@@ -429,7 +427,7 @@ public final class CastVoteRecordQueries {
                                              final Integer scanner_id,
                                              final String batch_id,
                                              final Integer position) {
-    String imprintedID = String.format("%d-%s-%d", scanner_id, batch_id, position);
+    final String imprintedID = String.format("%d-%s-%d", scanner_id, batch_id, position);
     final CastVoteRecord cvr = new CastVoteRecord(CastVoteRecord.RecordType.PHANTOM_RECORD,
                                                   null,
                                                   county_id,
