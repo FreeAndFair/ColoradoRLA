@@ -26,10 +26,8 @@ import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
-
 import org.hibernate.annotations.Immutable;
 
-import us.freeandfair.corla.Main;
 import us.freeandfair.corla.persistence.PersistentEntity;
 
 /**

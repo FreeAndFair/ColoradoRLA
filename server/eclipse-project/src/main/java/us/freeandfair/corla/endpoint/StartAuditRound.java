@@ -13,31 +13,26 @@ package us.freeandfair.corla.endpoint;
 import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.*;
 import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.*;
 import static us.freeandfair.corla.asm.ASMState.CountyDashboardState.*;
-import static us.freeandfair.corla.asm.ASMState.AuditBoardDashboardState.UNABLE_TO_AUDIT;
 import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.*;
 import static us.freeandfair.corla.asm.ASMState.DoSDashboardState.COMPLETE_AUDIT_INFO_SET;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import javax.persistence.PersistenceException;
 
-import com.google.gson.JsonParseException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import spark.Request;
 import spark.Response;
 
-import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.ASMState.CountyDashboardState;
 import us.freeandfair.corla.asm.ASMUtilities;
@@ -48,20 +43,13 @@ import us.freeandfair.corla.controller.BallotSelection.Segment;
 import us.freeandfair.corla.controller.BallotSelection.Selection;
 import us.freeandfair.corla.controller.ComparisonAuditController;
 import us.freeandfair.corla.controller.ContestCounter;
-import us.freeandfair.corla.json.SubmittedAuditRoundStart;
-import us.freeandfair.corla.math.Audit;
 import us.freeandfair.corla.model.AuditReason;
-import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.ComparisonAudit;
 import us.freeandfair.corla.model.ContestResult;
 import us.freeandfair.corla.model.ContestToAudit;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.util.SuppressFBWarnings;
-import us.freeandfair.corla.query.CastVoteRecordQueries;
-import us.freeandfair.corla.query.ContestResultQueries;
-import us.freeandfair.corla.query.ComparisonAuditQueries;
 
 /**
  * Starts a new audit round for one or more counties.

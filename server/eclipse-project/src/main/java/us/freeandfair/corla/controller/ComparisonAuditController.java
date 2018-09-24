@@ -20,14 +20,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalInt;
-import java.util.OptionalLong;
 import java.util.Set;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import us.freeandfair.corla.crypto.PseudoRandomNumberGenerator;
-import us.freeandfair.corla.controller.BallotSelection.Selection;
 import us.freeandfair.corla.math.Audit;
 import us.freeandfair.corla.model.AuditReason;
 import us.freeandfair.corla.model.CVRAuditInfo;
@@ -35,17 +32,11 @@ import us.freeandfair.corla.model.CVRContestInfo;
 import us.freeandfair.corla.model.CVRContestInfo.ConsensusValue;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.ContestResult;
-import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.ComparisonAudit;
 import us.freeandfair.corla.model.CountyDashboard;
-import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.model.Round;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.query.BallotManifestInfoQueries;
 import us.freeandfair.corla.query.CastVoteRecordQueries;
-
-import us.freeandfair.corla.util.BallotSequencer;
-
 
 /**
  * Controller methods relevant to comparison audits.

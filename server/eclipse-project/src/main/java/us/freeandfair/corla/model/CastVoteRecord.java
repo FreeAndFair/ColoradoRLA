@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import javax.persistence.Cacheable;
 import javax.persistence.CollectionTable;
@@ -35,7 +34,6 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.OrderColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
@@ -163,9 +161,12 @@ public class CastVoteRecord implements Comparable<CastVoteRecord>,
   @Column(updatable = false, nullable = false)
   private String my_ballot_type;
 
+  /**
+   * Is there an ACVR associated with this CVR?
+   */
   public boolean isAudited() {
     // this match is enforced in CVRAuditInfo's constructor
-    CVRAuditInfo cvrai = Persistence.getByID(my_id, CVRAuditInfo.class);
+    final CVRAuditInfo cvrai = Persistence.getByID(my_id, CVRAuditInfo.class);
     return cvrai != null;
   }
 
