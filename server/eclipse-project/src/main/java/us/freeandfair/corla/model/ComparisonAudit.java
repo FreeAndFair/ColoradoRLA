@@ -478,7 +478,7 @@ public class ComparisonAudit implements PersistentEntity {
                                  + " my_optimistic_samples_to_audit=%d,"
                                  + " computeOptimisticSamplesToAudit=%f]",
                                  my_optimistic_samples_to_audit, optimistic));
-;
+
       my_optimistic_samples_to_audit = optimistic.intValue();
       my_optimistic_recalculate_needed = false;
     }
@@ -588,7 +588,7 @@ public class ComparisonAudit implements PersistentEntity {
   }
 
   /** was the given cvrid selected for this contest? **/
-  public boolean isCovering(Long cvrId) {
+  public boolean isCovering(final Long cvrId) {
     return contestResult().getContestCVRIds().contains(cvrId);
   }
 

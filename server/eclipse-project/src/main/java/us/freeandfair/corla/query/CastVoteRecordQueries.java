@@ -375,7 +375,13 @@ public final class CastVoteRecordQueries {
     return result;
   }
 
-  public static CastVoteRecord atPosition(Tribute tribute) {
+  /**
+   * Find a CVR by it's Ballot Manifest position
+   * @parms tribute the ADT wrapping countyId, scannerId, batchId, and
+   * ballotPosition
+   * @return a CastVoteRecord at some position in a manifest
+   */
+  public static CastVoteRecord atPosition(final Tribute tribute) {
     return atPosition(tribute.countyId,
                       tribute.scannerId,
                       tribute.batchId,

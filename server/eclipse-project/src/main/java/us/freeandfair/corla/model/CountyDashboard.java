@@ -219,18 +219,6 @@ public class CountyDashboard implements PersistentEntity {
   /**
    * The audit data.
    */
-  // FIXME We left this here with the same name for what reason?
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(name = "counties_to_comparison_audits",
-             joinColumns = { @JoinColumn(name = DASHBOARD_ID,
-                                         referencedColumnName = MY_ID) },
-             inverseJoinColumns = { @JoinColumn(name = "comparison_audit_id",
-                                                referencedColumnName = MY_ID) })
-  private Set<ComparisonAudit> my_comparison_audits = new HashSet<>();
-
-  /**
-   * The audit data.
-   */
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "county_dashboard_to_comparison_audit",
              joinColumns = { @JoinColumn(name = DASHBOARD_ID,
@@ -266,16 +254,6 @@ public class CountyDashboard implements PersistentEntity {
    */
   @Column(nullable = false)
   private Integer my_ballots_audited = 0;
-
-  /**
-   * The number of estimated samples remaining to audit.
-   */
-  private Integer my_estimated_samples_to_audit = 0;
-
-  /**
-   * The number of optimistic samples remaining to audit.
-   */
-  private Integer my_optimistic_samples_to_audit = 0;
 
   /**
    * The length of the audited prefix of the list of samples to audit;
@@ -598,7 +576,8 @@ public class CountyDashboard implements PersistentEntity {
    * @return the number of ballots remaining in the current round, or 0
    * if there is no current round.
    */
-  // FIXME this is broken; round's expected and actual don't match what the dashboard sees.
+  // FIXME this is broken; round's expected and actual don't match what
+  // the dashboard sees.
   public int ballotsRemainingInCurrentRound() {
     final int result;
 
@@ -607,9 +586,7 @@ public class CountyDashboard implements PersistentEntity {
     } else {
 
       final Round round = currentRound();
-      // result = round.expectedCount() - round.actualCount();
-
-      Integer prefix = BallotSelection.auditedPrefixLength(round.ballotSequence());
+      final Integer prefix = BallotSelection.auditedPrefixLength(round.ballotSequence());
       result = round.ballotSequence().size() - prefix;
 
       LOGGER.debug(String.format("[ballotsRemainingInCurrentRound:"
@@ -905,7 +882,7 @@ public class CountyDashboard implements PersistentEntity {
    */
   public Integer estimatedSamplesToAudit() {
     // NOTE: there could be race conditions between audit boards across counties
-    Optional<Integer> maybe = comparisonAudits().stream()
+    final Optional<Integer> maybe = comparisonAudits().stream()
       .filter(ca -> ca.auditReason() != AuditReason.OPPORTUNISTIC_BENEFITS)
       .map(ca -> ca.estimatedSamplesToAudit())
       .max(Comparator.naturalOrder());
@@ -926,7 +903,7 @@ public class CountyDashboard implements PersistentEntity {
    */
   public Integer optimisticSamplesToAudit() {
     // NOTE: there could be race conditions between audit boards across counties
-    Optional<Integer> maybe = comparisonAudits().stream()
+    final Optional<Integer> maybe = comparisonAudits().stream()
       .filter(ca -> ca.auditReason() != AuditReason.OPPORTUNISTIC_BENEFITS)
       .map(ca -> ca.optimisticSamplesToAudit())
       .max(Comparator.naturalOrder());

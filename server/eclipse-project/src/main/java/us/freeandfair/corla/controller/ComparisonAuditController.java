@@ -158,14 +158,12 @@ public final class ComparisonAuditController {
    */
   public static ComparisonAudit createAudit(final ContestResult contestResult,
                                             final BigDecimal riskLimit) {
-    ComparisonAudit ca = new ComparisonAudit(contestResult,
-                                             riskLimit,
-                                             contestResult.getDilutedMargin(),
-                                             Audit.GAMMA,
-                                             contestResult.getAuditReason());
+    final ComparisonAudit ca =
+      new ComparisonAudit(contestResult, riskLimit, contestResult.getDilutedMargin(),
+                          Audit.GAMMA, contestResult.getAuditReason());
+    Persistence.save(ca);
     LOGGER.debug(String.format("[createAudit: contestResult=%s, ComparisonAudit=%s]",
                                contestResult, ca));
-    Persistence.save(ca);
     return ca;
   }
 
@@ -232,7 +230,7 @@ public final class ComparisonAuditController {
         Persistence.getByID(the_cvr_under_audit.id(), CVRAuditInfo.class);
 
     if (info == null) {
-      LOGGER.info("attempt to submit ACVR for county " +
+      LOGGER.warn("attempt to submit ACVR for county " +
                   cdb.id() + ", cvr " +
                   the_cvr_under_audit.id() + " not under audit");
     } else if (checkACVRSanity(the_cvr_under_audit, the_audit_cvr)) {
@@ -265,14 +263,12 @@ public final class ComparisonAuditController {
     }
     Persistence.flush();
 
-    LOGGER.info(String.format("[Before recalc: auditedSampleCount=%d, estimatedSamples=%d, optimisticSamples=%d",
+    LOGGER.trace(String.format("[Before recalc: auditedSampleCount=%d, estimatedSamples=%d, optimisticSamples=%d",
                               cdb.auditedSampleCount(),
                               cdb.estimatedSamplesToAudit(),
                               cdb.optimisticSamplesToAudit()));
     updateCVRUnderAudit(cdb);
-    // cdb.setEstimatedSamplesToAudit(estimatedSamplesToAudit(cdb) - cdb.auditedSampleCount());
-    // cdb.setOptimisticSamplesToAudit(computeOptimisticSamplesToAudit(cdb) - cdb.auditedSampleCount());
-    LOGGER.info(String.format("[After recalc: auditedSampleCount=%d, estimatedSamples=%d, optimisticSamples=%d",
+    LOGGER.trace(String.format("[After recalc: auditedSampleCount=%d, estimatedSamples=%d, optimisticSamples=%d",
                               cdb.auditedSampleCount(),
                               cdb.estimatedSamplesToAudit(),
                               cdb.optimisticSamplesToAudit()));

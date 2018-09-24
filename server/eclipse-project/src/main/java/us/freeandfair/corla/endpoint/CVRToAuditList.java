@@ -46,11 +46,6 @@ public class CVRToAuditList extends AbstractEndpoint {
   public static final String START = "start";
 
   /**
-   * The "ballot_count" parameter.
-   */
-  public static final String BALLOT_COUNT = "ballot_count";
-
-  /**
    * The "include duplicates" parameter.
    */
   public static final String INCLUDE_DUPLICATES = "include_duplicates";
@@ -103,20 +98,16 @@ public class CVRToAuditList extends AbstractEndpoint {
   @Override
   protected boolean validateParameters(final Request the_request) {
     final String start = the_request.queryParams(START);
-    final String ballot_count = the_request.queryParams(BALLOT_COUNT);
     final String round = the_request.queryParams(ROUND);
     final String county = the_request.queryParams(COUNTY);
 
-    boolean result = start != null && ballot_count != null ||
-                     round != null;
+    boolean result = start != null || round != null;
 
     if (result) {
       try {
         if (start != null) {
           final int s = Integer.parseInt(start);
           result &= s >= 0;
-          final int b = Integer.parseInt(ballot_count);
-          result &= b >= 0;
         }
 
         if (round != null) {
@@ -160,26 +151,9 @@ public class CVRToAuditList extends AbstractEndpoint {
 
     try {
       // get the request parameters
-      final String start_param = the_request.queryParams(START);
-      final String ballot_count_param = the_request.queryParams(BALLOT_COUNT);
-      final String duplicates_param = the_request.queryParams(INCLUDE_DUPLICATES);
       final String audited_param = the_request.queryParams(INCLUDE_AUDITED);
       final String round_param = the_request.queryParams(ROUND);
 
-      int ballot_count = 0;
-      if (ballot_count_param != null) {
-        ballot_count = Integer.parseInt(ballot_count_param);
-      }
-      int index = 0;
-      if (start_param != null) {
-        index = Integer.parseInt(start_param);
-      }
-      final boolean duplicates;
-      if (duplicates_param == null) {
-        duplicates = false;
-      } else {
-        duplicates = true;
-      }
       final boolean audited;
       if (audited_param == null) {
         audited = false;

@@ -30,13 +30,13 @@ import javax.persistence.ManyToMany;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import us.freeandfair.corla.persistence.IntegerListConverter;
 import us.freeandfair.corla.persistence.LongListConverter;
 import us.freeandfair.corla.persistence.PersistentEntity;
 import us.freeandfair.corla.persistence.StringSetConverter;
@@ -62,6 +62,11 @@ public class ContestResult implements PersistentEntity, Serializable {
    */
   public static final Logger LOGGER =
     LogManager.getLogger(ContestResult.class);
+
+  /**
+   * text
+   */
+  private static final String TEXT = "text";
 
   /**
    * The "id" string.
@@ -95,14 +100,14 @@ public class ContestResult implements PersistentEntity, Serializable {
   /**
    * The set of contest winners.
    */
-  @Column(name = "winners", columnDefinition = "text")
+  @Column(name = "winners", columnDefinition = TEXT)
   @Convert(converter = StringSetConverter.class)
   private final Set<String> winners = new HashSet<>();
 
   /**
    * The set of contest losers.
    */
-  @Column(name = "losers", columnDefinition = "text")
+  @Column(name = "losers", columnDefinition = TEXT)
   @Convert(converter = StringSetConverter.class)
   private final Set<String> losers = new HashSet<>();
 
@@ -168,21 +173,34 @@ public class ContestResult implements PersistentEntity, Serializable {
   @Column(name = "audit_reason")
   private AuditReason auditReason;
 
- /**
-   * The sequence of random sample numbers for this contest in the order
-   * they are to be presented.
-   */
-  @Column(name = "contest_rands", columnDefinition = "text")
-  @Convert(converter = IntegerListConverter.class)
-  private List<Integer> contestRands = new ArrayList<Integer>();
-
   /**
    * The sequence of CastVoteRecord ids for this contest ordered by County id
    */
-  @Column(name = "contest_cvr_ids", columnDefinition = "text")
+  @Column(name = "contest_cvr_ids", columnDefinition = TEXT)
   @Convert(converter = LongListConverter.class)
   private List<Long> contestCVRIds = new ArrayList<Long>();
 
+  /**
+   * This DTO is here to maintain relationship to help start a round.
+   * TODO shall we keep this around?
+   */
+  @Transient
+  private Selection selection;
+
+  /**
+   * Setter, used only once.
+   * TODO Shall we keep this around?
+   */
+  public void setSelection(final Selection s) {
+    selection = s;
+  }
+
+  /**
+   * getter to silence PMD.
+   */
+  public Selection getSelection() {
+    return this.selection;
+  }
 
   /**
    * Constructs a new empty ContestResult (solely for persistence).
@@ -275,21 +293,28 @@ public class ContestResult implements PersistentEntity, Serializable {
     return Collections.unmodifiableSet(this.contests);
   }
 
-  public void setContestCVRIds (List<Long> contestCVRIds) {
+  /**
+   * Sets the current collection of Contest CVR IDs to params
+   * @param contestCVRIds a list
+   */
+  public void setContestCVRIds (final List<Long> contestCVRIds) {
     this.contestCVRIds = contestCVRIds;
   }
 
-  public void addContestCVRIds (List<Long> contestCVRIds) {
+  /**
+   * Adds to the current collection of Contest CVR IDs
+   * @param contestCVRIds a list
+   */
+  public void addContestCVRIds (final List<Long> contestCVRIds) {
     this.contestCVRIds.addAll(contestCVRIds);
   }
 
-
+  /**
+   * getter
+   */
   public List<Long> getContestCVRIds() {
     return this.contestCVRIds;
   }
-
-  /** this DTO is here to maintain relationship to help start a round **/
-  public transient Selection selection;
 
   /**
    * @param county the county owning the contest you want

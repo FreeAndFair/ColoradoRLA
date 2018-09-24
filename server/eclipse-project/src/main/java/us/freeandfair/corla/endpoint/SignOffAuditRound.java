@@ -121,6 +121,7 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
    * @param response The response.
    */
   @Override
+  @SuppressWarnings({"PMD.ExcessiveMethodLength"})
   public String endpointBody(final Request request,
                              final Response response) {
     final County county = Main.authentication().authenticatedCounty(request);

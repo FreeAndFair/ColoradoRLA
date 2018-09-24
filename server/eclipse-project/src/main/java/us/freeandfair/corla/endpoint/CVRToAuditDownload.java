@@ -66,11 +66,6 @@ public class CVRToAuditDownload extends AbstractEndpoint {
   public static final String BALLOT_COUNT = "ballot_count";
 
   /**
-   * The "include duplicates" parameter.
-   */
-  public static final String INCLUDE_DUPLICATES = "include_duplicates";
-
-  /**
    * The "include audited" parameter.
    */
   public static final String INCLUDE_AUDITED = "include_audited";
@@ -186,7 +181,6 @@ public class CVRToAuditDownload extends AbstractEndpoint {
       // get the request parameters
       final String start_param = the_request.queryParams(START);
       final String ballot_count_param = the_request.queryParams(BALLOT_COUNT);
-      final String duplicates_param = the_request.queryParams(INCLUDE_DUPLICATES);
       final String audited_param = the_request.queryParams(INCLUDE_AUDITED);
       final String round_param = the_request.queryParams(ROUND);
 
@@ -194,16 +188,12 @@ public class CVRToAuditDownload extends AbstractEndpoint {
       if (ballot_count_param != null) {
         ballot_count = Integer.parseInt(ballot_count_param);
       }
+
       int index = 0;
       if (start_param != null) {
         index = Integer.parseInt(start_param);
       }
-      final boolean duplicates;
-      if (duplicates_param == null) {
-        duplicates = false;
-      } else {
-        duplicates = true;
-      }
+
       final boolean audited;
       if (audited_param == null) {
         audited = false;

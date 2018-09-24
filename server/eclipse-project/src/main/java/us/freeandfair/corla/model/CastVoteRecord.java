@@ -41,7 +41,6 @@ import javax.persistence.Version;
 import org.hibernate.annotations.Immutable;
 
 import us.freeandfair.corla.persistence.PersistentEntity;
-import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.util.NaturalOrderComparator;
 import us.freeandfair.corla.util.SuppressFBWarnings;
 
@@ -160,15 +159,6 @@ public class CastVoteRecord implements Comparable<CastVoteRecord>,
    */
   @Column(updatable = false, nullable = false)
   private String my_ballot_type;
-
-  /**
-   * Is there an ACVR associated with this CVR?
-   */
-  public boolean isAudited() {
-    // this match is enforced in CVRAuditInfo's constructor
-    final CVRAuditInfo cvrai = Persistence.getByID(my_id, CVRAuditInfo.class);
-    return cvrai != null;
-  }
 
   /**
    * The contest information in this cast vote record.
@@ -329,7 +319,6 @@ public class CastVoteRecord implements Comparable<CastVoteRecord>,
   /**
    * @return the ballot type for this cast vote record.
    */
-
   public String ballotType() {
     return my_ballot_type;
   }
@@ -346,7 +335,6 @@ public class CastVoteRecord implements Comparable<CastVoteRecord>,
     this.my_contest_info.clear();
     this.my_contest_info.addAll(contestInfos);
   }
-
 
   /**
    * Gets the choices for the specified contest.

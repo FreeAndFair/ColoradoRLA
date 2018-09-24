@@ -4,7 +4,6 @@
 package us.freeandfair.corla.controller;
 
 import java.util.ArrayList;
-import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -30,6 +29,8 @@ import us.freeandfair.corla.query.BallotManifestInfoQueries;
 import us.freeandfair.corla.query.CastVoteRecordQueries;
 import us.freeandfair.corla.util.PhantomBallots;
 
+// TODO remove suppression and refactor
+@SuppressWarnings({"PMD.ExcessivePublicCount"})
 public final class BallotSelection {
   /**
    * Class-wide logger
@@ -43,23 +44,60 @@ public final class BallotSelection {
   private BallotSelection() {
   }
 
-  /** I, cvr123, volunteer as tribute  **/
+  /**
+   * An ADT to wrap up some fiddly bits
+   **/
   public static class Tribute {
+    /**
+     * A county id
+     */
     public Long countyId;
+
+    /**
+     * A scanner id
+     */
     public Integer scannerId;
+
+    /**
+     * A batch id
+     */
     public String batchId;
+
+    /**
+     * A ballot's position as an offest
+     */
     public Integer ballotPosition;
   }
 
+  /**
+   * A Segment is the unit of work for a single contest during one round
+   * of a comparison audit. It might contain work for one or more
+   * counties.
+   */
   public static class Segment {
-    public Set<CastVoteRecord> cvrs = new TreeSet<>(); // to audit ordered, deduped
-    public List<Long> cvrIds = new ArrayList<>(); // to audit selection order, possible dups
-    public List<Integer> sequencePositions = new ArrayList<>(); // raw data, county scope of generatedNumbers
-    public Long countyId; // to avoid mapEntry,getKey,etc.
+    /**
+     * The set of CVRs to audit in audit sequence order, no duplicates.
+     */
+    public Set<CastVoteRecord> cvrs = new TreeSet<>();
+
+    /**
+     * CVR IDs in audit sequence order, possible duplicates.
+     */
+    public List<Long> cvrIds = new ArrayList<>();
+
+    /**
+     * Let's rethink the name 'Tribute'. It's enough metadata to find a
+     * CVR from a manifest given a sample position.
+     */
     public List<Tribute> tributes = new ArrayList<>();
 
-    public void addTribute(BallotManifestInfo bmi, Integer ballotPosition) {
-      Tribute t = new Tribute();
+    /**
+     * Add the nth ballot from a manifest to our segment
+     * @param bmi the manifest entry containing the sample
+     * @param ballotPosition the position within a batch to sample
+     */
+    public void addTribute(final BallotManifestInfo bmi, final Integer ballotPosition) {
+      final Tribute t = new Tribute();
       t.countyId = bmi.countyID();
       t.scannerId = bmi.scannerID();
       t.batchId = bmi.batchID();
@@ -67,30 +105,47 @@ public final class BallotSelection {
       tributes.add(t);
     }
 
-    public void addCvrs(Collection<CastVoteRecord> cvrs) {
+    /**
+     * Add some CVRs to this thing
+     */
+    public void addCvrs(final Collection<CastVoteRecord> cvrs) {
       this.cvrs.addAll(cvrs);
     }
 
-    public void addCvrIds(Collection<CastVoteRecord> cvrs) {
+    /**
+     * add CVR IDs. CVR flavored.
+     */
+    public void addCvrIds(final Collection<CastVoteRecord> cvrs) {
       this.cvrIds.addAll(cvrs.stream().map(cvr -> cvr.id()).collect(Collectors.toList()));
     }
 
-    public void addCvrIds(List<Long> cvrIds) {
+    /**
+     * add CVR IDs. Long flavored.
+     */
+    public void addCvrIds(final List<Long> cvrIds) {
       this.cvrIds.addAll(cvrIds);
     }
 
-    /** in the order of the random selection, not deduped and not sorted **/
+    /**
+     * in the order of the random selection, not deduped and not sorted
+     */
     public List<Long> auditSequence() {
       return cvrIds;
     }
 
-    /** deduped and sorted **/
+    /**
+     * Return a list of CVR IDs deduped and sorted. To be given to an
+     * audit board.
+     */
     public List<Long> ballotSequence() {
       return cvrs.stream()
         .map(cvr -> cvr.id())
         .collect(Collectors.toList());
     }
 
+    /**
+     * a good idea
+     */
     public String toString() {
       return String.format("[Segment auditSequence=%s ballotSequence=%s ballotPositions=%s ",
                            auditSequence(),
@@ -99,18 +154,40 @@ public final class BallotSelection {
     }
   }
 
+  /**
+   * An ADT for thinking about selecting a sample from a contest
+   */
   public static class Selection {
-    public Map<Long,Segment> segments = new HashMap<>(); //fast access
-    public Integer domainSize;
-    public List<Integer> generatedNumbers;
-    public String contestName;
-    public ContestResult contestResult;
-    public String seed;
-    public BigDecimal riskLimit;
-    public Integer minIndex;
-    public Integer maxIndex;
+    /**
+     * the audit segments for some collection of counties
+     */
+    public Map<Long, Segment> segments = new HashMap<>();
 
-    public static Segment combineSegments(Collection<Segment> segments) {
+    /**
+     * How large is our collection of ballots?
+     */
+    public Integer domainSize = Integer.MIN_VALUE;
+
+    /**
+     * the PRNG output
+     */
+    public List<Integer> generatedNumbers = new ArrayList<Integer>();
+
+    /**
+     * what's the contest called?
+     */
+    public String contestName;
+
+    /**
+     * The contest result associated with this selection
+     */
+    public ContestResult contestResult;
+
+    /**
+     * Combines a collection of segments (selections from different
+     * contests) into a single segment that can be given to a county.
+     */
+    public static Segment combineSegments(final Collection<Segment> segments) {
       return segments.stream()
         .filter(s -> null != s)
         .reduce(new Segment(),
@@ -122,26 +199,40 @@ public final class BallotSelection {
                   return acc;});
     }
 
-    public void initCounty(Long countyId) {
+    /**
+     * Initializer for a county segment
+     */
+    public void initCounty(final Long countyId) {
       if (null == forCounty(countyId)) {
-        Segment segment = new Segment();
-        segment.countyId = countyId;
+        final Segment segment = new Segment();
         this.segments.put(countyId, segment);
       }
     }
 
-    public void addBallotPosition(BallotManifestInfo bmi, Integer ballotPosition) {
+    /**
+     * record ballot position metadata
+     */
+    public void addBallotPosition(final BallotManifestInfo bmi, final Integer ballotPosition) {
       this.forCounty(bmi.countyID()).addTribute(bmi, ballotPosition);
     }
 
-    public Segment forCounty(Long countyId) {
+    /**
+     * return the segment for a county
+     */
+    public Segment forCounty(final Long countyId) {
       return this.segments.get(countyId);
     }
 
+    /**
+     * getter of all segments
+     */
     public Collection<Segment> allSegments() {
       return segments.values();
     }
 
+    /**
+     * CVR IDs for a contest, from a segment
+     */
     public List<Long> contestCVRIds() {
       return contestResult.countyIDs().stream()
         .map(id -> forCounty(id))
@@ -151,11 +242,12 @@ public final class BallotSelection {
         .collect(Collectors.toList());
     }
 
+    /**
+     * a good idea
+     */
     public String toString() {
       return String.format("[Selection contestName=%s generatedNumbers=%s domainSize=%s]",
-                           contestName,
-                           generatedNumbers,
-                           domainSize);
+                           contestName, generatedNumbers, domainSize);
     }
   }
 
@@ -175,15 +267,12 @@ public final class BallotSelection {
     final List<Integer> generatedNumbers = gen.getRandomNumbers(minIndex, maxIndex);
 
     // make the theoretical selections (avoiding cvrs)
-    Selection selection = select(generatedNumbers, contestResult.countyIDs());
+    final Selection selection = select(generatedNumbers, contestResult.countyIDs());
 
     selection.contestResult = contestResult;
     selection.contestName = contestResult.getContestName();//posterity
     selection.domainSize = domainSize; //posterity
     selection.generatedNumbers = generatedNumbers; //posterity
-    selection.seed = seed; //posterity
-    selection.minIndex = minIndex;
-    selection.maxIndex = maxIndex;
 
     LOGGER.info("randomSelection: selection= " + selection);
     // get the CVRs from the theoretical
@@ -216,7 +305,7 @@ public final class BallotSelection {
    **/
   public static Selection select(final List<Integer> generatedNumbers,
                                  final Set<Long> countyIds,
-                                 Set<BallotManifestInfo> contestBmis) {
+                                 final Set<BallotManifestInfo> contestBmis) {
     final Selection selection = new Selection();
     countyIds.forEach(id -> selection.initCounty(id));
     generatedNumbers.forEach(rand -> {
@@ -296,23 +385,24 @@ public final class BallotSelection {
    * original sampling.
    * @return the number of ballot cards that have been audited
    */
-  public static Integer auditedPrefixLength(List<Long> cvrIds) {
+  public static Integer auditedPrefixLength(final List<Long> cvrIds) {
     // FIXME extract-fn, then use
     // Map <Long, Boolean> isAuditedById = checkAudited(cvrIds);
 
-    if (cvrIds.isEmpty()) { return 0;}
+    if (cvrIds.isEmpty()) { return 0; }
 
-    Map <Long, Boolean> isAuditedById = new HashMap<>();
+    final Map <Long, Boolean> isAuditedById = new HashMap<>();
+
     for (final Long cvrId: cvrIds) {
-      CVRAuditInfo cvrai = Persistence.getByID(cvrId, CVRAuditInfo.class);
+      final CVRAuditInfo cvrai = Persistence.getByID(cvrId, CVRAuditInfo.class);
       // has an acvr
-      boolean isAudited = (cvrai != null && cvrai.acvr() != null);
+      final boolean isAudited = cvrai != null && cvrai.acvr() != null;
       isAuditedById.put(cvrId, isAudited);
     }
 
     Integer idx = 0;
     for (int i=0; i < cvrIds.size(); i++) {
-      boolean audited = isAuditedById.get(cvrIds.get(i));
+      final boolean audited = isAuditedById.get(cvrIds.get(i));
       if (audited) {
         idx = i + 1;
       } else { break; }
@@ -420,37 +510,6 @@ public final class BallotSelection {
                                   cvr.ballotType(),
                                   bmi.storageLocation(),
                                   cvr.auditFlag());
-  }
-
-  /**
-   * Create a new phantom record.
-   */
-  // PHANTOM_RECORD conspiracy theory time
-  private static CastVoteRecord createPhantomRecord(final Long countyId,
-                                                    final Integer scannerId,
-                                                    final String batchId,
-                                                    final Long position) {
-    final String imprintedId = String.format("%d-%s-%d",
-        scannerId, batchId, position);
-    // Dummy CVR number (this would have been in the imported CVR)
-    final Integer cvrNumber = 0;
-    // Dummy sequence number (this would have been set in the file read loop)
-    final Integer sequenceNumber = 0;
-    return new CastVoteRecord(CastVoteRecord.RecordType.PHANTOM_RECORD,
-        // timestamp
-        null,
-        countyId,
-        cvrNumber,
-        sequenceNumber,
-        scannerId,
-        batchId,
-        // record ID
-        position.intValue(),
-        imprintedId,
-        // ballot type
-        "PHANTOM RECORD",
-        // contest info
-        null);
   }
 
   /**
