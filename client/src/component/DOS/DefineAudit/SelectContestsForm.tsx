@@ -30,7 +30,8 @@ const TiedContestRow = (props: RowProps) => {
 
     return (
         <tr>
-            <td>{ countyName }</td>
+            {/* TODO: Removed for the time being, see related comments in this file. */ }
+            {/* <td>{ countyName }</td> */}
             <td>{ contest.name }</td>
             <td>
                 <Checkbox checked={ false }
