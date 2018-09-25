@@ -5,7 +5,7 @@ export function countyState(): County.AppState {
             auditBoard: 'AUDIT_INITIAL_STATE',
             county: 'COUNTY_INITIAL_STATE',
         },
-        auditBoard: [],
+        auditBoards: {},
         contests: [],
         cvrImportPending: {
             alerted: false,

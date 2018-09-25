@@ -41,18 +41,19 @@ const HandCountButton = (props: ButtonProps) => {
     );
 };
 
-type SortKey = 'county'
-             | 'name'
-             | 'discrepancyCount';
+type SortKey = 'name'
+             | 'discrepancyCount'
+             | 'estimatedBallotsToAudit';
 
 type SortOrder = 'asc' | 'desc';
 
 function sortIndex(sort: SortKey): number {
     // tslint:disable
     const index = {
-        county: 0,
         name: 1,
         discrepancyCount: 2,
+        estimatedBallotsToAudit: 3,
+
     };
     // tslint:enable
 
@@ -84,13 +85,13 @@ class ContestUpdates extends React.Component<UpdatesProps, UpdatesState> {
         const selectedContests: DOS.Contests =
             _.values(_.pick(contests, _.keys(dosState.auditedContests)));
 
-        type RowData = [string, string, number, Contest];
+        type RowData = [string, number, number, Contest];
 
         const rowData: RowData[] = _.map(selectedContests, (c): RowData => {
-            const county: CountyInfo = counties[c.countyId];
             const discrepancyCount: number = _.sum(_.values(dosState.discrepancyCounts![c.id]));
+            const estimatedBallotsToAudit = dosState.estimatedBallotsToAudit![c.id];
 
-            return [county.name, c.name, discrepancyCount, c];
+            return [c.name, discrepancyCount, estimatedBallotsToAudit, c];
         });
 
         const keyFunc = (d: RowData) => d[sortIndex(this.state.sort)];
@@ -101,29 +102,24 @@ class ContestUpdates extends React.Component<UpdatesProps, UpdatesState> {
         }
 
         const filterName = (d: RowData) => {
-            const countyName = d[0].toLowerCase();
-            const contestName = d[1].toLowerCase();
+            const contestName = d[0].toLowerCase();
             const str = this.state.filter.toLowerCase();
 
-            return countyName.includes(str) || contestName.includes(str);
+            return contestName.includes(str);
         };
         const filteredData = _.filter(sortedData, filterName);
 
         const contestStatuses = _.map(filteredData, row => {
-            const [countyName, contestName, discrepancyCount, c] = row;
-
-            if (!dosState.auditedContests) {
-                return <tr key={ c.id }><td /><td /><td /><td /><td /></tr>;
-            }
+            const [contestName, discrepancyCount, estimatedBallotsToAudit, c] = row;
 
             return (
                 <tr key={ c.id }>
                     <td>
                         <HandCountButton contest={ c } />
                     </td>
-                    <td>{ countyName }</td>
                     <td>{ contestName }</td>
                     <td>{ discrepancyCount }</td>
+                    <td>{ estimatedBallotsToAudit }</td>
                 </tr>
             );
         });
@@ -145,7 +141,7 @@ class ContestUpdates extends React.Component<UpdatesProps, UpdatesState> {
             <div className='pt-card'>
                 <h3>Contest Updates</h3>
                 <div className='pt-card'>
-                    Filter by County or Contest Name:
+                    <strong>Filter by County or Contest Name:</strong>
                     <span> </span>
                     <EditableText
                         className='pt-input'
@@ -158,11 +154,6 @@ class ContestUpdates extends React.Component<UpdatesProps, UpdatesState> {
                         <thead>
                             <tr>
                                 <th>Hand Count</th>
-                                <th onClick={ this.sortBy('county') }>
-                                    County
-                                    <span> </span>
-                                    { sortIconForCol('county') }
-                                </th>
                                 <th onClick={ this.sortBy('name') }>
                                     Name
                                     <span> </span>
@@ -173,6 +164,12 @@ class ContestUpdates extends React.Component<UpdatesProps, UpdatesState> {
                                     <span> </span>
                                     { sortIconForCol('discrepancyCount') }
                                 </th>
+                                <th onClick={ this.sortBy('estimatedBallotsToAudit') }>
+                                    Est. Ballots to Audit
+                                    <span> </span>
+                                   { sortIconForCol('estimatedBallotsToAudit') }
+                                </th>
+
                             </tr>
                         </thead>
                         <tbody>

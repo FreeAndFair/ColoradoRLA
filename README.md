@@ -1,26 +1,110 @@
-ColoradoRLA
-===========
+# Colorado Risk-Limiting Audit (RLA) Tool
 
-[![Build Status](https://travis-ci.org/FreeAndFair/ColoradoRLA.svg?branch=master)](https://travis-ci.org/FreeAndFair/ColoradoRLA)
+[![Build Status](https://travis-ci.org/democracyworks/ColoradoRLA.svg?branch=master)](https://travis-ci.org/democracyworks/ColoradoRLA)
 
-The **ColoradoRLA** system is software to facilitate risk-limiting
-audits at the state level, developed for Colorado's Department of
-State in July and August of 2017.
+The Colorado RLA Tool is designed to help local and state election officials conduct efficient and effective risk-limiting audits of their elections. The initial code was developed by the Colorado Department of State through a contract with Free & Fair in 2017, and is now being developed and maintained by [Democracy Works](https://democracy.works), a 501(c)3 nonpartisan, nonprofit organization.
 
-* Blog announcement: [Free & Fair to build risk-limiting audit system for State of Colorado](http://freeandfair.us/blog/risk-limiting-audits/)
+# Objectives
 
-* *To be written:* Project Background
+- State and county election officials are able to successfully conduct a statewide risk-limiting audit of their election
 
-* *To be written:* Future Work
+- Election administrators and citizen Audit Boards find the RLA Tool easy to use and helpful in conducting the audit
 
-Installation and Use
-====================
+- Public observers have increased confidence in the electoral outcomes as a result of the risk-limiting audit
+
+- The RLA tool is reliable, scalable, and performant
+
+# Description
+
+The RLA Tool is designed to facilitate a statistically valid audit of vote tabulation processes by comparing the votes marked on a random sample of original paper ballots with the electronically recorded votes for those same ballots.
+
+The RLA Tool:
+1) Calculates how many original paper ballots need to be audited for the targeted contest(s)
+
+2) randomly selects which original paper ballots will be audited and creates lists to help local election officials find the necessary ballots in storage,
+
+3) provides an interface for Audit Board teams to record the votes they see marked on the original paper ballot(s),
+
+4) checks whether the audited votes and recorded votes for each ballot match, and determines at the end of the audit round whether the desired confidence interval has been achieved based on these results (if not, additional ballots are randomly selected and audited)
+
+5) provides metrics and monitoring capabilities for election officials & public observers that indicate the progress and outcome of the audit.
+
+## What is a risk-limiting audit?
+
+A [risk-limiting audit](https://en.wikipedia.org/wiki/Risk-limiting_audit) is an audit of the results of an election which uses statistical methods to give high confidence that the winner(s) of the election were reported correctly.
+
+In Colorado, citizen Audit Boards examine a random sample of original paper ballots from an election, comparing the votes marked on each original paper ballot with the electronic representation of votes recorded by the vote tabulation system. Under most circumstances, this method requires auditing far fewer ballots than a full hand recount or fixed-percentage audit, while also providing strong statistical evidence that the outcome of the election was correct.
+
+# Docker Quick Start
+
+Primarily used to spin up the system for development in a controlled way. This
+is a work in progress but is usable.
+
+## Requirements
+
+- [`docker`](https://docs.docker.com/install/)
+- [`docker-compose`](https://docs.docker.com/compose/)
+
+## Setup
+
+This step is optional the first time, but you need to run it when you have new
+code changes you want to incorporate. You can pass specific services to
+`docker-compose build` if you don’t want to rebuild everything.
+
+```sh
+docker-compose build
+```
+
+## Running
+
+Assuming you have built images, you can bring up the system with those images:
+
+```sh
+docker-compose up
+```
+
+The application frontend will then be accessible at **`localhost:8080`**.
+
+Once the system is running, the server will create the PostgreSQL schema. After
+this, you most likely want to install test credentials, which are already inside
+the PostgreSQL image:
+
+```sh
+docker-compose exec postgresql \
+  /bin/bash -c \
+  'psql -U corla -d corla < /root/corla-test-credentials.psql'
+```
+
+With the test credentials loaded, you should be able to log in as a state
+administrator using `stateadmin1` as the username with any password, and as a
+county administrator with `countyadmin1` as the username along with any
+password. There are other usernames, especially for the counties (`countyadmin1`
+maps to a specific county). You may be able to use this file as a hint for the
+others:
+`server/eclipse-project/src/main/resources/us/freeandfair/corla/county_ids.properties`
+
+# Tests
+
+Unit tests can be run from the command line:
+
+```sh
+mvn test
+```
+
+By default, integration tests requiring a database are excluded. To avoid
+excluding those tests, you can override the excluded groups from the command
+line:
+
+```sh
+mvn test -Dcorla.test.excludedGroups=""
+```
+
+# Installation and Use
 
 A document describing how to download, install, and use this system is
 found in [the docs directory](docs/15_installation.md).
 
-System Documentation
-====================
+# System Documentation
 
 Documentation about this project and the Colorado RLA system includes:
 * a [User Manual (docx)](docs/user_manual.docx)
@@ -45,25 +129,10 @@ Documentation about this project and the Colorado RLA system includes:
 * all [contributors](#contributors) to the design and development of
   this system are listed below.
 
-Contributors
-============
+# Contributors
 
-* Joey Dodds (Principled Computer Scientist) RLA core computations
-  implementation
-* Joseph Kiniry (Principled CEO and Chief Scientist) Project Head,
-  author of formal specification, design and implementation of ASMs
-  and 2FA
-* Michael Kiniry (Principled Documentarian) User-facing documentation
-* Neal McBurnett (Principled Elections Auditing Expert and Computer Scientist) RLA expert,
-  design and implementation of data export application
-  and automatic server test infrastructure
-* Morgan Miller (Principled Usability Specialist) UX expert, conducted
-  interviews with CDOS and County personnel, initial UI design
-* Joe Ranweiler (Principled Computer Scientist) Principal author of
-  RLA Tool Client
-* Stephanie Singer (Principled Elections Expert and Data Scientist) Query design for
-  data export application, user-facing documentation
-* Daniel Zimmerman (Principled Computer Scientist) Principal author of
-  RLA Tool Server
-
-More information about our team members [is available](docs/70_team.md).
+* [Democracy Works](https://democracy.works)
+* [Free & Fair](https://http://freeandfair.us)
+* [Colorado Department of State](https://www.sos.state.co.us/pubs/elections/auditCenter.html)
+* [Colorado County Clerks Association](www.clerkandrecorder.org/)
+* Special thanks also to Philip Stark, Ron Rivest, Mark Lindeman, and others in the State Audit Working Group and RLA Representative Group for their work to develop and refine risk-limiting audits

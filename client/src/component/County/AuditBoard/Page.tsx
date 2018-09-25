@@ -10,7 +10,7 @@ import isValidAuditBoard from 'corla/selector/county/isValidAuditBoard';
 
 
 interface PageProps {
-    auditBoard: AuditBoard;
+    auditBoardIndex: number;
     countyName: string;
 }
 
@@ -35,13 +35,14 @@ class AuditBoardSignInPage extends React.Component<PageProps, PageState> {
     };
 
     public render() {
-        const { auditBoard, countyName } = this.props;
+        const {
+          auditBoardIndex,
+          countyName,
+        } = this.props;
 
-        if (!auditBoard) {
-            return <div />;
-        }
-
-        const submit = () => auditBoardSignIn(this.state.form);
+        const submit = () => {
+          auditBoardSignIn(auditBoardIndex, this.state.form);
+        };
 
         const disableButton = !isValidAuditBoard(this.state.form);
 
@@ -49,11 +50,14 @@ class AuditBoardSignInPage extends React.Component<PageProps, PageState> {
             <div>
                 <CountyNav />
                 <div>
-                    <h2>Audit Board</h2>
+                    <h2>Audit Board { auditBoardIndex + 1 }</h2>
                     <div className='pt-card'>
-                        Enter the full names and party affiliations of each member of
-                        the { countyName } County Audit Board who will be conducting this
-                        audit today:
+                        <span className='pt-ui-text-large'>
+                            Enter the full names and party affiliations of each
+                            member of the { countyName } County Audit Board
+                            { ' ' + (auditBoardIndex + 1) } who will be
+                            conducting this audit today.
+                         </span>
                     </div>
                 </div>
                 <SignInForm

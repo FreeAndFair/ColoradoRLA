@@ -56,9 +56,17 @@ interface AuditBoardStatus {
     signIn: Date;
 }
 
+interface AuditBoards {
+    [index: number]: AuditBoardStatus;
+}
+
 interface Elector {
     firstName: string;
     lastName: string;
+}
+
+interface Signatories {
+    [index: number]: Elector[];
 }
 
 type RecordType
@@ -118,7 +126,7 @@ interface Round {
     discrepancies: number;
     expectedCount: number;
     number: number;
-    signatories: Elector[];
+    signatories: Signatories;
     startAuditPrefixLength: number;
     startIndex: number;
     startTime: Date;

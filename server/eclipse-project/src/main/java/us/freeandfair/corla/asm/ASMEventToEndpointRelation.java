@@ -60,9 +60,6 @@ public class ASMEventToEndpointRelation {
         PARTIAL_AUDIT_INFO_EVENT,
         UNIMPLEMENTED));
     my_relation.add(new Pair<ASMEvent, String>(
-        PUBLIC_SEED_EVENT,
-        UNIMPLEMENTED));
-    my_relation.add(new Pair<ASMEvent, String>(
         DOS_START_ROUND_EVENT,
         UNIMPLEMENTED));
     my_relation.add(new Pair<ASMEvent, String>(

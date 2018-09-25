@@ -161,6 +161,7 @@ export function parse(data: any) {
         auditReasons: data.audit_reasons,
         auditTypes: data.audit_types,
         auditedContests: parseAuditedContests(data.audited_contests),
+        canonicalContests: data.audit_info.canonicalContests,
         countyStatus: parseCountyStatus(data.county_status),
         discrepancyCounts: data.discrepancy_count,
         election: parseElection(data),

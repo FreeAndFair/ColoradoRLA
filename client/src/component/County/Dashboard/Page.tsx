@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 
+import { History } from 'history';
+
 import LicenseFooter from 'corla/component/LicenseFooter';
 
 import CountyNav from '../Nav';
@@ -10,10 +12,8 @@ import Main from './Main';
 
 
 interface PageProps {
-    auditBoardSignedIn: boolean;
     auditComplete: boolean;
     auditStarted: boolean;
-    boardSignIn: OnClick;
     canAudit: boolean;
     canRenderReport: boolean;
     canSignIn: boolean;
@@ -21,15 +21,13 @@ interface PageProps {
     countyInfo: CountyInfo;
     countyState: County.AppState;
     currentRoundNumber: number;
-    startAudit: OnClick;
+    history: History;
 }
 
 const CountyDashboardPage = (props: PageProps) => {
     const {
-        auditBoardSignedIn,
         auditComplete,
         auditStarted,
-        boardSignIn,
         canAudit,
         canRenderReport,
         canSignIn,
@@ -37,11 +35,10 @@ const CountyDashboardPage = (props: PageProps) => {
         countyInfo,
         countyState,
         currentRoundNumber,
-        startAudit,
+        history,
     } = props;
 
-    const auditButtonDisabled = !canAudit || auditComplete;
-    const signInButtonDisabled = !canSignIn;
+    const auditBoardButtonDisabled = !canSignIn;
 
     return (
         <div>
@@ -50,15 +47,12 @@ const CountyDashboardPage = (props: PageProps) => {
                 <div>
                     <Main auditComplete={ auditComplete }
                           auditStarted={ auditStarted }
-                          auditBoardSignedIn={ auditBoardSignedIn }
-                          boardSignIn={ boardSignIn }
                           canRenderReport={ canRenderReport }
                           countyState={ countyState }
                           currentRoundNumber={ currentRoundNumber }
-                          auditButtonDisabled={ auditButtonDisabled }
+                          history={ history }
                           name={ countyInfo.name }
-                          signInButtonDisabled={ signInButtonDisabled }
-                          startAudit={ startAudit } />
+                          auditBoardButtonDisabled={ auditBoardButtonDisabled } />
                     <Info info={ countyInfo }
                           contests={ contests }
                           countyState={ countyState }

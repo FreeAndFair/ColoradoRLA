@@ -5,13 +5,18 @@ import ReviewStage from './ReviewStage';
 
 import uploadAcvr from 'corla/action/county/uploadAcvr';
 
+import currentBallotNumber from 'corla/selector/county/currentBallotNumber';
+import totalBallotsForBoard from 'corla/selector/county/totalBallotsForBoard';
+
 
 interface ContainerProps {
     countyState: County.AppState;
     currentBallot?: County.CurrentBallot;
+    currentBallotNumber: number;
     marks?: County.ACVR;
     nextStage: OnClick;
     prevStage: OnClick;
+    totalBallotsForBoard: number;
 }
 
 class ReviewStageContainer extends React.Component<ContainerProps> {
@@ -19,9 +24,11 @@ class ReviewStageContainer extends React.Component<ContainerProps> {
         const {
             countyState,
             currentBallot,
+            currentBallotNumber,
             marks,
             nextStage,
             prevStage,
+            totalBallotsForBoard,
         } = this.props;
 
         if (!currentBallot) {
@@ -34,9 +41,11 @@ class ReviewStageContainer extends React.Component<ContainerProps> {
 
         return <ReviewStage countyState={ countyState }
                             currentBallot={ currentBallot }
+                            currentBallotNumber={ currentBallotNumber }
                             marks={ marks }
                             nextStage={ nextStage }
                             prevStage={ prevStage }
+                            totalBallotsForBoard={ totalBallotsForBoard }
                             uploadAcvr={ uploadAcvr } />;
     }
 }
@@ -50,7 +59,13 @@ function select(countyState: County.AppState) {
 
     const marks = countyState.acvrs[currentBallot.id];
 
-    return { countyState, currentBallot, marks };
+    return {
+      countyState,
+      currentBallot,
+      currentBallotNumber: currentBallotNumber(countyState),
+      marks,
+      totalBallotsForBoard: totalBallotsForBoard(countyState),
+    };
 }
 
 

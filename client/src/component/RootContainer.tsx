@@ -20,6 +20,7 @@ import NextLoginContainer from './Login/Container';
 import DOSDefineAuditReviewPageContainer from './DOS/DefineAudit/ReviewPageContainer';
 import DOSDefineAuditSeedPageContainer from './DOS/DefineAudit/SeedPageContainer';
 import DOSDefineAuditSelectContestsPageContainer from './DOS/DefineAudit/SelectContestsPageContainer';
+import DOSDefineAuditStandardizeContestsPageContainer from './DOS/DefineAudit/StandardizeContestsPageContainer';
 import DOSDefineAuditStartPageContainer from './DOS/DefineAudit/StartPageContainer';
 
 import DOSContestDetailPageContainer from './DOS/Contest/DetailPageContainer';
@@ -52,10 +53,10 @@ export class RootContainer extends React.Component<RootContainerProps> {
                                     path='/county'
                                     page={ CountyDashboardPageContainer } />
                         <LoginRoute exact
-                                    path='/county/board'
+                                    path='/county/board/:id'
                                     page={ AuditBoardPageContainer } />
                         <LoginRoute exact
-                                    path='/county/audit'
+                                    path='/county/audit/:id'
                                     page={ CountyAuditPageContainer } />
                         <LoginRoute exact
                                     path='/sos'
@@ -66,6 +67,9 @@ export class RootContainer extends React.Component<RootContainerProps> {
                         <LoginRoute exact
                                     path='/sos/audit/seed'
                                     page={ DOSDefineAuditSeedPageContainer } />
+                        <LoginRoute exact
+                                    path='/sos/audit/standardize-contests'
+                                    page={ DOSDefineAuditStandardizeContestsPageContainer } />
                         <LoginRoute exact
                                     path='/sos/audit/select-contests'
                                     page={ DOSDefineAuditSelectContestsPageContainer } />

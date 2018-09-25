@@ -1,0 +1,14 @@
+"genelect CVRs: 10 ballots, margins [1, -2, 4, 1], undervotes []",,,,,,,,,,,,,
+,,,,,,Prop 1 (Vote For=1),Prop 1 (Vote For=1),Prop 2 (Vote For=1),Prop 2 (Vote For=1),Prop 3 (Vote For=1),Prop 3 (Vote For=1),Prop 4 (Vote For=1),Prop 4 (Vote For=1)
+,,,,,,Yes,No,Yes,No,Yes,No,Yes,No
+CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,BallotType,,,,,,,,
+1,1,1,1,"1-1-1",s1,0,0,0,1,1,0,0,0
+2,1,1,2,"1-1-2",s1,1,0,0,1,1,0,1,0
+3,1,1,3,"1-1-3",s1,0,1,0,1,1,0,0,1
+4,1,1,4,"1-1-4",s1,1,0,1,0,1,0,1,0
+5,1,1,5,"1-1-5",s1,0,1,0,1,0,1,0,1
+6,1,1,6,"1-1-6",s1,1,0,1,0,1,0,1,0
+7,1,1,7,"1-1-7",s1,0,1,0,1,0,1,0,1
+8,1,1,8,"1-1-8",s1,1,0,1,0,1,0,1,0
+9,1,1,9,"1-1-9",s1,0,1,0,1,0,1,0,1
+10,1,1,10,"1-1-10",s1,1,0,1,0,1,0,1,0

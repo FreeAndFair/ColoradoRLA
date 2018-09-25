@@ -181,7 +181,8 @@ class CountyUpdates extends React.Component<UpdatesProps, UpdatesState> {
                     <td>{ x[5] }</td>
                     <td>{ x[6] }</td>
                     <td>{ x[7] }</td>
-                    <td>{ x[8] }</td>
+                    {/* not applicable to Counties anymore, only ComparisonAudit */}
+                    {/* <td>{ x[8] }</td> */}
                 </tr>
             );
         });
@@ -203,7 +204,7 @@ class CountyUpdates extends React.Component<UpdatesProps, UpdatesState> {
             <div className='pt-card'>
                 <h3>County Updates</h3>
                 <div className='pt-card'>
-                    Filter by County Name:
+                    <strong>Filter by County Name:</strong>
                     <span> </span>
                     <EditableText
                         className='pt-input'
@@ -212,8 +213,8 @@ class CountyUpdates extends React.Component<UpdatesProps, UpdatesState> {
                         onChange={ this.onFilterChange } />
                 </div>
                 <div className='pt-card' >
-                    Click on a column name to sort by that column's data.
-                    To reverse sort, click on the column name again.
+                    <strong>Click on a column name to sort by that column's data.
+                    To reverse sort, click on the column name again.</strong>
                 </div>
                 <div className='pt-card'>
                     <table className='pt-table pt-bordered pt-condensed '>
@@ -254,11 +255,12 @@ class CountyUpdates extends React.Component<UpdatesProps, UpdatesState> {
                                     <span> </span>
                                     { sortIconForCol('remRound') }
                                 </th>
-                                <th onClick={ this.sortBy('remTotal') }>
-                                    <EstRemainingHeader />
-                                    <span> </span>
-                                    { sortIconForCol('remTotal') }
-                                </th>
+                                {/* not applicable to Counties anymore, only ComparisonAudit */}
+                                {/* <th onClick={ this.sortBy('remTotal') }> */}
+                                    {/* <EstRemainingHeader /> */}
+                                    {/* <span> </span> */}
+                                    {/* { sortIconForCol('remTotal') } */}
+                                    {/* </th> */}
                             </tr>
                         </thead>
                         <tbody>

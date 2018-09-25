@@ -1,6 +1,6 @@
 /*
  * Free & Fair Colorado RLA System
- * 
+ *
  * @title ColoradoRLA
  * @created Aug 8, 2017
  * @copyright 2017 Colorado Department of State
@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalLong;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
@@ -35,10 +36,11 @@ import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
 import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.controller.BallotSelection.Tribute;
 
 /**
  * Queries having to do with CastVoteRecord entities.
- * 
+ *
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 1.0.0
  */
@@ -47,37 +49,37 @@ public final class CastVoteRecordQueries {
    * The "county ID" field.
    */
   private static final String COUNTY_ID = "my_county_id";
-  
+
   /**
    * The "cvr number" field.
    */
   private static final String SEQUENCE_NUMBER = "my_sequence_number";
-  
+
   /**
    * The "record type" field.
    */
   private static final String RECORD_TYPE = "my_record_type";
-  
+
   /**
    * The "could not query database for CVRs error message.
    */
-  private static final String COULD_NOT_QUERY_DATABASE = 
+  private static final String COULD_NOT_QUERY_DATABASE =
       "could not query database for CVRs";
-  
+
   /**
    * Private constructor to prevent instantiation.
    */
   private CastVoteRecordQueries() {
     // do nothing
   }
-  
+
   /**
-   * Obtain a stream of CastVoteRecord objects with the specified type. 
+   * Obtain a stream of CastVoteRecord objects with the specified type.
    *
    * @param the_type The type.
    * @return the stream of CastVoteRecord objects, or null if one could
    * not be acquired.
-   * @exception IllegalStateException if this method is called outside a 
+   * @exception IllegalStateException if this method is called outside a
    * transaction.
    */
   @SuppressWarnings("PMD.AvoidDuplicateLiterals")
@@ -85,9 +87,9 @@ public final class CastVoteRecordQueries {
     if (!Persistence.isTransactionActive()) {
       throw new IllegalStateException("no running transaction");
     }
-    
+
     Stream<CastVoteRecord> result = null;
-   
+
     try {
       final Session s = Persistence.currentSession();
       final CriteriaBuilder cb = s.getCriteriaBuilder();
@@ -108,10 +110,10 @@ public final class CastVoteRecordQueries {
   }
 
   /**
-   * Counts the CastVoteRecord objects with the specified type. 
+   * Counts the CastVoteRecord objects with the specified type.
    *
    * @param the_type The type.
-   * @return the count, empty if the query could not be completed 
+   * @return the count, empty if the query could not be completed
    * successfully.
    */
   @SuppressWarnings("PMD.AvoidDuplicateLiterals")
@@ -119,9 +121,9 @@ public final class CastVoteRecordQueries {
     if (!Persistence.isTransactionActive()) {
       throw new IllegalStateException("no running transaction");
     }
-    
+
     OptionalLong result = OptionalLong.empty();
-   
+
     try {
       final Session s = Persistence.currentSession();
       final CriteriaBuilder cb = s.getCriteriaBuilder();
@@ -140,23 +142,23 @@ public final class CastVoteRecordQueries {
     }
     return result;
   }
-  
+
   /**
-   * Obtain a stream of CastVoteRecord objects with the specified county 
-   * and type, ordered by their sequence number. 
+   * Obtain a stream of CastVoteRecord objects with the specified county
+   * and type, ordered by their sequence number.
    *
    * @param the_county The county.
    * @param the_type The type.
    * @return the stream of CastVoteRecord objects, or null if one could
    * not be acquired.
-   * @exception IllegalStateException if this method is called outside a 
+   * @exception IllegalStateException if this method is called outside a
    * transaction.
    */
   @SuppressWarnings("PMD.AvoidDuplicateLiterals")
   public static Stream<CastVoteRecord> getMatching(final Long the_county,
                                                    final RecordType the_type) {
     Stream<CastVoteRecord> result = null;
-   
+
     try {
       final Session s = Persistence.currentSession();
       final CriteriaBuilder cb = s.getCriteriaBuilder();
@@ -173,27 +175,27 @@ public final class CastVoteRecordQueries {
       Main.LOGGER.error(COULD_NOT_QUERY_DATABASE);
     }
     if (result == null) {
-      Main.LOGGER.debug("found no CVRs for county " + the_county + 
+      Main.LOGGER.debug("found no CVRs for county " + the_county +
                         ", type " + the_type);
     } else {
       Main.LOGGER.debug("query succeeded, returning CVR stream");
     }
     return result;
   }
-  
+
   /**
    * Counts the CastVoteRecord objects with the specified county and type.
    *
    * @param the_county_id The county.
    * @param the_type The type.
-   * @return the count, empty if the query could not be completed 
+   * @return the count, empty if the query could not be completed
    * successfully.
    */
   @SuppressWarnings("PMD.AvoidDuplicateLiterals")
   public static OptionalLong countMatching(final Long the_county,
                                            final RecordType the_type) {
     OptionalLong result = OptionalLong.empty();
-   
+
     try {
       final Session s = Persistence.currentSession();
       final CriteriaBuilder cb = s.getCriteriaBuilder();
@@ -210,18 +212,18 @@ public final class CastVoteRecordQueries {
       Main.LOGGER.error(COULD_NOT_QUERY_DATABASE);
     }
     if (result == null) {
-      Main.LOGGER.debug("found no CVRs for county " + the_county + 
+      Main.LOGGER.debug("found no CVRs for county " + the_county +
                         ", type " + the_type);
     } else {
       Main.LOGGER.debug("query succeeded, returning CVR stream");
     }
     return result;
   }
-  
+
   /**
-   * Deletes the set of cast vote records for the specified county ID and 
+   * Deletes the set of cast vote records for the specified county ID and
    * record type.
-   * 
+   *
    * @param the_county_id The county ID.
    * @param the_type The record type.
    * @return the number of records deleted.
@@ -244,10 +246,10 @@ public final class CastVoteRecordQueries {
     });
     return count.get();
   }
-  
+
   /**
-   * Obtain the CastVoteRecord object with the specified county, type, 
-   * and sequence number. 
+   * Obtain the CastVoteRecord object with the specified county, type,
+   * and sequence number.
    *
    * @param the_county_id The county.
    * @param the_type The type.
@@ -262,7 +264,7 @@ public final class CastVoteRecordQueries {
                                    final RecordType the_type,
                                    final Integer the_sequence_number) {
     CastVoteRecord result = null;
-   
+
     try {
       final Session s = Persistence.currentSession();
       final CriteriaBuilder cb = s.getCriteriaBuilder();
@@ -278,7 +280,7 @@ public final class CastVoteRecordQueries {
       // if there's exactly one result, return that
       if (query_results.size() == 1) {
         result = query_results.get(0);
-      } 
+      }
     } catch (final PersistenceException e) {
       Main.LOGGER.error(COULD_NOT_QUERY_DATABASE);
     }
@@ -288,14 +290,14 @@ public final class CastVoteRecordQueries {
     } else {
       Main.LOGGER.debug("found CVR " + result);
     }
-    
+
     return result;
   }
-  
+
   /**
    * Obtain the CastVoteRecord objects with the specified county, type, and
    * sequence numbers.
-   * 
+   *
    * @param the_county_id The county.
    * @param the_type The type.
    * @param the_sequence_numbers The sequence numbers.
@@ -307,7 +309,7 @@ public final class CastVoteRecordQueries {
                                                  final List<Integer> the_sequence_numbers) {
     Map<Integer, CastVoteRecord> result = null;
     final Set<Integer> unique_numbers = new HashSet<>(the_sequence_numbers);
-   
+
     try {
       final Session s = Persistence.currentSession();
       final CriteriaBuilder cb = s.getCriteriaBuilder();
@@ -333,20 +335,24 @@ public final class CastVoteRecordQueries {
     } else {
       Main.LOGGER.debug("found " + result.keySet().size() + "CVRs ");
     }
-    
+
     return result;
   }
-  
+
   /**
-   * Obtain the CastVoteRecord objects with the specified IDs. 
-   * 
+   * Obtain the CastVoteRecord objects with the specified IDs.
+   *
    * @param the_ids The IDs.
    * @return the matching CastVoteRecord objects, an empty list if none are found,
    * or null if the query fails.
    */
   public static List<CastVoteRecord> get(final List<Long> the_ids) {
-    List<CastVoteRecord> result = null;
-    
+    List<CastVoteRecord> result = new ArrayList<>();
+
+    if (the_ids.isEmpty()) {
+      return result;
+    }
+
     try {
       final Session s = Persistence.currentSession();
       final CriteriaBuilder cb = s.getCriteriaBuilder();
@@ -362,10 +368,79 @@ public final class CastVoteRecordQueries {
     }
     if (result == null) {
       Main.LOGGER.debug("found no CVRs with ids " + the_ids);
+      return new ArrayList<>();
     } else {
       Main.LOGGER.debug("found " + result.size() + "CVRs ");
     }
-    
+
     return result;
   }
+
+  /**
+   * Find a CVR by it's Ballot Manifest position
+   * @parms tribute the ADT wrapping countyId, scannerId, batchId, and
+   * ballotPosition
+   * @return a CastVoteRecord at some position in a manifest
+   */
+  public static CastVoteRecord atPosition(final Tribute tribute) {
+    return atPosition(tribute.countyId,
+                      tribute.scannerId,
+                      tribute.batchId,
+                      tribute.ballotPosition);
+  }
+
+  /**
+   * join query
+   **/
+  public static CastVoteRecord atPosition(final Long county_id,
+                                          final Integer scanner_id,
+                                          final String batch_id,
+                                          final Integer position) {
+    final Session s = Persistence.currentSession();
+    final CriteriaBuilder cb = s.getCriteriaBuilder();
+    final CriteriaQuery<CastVoteRecord> cq = cb.createQuery(CastVoteRecord.class);
+    final Root<CastVoteRecord> root = cq.from(CastVoteRecord.class);
+    cq.select(root).where(cb.and(cb.equal(root.get("my_county_id"), county_id),
+                                 cb.equal(root.get("my_scanner_id"), scanner_id),
+                                 cb.equal(root.get("my_batch_id"), batch_id),
+                                 cb.equal(root.get("my_record_id"), position),
+                                 cb.or(cb.equal(root.get("my_record_type"), RecordType.UPLOADED),
+                                       // in case of duplicate selections on a phantom record
+                                       cb.equal(root.get("my_record_type"), RecordType.PHANTOM_RECORD))));
+
+    final Query q = s.createQuery(cq);
+    final Optional<CastVoteRecord> resultMaybe = q.uniqueResultOptional();
+
+    if (resultMaybe.isPresent()) {
+      return resultMaybe.get();
+    } else {
+      // hmm performance no good, prevents bulk queries
+      return phantomRecord(county_id,
+                           scanner_id,
+                           batch_id,
+                           position);
+    }
+  }
+
+  /** PHANTOM_RECORD conspiracy theory time **/
+  public static CastVoteRecord phantomRecord(final Long county_id,
+                                             final Integer scanner_id,
+                                             final String batch_id,
+                                             final Integer position) {
+    final String imprintedID = String.format("%d-%s-%d", scanner_id, batch_id, position);
+    final CastVoteRecord cvr = new CastVoteRecord(CastVoteRecord.RecordType.PHANTOM_RECORD,
+                                                  null,
+                                                  county_id,
+                                                  0, // cvrNumber N/A
+                                                  0, // sequenceNumber N/A
+                                                  scanner_id,
+                                                  batch_id,
+                                                  position,
+                                                  imprintedID,
+                                                  "PHANTOM RECORD",
+                                                  null);
+    Persistence.save(cvr);
+    return cvr;
+  }
+
 }

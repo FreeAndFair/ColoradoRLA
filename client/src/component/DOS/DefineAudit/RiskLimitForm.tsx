@@ -40,11 +40,12 @@ function toPercent(val: number) {
 
 
 class RiskLimitForm extends React.Component<FormProps, FormState> {
+    public initRiskLimit: number = (this.props.riskLimit || DEFAULT_RISK_LIMIT);
     public state: FormState = {
-        ballotPollingField: `${toPercent(DEFAULT_RISK_LIMIT)}`,
-        ballotPollingLimit: DEFAULT_RISK_LIMIT,
-        comparisonField: `${toPercent(DEFAULT_RISK_LIMIT).toFixed(2)}`,
-        comparisonLimit: DEFAULT_RISK_LIMIT,
+        ballotPollingField: `${toPercent(this.initRiskLimit)}`,
+        ballotPollingLimit: this.initRiskLimit,
+        comparisonField: `${toPercent(this.initRiskLimit).toFixed(2)}`,
+        comparisonLimit: this.initRiskLimit,
     };
 
     public render() {
