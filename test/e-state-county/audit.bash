@@ -22,7 +22,7 @@ mkdir -p $LOGDIR
     ./main.py -c 2 -f ../e-state-county/cvr-10--1--2-4-1.csv -F ../e-state/manifest-2-10.csv county_setup
     ./main.py -c 3 -f ../e-state-county/cvr-100--2-24-40.csv -F ../e-state/manifest-3-100.csv county_setup
 
-    echo -e "\nFinish 'Define audit' step to select contests, enter the random seed, and Lanuch the Audit\n"
+    echo -e "\nFinish 'Define audit' step to select contests, enter the random seed, and Launch the Audit\n"
 
     ./main.py -C 1  -C 3 -C 4 -C 5  -C 7 -C 8 dos_start
 
