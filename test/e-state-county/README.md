@@ -1,6 +1,6 @@
 # e-state-county: test for auditing three contests in 1, 2 or 3 counties
 
-These files are test input for auditing three contests. One is in a single tiny county, one is in two counties, and 1 is in three counties.
+These files are test input for auditing three contests. One is in a single tiny county, one is in two counties, and one is in three counties.
 
 Run via `audit.bash`.
 
