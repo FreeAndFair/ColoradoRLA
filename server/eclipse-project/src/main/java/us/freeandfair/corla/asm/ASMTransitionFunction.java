@@ -211,25 +211,6 @@ public interface ASMTransitionFunction {
     EARLY(new ASMTransition(ROUND_IN_PROGRESS,
                             RISK_LIMIT_ACHIEVED_EVENT,
                             AUDIT_COMPLETE)), */
-
-    // TODO Confirm. Does it work with a single audit board? What about
-    // multiples?
-    SKIP_ROUND
-    (new ASMTransition
-     (SetCreator.setOf
-      (WAITING_FOR_ROUND_START, ROUND_IN_PROGRESS),
-      ROUND_COMPLETE_EVENT,
-      WAITING_FOR_ROUND_SIGN_OFF)),
-
-    SKIP_ROUND_NO_AUDIT_BOARD
-    (new ASMTransition
-     (SetCreator.setOf
-      (AUDIT_INITIAL_STATE,
-       WAITING_FOR_ROUND_START_NO_AUDIT_BOARD,
-       ROUND_IN_PROGRESS_NO_AUDIT_BOARD),
-      ROUND_COMPLETE_EVENT,
-      WAITING_FOR_ROUND_SIGN_OFF_NO_AUDIT_BOARD)),
-
     P(new ASMTransition(ROUND_IN_PROGRESS_NO_AUDIT_BOARD,
                         SIGN_IN_AUDIT_BOARD_EVENT,
                         ROUND_IN_PROGRESS)),

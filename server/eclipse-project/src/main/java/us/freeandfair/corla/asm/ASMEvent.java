@@ -60,7 +60,6 @@ public interface ASMEvent extends Event {
     SIGN_OUT_AUDIT_BOARD_EVENT, // public inbound event
     SIGN_IN_AUDIT_BOARD_EVENT, // public inbound event
     ROUND_START_EVENT, // private internal event
-    ROUND_SKIP_EVENT, // private internal event
     ROUND_COMPLETE_EVENT, // private internal event
     ROUND_SIGN_OFF_EVENT, // public inbound event
     RISK_LIMIT_ACHIEVED_EVENT, // private internal event
