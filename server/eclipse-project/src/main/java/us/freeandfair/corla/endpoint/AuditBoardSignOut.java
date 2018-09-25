@@ -11,8 +11,6 @@
 
 package us.freeandfair.corla.endpoint;
 
-import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.SIGN_OUT_AUDIT_BOARD_EVENT;
-
 import javax.persistence.PersistenceException;
 
 import spark.Request;
@@ -22,11 +20,9 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonParseException;
 
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
  * Signs out the audit board for a county.
@@ -37,18 +33,13 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
 @SuppressWarnings({"PMD.AtLeastOneConstructor"})
 public class AuditBoardSignOut extends AbstractAuditBoardDashboardEndpoint {
   /**
-   * The event to return for this endpoint.
-   */
-  private final ThreadLocal<ASMEvent> asmEvent = new ThreadLocal<ASMEvent>();
-
-  /**
    * {@inheritDoc}
    */
   @Override
   public EndpointType endpointType() {
     return EndpointType.POST;
   }
-  
+
   /**
    * {@inheritDoc}
    */
@@ -65,19 +56,9 @@ public class AuditBoardSignOut extends AbstractAuditBoardDashboardEndpoint {
   }
 
   /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected ASMEvent endpointEvent() {
-    return this.asmEvent.get();
-  }
-
-  /**
    * Signs the audit board out for the logged in county at the specified index.
    */
   @Override
-  // false positive about inner class declaration
-  @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
   public String endpointBody(final Request the_request,
                              final Response the_response) {
     final JsonParser parser = new JsonParser();
@@ -96,7 +77,6 @@ public class AuditBoardSignOut extends AbstractAuditBoardDashboardEndpoint {
         } else {
           cdb.signOutAuditBoard(index);
           Persistence.saveOrUpdate(cdb);
-          this.asmEvent.set(this.nextEvent(cdb));
           ok(the_response,
              String.format("audit board #%d for county %d signed out",
                            index, county.id()));
@@ -109,20 +89,5 @@ public class AuditBoardSignOut extends AbstractAuditBoardDashboardEndpoint {
     }
 
     return my_endpoint_result.get();
-  }
-
-  /**
-   * Computes the ASM event to emit when the audit board signs out.
-   *
-   * Returns null if no ASM event should be emitted.
-   *
-   * @param cdb the county dashboard
-   */
-  private ASMEvent nextEvent(final CountyDashboard cdb) {
-    if (cdb.areAuditBoardsSignedOut()) {
-      return SIGN_OUT_AUDIT_BOARD_EVENT;
-    }
-
-    return null;
   }
 }

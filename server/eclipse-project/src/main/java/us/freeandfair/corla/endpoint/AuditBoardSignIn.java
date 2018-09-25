@@ -12,6 +12,7 @@
 package us.freeandfair.corla.endpoint;
 
 import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.SIGN_IN_AUDIT_BOARD_EVENT;
+import static us.freeandfair.corla.asm.ASMState.AuditBoardDashboardState.*;
 
 import java.lang.reflect.Type;
 
@@ -29,6 +30,9 @@ import spark.Response;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.asm.ASMEvent;
+import us.freeandfair.corla.asm.ASMState;
+import us.freeandfair.corla.asm.ASMUtilities;
+import us.freeandfair.corla.asm.AuditBoardDashboardASM;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.Elector;
@@ -143,7 +147,19 @@ public class AuditBoardSignIn extends AbstractAuditBoardDashboardEndpoint {
    * @param cdb the county dashboard
    */
   private ASMEvent nextEvent(final CountyDashboard cdb) {
-    if (cdb.areAuditBoardsSignedOut()) {
+    final AuditBoardDashboardASM asm = ASMUtilities.asmFor(
+        AuditBoardDashboardASM.class,
+        String.valueOf(cdb.id()));
+
+    ASMState currentState = null;
+    if (null != asm) {
+      currentState = asm.currentState();
+    }
+
+    if (AUDIT_INITIAL_STATE == currentState
+        || WAITING_FOR_ROUND_START_NO_AUDIT_BOARD == currentState
+        || ROUND_IN_PROGRESS_NO_AUDIT_BOARD == currentState
+        || WAITING_FOR_ROUND_SIGN_OFF_NO_AUDIT_BOARD == currentState) {
       return SIGN_IN_AUDIT_BOARD_EVENT;
     }
 
