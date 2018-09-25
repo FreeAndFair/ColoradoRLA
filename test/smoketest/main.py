@@ -1150,7 +1150,7 @@ def main():
     contests = r.json()
 
     for i, contest in enumerate(contests):
-        print("Contest {} in county_id {county_id}: vote for {votes_allowed} in {name}".format(i, **contest))
+          print("Contest {} in county_id {county_id} contest_id {id}: vote for {votes_allowed} in {name}".format(i, **contest))
 
     logging.log(5, "Contests: %s" % contests)
 
