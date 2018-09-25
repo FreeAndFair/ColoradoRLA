@@ -13,6 +13,7 @@ package us.freeandfair.corla.endpoint;
 
 import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.*;
 import static us.freeandfair.corla.asm.ASMEvent.DoSDashboardEvent.*;
+import static us.freeandfair.corla.asm.ASMState.AuditBoardDashboardState.*;
 
 import static us.freeandfair.corla.asm.ASMEvent.CountyDashboardEvent.COUNTY_AUDIT_COMPLETE_EVENT;
 
@@ -37,6 +38,7 @@ import us.freeandfair.corla.Main;
 
 import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.asm.ASMUtilities;
+import us.freeandfair.corla.asm.AuditBoardDashboardASM;
 import us.freeandfair.corla.asm.CountyDashboardASM;
 import us.freeandfair.corla.asm.DoSDashboardASM;
 
@@ -181,6 +183,16 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
       } else {
         // We're done!
         cdb.endRound();
+
+        final AuditBoardDashboardASM asm = ASMUtilities.asmFor(
+            AuditBoardDashboardASM.class,
+            String.valueOf(cdb.id()));
+
+        if (null != asm && asm.currentState() == ROUND_IN_PROGRESS) {
+          ASMUtilities.step(ROUND_COMPLETE_EVENT,
+                            AuditBoardDashboardASM.class,
+                            String.valueOf(cdb.id()));
+        }
 
         // update the ASM state for the county and maybe DoS
         if (!DISABLE_ASM) {
