@@ -54,7 +54,8 @@ import us.freeandfair.corla.persistence.Persistence;
  * @version 1.0.0
  */
 @SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.CyclomaticComplexity",
-    "PMD.ModifiedCyclomaticComplexity", "PMD.StdCyclomaticComplexity"})
+    "PMD.ModifiedCyclomaticComplexity", "PMD.NPathComplexity",
+    "PMD.StdCyclomaticComplexity"})
 public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
   /**
    * The type of the JSON request.
