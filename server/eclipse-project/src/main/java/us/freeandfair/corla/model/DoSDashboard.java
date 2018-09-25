@@ -264,16 +264,6 @@ public class DoSDashboard implements PersistentEntity, Serializable {
   }
 
   /**
-   * data access helper
-   * @return contests of contestsToAudit a.k.a selected contests, targeted contests
-   */
-  // FIXME this might not be needed.
-  public Stream<String> targetedContestNames() {
-    return contestsToAudit().stream()
-      .map(a -> a.contest().name());
-  }
-
-  /**
    * @return a String representation of this contest.
    */
   @Override

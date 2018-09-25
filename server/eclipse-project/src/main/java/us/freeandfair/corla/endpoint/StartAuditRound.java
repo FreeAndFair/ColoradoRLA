@@ -248,6 +248,8 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
    * happens
    */
   public List<ContestResult> countAndSaveContests(final Set<ContestToAudit> cta) {
+    LOGGER.debug(String.format("[countAndSaveContests: cta=%s]", cta));
+
     return
       ContestCounter.countAllContests().stream()
       .map(cr -> {cr.setAuditReason(targetedContestReasons(cta)
