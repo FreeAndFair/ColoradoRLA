@@ -484,7 +484,6 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
           Main.LOGGER.info(imported + " CVRs parsed from file " + the_file.id() + 
                            " for county " + the_file.county().id());
           updateCountyDashboard(the_file, new ImportStatus(ImportState.SUCCESSFUL), imported);
-          handleTies(the_file.county());
           the_file.setStatus(FileStatus.IMPORTED_AS_CVR_EXPORT);
           Persistence.saveOrUpdate(the_file);
         } else {
@@ -615,75 +614,4 @@ public class CVRExportImport extends AbstractCountyDashboardEndpoint {
       }
       return result;
     }
-    
-    /**
-     * Registers all tied contests in an uploaded CVR export as non-auditable contests
-     * in the DoS dashboard.
-     * 
-     * @param the_county The county to handle ties in.
-     * @return the number of tied contests detected.
-     */
-    private int handleTies(final County the_county) {
-      if (Persistence.isTransactionActive()) {
-        Persistence.commitTransaction();
-      }
-      boolean success = false;
-      int retries = 0;
-      int result = 0;
-      while (!success && retries < UPDATE_RETRIES) {
-        try {
-          retries = retries + 1;
-          Main.LOGGER.debug("updating DoS dashboard, attempt " + retries + 
-                            COUNTY + the_county.id());
-          Persistence.beginTransaction();
-          final Set<CountyContestResult> contest_results = 
-              CountyContestResultQueries.forCounty(the_county);
-          final DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
-
-          for (final CountyContestResult ccr : contest_results) {
-            if (ccr.minMargin() == 0) { 
-              // this is a tied contest
-              final ContestToAudit cta = new ContestToAudit(ccr.contest(), 
-                                                            AuditReason.TIED_CONTEST, 
-                                                            AuditType.NOT_AUDITABLE);
-              dosdb.updateContestToAudit(cta);
-              result = result + 1;
-            }
-          }
-          Persistence.commitTransaction();
-          success = true;
-        } catch (final PersistenceException e) {
-          // something went wrong, let's try again
-          if (Persistence.canTransactionRollback()) {
-            try {
-              Persistence.rollbackTransaction();
-            } catch (final PersistenceException ex) {
-              // not much we can do about it
-            }
-          }
-          result = 0;
-          // let's give other transactions time to breathe
-          try {
-            final long delay = 
-                ExponentialBackoffHelper.exponentialBackoff(retries, TRANSACTION_SLEEP_MSEC);
-            Main.LOGGER.info("retrying DoS dashboard update for county " + the_county.id() + 
-                             IN + delay + "ms");
-            Thread.sleep(delay);
-          } catch (final InterruptedException ex) {
-            // it's OK to be interrupted
-          }
-        }
-      }
-      // we always need a running transaction
-      Persistence.beginTransaction();
-      if (success && retries > 1) {
-        Main.LOGGER.info("updated DoS dashboard for county " + the_county.id() + 
-                         " tied contests in " + retries + TRIES);
-      } else if (!success) {
-        error("could not update DoS dashboard for county " + the_county.id() + 
-              " tied contests after " + retries + TRIES);
-      } 
-      return result;
-    }
-  }
 }
