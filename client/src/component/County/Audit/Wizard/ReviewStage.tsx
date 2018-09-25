@@ -194,26 +194,43 @@ const ReviewStage = (props: ReviewStageProps) => {
 
     return (
         <div className='rla-page'>
-          <div className='audit-page-container'>
-              <div className='audit-page-header'>
-                  <h2 className='audit-page-title'>Ballot Card Verification</h2>
-                  <div className='audit-page-subtitle'>Review ballot</div>
-                  <div className='ballot-number'>Auditing ballot card { currentBallotNumber } of { totalBallotsForBoard }</div>
-              </div>
+            <div className='audit-page-container'>
+                <div className='audit-page-header'>
+                    <h2 className='audit-page-title'>Ballot Card Verification</h2>
+                    <div className='audit-page-subtitle'>Review ballot</div>
+                    <div className='ballot-number'>Auditing ballot card { currentBallotNumber } of { totalBallotsForBoard }</div>
+                </div>
 
-              <div className = 'col-layout row1'>
-                  <div className='col1'>
-                    <AuditInstructions countyState={ countyState } currentBallot={ currentBallot } />
-                  </div>
-                  <div className='col2'>
-                    <BallotReview countyState={ countyState } marks={ marks } back={ prevStage } />
-                    <div className='button-container'>
-                      <button className='pt-large pt-button pt-intent-success pt-breadcrumb' onClick={ onClick }>
-                          Submit & Next Ballot Card
-                      </button>
+                <div className='col-layout row1'>
+                    <div className='col1'>
+                        <AuditInstructions countyState={ countyState } currentBallot={ currentBallot } />
                     </div>
-                  </div>
-              </div>
+                    <div className='col2'>
+                        <p>
+                            Confirm that the information displayed accurately
+                            reflects its interpretation for each contest and
+                            choice from the corresponding paper ballot.
+                        </p>
+                        <p>
+                            If there are any discrepancies, click the
+                            <b> Edit</b> button located to the right of the
+                            audited contest’s selections, and reenter the voter
+                            markings for the ballot.
+                        </p>
+                        <p>
+                            If the review page accurately reflects the audit
+                            board’s interpretation of all votes in all contests,
+                            click the <b>Submit</b> button at the bottom of the
+                            page.
+                        </p>
+                        <BallotReview countyState={ countyState } marks={ marks } back={ prevStage } />
+                        <div className='button-container'>
+                          <button className='pt-large pt-button pt-intent-success pt-breadcrumb' onClick={ onClick }>
+                              Submit & Next Ballot Card
+                          </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );
