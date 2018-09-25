@@ -724,11 +724,8 @@ def county_audit(ac, county_id):
     # This one currently doesn't actually include 'political_party', but this still seems to work
     sign_off_request = {'index': 0, 'audit_board': audit_board_set}
 
-    r = test_endpoint_get(ac, county_s, "/audit-board-asm-state")
-    if ((r.json()['current_state'] == "WAITING_FOR_ROUND_START_NO_AUDIT_BOARD") or
-        (r.json()['current_state'] == "ROUND_IN_PROGRESS_NO_AUDIT_BOARD")):
-        r = test_endpoint_json(ac, county_s, "/set-audit-board-count", audit_board_count_request)
-        r = test_endpoint_json(ac, county_s, "/audit-board-sign-in", sign_in_request)
+    r = test_endpoint_json(ac, county_s, "/set-audit-board-count", audit_board_count_request)
+    r = test_endpoint_json(ac, county_s, "/audit-board-sign-in", sign_in_request)
 
     # Print this tool's notion of what should be audited, based on seed etc.
     # for auditing the audit.
@@ -762,15 +759,6 @@ def county_audit(ac, county_id):
             for contest_id, d in contest_discrepancies.iteritems():
                 discrepancies += "%s %2d %2d %2d %2d %2d  " % (contest_id, d["2"], d["1"], d["0"], d["-1"], d["-2"])
             print(discrepancies)
-
-        # Simulate checking out and in on the 5th upload out of every 50 in each round.  TODO - should we drop this?
-        if i % 50 == 5:
-            r = test_endpoint_json(ac, county_s, "/sign-off-audit-round", sign_off_request)
-            r = test_endpoint_get(ac, county_s, "/audit-board-asm-state")
-            # print(r.text)
-            r = test_endpoint_json(ac, county_s, "/audit-board-sign-in", sign_in_request)
-            r = test_endpoint_get(ac, county_s, "/audit-board-asm-state")
-            # print(r.text)
 
         total_audited = county_dashboard['audited_ballot_count']
 
