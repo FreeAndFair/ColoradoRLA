@@ -244,7 +244,7 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
   /**
    * Update every - targeted and opportunistic both - contest's
    * voteTotals from the counties. This needs to happen between all
-   * counties uploading there data and before the ballot selection
+   * counties uploading their data and before the ballot selection
    * happens
    */
   public List<ContestResult> countAndSaveContests(final Set<ContestToAudit> cta) {

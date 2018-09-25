@@ -61,7 +61,6 @@ public final class DatabaseResetQueries {
         // FIXME these might not exist when we get to a PR state.
         "contest_comparison_audit_discrepancy",
         "contest_comparison_audit_disagreement",
-        "counties_to_comparison_audits",
         "comparison_audit",
         "county_contest_comparison_audit_discrepancy",
         "county_contest_comparison_audit_disagreement",
