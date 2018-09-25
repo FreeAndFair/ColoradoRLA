@@ -6,12 +6,12 @@ package us.freeandfair.corla.controller;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -27,6 +27,7 @@ import us.freeandfair.corla.model.CVRAuditInfo;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.BallotManifestInfoQueries;
 import us.freeandfair.corla.query.CastVoteRecordQueries;
+import us.freeandfair.corla.util.BallotSequencer;
 import us.freeandfair.corla.util.PhantomBallots;
 
 // TODO remove suppression and refactor
@@ -76,9 +77,9 @@ public final class BallotSelection {
    */
   public static class Segment {
     /**
-     * The set of CVRs to audit in audit sequence order, no duplicates.
+     * The set of CVRs to audit, unordered but without duplicates.
      */
-    public Set<CastVoteRecord> cvrs = new TreeSet<>();
+    public Set<CastVoteRecord> cvrs = new HashSet<>();
 
     /**
      * CVR IDs in audit sequence order, possible duplicates.
@@ -134,23 +135,25 @@ public final class BallotSelection {
     }
 
     /**
-     * Return a list of CVR IDs deduped and sorted. To be given to an
-     * audit board.
+     * Return a list of CVRs, de-duplicated and sorted.
+     *
+     * The IDs of these CVRs are expected to be given to an audit board.
+     *
+     * PERF: This is not a fast operation, avoid calling it more than once.
      */
-    public List<Long> ballotSequence() {
-      return cvrs.stream()
-        .map(cvr -> cvr.id())
-        .collect(Collectors.toList());
+    public List<CastVoteRecord> cvrsInBallotSequence() {
+      return BallotSequencer.sortAndDeduplicateCVRs(
+          cvrs.stream().collect(Collectors.toList()));
     }
 
     /**
      * a good idea
      */
     public String toString() {
-      return String.format("[Segment auditSequence=%s ballotSequence=%s ballotPositions=%s ",
+      return String.format("[Segment auditSequence=%s ballotPositions=%s cvrs=%s]",
                            auditSequence(),
-                           ballotSequence(),
-                           tributes.stream().map(t -> t.ballotPosition).collect(Collectors.toList()));
+                           tributes.stream().map(t -> t.ballotPosition).collect(Collectors.toList()),
+                           this.cvrs);
     }
   }
 
@@ -192,7 +195,7 @@ public final class BallotSelection {
         .filter(s -> null != s)
         .reduce(new Segment(),
                 (acc,s) -> {
-                  // can't ask segment.cvrs for raw data because it is a TreeSet
+                  // can't ask segment.cvrs for raw data because it is a set
                   // so we get the cvrIds
                   acc.addCvrIds(s.cvrIds);
                   acc.addCvrs(s.cvrs);

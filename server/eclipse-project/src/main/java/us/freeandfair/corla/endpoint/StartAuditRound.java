@@ -43,12 +43,14 @@ import us.freeandfair.corla.controller.BallotSelection.Selection;
 import us.freeandfair.corla.controller.ComparisonAuditController;
 import us.freeandfair.corla.controller.ContestCounter;
 import us.freeandfair.corla.model.AuditReason;
+import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.ComparisonAudit;
 import us.freeandfair.corla.model.ContestResult;
 import us.freeandfair.corla.model.ContestToAudit;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
 import us.freeandfair.corla.persistence.Persistence;
+import us.freeandfair.corla.util.PhantomBallots;
 
 /**
  * Starts a new audit round for one or more counties.
@@ -384,15 +386,29 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
                                                             .map(s -> s.forCounty(cdb.county().id()))
                                                             .collect(Collectors.toList()));
 
+          // Obtain all de-duplicated, ordered CVRs, then audit phantom ballots,
+          // removing them from the sequence to audit so the boards don’t have
+          // to.
+          final List<CastVoteRecord> ballotSequenceCVRs =
+              PhantomBallots.removePhantomRecords(
+                  PhantomBallots.auditPhantomRecords(
+                      cdb,
+                      segment.cvrsInBallotSequence()));
+
+          // ballotSequence is *just* the CVR IDs, as expected.
+          final List<Long> ballotSequence = ballotSequenceCVRs.stream()
+              .map(cvr -> cvr.id())
+              .collect(Collectors.toList());
+
           LOGGER.debug(String.format("[startRound:"
                                      + " county=%s, round=%s, segment.auditSequence()=%s,"
                                      + " segment.ballotSequence()=%s, cdb.comparisonAudits=%s,",
                                      cdb.county(), cdb.currentRound(), segment.auditSequence(),
-                                     segment.ballotSequence(), cdb.comparisonAudits()));
+                                     ballotSequence, cdb.comparisonAudits()));
           // Risk limit hasn't been achieved. We were given some audits
           // to work on, but have nothing to do in this round. Please
           // wait patiently.
-          if (segment.ballotSequence().isEmpty()) {
+          if (ballotSequence.isEmpty()) {
             LOGGER.debug(String.format("[startRound: no ballots to audit in %s County, skipping round]",
                                        cdb.county()));
             cdb.startRound(0, 0, 0, Collections.emptyList(), Collections.emptyList());
@@ -405,7 +421,7 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
           // do in this round!
           ComparisonAuditController.startRound(cdb, cdb.comparisonAudits(),
                                                segment.auditSequence(),
-                                               segment.ballotSequence());
+                                               ballotSequence);
           Persistence.saveOrUpdate(cdb);
 
           LOGGER.debug

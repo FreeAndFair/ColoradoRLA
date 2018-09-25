@@ -10,6 +10,9 @@
 package us.freeandfair.corla.util;
 
 import java.util.List;
+import java.util.Map;
+
+import java.util.function.Function;
 
 import java.util.stream.Collectors;
 
@@ -33,7 +36,7 @@ public final class BallotSequencer {
   }
 
   /**
-   * Returns sorted, deduplicated list of CVR IDs given a list of CVRs.
+   * Returns a sorted, deduplicated list of CVRs given a list of CVRs.
    *
    * The sort order must match the order of the ballots in the "pull list" that
    * counties use to fetch ballots. By storing the sorted, deduplicated list of
@@ -42,14 +45,18 @@ public final class BallotSequencer {
    * audit boards.
    *
    * @param cvrs input CVRs
-   * @return sorted, deduplicated list of CVR database IDs
+   * @return sorted, deduplicated list of CVRs
    */
-  public static List<Long>
+  public static List<CastVoteRecord>
       sortAndDeduplicateCVRs(final List<CastVoteRecord> cvrs) {
-    // Deduplicate CVRs.
-    final List<CastVoteRecord> deduplicatedCvrs = cvrs.stream()
-        .distinct()
-        .collect(Collectors.toList());
+    // Deduplicate CVRs, creating a mapping for use later on.
+    final Map<Long, CastVoteRecord> cvrIdToCvrs =
+        cvrs.stream()
+            .distinct()
+            .collect(Collectors.toMap(
+                cvr -> cvr.id(),
+                Function.identity(),
+                (a, b) -> b));
 
     // Join with ballot manifest for the purposes of sorting by location, then
     // sort it.
@@ -57,12 +64,15 @@ public final class BallotSequencer {
     // TOOD: Abusing the CVRToAuditResponse class for sorting is wrong; we
     // should reify the "joined CVR / Ballot Manifest" concept.
     final List<CVRToAuditResponse> sortedAuditResponses =
-        BallotSelection.toResponseList(deduplicatedCvrs);
+        BallotSelection.toResponseList(
+            cvrIdToCvrs.entrySet().stream()
+                .map(entry -> entry.getValue())
+                .collect(Collectors.toList()));
     sortedAuditResponses.sort(null);
 
-    // Pull CVR database IDs back out of the now-sorted list.
+    // Walk the now-sorted list, pulling CVRs back out of the map.
     return sortedAuditResponses.stream()
-        .map(auditResponse -> auditResponse.dbID())
+        .map(cvrar -> cvrIdToCvrs.get(cvrar.dbID()))
         .collect(Collectors.toList());
   }
 }

@@ -98,7 +98,7 @@ public class BallotSelectionTest {
     List<Segment> segments = new ArrayList<>();
     segments.add(new Segment());
     Segment result = BallotSelection.Selection.combineSegments(segments);
-    assertEquals(new ArrayList<>(), result.ballotSequence());
+    assertEquals(new ArrayList<>(), result.cvrsInBallotSequence());
   }
 
   @Test()
@@ -124,7 +124,12 @@ public class BallotSelectionTest {
     List<Long> expectedBallotSequence = Stream.of(1L, 2L, 3L, 4L).collect(Collectors.toList());
     Segment result = BallotSelection.Selection.combineSegments(segments);
     assertEquals(result.auditSequence(), expectedAuditSequence);
-    assertEquals(result.ballotSequence(), expectedBallotSequence);
+    assertEquals(
+        result.cvrsInBallotSequence()
+            .stream()
+            .map(cvr -> cvr.id())
+            .collect(Collectors.toList()),
+        expectedBallotSequence);
   }
 
   // @Test()

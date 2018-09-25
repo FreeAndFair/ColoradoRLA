@@ -178,24 +178,6 @@ public final class ComparisonAuditController {
                                    final List<Long> ballotSequence) {
     LOGGER.info(String.format("Starting a round for %s, drivingContests=%s",
                               cdb.county(), cdb.drivingContestNames()));
-    // FIXME resolve Gorddon's stuff
-    //   // the list of CVRs to audit, in audit sequence order
-    //   final List<CastVoteRecord> cvrs_to_audit =
-    //       PhantomBallots.auditPhantomRecords(
-    //           the_cdb,
-    //           getCVRsInAuditSequence(the_cdb.county(), 0, to_audit - 1));
-
-    //   // the IDs of the CVRs to audit, in audit sequence order
-    //   final List<Long> audit_subsequence_ids = new ArrayList<Long>();
-    //   for (final CastVoteRecord cvr : cvrs_to_audit) {
-    //     audit_subsequence_ids.add(cvr.id());
-    //   }
-
-    //   // Remove phantom CVRs, de-duplicate CVRs and put them in "pull list"
-    //   // order
-    //   final List<Long> ballotIdsToAudit =
-    //       BallotSequencer.sortAndDeduplicateCVRs(
-    //           PhantomBallots.removePhantomRecords(cvrs_to_audit));
     cdb.startRound(ballotSequence.size(), auditSequence.size(),
                    0, ballotSequence, auditSequence);
     // FIXME it appears these two must happen in this order.
