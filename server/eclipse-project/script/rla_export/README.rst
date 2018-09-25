@@ -30,10 +30,10 @@ Install rla_export
 Once pip is installed, you use it to install rla_export and all the packages it depends on.
 Locate the ``rla_export*.tar.gz`` file provided in the deliverable, and
 run a command like this on it.
-Note that the version number may be different than that shown and you'll need to specify a
+Note that the version number may be different than that shown here and you'll need to specify a
 properly qualified path name if it isn't in the current directory.
 
-  ``sudo pip install rla_export-1.1.0.tar.gz --upgrade``
+  ``sudo pip install rla_export-2.0.0.tar.gz --upgrade``
 
 Setup procedure for rla_export
 ------------------------------

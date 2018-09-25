@@ -1,7 +1,7 @@
 # Build a deliverable for rla_export
 
 # This should match the value in setup.py
-relname=rla_export-1.4.0-SNAPSHOT
+relname=rla_export-2.0.0
 deliverable=deliverable-$relname
 mkdir -p $deliverable
 

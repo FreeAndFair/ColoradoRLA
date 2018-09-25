@@ -8,16 +8,22 @@ SELECT
    LOWER(ccca.audit_status) as random_audit_status,
    -- cn.votes_allowed,
    -- cn.winners_allowed,
-   ccr.ballots_count AS ballot_card_count,
+   ccr.ballot_count AS ballot_card_count,
    -- ccr.contest_ballot_count AS contest_ballot_card_count,   -- need to SUM from county_contest_results
    SUBSTRING(ccr.winners, 2, LENGTH(ccr.winners) - 2) AS winners,
    ccr.min_margin,
    ccca.risk_limit,
+   ccca.audited_sample_count,
    ccca.two_vote_over_count,
    ccca.one_vote_over_count,
    ccca.one_vote_under_count,
    ccca.two_vote_under_count,
-   ccca.gamma
+   ccca.disagreement_count,
+   ccca.other_count,
+   ccca.gamma,
+   ccca.overstatements,
+   ccca.optimistic_samples_to_audit,
+   ccca.estimated_samples_to_audit
 FROM 
    comparison_audit AS ccca
 --LEFT JOIN

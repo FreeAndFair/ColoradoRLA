@@ -7,7 +7,7 @@ def readme():
 
 
 setup(name='rla_export',
-      version='1.4.0-SNAPSHOT',
+      version='2.0.0',
       description='Export data for publication and audit verification from ColoradoRLA: Software to facilitate risk-limiting post-election tabulation audits',
       long_description=readme(),
       url='https://github.com/FreeAndFair/ColoradoRLA',
