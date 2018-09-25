@@ -162,6 +162,13 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
 
       currentRound.setSignatories(auditBoardIndex, signatories);
 
+      if (cdb.auditBoardCount() == null) {
+        LOGGER.error(String.format(
+            "[signoff: Audit board count unset for %s County]",
+            cdb.county().name()));
+        invariantViolation(response, "audit board count unset");
+      }
+
       // If we have not seen all the boards sign off yet, we do not want to end
       // the round.
       if (currentRound.signatories().size() < cdb.auditBoardCount()) {
