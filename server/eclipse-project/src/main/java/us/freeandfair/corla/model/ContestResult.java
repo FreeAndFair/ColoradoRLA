@@ -30,7 +30,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
@@ -40,7 +39,6 @@ import org.apache.log4j.Logger;
 import us.freeandfair.corla.persistence.LongListConverter;
 import us.freeandfair.corla.persistence.PersistentEntity;
 import us.freeandfair.corla.persistence.StringSetConverter;
-import us.freeandfair.corla.controller.BallotSelection.Selection;
 
 /**
  * A class representing the results for a contest across counties.
