@@ -1,0 +1,6 @@
+CountyID,ScannerID,BatchID,NumBallots,StorageLocation
+Adams,"10","2",25,Bin 22
+Adams,"3","800",20,Bin 1
+Adams,"4","1200",50,Bin 1
+Adams,"5","1600",20,Bin 17
+Adams,"9","3200",50,Bin 17
