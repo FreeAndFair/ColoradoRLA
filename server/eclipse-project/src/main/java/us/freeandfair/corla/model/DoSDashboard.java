@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.Cacheable;
 import javax.persistence.CollectionTable;
@@ -251,6 +252,25 @@ public class DoSDashboard implements PersistentEntity, Serializable {
    */
   public Set<ContestToAudit> contestsToAudit() {
     return Collections.unmodifiableSet(my_contests_to_audit);
+  }
+
+  /**
+   * data access helper
+   * @return contests of contestsToAudit a.k.a selected contests, targeted contests
+   */
+  public Stream<Contest> targetedContests() {
+    return contestsToAudit().stream()
+      .map(a -> a.contest());
+  }
+
+  /**
+   * data access helper
+   * @return contests of contestsToAudit a.k.a selected contests, targeted contests
+   */
+  // FIXME this might not be needed.
+  public Stream<String> targetedContestNames() {
+    return contestsToAudit().stream()
+      .map(a -> a.contest().name());
   }
 
   /**

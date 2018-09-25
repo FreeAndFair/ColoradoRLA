@@ -68,6 +68,10 @@ div{
     margin: 10px;
 }
 
+.pt-button-group.corla-spaced > .pt-button:not(:last-child) {
+  margin-right: 10px;
+}
+
 .pt-table {
     border-spacing: 0;
     font-size: 16px !important;
@@ -117,11 +121,6 @@ h3 {
     max-width: 800px;
 }
 
-.rla-page .pt-card {
-    margin-bottom: 5px;
-    margin-top: 5px;
-}
-
 .rla-page table {
     margin: 0 auto;
 }
@@ -130,6 +129,10 @@ h3 {
     width: fit-content;
     width: -moz-fit-content;
     width: -webkit-fit-content;
+}
+
+.rla-radio-group .pt-control {
+    padding-left: 26px;
 }
 
 .rla-contest-choice {
@@ -168,4 +171,307 @@ th.rla-county-contest-info {
 
 .import-file {
   display: none;
+}
+
+/* Audit Stage two-column layout ------------------------------ */
+
+.audit-page-container {
+    padding-top: 40px;
+    color: #333;
+}
+
+.audit-page-title {
+    font-size: 36px;
+    font-weight: 200;
+    padding: 0;
+}
+
+.audit-page-subtitle {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.ballot-number {
+    font-size: 24px;
+    background-color: #08589A;
+    color: white;
+    font-weight: 200;
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 2px;
+}
+
+.col-layout {
+    display: grid;
+    grid-template-areas: "col1 col2";
+    grid-template-columns: 200px 1fr;
+    margin-top: 40px;
+}
+
+.col1 {
+    margin-right:20px;
+}
+
+.row1 {
+    border-bottom: solid 3px #eee;
+    padding-bottom: 25px;
+}
+
+.button-container {
+    display: flex;
+    margin: 40px 0;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.not-found-header {
+    font-size: 18px;
+    margin-bottom: 20px;
+    white-space: normal;
+}
+
+.not-found-copy {
+    margin-bottom: 20px;
+}
+
+.contest-row {
+    background-color: #f1f1f1;
+    padding: 20px;
+    border-radius: 2px;
+    margin-bottom: 30px;
+}
+
+.contest-info {
+    margin-bottom: 20px;
+    border-bottom: solid 1px #ddd;
+    padding-bottom: 20px;
+}
+
+.contest-name {
+    font-size: 21px;
+}
+
+.num-of-choices {
+    color: #666;
+}
+
+.contest-choice-grid {
+    display: grid;
+    grid-column-gap: 1rem;
+    grid-template-columns: 1fr 1fr 1fr;
+    margin-bottom: 20px;
+}
+
+.contest-choice-review-grid {
+    display: grid;
+    grid-column-gap: 1rem;
+    grid-template-columns: 2fr 1fr;
+}
+
+.contest-choice-review {
+    display: grid;
+    grid-column-gap: 1rem;
+    grid-template-columns: 1fr 1fr;
+}
+
+.contest-choice-review .rla-contest-choice {
+    margin-bottom: 20px;
+}
+
+.edit-button {
+    padding-right: 40px;
+    text-align: right;
+    color: #333;
+}
+
+.comments-container {
+    border-top: solid 1px #ddd;
+    margin-top: 20px;
+    padding-top: 20px;
+}
+
+/* hacking my way around blueprint's custom checkbox styles */
+
+.pt-control {
+    padding: 0;
+}
+
+.rla-contest-choice {
+    width: 100%;
+}
+
+.contest-choice-selection .pt-control-indicator {
+    display: none;
+}
+
+.contest-choice-selection .pt-disabled .choice-name,
+.contest-choice-selection .pt-disabled .choice-name:hover {
+    background-color: #f1f1f1;
+    color: #888;
+    border: solid 1px #dddddd;
+}
+
+.choice-name {
+    padding: 10px;
+    color: #333;
+    border: solid 1px #dddddd;
+    background: #fff;
+    border-radius: 2px;
+    display: block;
+    text-align:center;
+    min-height: 55px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.choice-name:hover {
+    border: solid 1px #08589A;
+}
+
+.no-choice {
+    background-color: #e8e8e8;
+    border: solid 1px #ccc;
+}
+
+.no-choice:hover {
+    border: solid 1px #aaaaaa;
+}
+
+.contest-choice-selection input:checked ~ .choice-name {
+    background-color: #08589A;
+    border: solid 1px #08589A;
+    color: white;
+}
+
+.contest-choice-selection.contest-choice-review .choice-name {
+    background-color: #08589A;
+    border: solid 1px #08589A;
+    color: white;
+}
+
+.current-ballot-info {
+    border-right: solid 3px #eeeeee;
+}
+
+.sidebar-heading {
+    font-size: 16px;
+    padding: 0;
+    line-height: 1.3;
+    margin-bottom: 20px;
+}
+
+.sidebar-instructions {
+    position: sticky;
+    top: 20px;
+}
+
+.current-ballot-stats {
+    list-style-type: none;
+    line-height: 1.7;
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+.main-col-instructions {
+    margin-bottom: 20px;
+}
+
+.comment-box .pt-editable-content {
+    color: #666;
+}
+
+.comment-box {
+    cursor: pointer;
+}
+
+.comment-box-label {
+    display: flex;
+}
+
+.comment-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    fill: #666;
+}
+
+.comment-box-field {
+    flex-basis: 100%;
+}
+
+/* accordion ------------------------------ */
+
+.sidebar-accordion {
+    border-bottom: solid 1px #eee;
+}
+
+.accordion-item{
+    display: none;
+}
+
+.accordion-item + .accordion-item-label {
+    cursor: pointer;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    align-items: center;
+    border-top: solid 1px #eee;
+    padding: 5px 10px 5px 5px;
+}
+
+.accordion-item-label::before {
+    content: '\203a';
+    font-size: 18pt;
+    transition: transform .15s ease-in-out;
+    color: rgba(0,0,0,.54);
+}
+
+.accordion-item-label:hover {
+    background-color: #eee;
+}
+
+.accordion-item:checked + .accordion-item-label::before{
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    transform: rotate(90deg);
+}
+
+.accordion-item-content {
+    transform: scaleY(0);
+    transform-origin: top;
+    max-height: 0px;
+    overflow: hidden;
+    position: relative;
+    font-weight: normal;
+    font-size: 14px;
+    transition: all 0.3s ease-in-out;
+}
+
+.accordion-item-content p {
+    padding-top: 10px;
+    padding-bottom: 20px;
+}
+
+.blank-vote, .no-consensus {
+    font-size: 2em;
+    padding-right: 20px;
+    vertical-align: middle;
+}
+
+.review-edit-selection {
+    padding-right: 10px;
+}
+
+/* shouldn't need this */
+#item1:checked ~ #content1,
+#item2:checked ~ #content2,
+#item3:checked ~ #content3,
+#item4:checked ~ #content4,
+#item5:checked ~ #content5 {
+    max-height: 350px;
+    transform: scaleY(1);
 }

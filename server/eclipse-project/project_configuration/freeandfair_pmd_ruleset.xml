@@ -19,6 +19,12 @@ The Free &amp; Fair ruleset checks Java code for possible issues.
     <exclude name="OnlyOneReturn"/>
     <exclude name="UseConcurrentHashMap"/>
   </rule>
+ <rule ref="rulesets/java/controversial.xml/AvoidLiteralsInIfCondition">
+   <properties>
+     <property name="ignoreMagicNumbers" value="-1,0,0L"/>
+   </properties>
+ </rule>
+
   <rule ref="rulesets/java/coupling.xml">
     <!-- If package coupling is something you want to check, specify
          packages and classes as described:

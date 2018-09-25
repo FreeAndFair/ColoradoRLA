@@ -14,6 +14,7 @@ package us.freeandfair.corla.model;
 import static us.freeandfair.corla.util.EqualsHashcodeHelper.*;
 
 import java.io.Serializable;
+import java.util.Comparator;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
@@ -30,7 +31,9 @@ import org.hibernate.annotations.Immutable;
 import us.freeandfair.corla.persistence.PersistentEntity;
 
 /**
- * Information about the locations of specific batches of ballots.
+ * Information about the locations of specific batches of ballots. The
+ * Set<BallotManifestInfo> for a given county forms a complete ballot
+ * manifest. Joins to a CastVoteRecord to provide a ballot pull list.
  *
  * @author Daniel M. Zimmerman <dmz@freeandfair.us>
  * @version 1.0.0
@@ -110,8 +113,58 @@ public class BallotManifestInfo implements PersistentEntity, Serializable {
   private Long my_sequence_end;
 
 
+  /**
+   * The projected start of this manifest chunk
+   */
+  public Long ultimateSequenceStart;
 
-  /** 
+  /**
+   * The projected end of this manifest chunk
+   */
+  public Long ultimateSequenceEnd;
+
+  /**
+   * @param start the adjusted sequence start
+   * this is like offset and limit of pages of a contest (multiple counties)
+   */
+  public void setUltimate(final Long start) {
+    this.ultimateSequenceStart = start;
+    this.ultimateSequenceEnd = start + rangeSize();
+  }
+
+  /** from contest scope to county scope **/
+  public Integer sequencePosition(final Integer rand) {
+    // subtraction gives a 0-based offset, adding one gives us the 1-based
+    // ballot position in the file, row number of the file, a.k.a.: cvr.cvrNumber()
+    return rand - this.ultimateSequenceStart.intValue() + 1;
+  }
+
+  /**
+   * translate a generated random number from contest to county scope, then
+   * from county to batch scope
+   **/
+  public Integer translateRand(final Integer rand) {
+    return sequencePosition(rand);
+  }
+
+  /**
+   * @return Long the number of ballots in my chunk of a manifest
+   */
+  public Long rangeSize() {
+    return my_sequence_end - my_sequence_start;
+  }
+
+  /**
+   * @return Boolean whether this manifest section would hold the random
+   * nth selection
+   */
+  public Boolean isHolding(final Long rand) {
+    // setUltimate(last + 1L) means the start and end is inclusive
+    return this.ultimateSequenceStart
+      <= rand && rand <= this.ultimateSequenceEnd;
+  }
+
+  /**
    * Constructs an empty ballot manifest information record, solely
    * for persistence.
    */
@@ -225,15 +278,15 @@ public class BallotManifestInfo implements PersistentEntity, Serializable {
   public String imprintedID(final Long rand) {
     return scannerID() + "-" +
            batchID() + "-" +
-           ballotPosition(rand).toString();
+           ballotPosition(rand.intValue()).toString();
   }
 
   /**
    * where the ballot sits in it's storage bin
    **/
-  public Long ballotPosition(final Long rand) {
+  public Integer ballotPosition(final Integer sequencePosition) {
     // position is the nth (1 based)
-    return rand - sequenceStart() + 1L;
+    return sequencePosition - sequenceStart().intValue() + 1;
   }
 
   /**
@@ -274,5 +327,29 @@ public class BallotManifestInfo implements PersistentEntity, Serializable {
   @Override
   public int hashCode() {
     return nullableHashCode(storageLocation());
+  }
+
+  /**
+   * sort across counties by comparing countyID() as well as sequenceEnd()
+   **/
+  public static class Sort implements Comparator<BallotManifestInfo>, Serializable {
+
+    /**
+     * a good practice
+     */
+    public static final long serialVersionUID = 1L;
+
+    /**
+     * a good practice
+     */
+    @Override
+    public int compare(final BallotManifestInfo bmi1,
+                       final BallotManifestInfo bmi2) {
+      if (bmi1.countyID().equals(bmi2.countyID())) {
+        return bmi1.sequenceEnd().compareTo(bmi2.sequenceEnd());
+      } else {
+        return bmi1.countyID().compareTo(bmi2.countyID());
+      }
+    }
   }
 }

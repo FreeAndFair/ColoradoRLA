@@ -5,9 +5,13 @@ declare namespace JSON {
         political_party: string;
     }
 
-    interface AuditBoard {
+    interface AuditBoardStatus {
         members: JSON.AuditBoardMember[];
         sign_in_time: Date;
+    }
+
+    interface AuditBoards {
+        [index: number]: AuditBoardStatus;
     }
 
     interface RiskLimit {
@@ -17,6 +21,10 @@ declare namespace JSON {
     interface Elector {
         first_name: string;
         last_name: string;
+    }
+
+    interface Signatories {
+        [index: number]: JSON.Elector[];
     }
 
     interface ContestInfo {
@@ -37,7 +45,7 @@ declare namespace JSON {
         discrepancies: number;
         expected_count: number;
         number: number;
-        signatories: JSON.Elector[];
+        signatories: Signatories;
         start_audit_prefix_length: number;
         start_index: number;
         start_time: Date;
@@ -45,14 +53,16 @@ declare namespace JSON {
 
     interface CountyDashboard {
         asm_state: string;
-        audit_board: any;
+        audit_board_count?: number;
+        audit_boards: JSON.AuditBoards;
         audit_info: any;
         audit_time: string;
         audited_ballot_count: number;
         audited_prefix_length: number;
         ballot_manifest_count: number;
         ballot_manifest_file: any;
-        ballot_under_audit_id: number;
+        ballot_under_audit_ids: number[];
+        ballot_sequence_assignment: object[];
         ballots_remaining_in_round: number;
         current_round: JSON.Round;
         cvr_export_count: number;
@@ -83,6 +93,7 @@ declare namespace JSON {
 
     interface CVR {
         audited?: boolean;
+        audit_board_index?: number;
         ballot_type: string;
         batch_id: number;
         contest_info: JSON.ContestInfo[];

@@ -1,6 +1,6 @@
 /*
  * Free & Fair Colorado RLA System
- * 
+ *
  * @title ColoradoRLA
  * @created Aug 8, 2017
  * @copyright 2017 Colorado Department of State
@@ -34,7 +34,7 @@ public interface ASMTransitionFunction {
    * @trace asm.dos_dashboard_next_state
    */
   enum DoSDashboardTransitionFunction implements ASMTransitionFunction {
-    A(new ASMTransition(SetCreator.setOf(DOS_INITIAL_STATE, 
+    A(new ASMTransition(SetCreator.setOf(DOS_INITIAL_STATE,
                                          PARTIAL_AUDIT_INFO_SET,
                                          COMPLETE_AUDIT_INFO_SET),
                         PARTIAL_AUDIT_INFO_EVENT,
@@ -62,7 +62,7 @@ public interface ASMTransitionFunction {
                                          DOS_ROUND_COMPLETE),
                         DOS_AUDIT_COMPLETE_EVENT,
                         DOS_AUDIT_COMPLETE)),
-    I(new ASMTransition(DOS_AUDIT_COMPLETE, 
+    I(new ASMTransition(DOS_AUDIT_COMPLETE,
                         PUBLISH_AUDIT_REPORT_EVENT,
                         AUDIT_RESULTS_PUBLISHED));
 
@@ -106,7 +106,7 @@ public interface ASMTransitionFunction {
     D(new ASMTransition(CVRS_IMPORTING,
                         CVR_IMPORT_FAILURE_EVENT,
                         COUNTY_INITIAL_STATE)),
-    E(new ASMTransition(BALLOT_MANIFEST_OK, 
+    E(new ASMTransition(BALLOT_MANIFEST_OK,
                         IMPORT_CVRS_EVENT,
                         BALLOT_MANIFEST_OK_AND_CVRS_IMPORTING)),
     F(new ASMTransition(BALLOT_MANIFEST_OK_AND_CVRS_IMPORTING,
@@ -133,7 +133,7 @@ public interface ASMTransitionFunction {
     M(new ASMTransition(BALLOT_MANIFEST_AND_CVRS_OK,
                         COUNTY_START_AUDIT_EVENT,
                         COUNTY_AUDIT_UNDERWAY)),
-    N(new ASMTransition(COUNTY_AUDIT_UNDERWAY, 
+    N(new ASMTransition(COUNTY_AUDIT_UNDERWAY,
                         COUNTY_AUDIT_COMPLETE_EVENT,
                         COUNTY_AUDIT_COMPLETE)),
     O(new ASMTransition(SetCreator.setOf(COUNTY_INITIAL_STATE,
@@ -172,8 +172,8 @@ public interface ASMTransitionFunction {
    * @trace asm.audit_board_dashboard_next_state
    */
   enum AuditBoardDashboardTransitionFunction implements ASMTransitionFunction {
-    A(new ASMTransition(SetCreator.setOf(AUDIT_INITIAL_STATE, 
-                                         WAITING_FOR_ROUND_START_NO_AUDIT_BOARD), 
+    A(new ASMTransition(SetCreator.setOf(AUDIT_INITIAL_STATE,
+                                         WAITING_FOR_ROUND_START_NO_AUDIT_BOARD),
                         ROUND_START_EVENT,
                         ROUND_IN_PROGRESS_NO_AUDIT_BOARD)),
     B(new ASMTransition(SetCreator.setOf(AUDIT_INITIAL_STATE,
@@ -181,7 +181,7 @@ public interface ASMTransitionFunction {
                         SIGN_IN_AUDIT_BOARD_EVENT,
                         WAITING_FOR_ROUND_START)),
     C(new ASMTransition(AUDIT_INITIAL_STATE,
-                        SetCreator.setOf(NO_CONTESTS_TO_AUDIT_EVENT, 
+                        SetCreator.setOf(NO_CONTESTS_TO_AUDIT_EVENT,
                                          RISK_LIMIT_ACHIEVED_EVENT),
                         AUDIT_COMPLETE)),
     D(new ASMTransition(AUDIT_INITIAL_STATE,
@@ -209,7 +209,7 @@ public interface ASMTransitionFunction {
                         WAITING_FOR_ROUND_SIGN_OFF)),
     /* We probably want this transition eventually, but not for CDOS
     EARLY(new ASMTransition(ROUND_IN_PROGRESS,
-                            RISK_LIMIT_ACHIEVED_EVENT, 
+                            RISK_LIMIT_ACHIEVED_EVENT,
                             AUDIT_COMPLETE)), */
     P(new ASMTransition(ROUND_IN_PROGRESS_NO_AUDIT_BOARD,
                         SIGN_IN_AUDIT_BOARD_EVENT,
@@ -228,7 +228,7 @@ public interface ASMTransitionFunction {
                         SIGN_IN_AUDIT_BOARD_EVENT,
                         WAITING_FOR_ROUND_SIGN_OFF)),
     U(new ASMTransition(SetCreator.setOf(AUDIT_INITIAL_STATE,
-                                         WAITING_FOR_ROUND_START, 
+                                         WAITING_FOR_ROUND_START,
                                          WAITING_FOR_ROUND_START_NO_AUDIT_BOARD,
                                          ROUND_IN_PROGRESS,
                                          ROUND_IN_PROGRESS_NO_AUDIT_BOARD,
@@ -236,13 +236,13 @@ public interface ASMTransitionFunction {
                                          WAITING_FOR_ROUND_SIGN_OFF_NO_AUDIT_BOARD),
                         ABORT_AUDIT_EVENT,
                         AUDIT_ABORTED));
-    
+
     /**
      * A single transition.
      */
     @SuppressWarnings("PMD.ConstantsInInterface")
     private final transient ASMTransition my_transition;
-    
+
     /**
      * Create a transition.
      * @param the_transition the transition.
@@ -250,7 +250,7 @@ public interface ASMTransitionFunction {
     AuditBoardDashboardTransitionFunction(final ASMTransition the_transition) {
       my_transition = the_transition;
     }
-    
+
     /**
      * @return the transition.
      */
@@ -258,7 +258,7 @@ public interface ASMTransitionFunction {
       return my_transition;
     }
   }
-  
+
   /**
    * @return the value of this transition function element.
    */

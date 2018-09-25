@@ -42,12 +42,16 @@ import us.freeandfair.corla.persistence.Persistence;
 @SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.CyclomaticComplexity"})
 public class UpdateAuditInfo extends AbstractDoSDashboardEndpoint {
   /**
+   * Uploaded file attribute
+   *
+   * Factored out due to the PMD rule AvoidDuplicateLiterals
+   */
+  private final static String UPLOAD_KEY = "upload_file";
+
+  /**
    * The event to return for this endpoint.
    */
   private final ThreadLocal<ASMEvent> my_event = new ThreadLocal<ASMEvent>();
-
-  /** string **/
-  private final static String UPLOAD_FILE = "upload_file";
 
   /**
    * {@inheritDoc}
@@ -93,7 +97,7 @@ public class UpdateAuditInfo extends AbstractDoSDashboardEndpoint {
       object = parser.parse(s).getAsJsonObject();
       if (hasFile(object)){
         return object
-          .getAsJsonArray(UPLOAD_FILE)
+          .getAsJsonArray(UPLOAD_KEY)
           .get(0)
           .getAsJsonObject()
           .get("contents")
@@ -110,9 +114,9 @@ public class UpdateAuditInfo extends AbstractDoSDashboardEndpoint {
 
   private Boolean hasFile(final JsonObject o) {
     return o != null
-        && o.getAsJsonArray(UPLOAD_FILE) != null
-        && o.getAsJsonArray(UPLOAD_FILE).size() > 0
-        && o.getAsJsonArray(UPLOAD_FILE).get(0) != null;
+        && o.getAsJsonArray(UPLOAD_KEY) != null
+        && o.getAsJsonArray(UPLOAD_KEY).size() > 0
+        && o.getAsJsonArray(UPLOAD_KEY).get(0) != null;
   }
 
   /**

@@ -1,6 +1,6 @@
 /*
  * Free & Fair Colorado RLA System
- * 
+ *
  * @title ColoradoRLA
  * @created Aug 8, 2017
  * @copyright 2017 Colorado Department of State
@@ -23,7 +23,7 @@ public interface ASMEvent extends Event {
    * @trace asm.department_of_state_dashboard_event
    */
   enum DoSDashboardEvent implements ASMEvent {
-    PARTIAL_AUDIT_INFO_EVENT, // public inbound event 
+    PARTIAL_AUDIT_INFO_EVENT, // public inbound event
     COMPLETE_AUDIT_INFO_EVENT, // public inbound event
     DOS_START_ROUND_EVENT, // public inbound event
     DOS_ROUND_COMPLETE_EVENT, // private internal event
@@ -32,7 +32,7 @@ public interface ASMEvent extends Event {
     DOS_AUDIT_COMPLETE_EVENT, // private internal event
     PUBLISH_AUDIT_REPORT_EVENT // public inbound event
   }
-  
+
   /**
    * The County Dashboard's events.
    * @trace asm.county_dashboard_event
@@ -45,7 +45,7 @@ public interface ASMEvent extends Event {
     COUNTY_START_AUDIT_EVENT, // private internal event
     COUNTY_AUDIT_COMPLETE_EVENT // private internal event
   }
-  
+
   /**
    * The Audit Board Dashboard's events.
    * @trace asm.audit_board_dashboard_event

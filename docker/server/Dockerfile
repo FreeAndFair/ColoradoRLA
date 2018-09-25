@@ -13,7 +13,7 @@ LABEL maintainer="Democracy Works, Inc. <dev@democracy.works>"
 ## TODO: How can we architect this such that passing -Dthe.prop=value works as
 ## expected?
 COPY docker/server/docker.properties /srv/corla/docker.properties
-COPY --from=maven /srv/corla/server/eclipse-project/target/colorado_rla-*-shaded.jar \
+COPY --from=maven /srv/corla/server/eclipse-project/target/corla-server-*-shaded.jar \
      /srv/corla/corla.jar
 
 CMD ["java", \

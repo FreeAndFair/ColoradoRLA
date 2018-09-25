@@ -32,17 +32,6 @@ export default class CountyNavMenu extends React.Component {
                     path='/county'
                     icon='pt-icon-home'
                 />
-                <li className='pt-menu-divider' />
-                <MenuItem
-                    text='Audit Board'
-                    path='/county/board'
-                    icon='pt-icon-people'
-                />
-                <MenuItem
-                    text='Audit'
-                    path='/county/audit'
-                    icon='pt-icon-eye-open'
-                />
             </ul>
         );
     }

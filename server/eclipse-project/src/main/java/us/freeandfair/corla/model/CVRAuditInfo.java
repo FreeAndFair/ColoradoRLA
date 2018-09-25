@@ -13,9 +13,7 @@ package us.freeandfair.corla.model;
 
 import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 
-import java.io.Serializable;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,7 +30,6 @@ import javax.persistence.Version;
 
 import us.freeandfair.corla.persistence.AuditReasonSetConverter;
 import us.freeandfair.corla.persistence.PersistentEntity;
-import us.freeandfair.corla.util.NaturalOrderComparator;
 
 /**
  * A class representing a contest to audit or hand count.
@@ -48,7 +45,8 @@ import us.freeandfair.corla.util.NaturalOrderComparator;
 // note: CVRAuditInfo is not serializable because it references CountyDashboard,
 // which is not serializable
 @SuppressWarnings("PMD.ImmutableField")
-public class CVRAuditInfo implements PersistentEntity {
+public class CVRAuditInfo implements Comparable<CVRAuditInfo>,
+                                     PersistentEntity {
   /**
    * The ID number. This is always the same as the CVR ID number.
    */
@@ -296,44 +294,14 @@ public class CVRAuditInfo implements PersistentEntity {
   }
 
   /**
-   * A comparator to sort CVRAuditInfo objects by CVR scanner ID, then batch ID,
-   * then record ID.
+   * Compares this CVRAuditInfo to another.
+   *
+   * Uses the underlying CVR to provide the sorting behavior.
+   *
+   * @return int
    */
-  @SuppressWarnings("PMD.AtLeastOneConstructor")
-  public static class BallotOrderComparator
-      implements Serializable, Comparator<CVRAuditInfo> {
-    /**
-     * The serialVersionUID.
-     */
-    private static final long serialVersionUID = 1;
-
-    /**
-     * Orders two CVRToAuditInfo lexicographically by the triple
-     * (scanner_id, batch_id, record_id).
-     *
-     * @param the_first The first to compare.
-     * @param the_second The second to compare.
-     * @return a positive, negative, or 0 value as the first response is
-     * greater than, equal to, or less than the second, respectively.
-     */
-    @SuppressWarnings("PMD.ConfusingTernary")
-    public int compare(final CVRAuditInfo the_first, final CVRAuditInfo the_second) {
-      final int scanner = the_first.cvr().scannerID() - the_second.cvr().scannerID();
-      final int batch = NaturalOrderComparator.INSTANCE.compare(the_first.cvr().batchID(),
-                                                             the_second.cvr().batchID());
-      final int record = the_first.cvr().recordID() - the_second.cvr().recordID();
-
-      final int result;
-
-      if (scanner != 0) {
-        result = scanner;
-      } else if (batch != 0) {
-        result = batch;
-      } else {
-        result = record;
-      }
-
-      return result;
-    }
+  @Override
+  public int compareTo(final CVRAuditInfo other) {
+    return this.cvr().compareTo(other.cvr());
   }
 }

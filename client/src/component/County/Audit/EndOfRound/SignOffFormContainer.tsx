@@ -9,6 +9,7 @@ import countyInfo from 'corla/selector/county/countyInfo';
 
 
 interface ContainerProps {
+    auditBoardIndex: number;
     countyInfo: CountyInfo;
 }
 
@@ -31,7 +32,7 @@ class SignOffFormContainer extends React.Component<ContainerProps, ContainerStat
     };
 
     public render() {
-        const { countyInfo } = this.props;
+        const { auditBoardIndex, countyInfo } = this.props;
 
         const props = {
             countyInfo,
@@ -40,7 +41,7 @@ class SignOffFormContainer extends React.Component<ContainerProps, ContainerStat
             onFirstNameChange: this.onFirstNameChange,
             onLastNameChange: this.onLastNameChange,
             onTextConfirm: this.onTextConfirm,
-            submit: () => roundSignOff(this.state.form),
+            submit: () => roundSignOff(auditBoardIndex, this.state.form),
         };
 
         return <SignOffForm { ...props } />;

@@ -30,7 +30,8 @@ const TiedContestRow = (props: RowProps) => {
 
     return (
         <tr>
-            <td>{ countyName }</td>
+            {/* TODO: Removed for the time being, see related comments in this file. */ }
+            {/* <td>{ countyName }</td> */}
             <td>{ contest.name }</td>
             <td>
                 <Checkbox checked={ false }
@@ -95,7 +96,10 @@ const ContestRow = (props: RowProps) => {
 
     return (
         <tr>
-            <td>{ countyName }</td>
+            {/* This is a shim for future work where the ui is less
+            County/Contest centric and more ContestResult Centric
+             removing for now */}
+            {/* <td>{ countyName }</td> */}
             <td>{ contest.name }</td>
             <td>
                 <Checkbox
@@ -187,11 +191,9 @@ class SelectContestsForm extends React.Component<FormProps, FormState> {
             ];
         });
 
-        const keyFunc = (d: ContestData) => {
-            const i = this.state.sort === 'contest' ? 1 : 0;
-            return d[i];
-        };
-        const sortedData = _.sortBy(contestData, keyFunc);
+        const sortedData = _.sortBy(contestData, (d: ContestData) => {
+            return d[this.state.sort === 'contest' ? 1 : 0];
+        });
 
         if (this.state.order === 'desc') {
             _.reverse(sortedData);
@@ -207,8 +209,9 @@ class SelectContestsForm extends React.Component<FormProps, FormState> {
 
         };
         const filteredData = _.filter(sortedData, filterFunc);
+        const uniqData = _.uniqBy(filteredData, (d: ContestData) => d[1]);
 
-        const contestRows = _.map(filteredData, (d: ContestData) => {
+        const contestRows = _.map(uniqData, (d: ContestData) => {
             const props = d[2];
             const { contest } = props;
 
@@ -246,7 +249,7 @@ class SelectContestsForm extends React.Component<FormProps, FormState> {
                     full hand count at any time.</h5>
                 </div>
                 <div className='pt-card'>
-                    <strong>Filter by County or Contest Name:</strong>
+                    <strong>Filter by Contest Name:</strong>
                     <span> </span>
                     <EditableText
                         className='pt-input'
@@ -255,18 +258,19 @@ class SelectContestsForm extends React.Component<FormProps, FormState> {
                         onChange={ this.onFilterChange } />
                 </div>
                 <div className='pt-card' >
-                    Click on the "County" or "Contest" column name to sort by that
+                    Click on the "Contest" column name to sort by that
                     column's data. To reverse sort, click on the column name again.
                 </div>
                 <div className='pt-card'>
                     <table className='pt-table pt-bordered pt-condensed'>
                         <thead>
                             <tr>
-                                <th onClick={ this.sortBy('county') }>
-                                    County
-                                    <span> </span>
-                                    { sortIconForCol('county') }
-                                </th>
+                                {/* see comment above */}
+                                {/* <th onClick={ this.sortBy('county') }> */}
+                                {/* County */}
+                                {/* <span> </span> */}
+                                {/* { sortIconForCol('county') } */}
+                                {/* </th> */}
                                 <th onClick={ this.sortBy('contest') }>
                                     Contest Name
                                     <span> </span>

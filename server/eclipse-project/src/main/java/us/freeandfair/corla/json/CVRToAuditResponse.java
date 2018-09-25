@@ -11,11 +11,10 @@
 
 package us.freeandfair.corla.json;
 
-import java.io.Serializable;
-import java.util.Comparator;
-
 import us.freeandfair.corla.util.NaturalOrderComparator;
 import us.freeandfair.corla.util.SuppressFBWarnings;
+
+import static us.freeandfair.corla.util.EqualsHashcodeHelper.*;
 
 /**
  * The standard response provided by the server in response to a request
@@ -26,7 +25,7 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
 @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
 @SuppressFBWarnings(value = {"URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"},
                     justification = "Field is read by Gson.")
-public class CVRToAuditResponse {
+public class CVRToAuditResponse implements Comparable<CVRToAuditResponse> {
   /**
    * The (first) audit sequence number.
    */
@@ -71,6 +70,11 @@ public class CVRToAuditResponse {
    * The CVR storage location.
    */
   protected final String my_storage_location;
+
+  /**
+   * The optional audit board index
+   */
+  protected Integer my_audit_board_index;
 
   /**
    * A flag that indicates whether or not the CVR has been audited.
@@ -178,6 +182,20 @@ public class CVRToAuditResponse {
   }
 
   /**
+   * @return the audit board index or null if not set
+   */
+  public Integer auditBoardIndex() {
+    return my_audit_board_index;
+  }
+
+  /**
+   * Optionally set the audit board index that will be auditing this ballot.
+   */
+  public void setAuditBoardIndex(final Integer auditBoardIndex) {
+    my_audit_board_index = auditBoardIndex;
+  }
+
+  /**
    * @return the audited flag.
    */
   public boolean audited() {
@@ -185,45 +203,61 @@ public class CVRToAuditResponse {
   }
 
   /**
-   * A comparator to sort CVRLocationResponse objects by scanner ID, then batch ID,
-   * then record ID.
+   * {@inheritDoc}
    */
-  @SuppressWarnings("PMD.AtLeastOneConstructor")
-  public static class BallotOrderComparator
-      implements Serializable, Comparator<CVRToAuditResponse> {
-    /**
-     * The serialVersionUID.
-     */
-    private static final long serialVersionUID = 1;
-
-    /**
-     * Orders two CVRToAuditResponses lexicographically by the triple
-     * (scanner_id, batch_id, record_id).
-     *
-     * @param the_first The first response.
-     * @param the_second The second response.
-     * @return a positive, negative, or 0 value as the first response is
-     * greater than, equal to, or less than the second, respectively.
-     */
-    @SuppressWarnings("PMD.ConfusingTernary")
-    public int compare(final CVRToAuditResponse the_first,
-                       final CVRToAuditResponse the_second) {
-      final int scanner = the_first.my_scanner_id - the_second.my_scanner_id;
-      final int batch = NaturalOrderComparator.INSTANCE.compare(the_first.batchID(),
-                                                             the_second.batchID());
-      final int record = the_first.my_record_id - the_second.my_record_id;
-
-      final int result;
-
-      if (scanner != 0) {
-        result = scanner;
-      } else if (batch != 0) {
-        result = batch;
-      } else {
-        result = record;
-      }
-
-      return result;
+  @Override
+  public boolean equals(final Object other) {
+    boolean result = true;
+    if (other instanceof CVRToAuditResponse) {
+      final CVRToAuditResponse otherCtar = (CVRToAuditResponse) other;
+      result &= nullableEquals(this.dbID(), otherCtar.dbID());
+    } else {
+      result = false;
     }
+
+    return result;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public int hashCode() {
+    return nullableHashCode(this.dbID());
+  }
+
+  /**
+   * Compares this object to another.
+   *
+   * The sorting happens by the tuple
+   * (storageLocation(), scannerID(), batchID(), recordID()) and will return a
+   * negative, positive, or 0-valued result if this should come before, after,
+   * or at the same point as the other object, respectively.
+   *
+   * @return int
+   */
+  @Override
+  public int compareTo(final CVRToAuditResponse other) {
+    final int storageLocation = NaturalOrderComparator.INSTANCE.compare(
+        this.storageLocation(), other.storageLocation());
+
+    if (storageLocation != 0) {
+      return storageLocation;
+    }
+
+    final int scanner = this.scannerID() - other.scannerID();
+
+    if (scanner != 0) {
+      return scanner;
+    }
+
+    final int batch = NaturalOrderComparator.INSTANCE.compare(
+        this.batchID(), other.batchID());
+
+    if (batch != 0) {
+      return batch;
+    }
+
+    return this.recordID() - other.recordID();
   }
 }

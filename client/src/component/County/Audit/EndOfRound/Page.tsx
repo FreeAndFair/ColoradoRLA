@@ -1,6 +1,10 @@
 import * as React from 'react';
 
+import { Redirect } from 'react-router-dom';
+
 import CountyNav from 'corla/component/County/Nav';
+
+import notice from 'corla/notice';
 
 import SignOffFormContainer from './SignOffFormContainer';
 
@@ -20,10 +24,14 @@ const PreviousRoundSignedOff = (props: PreviousRoundProps) => {
     return (
         <div>
             <CountyNav />
-            <h3> End of Round { roundNumber }</h3>
+            <h3>End of round { roundNumber }</h3>
             <div className='pt-card'>
-               <h3>The current round, Round { roundNumber }, is complete.
-                Please wait for the Department of State to begin the next round.</h3>
+               <h3>
+                  You have finished auditing your portion of ballots to audit in
+                  round { roundNumber }. Please wait for the other audit boards
+                  to finish their portion of the audit, and for the Department
+                  of State to begin the next round.
+               </h3>
             </div>
         </div>
     );
@@ -49,6 +57,7 @@ const LastRoundComplete = () => {
 
 interface PageProps {
     allRoundsComplete: boolean;
+    auditBoardIndex: number;
     countyInfo: CountyInfo;
     currentRoundNumber: number;
     election: Election;
@@ -60,6 +69,7 @@ interface PageProps {
 const EndOfRoundPage = (props: PageProps) => {
     const {
         allRoundsComplete,
+        auditBoardIndex,
         countyInfo,
         currentRoundNumber,
         election,
@@ -76,7 +86,10 @@ const EndOfRoundPage = (props: PageProps) => {
     }
 
     if (previousRoundSignedOff) {
-        return <PreviousRoundSignedOff roundNumber={ roundNumber } />;
+        notice.ok('Congratulations! You have finished auditing your board’s'
+            + ` ballots in round ${roundNumber}. Please wait for any other`
+            + ' audit boards to complete the audit.');
+        return <Redirect to='/county' />;
     }
 
     const electionDate = corlaDate.format(election.date);
@@ -85,28 +98,34 @@ const EndOfRoundPage = (props: PageProps) => {
     return (
         <div>
             <CountyNav />
-            <h3> End of Round { roundNumber }</h3>
+            <h3>Audit board { auditBoardIndex + 1 }: Sign off on round { roundNumber }</h3>
             <div className='pt-card'>
-                <h3> Congratulations! You have completed reporting the votes on all ballots
+              <h3>
+                Congratulations! You have completed reporting the votes on all ballots
                 randomly selected for this round of the risk-limiting audit of the
-                <span> { countyName } </span> County <span> { electionDate } </span>
-                <span> { electionType} </span>. After the judges have signed off on the round,
-                updated audit status will be displayed on the next page.  </h3>
+                <span> { countyName }</span> County <span> { electionDate }</span>
+                <span> { electionType}</span>. After you have signed off on the
+                round, you will be taken back to the main audit screen to await
+                further instruction.
+              </h3>
             </div>
 
             <div className='pt-card'>
-                <h3> Please complete this audit round by entering your names in the fields below,
-                making the following certification, and selecting Submit. By entering his or
-                her name and selecting Submit below, each Audit Board member individually
-                certifies that he or she: </h3>
+                <h3>
+                    Please complete this audit round by entering your names in
+                    the fields below, making the following certification, and
+                    selecting Submit. By entering their name and selecting
+                    Submit below, each audit board member individually certifies
+                    that they:
+                </h3>
 
                 <ul>
                     <li>
                         Personally located and retrieved, or personally observed a county staff
-                        member locate and retrieve, each paper ballot randomly selected for
-                        Audit Round <span> { currentRoundNumber } </span> of the <span> { countyName }
-                        </span> County <span> { electionDate } </span> <span> { electionType }
-                        </span>.
+                        member locate and retrieve, each paper ballot randomly selected for your
+                        assigned portion of audit round <span>{ currentRoundNumber }</span> of
+                        the <span>{ countyName }</span> County <span>{ electionDate } </span>
+                        <span>{ electionType }</span>.
                     </li>
                     <li>
                         Personally examined each such randomly selected ballot;
@@ -126,7 +145,7 @@ const EndOfRoundPage = (props: PageProps) => {
                         submitted by the voter.
                     </li>
                 </ul>
-                <SignOffFormContainer />
+                <SignOffFormContainer auditBoardIndex={ auditBoardIndex } />
             </div>
         </div>
     );

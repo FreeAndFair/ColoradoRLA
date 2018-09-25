@@ -13,6 +13,7 @@ package us.freeandfair.corla.endpoint;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.OptionalInt;
 
 import javax.persistence.PersistenceException;
@@ -24,10 +25,10 @@ import us.freeandfair.corla.Main;
 import us.freeandfair.corla.controller.BallotSelection;
 import us.freeandfair.corla.controller.ComparisonAuditController;
 import us.freeandfair.corla.json.CVRToAuditResponse;
-import us.freeandfair.corla.json.CVRToAuditResponse.BallotOrderComparator;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
+import us.freeandfair.corla.model.Round;
 import us.freeandfair.corla.persistence.Persistence;
 
 /**
@@ -43,11 +44,6 @@ public class CVRToAuditList extends AbstractEndpoint {
    * The "start" parameter.
    */
   public static final String START = "start";
-
-  /**
-   * The "ballot_count" parameter.
-   */
-  public static final String BALLOT_COUNT = "ballot_count";
 
   /**
    * The "include duplicates" parameter.
@@ -102,20 +98,16 @@ public class CVRToAuditList extends AbstractEndpoint {
   @Override
   protected boolean validateParameters(final Request the_request) {
     final String start = the_request.queryParams(START);
-    final String ballot_count = the_request.queryParams(BALLOT_COUNT);
     final String round = the_request.queryParams(ROUND);
     final String county = the_request.queryParams(COUNTY);
 
-    boolean result = start != null && ballot_count != null ||
-                     round != null;
+    boolean result = start != null || round != null;
 
     if (result) {
       try {
         if (start != null) {
           final int s = Integer.parseInt(start);
           result &= s >= 0;
-          final int b = Integer.parseInt(ballot_count);
-          result &= b >= 0;
         }
 
         if (round != null) {
@@ -141,7 +133,7 @@ public class CVRToAuditList extends AbstractEndpoint {
    * {@inheritDoc}
    */
   @Override
-  @SuppressWarnings("PMD.NPathComplexity")
+  @SuppressWarnings({"PMD.ExcessiveMethodLength", "PMD.NPathComplexity"})
   public String endpointBody(final Request the_request, final Response the_response) {
     // we know we have either state or county authentication; this will be null
     // for state authentication
@@ -152,33 +144,16 @@ public class CVRToAuditList extends AbstractEndpoint {
           Persistence.getByID(Long.parseLong(the_request.queryParams(COUNTY)), County.class);
       if (county == null) {
         badDataContents(the_response, "county " + the_request.queryParams(COUNTY) +
-                                      " does not exist");
+                        " does not exist");
       }
       assert county != null; // makes FindBugs happy
     }
 
     try {
       // get the request parameters
-      final String start_param = the_request.queryParams(START);
-      final String ballot_count_param = the_request.queryParams(BALLOT_COUNT);
-      final String duplicates_param = the_request.queryParams(INCLUDE_DUPLICATES);
       final String audited_param = the_request.queryParams(INCLUDE_AUDITED);
       final String round_param = the_request.queryParams(ROUND);
 
-      int ballot_count = 0;
-      if (ballot_count_param != null) {
-        ballot_count = Integer.parseInt(ballot_count_param);
-      }
-      int index = 0;
-      if (start_param != null) {
-        index = Integer.parseInt(start_param);
-      }
-      final boolean duplicates;
-      if (duplicates_param == null) {
-        duplicates = false;
-      } else {
-        duplicates = true;
-      }
       final boolean audited;
       if (audited_param == null) {
         audited = false;
@@ -205,14 +180,33 @@ public class CVRToAuditList extends AbstractEndpoint {
       if (round.isPresent()) {
         cvr_to_audit_list =
             ComparisonAuditController.ballotsToAudit(cdb, round.getAsInt(), audited);
-      } else {
-        cvr_to_audit_list =
-            ComparisonAuditController.computeBallotOrder(cdb, index, ballot_count,
-                                                         duplicates, audited);
+        response_list.addAll(BallotSelection.toResponseList(cvr_to_audit_list));
+        response_list.sort(null);
+
+        final Round roundObject = cdb.rounds().get(round.getAsInt() - 1);
+
+        final List<Map<String, Integer>> bsa =
+          roundObject.ballotSequenceAssignment();
+
+        if (bsa != null) {
+          // Walk the sequence assignments getting the audit boards' index and
+          // count values. Use that information to set the audit board index for
+          // each response row.
+          for (int i = 0; i < bsa.size(); i++) {
+            final Map<String, Integer> m = bsa.get(i);
+
+            final Integer boardIndex = m.get("index");
+            final Integer boardCount = m.get("count");
+
+            for (int j = boardIndex; j < boardIndex + boardCount; j++) {
+              // TODO: Will this always agree with the round information?
+              final CVRToAuditResponse row = response_list.get(j);
+              row.setAuditBoardIndex(i);
+            }
+          }
+        }
       }
 
-      response_list.addAll(BallotSelection.toResponseList(cvr_to_audit_list));
-      response_list.sort(new BallotOrderComparator());
       okJSON(the_response, Main.GSON.toJson(response_list));
     } catch (final PersistenceException e) {
       serverError(the_response, "could not generate cvr list");

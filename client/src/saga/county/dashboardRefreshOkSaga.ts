@@ -37,9 +37,15 @@ function* countyRefreshOk({ data }: any): any {
         }
     }
 
-    const nextId = state.ballotUnderAuditId;
+    if (typeof state.auditBoardIndex !== 'number') {
+        return;
+    }
 
-    if (!nextId) { return; }
+    const nextId = state.ballotUnderAuditIds[state.auditBoardIndex];
+
+    if (!nextId) {
+        return;
+    }
 
     const { currentBallot } = state;
 

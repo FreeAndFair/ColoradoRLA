@@ -70,7 +70,7 @@ public class IntermediateAuditReport extends AbstractAuditBoardDashboardEndpoint
    */
   @Override
   public String endpointBody(final Request the_request,
-                         final Response the_response) {
+                             final Response the_response) {
     try {
       final IntermediateAuditReportInfo report =
           Main.GSON.fromJson(the_request.body(), IntermediateAuditReportInfo.class);
@@ -82,9 +82,6 @@ public class IntermediateAuditReport extends AbstractAuditBoardDashboardEndpoint
         serverError(the_response, "Could not save intermediate audit report");
       } else {
         cdb.submitIntermediateReport(report);
-        // sign the audit board out
-        cdb.signOutAuditBoard();
-
       }
       Persistence.saveOrUpdate(cdb);
     } catch (final JsonParseException e) {
@@ -96,6 +93,6 @@ public class IntermediateAuditReport extends AbstractAuditBoardDashboardEndpoint
     }
     ok(the_response, "Report submitted");
     // de-authenticate user?
-    return my_endpoint_result.get();    
+    return my_endpoint_result.get();
   }
 }

@@ -11,19 +11,18 @@
 
 package us.freeandfair.corla.endpoint;
 
-import static us.freeandfair.corla.asm.ASMEvent.AuditBoardDashboardEvent.SIGN_OUT_AUDIT_BOARD_EVENT;
-
 import javax.persistence.PersistenceException;
 
 import spark.Request;
 import spark.Response;
 
+import com.google.gson.JsonParser;
+import com.google.gson.JsonParseException;
+
 import us.freeandfair.corla.Main;
-import us.freeandfair.corla.asm.ASMEvent;
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.persistence.Persistence;
-import us.freeandfair.corla.util.SuppressFBWarnings;
 
 /**
  * Signs out the audit board for a county.
@@ -31,7 +30,7 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
  * @author Daniel M. Zimmerman <dmz@freeandFair.us>
  * @version 1.0.0
  */
-@SuppressWarnings({"PMD.AtLeastOneConstructor", "PMD.ExcessiveImports"})
+@SuppressWarnings({"PMD.AtLeastOneConstructor"})
 public class AuditBoardSignOut extends AbstractAuditBoardDashboardEndpoint {
   /**
    * {@inheritDoc}
@@ -40,7 +39,7 @@ public class AuditBoardSignOut extends AbstractAuditBoardDashboardEndpoint {
   public EndpointType endpointType() {
     return EndpointType.POST;
   }
-  
+
   /**
    * {@inheritDoc}
    */
@@ -57,22 +56,15 @@ public class AuditBoardSignOut extends AbstractAuditBoardDashboardEndpoint {
   }
 
   /**
-   * {@inheritDoc}
+   * Signs the audit board out for the logged in county at the specified index.
    */
   @Override
-  protected ASMEvent endpointEvent() {
-    return SIGN_OUT_AUDIT_BOARD_EVENT;
-  }
-  
-  /**
-   * Establish the audit board for a county.
-   */
-  @Override
-  // false positive about inner class declaration
-  @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
   public String endpointBody(final Request the_request,
-                         final Response the_response) {
+                             final Response the_response) {
+    final JsonParser parser = new JsonParser();
+
     try {
+      final int index = parser.parse(the_request.body()).getAsInt();
       final County county = Main.authentication().authenticatedCounty(the_request); 
       if (county == null) {
         Main.LOGGER.error("could not get authenticated county");
@@ -83,15 +75,19 @@ public class AuditBoardSignOut extends AbstractAuditBoardDashboardEndpoint {
           Main.LOGGER.error("could not get county dashboard");
           serverError(the_response, "could not log in audit board");
         } else {
-          cdb.signOutAuditBoard();
+          cdb.signOutAuditBoard(index);
           Persistence.saveOrUpdate(cdb);
-          ok(the_response, "audit board for county " + county.id() +  
-              " signed out");
+          ok(the_response,
+             String.format("audit board #%d for county %d signed out",
+                           index, county.id()));
         }
       }
     } catch (final PersistenceException e) {
       serverError(the_response, "unable to sign out audit board: " + e);
+    } catch (final JsonParseException e) {
+      badDataContents(the_response, "unable to sign out audit board");
     }
+
     return my_endpoint_result.get();
   }
 }
