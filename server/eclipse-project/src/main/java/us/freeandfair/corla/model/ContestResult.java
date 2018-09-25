@@ -164,7 +164,7 @@ public class ContestResult implements PersistentEntity, Serializable {
   /**
    * The number of ballots cast for this contest
    */
-  @Column(name = "ballots_count")
+  @Column(name = "ballot_count")
   private Long ballotCount;
 
   /**
