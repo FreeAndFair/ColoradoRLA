@@ -74,14 +74,18 @@ function parseSignatories(s?: JSON.Signatories): Signatories {
         return {};
     }
 
-    return _.map(s, (electors): Elector[] => {
-        return _.map(electors, (e: JSON.Elector): Elector => {
+    let ret: Signatories = {};
+
+    _.forEach(s, (electors, idx: any) => {
+        ret[idx] = _.map(electors, (e: JSON.Elector): Elector => {
             return {
                 firstName: e.first_name,
-                lastName: e.last_name,
+                lastName: e.last_name
             };
         });
     });
+
+    return ret;
 }
 
 function parseRound(data: JSON.Round): Round {
