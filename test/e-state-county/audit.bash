@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-# automate auditing of 3 contests in 3 counties
+# Automate auditing of 3 contests in 3 counties
+
+# Run from test/smoketest
+
 # Output goes in $LOGDIR (/tmp by default, created if necessary) in files and export directories
 # tagged by $LOGTAG (default "state-county")
 
@@ -16,11 +19,11 @@ mkdir -p $LOGDIR
     echo -e "\nStart 'Define audit' step and upload county audit data\n"
     ./main.py dos_init
 
-    ./main.py -c 1 -f ../e-state-county/cvr-1000--20-200.csv -F ../e-state/manifest-1-1000.csv county_setup
-    ./main.py -c 2 -f ../e-state-county/cvr-10--0--2-4-1.csv -F ../e-state/manifest-2-10.csv county_setup
+    ./main.py -c 1 -f ../e-state-county/cvr-1000--20-200.csv -F ../e-state-county/manifest-1-1000.csv county_setup
+    ./main.py -c 2 -f ../e-state-county/cvr-10--0--2-4-1.csv -F ../e-state-county/manifest-2-10.csv county_setup
     # Alternative, without a tie in just the county 2 portion of Prop 1
-    # ./main.py -c 2 -f ../e-state-county/cvr-10--1--2-4-1.csv -F ../e-state/manifest-2-10.csv county_setup
-     ./main.py -c 3 -f ../e-state-county/cvr-100--2-24-40.csv -F ../e-state/manifest-3-100.csv county_setup
+    # ./main.py -c 2 -f ../e-state-county/cvr-10--1--2-4-1.csv -F ../e-state-county/manifest-2-10.csv county_setup
+     ./main.py -c 3 -f ../e-state-county/cvr-100--2-24-40.csv -F ../e-state-county/manifest-3-100.csv county_setup
 
     echo -e "\nFinish 'Define audit' step to select contests, enter the random seed, and Launch the Audit\n"
 
