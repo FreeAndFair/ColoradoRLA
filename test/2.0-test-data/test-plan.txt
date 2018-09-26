@@ -21,8 +21,7 @@ risk limit: 60% -- for an easy test
 canonical contests: upload canonical-contests.csv
 save and next
 
-standardize contest names
-change Alamosa County Comissioner District 3 to something else
+-- skip standardizing contest names
 save and next
 
 select Regent of the University of Colorado - At Large to Audit
@@ -43,11 +42,19 @@ Sign in Audit Board
 enter anything for all fields
 Sign in
 
+-- 3-800-19
 Blank vote, Jeff Baker, Review, Submit
-Clear Winner, Review, Submit
+-- 5-1600-13
+Distant Loser, Review, Submit
+-- 9-3200-31
 Blank vote, Jeff Baker, Review, Submit
+-- 9-3200-41
 Clear Winner, Review, Submit
+-- 9-3200-47
 Blank vote, Review, Submit
+-- 10-2-21
+Blank vote, Jeff Baker, Review, Submit
+
 
 enter anything for all fields
 submit

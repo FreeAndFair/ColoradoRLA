@@ -613,14 +613,6 @@ public class CountyDashboard implements PersistentEntity {
 
 
   /**
-   * @return true if all of the comparison audits are finished.
-   */
-  public boolean auditsFinished() {
-    return comparisonAudits().stream()
-      .allMatch(c -> c.auditStatus().equals(AuditStatus.RISK_LIMIT_ACHIEVED));
-  }
-
-  /**
    * @return the set of comparison audits being performed.
    */
   public Set<ComparisonAudit> comparisonAudits() {
@@ -877,25 +869,27 @@ public class CountyDashboard implements PersistentEntity {
     }
   }
 
+
+  /**
+   *  takes the targeted contests/ComparisonAudits and checks them for
+   *  completion/RiskLimitAchieved
+   **/
+  public Boolean allAuditsComplete() {
+    return comparisonAudits().stream()
+      .filter(ca -> ca.auditReason() != AuditReason.OPPORTUNISTIC_BENEFITS)
+      .allMatch(ca -> ca.auditStatus() == AuditStatus.RISK_LIMIT_ACHIEVED
+                || ca.auditStatus() == AuditStatus.ENDED);
+  }
+
   /**
    * @return the estimated number of samples to audit.
    */
   public Integer estimatedSamplesToAudit() {
-    // NOTE: there could be race conditions between audit boards across counties
-    final Optional<Integer> maybe = comparisonAudits().stream()
+    return comparisonAudits().stream()
       .filter(ca -> ca.auditReason() != AuditReason.OPPORTUNISTIC_BENEFITS)
-      .map(ca -> ca.estimatedSamplesToAudit())
-      .max(Comparator.naturalOrder());
-    // NOTE: we may be asking for this when we don't need to; when there are no
-    // audits setup yet
-    if (maybe.isPresent()) {
-      LOGGER.debug(String.format("estimatedSamplesToAudit: result=%s auditedSampleCount=%s",
-                                 maybe.get(),
-                                 auditedSampleCount()));
-      return maybe.get() - auditedSampleCount();
-    } else {
-      return 0;
-    }
+      .map(ca -> ca.estimatedRemaining())
+      .mapToInt(Integer::intValue)
+      .sum();
   }
 
   /**

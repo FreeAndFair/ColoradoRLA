@@ -336,39 +336,18 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
           // If a county still has an audit underway, check to see if
           // they've achieved their risk limit before starting anything
           // else. A county that has met the risk limit is done.
-          if (countyDashboardASM.currentState().equals(CountyDashboardState.COUNTY_AUDIT_UNDERWAY)) {
-
-            // There are two ways of looking at this. The original way,
-            // by estimatedSamplesToAudit: a counter in each dashboard.
-            // Meh, that's state that we have to maintain.
-            // TODO strike this flavor.
-            if (cdb.estimatedSamplesToAudit() <= 0) {
-            LOGGER
-              .debug(String.format("[startRound: %s County needs to audit 0 ballots to"
-                                   + " achieve its risk limit, its audit is complete.]",
-                                   cdb.county().name()));
+          if (countyDashboardASM.currentState().equals(CountyDashboardState.COUNTY_AUDIT_UNDERWAY)
+              && cdb.allAuditsComplete()) {
+            LOGGER.debug
+              (String.format
+               ("[startRound: allAuditsComplete! %s County is FINISHED.]",
+                cdb.county().name()));
             ASMUtilities.step(RISK_LIMIT_ACHIEVED_EVENT, AuditBoardDashboardASM.class,
                               String.valueOf(cdb.id()));
             countyDashboardASM.stepEvent(COUNTY_AUDIT_COMPLETE_EVENT);
 
             ASMUtilities.save(countyDashboardASM);
             continue;
-            }
-            // Another way might be to ask if every audit has met its
-            // risk limit. This feels a little nicer to me.
-            if (cdb.auditsFinished()) {
-              LOGGER.debug
-                (String.format
-                 ("[startRound: %s County is FINISHED. auditsFinished=%s, cdb.estimatedSamplesToAudit()=%d]",
-                  cdb.county().name(),
-                  cdb.auditsFinished(), cdb.estimatedSamplesToAudit()));
-              ASMUtilities.step(RISK_LIMIT_ACHIEVED_EVENT, AuditBoardDashboardASM.class,
-                                String.valueOf(cdb.id()));
-              countyDashboardASM.stepEvent(COUNTY_AUDIT_COMPLETE_EVENT);
-
-              ASMUtilities.save(countyDashboardASM);
-              continue;
-            }
           }
 
           // Risk limit hasn't been achieved and we were never given any
