@@ -1,6 +1,6 @@
 {
     "name": "corla-client",
-    "version": "2.0.0",
+    "version": "2.0.1-SNAPSHOT",
     "description": "Browser-based client to facilitate risk-limiting audits for the State of Colorado.",
     "main": "index.js",
     "scripts": {
