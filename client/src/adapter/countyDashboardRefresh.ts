@@ -74,13 +74,13 @@ function parseSignatories(s?: JSON.Signatories): Signatories {
         return {};
     }
 
-    let ret: Signatories = {};
+    const ret: Signatories = {};
 
     _.forEach(s, (electors, idx: any) => {
         ret[idx] = _.map(electors, (e: JSON.Elector): Elector => {
             return {
                 firstName: e.first_name,
-                lastName: e.last_name
+                lastName: e.last_name,
             };
         });
     });
