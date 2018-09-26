@@ -802,6 +802,10 @@ public class ComparisonAudit implements PersistentEntity {
         //not present
         result = OptionalInt.of(1);
       }
+    } else if (cvr.recordType() == RecordType.PHANTOM_RECORD){
+      // similar to the phantom ballot, we use the worst case scenario, a 2-vote
+      // overstatement, except here, we don't have a CVR to check anything on.
+      result = OptionalInt.of(2);
     } else if (cvr_info.isPresent() && acvr_info.isPresent()) {
       if (acvr_info.get().consensus() == ConsensusValue.NO) {
         // a lack of consensus for this contest is treated
