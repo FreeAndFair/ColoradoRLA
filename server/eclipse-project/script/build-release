@@ -23,7 +23,7 @@ mkdir -p $reldir
 # server
 cd $SERVER_DIR
 mvn package > target/mvn.stdout
-jar=target/colorado_rla-$version-shaded.jar
+jar=target/corla-server-$version-shaded.jar
 cp $jar $reldir/corla-server.jar
 
 # httpd
