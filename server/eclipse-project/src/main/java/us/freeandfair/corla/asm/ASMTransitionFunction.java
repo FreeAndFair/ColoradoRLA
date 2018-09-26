@@ -212,6 +212,11 @@ public interface ASMTransitionFunction {
                         ROUND_COMPLETE_EVENT,
                         WAITING_FOR_ROUND_START)),
 
+    // this can happen if there are no ballots to audit in subsequent rounds
+    O2(new ASMTransition(WAITING_FOR_ROUND_START,
+                         ROUND_COMPLETE_EVENT,
+                         WAITING_FOR_ROUND_START)),
+
     /* We probably want this transition eventually, but not for CDOS
     EARLY(new ASMTransition(ROUND_IN_PROGRESS,
                             RISK_LIMIT_ACHIEVED_EVENT,
