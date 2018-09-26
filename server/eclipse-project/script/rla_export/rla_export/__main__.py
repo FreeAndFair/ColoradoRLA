@@ -363,6 +363,21 @@ def db_export(args, ac):
 
     ac.cur = ac.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
+    # For each contest in contest_result, export contest_selections_<contest_name>.csv
+    ac.cur.execute("SELECT contest_name, contest_cvr_ids from contest_result")
+    contest_results = ac.cur.fetchall()
+    for row in contest_results:
+        contest_name = row['contest_name']
+        cvrs = json.loads(row['contest_cvr_ids'])
+        logging.debug("cvrs for %s: %s" % (contest_name, cvrs))
+        if cvrs:
+            contest_selections(args, ac, cvrs, contest_name)
+        else:
+            logging.warning("No contest_selections for contest '%s'" % contest_name)
+
+    # example: contest_selections(args, ac, [756,760,754,757], "Prop 3")
+
+
     queryfiles = args.queryfiles
     if not queryfiles:
         sql_dir = os.environ.get('SQL_DIR', SQL_PATH)
@@ -392,7 +407,7 @@ def db_export(args, ac):
     for row in county_ids:
         county_id = row['id']
         county_name = row['name'].replace(" ", "_")
-        random_sequence(args, ac.connection, ac.cur, county_id, county_name)
+        random_sequence(args, ac.cur, county_id, county_name)
 
     ac.connection.close()
 
@@ -428,10 +443,43 @@ CVR_SELECTION_QUERY = """
     ;
 """
 
-def random_sequence(args, connection, cursor, county_id, county_name):
-    "Export list of ballots to be audited by county in random selection order, with dups"
+def contest_selections(args, ac, cvrs, contest_name):
+    """Export list of selections audited for a given contest, with dups.
 
     """
+
+    #from query_to_csvfile(ac, queryfile, csvfile):
+
+    csvfile = os.path.join(args.export_dir, 'contest_selections_%s.csv' % contest_name.replace(" ", "_"))
+
+    # To get query result in csv format, substitute the query in this string
+    # and execute the result.
+    csv_query_wrapper = "COPY ({}) TO STDOUT WITH CSV HEADER"
+
+    # filled_query = wrapped_query.format()
+    query = (CVR_SELECTION_QUERY % ({'cvr_id_list': tuple(cvrs)})).rstrip(';' + string.whitespace)
+    wrapped_query = csv_query_wrapper.format(query, csvfile)
+
+    logging.debug("wrapped_query: %s" % (wrapped_query))
+
+    try:
+        with open(csvfile, "w") as f:
+            ac.cur.copy_expert(wrapped_query, f)
+    except (psycopg2.Error, IOError) as e:
+        message = ("rla_export contest_selections csv query error, writing to %s:\n %s\nQuery: \n%s" %
+                      (csvfile, e, wrapped_query))
+        logging.error(message)
+        return message
+
+
+def random_sequence(args, cursor, county_id, county_name):
+    """Export list of ballots to be audited by county in random selection order, with dups
+
+    cursor.fetchall should return .... FIXME
+    """
+
+    """
+    Some alternate approaches:
     Probably easiest for reporting to just use the sequences in the new round table to fetch the CVRs from the dB directly (use the ballot sequences to fetch them in bulk and then the audit subsequences to present the fetched records in order).
     Another straightforward thing to do: get the cvr IDs from the ballot sequence list (because the ballots returned from the endpoint are in the same order) and use those to put the ballots in audit sequence order based on the audit subsequence list.
     """
@@ -494,7 +542,8 @@ def random_sequence(args, connection, cursor, county_id, county_name):
         print("I/O error({0}): {1}".format(e.errno, e.strerror))
 
     except Exception as e:
-        logging.error("rla_export: random_sequence: failure: %s" % e)
+        logging.error("rla_export: random_sequence: failure on %s: %s. Removing temp file %s" % (filename, e, stream.name))
+        os.remove(stream.name)
 
 def show_elapsed(r, *args, **kwargs):
     logging.log(25,"Endpoint %s: %s. Elapsed time %.3f" % (r.url, r, r.elapsed.total_seconds()))
