@@ -207,7 +207,7 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
               cdb.auditedSampleCount(),
               cdb.ballotsAudited()));
 
-          if (cdb.estimatedSamplesToAudit() <= 0) {
+          if (cdb.allAuditsComplete()) {
             LOGGER.debug
               (String.format
                ("[signoff: RISK_LIMIT_ACHIEVED for %s County: "
