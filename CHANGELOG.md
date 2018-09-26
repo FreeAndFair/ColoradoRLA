@@ -1,17 +1,31 @@
 # Changes
 
-Releases correspond to Git tags. Changes between releases are described below with the following tags indicating the components affected:
+Releases correspond to Git tags. Changes between releases are described below
+with the following tags indicating the components affected:
+
 - `UI` refers the user interface
 - `API` refers to the server component
-- `INFRA` referes to infrastructure changes such as Docker, HTTPD configuration, etc.
+- `INFRA` refers to infrastructure changes such as Docker, HTTPD configuration,
+  etc.
+- `TOOLING` refers to changes to tooling that falls outside the UI or API, such
+  as the RLA export.
 
-## 1.4.0 - In Progress
+## 2.0.0 - Major Release
 
-The sprint ending on 8/29/2018
+This release contained significant API-level and application-level changes, and
+represents over six weeks of sustained development effort.
 
 - [API - Log on phantom CVR creation][pr33]
 - [UI - Fix a bug where standardized contests would sometimes not display on first run][pr34]
 - [INFRA - Always pull new base Docker images when building][pr35]
+- [TOOLING - Better debugging for smoketest main.py][pr36]
+- [API - Handle phantom records][pr40]
+- [TOOLING - Generate test files for RLAtool][pr42]
+
+The bulk of the changes since the last release are wrapped up in the following
+PR:
+
+- [**Support multiple audit boards and multi-county audits**][pr44]
 
 ## 1.3.4 - Bugfixes
 
@@ -81,3 +95,7 @@ This is [FreeAndFair's most recent tag][1.1.0.3].
 [pr33]: https://github.com/democracyworks/ColoradoRLA/pull/33
 [pr34]: https://github.com/democracyworks/ColoradoRLA/pull/34
 [pr35]: https://github.com/democracyworks/ColoradoRLA/pull/35
+[pr36]: https://github.com/democracyworks/ColoradoRLA/pull/36
+[pr40]: https://github.com/democracyworks/ColoradoRLA/pull/40
+[pr42]: https://github.com/democracyworks/ColoradoRLA/pull/42
+[pr44]: https://github.com/democracyworks/ColoradoRLA/pull/44
