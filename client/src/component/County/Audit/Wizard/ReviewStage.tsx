@@ -224,7 +224,7 @@ const ReviewStage = (props: ReviewStageProps) => {
                             page.
                         </p>
                         <BallotReview countyState={ countyState } marks={ marks } back={ prevStage } />
-                        <div className='button-container'>
+                        <div className='button-container button-container-left'>
                           <button className='pt-large pt-button pt-intent-success pt-breadcrumb' onClick={ onClick }>
                               Submit & Next Ballot Card
                           </button>

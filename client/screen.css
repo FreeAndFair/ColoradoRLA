@@ -224,6 +224,10 @@ th.rla-county-contest-info {
     align-items: center;
 }
 
+.button-container-left {
+    justify-content: flex-start;
+}
+
 .not-found-header {
     font-size: 18px;
     margin-bottom: 20px;
