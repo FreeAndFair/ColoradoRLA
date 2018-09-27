@@ -360,8 +360,9 @@ public final class BallotSelection {
         segment.addCvrs(cvrs);
         segment.addCvrIds(cvrs); // keep raw data separate
       });
-    LOGGER.info("resolveSelection = " + selection.segments);
-    LOGGER.info("resolveSelection = " + Selection.combineSegments(selection.allSegments()).cvrIds);
+    LOGGER.debug(String.format("[resolveSelection: selection=%s, combinedSegments=%s]",
+                               selection.segments,
+                               Selection.combineSegments(selection.allSegments()).cvrIds));
     return selection;
   }
 

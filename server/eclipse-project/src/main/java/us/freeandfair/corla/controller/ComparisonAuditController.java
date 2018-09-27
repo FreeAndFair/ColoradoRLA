@@ -412,7 +412,7 @@ public final class ComparisonAuditController {
         disagreements.add(ca.auditReason());
       }
 
-      ca.signalSampleAudited(audit_count);
+      ca.signalSampleAudited(audit_count, cvr_under_audit.id());
       Persistence.saveOrUpdate(ca);
     }
 
@@ -468,7 +468,7 @@ public final class ComparisonAuditController {
         }
         disagreements.add(ca.auditReason());
       }
-      ca.signalSampleUnaudited(result);
+      ca.signalSampleUnaudited(result, cvr_under_audit.id());
       Persistence.saveOrUpdate(ca);
     }
 

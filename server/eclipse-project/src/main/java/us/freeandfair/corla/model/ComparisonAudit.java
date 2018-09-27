@@ -478,11 +478,6 @@ public class ComparisonAudit implements PersistentEntity {
                                                                     my_one_vote_under_count,
                                                                     my_one_vote_over_count,
                                                                     my_two_vote_over_count);
-      LOGGER.debug(String.format("[recalculateSamplesToAudit:"
-                                 + " my_optimistic_samples_to_audit=%d,"
-                                 + " computeOptimisticSamplesToAudit=%f]",
-                                 my_optimistic_samples_to_audit, optimistic));
-
       my_optimistic_samples_to_audit = optimistic.intValue();
       my_optimistic_recalculate_needed = false;
     }
@@ -534,16 +529,44 @@ public class ComparisonAudit implements PersistentEntity {
    * Signals that a sample has been audited. This ensures that estimates
    * are recalculated correctly and states are updated.
    *
-   * @param the_count The count of samples that have been audited simultaneously
+   * @param count The count of samples that have been audited simultaneously
    * (for duplicates).
    */
-  public void signalSampleAudited(final int the_count) {
+  public void signalSampleAudited(final int count) {
     my_estimated_recalculate_needed = true;
-    my_audited_sample_count = my_audited_sample_count + the_count;
+    my_audited_sample_count = my_audited_sample_count + count;
 
     if (my_audit_status != AuditStatus.ENDED &&
         my_audit_status != AuditStatus.NOT_AUDITABLE) {
       my_audit_status = AuditStatus.IN_PROGRESS;
+    }
+  }
+
+  /**
+   * Signals that a sample has been audited, if the CVR was selected for
+   * this audit and this audit is targeted (i.e., not for opportunistic
+   * benefits.)
+   *
+   * @param count The count of samples that have been audited simultaneously
+   * @param cvrID ID of the CVR being audited
+   */
+  public void signalSampleAudited(final int count, final Long cvrID) {
+    final boolean covered = isCovering(cvrID);
+    final boolean targeted = contestResult().getAuditReason().isTargeted();
+
+    if (targeted && !covered) {
+      LOGGER.debug
+        (String.format("[signalSampleAudited: Targeted contest, but cvrID (%d) not selected.]",
+                       cvrID));
+    }
+
+    if (targeted && covered) {
+    LOGGER.debug
+      (String.format
+       ("[signalSampleAudited: targeted and covered! "
+        + "contestName=%s, cvrID=%d, auditedSamples=%d, count=%d]",
+        contestResult().getContestName(), cvrID, getAuditedSampleCount(), count));
+      signalSampleAudited(count);
     }
   }
 
@@ -563,6 +586,33 @@ public class ComparisonAudit implements PersistentEntity {
       my_audit_status = AuditStatus.IN_PROGRESS;
     }
   }
+
+
+  /**
+   * Signals that a sample has been unaudited, if the CVR was selected
+   * for this audit.
+   *
+   * @param count The count of samples that have been unaudited simultaneously
+   * (for duplicates).
+   * @parma cvrID The ID of the CVR to unaudit
+   */
+  public void signalSampleUnaudited(final int count, final Long cvrID) {
+    final boolean covered = isCovering(cvrID);
+    final boolean targeted = contestResult().getAuditReason().isTargeted();
+
+    if (targeted && !covered) {
+      LOGGER.debug
+        (String.format("[signalSampleUnaudited: Targeted contest, but cvrID (%d) not selected.]",
+                       cvrID));
+    }
+
+    if (targeted && covered) {
+      LOGGER.debug(String.format("[signalSampleUnaudited: CVR ID [%d] is interesting to %s]",
+                                 cvrID, contestResult().getContestName()));
+      signalSampleUnaudited(count);
+    }
+  }
+
 
   /**
    * Records a disagreement with the specified CVRAuditInfo.
