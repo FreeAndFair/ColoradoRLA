@@ -95,9 +95,17 @@ class AuditBoardNumberSelector
             return null;
         }
 
+        if (1 === toAudit) {
+            return (
+                <div className='pt-form-helper-text'>
+                    There is <b>1</b> ballot card to audit in this round.
+                </div>
+            );
+        }
+
         return (
             <div className='pt-form-helper-text'>
-                There are <b>{ toAudit }</b>  ballot cards to audit in this
+                There are <b>{ toAudit }</b> ballot cards to audit in this
                 round.
             </div>
         );
