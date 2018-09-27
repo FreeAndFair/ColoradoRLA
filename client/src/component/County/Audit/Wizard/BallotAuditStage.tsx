@@ -177,9 +177,20 @@ const BallotContestMarkForm = (props: MarkFormProps) => {
     };
 
     const updateConsensus = (e: React.ChangeEvent<any>) => {
-        if (confirm('By continuing, you acknowledge that the audit board could not reach consensus on an interpretation'
-                    + ' of voter intent for this ballot.')) {
-          updateBallotMarks({ noConsensus: !!e.target.checked });
+        const isChecked: boolean = !!e.target.checked;
+
+        // If unchecked, explicit permission granted
+        let hasPermission: boolean = !isChecked;
+
+        if (isChecked) {
+            hasPermission = confirm(
+                'By continuing, you acknowledge that the audit board could not reach consensus on an interpretation'
+                + ' of voter intent for this ballot.',
+            );
+        }
+
+        if (hasPermission) {
+            updateBallotMarks({ noConsensus: isChecked });
         }
     };
 
