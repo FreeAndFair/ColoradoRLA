@@ -10,6 +10,15 @@ with the following tags indicating the components affected:
 - `TOOLING` refers to changes to tooling that falls outside the UI or API, such
   as the RLA export.
 
+## 2.0.2-SNAPSHOT - In development
+
+## 2.0.1 - Bugfix release
+
+- [API - A CVR counts as an audited sample if it was selected for an audit][pr61]
+- [UI - Fix ballot count pluralization on the county dashboard][pr62]
+- [UI - Move "next card" button on the review screen][pr63]
+- [UI - Only require no-consensus consent if we are checking the box][pr64]
+
 ## 2.0.0 - Major Release
 
 This release contained significant API-level and application-level changes, and
@@ -99,3 +108,7 @@ This is [FreeAndFair's most recent tag][1.1.0.3].
 [pr40]: https://github.com/democracyworks/ColoradoRLA/pull/40
 [pr42]: https://github.com/democracyworks/ColoradoRLA/pull/42
 [pr44]: https://github.com/democracyworks/ColoradoRLA/pull/44
+[pr61]: https://github.com/democracyworks/ColoradoRLA/pull/61
+[pr62]: https://github.com/democracyworks/ColoradoRLA/pull/62
+[pr63]: https://github.com/democracyworks/ColoradoRLA/pull/63
+[pr64]: https://github.com/democracyworks/ColoradoRLA/pull/64
