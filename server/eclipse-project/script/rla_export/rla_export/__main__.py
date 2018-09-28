@@ -363,21 +363,6 @@ def db_export(args, ac):
 
     ac.cur = ac.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
-    # For each contest in contest_result, export contest_selections_<contest_name>.csv
-    ac.cur.execute("SELECT contest_name, contest_cvr_ids from contest_result")
-    contest_results = ac.cur.fetchall()
-    for row in contest_results:
-        contest_name = row['contest_name']
-        cvrs = json.loads(row['contest_cvr_ids'])
-        logging.debug("cvrs for %s: %s" % (contest_name, cvrs))
-        if cvrs:
-            contest_selections(args, ac, cvrs, contest_name)
-        else:
-            logging.warning("No contest_selections for contest '%s'" % contest_name)
-
-    # example: contest_selections(args, ac, [756,760,754,757], "Prop 3")
-
-
     queryfiles = args.queryfiles
     if not queryfiles:
         sql_dir = os.environ.get('SQL_DIR', SQL_PATH)
@@ -442,35 +427,6 @@ CVR_SELECTION_QUERY = """
     ORDER BY county_name
     ;
 """
-
-def contest_selections(args, ac, cvrs, contest_name):
-    """Export list of selections audited for a given contest, with dups.
-
-    """
-
-    #from query_to_csvfile(ac, queryfile, csvfile):
-
-    csvfile = os.path.join(args.export_dir, 'contest_selections_%s.csv' % contest_name.replace(" ", "_"))
-
-    # To get query result in csv format, substitute the query in this string
-    # and execute the result.
-    csv_query_wrapper = "COPY ({}) TO STDOUT WITH CSV HEADER"
-
-    # filled_query = wrapped_query.format()
-    query = (CVR_SELECTION_QUERY % ({'cvr_id_list': tuple(cvrs)})).rstrip(';' + string.whitespace)
-    wrapped_query = csv_query_wrapper.format(query, csvfile)
-
-    logging.debug("wrapped_query: %s" % (wrapped_query))
-
-    try:
-        with open(csvfile, "w") as f:
-            ac.cur.copy_expert(wrapped_query, f)
-    except (psycopg2.Error, IOError) as e:
-        message = ("rla_export contest_selections csv query error, writing to %s:\n %s\nQuery: \n%s" %
-                      (csvfile, e, wrapped_query))
-        logging.error(message)
-        return message
-
 
 def random_sequence(args, cursor, county_id, county_name):
     """Export list of ballots to be audited by county in random selection order, with dups

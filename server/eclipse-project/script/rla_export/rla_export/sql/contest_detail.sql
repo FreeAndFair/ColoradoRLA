@@ -15,7 +15,7 @@ SELECT
    cvr_s.imprinted_id,
    cvr_s.ballot_type, 
    cai.counted,
-   SUBSTRING(cci.choices, 2, LENGTH(cci.choices) - 2) AS audit_board_selection,
+   SUBSTRING(cci_a.choices, 2, LENGTH(cci_a.choices) - 2) AS audit_board_selection,
    cci_a.consensus,
    LOWER(cvr_s.record_type) as record_type,
    cci_a.comment AS audit_board_comment,
