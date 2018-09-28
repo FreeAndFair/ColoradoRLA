@@ -17,17 +17,15 @@ mkdir -p $LOGDIR
     ./main.py reset
 
     echo -e "\nStart 'Define audit' step and upload county audit data\n"
-    ./main.py dos_init
+    ./main.py dos_init -s 12341234123412341234 -r 0.05
 
     ./main.py -c 1 -f ../e-state-county/cvr-1000--20-200.csv -F ../e-state-county/manifest-1-1000.csv county_setup
     ./main.py -c 2 -f ../e-state-county/cvr-10--0--2-4-1.csv -F ../e-state-county/manifest-2-10.csv county_setup
-    # Alternative, without a tie in just the county 2 portion of Prop 1
-    # ./main.py -c 2 -f ../e-state-county/cvr-10--1--2-4-1.csv -F ../e-state-county/manifest-2-10.csv county_setup
-     ./main.py -c 3 -f ../e-state-county/cvr-100--2-24-40.csv -F ../e-state-county/manifest-3-100.csv county_setup
+    ./main.py -c 3 -f ../e-state-county/cvr-100--2-24-40.csv -F ../e-state-county/manifest-3-100.csv county_setup
 
     echo -e "\nFinish 'Define audit' step to select contests, enter the random seed, and Launch the Audit\n"
 
-    ./main.py -C 1  -C 3 -C 4 -C 5  -C 7 -C 8 dos_start
+    ./main.py -C 0 -C 1 -C 4 -C 5 dos_start
 
 ) | tee $LOGDIR/$LOGTAG.sm
 
@@ -43,7 +41,9 @@ rla_export -e $LOGDIR/$LOGTAG-setup.export
 
 rla_export -e $LOGDIR/$LOGTAG-round1.export
 
-# Final round, no discrepancies
+echo -e "\nPress <C-c> if you don't want to start a second round! Otherwise, press <RET> when ready...\n"
+read
+# Second round, no discrepancies
 (
     echo -e "\nRun second round\n"
 
