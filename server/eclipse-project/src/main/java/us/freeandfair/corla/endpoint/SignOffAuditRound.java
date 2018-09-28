@@ -44,6 +44,7 @@ import us.freeandfair.corla.asm.DoSDashboardASM;
 
 import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyDashboard;
+import us.freeandfair.corla.model.ComparisonAudit;
 import us.freeandfair.corla.model.Elector;
 import us.freeandfair.corla.model.Round;
 
@@ -184,11 +185,11 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
         // We're done!
         cdb.endRound();
 
-        final AuditBoardDashboardASM asm = ASMUtilities.asmFor(
-            AuditBoardDashboardASM.class,
-            String.valueOf(cdb.id()));
+        final AuditBoardDashboardASM asm =
+          ASMUtilities.asmFor(AuditBoardDashboardASM.class,
+                              String.valueOf(cdb.id()));
 
-        if (null != asm && asm.currentState() == ROUND_IN_PROGRESS) {
+       if (null != asm && asm.currentState() == ROUND_IN_PROGRESS) {
           ASMUtilities.step(ROUND_COMPLETE_EVENT,
                             AuditBoardDashboardASM.class,
                             String.valueOf(cdb.id()));
@@ -196,7 +197,7 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
 
         // update the ASM state for the county and maybe DoS
         if (!DISABLE_ASM) {
-          final boolean audit_complete;
+          final boolean auditComplete;
           LOGGER.debug
             (String.format
              ("[signoff for %s County: cdb.estimatedSamplesToAudit()=%d,"
@@ -208,35 +209,30 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
               cdb.ballotsAudited()));
 
           if (cdb.allAuditsComplete()) {
-            LOGGER.debug
-              (String.format
-               ("[signoff: RISK_LIMIT_ACHIEVED for %s County: "
-                + " cdb.estimatedSamplesToAudit()=%d,"
-                + " cdb.auditedSampleCount()=%d,"
-                + " cdb.ballotsAudited()=%d]",
-                cdb.county().name(),
-                cdb.estimatedSamplesToAudit(),
-                cdb.auditedSampleCount(),
-                cdb.ballotsAudited()));
             my_event.set(RISK_LIMIT_ACHIEVED_EVENT);
-            cdb.endAudits();
-            audit_complete = true;
+            final List<ComparisonAudit> terminated = cdb.endSingleCountyAudits();
+            LOGGER.debug(String.format("[signoff: all targeted audits finished in %s County."
+                                       + " Terminated these audits: %s]",
+                                       cdb.county().name(), terminated));
+            auditComplete = true;
           } else if (cdb.cvrsImported() <= cdb.ballotsAudited()) {
-            LOGGER.debug("[signoff: there are no more ballots in the county]");
-            my_event.set(BALLOTS_EXHAUSTED_EVENT);
-            cdb.endAudits();
-            audit_complete = true;
+            final List<ComparisonAudit> terminated = cdb.endSingleCountyAudits();
+            auditComplete = cdb.allAuditsComplete();
+            LOGGER.debug(String.format("[signoff: no more ballots; terminated single-county audits"
+                                       + " %s in %s County. All complete? (%b)]",
+                                       terminated, cdb.county().name(), auditComplete));
+            my_event.set(ROUND_SIGN_OFF_EVENT);
           } else {
             LOGGER.debug("[signoff: the round ended normally]");
-            audit_complete = false;
+            auditComplete = false;
             my_event.set(ROUND_SIGN_OFF_EVENT);
           }
 
-          if (audit_complete) {
-            LOGGER.debug("[signoff: audit complete]");
+          if (auditComplete) {
+            LOGGER.debug(String.format("[signoff: audit complete in %s County]", cdb.county().name()));
             notifyAuditComplete();
           } else {
-            LOGGER.debug("[signoff: round complete]");
+            LOGGER.debug(String.format("[signoff: round complete in %s County]", cdb.county().name()));
             notifyRoundComplete(cdb.id());
           }
         }

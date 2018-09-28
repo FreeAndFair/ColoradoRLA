@@ -150,10 +150,9 @@ public final class BallotSelection {
      * a good idea
      */
     public String toString() {
-      return String.format("[Segment auditSequence=%s ballotPositions=%s cvrs=%s]",
+      return String.format("[Segment auditSequence=%s ballotPositions=%s]",
                            auditSequence(),
-                           tributes.stream().map(t -> t.ballotPosition).collect(Collectors.toList()),
-                           this.cvrs);
+                           tributes.stream().map(t -> t.ballotPosition).collect(Collectors.toList()));
     }
   }
 

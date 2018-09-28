@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Comparator;
+import java.util.stream.Collectors;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -955,11 +956,26 @@ public class CountyDashboard implements PersistentEntity {
   /**
    * Ends all audits in the county. This changes the status of any audits
    * that have not achieved their risk limit to ENDED.
+   *
+   * You should not use this lightly, some of the audits might be shared
+   * with others!
    */
   public void endAudits() {
     for (final ComparisonAudit ca : audits) {
       ca.endAudit();
     }
+  }
+
+  /**
+   * End all audits that only belong to this county.
+   */
+  public List<ComparisonAudit> endSingleCountyAudits() {
+    return comparisonAudits().stream()
+      .filter(a -> a.isSingleCountyFor(this.county()))
+      .map(a -> {
+          a.endAudit();
+          return a;})
+      .collect(Collectors.toList());
   }
 
   /**

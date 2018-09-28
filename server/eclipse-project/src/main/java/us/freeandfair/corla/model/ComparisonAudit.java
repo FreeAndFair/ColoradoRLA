@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.Cacheable;
 import javax.persistence.CollectionTable;
@@ -357,6 +359,14 @@ public class ComparisonAudit implements PersistentEntity {
       .filter(c -> c.id().equals(countyId))
       .findFirst()
       .isPresent();
+  }
+
+  /**
+   * Does this audit belong to only a single county?
+   */
+  public boolean isSingleCountyFor(final County c) {
+    return getCounties().equals(Stream.of(c)
+                                .collect(Collectors.toSet()));
   }
 
   /**
