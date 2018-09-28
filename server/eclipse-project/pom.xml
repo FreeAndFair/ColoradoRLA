@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>us.freeandfair.production</groupId>
 	<artifactId>corla-server</artifactId>
-	<version>2.0.1-SNAPSHOT</version>
+	<version>2.0.1</version>
 	<name>ColoradoRLA</name>
 	<description>A risk-limiting audit system for the State of Colorado</description>
 	<properties>
