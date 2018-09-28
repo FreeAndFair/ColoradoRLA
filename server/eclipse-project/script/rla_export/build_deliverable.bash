@@ -1,7 +1,7 @@
 # Build a deliverable for rla_export
 
 # This should match the value in setup.py
-relname=rla_export-2.0.0.post2
+relname=rla_export-2.0.1
 deliverable=deliverable-$relname
 mkdir -p $deliverable
 
