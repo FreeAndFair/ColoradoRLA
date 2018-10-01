@@ -444,10 +444,11 @@ def random_sequence(args, cursor, county_id, county_name):
         cursor.execute(SEQUENCE_SUBSEQUENCE_QUERY, {'county_id': county_id})
 
         rows = cursor.fetchall()
-        logging.debug("Row count: %d" % len(rows))
 
         if not rows:
             return
+
+        logging.debug("Row count: %d" % len(rows))
 
         # Build a dictionary of cvrs, to replay according to the random sequence
         cvrs = {}
