@@ -693,6 +693,10 @@ public class StateReport {
         cell.setCellType(CellType.STRING);
         cell.setCellStyle(bold_right_style);
         cell.setCellValue("Disagreement");
+        cell = row.createCell(cell_number++);
+        cell.setCellType(CellType.STRING);
+        cell.setCellStyle(bold_right_style);
+        cell.setCellValue("Ballot Type");
 
         max_cell_number = Math.max(max_cell_number, cell_number);
         for (final CVRAuditInfo audit_info : 
@@ -720,6 +724,11 @@ public class StateReport {
           cell.setCellType(CellType.STRING);
           cell.setCellStyle(standard_right_style);
           cell.setCellValue(booleanYesNo(!audit_info.disagreement().isEmpty()));
+          cell = row.createCell(cell_number++);
+          cell.setCellType(CellType.STRING);
+          cell.setCellStyle(standard_right_style);
+          cell.setCellValue(audit_info.cvr().ballotType());
+
         }
       }
       for (int i = 0; i < max_cell_number; i++) {
