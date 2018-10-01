@@ -1,13 +1,4 @@
 from setuptools import setup, find_packages
-from pkg_resources import get_distribution, DistributionNotFound
-
-""" FIXME get version properly identified
-try:
-    __version__ = get_distribution(__name__).version
-except DistributionNotFound:
-    # package is not installed
-    pass
-"""
 
 def readme():
     with open('README.rst') as f:
@@ -15,9 +6,8 @@ def readme():
 
 
 setup(name='rla_export',
-      # use_scm_version={"root": "../../../..", "relative_to": __file__},  # FIXME do this after properly delivering and tagging code
       setup_requires=['setuptools_scm'],
-      version='2.0.1',
+      use_scm_version={"root": "../../../.."},
       description='Export data for publication and audit verification from ColoradoRLA: Software to facilitate risk-limiting post-election tabulation audits',
       long_description=readme(),
       url='https://github.com/FreeAndFair/ColoradoRLA',
