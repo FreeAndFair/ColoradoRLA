@@ -189,7 +189,7 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
           ASMUtilities.asmFor(AuditBoardDashboardASM.class,
                               String.valueOf(cdb.id()));
 
-       if (null != asm && asm.currentState() == ROUND_IN_PROGRESS) {
+        if (null != asm && asm.currentState() == ROUND_IN_PROGRESS) {
           ASMUtilities.step(ROUND_COMPLETE_EVENT,
                             AuditBoardDashboardASM.class,
                             String.valueOf(cdb.id()));
@@ -210,12 +210,16 @@ public class SignOffAuditRound extends AbstractAuditBoardDashboardEndpoint {
 
           if (cdb.allAuditsComplete()) {
             my_event.set(RISK_LIMIT_ACHIEVED_EVENT);
+            // In this case, we'd be terminating single county audits
+            // for opportunistic benefits only.
             final List<ComparisonAudit> terminated = cdb.endSingleCountyAudits();
             LOGGER.debug(String.format("[signoff: all targeted audits finished in %s County."
                                        + " Terminated these audits: %s]",
                                        cdb.county().name(), terminated));
             auditComplete = true;
           } else if (cdb.cvrsImported() <= cdb.ballotsAudited()) {
+            // In this case, we'd be terminating targeted and
+            // opportunistic single county audits.
             final List<ComparisonAudit> terminated = cdb.endSingleCountyAudits();
             auditComplete = cdb.allAuditsComplete();
             LOGGER.debug(String.format("[signoff: no more ballots; terminated single-county audits"

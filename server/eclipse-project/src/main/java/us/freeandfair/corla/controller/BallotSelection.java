@@ -264,7 +264,7 @@ public final class BallotSelection {
                                           final Integer maxIndex) {
     if (minIndex > maxIndex) {
       // you are done, silly
-      Selection selection = new Selection();
+      final Selection selection = new Selection();
       selection.contestResult = contestResult;
       return selection;
     }

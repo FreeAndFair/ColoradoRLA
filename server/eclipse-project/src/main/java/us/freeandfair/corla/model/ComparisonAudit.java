@@ -566,8 +566,8 @@ public class ComparisonAudit implements PersistentEntity {
 
     if (targeted && !covered) {
       LOGGER.debug
-        (String.format("[signalSampleAudited: Targeted contest, but cvrID (%d) not selected.]",
-                       cvrID));
+        (String.format("[signalSampleAudited: %s is targeted, but cvrID (%d) not selected for audit.]",
+                       contestResult().getContestName(), cvrID));
     }
 
     if (targeted && covered) {

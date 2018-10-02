@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-# Automate auditing of 3 contests in 3 counties
+# Automate auditing of 3 contests in 3 counties. 3 discrepancies in
+# Adams move to a second round; no further discrepancies allow risk
+# limit to be achieved.
 
 # Run from test/smoketest
 
@@ -17,7 +19,7 @@ mkdir -p $LOGDIR
     ./main.py reset
 
     echo -e "\nStart 'Define audit' step and upload county audit data\n"
-    ./main.py dos_init -s 12341234123412341234 -r 0.05
+    ./main.py dos_init -r 0.05
 
     ./main.py -c 1 -f ../e-state-county/cvr-1000--20-200.csv -F ../e-state-county/manifest-1-1000.csv county_setup
     ./main.py -c 2 -f ../e-state-county/cvr-10--0--2-4-1.csv -F ../e-state-county/manifest-2-10.csv county_setup
@@ -25,7 +27,7 @@ mkdir -p $LOGDIR
 
     echo -e "\nFinish 'Define audit' step to select contests, enter the random seed, and Launch the Audit\n"
 
-    ./main.py -C 0 -C 1 -C 4 -C 5 dos_start
+    ./main.py -C 0 -C 1 -C 4 -C 5 -s 12341234123412341234 dos_start
 
 ) | tee $LOGDIR/$LOGTAG.sm
 
