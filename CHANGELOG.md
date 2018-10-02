@@ -11,6 +11,7 @@ with the following tags indicating the components affected:
   as the RLA export.
 
 ## 2.0.2-SNAPSHOT - In development
+- [API - (phantom-record) add ballotType to State report][pr68]
 
 ## 2.0.1 - Bugfix release
 
@@ -112,3 +113,4 @@ This is [FreeAndFair's most recent tag][1.1.0.3].
 [pr62]: https://github.com/democracyworks/ColoradoRLA/pull/62
 [pr63]: https://github.com/democracyworks/ColoradoRLA/pull/63
 [pr64]: https://github.com/democracyworks/ColoradoRLA/pull/64
+[pr68]: https://github.com/democracyworks/ColoradoRLA/pull/68
