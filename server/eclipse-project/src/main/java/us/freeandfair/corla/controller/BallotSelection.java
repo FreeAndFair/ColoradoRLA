@@ -262,6 +262,13 @@ public final class BallotSelection {
                                           final String seed,
                                           final Integer minIndex,
                                           final Integer maxIndex) {
+    if (minIndex > maxIndex) {
+      // you are done, silly
+      Selection selection = new Selection();
+      selection.contestResult = contestResult;
+      return selection;
+    }
+
     final int domainSize = ballotsCast(contestResult.countyIDs()).intValue();
     final PseudoRandomNumberGenerator gen =
       new PseudoRandomNumberGenerator(seed, true, 1, domainSize);

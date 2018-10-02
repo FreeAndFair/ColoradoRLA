@@ -207,6 +207,7 @@ public interface ASMTransitionFunction {
     O(new ASMTransition(ROUND_IN_PROGRESS,
                         ROUND_COMPLETE_EVENT,
                         WAITING_FOR_ROUND_SIGN_OFF)),
+
     // this can happen if there are no ballots to audit in the first round
     O1(new ASMTransition(AUDIT_INITIAL_STATE,
                         ROUND_COMPLETE_EVENT,
@@ -216,6 +217,12 @@ public interface ASMTransitionFunction {
     O2(new ASMTransition(WAITING_FOR_ROUND_START,
                          ROUND_COMPLETE_EVENT,
                          WAITING_FOR_ROUND_START)),
+
+    // this can happen if there are no ballots for an audit board
+    O3(new ASMTransition(WAITING_FOR_ROUND_START,
+                         ROUND_SIGN_OFF_EVENT,
+                         WAITING_FOR_ROUND_START)),
+
 
     /* We probably want this transition eventually, but not for CDOS
     EARLY(new ASMTransition(ROUND_IN_PROGRESS,

@@ -333,10 +333,15 @@ public class Round implements Serializable {
     final List<Map<String, Integer>> bsa = this.ballotSequenceAssignment();
 
     if (bsa == null) {
-      return null;
+      return new ArrayList<>();
     }
 
     final List<Long> bs = this.ballotSequence();
+
+    if (bs.isEmpty()) {
+      // avoid psql exception
+      return new ArrayList<>();
+    }
 
     // All CVR IDs that have no corresponding ACVR
     final Session s = Persistence.currentSession();
