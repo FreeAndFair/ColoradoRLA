@@ -10,7 +10,11 @@ with the following tags indicating the components affected:
 - `TOOLING` refers to changes to tooling that falls outside the UI or API, such
   as the RLA export.
 
-## 2.0.2-SNAPSHOT - In development
+## 2.0.3 - SNAPSHOT - In development
+
+## 2.0.2 - Bugfix release
+
+- [API - When a county runs out of ballots, we can only terminate single county audits ][pr66]
 - [API - (phantom-record) add ballotType to State report][pr68]
 
 ## 2.0.1 - Bugfix release
@@ -113,4 +117,5 @@ This is [FreeAndFair's most recent tag][1.1.0.3].
 [pr62]: https://github.com/democracyworks/ColoradoRLA/pull/62
 [pr63]: https://github.com/democracyworks/ColoradoRLA/pull/63
 [pr64]: https://github.com/democracyworks/ColoradoRLA/pull/64
+[pr66]: https://github.com/democracyworks/ColoradoRLA/pull/66
 [pr68]: https://github.com/democracyworks/ColoradoRLA/pull/68
