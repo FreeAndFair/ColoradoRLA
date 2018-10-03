@@ -14,7 +14,6 @@ package us.freeandfair.corla.controller;
 import java.math.BigDecimal;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -228,6 +227,8 @@ public final class ComparisonAuditController {
         info.setACVR(the_audit_cvr);
         final int new_count = audit(cdb, info, true);
         cdb.addAuditedBallot();
+        // there could be a problem here, maybe the cdb counts for all contests
+        // and that is good enough??
         cdb.setAuditedSampleCount(cdb.auditedSampleCount() + new_count);
       } else {
         // the record has been audited before, so we need to "unaudit" it
@@ -315,21 +316,22 @@ public final class ComparisonAuditController {
    * @param cdb The county dashboard to update.
    * @param round The round to update.
    */
-  // FIXME should be private
-  public static void updateRound(final CountyDashboard cdb,
+  private static void updateRound(final CountyDashboard cdb,
                                  final Round round) {
     for (final Long cvrID : new HashSet<>(round.auditSubsequence())) {
       final Map<String, AuditReason> auditReasons = new HashMap<>();
       final Set<AuditReason> discrepancies = new HashSet<>();
       final Set<AuditReason> disagreements = new HashSet<>();
-      CVRAuditInfo cvrai = Persistence.getByID(cvrID, CVRAuditInfo.class);
 
+      // FIXME extract-fn: findOrCreate
+      CVRAuditInfo cvrai = Persistence.getByID(cvrID, CVRAuditInfo.class);
       if (cvrai == null) {
-        // create it if it doesn't exist
         cvrai = new CVRAuditInfo(Persistence.getByID(cvrID, CastVoteRecord.class));
-        cvrai.setMultiplicity(Collections.frequency(round.auditSubsequence(), cvrID));
-        Persistence.saveOrUpdate(cvrai);
-      } else if (cvrai.acvr() != null) {
+      }
+      // extract-fn
+
+      if (cvrai.acvr() != null) {
+        // do the thing
         // update the round statistics as necessary
 
         for (final ComparisonAudit ca : cdb.comparisonAudits()) {
@@ -338,6 +340,15 @@ public final class ComparisonAuditController {
               ca.computeDiscrepancy(cvrai.cvr(), cvrai.acvr()).isPresent()) {
             discrepancies.add(ca.auditReason());
           }
+
+          final int multiplicity = ca.multiplicity(cvrID);
+
+          for (int i = 0; i < multiplicity; i++) {
+            round.addDiscrepancy(discrepancies);
+            round.addDisagreement(disagreements);
+          }
+
+          cvrai.setMultiplicityByContest(ca.id(), multiplicity);
         }
 
         for (final CVRContestInfo ci : cvrai.acvr().contestInfo()) {
@@ -346,16 +357,9 @@ public final class ComparisonAuditController {
             disagreements.add(reason);
           }
         }
-
-        final int multiplicity = Collections.frequency(round.auditSubsequence(),
-                                                       cvrID);
-        for (int i = 0; i < multiplicity; i++) {
-          round.addDiscrepancy(discrepancies);
-          round.addDisagreement(disagreements);
-        }
-
-        cvrai.setMultiplicity(cvrai.multiplicity() + multiplicity);
       }
+
+      Persistence.saveOrUpdate(cvrai);
     }
   }
 
@@ -380,6 +384,7 @@ public final class ComparisonAuditController {
     final Set<AuditReason> disagreements = new HashSet<>();
     final CastVoteRecord cvr_under_audit = auditInfo.cvr();
     final CastVoteRecord audit_cvr = auditInfo.acvr();
+    int totalCount = 0;
 
     for (final CVRContestInfo ci : audit_cvr.contestInfo()) {
       if (ci.consensus() == ConsensusValue.NO) {
@@ -387,34 +392,40 @@ public final class ComparisonAuditController {
       }
     }
 
-    final int audit_count = auditInfo.multiplicity() - auditInfo.counted();
-
     for (final ComparisonAudit ca : cdb.comparisonAudits()) {
+      // FIXME extract-fn: multiplicityFu
+      final int multiplicity = ca.multiplicity(auditInfo.cvr().id());
+      final int auditCount = multiplicity - auditInfo.getCountByContest(ca.id());
+      totalCount += auditCount;
 
+      auditInfo.setMultiplicityByContest(ca.id(), multiplicity);
+      auditInfo.setCountByContest(ca.id(), multiplicity);
+
+      // FIXME extract-fn: discrepancyFu
       final OptionalInt discrepancy = ca.computeDiscrepancy(cvr_under_audit, audit_cvr);
-
       if (discrepancy.isPresent()) {
-        for (int i = 0; i < audit_count; i++) {
+        for (int i = 0; i < auditCount; i++) {
           ca.recordDiscrepancy(auditInfo, discrepancy.getAsInt());
         }
         discrepancies.add(ca.auditReason());
       }
 
+      // FIXME extract-fn: disagreementFu
       // NOTE: this may or may not be correct, we're not sure
       if (contest_disagreements.contains(ca.contestResult().getContestName())) {
-        for (int i = 0; i < audit_count; i++) {
+        for (int i = 0; i < auditCount; i++) {
           ca.recordDisagreement(auditInfo);
         }
         disagreements.add(ca.auditReason());
       }
 
-      ca.signalSampleAudited(audit_count, cvr_under_audit.id());
+      ca.signalSampleAudited(auditCount, cvr_under_audit.id());
       Persistence.saveOrUpdate(ca);
     }
 
+    // todo does this need to be in the loop?
     auditInfo.setDiscrepancy(discrepancies);
     auditInfo.setDisagreement(disagreements);
-    auditInfo.setCounted(auditInfo.multiplicity());
     Persistence.saveOrUpdate(auditInfo);
 
     if (updateCounters) {
@@ -422,7 +433,7 @@ public final class ComparisonAuditController {
       cdb.addDisagreement(disagreements);
     }
 
-    return audit_count;
+    return totalCount;
   }
 
   /**
@@ -434,14 +445,13 @@ public final class ComparisonAuditController {
    * @param the_info The CVRAuditInfo to unaudit.
    */
   @SuppressWarnings("PMD.NPathComplexity")
-  private static int unaudit(final CountyDashboard the_cdb,
-                             final CVRAuditInfo the_info) {
+  private static int unaudit(final CountyDashboard the_cdb, final CVRAuditInfo the_info) {
     final Set<String> contest_disagreements = new HashSet<>();
     final Set<AuditReason> discrepancies = new HashSet<>();
     final Set<AuditReason> disagreements = new HashSet<>();
     final CastVoteRecord cvr_under_audit = the_info.cvr();
     final CastVoteRecord audit_cvr = the_info.acvr();
-    final int result = the_info.counted();
+    final int result = the_info.totalCounts();
 
     for (final CVRContestInfo ci : audit_cvr.contestInfo()) {
       if (ci.consensus() == ConsensusValue.NO) {
@@ -470,7 +480,7 @@ public final class ComparisonAuditController {
 
     the_info.setDisagreement(null);
     the_info.setDiscrepancy(null);
-    the_info.setCounted(0);
+    the_info.resetCounted();
     Persistence.saveOrUpdate(the_info);
 
     the_cdb.removeDiscrepancy(discrepancies);

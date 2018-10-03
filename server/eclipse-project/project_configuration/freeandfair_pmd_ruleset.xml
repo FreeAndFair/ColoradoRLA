@@ -14,6 +14,7 @@ The Free &amp; Fair ruleset checks Java code for possible issues.
   <rule ref="rulesets/java/codesize.xml"/>
   <rule ref="rulesets/java/comments.xml"/>
   <rule ref="rulesets/java/controversial.xml">
+    <exclude name="AtLeastOneConstructor"/>
     <exclude name="AvoidFinalLocalVariable"/>
     <exclude name="DataflowAnomalyAnalysis"/>
     <exclude name="OnlyOneReturn"/>

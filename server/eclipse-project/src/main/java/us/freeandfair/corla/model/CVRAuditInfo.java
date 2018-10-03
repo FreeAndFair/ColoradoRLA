@@ -15,6 +15,8 @@ import static us.freeandfair.corla.util.EqualsHashcodeHelper.nullableEquals;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Cacheable;
@@ -29,6 +31,7 @@ import javax.persistence.Table;
 import javax.persistence.Version;
 
 import us.freeandfair.corla.persistence.AuditReasonSetConverter;
+import us.freeandfair.corla.persistence.LongIntegerMapConverter;
 import us.freeandfair.corla.persistence.PersistentEntity;
 
 /**
@@ -75,18 +78,19 @@ public class CVRAuditInfo implements Comparable<CVRAuditInfo>,
   private CastVoteRecord my_acvr;
 
   /**
-   * The number of times this CVRAuditInfo appears in the audit
-   * sequence.
+   * The number of times this auditInfo's CVR appears in the selections of
+   * ComparisonAudits
+   * {Long ComparisonAuditId: Integer count}
    */
-  @Column(nullable = false)
-  private Integer my_multiplicity = 1;
+  @Convert(converter = LongIntegerMapConverter.class)
+  private Map<Long,Integer> multiplicity_by_contest = new HashMap<>();
 
   /**
-   * The number of times this CVRAuditInfo has been considered
-   * in the audit calculations.
+   * The number of times this CVRAuditInfo has been counted/sampled in each
+   * ComparisonAudit
    */
-  @Column(nullable = false)
-  private Integer my_counted = 0;
+  @Convert(converter = LongIntegerMapConverter.class)
+  private Map<Long,Integer> count_by_contest = new HashMap<>();
 
   /**
    * The number of discrepancies found in the audit so far.
@@ -168,28 +172,13 @@ public class CVRAuditInfo implements Comparable<CVRAuditInfo>,
   }
 
   /**
-   * @return the number of times this record appears in the audit
-   * sequence.
-   */
-  public int multiplicity() {
-    return my_multiplicity;
-  }
-
-  /**
-   * Sets the number of times this record appears in the audit sequence.
+   * Sets the number of times this record appears in one contest.
    *
-   * @param the_multiplicity The new value.
+   * @param comparisonAuditId.
+   * @param count.
    */
-  public void setMultiplicity(final int the_multiplicity) {
-    my_multiplicity = the_multiplicity;
-  }
-
-  /**
-   * @return the number of times this record has been counted in
-   * the audit calculations.
-   */
-  public int counted() {
-    return my_counted;
+  public void setMultiplicityByContest (final Long comparisonAuditId, final Integer count) {
+    this.multiplicity_by_contest.put(comparisonAuditId, count);
   }
 
   /**
@@ -198,8 +187,29 @@ public class CVRAuditInfo implements Comparable<CVRAuditInfo>,
    *
    * @param the_counted The new value.
    */
-  public void setCounted(final int the_counted) {
-    my_counted = the_counted;
+  public void setCountByContest (final Long comparisonAuditId, final Integer count) {
+    this.count_by_contest.put(comparisonAuditId, count);
+  }
+
+  /**
+   * get the number of times this cvr has been counted per contest
+   **/
+  public int getCountByContest(final Long comparisonAuditId) {
+    return this.count_by_contest.getOrDefault(comparisonAuditId, 0);
+  }
+
+  /**
+   * how many times has this been counted over all contests?
+   */
+  public int totalCounts() {
+    return this.count_by_contest.values().stream().mapToInt(e -> e).sum();
+  }
+
+  /**
+   * clear record of counts per contest, for unauditing.
+   */
+  public void resetCounted() {
+    this.count_by_contest.clear();
   }
 
   /**
