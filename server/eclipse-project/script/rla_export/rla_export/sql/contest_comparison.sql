@@ -14,7 +14,6 @@ SELECT
    cn.name AS contest_name, 
    cvr_s.imprinted_id,
    cvr_s.ballot_type, 
-   cai.counted,
    SUBSTRING(cci.choices, 2, LENGTH(cci.choices) - 2) AS choice_per_voting_computer,
    SUBSTRING(cci_a.choices, 2, LENGTH(cci_a.choices) - 2) AS audit_board_selection,
    cci_a.consensus,
@@ -41,8 +40,6 @@ FROM
    ON cci.contest_id = cn.id
  LEFT JOIN county AS cty
    ON cn.county_id = cty.id
-
-WHERE cai.counted <> 0 
 
 ORDER BY county_name, contest_name
 ;
