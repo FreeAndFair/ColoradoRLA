@@ -1,6 +1,6 @@
 -- For each contest, and for each cast vote record in the random sequence
 -- (with duplicates) for which the Audit Board has submitted information, and which 
--- affects the contest in question,
+-- covers the contest in question,
 -- original cvr info, audit board interp info.
 -- note that the random sequence index (includes dupes) is contest_audit_info.index
 -- cvr_contest_info.index is the index of the *contest* on the ballot
@@ -15,10 +15,10 @@ SELECT
    cvr_s.imprinted_id,
    cvr_s.ballot_type, 
    cai.counted,
-   cci.choices AS choice_per_voting_computer, 
-   cci_a.choices AS choice_per_audit_board,
+   SUBSTRING(cci.choices, 2, LENGTH(cci.choices) - 2) AS choice_per_voting_computer,
+   SUBSTRING(cci_a.choices, 2, LENGTH(cci_a.choices) - 2) AS audit_board_selection,
    cci_a.consensus,
-   cvr_s.record_type,
+   LOWER(cvr_s.record_type) as record_type,
    cci_a.comment AS audit_board_comment,
    cvr_a.timestamp,
    cai.cvr_id
