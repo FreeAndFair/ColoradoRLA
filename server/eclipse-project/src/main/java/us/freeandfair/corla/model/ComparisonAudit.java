@@ -656,6 +656,13 @@ public class ComparisonAudit implements PersistentEntity {
     return contestResult().getContestCVRIds().contains(cvrId);
   }
 
+  /** calculate the number of times the given cvrId appears in the selection
+   * (across all rounds)
+   **/
+  public int multiplicity(final Long cvrId) {
+    return Collections.frequency(contestResult().getContestCVRIds(), cvrId);
+  }
+
   /**
    * Records the specified discrepancy. If the discrepancy is for this Contest
    * but from a CVR/ballot that was not selected for this Contest (selected for
