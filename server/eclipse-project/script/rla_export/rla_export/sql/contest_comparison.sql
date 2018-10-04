@@ -1,6 +1,6 @@
 -- For each contest, and for each cast vote record in the random sequence
 -- (with duplicates) for which the Audit Board has submitted information, and which 
--- affects the contest in question,
+-- covers the contest in question,
 -- original cvr info, audit board interp info.
 -- note that the random sequence index (includes dupes) is contest_audit_info.index
 -- cvr_contest_info.index is the index of the *contest* on the ballot
