@@ -8,7 +8,7 @@ function cleanup {
   echo tail "${SERVER_DIR}"/target/server.stdout
   echo tail credentials.stdout
   echo tail server_test.stdout
-  echo "If you're done with the server: pkill -f java.-jar.target/colorado_rla"
+  echo "If you're done with the server: pkill -f java.-jar.target/corla-server"
   echo "If this script doesn't exit now, kill it from the keyboard. FIXME."
 }
 trap cleanup EXIT
@@ -31,7 +31,7 @@ export SQL_DIR=${SERVER_DIR}/script/rla_export/rla_export/sql
 
 cd "${SERVER_DIR}"
 
-pkill -f java.-jar.target/colorado_rla || true
+pkill -f java.-jar.target/corla-server || true
 dropdb corla || true
 createdb -O corla corla
 
@@ -40,7 +40,7 @@ mvn package > target/mvn.stdout
 
 # Surprising how kludgey this seems to be https://stackoverflow.com/a/45657043/507544
 version=$(sed < pom.xml '2 s/xmlns=".*"//g' | xmllint --xpath '/project/version/text()' - 2>/dev/null)
-jar=target/colorado_rla-$version-shaded.jar
+jar=target/corla-server-$version-shaded.jar
 echo Built $jar
 
 # for port 8887, add this argument: src/main/resources/us/freeandfair/corla/proxiable.properties
