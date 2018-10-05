@@ -10,7 +10,9 @@ with the following tags indicating the components affected:
 - `TOOLING` refers to changes to tooling that falls outside the UI or API, such
   as the RLA export.
 
-## 2.0.4 - SNAPSHOT - In development
+## 2.0.5 - SNAPSHOT - In development
+
+## 2.0.4 - Bugfix release
 
 - [API - Specify column types for map serialization][pr74]
 - [API - Show all audit board members on the affirmation sheet][pr73]
