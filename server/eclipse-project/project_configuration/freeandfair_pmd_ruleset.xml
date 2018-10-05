@@ -55,6 +55,7 @@ The Free &amp; Fair ruleset checks Java code for possible issues.
   </rule>
   <rule ref="rulesets/java/strictexception.xml"/>
   <rule ref="rulesets/java/strings.xml">
+    <exclude name="AvoidDuplicateLiterals"/>
     <exclude name="ConsecutiveAppendsShouldReuse"/>
   </rule>
   <rule ref="rulesets/java/sunsecure.xml"/>

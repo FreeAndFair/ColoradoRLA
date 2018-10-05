@@ -10,8 +10,9 @@ with the following tags indicating the components affected:
 - `TOOLING` refers to changes to tooling that falls outside the UI or API, such
   as the RLA export.
 
-## 2.0.4-SNAPSHOT - In development
+## 2.0.4 - SNAPSHOT - In development
 
+- [API - Specify column types for map serialization][pr74]
 - [API - Show all audit board members on the affirmation sheet][pr73]
 
 ## 2.0.3 - Bugfix release
@@ -127,3 +128,5 @@ This is [FreeAndFair's most recent tag][1.1.0.3].
 [pr68]: https://github.com/democracyworks/ColoradoRLA/pull/68
 [pr70]: https://github.com/democracyworks/ColoradoRLA/pull/70
 [pr73]: https://github.com/democracyworks/ColoradoRLA/pull/73
+[pr74]: https://github.com/democracyworks/ColoradoRLA/pull/74
+
