@@ -83,6 +83,7 @@ public class CVRAuditInfo implements Comparable<CVRAuditInfo>,
    * {Long ComparisonAuditId: Integer count}
    */
   @Convert(converter = LongIntegerMapConverter.class)
+  @Column(columnDefinition = "text")
   private Map<Long,Integer> multiplicity_by_contest = new HashMap<>();
 
   /**
@@ -90,6 +91,7 @@ public class CVRAuditInfo implements Comparable<CVRAuditInfo>,
    * ComparisonAudit
    */
   @Convert(converter = LongIntegerMapConverter.class)
+  @Column(columnDefinition = "text")
   private Map<Long,Integer> count_by_contest = new HashMap<>();
 
   /**
