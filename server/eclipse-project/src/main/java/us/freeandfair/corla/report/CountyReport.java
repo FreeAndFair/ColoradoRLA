@@ -789,21 +789,32 @@ public class CountyReport {
     cell.setCellStyle(standard_style);
     cell.setCellValue(AFFIRMATION_STATEMENT);
 
-    for (int i = 0; i < 2; i++) {
-      cell_number = 0;
-      row_number++;
-      row = affirmation_sheet.createRow(row_number++);
-      cell = row.createCell(cell_number++);
-      cell.setCellType(CellType.STRING);
-      cell.setCellStyle(bold_style);
-      cell.setCellValue("Audit Board Member");
+    // Use the signatories from the latest round, earlier rounds' signatories
+    // may have already had to leave.
+    //
+    // Signatories are indexed by audit board, so we can just use its size.
+    final int auditBoardCount = my_rounds.get(my_rounds.size() - 1)
+        .signatories()
+        .size();
 
-      cell_number = 0;
-      row = affirmation_sheet.createRow(row_number++);
-      cell = row.createCell(cell_number++);
-      cell.setCellType(CellType.STRING);
-      cell.setCellStyle(box_style);
-      row.setHeight((short) 800);
+    for (int boardIndex = 0; boardIndex < auditBoardCount; boardIndex++) {
+      for (int memberIndex = 0; memberIndex < 2; memberIndex++) {
+        cell_number = 0;
+        row_number++;
+        row = affirmation_sheet.createRow(row_number++);
+        cell = row.createCell(cell_number++);
+        cell.setCellType(CellType.STRING);
+        cell.setCellStyle(bold_style);
+        cell.setCellValue(
+            String.format("Audit Board %d Member", boardIndex + 1));
+
+        cell_number = 0;
+        row = affirmation_sheet.createRow(row_number++);
+        cell = row.createCell(cell_number++);
+        cell.setCellType(CellType.STRING);
+        cell.setCellStyle(box_style);
+        row.setHeight((short) 800);
+      }
     }
 
     cell_number = 0;
