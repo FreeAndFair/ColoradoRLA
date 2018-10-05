@@ -283,7 +283,10 @@ public final class BallotSelection {
     selection.domainSize = domainSize; //posterity
     selection.generatedNumbers = generatedNumbers; //posterity
 
-    LOGGER.info("randomSelection: selection= " + selection);
+    LOGGER.info(String.format("[randomSelection] selected %s samples for %s ",
+                              selection.generatedNumbers.size(),
+                              contestResult.getContestName()));
+    LOGGER.debug("randomSelection: selection= " + selection);
     // get the CVRs from the theoretical
     resolveSelection(selection);
     return selection;
