@@ -32,10 +32,10 @@ const StartStage = (props: StageProps) => {
         <div className='rla-page'>
             <h2>{ countyName } County { electionDate } { electionType }</h2>
             <div className='pt-card'>
-                Audit Board Reporting Utility for Risk-Limiting Audit
+                <strong>Audit Board Reporting Utility for Risk-Limiting Audit</strong>
             </div>
             <div className='pt-card'>
-                Click here to proceed: <span> </span>
+                <strong>Click here to proceed:</strong> <span> </span>
                 <button
                     className='pt-button pt-intent-primary'
                     onClick={ nextStage }>

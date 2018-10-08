@@ -1,0 +1,53 @@
+#!/bin/bash
+
+# Build a Colorado RLA release zip file
+
+## Ensure you have installed `xmllint`, sometimes part of `libxml2-utils`, in
+## addition to the required dependencies for building the rest of the system.
+
+set -eo pipefail
+
+PROJECT_DIR="`git rev-parse --show-toplevel`"
+CLIENT_DIR="${PROJECT_DIR}/client"
+SERVER_DIR="${PROJECT_DIR}/server/eclipse-project"
+TEST_DIR="${PROJECT_DIR}/test"
+
+version=$(sed < "${SERVER_DIR}/pom.xml" '2 s/xmlns=".*"//g' | \
+            xmllint --xpath '/project/version/text()' - 2>/dev/null)
+relname="colorado-rla-release-${version}"
+reldir="${SERVER_DIR}/target/${relname}"
+
+if [[ -d "${reldir}" ]]; then
+  echo "The release directory ${reldir} already exists."
+  echo "Please remove that directory or update the project versions before continuing."
+  exit 1
+fi
+
+### Server and setup
+
+cd "${SERVER_DIR}"
+mvn clean package
+
+mkdir -p "${reldir}"
+
+cp "target/corla-server-${version}-shaded.jar" "${reldir}/corla-server.jar"
+
+### Apache httpd
+
+cp ../deploy/corla.conf "${reldir}"
+
+### Client
+
+cd "${CLIENT_DIR}"
+npm install --no-audit
+./script/dist
+zip -r "${reldir}/corla-client.zip" dist
+
+### Test credentials
+
+cp "${TEST_DIR}/corla-test-credentials.psql" "${reldir}"
+
+### Package release
+
+cd "${SERVER_DIR}/target"
+zip -r "${SERVER_DIR}/target/${relname}.zip" "${relname}"

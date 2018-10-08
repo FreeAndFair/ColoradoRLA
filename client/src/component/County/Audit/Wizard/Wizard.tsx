@@ -15,6 +15,8 @@ interface TransitionTable {
 
 interface WizardProps {
     countyState: County.AppState;
+    currentBallotNumber: number;
+    totalBallotsForBoard: number;
 }
 
 interface WizardState {

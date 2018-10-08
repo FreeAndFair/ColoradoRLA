@@ -42,4 +42,18 @@ public class PseudoRandomNumberGeneratorTest {
         537, 197);
     Assert.assertEquals(numbers, expected);
   }
+
+  @Test()
+  public void testMinimum() {
+    final Integer min = 5;
+    final String seed = "12345678901234567890";
+    final PseudoRandomNumberGenerator gen =
+      new PseudoRandomNumberGenerator(seed, true, min, 876);
+    final List<Integer> numbers = gen.getRandomNumbers(0, 46);
+
+    final Long violations = numbers.stream().filter(n -> n < min).count();
+    // there is nothing less that the minimum
+    Assert.assertEquals((Long)violations, (Long)0L);
+
+  }
 }

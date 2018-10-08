@@ -17,6 +17,7 @@
 
         "lib": [
             "dom",
+            "es2015.promise",
             "es5",
             "es2015",
             "esnext",

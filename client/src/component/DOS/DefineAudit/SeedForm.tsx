@@ -5,6 +5,7 @@ import { EditableText } from '@blueprintjs/core';
 
 interface FormProps {
     forms: DOS.Form.Seed.Ref;
+    initSeed: string;
 }
 
 interface FormState {
@@ -13,7 +14,7 @@ interface FormState {
 
 
 class SeedForm extends React.Component<FormProps, FormState> {
-    public state = { seed: '' };
+    public state = { seed: (this.props.initSeed || '')};
 
     public render() {
         const { seed } = this.state;
@@ -22,7 +23,7 @@ class SeedForm extends React.Component<FormProps, FormState> {
 
         return (
             <label>
-                Seed
+               <strong> Seed:  </strong>
                 <EditableText
                     className='pt-input'
                     minWidth={ 64 }

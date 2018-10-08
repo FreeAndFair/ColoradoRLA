@@ -1,0 +1,6 @@
+CountyID,ScannerID,BatchID,NumBallots,StorageLocation
+GenericCounty,1,1,1000,LOC-1
+GenericCounty,2,2,1000,LOC-2
+GenericCounty,3,3,1000,LOC-3
+GenericCounty,4,4,1000,LOC-4
+GenericCounty,5,5,1000,LOC-5

@@ -8,6 +8,7 @@ import countyInfo from 'corla/selector/county/countyInfo';
 
 
 interface ContainerProps {
+    auditBoardIndex: number;
     countyInfo: CountyInfo;
     countyState: County.AppState;
     cvrsToAudit: JSON.CVR[];
@@ -28,6 +29,7 @@ class BallotListStageContainer extends React.Component<ContainerProps> {
 
 function select(countyState: County.AppState) {
     return {
+        auditBoardIndex: countyState.auditBoardIndex,
         countyInfo: countyInfo(countyState),
         countyState,
         cvrsToAudit: countyState.cvrsToAudit,

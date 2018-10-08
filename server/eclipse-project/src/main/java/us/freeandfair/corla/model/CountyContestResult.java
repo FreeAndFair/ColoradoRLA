@@ -540,6 +540,8 @@ public class CountyContestResult implements PersistentEntity, Serializable {
     my_max_margin = Integer.MIN_VALUE;
     for (final String w : my_winners) {
       if (my_losers.isEmpty()) {
+        // this could be either uncontested or tied (I think) and it means that the
+        // ContestToAudit will have an AuditType of NOT_AUDITABLE
         my_min_margin = 0;
         my_max_margin = 0;
       } else {

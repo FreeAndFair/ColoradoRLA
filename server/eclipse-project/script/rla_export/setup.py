@@ -1,13 +1,13 @@
 from setuptools import setup, find_packages
 
-
 def readme():
     with open('README.rst') as f:
         return f.read()
 
 
 setup(name='rla_export',
-      version='1.1.0.3',
+      setup_requires=['setuptools_scm'],
+      use_scm_version={"root": "../../../.."},
       description='Export data for publication and audit verification from ColoradoRLA: Software to facilitate risk-limiting post-election tabulation audits',
       long_description=readme(),
       url='https://github.com/FreeAndFair/ColoradoRLA',

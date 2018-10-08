@@ -1,6 +1,6 @@
 /*
  * Free & Fair Colorado RLA System
- * 
+ *
  * @title ColoradoRLA
  * @created Aug 8, 2017
  * @copyright 2017 Colorado Department of State
@@ -16,7 +16,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import us.freeandfair.corla.Main;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 /**
  * @description A generic Abstract State Machine (ASM).
@@ -29,57 +30,63 @@ import us.freeandfair.corla.Main;
 @SuppressWarnings("PMD.CyclomaticComplexity")
 public abstract class AbstractStateMachine implements Serializable {
   /**
+   * Class-wide logger
+   */
+  public static final Logger LOGGER =
+      LogManager.getLogger(AbstractStateMachine.class);
+
+  /**
    * The serialVersionUID.
    */
-  private static final long serialVersionUID = 1; 
-  
+  private static final long serialVersionUID = 1;
+
   /**
    * This ASM's set of states.
    */
   protected final Set<ASMState> my_states;
-  
+
   /**
    * This ASM's initial state.
    */
   protected final ASMState my_initial_state;
-  
+
   /**
    * This AMS's final states.
    */
   protected final Set<ASMState> my_final_states;
-  
+
   /**
    * This ASM's set of events.
    */
   protected final Set<ASMEvent> my_events;
-  
+
   /**
    * A map from (state, event) pairs to state.
    */
-  protected final Set<ASMTransition> my_transition_function; 
-  
+  protected final Set<ASMTransition> my_transition_function;
+
   /**
    * The relation between UI events and ASM transitions.
    */
-  protected final UIToASMEventRelation my_ui_to_asm_relation = 
+  protected final UIToASMEventRelation my_ui_to_asm_relation =
       new UIToASMEventRelation();
-  
+
   /**
    * The current state of this ASM. Initialized to the initial state
    * provided in the constructor.
    */
   protected ASMState my_current_state;
-  
+
   /**
    * The identity of this ASM. The structure of this string is child
    * class implementation dependent.
    */
   protected String my_identity;
-  
+
   /**
-   * Constructs an ASM. This constructor takes ownership of all the 
+   * Constructs an ASM. This constructor takes ownership of all the
    * Collections passed to it.
-   * 
+   *
    * @param the_states the states of the new ASM.
    * @param the_events the events of the new ASM.
    * @param the_transition_function the transition function of the new
@@ -104,21 +111,21 @@ public abstract class AbstractStateMachine implements Serializable {
     my_final_states = the_final_states;
     my_identity = the_identity;
   }
-  
+
   /**
    * @return are we in the initial state?
    */
   public boolean isInInitialState() {
     return my_current_state.equals(my_initial_state);
   }
-  
+
   /**
    * @return are we in a final state?
    */
   public boolean isInFinalState() {
     return my_final_states.contains(my_current_state);
   }
-  
+
   /**
    * @return the current state of this ASM.
    * @trace asm.current_state
@@ -126,35 +133,35 @@ public abstract class AbstractStateMachine implements Serializable {
   public ASMState currentState() {
     return my_current_state;
   }
-  
+
   /**
    * Sets the current state. This method ignores any constraints
    * imposed by the current state, and should only be used as part of
    * reconstructing an ASM at a particular state.
-   * 
+   *
    * @param the_state The new state.
    */
   protected void setCurrentState(final ASMState the_state) {
     my_current_state = the_state;
   }
-  
+
   /**
    * @return the ASM's identity, or null if this ASM is a singleton.
    */
   public String identity() {
     return my_identity;
   }
-  
+
   /**
    * Sets the ASM's identity. This method should only be used as part
    * of reconstructing an ASM at a particular state.
-   * 
+   *
    * @param the_identity The new identity.
    */
   protected void setIdentity(final String the_identity) {
     my_identity = the_identity;
   }
-  
+
   /**
    * @return the UI events enabled in this ASM.  I.e., which UI events
    * correspond to those states reachable from the current state?
@@ -168,7 +175,7 @@ public abstract class AbstractStateMachine implements Serializable {
     }
     return result;
   }
-  
+
   /**
    * @return the transitions of this ASM that are enabled. I.e., which
    * states are reachable from the current state, given any possible
@@ -184,7 +191,7 @@ public abstract class AbstractStateMachine implements Serializable {
     }
     return result;
   }
-  
+
   /**
    * Transition to the next state of this ASM given the provided
    * transition and its current state.
@@ -198,21 +205,21 @@ public abstract class AbstractStateMachine implements Serializable {
     // If we are in the right state then transition to the new state.
     if (the_transition.startStates().contains(my_current_state)) {
       my_current_state = the_transition.endState();
-      Main.LOGGER.info("ASM transition " + the_transition + " succeeded from state " +
-                       my_current_state + " for " + getClass().getSimpleName() + "/" + 
-                       my_identity);
+      LOGGER.debug("ASM transition " + the_transition + " succeeded from state " +
+                   my_current_state + " for " + getClass().getSimpleName() + "/" +
+                   my_identity);
     } else {
-      Main.LOGGER.error("ASM transition " + the_transition + 
-                        " failed from state " + my_current_state); 
-      throw new IllegalStateException("Attempted to transition ASM " + 
-                                      getClass().getName() + "/" + my_identity + 
-                                      " from " + my_current_state + 
-                                      " using transition " + 
+      LOGGER.error("ASM transition " + the_transition +
+                   " failed from state " + my_current_state);
+      throw new IllegalStateException("Attempted to transition ASM " +
+                                      getClass().getName() + "/" + my_identity +
+                                      " from " + my_current_state +
+                                      " using transition " +
                                       the_transition);
     }
     return my_current_state;
   }
-  
+
   /**
    * Transition to the next state of this ASM given the provided event
    * and its current state.
@@ -222,7 +229,7 @@ public abstract class AbstractStateMachine implements Serializable {
    */
   @SuppressWarnings("PMD.CyclomaticComplexity")
   public ASMState stepEvent(final ASMEvent the_event)
-      throws IllegalStateException {  
+      throws IllegalStateException {
     ASMState result = null;
     for (final ASMTransition t : my_transition_function) {
       if (t.startStates().contains(my_current_state) &&
@@ -232,27 +239,27 @@ public abstract class AbstractStateMachine implements Serializable {
       }
     }
     if (result == null) {
-      Main.LOGGER.error("ASM event " + the_event + 
-                        " failed from state " + my_current_state); 
-      throw new IllegalStateException("Illegal transition on ASM " + 
-                                      getClass().getSimpleName() + "/" + my_identity + 
-                                      ": (" + my_current_state + ", " + 
+      LOGGER.error("ASM event " + the_event +
+                   " failed from state " + my_current_state);
+      throw new IllegalStateException("Illegal transition on ASM " +
+                                      getClass().getSimpleName() + "/" + my_identity +
+                                      ": (" + my_current_state + ", " +
                                       the_event + ")");
     } else {
       my_current_state = result;
-      Main.LOGGER.info("ASM event " + the_event + " caused transition to " + 
-                       my_current_state + " for " + getClass().getSimpleName() + 
-                       "/" + my_identity); 
+      LOGGER.debug("ASM event " + the_event + " caused transition to " +
+                   my_current_state + " for " + getClass().getSimpleName() +
+                   "/" + my_identity);
       return result;
     }
   }
-  
+
   /**
    * Converts a list of ASMTransitionFunctions to a set of
    * ASMTransitions.
-   * 
+   *
    * @param the set of ASMTransitionFunctions.
-   * @return the set of ASMTransitions for the specified list of 
+   * @return the set of ASMTransitions for the specified list of
    * ASMTransitionFunctions.
    */
   public static Set<ASMTransition>
@@ -263,12 +270,12 @@ public abstract class AbstractStateMachine implements Serializable {
     }
     return result;
   }
-  
+
   /**
    * @return a String representation of this ASM.
    */
   public String toString() {
-    return getClass().getSimpleName() + ", identity=" + my_identity + 
+    return getClass().getSimpleName() + ", identity=" + my_identity +
            ", current_state=" + my_current_state;
   }
 }

@@ -89,13 +89,15 @@ public class SelectContestsForAudit extends AbstractDoSDashboardEndpoint {
         Main.LOGGER.error("could not get department of state dashboard");
         serverError(the_response, "Could not select contests");
       } else {
+        // unchecked contests are not posted so that which is not added, is removed.
+        dosdb.removeAuditableContestsToAudit();
         for (final ContestToAudit c : contests) {
           Main.LOGGER.info("updating contest audit status: " + c);
           dosdb.updateContestToAudit(c);
           Persistence.saveOrUpdate(dosdb);
-          my_event.set(nextEvent(dosdb));
-          ok(the_response, "Contests selected");
         }
+        my_event.set(nextEvent(dosdb));
+        ok(the_response, "Contests selected");
       }
     } catch (final JsonParseException e) {
       Main.LOGGER.error("malformed contest selection");
@@ -117,7 +119,8 @@ public class SelectContestsForAudit extends AbstractDoSDashboardEndpoint {
     final AuditInfo info = the_dosdb.auditInfo();
 
     if (info.electionDate() == null || info.electionType() == null ||
-        info.publicMeetingDate() == null || info.riskLimit() == null) {
+        info.publicMeetingDate() == null || info.riskLimit() == null ||
+        info.seed() == null || the_dosdb.contestsToAudit().isEmpty()) {
       Main.LOGGER.debug("partial audit information submitted");
       result = PARTIAL_AUDIT_INFO_EVENT;
     } else {

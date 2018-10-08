@@ -58,4 +58,11 @@ public enum AuditReason {
       return AuditSelection.AUDITED_CONTEST;
     }
   }
+
+  /**
+   * we are thinking that this was selected by DOS as a targeted contest
+   **/
+  public Boolean isTargeted() {
+    return selection() == AuditSelection.AUDITED_CONTEST;
+  }
 }

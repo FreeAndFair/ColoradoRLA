@@ -59,13 +59,13 @@ public class BallotManifestDownloadByCounty extends AbstractCountyDashboardEndpo
   @Override
   public String endpointBody(final Request the_request, final Response the_response) {
     if (validateParameters(the_request)) {
-      final Set<Integer> county_set = new HashSet<Integer>();
+      final Set<Long> county_set = new HashSet<Long>();
       for (final String s : the_request.queryParams()) {
-        county_set.add(Integer.valueOf(s));
+        county_set.add(Long.valueOf(s));
       }
       final Set<BallotManifestInfo> matches = 
           BallotManifestInfoQueries.getMatching(county_set);
-      if (matches == null) {
+      if (matches.isEmpty()) {
         serverError(the_response, "Error retrieving records from database");
       } else {
         try (OutputStream os = SparkHelper.getRaw(the_response).getOutputStream();

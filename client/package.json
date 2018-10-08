@@ -1,6 +1,6 @@
 {
     "name": "corla-client",
-    "version": "0.1.0",
+    "version": "2.0.3-SNAPSHOT",
     "description": "Browser-based client to facilitate risk-limiting audits for the State of Colorado.",
     "main": "index.js",
     "scripts": {
@@ -25,6 +25,7 @@
         "@types/moment-timezone": "^0.2.35",
         "@types/react": "^15.6.5",
         "@types/react-dom": "^15.5.6",
+        "@types/react-dropzone": "^4.2.0",
         "@types/react-redux": "^5.0.11",
         "@types/react-router-dom": "^4.0.6",
         "@types/redux-mock-store": "0.0.9",
@@ -47,6 +48,7 @@
         "react-addons-css-transition-group": "^15.6.0",
         "react-addons-test-utils": "^15.6.0",
         "react-dom": "^15.6.2",
+        "react-dropzone": "^4.2.13",
         "react-hot-loader": "^3.0.0-beta.7",
         "react-redux": "^5.0.5",
         "react-router-dom": "^4.1.1",
