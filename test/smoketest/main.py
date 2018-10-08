@@ -26,7 +26,7 @@ crtest -l "Clear Winner" -s "22345123451234512345" -p "1 17"
 # Test ballot-not-found
 crtest -C 1 -n "8 15"
 
-# Simple quick retrievals
+# Simple quick status retrievals
 crtest -E /audit-board-asm-state
 crtest -e /dos-asm-state
 
@@ -110,10 +110,8 @@ crtest -e /contest
 crtest -e /contest/id/52253
 crtest -e /contest/county?3
 crtest -E /contest/county?3 -c 3
-
-# Not working - minor missing feature:
-
-crtest -e /acvr/county/3
+crtest -e /cvr/county?3
+crtest -e /acvr/county?3
 
 TODO later:
 
@@ -124,7 +122,6 @@ TODO later:
  GET /cvr (CVRDownload)
  GET /cvr/id/:id (CVRDownloadByID)
  GET /ballot-manifest/county (BallotManifestDownloadByCounty)
- GET /cvr/county (CVRDownloadByCounty)
  GET /acvr (ACVRDownload)
  GET /contest (ContestDownload)
  GET /contest/id/:id (ContestDownloadByID)
@@ -179,7 +176,7 @@ parser.add_argument('-C, --contest', dest='contests', metavar='CONTEST', action=
                     type=int,
                     help='numeric contest_index of contest to use for the given audit commands '
                     'E.g. 0 for first one from the CVRs. May be specified multiple times. '
-                    '-1 means "audit all contests')
+                    '-1 means "audit all contests. Default: 0')
 parser.add_argument('-l, --loser', dest='loser', default="UNDERVOTE",
                     help='Loser to use for -p, default "UNDERVOTE"')
 parser.add_argument('-p, --discrepancy-plan', dest='plan', default="2 17",
@@ -195,6 +192,11 @@ parser.add_argument('-n, --notfound-plan', dest='notfound_plan', default="-1 1",
 
 parser.add_argument('-R, --rounds', type=int, dest='rounds', default=-1,
                     help='Set maximum number of rounds. Default is all rounds.')
+
+parser.add_argument('-B, --ballot-polling-tally', dest='ballot_polling_tally',
+                    help='ballot polling tally results filename, for creating ACVRs.')
+parser.add_argument('-N, --num_samples', type=int, dest='num_samples', default=-1,
+                    help='Set maximum number of samples. Default is a full round.')
 
 parser.add_argument('-r, --risk-limit', type=float, dest='risk_limit', default=0.1,
                     help='risk limit, e.g. 0.1')
@@ -222,6 +224,8 @@ parser.add_argument('--download-file', dest='download_file', type=int, metavar='
                     # help='Just list files and download selected ones')
 parser.add_argument('-S, --check-audit-size', type=bool, dest='check_audit_size',
                     help='Check calculations of audit size. Requires rlacalc, psycopg2')
+parser.add_argument('--check-selection', dest='check_selection', action='store_true',
+                    help='Check random selection, only works for default options. Requires sampler.py')
 
 parser.add_argument('-T, --time-delay', type=float, dest='time_delay', default=0.0,
                     help='Maximum time to pause before network requests. Default 0.0. '
@@ -229,6 +233,8 @@ parser.add_argument('-T, --time-delay', type=float, dest='time_delay', default=0
 parser.add_argument('-L, --lower-time-delay', type=float, dest='lower_time_delay', default=0.0,
                     help='Minimum time to pause before network requests. Default 0.0. '
                     'Actual pauses will be uniformly distributed between this and the maximum')
+parser.add_argument('--progress-delay', type=float, dest='progress_delay', default=3.0,
+                    help='Time to pause between upload progress queries. Default 3.0.')
 
 # TODO: get rid of this and associated old code when /upload-cvr-export and /upload-cvr-export go away
 parser.add_argument('-Y, --ye-olde-upload', type=bool, dest='ye_olde_upload',
@@ -405,17 +411,20 @@ def upload_file(ac, s, import_path, filename, sha256):
     if import_path == "/import-cvr-export":
         while True:
             # wait for the verdict on the CVR export
-            r = test_endpoint_get(ac, s, "/county-dashboard")
+            r = test_endpoint_get(ac, s, "/county-dashboard", show=False)
             dashboard = r.json()
             (state, summary) = get_imported_count(dashboard)
 
-            logging.info(summary)
+            ac.logconsole.info(summary)
 
             if state not in ["CVRS_IMPORTING", "BALLOT_MANIFEST_OK_AND_CVRS_IMPORTING"]:
                 print("CVR import complete, state: %s" % state)
+                if state == 'BALLOT_MANIFEST_OK':
+                    print("Problem with CVR Import: %s" % json.dumps(dashboard['cvr_import_status'], indent=2))
+                    exit(1)
                 break
 
-            time.sleep(30)
+            time.sleep(ac.args.progress_delay)
 
 
 def download_file(ac, s, file_id, filename):
@@ -460,8 +469,10 @@ def upload_manifest(ac, s, filename, sha256):
 def get_county_cvrs(ac, county_id, s):
     "Return all cvrs uploaded by a given county"
 
-    path = x
-    r = s.get("%s/cvr/%d" % (ac.base, county_id))
+    # c.f. select from cast_vote_record where county_id = X order by cvr_number
+
+    path = "/cvr/county?%d" % county_id
+    r = s.get("%s%s" % (ac.base, path))
     if r.status_code != 200:
          print(r, "GET", path, r.text)
     cvrs = r.json()
@@ -478,38 +489,49 @@ def get_cvrs(ac, s):
     return cvrs
 
 
-def publish_ballots_to_audit(seed, cvrs):
+def publish_ballots_to_audit(ac, cvrs):
     """Return lists by county of ballots to audit.
     """
 
     import sampler
+
+    seed = ac.args.seed
 
     county_ids = set(cvr['county_id'] for cvr in cvrs)
 
     ballots_to_audit = []
     for county_id in county_ids:
         county_cvrs = sorted( (cvr for cvr in cvrs if cvr['county_id'] == county_id),
-                              key=lambda cvr: "%s-%s-%s" % (cvr['scanner_id'], cvr['batch_id'], cvr['record_id']))
+                              key=lambda cvr: cvr['cvr_number'])
         N = len(county_cvrs)
-        # n is based on auditing Regent contest.
         # TODO: perhaps calculate from margin etc
-        n = 11
+        n = 12  # matches default crtest run, Regent contest, 2 rounds, 2 dups, 10 unique ballots
+        n = 516  # arapahoe
         seed = "01234567890123456789"
 
-        _, new_list = sampler.generate_outputs(n, True, 0, N, seed, False)
+        _, new_list = sampler.generate_outputs(n, True, 1, N, seed, False)
 
-        logging.debug("Random selections, N=%d, n=%d, seed=%s: %s" %
+        ac.logconsole.info("Random selections, N=%d, n=%d, seed=%s: %s" %
                       (N, n, seed, new_list))
 
+        ac.logconsole.info("Independent cvr list, selection order. Compare with audits later on.")
+        for selection, cvrNumber in enumerate(new_list):
+            cvr = county_cvrs[cvrNumber - 1]
+            ac.logconsole.info("Selected cvr sequence %d CvrNumber %d: id: %d RecordID: %s" %
+                               (selection, cvrNumber, cvr['id'], cvr['imprinted_id']))
+
+        ac.logconsole.info("Independent list in location order, no dups")
         selected = []
         for i, cvr in enumerate(county_cvrs):
-            if i in new_list:
+            id = i + 1
+            if id in new_list:
                 cvr['record_type'] = 'AUDITOR_ENTERED'
                 selected.append(cvr)
-                logging.info("Selected cvr %d: id: %d RecordID: %s" % (i, cvr['id'], cvr['imprinted_id']))
+                ac.logconsole.info("Selected cvr %d: id: %d RecordID: %s" % (id, cvr['id'], cvr['imprinted_id']))
 
         ballots_to_audit.append([county_id, selected])
 
+        ac.logconsole.info("")
     return ballots_to_audit
 
 
@@ -573,7 +595,7 @@ def upload_files(ac, s):
     else:
         upload_file(ac, s, '/import-cvr-export', cvrfile, hash)
 
-def get_county_dashboard(ac, county_s, county_id, i=0, acvr={'id': -1}, show=True):
+def get_county_dashboard(ac, county_s, county_id, i=0, acvr={'id': -1, 'imprinted_id': '--'}, show=True):
     "Get and show useful info about /county-dashboard"
 
     r = test_endpoint_get(ac, county_s, "/county-dashboard", show=False)
@@ -583,9 +605,11 @@ def get_county_dashboard(ac, county_s, county_id, i=0, acvr={'id': -1}, show=Tru
 
     if show:
         logging.debug("county-dashboard: %s" % r.text)
-        print("Round %d, county %d, upload %d, prefix %d: aCVR %d; ballots_remaining_in_round: %d, optimistic_ballots_to_audit: %s est %s" %
-              (ac.round, county_id, total_audited, county_dashboard.get('audited_prefix_length', -1), acvr['id'],  # FIXME
-               county_dashboard['ballots_remaining_in_round'], county_dashboard['optimistic_ballots_to_audit'], county_dashboard['estimated_ballots_to_audit']))
+        print("Round %d, county %d, upload %d, prefix %d: aCVR %s; ballots_remaining_in_round: %d, optimistic_ballots_to_audit: %s est %s" %
+              (ac.round, county_id, total_audited, county_dashboard.get('audited_prefix_length', -1),
+               acvr['imprinted_id'], county_dashboard['ballots_remaining_in_round'],
+               county_dashboard['optimistic_ballots_to_audit'],
+               county_dashboard['estimated_ballots_to_audit']))
 
 
         """ Put this back in when estimated_ballots_to_audit makes sense again
@@ -649,7 +673,7 @@ def dos_start(ac):
     'Run DOS steps to start the audit, enabling county auditing to begin: contest selection, seed, etc.'
 
     if len(ac.audited_contests) <= 0:
-        print("No contests to audit, status_code = %d" % r.status_code)
+        print("No contests to audit")
         return
 
     for contest_id in ac.audited_contests:
@@ -697,26 +721,31 @@ def county_audit(ac, county_id):
     if county_dashboard['asm_state'] == "COUNTY_AUDIT_COMPLETE":
         return(True)
 
-    audit_board_set = [{"first_name": "Mary",
-                        "last_name": "Doe",
-                        "political_party": "Democrat"},
-                       {"first_name": "John",
-                        "last_name": "Doe",
-                        "political_party": "Republican"}]
+    audit_board_set = [{"first_name": "Rosalind",
+                        "last_name": "Franklin",
+                        "political_party": "Independent"},
+                       {"first_name": "Horst",
+                        "last_name": "Feistel",
+                        "political_party": "Unaffiliated"}]
 
     r = test_endpoint_get(ac, county_s, "/audit-board-asm-state")
     if ((r.json()['current_state'] == "WAITING_FOR_ROUND_START_NO_AUDIT_BOARD") or
         (r.json()['current_state'] == "ROUND_IN_PROGRESS_NO_AUDIT_BOARD")):
         r = test_endpoint_json(ac, county_s, "/audit-board-sign-in", audit_board_set)
 
-    # Print this tool's notion of what should be audited, based on seed etc.
-    # for auditing the audit.
-    # TODO or FIXME - doesn't yet match "ballots_to_audit" from the dashboard
-    # logging.log(5, json.dumps(publish_ballots_to_audit(ac.args.seed, cvrs), indent=2))
+    round = len(county_dashboard['rounds'])
+
+    if ac.args.check_selection and round < 2:
+        # To enable comparison of this tool's notion of what should be audited,
+        # based on seed etc. with selection with server, later on.
+
+        cvrs = get_county_cvrs(ac, county_id, county_s)
+        # To print full list if really necessary
+        # print('\n'.join(["%s\t%s\t%s" % (cvr['cvr_number'], cvr['id'], cvr['imprinted_id']) for cvr in cvrs]))
+        logging.log(5, json.dumps(publish_ballots_to_audit(ac, cvrs), indent=2))
 
     # r = test_endpoint_get(ac, county_s, "/audit-board-asm-state")
 
-    round = len(county_dashboard['rounds'])
     r = test_endpoint_get(ac, county_s, "/cvr-to-audit-download?round=%d" % round)
     r = test_endpoint_get(ac, county_s, "/cvr-to-audit-list?round=%d" % round)
     selected = r.json()
@@ -733,7 +762,7 @@ def county_audit(ac, county_id):
     if len(selected) < 1:
         print("No ballots_to_audit")
 
-    for i in range(len(selected)):
+    for i in range(min(len(selected), ac.args.num_samples)):
         if ac.args.debuglevel >= logging.INFO:
             r = test_endpoint_get(ac, ac.state_s, "/dos-dashboard", show=False)
             discrepancies = ""
@@ -752,6 +781,8 @@ def county_audit(ac, county_id):
 
         r = test_endpoint_get(ac, county_s, "/cvr/id/%d" % selected[i]['db_id'], show=False)
         acvr = r.json()
+        if ac.args.ballot_polling_tally:
+            acvr['contest_info'] = ballot_polling_sample(acvr['contest_info'], ac.args.ballot_polling_tally)
         logging.debug("Original CVR: %s" % json.dumps(acvr))
         acvr['record_type'] = 'AUDITOR_ENTERED'
 
@@ -771,6 +802,9 @@ def county_audit(ac, county_id):
                     if ci['choices'] != ac.false_choices:
                         message = "Discrepancy: %s in %d, was %s" % (ac.false_choices, ac.audited_contests[0], ci['choices'])
                         ci['choices'] = ac.false_choices
+                        ci['comments'] = message
+                        print("acvr prior: %s" % acvr)
+                        print("adding comment for %d" % acvr['id'])
                     break
             print(message)
 
@@ -802,6 +836,34 @@ def county_audit(ac, county_id):
 
     return(remaining)
 
+def ballot_polling_sample(contest_info, ballot_polling_tally):
+    """Return ACVR with distribution matching given json file
+    # contest_info sample: [{u'choices': [u'DARRYL W. PERRY'], u'contest': 25829}]
+    # FIXME: Only works for one contest. Figure out how to match up contest ids with contests
+    # Hmmm - they should be in order....
+    """
+
+    import numpy as np
+    logging.warning("ACVR Contest Info: %s" % contest_info)
+
+    # TODO: Ensure tally file has been read and parsed
+    # Pick a random sample from it for each contest - how do we know which?
+    # Hard code 2016 president for now
+    """
+    PRESIDENT OF THE UNITED STATES	700	371	0	329	HILLARY CLINTON
+    PRESIDENT OF THE UNITED STATES	563	373	0	190	DONALD TRUMP
+    PRESIDENT OF THE UNITED STATES	440	208	0	232	BERNIE SANDERS
+    PRESIDENT OF THE UNITED STATES	95	56	0	39	TED CRUZ
+    PRESIDENT OF THE UNITED STATES	84	38	0	46	JOHN R. KASICH
+    PRESIDENT OF THE UNITED STATES	20	12	0	8	BEN CARSON
+    ...
+    """
+    choices = [u'HILLARY CLINTON', u'DONALD TRUMP', u'BERNIE SANDERS', u'TED CRUZ', u'JOHN R. KASICH', u'BEN CARSON', u'other']
+    counts = np.array([700, 563, 440, 95, 84, 20, 7+5+3+3+3+3+2+2+2+1+1+1+1+1])
+    probabilities = counts / sum(counts)
+    contest_info[0]['choices'] = [np.random.choice(choices, 1, p=probabilities)[0]]
+    print(contest_info)
+    return contest_info
 
 def download_report(ac, s, path, extension):
     "Download and save the given report, adding the given extension"
@@ -1116,7 +1178,7 @@ def main():
     contests = r.json()
 
     for i, contest in enumerate(contests):
-        print("Contest {}: vote for {votes_allowed} in {name}".format(i, **contest))
+        print("County {county_id} Contest {}: vote for {votes_allowed} in {name}".format(i, **contest))
 
     logging.log(5, "Contests: %s" % contests)
 
