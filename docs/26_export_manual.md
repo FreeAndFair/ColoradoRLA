@@ -42,11 +42,10 @@ For example, the query file ``seed.sql``, produces files ``seed.json`` and ``see
 
 Specific exports are detailed below.
 
-### tabulate.sql
+### tabulate
 
  Field | Type | _______________Meaning_______________ 
 --- | --- | ---
-county_name | Text String | Name of County
 contest_name | Text String | Name of contest 
 choice | Text String | Name of candidate or for a ballot question e.g. "Yes" or "No" 
 votes | Integer | Number of votes recorded for the given choice in the given contest in the given County
