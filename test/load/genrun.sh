@@ -69,7 +69,7 @@ counties=( Adams
 
 # num ballots, margin for county, rest are margins for state-wide
 # remember to calculate margin by multiplying counties by ballot count for a total
-small=(50 30 30 30);
+small=(50 45 45 45);
 
 function import() {
     trap exit INT #easy quit
@@ -91,6 +91,11 @@ function import() {
 function init() {
     echo "defining audit partially";
     ../smoketest/main.py dos_init;
+}
+
+function reset() {
+    echo "deleting all data";
+    ../smoketest/main.py reset;
 }
 
 # start audit by starting round 1
@@ -146,6 +151,9 @@ function main() {
     case "$subcommand" in
         import)
             import
+            ;;
+        reset)
+            reset
             ;;
         init)
             init
