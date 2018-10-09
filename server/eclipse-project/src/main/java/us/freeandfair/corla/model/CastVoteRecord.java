@@ -67,7 +67,8 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
                    @Index(name = "idx_cvr_county_sequence_number_type",
                           columnList = "county_id, sequence_number, record_type"),
                    @Index(name = "idx_cvr_county_imprinted_id_type",
-                          columnList = "county_id, imprinted_id, record_type")})
+                          columnList = "county_id, imprinted_id, record_type"),
+                   @Index(name = "idx_cvr_uri", columnList = "uri")})
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
@@ -155,6 +156,29 @@ public class CastVoteRecord implements Comparable<CastVoteRecord>,
   private String my_imprinted_id;
 
   /**
+   * The countyid + imprinted ID for fast selection
+   */
+  private String uri;
+
+  /** get the uri for fast selection **/
+  public String getUri() {
+    return this.uri;
+  }
+
+  /** set the uri for fast selection **/
+  public void setUri() {
+    // don't pollute the index with acvrs
+    if (recordType() == RecordType.UPLOADED) {
+      this.uri = String.format("%s:%s-%s-%s",
+                               countyID(),
+                               scannerID(),
+                               batchID(),
+                               recordID());
+    }
+  }
+
+
+  /**
    * The ballot style of this cast vote record.
    */
   @Column(updatable = false, nullable = false)
@@ -169,6 +193,7 @@ public class CastVoteRecord implements Comparable<CastVoteRecord>,
                    joinColumns = @JoinColumn(name = "cvr_id",
                                              referencedColumnName = "my_id"))
   private List<CVRContestInfo> my_contest_info = new ArrayList<>();
+
 
   /**
    * A transient flag that indicates whether this CVR was audited; this is only
@@ -227,6 +252,7 @@ public class CastVoteRecord implements Comparable<CastVoteRecord>,
     if (the_contest_info != null) {
       my_contest_info.addAll(the_contest_info);
     }
+    setUri();
   }
 
   /**

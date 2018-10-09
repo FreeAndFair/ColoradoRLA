@@ -68,6 +68,20 @@ public final class BallotSelection {
      * A ballot's position as an offest
      */
     public Integer ballotPosition;
+
+    /**
+     * combine attributes to form an imprintedID
+     */
+    public String imprintedId() {
+      return String.format("%s-%s-%s", scannerId, batchId, ballotPosition);
+    }
+
+    /**
+     * combine attributes to form a uri for fast selection
+     */
+    public String uri() {
+      return String.format("%s:%s-%s-%s", countyId, scannerId, batchId, ballotPosition);
+    }
   }
 
   /**
@@ -363,9 +377,8 @@ public final class BallotSelection {
   public static Selection resolveSelection(final Selection selection) {
     selection.allSegments().forEach(segment -> {
         final List<CastVoteRecord> cvrs =
-          dedupePhantomBallots(segment.tributes.stream()
-                               .map(CastVoteRecordQueries::atPosition)
-                               .collect(Collectors.toList()));
+          dedupePhantomBallots(CastVoteRecordQueries.atPosition(segment.tributes));
+
         segment.addCvrs(cvrs);
         segment.addCvrIds(cvrs); // keep raw data separate
       });
