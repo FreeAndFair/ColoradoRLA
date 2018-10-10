@@ -5,12 +5,18 @@ declare namespace DOS {
         auditTypes: ContestAuditTypes;
         contests: DOS.Contests;
         countyStatus: DOS.CountyStatuses;
+        canonicalContests?: DOS.CanonicalContests;
         discrepancyCounts?: DOS.DiscrepancyCounts;
+        estimatedBallotsToAudit?: DOS.EstimatedBallotsToAudit;
         election?: Election;
         publicMeetingDate?: Date;
         riskLimit?: number;
         seed?: string;
         type: 'DOS';
+    }
+
+    interface EstimatedBallotsToAudit {
+        [contestId: number]: number;
     }
 
     interface DiscrepancyCount {
@@ -27,6 +33,10 @@ declare namespace DOS {
     interface DiscrepancyCount {
         // The index type is really limited to `DiscrepancyType`.
         [type: string]: number;
+    }
+
+    interface CanonicalContests {
+        [countyId: string]: string[]
     }
 
     interface CountyStatuses {
@@ -77,6 +87,7 @@ declare namespace DOS {
         election: Election;
         publicMeetingDate: Date;
         riskLimit: number;
+        uploadFile: any;
     }
 
     namespace Form {
@@ -86,6 +97,7 @@ declare namespace DOS {
                 electionTypeForm?: DOS.Form.ElectionType.Form;
                 publicMeetingDateForm?: DOS.Form.PublicMeetingDate.Form;
                 riskLimit?: DOS.Form.RiskLimit.Form;
+                uploadFile?: DOS.Form.UploadFile.Form;
             }
         }
 
@@ -113,6 +125,12 @@ declare namespace DOS {
                 ballotPollingLimit: number;
                 comparisonField: string;
                 comparisonLimit: number;
+            }
+        }
+
+        namespace UploadFile {
+            interface Form {
+                files: Array<Object>;
             }
         }
 
@@ -146,6 +164,20 @@ declare namespace DOS {
 
             interface FormData {
                 [contestId: number]: ContestStatus;
+            }
+        }
+
+        namespace StandardizeContests {
+            interface Ref {
+                standardizeContestsForm?: DOS.Form.StandardizeContests.FormData;
+            }
+
+            interface ContestName {
+                name: string;
+            }
+
+            interface FormData {
+                [contestId: number]: ContestName;
             }
         }
     }

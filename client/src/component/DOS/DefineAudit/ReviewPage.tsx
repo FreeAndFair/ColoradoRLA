@@ -1,7 +1,12 @@
 import * as React from 'react';
 
+import * as _ from 'lodash';
+
 import Nav from '../Nav';
 
+import counties from 'corla/data/counties';
+
+import { format } from 'corla/date';
 
 const Breadcrumb = () => (
     <ul className='pt-breadcrumbs'>
@@ -23,11 +28,65 @@ const Breadcrumb = () => (
     </ul>
 );
 
+function formatReason(reason: AuditReason): string {
+    if (reason === 'STATE_WIDE_CONTEST') {
+        return 'State Contest';
+    }
+
+    return 'County Contest';
+}
+
+interface SelectedContestsProps {
+    auditedContests: DOS.AuditedContests;
+    contests: DOS.Contests;
+}
+
+const SelectedContests = (props: SelectedContestsProps) => {
+    const { auditedContests, contests } = props;
+
+    const rows = _.map(props.auditedContests, audited => {
+        const contest = contests[audited.id];
+        const countyName = counties[contest.countyId].name;
+
+        return (
+            <tr key={ contest.id }>
+                <td>{ countyName }</td>
+                <td>{ contest.name }</td>
+                <td>{ formatReason(audited.reason) }</td>
+            </tr>
+        );
+    });
+
+    return (
+        <div className='pt-card'>
+            <h3>Selected Contests</h3>
+            <div className='pt-card'>
+                <table className='pt-table pt-bordered pt-condensed'>
+                    <thead>
+                        <tr>
+                            <th>County</th>
+                            <th>Name</th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        { rows }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+};
+
 interface AuditReviewProps {
     back: OnClick;
     publishBallotsToAudit: OnClick;
     saveAndDone: OnClick;
     dosState: DOS.AppState;
+}
+
+function riskLimitPercent(dosState: DOS.AppState) {
+    return (dosState.riskLimit! * 100).toFixed(2);
 }
 
 const AuditReview = (props: AuditReviewProps) => {
@@ -37,8 +96,6 @@ const AuditReview = (props: AuditReviewProps) => {
         publishBallotsToAudit();
         saveAndDone();
     };
-
-    const riskLimitPercent = dosState.riskLimit! * 100;
 
     const disableLaunchButton = !dosState.seed;
 
@@ -58,8 +115,20 @@ const AuditReview = (props: AuditReviewProps) => {
                 <table className='pt-table'>
                     <tbody>
                         <tr>
+                            <td>Public Meeting Date:</td>
+                            <td>{ dosState.publicMeetingDate && format(dosState.publicMeetingDate) }</td>
+                        </tr>
+                        <tr>
+                            <td>Election Date:</td>
+                            <td>{ dosState.election && dosState.election.date && format(dosState.election.date) }</td>
+                        </tr>
+                        <tr>
+                            <td>Election Type:</td>
+                            <td>{ dosState.election && dosState.election.type }</td>
+                        </tr>
+                        <tr>
                             <td>Risk Limit:</td>
-                            <td>{ riskLimitPercent }%</td>
+                            <td>{ riskLimitPercent(dosState) }%</td>
                         </tr>
                         <tr>
                             <td>Random Number Generator Seed:</td>
@@ -68,13 +137,15 @@ const AuditReview = (props: AuditReviewProps) => {
                     </tbody>
                 </table>
             </div>
+            <SelectedContests auditedContests={dosState.auditedContests}
+                              contests={dosState.contests} />
             <div>
-                <button onClick={ back } className='pt-button'>
+                <button onClick={ back } className='pt-button pt-breadcrumb'>
                     Back
                 </button>
                 <button disabled={ disableLaunchButton }
                         onClick={ launch }
-                        className='pt-button pt-intent-primary'>
+                        className='pt-button pt-intent-primary pt-breadcrumb'>
                     Launch Audit
                 </button>
             </div>

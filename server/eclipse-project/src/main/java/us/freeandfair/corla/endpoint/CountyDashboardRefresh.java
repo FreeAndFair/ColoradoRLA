@@ -67,7 +67,7 @@ public class CountyDashboardRefresh extends AbstractCountyDashboardEndpoint {
   public String endpointBody(final Request the_request, final Response the_response) {
     try {
       final County county = Main.authentication().authenticatedCounty(the_request);
-          
+
       okJSON(the_response, 
              Main.GSON.toJson(CountyDashboardRefreshResponse.createResponse
                               (Persistence.getByID(county.id(), CountyDashboard.class))));

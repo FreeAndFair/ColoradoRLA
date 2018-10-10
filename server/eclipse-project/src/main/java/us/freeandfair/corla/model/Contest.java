@@ -83,7 +83,7 @@ public class Contest implements PersistentEntity, Serializable {
   /**
    * The contest name.
    */
-  @Column(name = "name", updatable = false, nullable = false)
+  @Column(name = "name", nullable = false)
   private String my_name;
 
   /**

@@ -105,7 +105,16 @@ public class ContestToAudit implements Serializable {
   public AuditType audit() {
     return my_audit;
   }
-  
+
+  /**
+   * @return boolean
+   */
+  public Boolean isAuditable() {
+    // should match SelectContestsPageContainer.select
+    return my_audit != AuditType.HAND_COUNT
+        && my_audit != AuditType.NOT_AUDITABLE;
+  }
+
   /**
    * @return a String representation of this contest to audit.
    */

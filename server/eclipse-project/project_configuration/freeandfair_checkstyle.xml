@@ -15,10 +15,6 @@
     <module name="ConstantName">
       <message key="name.invalidPattern" value="Constant ''{0}'' must be named IN_ALL_UPPER_CASE_WITH_UNDERSCORES."/>
     </module>
-    <module name="MemberName">
-      <property name="format" value="^my_[a-z0-9]*(_[a-z0-9]+)*$"/>
-      <message key="name.invalidPattern" value="Instance field ''{0}'' must start with &quot;my_&quot; and contain only lowercase letters, numbers, and underscores."/>
-    </module>
     <module name="MethodName">
       <message key="name.invalidPattern" value="Method name &quot;{0}&quot; must start with a lowercase letter and contain only letters and numbers."/>
       <message key="method.name.equals.class.name" value="Method name ''{0}'' must not equal the enclosing class name."/>
@@ -32,10 +28,6 @@
     <module name="PackageName">
       <property name="format" value="^[a-z]+(\.[a-z0-9]*)*$"/>
       <message key="name.invalidPattern" value="Package name ''{0}'' must be all lower case."/>
-    </module>
-    <module name="ParameterName">
-      <property name="format" value="(^a_[a-z0-9]*(_[a-z0-9]+)*$)|(^an_[a-z0-9]*(_[a-z0-9]+)*$)|(^the_[a-z0-9]*(_[a-z0-9]+)*$)|(^some_[a-z0-9]*(_[a-z0-9]+)*$)|(^[a-z][_a-z0-9]*_[0-9]$)"/>
-      <message key="name.invalidPattern" value="Method parameter ''{0}'' must contain only lower case letters, numbers and underscores, and must either start with &quot;a_&quot;, &quot;an_&quot;, or &quot;the_&quot; or end with &quot;_X&quot; (where X is a digit)."/>
     </module>
     <module name="TypeName">
       <property name="format" value="^[A-Z][a-z0-9]*([A-Z][a-z0-9]*)*$"/>
@@ -84,11 +76,11 @@
       <property name="tokens" value="ARRAY_INIT,BNOT,DEC,DOT,INC,LNOT,UNARY_MINUS,UNARY_PLUS"/>
     </module>
     <module name="NoWhitespaceBefore">
-      <property name="tokens" value="SEMI,DOT,POST_DEC,POST_INC"/>
+      <property name="tokens" value="SEMI,POST_DEC,POST_INC"/>
     </module>
     <module name="OperatorWrap">
       <property name="option" value="eol"/>
-      <property name="tokens" value="ASSIGN,BAND,BAND_ASSIGN,BOR,BOR_ASSIGN,BSR,BSR_ASSIGN,BXOR,BXOR_ASSIGN,COLON,DIV,DIV_ASSIGN,EQUAL,GE,GT,LAND,LE,LITERAL_INSTANCEOF,LOR,LT,MINUS,MINUS_ASSIGN,MOD,MOD_ASSIGN,NOT_EQUAL,PLUS,PLUS_ASSIGN,QUESTION,SL,SL_ASSIGN,SR,SR_ASSIGN,STAR,STAR_ASSIGN"/>
+      <property name="tokens" value="ASSIGN,BAND,BAND_ASSIGN,BOR,BOR_ASSIGN,BSR,BSR_ASSIGN,BXOR,BXOR_ASSIGN,COLON,DIV,DIV_ASSIGN,EQUAL,GE,GT,LAND,LE,LITERAL_INSTANCEOF,LOR,LT,MINUS,MINUS_ASSIGN,MOD,MOD_ASSIGN,NOT_EQUAL,PLUS_ASSIGN,QUESTION,SL,SL_ASSIGN,SR,SR_ASSIGN,STAR,STAR_ASSIGN"/>
     </module>
     <module name="MethodParamPad">
       <property name="allowLineBreaks" value="true"/>
@@ -97,7 +89,6 @@
     <module name="TypecastParenPad">
       <property name="tokens" value="RPAREN,TYPECAST"/>
     </module>
-    <module name="WhitespaceAfter"/>
     <module name="WhitespaceAround"/>
     <module name="ModifierOrder"/>
     <module name="RedundantModifier"/>
@@ -118,7 +109,9 @@
     <module name="ExplicitInitialization"/>
     <module name="FallThrough"/>
     <module name="FinalLocalVariable"/>
-    <module name="HiddenField"/>
+    <module name="HiddenField">
+      <property name="tokens" value="VARIABLE_DEF"/>
+    </module>
     <module name="IllegalThrows"/>
     <module name="IllegalType">
       <property name="tokens" value="METHOD_DEF,PARAMETER_DEF,VARIABLE_DEF"/>
@@ -167,39 +160,6 @@
     </module>
     <module name="UpperEll"/>
     <module name="OuterTypeNumber"/>
-    <module name="LocalFinalVariableName">
-      <property name="format" value="^[b-z][_a-z0-9]*$|^a[a-mo-z0-9][_a-z0-9]*$|^an[a-z0-9][_a-z0-9]*|^a$|^an$"/>
-      <message key="name.invalidPattern" value="Local final variable ''{0}'' must start with a lowercase letter, contain only lowercase letters, numbers and underscores, and not start with &quot;a_&quot; or &quot;an_&quot;."/>
-    </module>
-    <module name="LocalFinalVariableName">
-      <property name="format" value="^[a-su-z][_a-z0-9]*$|^t[_a-gi-z0-9][_a-z0-9]*$|^th[_a-df-z0-9][_a-z0-9]*|the[a-z0-9][_a-z0-9]*|^t$|^th$|^the$"/>
-      <message key="name.invalidPattern" value="Local final variable ''{0}'' must start with a lowercase letter, contain only lowercase letters, numbers and underscores, and not start with &quot;the_&quot;."/>
-    </module>
-    <module name="LocalFinalVariableName">
-      <property name="format" value="^[a-rt-z][_a-z0-9]*$|^s[_a-np-z0-9][_a-z0-9]*$|^so[_a-ln-z0-9][_a-z0-9]*|som[_a-df-z0-9][_a-z0-9]*|some[a-z0-9][_a-z0-9]*|^s$|^so$|^som$|^some$"/>
-      <message key="name.invalidPattern" value="Local final variable ''{0}'' must start with a lowercase letter, contain only lowercase letters, numbers and underscores, and not start with &quot;some_&quot;."/>
-    </module>
-    <module name="LocalFinalVariableName">
-      <property name="format" value="^[a-ln-z][_a-z0-9]*$|^m[_a-xz0-9][_a-z0-9]*$|^m$"/>
-      <message key="name.invalidPattern" value="Local final variable ''{0}'' must start with a lowercase letter, contain only lowercase letters, numbers and underscores, and not start with &quot;my_&quot;."/>
-    </module>
-    <module name="LocalVariableName">
-      <property name="format" value="^[b-z][_a-zA-Z0-9]*$|^a[a-mo-zA-Z0-9][_a-zA-Z0-9]*$|^an[a-zA-Z0-9][_a-zA-Z0-9]*|^a$|^an$"/>
-      <property name="tokens" value="VARIABLE_DEF"/>
-      <message key="name.invalidPattern" value="Local variable ''{0}'' must start with a lowercase letter, contain only lowercase letters, numbers and underscores, and not start with &quot;a_&quot; or &quot;an_&quot;."/>
-    </module>
-    <module name="LocalVariableName">
-      <property name="format" value="^[a-su-z][_a-zA-Z0-9]*$|^t[a-gi-zA-Z0-9][_a-zA-Z0-9]*$|^th[a-df-zA-Z0-9][_a-zA-Z0-9]*|the[a-zA-Z0-9][_a-zA-Z0-9]*|^t$|^th$|^the$ "/>
-      <message key="name.invalidPattern" value="Local variable ''{0}'' must start with a lowercase letter, contain only lowercase letters, numbers and underscores, and not start with &quot;the_&quot;."/>
-    </module>
-    <module name="LocalVariableName">
-      <property name="format" value="^[a-rt-z][_a-zA-Z0-9]*$|^s[_a-np-zA-Z0-9][_a-zA-Z0-9]*$|^so[_a-ln-zA-Z0-9][_a-zA-Z0-9]*|som[_a-df-zA-Z0-9][_a-zA-Z0-9]*|some[a-zA-Z0-9][_a-zA-Z0-9]*|^s$|^so$|^som$|^some$ "/>
-      <message key="name.invalidPattern" value="Local variable ''{0}'' must start with a lowercase letter, contain only lowercase letters, numbers and underscores, and not start with &quot;some_&quot;."/>
-    </module>
-    <module name="LocalVariableName">
-      <property name="format" value="^[a-ln-z][_a-z0-9]*$|^m[_a-xz0-9][_a-z0-9]*$|^m$"/>
-      <message key="name.invalidPattern" value="Local variable ''{0}'' must start with a lowercase letter, contain only lowercase letters, numbers and underscores, and not start with &quot;my_&quot;."/>
-    </module>
     <module name="ParameterAssignment"/>
     <module name="NestedForDepth">
       <property name="max" value="3"/>

@@ -71,6 +71,6 @@ export default class PasswordForm extends React.Component<{}, FormState> {
     private buttonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         const { username, password } = this.state.form;
 
-        login1F(username, password);
+        login1F(username.toLowerCase(), password);
     }
 }

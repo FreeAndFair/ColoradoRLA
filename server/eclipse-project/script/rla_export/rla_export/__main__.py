@@ -17,6 +17,9 @@ Full command line usage synopsis:
  rla_export -h
 
 See README.md for documentation.
+
+Copyright (c) 2017 Colorado Department of State
+SPDX-License-Identifier: GPL-3.0
 """
 
 from __future__ import (print_function, division,
@@ -41,8 +44,6 @@ import getpass
 
 __author__ = "Neal McBurnett <nealmcb@freeandfair.us>"
 __date__ = "2017-10-03"
-__copyright__ = "Copyright (c) 2017 Colorado Department of State"
-__license__ = "AGPLv3"
 
 MYPACKAGE = 'rla_export'
 CORLA_INI_FILE = pkg_resources.resource_filename(MYPACKAGE, 'corla.ini')
@@ -214,7 +215,8 @@ class fragile(object):
 class Dotable(dict):
     """Make nested python dictionaries (json-like objects) accessable using dot notation.
 
-    MIT License. Copyright 2013 Andy Hayden <http://hayd.github.io/2013/dotable-dictionaries> 
+    This function Copyright 2013 Andy Hayden <http://hayd.github.io/2013/dotable-dictionaries> 
+    SPDX-License-Identifier: MIT
     """
 
     __getattr__= dict.__getitem__
@@ -390,7 +392,7 @@ def db_export(args, ac):
     for row in county_ids:
         county_id = row['id']
         county_name = row['name'].replace(" ", "_")
-        random_sequence(args, ac.connection, ac.cur, county_id, county_name)
+        random_sequence(args, ac.cur, county_id, county_name)
 
     ac.connection.close()
 
@@ -426,10 +428,14 @@ CVR_SELECTION_QUERY = """
     ;
 """
 
-def random_sequence(args, connection, cursor, county_id, county_name):
-    "Export list of ballots to be audited by county in random selection order, with dups"
+def random_sequence(args, cursor, county_id, county_name):
+    """Export list of ballots to be audited by county in random selection order, with dups
+
+    cursor.fetchall should return .... FIXME
+    """
 
     """
+    Some alternate approaches:
     Probably easiest for reporting to just use the sequences in the new round table to fetch the CVRs from the dB directly (use the ballot sequences to fetch them in bulk and then the audit subsequences to present the fetched records in order).
     Another straightforward thing to do: get the cvr IDs from the ballot sequence list (because the ballots returned from the endpoint are in the same order) and use those to put the ballots in audit sequence order based on the audit subsequence list.
     """
@@ -438,16 +444,20 @@ def random_sequence(args, connection, cursor, county_id, county_name):
         cursor.execute(SEQUENCE_SUBSEQUENCE_QUERY, {'county_id': county_id})
 
         rows = cursor.fetchall()
-        logging.debug("Row count: %d" % len(rows))
 
         if not rows:
             return
+
+        logging.debug("Row count: %d" % len(rows))
 
         # Build a dictionary of cvrs, to replay according to the random sequence
         cvrs = {}
 
 
         with UmaskNamedTemporaryFile(mode="w", dir=args.export_dir, delete=False) as stream:
+            filename = os.path.join(args.export_dir, 'random_sequence_%s.csv' % county_name)
+            logging.debug("created %s for %s" % (stream.name, filename))
+
             print("county_name,round_number,random_sequence_index,scanner_id,batch_id,record_id,imprinted_id,ballot_type",
                   file=stream)
             prefix = 0
@@ -469,7 +479,7 @@ def random_sequence(args, connection, cursor, county_id, county_name):
 
                 for i, cvr_id in enumerate(audit_subsequence):
                     cvr = cvrs[cvr_id]
-                    print('"%s",%d,%d,%d,%d,%d,"%s","%s"' % (
+                    print('"%s",%d,%d,%s,%s,%d,"%s","%s"' % (
                         cvr['county_name'],
                         round_number,
                         prefix + i + 1,
@@ -483,15 +493,14 @@ def random_sequence(args, connection, cursor, county_id, county_name):
                 prefix += i + 1
                 logging.debug('Total of %d selected in round %d, prefix=%d' % (i + 1, round_number, prefix))
 
-            filename = os.path.join(args.export_dir, 'random_sequence_%s.csv' % county_name)
             os.rename(stream.name, filename)
 
     except IOError as e:
         print("I/O error({0}): {1}".format(e.errno, e.strerror))
 
     except Exception as e:
-        print("e: %s, type(e): %s" % (e, type(e)))
-        logging.error("rla_export: random_sequence: failure: %s" % e)
+        logging.error("rla_export: random_sequence: failure on %s: %s. Removing temp file %s" % (filename, e, stream.name))
+        os.remove(stream.name)
 
 def show_elapsed(r, *args, **kwargs):
     logging.log(25,"Endpoint %s: %s. Elapsed time %.3f" % (r.url, r, r.elapsed.total_seconds()))

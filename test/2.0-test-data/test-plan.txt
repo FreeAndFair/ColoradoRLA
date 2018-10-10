@@ -1,0 +1,78 @@
+login as countyadmin1
+
+upload manifest adams-manifest.csv with sha 87ed7f1732cb4ca89162a73504d7f682f0c5ab8a5b175c8b0af3c232e772a4ae
+upload export adams-cvrexport.csv with sha e71bf230547843dcd91df413d06493c0d2c6511bead69dce5e6fb7ff02a43edb
+
+logout
+
+login as countyadmin2
+
+upload manifest alamosa-manifest.csv with sha 87ed7f1732cb4ca89162a73504d7f682f0c5ab8a5b175c8b0af3c232e772a4ae
+upload export alamosa-cvrexport.csv with sha 4544f2b3f8f310c30711589a38465d3e05eb2129183edd78e8f75feea60e4ae2
+
+logout
+
+login as stateadmin1
+define audit as:
+election date: default
+election type: any
+public meeting date: default
+risk limit: 60% -- for an easy test
+canonical contests: upload canonical-contests.csv
+save and next
+
+-- skip standardizing contest names
+save and next
+
+select Regent of the University of Colorado - At Large to Audit
+select Adams County Commissioner district 3 to Audit
+save and next
+
+enter seed: 12345678901234567890
+save and next
+
+Launch Audit
+
+logout
+
+login as countyadmin1
+
+enter 1 Audit Board
+Sign in Audit Board
+enter anything for all fields
+Sign in
+
+-- 3-800-19
+Blank vote, Jeff Baker, Review, Submit
+-- 5-1600-13
+Distant Loser, Review, Submit
+-- 9-3200-31
+Blank vote, Jeff Baker, Review, Submit
+-- 9-3200-41
+Clear Winner, Review, Submit
+-- 9-3200-47
+Blank vote, Review, Submit
+-- 10-2-21
+Blank vote, Jeff Baker, Review, Submit
+
+
+enter anything for all fields
+submit
+
+logout
+
+login as countyadmin2
+
+enter 1 Audit Board
+Sign in Audit Board
+enter anything for all fields
+Sign in
+
+Blank vote, Jeff Baker, Review, Submit
+
+enter anything for all fields
+submit
+
+logout
+
+login as stateadmin1
