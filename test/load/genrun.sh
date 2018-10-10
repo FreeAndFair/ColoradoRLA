@@ -69,7 +69,7 @@ counties=( Adams
 
 # num ballots, margin for county, rest are margins for state-wide
 # remember to calculate margin by multiplying counties by ballot count for a total
-small=(50 45 45 45);
+small=(5000 45 45 45);
 
 function import() {
     trap exit INT #easy quit
