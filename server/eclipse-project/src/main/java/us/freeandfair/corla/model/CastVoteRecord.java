@@ -167,14 +167,22 @@ public class CastVoteRecord implements Comparable<CastVoteRecord>,
 
   /** set the uri for fast selection **/
   public void setUri() {
-    // don't pollute the index with acvrs
-    if (recordType() == RecordType.UPLOADED) {
-      this.uri = String.format("%s:%s-%s-%s",
-                               countyID(),
-                               scannerID(),
-                               batchID(),
-                               recordID());
+    String cvrOrAcvr;
+    if (recordType() == RecordType.UPLOADED
+        || recordType() == RecordType.PHANTOM_RECORD) {
+      // phantoms play the role of uploaded cvrs
+      cvrOrAcvr = "cvr";
+    } else {
+      // auditor entered (or ballot not found)
+      cvrOrAcvr = "acvr";
     }
+    this.uri = String.format("%s:%s:%s-%s-%s",
+                             cvrOrAcvr,
+                             countyID(),
+                             scannerID(),
+                             batchID(),
+                             recordID());
+
   }
 
 
