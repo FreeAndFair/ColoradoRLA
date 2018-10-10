@@ -133,3 +133,4 @@ This is [FreeAndFair's most recent tag][1.1.0.3].
 [pr70]: https://github.com/democracyworks/ColoradoRLA/pull/70
 [pr73]: https://github.com/democracyworks/ColoradoRLA/pull/73
 [pr74]: https://github.com/democracyworks/ColoradoRLA/pull/74
+[pr78]: https://github.com/democracyworks/ColoradoRLA/pull/78
