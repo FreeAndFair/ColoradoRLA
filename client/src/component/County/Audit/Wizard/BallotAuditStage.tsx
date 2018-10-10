@@ -81,13 +81,12 @@ interface ContestInfoProps {
 }
 
 const ContestInfo = ({ contest }: ContestInfoProps) => {
-    const { name, description, choices, votesAllowed } = contest;
+    const { name, description, choices } = contest;
 
     return (
         <div className='contest-info'>
             <div className='contest-name'>{ name }</div>
             <div>{ description }</div>
-            <div className='num-of-choices'>Vote for { votesAllowed } out of { choices.length }</div>
         </div>
     );
 };
@@ -167,7 +166,7 @@ interface MarkFormProps {
 
 const BallotContestMarkForm = (props: MarkFormProps) => {
     const { contest, countyState, currentBallot, updateBallotMarks } = props;
-    const { name, description, choices, votesAllowed } = contest;
+    const { name, description, choices } = contest;
 
     const acvr = countyState.acvrs![currentBallot.id];
     const contestMarks = acvr[contest.id];
