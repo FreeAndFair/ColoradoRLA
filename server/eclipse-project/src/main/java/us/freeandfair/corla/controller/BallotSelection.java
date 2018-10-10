@@ -80,7 +80,8 @@ public final class BallotSelection {
      * combine attributes to form a uri for fast selection
      */
     public String uri() {
-      return String.format("%s:%s-%s-%s", countyId, scannerId, batchId, ballotPosition);
+      // cvrs only, not acvrs
+      return String.format("%s:%s:%s-%s-%s", "cvr", countyId, scannerId, batchId, ballotPosition);
     }
   }
 

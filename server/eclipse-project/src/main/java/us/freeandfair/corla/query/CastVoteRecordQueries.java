@@ -406,15 +406,11 @@ public final class CastVoteRecordQueries {
     final Session s = Persistence.currentSession();
     final Query q =
       s.createQuery("select cvr from CastVoteRecord cvr " +
-                    " where uri in (:uris) " +
-                    " and record_type in (:recordTypes)");
+                    " where uri in (:uris) ");
 
+    // maybe???
     q.setFlushMode(FlushMode.ALWAYS);
     q.setParameter("uris", uris);
-    final List<String> recordTypes = new ArrayList();
-    recordTypes.add(RecordType.UPLOADED.toString());
-    recordTypes.add(RecordType.PHANTOM_RECORD.toString());
-    q.setParameter("recordTypes", recordTypes);
 
     final List<CastVoteRecord> results = q.getResultList();
 
