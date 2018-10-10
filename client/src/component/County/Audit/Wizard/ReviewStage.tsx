@@ -116,7 +116,6 @@ const BallotContestReview = (props: BallotContestReviewProps) => {
         <div className='contest-info'>
           <strong><div className='contest-name'>{ contest.name }</div></strong>
           <strong><div>{ contest.description }</div></strong>
-          <div>Vote for { contest.votesAllowed }</div>
         </div>
         <div className='contest-choice-review-grid'>
           { noConsensus ? noConsensusDiv : renderMarkedChoices() }
