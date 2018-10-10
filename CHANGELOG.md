@@ -12,6 +12,8 @@ with the following tags indicating the components affected:
 
 ## 2.0.5 - SNAPSHOT - In development
 
+- [UI - Remove 'Vote for X' text from data entry and review screens][pr78]
+
 ## 2.0.4 - Bugfix release
 
 - [API - Specify column types for map serialization][pr74]
@@ -131,4 +133,3 @@ This is [FreeAndFair's most recent tag][1.1.0.3].
 [pr70]: https://github.com/democracyworks/ColoradoRLA/pull/70
 [pr73]: https://github.com/democracyworks/ColoradoRLA/pull/73
 [pr74]: https://github.com/democracyworks/ColoradoRLA/pull/74
-
