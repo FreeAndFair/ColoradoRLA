@@ -47,7 +47,7 @@ import us.freeandfair.corla.persistence.PersistentEntity;
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
 @SuppressWarnings("PMD.ImmutableField")
-public class BallotManifestInfo implements PersistentEntity, Serializable {
+final public class BallotManifestInfo implements PersistentEntity, Serializable {
   /**
    * The serialVersionUID.
    */
@@ -117,20 +117,6 @@ public class BallotManifestInfo implements PersistentEntity, Serializable {
    */
   private String uri;
 
-  /** get the uri for fast selection **/
-  public String getUri() {
-    return this.uri;
-  }
-
-  /** set the uri for fast selection **/
-  public void setUri() {
-    this.uri = String.format("%s:%s:%s-%s",
-                             "bmi",
-                             countyID(),
-                             scannerID(),
-                             batchID());
-  }
-
   /**
    * The projected start of this manifest chunk
    */
@@ -170,6 +156,20 @@ public class BallotManifestInfo implements PersistentEntity, Serializable {
    */
   public Long rangeSize() {
     return my_sequence_end - my_sequence_start;
+  }
+
+  /** get the uri for fast selection **/
+  public String getUri() {
+    return this.uri;
+  }
+
+  /** set the uri for fast selection **/
+  public void setUri() {
+    this.uri = String.format("%s:%s:%s-%s",
+                             "bmi",
+                             countyID(),
+                             scannerID(),
+                             batchID());
   }
 
   /**
@@ -214,7 +214,7 @@ public class BallotManifestInfo implements PersistentEntity, Serializable {
     my_storage_location = the_storage_location;
     my_sequence_start = the_sequence_start;
     my_sequence_end = the_sequence_end;
-    setUri();
+    this.setUri();
   }
 
   /**

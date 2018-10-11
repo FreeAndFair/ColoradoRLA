@@ -34,7 +34,6 @@ import javax.persistence.criteria.Root;
 
 import org.hibernate.Session;
 import org.hibernate.query.Query;
-import org.hibernate.FlushMode;
 
 import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.CastVoteRecord;
@@ -393,13 +392,14 @@ public final class CastVoteRecordQueries {
                       tribute.ballotPosition);
   }
 
+  /** select cast_vote_record where uri in :uris **/
   public static List<CastVoteRecord> atPosition(final List<Tribute> tributes) {
 
     if (tributes.isEmpty()) {
       return new ArrayList();
     }
 
-    List<String> uris = tributes.stream()
+    final List<String> uris = tributes.stream()
       .map(t -> t.uri())
       .collect(Collectors.toList());
 
@@ -408,8 +408,6 @@ public final class CastVoteRecordQueries {
       s.createQuery("select cvr from CastVoteRecord cvr " +
                     " where uri in (:uris) ");
 
-    // maybe???
-    q.setFlushMode(FlushMode.ALWAYS);
     q.setParameter("uris", uris);
 
     final List<CastVoteRecord> results = q.getResultList();
@@ -489,14 +487,14 @@ public final class CastVoteRecordQueries {
                                                   imprintedID,
                                                   "PHANTOM RECORD",
                                                   null);
-    // Persistence.save(cvr);
+    Persistence.save(cvr);
     return cvr;
   }
 
-  //Utility function
-  public static <T> java.util.function.Predicate <T> distinctByKey(Function<? super T, Object> keyExtractor)
+  /** Utility function **/
+  public static <T> java.util.function.Predicate <T> distinctByKey(final Function<? super T, Object> keyExtractor)
   {
-    Map<Object, Boolean> map = new ConcurrentHashMap<>();
+    final Map<Object, Boolean> map = new ConcurrentHashMap<>();
     return t -> map.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
   }
 }

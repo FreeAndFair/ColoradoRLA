@@ -91,6 +91,7 @@ public final class BallotManifestInfoQueries {
 
 
 
+  /** select ballot_manifest_info where uri in :uris **/
   public static List<BallotManifestInfo> locationFor(final Set<String> uris) {
     if (uris.isEmpty()) {
       return new ArrayList();
@@ -101,9 +102,7 @@ public final class BallotManifestInfoQueries {
     final Root<BallotManifestInfo> root = cq.from(BallotManifestInfo.class);
     cq.where(root.get("uri").in(uris));
     final TypedQuery<BallotManifestInfo> query = s.createQuery(cq);
-    final List<BallotManifestInfo> query_result = query.getResultList();
-
-    return query_result;
+    return query.getResultList();
   }
 
   /**

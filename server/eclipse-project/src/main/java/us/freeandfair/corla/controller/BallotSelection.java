@@ -70,13 +70,6 @@ public final class BallotSelection {
     public Integer ballotPosition;
 
     /**
-     * combine attributes to form an imprintedID
-     */
-    public String imprintedId() {
-      return String.format("%s-%s-%s", scannerId, batchId, ballotPosition);
-    }
-
-    /**
      * combine attributes to form a uri for fast selection
      */
     public String uri() {
@@ -498,11 +491,11 @@ public final class BallotSelection {
 
     final List<CVRToAuditResponse> responses = new LinkedList<CVRToAuditResponse>();
 
-    Set<String> uris = cvrs.stream()
+    final Set<String> uris = cvrs.stream()
       .map(cvr -> cvr.bmiUri())
       .collect(Collectors.toSet());
-    List<BallotManifestInfo> bmis = BallotManifestInfoQueries.locationFor(uris);
-    Map<String,String> uriToLoc = bmis.stream().collect(Collectors.toMap(bmi -> bmi.getUri(),
+    final List<BallotManifestInfo> bmis = BallotManifestInfoQueries.locationFor(uris);
+    final Map<String,String> uriToLoc = bmis.stream().collect(Collectors.toMap(bmi -> bmi.getUri(),
                                                                          bmi -> bmi.storageLocation()));
     int i = 0;
     for (final CastVoteRecord cvr: cvrs) {
