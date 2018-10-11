@@ -50,6 +50,7 @@ import us.freeandfair.corla.model.County;
 import us.freeandfair.corla.model.CountyContestResult;
 import us.freeandfair.corla.model.CountyDashboard;
 import us.freeandfair.corla.model.DoSDashboard;
+import us.freeandfair.corla.model.Elector;
 import us.freeandfair.corla.model.Round;
 import us.freeandfair.corla.persistence.Persistence;
 import us.freeandfair.corla.query.CountyContestResultQueries;
@@ -789,31 +790,37 @@ public class CountyReport {
     cell.setCellStyle(standard_style);
     cell.setCellValue(AFFIRMATION_STATEMENT);
 
-    // Use the signatories from the latest round, earlier rounds' signatories
-    // may have already had to leave.
-    //
-    // Signatories are indexed by audit board, so we can just use its size.
-    final int auditBoardCount = my_rounds.get(my_rounds.size() - 1)
-        .signatories()
-        .size();
+    for (int roundIndex = 0; roundIndex < my_rounds.size(); roundIndex++) {
+      final Round round = my_rounds.get(roundIndex);
+      final Map<Integer, List<Elector>> signatories = round.signatories();
+      final List<Integer> boardIndices = new ArrayList(signatories.keySet());
+      Collections.sort(boardIndices);
 
-    for (int boardIndex = 0; boardIndex < auditBoardCount; boardIndex++) {
-      for (int memberIndex = 0; memberIndex < 2; memberIndex++) {
+      cell_number = 0;
+      row_number++;
+      row = affirmation_sheet.createRow(row_number++);
+      cell = row.createCell(cell_number++);
+      cell.setCellType(CellType.STRING);
+      cell.setCellStyle(bold_style);
+      cell.setCellValue(String.format("Round %d", round.number()));
+
+      for (final Integer boardIndex : boardIndices) {
         cell_number = 0;
-        row_number++;
         row = affirmation_sheet.createRow(row_number++);
         cell = row.createCell(cell_number++);
         cell.setCellType(CellType.STRING);
         cell.setCellStyle(bold_style);
-        cell.setCellValue(
-            String.format("Audit Board %d Member", boardIndex + 1));
+        cell.setCellValue(String.format("Audit board %d:", boardIndex + 1));
 
-        cell_number = 0;
-        row = affirmation_sheet.createRow(row_number++);
-        cell = row.createCell(cell_number++);
-        cell.setCellType(CellType.STRING);
-        cell.setCellStyle(box_style);
-        row.setHeight((short) 800);
+        final List<Elector> boardSignatories = signatories.get(boardIndex);
+        for (final Elector signatory : boardSignatories) {
+          cell = row.createCell(cell_number++);
+          cell.setCellType(CellType.STRING);
+          cell.setCellStyle(standard_style);
+          cell.setCellValue(String.format("%s %s",
+              signatory.firstName(),
+              signatory.lastName()));
+        }
       }
     }
 
