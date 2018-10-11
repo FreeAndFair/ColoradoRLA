@@ -199,23 +199,23 @@ parser.add_argument('-n, --notfound-plan', dest='notfound_plan', default="-1 1",
 parser.add_argument('-R, --rounds', type=int, dest='rounds', default=-1,
                     help='Set maximum number of rounds. Default is all rounds.')
 
-parser.add_argument('-r, --risk-limit', type=float, dest='risk_limit', default=0.1,
+parser.add_argument('-r','--risk-limit', type=float, dest='risk_limit', default=0.1,
                     help='risk limit, e.g. 0.1')
-parser.add_argument('-s, --seed', dest='seed',
+parser.add_argument('-s','--seed', dest='seed',
                     default='01234567890123456789',
                     help='random seed to use: 20 or more digts')
-parser.add_argument('-u, --url', dest='url',
+parser.add_argument('-u','--url', dest='url',
                     default='http://localhost:8888',
                     help='base url of corla server. Defaults to http://localhost:8888. '
                     'Use something like http://example.gov/api when running '
                     'against a full installation.')
-parser.add_argument('-e, --dos-endpoint', dest='dos_endpoint',
+parser.add_argument('-e','--dos-endpoint', dest='dos_endpoint',
                     help='do an HTTP GET from the given endpoint, authenticated as state admin.')
-parser.add_argument('-E, --county-endpoint', dest='county_endpoint',
+parser.add_argument('-E','--county-endpoint', dest='county_endpoint',
                     help='do an HTTP GET from the given endpoint, authenticated as a county.')
-parser.add_argument('-i, --state-imported', dest='state_imported', action='store_true',
+parser.add_argument('-i','--state-imported', dest='state_imported', action='store_true',
                     help='show CVRs imported for all counties')
-parser.add_argument('-I, --county-imported', dest='county_imported', action='store_true',
+parser.add_argument('-I','--county-imported', dest='county_imported', action='store_true',
                     help='show CVRs imported for given counties')
 
 parser.add_argument('--hand-count', dest='hand_counts', type=int, metavar='CONTEST', action='append',
@@ -223,28 +223,28 @@ parser.add_argument('--hand-count', dest='hand_counts', type=int, metavar='CONTE
 parser.add_argument('--download-file', dest='download_file', type=int, metavar='FILE_ID',
                     help='Just download file with given FILE_ID')
                     # help='Just list files and download selected ones')
-parser.add_argument('-S, --check-audit-size', type=bool, dest='check_audit_size',
+parser.add_argument('-S','--check-audit-size', type=bool, dest='check_audit_size',
                     help='Check calculations of audit size. Requires rlacalc, psycopg2')
 
-parser.add_argument('-T, --time-delay', type=float, dest='time_delay', default=0.0,
+parser.add_argument('-T','--time-delay', type=float, dest='time_delay', default=0.0,
                     help='Maximum time to pause before network requests. Default 0.0. '
                     'Actual pauses will be uniformly distributed between 0 and the maximum')
-parser.add_argument('-L, --lower-time-delay', type=float, dest='lower_time_delay', default=0.0,
+parser.add_argument('-L','--lower-time-delay', type=float, dest='lower_time_delay', default=0.0,
                     help='Minimum time to pause before network requests. Default 0.0. '
                     'Actual pauses will be uniformly distributed between this and the maximum')
 
 # TODO: get rid of this and associated old code when /upload-cvr-export and /upload-cvr-export go away
-parser.add_argument('-Y, --ye-olde-upload', type=bool, dest='ye_olde_upload',
+parser.add_argument('-Y','--ye-olde-upload', type=bool, dest='ye_olde_upload',
                     help='use old file upload protocol')
 
-parser.add_argument('-t, --trackstates', type=bool, dest='trackstates',
+parser.add_argument('-t','--trackstates', type=bool, dest='trackstates',
                     default=False,
                     help='Show state after most requests')
 
-parser.add_argument('-d, --debuglevel', type=int, default=logging.WARNING, dest='debuglevel',
+parser.add_argument('-d','--debuglevel', type=int, default=logging.WARNING, dest='debuglevel',
   help='Set logging level to debuglevel: DEBUG=10, INFO=20,\n WARNING=30 (the default), ERROR=40, CRITICAL=50')
 
-parser.add_argument('-X, --contest-names', dest='contestNames', default="../contest-names/canonical-contests.csv",
+parser.add_argument('-X','--contest-names', dest='contestNames', default="../contest-names/canonical-contests.csv",
                     help='Path to a valid CSV file of canonical names')
 
 parser.add_argument('commands', metavar="COMMAND", nargs='*',
@@ -309,7 +309,7 @@ def state_login(ac, s):
                data={'username': 'stateadmin1', 'password': '', 'second_factor': ''})
     r = s.post(ac.base + path,
                data={'username': 'stateadmin1', 'password': '', 'second_factor': ''})
-    ac.logconsole.info("%s %s %s", r, "POST", path)
+    logging.info("%s %s %s", r, "POST", path)
 
 
 def county_login(ac, s, county_id):
@@ -320,7 +320,7 @@ def county_login(ac, s, county_id):
                data={'username': 'countyadmin%d' % county_id, 'password': '', 'second_factor': ''})
     r = s.post(ac.base + path,
                data={'username': 'countyadmin%d' % county_id, 'password': '', 'second_factor': ''})
-    ac.logconsole.info("%s %s %s", r, "POST", path)
+    logging.info("%s %s %s", r, "POST", path)
 
 
 def test_endpoint_json(ac, s, path, data, show=True):
@@ -332,23 +332,23 @@ def test_endpoint_json(ac, s, path, data, show=True):
     r = s.post(ac.base + path, json=data)
     if r.status_code == 200:
         if show:
-            ac.logconsole.info("%s %s %s", r, "POST", path)
+            logging.info("%s %s %s", r, "POST", path)
     else:
         if show:
-            ac.logconsole.info("%s %s %s %s", r, "POST", path, r.text)
+            logging.info("%s %s %s %s", r, "POST", path, r.text)
         else:
-            ac.logconsole.info("%s %s %s", r, "POST", path)
+            logging.info("%s %s %s", r, "POST", path)
 
     if ac.args.trackstates:
         r = test_endpoint_get(ac, ac.state_s, "/dos-asm-state", show=False)
 
         if 'current_state' in r.json():
-            print("DOS: %s" % r.json()['current_state'])
+            logging.info("DOS: %s" % r.json()['current_state'])
         else:
-            print("smoketest sees no current state", r.text)
+            logging.error("smoketest sees no current state", r.text)
 
         if s != ac.state_s:
-            print("County: %s" % test_endpoint_get(ac, s, "/audit-board-asm-state", show=False).json()['current_state'])
+            logging.warn("County: %s" % test_endpoint_get(ac, s, "/audit-board-asm-state", show=False).json()['current_state'])
             
     return r
 
@@ -358,13 +358,9 @@ def test_endpoint_get(ac, s, path, show=True):
 
     r = s.get(ac.base + path)
     if r.status_code == 200:
-        if show:
-            ac.logconsole.info("%s %s %s", r, "GET", path)
+        logging.info("%s %s %s", r, "GET", path)
     else:
-        if show:
-            ac.logconsole.info("%s %s %s %s", r, "GET", path, r.text)
-        else:
-            ac.logconsole.info("%s %s %s", r, "GET", path)
+        logging.error("%s %s %s %s", r, "GET", path, r.text)
     return r
 
 
@@ -396,7 +392,7 @@ def upload_file(ac, s, import_path, filename, sha256):
                           files={'file': f}, data=payload)
 
     if r.status_code != 200:
-        print(r, "POST", path, r.text)
+        logging.error("%s %s %s" % (r, path, r.text))
 
     logging.debug("%s %s %s" % (r, path, r.text))
 
@@ -404,7 +400,7 @@ def upload_file(ac, s, import_path, filename, sha256):
 
     r = test_endpoint_json(ac, s, import_path, import_handle)
     if r.status_code != 200:
-        print(r, "POST", import_path, r.text)
+        logging.error("%s %s %s" % (r, path, r.text))
 
     logging.debug("%s %s %s" % (r, import_path, r.text))
 
@@ -418,7 +414,7 @@ def upload_file(ac, s, import_path, filename, sha256):
             logging.info(summary)
 
             if state not in ["CVRS_IMPORTING", "BALLOT_MANIFEST_OK_AND_CVRS_IMPORTING"]:
-                print("CVR import complete, state: %s" % state)
+                logging.info("CVR import complete, state: %s" % state)
                 break
 
             time.sleep(3)
@@ -432,13 +428,13 @@ def download_file(ac, s, file_id, filename):
         r = s.get(ac.base + path, params={'file_info': json.dumps({'file_id': "%d" % file_id})})
 
     if r.status_code != 200:
-        print(r, "GET", path, r.text)
+        logging.error("%s %s %s" % (r, path, r.text))
 
     logging.debug("%s %s" % (r, path))
 
     with open(filename, "wb") as f:
         f.write(r.content)
-        print("file_id %d saved as %s" % (file_id, filename))
+        logging.info("file_id %d saved as %s" % (file_id, filename))
 
 def upload_cvrs(ac, s, filename, sha256):
     "Upload cvrs"
@@ -449,7 +445,8 @@ def upload_cvrs(ac, s, filename, sha256):
         payload = {'county': '3', 'hash': sha256}
         r = s.post(ac.base + path,
                           files={'cvr_file': f}, data=payload)
-    print(r, "POST", path, r.text)
+
+    logging.info("%s %s %s" % r, "POST", path)
 
 
 def upload_manifest(ac, s, filename, sha256):
@@ -460,7 +457,7 @@ def upload_manifest(ac, s, filename, sha256):
         payload = {'county': 'Arapahoe', 'hash': sha256}
         r = s.post(ac.base + path,
                           files={'bmi_file': f}, data=payload)
-    print(r, "POST", path)
+    logging.info("%s %s %s" % r, "POST", path)
 
 
 def get_county_cvrs(ac, county_id, s):
@@ -469,7 +466,7 @@ def get_county_cvrs(ac, county_id, s):
     path = x
     r = s.get("%s/cvr/%d" % (ac.base, county_id))
     if r.status_code != 200:
-         print(r, "GET", path, r.text)
+        logging.error("%s %s %s" % (r, path, r.text))
     cvrs = r.json()
 
     return cvrs
@@ -589,7 +586,7 @@ def get_county_dashboard(ac, county_s, county_id, i=0, acvr={'id': -1}, show=Tru
 
     if show:
         logging.log(5, "county-dashboard: %s" % r.text)
-        print("Round %d, county %d, upload %d, prefix %d: aCVR %d; ballots_remaining_in_round: %d, optimistic_ballots_to_audit: %s est %s" %
+        logging.info("Round %d, county %d, upload %d, prefix %d: aCVR %d; ballots_remaining_in_round: %d, optimistic_ballots_to_audit: %s est %s" %
               (ac.round, county_id, total_audited, county_dashboard.get('audited_prefix_length', -1), acvr['id'],  # FIXME
                county_dashboard['ballots_remaining_in_round'], county_dashboard['optimistic_ballots_to_audit'], county_dashboard['estimated_ballots_to_audit']))
 
@@ -646,7 +643,7 @@ def county_setup(ac, county_id):
     contests = r.json()
 
     # TODO: get count again: print("Uploaded table of %d CVRs with %d contests" % (, len(contests)))
-    print("Uploaded CVR table with %d contests" % (len(contests),))
+    logging.info("Uploaded CVR table with %d contests" % (len(contests),))
 
     # TODO perhaps cleanup - but is it more realistic to just leave sessions open?
     # county_s.close()
@@ -656,7 +653,7 @@ def dos_start(ac):
     'Run DOS steps to start the audit, enabling county auditing to begin: contest selection, seed, etc.'
 
     if len(ac.audited_contests) <= 0:
-        print("No contests to audit. Perhaps CVR or -C option is invalid?")
+        logging.error("No contests to audit. Perhaps CVR or -C option is invalid?")
         return
     r = test_endpoint_json(ac, ac.state_s, "/select-contests",
                            [{"contest": contest_id,
@@ -678,15 +675,15 @@ def dos_start(ac):
         for contest_id, reason in dos_dashboard['audited_contests'].items():
             r = test_endpoint_get(ac, ac.state_s, "/contest/id/%s" % contest_id)
             contest = r.json()
-            print("Audit driver in county {county_id}, contest {id}: vote for {votes_allowed} in {name}".format(**contest))
+            logging.debug("Audit driver in county {county_id}, contest {id}: vote for {votes_allowed} in {name}".format(**contest))
             for choice in contest['choices']:
-                print("  %s" % choice['name'])
+                logging.debug("  %s" % choice['name'])
 
         for county_id, status in dos_dashboard['county_status'].items():
             if status['estimated_ballots_to_audit'] != 0:
-                print("County %s has initial sample size of %s sample interpretations, including duplicates" % 
+                logging.info("County %s has initial sample size of %s sample interpretations, including duplicates" %
                       (county_id, status['estimated_ballots_to_audit']))
-                print("ballots_remaining_in_round %d: %d" %
+                logging.info("ballots_remaining_in_round %d: %d" %
                       (ac.round, status['ballots_remaining_in_round']))
     logging.debug("dos-dashboard: %s" % r.text)
 
@@ -739,9 +736,9 @@ def county_audit(ac, county_id):
     r = test_endpoint_get(ac, county_s, "/cvr-to-audit-list?round=%d" % round)
     selected = r.json()
 
-    print("Retrieved ballots_to_audit, got %d" % len(selected))
+    logging.info("Retrieved ballots_to_audit, got %d" % len(selected))
     if len(selected) != county_dashboard['ballots_remaining_in_round']:
-        print("ERROR: got %d CVR ids in ballots_to_audit, but ballots_remaining_in_round is %d in county-dashboard" %
+        logging.error("ERROR: got %d CVR ids in ballots_to_audit, but ballots_remaining_in_round is %d in county-dashboard" %
               (len(selected), county_dashboard['ballots_remaining_in_round']))
 
     # For each of a a bunch of selected cvrs,
@@ -749,7 +746,7 @@ def county_audit(ac, county_id):
     # TODO: upload the right number of them....
 
     if len(selected) < 1:
-        print("No ballots_to_audit")
+        logging.warn("No ballots_to_audit")
 
     for i in range(len(selected)):
         if ac.args.debuglevel >= logging.INFO:
@@ -758,7 +755,7 @@ def county_audit(ac, county_id):
             contest_discrepancies = r.json().get('discrepancy_count', {})
             for contest_id, d in contest_discrepancies.iteritems():
                 discrepancies += "%s %2d %2d %2d %2d %2d  " % (contest_id, d["2"], d["1"], d["0"], d["-1"], d["-2"])
-            print(discrepancies)
+            logging.debug(discrepancies)
 
         total_audited = county_dashboard['audited_ballot_count']
 
@@ -788,7 +785,7 @@ def county_audit(ac, county_id):
                         message = "Discrepancy: %s in %d, was %s" % (ac.false_choices, ac.audited_contests[0], ci['choices'])
                         ci['choices'] = ac.false_choices
                     break
-            print(message)
+            logging.debug(message)
 
         elif False:
             # Test: make uploaded cvr not match
@@ -799,10 +796,10 @@ def county_audit(ac, county_id):
         # Either submit a not-found discrepancy, or submit the aCVR
         if (total_audited % ac.nf_discrepancy_cycle == ac.nf_discrepancy_remainder
             and  total_audited <= ac.args.plan_limit):
-            print('ballot-not-found for %s' % acvr['contest_info'])
+            logging.debug('ballot-not-found for %s' % acvr['contest_info'])
             r = test_endpoint_json(ac, county_s, "/ballot-not-found", {'id': acvr['id']})
         else:
-            logging.debug("Submitting aCVR: %s" % json.dumps(acvr))
+            logging.info(26,"Submitting aCVR: %s" % json.dumps(acvr))
             test_endpoint_json(ac, county_s, "/upload-audit-cvr",
                                {'cvr_id': selected[i]['db_id'], 'audit_cvr': acvr}, show=False)
 
@@ -817,7 +814,7 @@ def county_audit(ac, county_id):
 
     remaining = county_dashboard['ballots_remaining_in_round']
     if remaining <= 0:
-        print("\nCounty %d Audit Round completed after %d ballots" % (county_id, total_audited + 1))
+        logging.info("\nCounty %d Audit Round completed after %d ballots" % (county_id, total_audited + 1))
 
     return(remaining)
 
@@ -829,7 +826,7 @@ def download_report(ac, s, path, extension):
     name = "%s.%s" % (path, extension)
     with open(name, "wb") as f:
         f.write(r.content)
-        print("/%s report saved as %s" % (path, name))
+        logging.info("/%s report saved as %s" % (path, name))
 
 
 def county_wrapup(ac, county_id):
@@ -843,7 +840,7 @@ def county_wrapup(ac, county_id):
 
     rounds = len(county_dashboard['rounds'])
 
-    print("Rounds: %s " % json.dumps(county_dashboard['rounds'], indent=2))
+    logging.info("Rounds: %s " % json.dumps(county_dashboard['rounds'], indent=2))
 
     if (rounds > 1)  and  county_dashboard['rounds'][rounds - 1]['actual_count'] == 0:
         # we didn't actually start the last round
@@ -854,10 +851,10 @@ def county_wrapup(ac, county_id):
     cvr_count = county_dashboard['cvr_export_count']
 
     if county_dashboard['asm_state'] == "COUNTY_AUDIT_COMPLETE":
-        print("\nCounty %d audit complete, ended after %d ballots (of %d exported) and %d rounds, %d to go" %
+        logging.info("\nCounty %d audit complete, ended after %d ballots (of %d exported) and %d rounds, %d to go" %
               (county_id, audited, cvr_count, rounds, to_go))
     else:
-        print("\nCounty %d audit incomplete, ended after %d ballots (of %d exported) and %d rounds, %d to go, state %s" %
+        logging.info("\nCounty %d audit incomplete, ended after %d ballots (of %d exported) and %d rounds, %d to go, state %s" %
               (county_id, audited, cvr_count, rounds, to_go, county_dashboard['asm_state']))
 
     # TODO: Replaced by audit board sign out? Gone?
@@ -971,19 +968,19 @@ def check_audit_size(ac):
             togo_1_0 = nmin_size
 
         if r['estimated_samples_to_audit'] != togo_1_0:
-                print("ERROR: r['estimated_samples_to_audit'] %d != togo_1_0 %d]" %
+                logging.error("ERROR: r['estimated_samples_to_audit'] %d != togo_1_0 %d]" %
                       (r['estimated_samples_to_audit'], togo_1_0))
 
-        print("County {} nmin={:.0f} nminToGo={:.0f} est={} alpha={alpha:.0%} gamma={gamma} margin={margin:.2%}, disc={o2} {o1} {u1} {u2} for contest {}".format(
+        logging.debug("County {} nmin={:.0f} nminToGo={:.0f} est={} alpha={alpha:.0%} gamma={gamma} margin={margin:.2%}, disc={o2} {o1} {u1} {u2} for contest {}".format(
             r['county_id'], nmin_size, togo_size, r['estimated_samples_to_audit'], r['name'], **params))
 
         if (r['audit_reason'] != 'OPPORTUNISTIC_BENEFITS'  and
             r['audit_status'] == 'RISK_LIMIT_ACHIEVED'):
             if r['optimistic_samples_to_audit'] != nmin_size:
-                print("ERROR: r['optimistic_samples_to_audit' %d != nmin_size %d]" %
+                logging.error("ERROR: r['optimistic_samples_to_audit' %d != nmin_size %d]" %
                       (r['audited_sample_count'], nmin_size))
             if r['audited_sample_count'] < nmin_size:
-                print("ERROR: r['audited_sample_count' %d < nmin_size %d]" %
+                logging.error("ERROR: r['audited_sample_count' %d < nmin_size %d]" %
                       (r['audited_sample_count'], nmin_size))
 
 def main():
@@ -998,7 +995,7 @@ def main():
     FORMAT = '%(asctime)-15s %(levelname)s %(name)s %(message)s'
     logging.basicConfig(stream=sys.stdout, level=ac.args.debuglevel, format=FORMAT)
 
-    # Define a standalone logger to get timestamped results sent to stdout
+    # Define a standalone logging to get timestamped results sent to stdout
     # creating a nice "print" statement with additional context added in
     ac.logconsole = logging.getLogger('console')
     ac.logconsole.propagate = False
@@ -1027,7 +1024,7 @@ def main():
     fields = [int(f) for f in ac.args.notfound_plan.split()]
     ac.nf_discrepancy_remainder, ac.nf_discrepancy_cycle = fields
 
-    ac.logconsole.info("Arguments: %s" % ac.args)
+    # ac.logconsole.info("Arguments: %s" % ac.args)
 
     Pause.max_pause = ac.args.time_delay
     Pause.min_pause = ac.args.lower_time_delay
@@ -1068,7 +1065,7 @@ def main():
 
     if ac.args.dos_endpoint is not None:
         r = test_endpoint_get(ac, ac.state_s, ac.args.dos_endpoint)
-        print(r, "GET", ac.args.dos_endpoint, r.text)
+        logging.info(r, "GET", ac.args.dos_endpoint, r.text)
         sys.exit(0)
 
     if ac.args.county_imported:
@@ -1080,7 +1077,7 @@ def main():
             dashboard = r.json()
             (state, summary) = get_imported_count(dashboard)
 
-            print("County %d: %s" % (county_id, summary))
+            logging.info("County %d: %s" % (county_id, summary))
 
         sys.exit(0)
 
@@ -1091,7 +1088,7 @@ def main():
                                         key=lambda t: int(t[0])):
             county_id = int(county_id)
             (state, summary) = get_imported_count(status)
-            print("County %d: %s" % (county_id, summary))
+            logging.info("County %d: %s" % (county_id, summary))
 
         sys.exit(0)
 
@@ -1137,8 +1134,8 @@ def main():
     r = test_endpoint_get(ac, ac.state_s, "/contest")
     contests = r.json()
 
-    for i, contest in enumerate(contests):
-          print("Contest {} in county_id {county_id} contest_id {id}: vote for {votes_allowed} in {name}".format(i, **contest))
+    # for i, contest in enumerate(contests):
+    #       print("Contest {} in county_id {county_id} contest_id {id}: vote for {votes_allowed} in {name}".format(i, **contest))
 
     logging.log(5, "Contests: %s" % contests)
 
@@ -1150,7 +1147,7 @@ def main():
 
     for contest_index in ac.args.contests:
         if contest_index >= len(contests):
-            logging.debug("Warning: Contest_index %d out of range: only %d contests in election (but we may just be in an early phase)" %
+            logging.error("Warning: Contest_index %d out of range: only %d contests in election (but we may just be in an early phase)" %
                           (contest_index, len(contests)))
             break
 
@@ -1159,41 +1156,12 @@ def main():
     if "dos_start" in ac.args.commands:
         dos_start(ac)
 
-    print()
-
     if "county_audit" in ac.args.commands:
-        round = 0
-        alldone = False
-
-        while (ac.args.rounds == -1) or (round < ac.args.rounds):
-            if ac.args.check_audit_size:
-                check_audit_size(ac)
-
-            r = test_endpoint_get(ac, ac.state_s, "/dos-asm-state")
-            current_state = r.json()['current_state']
-            if current_state == "DOS_AUDIT_COMPLETE":
-                alldone = True
-                break
-            elif current_state != "DOS_AUDIT_ONGOING":
-                print("Not in DOS_AUDIT_ONGOING state, can't audit")
-                break
-            round += 1
-            print("Start Round %d" % round)
-            for county_id in ac.args.counties:
-                # TODO: really needs to track each individual county for being done....
-                remaining = county_audit(ac, county_id)
-
-            print()
-            ac.round += 1
-            # Note, may get Illegal transition on ASM... (DOS_AUDIT_COMPLETE, DOS_START_ROUND_EVENT)
-            r = test_endpoint_json(ac, ac.state_s, "/start-audit-round",
-                                   { "multiplier": 1.0, "use_estimates": True})
-
-        if alldone:
-            print("State audit complete")
-
+        if ac.args.check_audit_size:
+            check_audit_size(ac)
         for county_id in ac.args.counties:
-            county_wrapup(ac, county_id)
+            # TODO: really needs to track each individual county for being done....
+            remaining = county_audit(ac, county_id)
 
     if "dos_wrapup" in ac.args.commands:
         dos_wrapup(ac)

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Genelect
+"""Genelect
 ~~~~~~~~
 
 Generate test files for RLAtool
@@ -22,6 +21,14 @@ per contest with a "--", e.g.
 
 ./genelect.py -u 100 200 300 -- 5000 900 -200 1500 > cvr-5000-900--200-1500_100-200-300.csv
 
+A county specific contest can be added with --with-county. One of the contests
+with have the county name prepended to it so that it will be unique to the
+county. The other contests will be possibly shared with other counties.
+
+./genelect.py 5000 900 -200 1500 --with-county Arapahoe > cvr-arapahoe.csv
+
+    ,,,,,,Arapahoe Prop 1 (Vote For=1),
+
 Todo:
 
  Automatically save output to a specified file with a helpful name
@@ -34,6 +41,7 @@ Todo:
  Allow for multiple ballot styles
 
 SPDX-License-Identifier:	GPL-3.0-or-later
+
 """
 
 import os
@@ -61,6 +69,9 @@ parser.add_argument("-d", "--debuglevel", type=int, default=logging.WARNING,
   help="Set logging level to debuglevel, expressed as an integer: "
   "DEBUG=10, INFO=20, endpoint timing=25, WARNING=30, ERROR=40, CRITICAL=50. "
   "The default is %(default)s" )
+
+parser.add_argument("-c", "--county", type=str,
+                    help="prepend COUNTY to the first contest's name")
 
 parser.add_argument("--test",  action="store_true", default=False,
   help="Run tests")
@@ -158,7 +169,10 @@ def main(parser):
 
     # Zip up the margins and contests and generate a Contest for each such contest spec.
     contestspecs = itertools.zip_longest(args.margins, args.undervotes, fillvalue=0)
-    contests = [Contest('Prop %d (Vote For=1)' % (i+1), margin, genvotes(args.ballots, margin, undervotes))
+    #blank if not set, set if first contest and arg given
+    prefix = lambda i: i == 0 and args.county and (args.county + ' ') or ''
+    contest_name = lambda i: '%sProp %d (Vote For=1)' % (prefix(i),(i+1))
+    contests = [Contest(contest_name(i), margin, genvotes(args.ballots, margin, undervotes))
                         for i, (margin, undervotes) in enumerate(contestspecs)
                         if margin != 'na']
 
