@@ -89,6 +89,23 @@ public final class BallotManifestInfoQueries {
     return result;
   }
 
+
+
+  public static List<BallotManifestInfo> locationFor(final Set<String> uris) {
+    if (uris.isEmpty()) {
+      return new ArrayList();
+    }
+    final Session s = Persistence.currentSession();
+    final CriteriaBuilder cb = s.getCriteriaBuilder();
+    final CriteriaQuery<BallotManifestInfo> cq = cb.createQuery(BallotManifestInfo.class);
+    final Root<BallotManifestInfo> root = cq.from(BallotManifestInfo.class);
+    cq.where(root.get("uri").in(uris));
+    final TypedQuery<BallotManifestInfo> query = s.createQuery(cq);
+    final List<BallotManifestInfo> query_result = query.getResultList();
+
+    return query_result;
+  }
+
   /**
    * Returns the location for the specified CVR, assuming one can be found.
    *

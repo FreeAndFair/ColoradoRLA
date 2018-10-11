@@ -498,44 +498,45 @@ public final class BallotSelection {
 
     final List<CVRToAuditResponse> responses = new LinkedList<CVRToAuditResponse>();
 
+    Set<String> uris = cvrs.stream()
+      .map(cvr -> cvr.bmiUri())
+      .collect(Collectors.toSet());
+    List<BallotManifestInfo> bmis = BallotManifestInfoQueries.locationFor(uris);
+    Map<String,String> uriToLoc = bmis.stream().collect(Collectors.toMap(bmi -> bmi.getUri(),
+                                                                         bmi -> bmi.storageLocation()));
     int i = 0;
     for (final CastVoteRecord cvr: cvrs) {
-      final BallotManifestInfo bmi =
-          bmiMaybe(bmiq.apply(cvr), Long.valueOf(cvr.cvrNumber()));
 
-      responses.add(toResponse(i, bmi, cvr));
+      final String storageLocation = uriToLoc.get(cvr.bmiUri());
+      if (null == storageLocation) {
+        LOGGER.error("could not find a ballot manifest for cvr: "+ cvr.getUri());
+        continue;
+      }
+      responses.add(toResponse(i, storageLocation, cvr));
       i++;
     }
     return responses;
-  }
-
-  /** get the bmi or blow up with a hopefully helpful message **/
-  public static BallotManifestInfo
-      bmiMaybe(final Optional<BallotManifestInfo> bmi, final Long rand) {
-
-    if (!bmi.isPresent()) {
-      final String msg = "could not find a ballot manifest for number: " + rand;
-      throw new BallotSelection.MissingBallotManifestException(msg);
-    }
-    return bmi.get();
   }
 
   /**
    * get ready to render the data
    **/
   public static CVRToAuditResponse toResponse(final int i,
-                                              final BallotManifestInfo bmi,
+                                              final String storageLocation,
                                               final CastVoteRecord cvr) {
 
+    // the only field that the cvr doesn't have is storageLocation. Also, it would be
+    // ideal to render data from bmis but the cvrs have already been selected
+    // from info from bmis so that integrity concern can be checked off as met
     return new CVRToAuditResponse(i,
-                                  bmi.scannerID(),
-                                  bmi.batchID(),
+                                  cvr.scannerID(),
+                                  cvr.batchID(),
                                   cvr.recordID(),
                                   cvr.imprintedID(),
                                   cvr.cvrNumber(),
                                   cvr.id(),
                                   cvr.ballotType(),
-                                  bmi.storageLocation(),
+                                  storageLocation,
                                   cvr.auditFlag());
   }
 

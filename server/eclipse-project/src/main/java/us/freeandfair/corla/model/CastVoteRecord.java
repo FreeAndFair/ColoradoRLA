@@ -185,6 +185,15 @@ public class CastVoteRecord implements Comparable<CastVoteRecord>,
 
   }
 
+  /** link to a bmi for fast selection **/
+  public String bmiUri() {
+    return String.format("%s:%s:%s-%s",
+                         "bmi",
+                         countyID(),
+                         scannerID(),
+                         batchID());
+  }
+
 
   /**
    * The ballot style of this cast vote record.
