@@ -13,6 +13,7 @@ with the following tags indicating the components affected:
 ## 2.0.5 - SNAPSHOT - In development
 
 - [UI - Remove 'Vote for X' text from data entry and review screens][pr78]
+- [API - Show signatories from all rounds on the affirmation sheet][pr79]
 
 ## 2.0.4 - Bugfix release
 
@@ -134,3 +135,4 @@ This is [FreeAndFair's most recent tag][1.1.0.3].
 [pr73]: https://github.com/democracyworks/ColoradoRLA/pull/73
 [pr74]: https://github.com/democracyworks/ColoradoRLA/pull/74
 [pr78]: https://github.com/democracyworks/ColoradoRLA/pull/78
+[pr79]: https://github.com/democracyworks/ColoradoRLA/pull/79
