@@ -20,7 +20,10 @@ import java.util.OptionalLong;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
@@ -389,6 +392,43 @@ public final class CastVoteRecordQueries {
                       tribute.ballotPosition);
   }
 
+  /** select cast_vote_record where uri in :uris **/
+  public static List<CastVoteRecord> atPosition(final List<Tribute> tributes) {
+
+    if (tributes.isEmpty()) {
+      return new ArrayList();
+    }
+
+    final List<String> uris = tributes.stream()
+      .map(t -> t.uri())
+      .collect(Collectors.toList());
+
+    final Session s = Persistence.currentSession();
+    final Query q =
+      s.createQuery("select cvr from CastVoteRecord cvr " +
+                    " where uri in (:uris) ");
+
+    q.setParameter("uris", uris);
+
+    final List<CastVoteRecord> results = q.getResultList();
+
+    final Set<String> foundUris = results.stream()
+      .map(cvr -> (String)cvr.getUri())
+      .collect(Collectors.toSet());
+
+    final Set<CastVoteRecord> phantomRecords = tributes.stream()
+      .filter(distinctByKey((Tribute t) -> {return t.uri();}))
+      // is it faster to let the db do this with an except query?
+      .filter((Tribute t) -> {return !foundUris.contains(t.uri());})
+      .map(t -> (CastVoteRecord)phantomRecord(t))
+      .map(Persistence::persist)
+      .collect(Collectors.toSet());
+
+    results.addAll(phantomRecords);
+
+    return results;
+  }
+
   /**
    * join query
    **/
@@ -423,6 +463,14 @@ public final class CastVoteRecordQueries {
   }
 
   /** PHANTOM_RECORD conspiracy theory time **/
+  public static CastVoteRecord phantomRecord(final Tribute tribute) {
+    return phantomRecord(tribute.countyId,
+                         tribute.scannerId,
+                         tribute.batchId,
+                         tribute.ballotPosition);
+  }
+
+  /** PHANTOM_RECORD conspiracy theory time **/
   public static CastVoteRecord phantomRecord(final Long county_id,
                                              final Integer scanner_id,
                                              final String batch_id,
@@ -443,4 +491,10 @@ public final class CastVoteRecordQueries {
     return cvr;
   }
 
+  /** Utility function **/
+  public static <T> java.util.function.Predicate <T> distinctByKey(final Function<? super T, Object> keyExtractor)
+  {
+    final Map<Object, Boolean> map = new ConcurrentHashMap<>();
+    return t -> map.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+  }
 }

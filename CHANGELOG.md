@@ -11,9 +11,12 @@ with the following tags indicating the components affected:
   as the RLA export.
 
 ## 2.0.5 - SNAPSHOT - In development
+- [API - Adjust where discrepancies appear in the DoS dashboard][pr80]
+- [UI - Remove 'Vote for X' text from data entry and review screens][pr78]
+- [API - Show signatories from all rounds on the affirmation sheet][pr79]
+- [API - select CVRs in bulk, add uri concept for fast selection][pr77]
 
 ## 2.0.4 - Bugfix release
-- [API - Adjust where discrepancies appear in the DoS dashboard][pr80]
 - [API - Specify column types for map serialization][pr74]
 - [API - Show all audit board members on the affirmation sheet][pr73]
 
@@ -131,4 +134,6 @@ This is [FreeAndFair's most recent tag][1.1.0.3].
 [pr70]: https://github.com/democracyworks/ColoradoRLA/pull/70
 [pr73]: https://github.com/democracyworks/ColoradoRLA/pull/73
 [pr74]: https://github.com/democracyworks/ColoradoRLA/pull/74
+[pr78]: https://github.com/democracyworks/ColoradoRLA/pull/78
+[pr79]: https://github.com/democracyworks/ColoradoRLA/pull/79
 [pr80]: https://github.com/democracyworks/ColoradoRLA/pull/80

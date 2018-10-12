@@ -51,7 +51,7 @@ export const StandardizeContestsPage = (props: PageProps) => {
           </p>
 
           <div className='pt-card'>
-              <StandardizeContestsForm formData={ forms.standardizeContestsForm || {}}
+              <StandardizeContestsForm formData={ _.get(forms, 'standardizeContestsForm', {})}
                                        canonicalContests={ canonicalContests }
                                        contests={ contests } />
           </div>

@@ -338,7 +338,7 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
           // else. A county that has met the risk limit is done.
           if (countyDashboardASM.currentState().equals(CountyDashboardState.COUNTY_AUDIT_UNDERWAY)
               && cdb.allAuditsComplete()) {
-            LOGGER.debug
+            LOGGER.info
               (String.format
                ("[startRound: allAuditsComplete! %s County is FINISHED.]",
                 cdb.county().name()));
@@ -353,7 +353,7 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
           // Risk limit hasn't been achieved and we were never given any
           // audits to work on.
           if (cdb.comparisonAudits().isEmpty()) {
-            LOGGER.debug("[startRound: county made its deadline but was assigned no contests to audit]");
+            LOGGER.info("[startRound: county made its deadline but was assigned no contests to audit]");
             ASMUtilities.step(NO_CONTESTS_TO_AUDIT_EVENT, AuditBoardDashboardASM.class,
                               String.valueOf(cdb.id()));
             countyDashboardASM.stepEvent(COUNTY_AUDIT_COMPLETE_EVENT);
@@ -381,7 +381,8 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
               .map(cvr -> cvr.id())
               .collect(Collectors.toList());
 
-          LOGGER.debug(String.format("[startRound:"
+          // similar message also sent to info below, this could be a big line
+          LOGGER.trace(String.format("[startRound:"
                                      + " county=%s, round=%s, segment.auditSequence()=%s,"
                                      + " segment.ballotSequence()=%s, cdb.comparisonAudits=%s,",
                                      cdb.county(), cdb.currentRound(), segment.auditSequence(),
@@ -390,7 +391,7 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
           // to work on, but have nothing to do in this round. Please
           // wait patiently.
           if (ballotSequence.isEmpty()) {
-            LOGGER.debug(String.format("[startRound: no ballots to audit in %s County, skipping round]",
+            LOGGER.info(String.format("[startRound: no ballots to audit in %s County, skipping round]",
                                        cdb.county()));
             cdb.startRound(0, 0, 0, Collections.emptyList(), Collections.emptyList());
             Persistence.saveOrUpdate(cdb);
@@ -405,7 +406,7 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
                                                ballotSequence);
           Persistence.saveOrUpdate(cdb);
 
-          LOGGER.debug
+          LOGGER.info
             (String.format
              ("[startRound: Round %d for %s County started normally."
               + " Estimated to audit %d ballots.]",
