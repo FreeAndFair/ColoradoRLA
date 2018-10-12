@@ -13,7 +13,7 @@ with the following tags indicating the components affected:
 ## 2.0.5 - SNAPSHOT - In development
 
 ## 2.0.4 - Bugfix release
-
+- [API - Adjust where discrepancies appear in the DoS dashboard][pr80]
 - [API - Specify column types for map serialization][pr74]
 - [API - Show all audit board members on the affirmation sheet][pr73]
 
@@ -131,4 +131,4 @@ This is [FreeAndFair's most recent tag][1.1.0.3].
 [pr70]: https://github.com/democracyworks/ColoradoRLA/pull/70
 [pr73]: https://github.com/democracyworks/ColoradoRLA/pull/73
 [pr74]: https://github.com/democracyworks/ColoradoRLA/pull/74
-
+[pr80]: https://github.com/democracyworks/ColoradoRLA/pull/80
