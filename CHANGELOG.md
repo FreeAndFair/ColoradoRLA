@@ -10,7 +10,10 @@ with the following tags indicating the components affected:
 - `TOOLING` refers to changes to tooling that falls outside the UI or API, such
   as the RLA export.
 
-## 2.0.5 - SNAPSHOT - In development
+## 2.0.6 - SNAPSHOT - In development
+
+## 2.0.5 - Bugfix release
+
 - [API - Adjust where discrepancies appear in the DoS dashboard][pr80]
 - [UI - Add CDOS contact info][pr81]
 - [UI - Remove 'Vote for X' text from data entry and review screens][pr78]
