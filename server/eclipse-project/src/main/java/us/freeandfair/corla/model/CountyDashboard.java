@@ -790,6 +790,7 @@ public class CountyDashboard implements PersistentEntity {
    * @param the_reasons The reasons.
    */
   public void addDiscrepancy(final Set<AuditReason> the_reasons) {
+    LOGGER.debug(String.format("[addDiscrepancy for %s County: the_reasons=%s", county().name(), the_reasons));
     final Set<AuditSelection> selections = new HashSet<>();
     for (final AuditReason r : the_reasons) {
       selections.add(r.selection());

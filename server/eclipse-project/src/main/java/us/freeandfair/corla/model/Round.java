@@ -28,8 +28,9 @@ import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Embeddable;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
-
 import org.hibernate.query.Query;
 
 import us.freeandfair.corla.persistence.AuditSelectionIntegerMapConverter;
@@ -47,6 +48,11 @@ import us.freeandfair.corla.persistence.Persistence;
 @Embeddable
 @SuppressWarnings({"PMD.ImmutableField", "PMD.TooManyMethods"})
 public class Round implements Serializable {
+  /**
+   * Class-wide logger
+   */
+  public static final Logger LOGGER = LogManager.getLogger(Round.class);
+
   /**
    * The serialVersionUID.
    */
@@ -429,6 +435,9 @@ public class Round implements Serializable {
     for (final AuditSelection s : selections) {
       my_discrepancies.put(s, my_discrepancies.getOrDefault(s, 0) + 1);
     }
+
+    LOGGER.info(String.format("[addDiscrepancy: the_reasons= %s, my_discrepancies=%s]",
+                              the_reasons, my_discrepancies));
   }
 
   /**

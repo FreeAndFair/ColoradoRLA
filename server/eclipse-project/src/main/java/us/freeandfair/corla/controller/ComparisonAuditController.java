@@ -317,32 +317,47 @@ public final class ComparisonAuditController {
    * @param round The round to update.
    */
   private static void updateRound(final CountyDashboard cdb,
-                                 final Round round) {
+                                  final Round round) {
     for (final Long cvrID : new HashSet<>(round.auditSubsequence())) {
       final Map<String, AuditReason> auditReasons = new HashMap<>();
       final Set<AuditReason> discrepancies = new HashSet<>();
       final Set<AuditReason> disagreements = new HashSet<>();
 
-      // FIXME extract-fn: findOrCreate
       CVRAuditInfo cvrai = Persistence.getByID(cvrID, CVRAuditInfo.class);
       if (cvrai == null) {
         cvrai = new CVRAuditInfo(Persistence.getByID(cvrID, CastVoteRecord.class));
       }
-      // extract-fn
 
       if (cvrai.acvr() != null) {
         // do the thing
         // update the round statistics as necessary
-
         for (final ComparisonAudit ca : cdb.comparisonAudits()) {
-          auditReasons.put(ca.contestResult().getContestName(), ca.auditReason());
-          if (!discrepancies.contains(ca.auditReason()) &&
-              ca.computeDiscrepancy(cvrai.cvr(), cvrai.acvr()).isPresent()) {
-            discrepancies.add(ca.auditReason());
+          final String contestName = ca.contestResult().getContestName();
+          AuditReason auditReason = ca.auditReason();
+
+          if (ca.isCovering(cvrID) && auditReason.isTargeted()) {
+            // If this CVR is interesting to this audit, the discrepancy
+            // should be in the audited contests part of the dashboard.
+            LOGGER.debug(String.format("[updateRound: CVR %d is covered in a targeted audit."
+                                       + " contestName=%s, auditReason=%s]",
+                                       cvrID, contestName, auditReason));
+            auditReasons.put(contestName, auditReason);
+          } else {
+            // Otherwise, let's put it in the unaudited contest bucket.
+            auditReason = AuditReason.OPPORTUNISTIC_BENEFITS;
+            LOGGER.debug(String.format("[updateRound: CVR %d has a discrepancy; not covered by"
+                                       + " contestName=%s, auditReason=%s]",
+                                       cvrID, contestName, auditReason));
+            auditReasons.put(contestName, auditReason);
           }
 
-          final int multiplicity = ca.multiplicity(cvrID);
+          final OptionalInt discrepancy = ca.computeDiscrepancy(cvrai.cvr(), cvrai.acvr());
+          if (!discrepancies.contains(auditReason) && discrepancy.isPresent()) {
+            discrepancies.add(auditReason);
+          }
 
+
+          final int multiplicity = ca.multiplicity(cvrID);
           for (int i = 0; i < multiplicity; i++) {
             round.addDiscrepancy(discrepancies);
             round.addDisagreement(disagreements);
@@ -354,6 +369,8 @@ public final class ComparisonAuditController {
         for (final CVRContestInfo ci : cvrai.acvr().contestInfo()) {
           final AuditReason reason = auditReasons.get(ci.contest().name());
           if (ci.consensus() == ConsensusValue.NO) {
+            // TODO check to see if we have disagreement problems. this
+            // is being added in the other loop.
             disagreements.add(reason);
           }
         }
@@ -379,47 +396,59 @@ public final class ComparisonAuditController {
   private static int audit(final CountyDashboard cdb,
                            final CVRAuditInfo auditInfo,
                            final boolean updateCounters) {
-    final Set<String> contest_disagreements = new HashSet<>();
+    final Set<String> contestDisagreements = new HashSet<>();
     final Set<AuditReason> discrepancies = new HashSet<>();
     final Set<AuditReason> disagreements = new HashSet<>();
-    final CastVoteRecord cvr_under_audit = auditInfo.cvr();
-    final CastVoteRecord audit_cvr = auditInfo.acvr();
+    final CastVoteRecord cvrUnderAudit = auditInfo.cvr();
+    final Long cvrID = cvrUnderAudit.id();
+    final CastVoteRecord auditCvr = auditInfo.acvr();
     int totalCount = 0;
 
-    for (final CVRContestInfo ci : audit_cvr.contestInfo()) {
+    for (final CVRContestInfo ci : auditCvr.contestInfo()) {
       if (ci.consensus() == ConsensusValue.NO) {
-        contest_disagreements.add(ci.contest().name());
+        contestDisagreements.add(ci.contest().name());
       }
     }
 
     for (final ComparisonAudit ca : cdb.comparisonAudits()) {
-      // FIXME extract-fn: multiplicityFu
-      final int multiplicity = ca.multiplicity(auditInfo.cvr().id());
+      AuditReason auditReason = ca.auditReason();
+      final String contestName = ca.contestResult().getContestName();
+      final int multiplicity = ca.multiplicity(cvrID);
       final int auditCount = multiplicity - auditInfo.getCountByContest(ca.id());
       totalCount += auditCount;
 
       auditInfo.setMultiplicityByContest(ca.id(), multiplicity);
       auditInfo.setCountByContest(ca.id(), multiplicity);
 
-      // FIXME extract-fn: discrepancyFu
-      final OptionalInt discrepancy = ca.computeDiscrepancy(cvr_under_audit, audit_cvr);
+      final OptionalInt discrepancy = ca.computeDiscrepancy(cvrUnderAudit, auditCvr);
       if (discrepancy.isPresent()) {
         for (int i = 0; i < auditCount; i++) {
           ca.recordDiscrepancy(auditInfo, discrepancy.getAsInt());
         }
-        discrepancies.add(ca.auditReason());
+
+        if (ca.isCovering(cvrID) && auditReason.isTargeted()) {
+          LOGGER.debug(String.format("[audit: CVR %d is covered in a targeted audit."
+                                     + " contestName=%s, auditReason=%s]",
+                                     cvrID, contestName, auditReason));
+          discrepancies.add(auditReason);
+        } else {
+          auditReason = AuditReason.OPPORTUNISTIC_BENEFITS;
+          LOGGER.debug(String.format("[audit: CVR %d has a discrepancy, but isn't covered by"
+                                     + " contestName=%s, auditReason=%s]",
+                                     cvrID, contestName, auditReason));
+          discrepancies.add(auditReason);
+        }
       }
 
-      // FIXME extract-fn: disagreementFu
       // NOTE: this may or may not be correct, we're not sure
-      if (contest_disagreements.contains(ca.contestResult().getContestName())) {
+      if (contestDisagreements.contains(contestName)) {
         for (int i = 0; i < auditCount; i++) {
           ca.recordDisagreement(auditInfo);
         }
         disagreements.add(ca.auditReason());
       }
 
-      ca.signalSampleAudited(auditCount, cvr_under_audit.id());
+      ca.signalSampleAudited(auditCount, cvrID);
       Persistence.saveOrUpdate(ca);
     }
 
@@ -431,6 +460,8 @@ public final class ComparisonAuditController {
     if (updateCounters) {
       cdb.addDiscrepancy(discrepancies);
       cdb.addDisagreement(disagreements);
+      LOGGER.debug(String.format("[audit: %s County discrepancies=%s, disagreements=%s]",
+                                 cdb.county().name(), discrepancies, disagreements));
     }
 
     return totalCount;
