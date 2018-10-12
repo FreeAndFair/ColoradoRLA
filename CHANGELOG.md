@@ -12,6 +12,7 @@ with the following tags indicating the components affected:
 
 ## 2.0.5 - SNAPSHOT - In development
 - [API - Adjust where discrepancies appear in the DoS dashboard][pr80]
+- [UI - Add CDOS contact info][pr81]
 - [UI - Remove 'Vote for X' text from data entry and review screens][pr78]
 - [API - Show signatories from all rounds on the affirmation sheet][pr79]
 - [API - select CVRs in bulk, add uri concept for fast selection][pr77]
@@ -137,3 +138,4 @@ This is [FreeAndFair's most recent tag][1.1.0.3].
 [pr78]: https://github.com/democracyworks/ColoradoRLA/pull/78
 [pr79]: https://github.com/democracyworks/ColoradoRLA/pull/79
 [pr80]: https://github.com/democracyworks/ColoradoRLA/pull/80
+[pr81]: https://github.com/democracyworks/ColoradoRLA/pull/81
