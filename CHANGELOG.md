@@ -14,6 +14,7 @@ with the following tags indicating the components affected:
 
 - [UI - Remove 'Vote for X' text from data entry and review screens][pr78]
 - [API - Show signatories from all rounds on the affirmation sheet][pr79]
+- [API - select CVRs in bulk, add uri concept for fast selection][pr77]
 
 ## 2.0.4 - Bugfix release
 

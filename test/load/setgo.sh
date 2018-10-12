@@ -4,7 +4,11 @@ set -m #job control
 
 function go() {
     pushd ../../server/eclipse-project
-    mvn clean compile exec:exec &
+    mvn clean compile
+    if [ $? -ge 1 ]; then
+        exit 1
+    fi
+    mvn exec:exec &
     sleep 10 # to boot
     popd
 }

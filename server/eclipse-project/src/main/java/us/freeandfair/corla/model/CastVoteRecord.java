@@ -67,15 +67,18 @@ import us.freeandfair.corla.util.SuppressFBWarnings;
                    @Index(name = "idx_cvr_county_sequence_number_type",
                           columnList = "county_id, sequence_number, record_type"),
                    @Index(name = "idx_cvr_county_imprinted_id_type",
-                          columnList = "county_id, imprinted_id, record_type")})
+                          columnList = "county_id, imprinted_id, record_type"),
+                   @Index(name = "idx_cvr_uri", columnList = "uri")})
 // this class has many fields that would normally be declared final, but
 // cannot be for compatibility with Hibernate and JPA.
-@SuppressWarnings("PMD.ImmutableField")
+@SuppressWarnings({"PMD.ImmutableField",
+                    // I agreed but let's put if off for now
+                   "PMD.TooManyMethods"})
 // this FindBugs warning is for the transient field, which we know will not be
 // restored when the class is unserialized, because we intentionally made it
 // transient so it wouldn't be. Since that's what "transient" means.
 @SuppressFBWarnings("SE_TRANSIENT_FIELD_NOT_RESTORED")
-public class CastVoteRecord implements Comparable<CastVoteRecord>,
+final public class CastVoteRecord implements Comparable<CastVoteRecord>,
                                        PersistentEntity,
                                        Serializable {
   /**
@@ -155,6 +158,11 @@ public class CastVoteRecord implements Comparable<CastVoteRecord>,
   private String my_imprinted_id;
 
   /**
+   * The countyid + imprinted ID for fast selection
+   */
+  private String uri;
+
+  /**
    * The ballot style of this cast vote record.
    */
   @Column(updatable = false, nullable = false)
@@ -169,6 +177,7 @@ public class CastVoteRecord implements Comparable<CastVoteRecord>,
                    joinColumns = @JoinColumn(name = "cvr_id",
                                              referencedColumnName = "my_id"))
   private List<CVRContestInfo> my_contest_info = new ArrayList<>();
+
 
   /**
    * A transient flag that indicates whether this CVR was audited; this is only
@@ -227,6 +236,7 @@ public class CastVoteRecord implements Comparable<CastVoteRecord>,
     if (the_contest_info != null) {
       my_contest_info.addAll(the_contest_info);
     }
+    this.setUri();
   }
 
   /**
@@ -321,6 +331,41 @@ public class CastVoteRecord implements Comparable<CastVoteRecord>,
    */
   public String ballotType() {
     return my_ballot_type;
+  }
+
+
+  /** get the uri for fast selection **/
+  public String getUri() {
+    return this.uri;
+  }
+
+  /** set the uri for fast selection **/
+  public void setUri() {
+    String cvrOrAcvr;
+    if (recordType() == RecordType.UPLOADED
+        || recordType() == RecordType.PHANTOM_RECORD) {
+      // phantoms play the role of uploaded cvrs
+      cvrOrAcvr = "cvr";
+    } else {
+      // auditor entered (or ballot not found)
+      cvrOrAcvr = "acvr";
+    }
+    this.uri = String.format("%s:%s:%s-%s-%s",
+                             cvrOrAcvr,
+                             countyID(),
+                             scannerID(),
+                             batchID(),
+                             recordID());
+
+  }
+
+  /** link to a bmi for fast selection **/
+  public String bmiUri() {
+    return String.format("%s:%s:%s-%s",
+                         "bmi",
+                         countyID(),
+                         scannerID(),
+                         batchID());
   }
 
   /**
