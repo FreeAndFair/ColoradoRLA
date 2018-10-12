@@ -13,9 +13,9 @@ export const endpoint = (path: string) => `${endpointPrefix}/${path}`;
 
 export const timezone = 'America/Denver';
 
-export const helpEmail = 'help@example.com';
+export const helpEmail = 'voting.systems@sos.state.co.us';
 
-export const helpTel = '555-555-5555';
+export const helpTel = '877-436-5677';
 
 export const pollDelay
     = debug

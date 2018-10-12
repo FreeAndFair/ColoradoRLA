@@ -16,8 +16,8 @@ const MissedDeadlinePage = () => {
             <div>
                 <div className='pt-card'>
                     You are unable to upload a file because the deadline has passed and the
-                    audit has begun. Please contact the CDOS voting systems team at
-                    <span>{ config.helpEmail }</span> or { config.helpTel } for assistance.
+                    audit has begun. Please contact the CDOS voting systems team at&nbsp;
+                    <strong>{ config.helpEmail }</strong> or <strong>{ config.helpTel }</strong> for assistance.
                 </div>
             </div>
         </div>
