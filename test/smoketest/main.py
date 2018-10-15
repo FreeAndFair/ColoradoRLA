@@ -799,7 +799,7 @@ def county_audit(ac, county_id):
             logging.debug('ballot-not-found for %s' % acvr['contest_info'])
             r = test_endpoint_json(ac, county_s, "/ballot-not-found", {'id': acvr['id']})
         else:
-            logging.info(26,"Submitting aCVR: %s" % json.dumps(acvr))
+            logging.info("Submitting aCVR: %s" % json.dumps(acvr))
             test_endpoint_json(ac, county_s, "/upload-audit-cvr",
                                {'cvr_id': selected[i]['db_id'], 'audit_cvr': acvr}, show=False)
 
@@ -995,7 +995,7 @@ def main():
     FORMAT = '%(asctime)-15s %(levelname)s %(name)s %(message)s'
     logging.basicConfig(stream=sys.stdout, level=ac.args.debuglevel, format=FORMAT)
 
-    # Define a standalone logging to get timestamped results sent to stdout
+    # Define a standalone logger to get timestamped results sent to stdout
     # creating a nice "print" statement with additional context added in
     ac.logconsole = logging.getLogger('console')
     ac.logconsole.propagate = False
@@ -1024,7 +1024,7 @@ def main():
     fields = [int(f) for f in ac.args.notfound_plan.split()]
     ac.nf_discrepancy_remainder, ac.nf_discrepancy_cycle = fields
 
-    # ac.logconsole.info("Arguments: %s" % ac.args)
+    logging.debug("Arguments: %s" % ac.args)
 
     Pause.max_pause = ac.args.time_delay
     Pause.min_pause = ac.args.lower_time_delay
@@ -1134,10 +1134,10 @@ def main():
     r = test_endpoint_get(ac, ac.state_s, "/contest")
     contests = r.json()
 
-    # for i, contest in enumerate(contests):
-    #       print("Contest {} in county_id {county_id} contest_id {id}: vote for {votes_allowed} in {name}".format(i, **contest))
+    for i, contest in enumerate(contests):
+          logging.debug("Contest {} in county_id {county_id} contest_id {id}: vote for {votes_allowed} in {name}".format(i, **contest))
 
-    logging.log(5, "Contests: %s" % contests)
+    logging.info("Contests: %s" % contests)
 
     ac.audited_contests = []
 
@@ -1156,12 +1156,41 @@ def main():
     if "dos_start" in ac.args.commands:
         dos_start(ac)
 
+    print()
+
     if "county_audit" in ac.args.commands:
-        if ac.args.check_audit_size:
-            check_audit_size(ac)
+        round = 0
+        alldone = False
+
+        while (ac.args.rounds == -1) or (round < ac.args.rounds):
+            if ac.args.check_audit_size:
+                check_audit_size(ac)
+
+            r = test_endpoint_get(ac, ac.state_s, "/dos-asm-state")
+            current_state = r.json()['current_state']
+            if current_state == "DOS_AUDIT_COMPLETE":
+                alldone = True
+                break
+            elif current_state != "DOS_AUDIT_ONGOING":
+                print("Not in DOS_AUDIT_ONGOING state, can't audit")
+                break
+            round += 1
+            print("Start Round %d" % round)
+            for county_id in ac.args.counties:
+                # TODO: really needs to track each individual county for being done....
+                remaining = county_audit(ac, county_id)
+
+            print()
+            ac.round += 1
+            # Note, may get Illegal transition on ASM... (DOS_AUDIT_COMPLETE, DOS_START_ROUND_EVENT)
+            r = test_endpoint_json(ac, ac.state_s, "/start-audit-round",
+                                   { "multiplier": 1.0, "use_estimates": True})
+
+        if alldone:
+            print("State audit complete")
+
         for county_id in ac.args.counties:
-            # TODO: really needs to track each individual county for being done....
-            remaining = county_audit(ac, county_id)
+            county_wrapup(ac, county_id)
 
     if "dos_wrapup" in ac.args.commands:
         dos_wrapup(ac)
