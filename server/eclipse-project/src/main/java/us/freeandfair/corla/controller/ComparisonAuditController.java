@@ -556,6 +556,7 @@ public final class ComparisonAuditController {
       // FIXME audited prefix length might not mean the same things that
       // it once meant.
       cdb.setAuditedPrefixLength(index + round.startAuditedPrefixLength());
+      cdb.updateAuditStatus();
     }
   }
 
