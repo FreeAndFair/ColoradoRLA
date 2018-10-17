@@ -96,7 +96,7 @@ for c in 1 2 3 4 5 6 7 8 9 10; do
  ./main.py -c $c -f neal_ignore/d0-n50000.csv county_setup &
 done
 wait
-./main.py dos_start -C 1 
+./main.py dos_start -C 1
 for c in 1 2 3 4 5 6 7 8 9 10; do ./main.py -c $c county_audit &
 wait
 done
@@ -141,7 +141,7 @@ from __future__ import (print_function, division,
                         absolute_import, unicode_literals)
 import sys
 import codecs
-import os 
+import os
 import operator
 import argparse
 from argparse import Namespace
@@ -349,7 +349,7 @@ def test_endpoint_json(ac, s, path, data, show=True):
 
         if s != ac.state_s:
             logging.warn("County: %s" % test_endpoint_get(ac, s, "/audit-board-asm-state", show=False).json()['current_state'])
-            
+
     return r
 
 
@@ -696,6 +696,44 @@ def start_audit_round(ac):
     logging.debug("dos-dashboard: %s" % r.json())
 
 
+def audit_board_set():
+    'A default audit board placeholder. Maybe not a function? Always?'
+    return([{"first_name": "Mary",
+             "last_name": "Doe",
+             "political_party": "Democrat"},
+            {"first_name": "John",
+             "last_name": "Doe",
+             "political_party": "Republican"}])
+
+
+def signin_audit_board(ac, county_s, county_id):
+    'Signin a single default audit board for `county_id`'
+    r = test_endpoint_json(ac, county_s, "/set-audit-board-count",
+                           {"count": 1})
+    r = test_endpoint_json(ac, county_s, "/audit-board-sign-in",
+                           {'index': 0, 'audit_board': audit_board_set()})
+
+def signoff_audit_round(ac, county_s, county_id):
+    # This one currently doesn't actually include 'political_party', but this still seems to work
+    sign_off_request = {'index': 0, 'audit_board': audit_board_set()}
+    r = test_endpoint_json(ac, county_s, "/sign-off-audit-round", sign_off_request)
+
+def login_audit_board(ac):
+    'Login to a county and sign-in one default audit board. Should be used with `-c n` to specify counties lest the default be used!'
+    for county_id in ac.args.counties:
+        county_s = requests_retry_session()
+        county_login(ac, county_s, county_id)
+        signin_audit_board(ac, county_s, county_id)
+
+def login_signoff_round(ac):
+    'Login to a county and sign-off on a round as the default audit board. Should be used with `-c n` to specify counties lest the default be used!'
+    for county_id in ac.args.counties:
+        county_s = requests_retry_session()
+        county_login(ac, county_s, county_id)
+        signin_audit_board(ac, county_s, county_id)
+        signoff_audit_round(ac, county_s, county_id)
+
+
 def county_audit(ac, county_id):
     'Audit board uploads ACVRs from a county. Return estimated remaining ballots to audit'
 
@@ -708,21 +746,7 @@ def county_audit(ac, county_id):
     if county_dashboard['asm_state'] == "COUNTY_AUDIT_COMPLETE":
         return(True)
 
-    audit_board_set = [{"first_name": "Mary",
-                        "last_name": "Doe",
-                        "political_party": "Democrat"},
-                       {"first_name": "John",
-                        "last_name": "Doe",
-                        "political_party": "Republican"}]
-
-    audit_board_count_request = {"count": 1}
-    sign_in_request = {'index': 0, 'audit_board': audit_board_set}
-
-    # This one currently doesn't actually include 'political_party', but this still seems to work
-    sign_off_request = {'index': 0, 'audit_board': audit_board_set}
-
-    r = test_endpoint_json(ac, county_s, "/set-audit-board-count", audit_board_count_request)
-    r = test_endpoint_json(ac, county_s, "/audit-board-sign-in", sign_in_request)
+    signin_audit_board(ac, county_s, county_id)
 
     # Print this tool's notion of what should be audited, based on seed etc.
     # for auditing the audit.
@@ -747,6 +771,7 @@ def county_audit(ac, county_id):
 
     if len(selected) < 1:
         logging.warn("No ballots_to_audit")
+        #return(False) ?
 
     for i in range(len(selected)):
         if ac.args.debuglevel >= logging.INFO:
@@ -775,7 +800,7 @@ def county_audit(ac, county_id):
         if (total_audited % ac.discrepancy_cycle == ac.discrepancy_remainder
               and  total_audited <= ac.args.plan_limit):
 
-            # TODO: use contest info to look for the contests and add votes for losers 
+            # TODO: use contest info to look for the contests and add votes for losers
 
             message = "No Discrepancy, contest %d not in this CVR" % ac.audited_contests[0]
             for ci in acvr['contest_info']:
@@ -810,7 +835,7 @@ def county_audit(ac, county_id):
     # in case the this didn't happen in the last iteration (because it was a phantom record)
     county_dashboard = get_county_dashboard(ac, county_s, county_id, i, acvr)
 
-    r = test_endpoint_json(ac, county_s, "/sign-off-audit-round", sign_off_request)
+    signoff_audit_round(ac, county_s, county_id)
 
     remaining = county_dashboard['ballots_remaining_in_round']
     if remaining <= 0:
@@ -1120,6 +1145,12 @@ def main():
 
     if "start_audit_round" in ac.args.commands:
         start_audit_round(ac)
+
+    if "login_audit_board" in ac.args.commands:
+        login_audit_board(ac)
+
+    if "login_signoff_round" in ac.args.commands:
+        login_signoff_round(ac)
 
     if "county_setup" in ac.args.commands:
         for county_id in ac.args.counties:
