@@ -10,7 +10,11 @@ with the following tags indicating the components affected:
 - `TOOLING` refers to changes to tooling that falls outside the UI or API, such
   as the RLA export.
 
-## 2.0.6 - SNAPSHOT - In development
+## 2.0.7 - SNAPSHOT - In development
+
+## 2.0.6 - Bugfix release
+
+- [API - A county with no work must still sign off before the next round][pr83]
 
 ## 2.0.5 - Bugfix release
 
@@ -143,3 +147,4 @@ This is [FreeAndFair's most recent tag][1.1.0.3].
 [pr79]: https://github.com/democracyworks/ColoradoRLA/pull/79
 [pr80]: https://github.com/democracyworks/ColoradoRLA/pull/80
 [pr81]: https://github.com/democracyworks/ColoradoRLA/pull/81
+[pr83]: https://github.com/democracyworks/ColoradoRLA/pull/83
