@@ -407,7 +407,7 @@ SEQUENCE_SUBSEQUENCE_QUERY = """
        round AS r
     WHERE
        r.dashboard_id = %(county_id)s
-    ORDER BY county_id, round_number
+    ORDER BY round_number
     ;
 """
 
@@ -429,13 +429,21 @@ CVR_SELECTION_QUERY = """
 """
 
 def random_sequence(args, cursor, county_id, county_name):
-    """Export list of ballots to be audited by county in random selection order, with dups
+    """Export list of ballots to be audited by county in random selection order,
+    with dups, with round numbers.
 
-    cursor.fetchall should return .... FIXME
+    SEQUENCE_SUBSEQUENCE_QUERY retrieves the ballot_sequence and audit_subsequence
+    data for each county, for each round.  Each is a list of cvr_ids.
+
+    audit_subsequence is in random selection order, and includes duplicates.
+
+    ballot_sequence is in location order, and does not include duplicates,
+    or phantom records (paper ballots for which cvrs don't exist), or cvrs which
+    were already selected in previous rounds
     """
 
     """
-    Some alternate approaches:
+    Some alternate proposed approaches:
     Probably easiest for reporting to just use the sequences in the new round table to fetch the CVRs from the dB directly (use the ballot sequences to fetch them in bulk and then the audit subsequences to present the fetched records in order).
     Another straightforward thing to do: get the cvr IDs from the ballot sequence list (because the ballots returned from the endpoint are in the same order) and use those to put the ballots in audit sequence order based on the audit subsequence list.
     """
@@ -443,14 +451,15 @@ def random_sequence(args, cursor, county_id, county_name):
     try:
         cursor.execute(SEQUENCE_SUBSEQUENCE_QUERY, {'county_id': county_id})
 
-        rows = cursor.fetchall()
+        rounds = cursor.fetchall()
 
-        if not rows:
+        # Skip the county entirely if there are no rounds with selections
+        if not rounds:
             return
 
-        logging.debug("Row count: %d" % len(rows))
+        logging.debug("Row count: %d" % len(rounds))
 
-        # Build a dictionary of cvrs, to replay according to the random sequence
+        # We will build a cache of cvrs, for easy retrieval as we walk the random sequence
         cvrs = {}
 
 
@@ -461,22 +470,38 @@ def random_sequence(args, cursor, county_id, county_name):
             print("county_name,round_number,random_sequence_index,scanner_id,batch_id,record_id,imprinted_id,ballot_type",
                   file=stream)
             prefix = 0
-            for sequences in rows:
-                round_number = sequences['round_number']
-                ballot_sequence = json.loads(sequences['ballot_sequence'])
-                audit_subsequence = json.loads(sequences['audit_subsequence'])
+
+            for round in rounds:
+                round_number = round['round_number']
+                ballot_sequence = json.loads(round['ballot_sequence'])
+                audit_subsequence = json.loads(round['audit_subsequence'])
+
+                # Get a crude idea of whether the audit_subsequence is in random order.
+                # How many times is a given entry less than the previous one, called a jumpback?
+                old_cvr_id = 0
+                jumpbacks = 0
+                for cvr_id in audit_subsequence:
+                    if cvr_id < old_cvr_id:
+                        jumpbacks += 1
+                    old_cvr_id = cvr_id
 
                 logging.debug("random_sequence: ballot_sequence for county %s, round %d: %s" %
                               (county_name, round_number, ballot_sequence))
-                logging.debug("random_sequence: audit_subsequence for county %s, round %d: %s" %
-                              (county_name, round_number, audit_subsequence))
+                logging.debug("random_sequence: %d out of %d jumpbacks in audit_subsequence for county %s, round %d: %s" %
+                              (jumpbacks, len(audit_subsequence), county_name, round_number, audit_subsequence))
 
-                cursor.execute(CVR_SELECTION_QUERY,
-                               {'cvr_id_list': tuple(ballot_sequence)})
+                # If there are cvrs to audit in this round, cache them
+                if len(ballot_sequence) != 0:
+                    # Retrieve and record information on all the unique cvr_ids reported
+                    cursor.execute(CVR_SELECTION_QUERY,
+                                   {'cvr_id_list': tuple(ballot_sequence)})
 
-                for cvr in cursor.fetchall():
-                    cvrs[cvr['id']] = cvr
+                    for cvr in cursor.fetchall():
+                        cvrs[cvr['id']] = cvr
 
+                # logging.debug("cvrs: %s" % cvrs)
+
+                # Print a row for each audited cvr_id, in random selection order
                 for i, cvr_id in enumerate(audit_subsequence):
                     cvr = cvrs[cvr_id]
                     print('"%s",%d,%d,%s,%s,%d,"%s","%s"' % (
@@ -499,7 +524,7 @@ def random_sequence(args, cursor, county_id, county_name):
         print("I/O error({0}): {1}".format(e.errno, e.strerror))
 
     except Exception as e:
-        logging.error("rla_export: random_sequence: failure on %s: %s. Removing temp file %s" % (filename, e, stream.name))
+        logging.error("rla_export: random_sequence: failure on %s: %s. Removing temp file %s" % (filename, repr(e), stream.name))
         os.remove(stream.name)
 
 def show_elapsed(r, *args, **kwargs):
