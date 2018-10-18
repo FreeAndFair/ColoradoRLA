@@ -22,7 +22,7 @@ The Free &amp; Fair ruleset checks Java code for possible issues.
   </rule>
  <rule ref="rulesets/java/controversial.xml/AvoidLiteralsInIfCondition">
    <properties>
-     <property name="ignoreMagicNumbers" value="-1,0,0L"/>
+     <property name="ignoreMagicNumbers" value="-1,0,0L,1"/>
    </properties>
  </rule>
 

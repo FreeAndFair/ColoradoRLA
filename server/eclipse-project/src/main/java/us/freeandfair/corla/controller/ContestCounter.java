@@ -3,7 +3,7 @@ package us.freeandfair.corla.controller;
 
 
 import java.math.BigDecimal;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -27,7 +27,7 @@ public final class ContestCounter {
    * Class-wide logger
    */
   public static final Logger LOGGER =
-      LogManager.getLogger(ContestCounter.class);
+    LogManager.getLogger(ContestCounter.class);
 
   /** prevent contruction **/
   private ContestCounter() {
@@ -52,22 +52,68 @@ public final class ContestCounter {
   }
 
   /**
+   * Calculates all the pairwise margins - like a cross product - using
+   * the vote totals. When there are no losers, all margins are zero.
+   *
+   * @param winners those who won the contest
+   * @param losers those who did not win the contest
+   * @param voteTotals a map of choice name to number of votes received
+   * @return a Set of Integers representing all margins between winners
+   * and losers
+   */
+  public static Set<Integer> pairwiseMargins(final Set<String> winners,
+                                             final Set<String> losers,
+                                             final Map<String, Integer> voteTotals) {
+    final Set<Integer> margins = new HashSet<>();
+
+    if (losers.isEmpty()) {
+      margins.add(0);
+    } else {
+      for (final String w : winners) {
+        for (final String l : losers) {
+          margins.add(voteTotals.get(w) - voteTotals.get(l));
+        }
+      }
+    }
+
+    return margins;
+  }
+
+  /**
    * Set voteTotals on CONTEST based on all counties that have that
    * Contest name in their uploaded CVRs
    **/
-  public static ContestResult countContest(final Map.Entry<String,
-                                           List<CountyContestResult>>
-                                           countyContestResults) {
-    final ContestResult contestResult =
-      ContestResultQueries.findOrCreate(countyContestResults.getKey());
+  public static ContestResult
+    countContest(final Map.Entry<String, List<CountyContestResult>> countyContestResults) {
+    final String contestName = countyContestResults.getKey();
+    final ContestResult contestResult = ContestResultQueries.findOrCreate(contestName);
 
     final Map<String,Integer> voteTotals =
       accumulateVoteTotals(countyContestResults.getValue().stream()
                            .map((cr) -> cr.voteTotals())
                            .collect(Collectors.toList()));
     contestResult.setVoteTotals(voteTotals);
-    // TODO how many winners are allowed?
-    contestResult.setWinners(winners(voteTotals));
+
+    int numWinners;
+    final Set<Integer> winnersAllowed = countyContestResults.getValue().stream()
+      .map(x -> x.winnersAllowed())
+      .collect(Collectors.toSet());
+
+    if (winnersAllowed.isEmpty()) {
+      LOGGER.error(String.format("[countContest: %s doesn't have any winners allowed."
+                                 + " Assuming 1 allowed! Check the CVRS!", contestName));
+      numWinners = 1;
+    } else {
+      if (winnersAllowed.size() > 1) {
+        LOGGER.error(String.format("[countContest: County results for %s contain different"
+                                   + " numbers of winners allowed: %s. Check the CVRS!",
+                                   contestName, winnersAllowed));
+      }
+      numWinners = Collections.max(winnersAllowed);
+    }
+
+    contestResult.setWinnersAllowed(numWinners);
+    contestResult.setWinners(winners(voteTotals, numWinners));
     contestResult.setLosers(losers(voteTotals, contestResult.getWinners()));
 
     contestResult.addContests(countyContestResults.getValue().stream()
@@ -78,19 +124,22 @@ public final class ContestCounter {
                               .collect(Collectors.toSet()));
 
     final Long ballotCount = BallotManifestInfoQueries.totalBallots(contestResult.countyIDs());
-    final Integer minMargin = margin(contestResult.getVoteTotals());
+    final Set<Integer> margins = pairwiseMargins(contestResult.getWinners(),
+                                                  contestResult.getLosers(),
+                                                  voteTotals);
+    final Integer minMargin = Collections.min(margins);
+    final Integer maxMargin = Collections.max(margins);
     final BigDecimal dilutedMargin = Audit.dilutedMargin(minMargin, ballotCount);
     // dilutedMargin of zero is ok here, it means the contest is uncontested
     // and the contest will not be auditable, so samples should not be selected for it
     contestResult.setBallotCount(ballotCount);
     contestResult.setMinMargin(minMargin);
+    contestResult.setMaxMargin(maxMargin);
     contestResult.setDilutedMargin(dilutedMargin);
 
     if (ballotCount == 0L) {
-      LOGGER.error("contest has no ballot manifests!:"
-                   + contestResult.getContestName()
-                   + " for countyIDs: "
-                   + contestResult.countyIDs());
+      LOGGER.error(String.format("[countContest: %s has no ballot manifests for"
+                                 + " countyIDs: %s", contestName, contestResult.countyIDs()));
     }
 
     return contestResult;
@@ -114,28 +163,20 @@ public final class ContestCounter {
     return acc;
   }
 
-  /** extract totals, then sort reversed so the winner is first  **/
-  public static List<Entry> rankTotals(final Map<String,Integer> voteTotals) {
+  /**
+   * Ranks a list of the choices in descending order by number of votes
+   * received.
+   **/
+  public static List<Entry<String, Integer>> rankTotals(final Map<String,Integer> voteTotals) {
     return voteTotals.entrySet().stream()
-      .sorted(Comparator.comparing((Entry e) -> -(Integer)e.getValue()))
+      .sorted(Collections.reverseOrder(Entry.comparingByValue()))
       .collect(Collectors.toList());
-  }
-
-  /** gap between winner and runner-up **/
-  public static Integer margin(final Map<String,Integer> voteTotals) {
-    final List<Entry> totals = rankTotals(voteTotals);
-    final int two = 2;//pmd
-    if (two <= totals.size()) {
-      return (Integer)totals.get(0).getValue() - (Integer)totals.get(1).getValue();
-    } else {
-      // uncontested
-      return 0;
-    }
   }
 
   /**
    * Find the set of winners for the ranking of voteTotals. Assumes only
    * one winner allowed.
+   *
    * @param voteTotals a map of choice name to number of votes
    */
   public static Set<String> winners(final Map<String,Integer> voteTotals) {
@@ -143,7 +184,8 @@ public final class ContestCounter {
   }
 
   /**
-   * Find the set of winners for the ranking of voteTotals.
+   * Find the set of winners for the ranking of voteTotals
+   *
    * @param voteTotals a map of choice name to number of votes
    * @param winnersAllowed how many can win this contest?
    */
@@ -152,13 +194,13 @@ public final class ContestCounter {
     return rankTotals(voteTotals).stream()
       .limit(winnersAllowed)
       .map(Entry::getKey)
-      .map(k -> k.toString()) // types?
       .collect(Collectors.toSet());
   }
 
   /**
-   * Find the set of losers give a ranking of voteTotals and some set
+   * Find the set of losers given a ranking of voteTotals and some set
    * of contest winners.
+   *
    * @param voteTotals a map of choice name to number of votes
    * @param winners the choices that aren't losers
    */
