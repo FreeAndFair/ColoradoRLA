@@ -13,6 +13,7 @@ with the following tags indicating the components affected:
 ## 2.0.7 - SNAPSHOT - In development
 
 - [API - Multi-winner contests consider the right margins][pr85]
+- [API - Normalize contest choices][pr86]
 
 ## 2.0.6 - Bugfix release
 
@@ -151,3 +152,4 @@ This is [FreeAndFair's most recent tag][1.1.0.3].
 [pr81]: https://github.com/democracyworks/ColoradoRLA/pull/81
 [pr83]: https://github.com/democracyworks/ColoradoRLA/pull/83
 [pr85]: https://github.com/democracyworks/ColoradoRLA/pull/85
+[pr86]: https://github.com/democracyworks/ColoradoRLA/pull/86
