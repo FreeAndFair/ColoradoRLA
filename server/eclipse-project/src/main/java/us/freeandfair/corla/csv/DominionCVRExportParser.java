@@ -32,8 +32,10 @@ import javax.persistence.PersistenceException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.text.WordUtils;
+import org.apache.log4j.Logger;
+import org.apache.log4j.LogManager;
 
-import us.freeandfair.corla.Main;
 import us.freeandfair.corla.model.CVRContestInfo;
 import us.freeandfair.corla.model.CastVoteRecord;
 import us.freeandfair.corla.model.CastVoteRecord.RecordType;
@@ -55,6 +57,12 @@ import us.freeandfair.corla.util.ExponentialBackoffHelper;
 @SuppressWarnings({"PMD.GodClass", "PMD.CyclomaticComplexity", "PMD.ExcessiveImports",
     "PMD.ModifiedCyclomaticComplexity", "PMD.StdCyclomaticComplexity"})
 public class DominionCVRExportParser implements CVRExportParser {
+  /**
+   * Class-wide logger
+   */
+  public static final Logger LOGGER =
+    LogManager.getLogger(DominionCVRExportParser.class);
+
   /**
    * The name of the transaction size property.
    */
@@ -340,34 +348,36 @@ public class DominionCVRExportParser implements CVRExportParser {
   /**
    * Create contest and result objects for use later in parsing.
    *
-   * @param the_choice_line The CSV line containing the choice information.
-   * @param the_expl_line The CSV line containing the choice explanations.
-   * @param the_contest_names The list of contest names.
-   * @param the_votes_allowed The table of votes allowed values.
-   * @param the_choice_counts The table of contest choice counts.
+   * @param choiceLine The CSV line containing the choice information.
+   * @param explanationLine The CSV line containing the choice explanations.
+   * @param contestNames The list of contest names.
+   * @param votesAllowed The table of votes allowed values.
+   * @param choiceCounts The table of contest choice counts.
    */
-  private void addContests(final CSVRecord the_choice_line,
-                           final CSVRecord the_expl_line,
-                           final List<String> the_contest_names,
-                           final Map<String, Integer> the_votes_allowed,
-                           final Map<String, Integer> the_choice_counts) {
+  private void addContests(final CSVRecord choiceLine,
+                           final CSVRecord explanationLine,
+                           final List<String> contestNames,
+                           final Map<String, Integer> votesAllowed,
+                           final Map<String, Integer> choiceCounts) {
     int index = my_first_contest_column;
     int contest_count = 0;
-    for (final String cn : the_contest_names) {
+
+    for (final String contestName : contestNames) {
       final List<Choice> choices = new ArrayList<Choice>();
-      final int end = index + the_choice_counts.get(cn);
-      boolean write_in = false;
+      final int end = index + choiceCounts.get(contestName);
+      boolean isWriteIn = false;
+
       while (index < end) {
-        final String ch = the_choice_line.get(index).trim();
-        final String ex = the_expl_line.get(index).trim();
+        final String choice = WordUtils.capitalizeFully(choiceLine.get(index).trim());
+        final String explanation = explanationLine.get(index).trim();
         // "Write-in" is a fictitious candidate that denotes the beginning of
         // the list of qualified write-in candidates
-        final boolean fictitious = "Write-in".equals(ch);
-        choices.add(new Choice(ch, ex, write_in, fictitious));
-        if (fictitious) {
+        final boolean isFictitious = "Write-in".equals(choice);
+        choices.add(new Choice(choice, explanation, isWriteIn, isFictitious));
+        if (isFictitious) {
           // consider all subsequent choices in this contest to be qualified
           // write-in candidates
-          write_in = true;
+          isWriteIn = true;
         }
         index = index + 1;
       }
@@ -377,9 +387,11 @@ public class DominionCVRExportParser implements CVRExportParser {
       // note that we're using the "Vote For" number as the number of winners
       // allowed as well, because the Dominion format doesn't give us that
       // separately
-      final Contest c = new Contest(cn, my_county, "", choices,
-                                    the_votes_allowed.get(cn), the_votes_allowed.get(cn),
+      final Contest c = new Contest(contestName, my_county, "", choices,
+                                    votesAllowed.get(contestName), votesAllowed.get(contestName),
                                     contest_count);
+      LOGGER.debug(String.format("[addContests: county=%s, contest=%s", my_county.name(), c));
+
       contest_count = contest_count + 1;
       Persistence.saveOrUpdate(c);
       final CountyContestResult r =
@@ -420,7 +432,7 @@ public class DominionCVRExportParser implements CVRExportParser {
     while (!success && retries < UPDATE_RETRIES) {
       try {
         retries = retries + 1;
-        Main.LOGGER.debug("updating county " + my_county.id() + " dashboard, attempt " +
+        LOGGER.debug("updating county " + my_county.id() + " dashboard, attempt " +
                           retries);
         Persistence.beginTransaction();
         final CountyDashboard cdb =
@@ -448,7 +460,7 @@ public class DominionCVRExportParser implements CVRExportParser {
         try {
           final long delay =
               ExponentialBackoffHelper.exponentialBackoff(retries, TRANSACTION_SLEEP_MSEC);
-          Main.LOGGER.info("retrying county " + my_county.id() +
+          LOGGER.info("retrying county " + my_county.id() +
                            " dashboard update in " + delay + "ms");
           Thread.sleep(delay);
         } catch (final InterruptedException ex) {
@@ -459,7 +471,7 @@ public class DominionCVRExportParser implements CVRExportParser {
     // we always need a running transaction
     Persistence.beginTransaction();
     if (success && retries > 1) {
-      Main.LOGGER.info("updated state machine for county " + my_county.id() +
+      LOGGER.info("updated state machine for county " + my_county.id() +
                        " in " + retries + " tries");
     } else if (!success) {
       throw new PersistenceException("could not update state machine for county " +
@@ -532,7 +544,7 @@ public class DominionCVRExportParser implements CVRExportParser {
       for (final CountyContestResult r : my_results) {
         r.addCVR(new_cvr);
       }
-      Main.LOGGER.debug("parsed CVR: " + new_cvr);
+      LOGGER.debug("parsed CVR: " + new_cvr);
       return new_cvr;
     } catch (final NumberFormatException e) {
       return null;
@@ -648,7 +660,7 @@ public class DominionCVRExportParser implements CVRExportParser {
       return my_parse_success;
     }
 
-    Main.LOGGER.info("parsing CVR export for county " + my_county.id() +
+    LOGGER.info("parsing CVR export for county " + my_county.id() +
                      ", batch_size=" + my_batch_size +
                      ", transaction_size=" + my_transaction_size);
 
@@ -698,14 +710,14 @@ public class DominionCVRExportParser implements CVRExportParser {
           final CastVoteRecord cvr = extractCVR(cvr_line);
           if (cvr == null) {
             // we don't record the CVR since it didn't parse
-            Main.LOGGER.error("Could not parse malformed CVR record (" + cvr_line + ")");
+            LOGGER.error("Could not parse malformed CVR record (" + cvr_line + ")");
             my_error_message = "malformed CVR record (" + cvr_line + ")";
             result = false;
             break;
           } else {
             my_record_count = my_record_count + 1;
             if (my_record_count % PROGRESS_INTERVAL == 0) {
-              Main.LOGGER.info("parsed " + my_record_count +
+              LOGGER.info("parsed " + my_record_count +
                                " CVRs for county " + my_county.id());
             }
           }
@@ -726,7 +738,7 @@ public class DominionCVRExportParser implements CVRExportParser {
       }
     } catch (final NoSuchElementException | StringIndexOutOfBoundsException |
                    ArrayIndexOutOfBoundsException e) {
-      Main.LOGGER.error("Could not parse CVR file because it was malformed");
+      LOGGER.error("Could not parse CVR file because it was malformed");
       my_error_message = "malformed CVR file";
       result = false;
     }
