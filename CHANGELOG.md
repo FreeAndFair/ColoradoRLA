@@ -12,6 +12,8 @@ with the following tags indicating the components affected:
 
 ## 2.0.7 - SNAPSHOT - In development
 
+- [API - Multi-winner contests consider the right margins][pr85]
+
 ## 2.0.6 - Bugfix release
 
 - [API - A county with no work must still sign off before the next round][pr83]
@@ -148,3 +150,4 @@ This is [FreeAndFair's most recent tag][1.1.0.3].
 [pr80]: https://github.com/democracyworks/ColoradoRLA/pull/80
 [pr81]: https://github.com/democracyworks/ColoradoRLA/pull/81
 [pr83]: https://github.com/democracyworks/ColoradoRLA/pull/83
+[pr85]: https://github.com/democracyworks/ColoradoRLA/pull/85

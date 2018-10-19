@@ -1,0 +1,5 @@
+CountyID,TabulatorID,BatchID,NumBallots,StorageLocation
+Fremont,4,1,15,Bin 1
+Fremont,4,2,13,Bin 2
+Fremont,5,1,15,Bin 3
+Fremont,5,2,13,Bin 4

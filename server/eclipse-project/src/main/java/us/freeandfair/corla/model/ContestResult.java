@@ -96,6 +96,12 @@ public class ContestResult implements PersistentEntity, Serializable {
   private Long version;
 
   /**
+   * The winners allowed.
+   */
+  @Column(name = "winners_allowed")
+  private Integer winnersAllowed;
+
+  /**
    * The set of contest winners.
    */
   @Column(name = "winners", columnDefinition = TEXT)
@@ -148,16 +154,22 @@ public class ContestResult implements PersistentEntity, Serializable {
   private String contestName;
 
   /**
-   * The gap between winner and second place divided by total number of ballots.
+   * The margin divided by total number of ballots cast.
    */
   @Column(name = "diluted_margin")
   private BigDecimal dilutedMargin;
 
   /**
-   * The gap between winner and second place
+   * The smallest margin between any winner and loser of the contest
    */
   @Column(name = "min_margin")
   private Integer minMargin;
+
+  /**
+   * The largest margin between any winner and loser of the contest.
+   */
+  @Column(name = "max_margin")
+  private Integer maxMargin;
 
   /**
    * The number of ballots cast for this contest
@@ -293,6 +305,20 @@ public class ContestResult implements PersistentEntity, Serializable {
   }
 
   /**
+   * getter
+   */
+  public int winnersAllowed() {
+    return this.winnersAllowed;
+  }
+
+  /**
+   * setter
+   */
+  public void setWinnersAllowed(final int n) {
+    this.winnersAllowed = n;
+  }
+
+  /**
    * @param county the county owning the contest you want
    * @return the contest belonging to county
    */
@@ -374,10 +400,24 @@ public class ContestResult implements PersistentEntity, Serializable {
   }
 
   /**
-   * The margin between this contest's first and second place choice
+   * The smallest margin between any winner and loser of the contest
    */
   public Integer getMinMargin() {
     return this.minMargin;
+  }
+
+  /**
+   * set maxMargin.
+   */
+  public void setMaxMargin(final Integer maxMargin) {
+    this.maxMargin = maxMargin;
+  }
+
+  /**
+   * The largest margin between any winner and loser of the contest
+   */
+  public Integer getMaxMargin() {
+    return this.maxMargin;
   }
 
   /**
