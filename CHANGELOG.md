@@ -10,7 +10,9 @@ with the following tags indicating the components affected:
 - `TOOLING` refers to changes to tooling that falls outside the UI or API, such
   as the RLA export.
 
-## 2.0.7 - SNAPSHOT - In development
+## 2.0.8 - SNAPSHOT - In development
+
+## 2.0.7 - Bugfix release
 
 - [API - Multi-winner contests consider the right margins][pr85]
 - [API - Normalize contest choices][pr86]
