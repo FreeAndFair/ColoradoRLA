@@ -501,6 +501,8 @@ def random_sequence(args, cursor, county_id, county_name):
 
                 # logging.debug("cvrs: %s" % cvrs)
 
+                i = -1
+
                 # Print a row for each audited cvr_id, in random selection order
                 for i, cvr_id in enumerate(audit_subsequence):
                     cvr = cvrs[cvr_id]
