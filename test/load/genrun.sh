@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -m #job control
+
 # no whitespace in names, not sure how to support that yet...
 # TODO: split by newline somehow
 counties=( Adams
@@ -69,27 +71,32 @@ counties=( Adams
 
 # num ballots, margin for county, rest are margins for state-wide
 # remember to calculate margin by multiplying counties by ballot count for a total
-small=(5000 45 45 45);
+small=(64000 450 450 450);
 
 function import() {
     trap exit INT #easy quit
     countyId=1;
     for county in ${counties[*]}; do
-        echo "importing county ${countyId} ${county[0]}";
-        cvrFile=cvr-${county[0]}.csv;
-        ../smoketest/genelect.py ${small[*]} --county ${county[0]} > $cvrFile;
-        ../smoketest/main.py -c $countyId county_setup -f $cvrFile -F manifest-5000.csv;
-        rm $cvrFile;
-        ((countyId++));
-        if [ $countyId -gt $counties_todo ]; then
-            echo "done"
-            exit 0
-        fi
+            echo "importing county ${countyId} ${county[0]}";
+            cvrFile=cvr-${county[0]}.csv;
+            manifestFile=manifest-${small[0]}.csv
+            ballotCount=${small[0]}
+            sed "s/{ballot-count}/${ballotCount}/g" > $manifestFile < manifest-template.csv
+            ../smoketest/genelect.py ${small[*]} --county ${county[0]} > $cvrFile;
+            ../smoketest/main.py -c $countyId county_setup -f $cvrFile -F $manifestFile;
+            rm $cvrFile;
+            rm $manifestFile;
+            ((countyId++));
+            if [ $countyId -gt $counties_todo ]; then
+                echo "done"
+                exit 0
+            fi
     done
 }
 
 function init() {
     echo "defining audit partially";
+    # ../smoketest/main.py dos_init -r 0.01;
     ../smoketest/main.py dos_init;
 }
 

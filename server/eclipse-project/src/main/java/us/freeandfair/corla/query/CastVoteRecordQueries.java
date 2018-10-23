@@ -419,8 +419,8 @@ public final class CastVoteRecordQueries {
     final Set<CastVoteRecord> phantomRecords = tributes.stream()
       .filter(distinctByKey((Tribute t) -> {return t.uri();}))
       // is it faster to let the db do this with an except query?
-      .filter((Tribute t) -> {return !foundUris.contains(t.uri());})
-      .map(t -> (CastVoteRecord)phantomRecord(t))
+      .filter(t -> !foundUris.contains(t.uri()))
+      .map(t -> phantomRecord(t))
       .map(Persistence::persist)
       .collect(Collectors.toSet());
 

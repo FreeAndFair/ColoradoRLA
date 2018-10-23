@@ -1,2 +1,2 @@
 CountyID,ScannerID,BatchID,NumBallots,StorageLocation
-GenericCounty,1,1,5000,LOC-1
+GenericCounty,1,1,{ballot-count},LOC-1
