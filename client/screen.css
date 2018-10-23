@@ -328,6 +328,11 @@ th.rla-county-contest-info {
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
+    /* Prevent issues with text selection interfering with button clicks */
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .choice-name:hover {
