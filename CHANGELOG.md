@@ -10,8 +10,9 @@ with the following tags indicating the components affected:
 - `TOOLING` refers to changes to tooling that falls outside the UI or API, such
   as the RLA export.
 
-## 2.0.8 - SNAPSHOT - In development
+## 2.0.9 - SNAPSHOT - In development
 
+## 2.0.8 - Bugfix release
 - [API - change meaning of ballotsRemainingInCurrentRound][pr88]
 - [UI - Prevent text selection on audit buttons][pr90]
 
