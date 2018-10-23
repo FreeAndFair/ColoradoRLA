@@ -11,6 +11,7 @@ with the following tags indicating the components affected:
   as the RLA export.
 
 ## 2.0.8 - SNAPSHOT - In development
+- [API - change meaning of ballotsRemainingInCurrentRound][pr88]
 
 ## 2.0.7 - Bugfix release
 
@@ -155,3 +156,4 @@ This is [FreeAndFair's most recent tag][1.1.0.3].
 [pr83]: https://github.com/democracyworks/ColoradoRLA/pull/83
 [pr85]: https://github.com/democracyworks/ColoradoRLA/pull/85
 [pr86]: https://github.com/democracyworks/ColoradoRLA/pull/86
+[pr88]: https://github.com/democracyworks/ColoradoRLA/pull/88
