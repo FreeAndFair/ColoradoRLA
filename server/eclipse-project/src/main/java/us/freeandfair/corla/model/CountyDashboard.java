@@ -50,7 +50,6 @@ import javax.persistence.Version;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import us.freeandfair.corla.controller.BallotSelection;
 import us.freeandfair.corla.model.ImportStatus.ImportState;
 
 import us.freeandfair.corla.persistence.AuditSelectionIntegerMapConverter;
@@ -577,8 +576,6 @@ public class CountyDashboard implements PersistentEntity {
    * @return the number of ballots remaining in the current round, or 0
    * if there is no current round.
    */
-  // FIXME this is broken; round's expected and actual don't match what
-  // the dashboard sees.
   public int ballotsRemainingInCurrentRound() {
     final int result;
 
@@ -587,17 +584,16 @@ public class CountyDashboard implements PersistentEntity {
     } else {
 
       final Round round = currentRound();
-      final Integer prefix = BallotSelection.auditedPrefixLength(round.ballotSequence());
-      result = round.ballotSequence().size() - prefix;
+
+      result = round.ballotSequence().size() - this.auditedSampleCount();
 
       LOGGER.debug(String.format("[ballotsRemainingInCurrentRound:"
-                                 + " index=%d, result=%d, prefix=%d,"
+                                 + " index=%d, result=%d,"
                                  + " ballotSequence=%s"
                                  + " ballotSequence.size=%d"
                                  + " cdb.auditedSampleCount()=%d]",
                                  my_current_round_index,
                                  result,
-                                 prefix,
                                  round.ballotSequence(),
                                  round.ballotSequence().size(),
                                  this.auditedSampleCount()));
