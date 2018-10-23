@@ -585,7 +585,7 @@ public class CountyDashboard implements PersistentEntity {
 
       final Round round = currentRound();
 
-      result = round.ballotSequence().size() - this.auditedSampleCount();
+      result = round.ballotSequence().size() - round.actualCount();
 
       LOGGER.debug(String.format("[ballotsRemainingInCurrentRound:"
                                  + " index=%d, result=%d,"
