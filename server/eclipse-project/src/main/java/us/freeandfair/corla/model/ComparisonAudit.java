@@ -249,7 +249,7 @@ public class ComparisonAudit implements PersistentEntity {
    *
    * @param contestResult The contest result.
    * @param riskLimit The risk limit.
-   * @param dilutedMargin moo
+   * @param dilutedMargin μ
    * @param gamma γ
    * @param auditReason The audit reason.
    */
