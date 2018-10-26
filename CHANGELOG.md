@@ -12,7 +12,10 @@ with the following tags indicating the components affected:
 
 ## 2.0.9 - SNAPSHOT - In development
 
+- [API - Contests that are NOT_AUDITABLE don't impede progress][pr93]
+
 ## 2.0.8 - Bugfix release
+
 - [API - change meaning of ballotsRemainingInCurrentRound][pr88]
 - [INFRA - add dashboard polling load test script][pr89]
 - [UI - Prevent text selection on audit buttons][pr90]
@@ -163,3 +166,4 @@ This is [FreeAndFair's most recent tag][1.1.0.3].
 [pr88]: https://github.com/democracyworks/ColoradoRLA/pull/88
 [pr89]: https://github.com/democracyworks/ColoradoRLA/pull/89
 [pr90]: https://github.com/democracyworks/ColoradoRLA/pull/90
+[pr93]: https://github.com/democracyworks/ColoradoRLA/pull/93
