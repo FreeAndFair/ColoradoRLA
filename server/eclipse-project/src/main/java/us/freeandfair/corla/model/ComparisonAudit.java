@@ -562,7 +562,7 @@ public class ComparisonAudit implements PersistentEntity {
    */
   public void signalSampleAudited(final int count, final Long cvrID) {
     final boolean covered = isCovering(cvrID);
-    final boolean targeted = contestResult().getAuditReason().isTargeted();
+    final boolean targeted = isTargeted();
 
     if (targeted && !covered) {
       LOGGER.debug
@@ -608,7 +608,7 @@ public class ComparisonAudit implements PersistentEntity {
    */
   public void signalSampleUnaudited(final int count, final Long cvrID) {
     final boolean covered = isCovering(cvrID);
-    final boolean targeted = contestResult().getAuditReason().isTargeted();
+    final boolean targeted = isTargeted();
 
     if (targeted && !covered) {
       LOGGER.debug
@@ -654,6 +654,24 @@ public class ComparisonAudit implements PersistentEntity {
   /** was the given cvrid selected for this contest? **/
   public boolean isCovering(final Long cvrId) {
     return contestResult().getContestCVRIds().contains(cvrId);
+  }
+
+  /**
+   * Is this audit because of a targeted contest?
+   */
+  public boolean isTargeted() {
+    return this.contestResult().getAuditReason().isTargeted();
+  }
+
+  /**
+   * Is an audit finished, or should we find more samples to compare?
+   *
+   */
+  public boolean isFinished() {
+    return
+      this.auditStatus().equals(AuditStatus.NOT_AUDITABLE) ||
+      this.auditStatus().equals(AuditStatus.RISK_LIMIT_ACHIEVED) ||
+      this.auditStatus().equals(AuditStatus.ENDED);
   }
 
   /** calculate the number of times the given cvrId appears in the selection

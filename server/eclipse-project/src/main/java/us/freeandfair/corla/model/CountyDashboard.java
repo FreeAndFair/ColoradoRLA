@@ -867,17 +867,15 @@ public class CountyDashboard implements PersistentEntity {
     }
   }
 
-
   /**
    *  takes the targeted contests/ComparisonAudits and checks them for
    *  completion/RiskLimitAchieved
    **/
   public Boolean allAuditsComplete() {
     return comparisonAudits().stream()
-      .filter(ca -> ca.auditReason() != AuditReason.OPPORTUNISTIC_BENEFITS &&
-                    ca.auditStatus() != AuditStatus.NOT_AUDITABLE)
-      .allMatch(ca -> ca.auditStatus() == AuditStatus.RISK_LIMIT_ACHIEVED
-                || ca.auditStatus() == AuditStatus.ENDED);
+      // .filter(ca -> ca.isTargeted()) // FIXME This might be better?
+      .filter(ca -> ca.auditReason() != AuditReason.OPPORTUNISTIC_BENEFITS)
+      .allMatch(ca -> ca.isFinished());
   }
 
   /**
