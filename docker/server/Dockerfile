@@ -1,4 +1,5 @@
-FROM maven:3 as maven
+## Pinned to 3.5.3 to work around https://github.com/carlossg/docker-maven/issues/92
+FROM maven:3.5.3 as maven
 
 COPY server/eclipse-project /srv/corla/server/eclipse-project
 
