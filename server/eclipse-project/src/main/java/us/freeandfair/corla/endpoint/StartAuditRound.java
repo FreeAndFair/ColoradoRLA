@@ -314,7 +314,12 @@ public class StartAuditRound extends AbstractDoSDashboardEndpoint {
     final DoSDashboard dosdb = Persistence.getByID(DoSDashboard.ID, DoSDashboard.class);
     final BigDecimal riskLimit = dosdb.auditInfo().riskLimit();
     final String seed = dosdb.auditInfo().seed();
-    final List<ComparisonAudit> comparisonAudits = Persistence.getAll(ComparisonAudit.class);
+
+    final List<ComparisonAudit> comparisonAudits =
+      Persistence.getAll(ComparisonAudit.class).stream()
+      .filter(ca -> ca.isTargeted() && !ca.isFinished())
+      .collect(Collectors.toList());
+
     final List<Selection> selections = makeSelections(comparisonAudits, seed, riskLimit);
 
     // Nothing in this try-block should know about HTTP requests / responses

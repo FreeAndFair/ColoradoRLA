@@ -58,7 +58,6 @@ public final class DatabaseResetQueries {
         "contest_to_audit",
         "county_contest_vote_total",
         "contest_vote_total",
-        // FIXME these might not exist when we get to a PR state.
         "contest_comparison_audit_discrepancy",
         "contest_comparison_audit_disagreement",
         "comparison_audit",
@@ -80,7 +79,7 @@ public final class DatabaseResetQueries {
     };
 
     for (final String t : tables) {
-      s.createNativeQuery("delete from " + t).executeUpdate();
+      s.createNativeQuery("truncate table " + t + " cascade").executeUpdate();
     }
 
     // delete all the no-longer-referenced LOBs
