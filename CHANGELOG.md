@@ -9,8 +9,9 @@ with the following tags indicating the components affected:
   etc.
 - `TOOLING` refers to changes to tooling that falls outside the UI or API, such
   as the RLA export.
+## 2.0.10 - SNAPSHOT - In development
 
-## 2.0.9 - SNAPSHOT - In development
+## 2.0.9 - Bugfix release
 
 - [API - Contests that are NOT_AUDITABLE don't impede progress][pr93]
 
